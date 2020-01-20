@@ -29,7 +29,6 @@ class Client(BaseClient):
     def do_request(self, method, url_suffix, data=None, params=None, resp_type='json'):
         if not self.session:
             self.update_session()
-
         res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
                                  params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 403, 404))
 
@@ -309,6 +308,39 @@ class Client(BaseClient):
             'Tags': raw_item.get('tags')
         }
         return {key: val for key, val in evidence_item.items() if val is not None}
+
+    def parse_events_by_category(self, events, category_name):
+        # todo: If possible, complete method (parse). Otherwise, remove this method and pass events list as is.
+        parsed_events = events
+        if category_name.lower() == 'file':
+            pass
+        elif category_name.lower() == 'dns':
+            pass
+        elif category_name.lower() == 'registry':
+            pass
+        elif category_name.lower() == 'network':
+            pass
+        elif category_name.lower() == 'image':
+            pass
+        else:  # category_name.lower() == 'process'
+            pass
+        return parsed_events
+
+    def get_process_timeline_item(self, raw_item, category_name, limit, offset):
+        timeline_item = []
+        for category in raw_item:
+            if category['name'].lower() == category_name.lower():
+                sorted_timeline_dates = sorted(category['details'].keys())
+                for i in range(offset, offset + limit):
+                    current_date = sorted_timeline_dates[i]
+                    events_in_current_date = category['details'][current_date]
+                    events_for_date_i = self.parse_events_by_category(events_in_current_date, category_name)
+                    timeline_item.append({
+                        'date': sorted_timeline_dates[i],
+                        'events': events_for_date_i
+                    })
+
+        return timeline_item
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -817,7 +849,6 @@ def request_file_download(client, data_args):
     context = {
         'Host': con_id,
         'Path': path,
-        'Status': 'Pending',
         'Downloaded': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')
     }
     outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.Host === obj.Host)': context}
@@ -845,11 +876,10 @@ def get_file_download_request_status(client, data_args):
     if raw_response:
         file_id = raw_response[0].get('id')
         status = 'Completed'
-        host = raw_response[0].get('host')
-        path = raw_response[0].get('path')
+        downloaded = raw_response[0].get('downloaded')
     else:
         file_id = None
-        status = 'Pending'
+        status = 'Not found'
 
     file_download_request = {
         'ID': file_id,
@@ -910,7 +940,19 @@ def delete_file_from_endpoint(client, data_args):
 
 
 def get_process_timeline(client, data_args):
-    pass
+    con_id = data_args.get('connection-id')
+    ptid = data_args.get('ptid')
+    category = data_args.get('category')
+    limit = int(data_args.get('limit'))
+    offset = int(data_args.get('offset'))
+
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/eprocessestimelines/{ptid}')
+    timeline = client.get_process_timeline_item(raw_response, category, limit, offset)
+
+    context = createContext(timeline, removeNull=True)
+    outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown(f'Timeline for process `{ptid}`', timeline)
+    return human_readable, outputs, raw_response
 
 
 def fetch_incidents(client):
