@@ -11,12 +11,9 @@ def main():
     for subfeed in subfeeds:
         feed_types[F'https://lists.blocklist.de/lists/{subfeed}.txt'] = {
             'indicator_type': FeedIndicatorType.IP,
-            'indicator': {
-                'regex': r''
-            }
         }
 
-    params['feed_types'] = feed_types
+    params['feed_url_to_config'] = feed_types
 
     chosen_subfeeds = list()
     for subfeed in argToList(demisto.params().get('subfeeds', [])):
