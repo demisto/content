@@ -488,6 +488,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Test_GOI",
+            "integrations": "GenericOutboundIndicators",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
