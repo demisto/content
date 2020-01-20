@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Fixed an issue when trying to download a filter-pcap with the necessary arguments.
+- Fixed an issue where trying to download a filter-pcap with the necessary arguments did not return the correct results.
 
 ## [20.1.0] - 2020-01-07
   - Fixed an issue when trying to download a threat-pcap without the necessary arguments.
