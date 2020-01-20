@@ -539,21 +539,22 @@ def fetch_indicators_command():
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
-    demisto.setLastRun(now)
+    demisto.setLastRun({'time': now})
 
 
 def get_indicators_search_scan():
     now = datetime.now()
     time_field = "calculatedTime"
     last_fetch = demisto.getLastRun().get('time')
-    range_field = {time_field: {'gt': last_fetch, 'lte': now}} if last_fetch else {time_field: {'lte': now}}
+    range_field = {time_field: {'gt': datetime.fromtimestamp(float(last_fetch)), 'lte': now}} if last_fetch else {
+        time_field: {'lte': now}}
     es = elasticsearch_builder()
     query = QueryString(query=time_field + ":*")
     tenant_hash = demisto.getIndexHash()
     # all shared indexes minus this tenant shared
     indexes = f'*-shared*,-*{tenant_hash}*-shared*'
     search = Search(using=es, index=indexes).filter({'range': range_field}).query(query)
-    return search, now
+    return search, str(now.timestamp())
 
 
 def results_to_indicator(hit):
