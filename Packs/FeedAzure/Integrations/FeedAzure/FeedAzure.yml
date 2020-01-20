@@ -28,12 +28,12 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalInfo: When selected, the exclusion list will be ignored for this feed.
+- additionalinfo: When selected, the exclusion list will be ignored for this feed.
   display: Bypass exclusion list
   name: bypassExclusionList
   required: false
   type: 8
-- additionalInfo: Indicators from this integration instance will be marked with this
+- additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator reputation
