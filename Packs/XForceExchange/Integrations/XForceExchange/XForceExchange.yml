@@ -44,6 +44,17 @@ script:
     description: IP to check
     execution: false
     name: ip
+  - arguments:
+    - default: true
+      description: URL to check
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: URL reputation
+    execution: false
+    name: url
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: false
