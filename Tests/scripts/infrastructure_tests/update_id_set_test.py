@@ -171,11 +171,13 @@ PLAYBOOK_DATA3["implementing_playbooks"] = ["Cortex XDR Incident Handling"]
 PLAYBOOK_DATA3["name"] = "Palo Alto Networks - Malware Remediation"
 
 playbook_deps = [
-    ({"playbooks": [PLAYBOOK_DATA]}, True),
-    ({"playbooks": [PLAYBOOK_DATA, PLAYBOOK_DATA2, PLAYBOOK_DATA3]}, False),
+    ({"playbooks": [{"str": PLAYBOOK_DATA}]}, True),
+    ({"playbooks": [{"str0": PLAYBOOK_DATA}, {"str1": PLAYBOOK_DATA2}, {"str2": PLAYBOOK_DATA3}]},
+     False),
     ({}, False),
-    ({"playbooks": [PLAYBOOK_DATA], "TestPlaybooks": [PLAYBOOK_DATA2, PLAYBOOK_DATA3]}, False),
-    ({"playbooks": [PLAYBOOK_DATA], "TestPlaybooks": [PLAYBOOK_DATA2]}, True)
+    ({"playbooks": [{"str": PLAYBOOK_DATA}],
+      "TestPlaybooks": [{"str": PLAYBOOK_DATA2}, {"str1": PLAYBOOK_DATA3}]}, False),
+    ({"playbooks": [{"str": PLAYBOOK_DATA}], "TestPlaybooks": [{"str": PLAYBOOK_DATA2}]}, True)
 ]
 
 

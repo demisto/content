@@ -677,7 +677,7 @@ def update_id_set():
 
 
 def validate_playbook_dependencies(id_set_list):
-    # type: (dict) -> None
+    # type: (Dict[List[dict]]) -> None
     """Gets all playbook dependencies and checks if the playbook exists.
 
     Args:
@@ -690,11 +690,17 @@ def validate_playbook_dependencies(id_set_list):
     playbook_list = list()
     playbook_list.extend(id_set_list.get('playbooks', []))
     playbook_list.extend(id_set_list.get('TestPlaybooks', []))
-    playbook_names = [playbook["name"] for playbook in playbook_list]
+    playbook_names = list()
     for playbook in playbook_list:
-        for dependency in playbook.get('implementing_playbooks', []):
-            if dependency not in playbook_names:
-                raise KeyError("Could not find playbook ID: `{}` in playbooks.".format(dependency))
+        for _, playbook_obj in playbook.items():
+            name = playbook_obj["name"]
+            playbook_names.append(name)
+
+    for playbook in playbook_list:
+        for _, playbook_obj in playbook.items():
+            for dependency in playbook_obj.get('implementing_playbooks', []):
+                if dependency not in playbook_names:
+                    raise KeyError("Could not find playbook ID: `{}` in playbooks.".format(dependency))
 
 
 if __name__ == '__main__':
