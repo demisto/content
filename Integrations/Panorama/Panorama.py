@@ -3037,13 +3037,13 @@ def panorama_get_pcap_command():
     }
 
     password = demisto.args().get('password')
-    pcap_id = demisto.args()['pcapID']
+    pcap_id = demisto.args().get('pcapID')
     search_time = demisto.args().get('searchTime')
     if pcap_type == 'dlp-pcap' and not password:
         raise Exception('Can not provide dlp-pcap without password.')
     else:
         params['dlp-password'] = password
-    if pcap_type == 'threat-pcap' and not pcap_id or not search_time:
+    if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
         raise Exception('Can not provide threat-pcap without pcap-id and the searchTime arguments.')
 
     pcap_name = demisto.args().get('from')
