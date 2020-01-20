@@ -3719,7 +3719,7 @@ inputs:
   value: {}
   required: false
   description: 'A list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation, separated by commas. An example of a list
+    should be provided in CIDR format, separated by commas. An example of a list
     of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
     If a list is not provided, will use default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
@@ -3727,14 +3727,12 @@ inputs:
   value:
     simple: sourceip,destinationip
   required: true
-  description: The values of these QRadar fields will be used for the playbook IP
-    addresses outputs.
+  description: The values of these fields are used as the playbook IP address outputs.
 - key: InvestigationUserFields
   value:
     simple: username
   required: true
-  description: The values of these QRadar fields will be used for the playbook user
-    name outputs.
+  description: The values of these fields are used as the playbook user name outputs.
 outputs:
 - contextPath: QRadar.DetectedUsers
   description: Users detected based on the username field in your search.
