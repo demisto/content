@@ -695,14 +695,16 @@ def validate_playbook_dependencies(id_set_list):
         for _, playbook_obj in playbook.items():
             name = playbook_obj["name"]
             playbook_names.append(name)
-
+    failed = False
     for playbook in playbook_list:
         for _, playbook_obj in playbook.items():
             for dependency in playbook_obj.get('implementing_playbooks', []):
                 if dependency not in playbook_names:
-                    print_error("Could not find playbook ID: `{}` in playbooks. Make sure the playbook exists"
-                                "".format(dependency))
-                    raise
+                    failed = True
+                    print_error(
+                        "Playbook `{}` is missing a playbook dependency: `{}`".format(dependency, playbook_obj["name"]))
+    if failed:
+        sys.exit(1)
 
 
 if __name__ == '__main__':

@@ -184,7 +184,7 @@ playbook_deps = [
 @pytest.mark.parametrize('input_data, expected_error', playbook_deps)
 def test_validate_playbook_deps(input_data, expected_error):
     if expected_error:
-        with pytest.raises(RuntimeError):
+        with pytest.raises(SystemExit):
             validate_playbook_dependencies(input_data)
     else:
         validate_playbook_dependencies(input_data)
