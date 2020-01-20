@@ -85,16 +85,6 @@ configuration:
   name: polling_timeout
   required: false
   type: 0
-- additionalinfo: Regular expression for lines that should be ignored.
-  display: Ignore Regex
-  name: ignore_regex
-  required: false
-  type: 0
-- additionalinfo: Encoding of the feed (UTF-8 by default).
-  display: Encoding
-  name: encoding
-  required: false
-  type: 0
 description: Use the Spamhaus feed integration to fetch indicators from the feed.
 display: Spamhaus Feed
 name: SpamhausFeed
