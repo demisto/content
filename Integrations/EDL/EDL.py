@@ -136,8 +136,6 @@ def get_edl_ioc_values(on_demand, edl_size, indicator_query='', out_format='text
     """
     Get the ioc list to return in the edl
     """
-    out_format = out_format
-    on_demand = on_demand
     limit = try_parse_integer(edl_size, EDL_LIMIT_ERR_MSG)
     # on_demand ignores cache
     if on_demand:
