@@ -648,9 +648,9 @@ tasks:
     task:
       id: 3d9a9afc-e7e3-4be6-8142-57b5ef3bffb2
       version: -1
-      name: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP Port
+      name: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP
       description: ""
-      playbookName: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP Port
+      playbookName: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP
       type: playbook
       iscommand: false
       brand: ""
