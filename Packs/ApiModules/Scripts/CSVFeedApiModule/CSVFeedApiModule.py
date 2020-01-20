@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, url_to_fieldnames: dict, fieldnames: str = '', insecure: bool = False,
+    def __init__(self, url: str, url_to_fieldnames: dict = None, fieldnames: str = '', insecure: bool = False,
                  credentials: dict = None, ignore_regex: str = None, encoding: str = 'utf-8',
                  delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
@@ -130,12 +130,9 @@ class Client(BaseClient):
         return results
 
 
-def module_test_command(client, args):
-    fieldnames = argToList(demisto.params().get('fieldnames'))
-    if len(fieldnames) == 1 or 'indicator' in fieldnames:
-        client.build_iterator()
-        return 'ok', {}, {}
-    return_error('Please provide a column named "indicator" in fieldnames')
+def module_test_command(client: Client, args):
+    client.build_iterator()
+    return 'ok', {}, {}
 
 
 def fetch_indicators_command(client, itype, **kwargs):
