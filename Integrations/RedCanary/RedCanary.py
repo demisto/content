@@ -303,7 +303,16 @@ def detections_to_entry(detections, show_timeline=False):
 
 
 def get_unacknowledged_detections(t, per_page=50):
-    ''' iterate over all unacknowledged detections later then time t'''
+    # type: (datetime, int) -> Generator[dict, None, None]
+    """ iterate over all unacknowledged detections later then time t
+
+    Args:
+        t : last fetched time
+        per_page: how many detections per page
+
+    Yields:
+        dict: A detection from api
+    """
     page = 1
     res = list_detections(page=page, per_page=per_page, since=t)
     while res:
@@ -516,7 +525,7 @@ def fetch_incidents():
         last_fetch = last_run.get('time')
         last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
     else:
-        last_fetch = datetime.now() - timedelta(days=5)
+        last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
 
     LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
     incidents = []
@@ -563,7 +572,7 @@ def main():
         command_func = COMMANDS.get(demisto.command())
         if command_func is not None:
             if demisto.command() == 'fetch-incidents':
-                demisto.incidents(command_func())
+                demisto.incidents(fetch_incidents())
             else:
                 demisto.results(command_func())
 
