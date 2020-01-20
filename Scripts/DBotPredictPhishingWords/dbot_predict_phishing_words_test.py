@@ -41,8 +41,8 @@ def executeCommand(command, args=None):
 
 def test_get_model_data(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    assert "ModelDataList" == get_model_data("test", "list")
-    assert "ModelDataML" == get_model_data("test", "mlModel")
+    assert "ModelDataList" == get_model_data("test", "list", True)
+    assert "ModelDataML" == get_model_data("test", "mlModel", True)
 
 
 def test_predict_phishing_words(mocker):
@@ -196,7 +196,8 @@ def test_predict_phishing_words_tokenization_by_character_hashed(mocker):
                                                                  'NegativeWords': negative_tokens}, create=True)
     res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
     correct_highlighted = ' '.join(
-        bold(w) if any(unhash_token(pos_token) in w for pos_token in positive_tokens) else w for w in original_text.split())
+        bold(w) if any(unhash_token(pos_token) in w for pos_token in positive_tokens) else w for w in
+        original_text.split())
     assert res['Contents'] == {'OriginalText': original_text,
                                'Probability': 0.7, 'NegativeWords': negative_tokens,
                                'TextTokensHighlighted': correct_highlighted,
