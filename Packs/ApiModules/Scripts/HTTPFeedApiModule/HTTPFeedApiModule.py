@@ -29,24 +29,26 @@ class Client(BaseClient):
         :param: encoding: encoding of the feed, if not UTF-8. See
             ``str.decode`` for options. Default: *null*, meaning do
             nothing, (Assumes UTF-8).
+        :param: indicator_type: Default indicator type
         :param: indicator: an *extraction dictionary* to extract the indicator from
             the line. If *null*, the text until the first whitespace or newline
             character is used as indicator. Default: *null*
-        :param: feed_types: For each sub-feed, a dictionary to process indicators by.
+        :param: fields: a dictionary of *extraction dictionaries* to extract
+            additional attributes from each line. Default: {}
+        :param: feed_url_to_config: For each sub-feed, a dictionary to process indicators by.
         For example, ASN feed:
         'https://www.spamhaus.org/drop/asndrop.txt': {
             'indicator_type': ASN,
-            'indicator': {
+            'indicator': { (Regex to extract the indicator by, if empty - the whole line is extracted)
                 'regex': r'^AS[0-9]+',
             },
-            'fields': {
+            'fields': { (See Extraction dictionary below)
                 'asndrop_country': {
                     'regex': '^.*;\\W([a-zA-Z]+)\\W+',
                     'transform: r'\1'
                 }
             }
         }
-        :param: indicator_type: Default indicator type
         :param: proxy: Use proxy in requests.
         **Extraction dictionary**
             Extraction dictionaries contain the following keys:
