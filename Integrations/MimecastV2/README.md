@@ -3357,10 +3357,4 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+<img src="https://github.com/demisto/content/blob/mimecast_upgrade/Integrations/MimecastV2/mimecast-update-policy.png?raw=true" alt="image">
