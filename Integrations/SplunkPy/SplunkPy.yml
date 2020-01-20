@@ -85,7 +85,8 @@ configuration:
   name: hec_token
   required: false
   type: 4
-- display: HEC Port
+- defaultvalue: '8088'
+  display: HEC Port
   name: hec_port
   required: false
   type: 0
