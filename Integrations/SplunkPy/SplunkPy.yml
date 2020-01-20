@@ -284,8 +284,7 @@ script:
   - arguments:
     - default: false
       description: |-
-        Event payload key-value. Value can be a string or a JSON object.
-        JSON example: {"event": {"message":"Access log test message"}}
+        Event payload key-value.
         String example: "event": "Access log test message."
       isArray: false
       name: event
@@ -293,6 +292,7 @@ script:
       secret: false
     - default: false
       description: Fields for indexing that do not occur in the event payload itself.
+        Accepts multiple comma separated fields.
       isArray: false
       name: fields
       required: false
@@ -328,8 +328,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends events to an HTTP Event Collector using the Splunk platform JSON
-      event protocol.
+    description: Sends events to an HTTP Event Collector using the Splunk platform
+      JSON event protocol.
     execution: false
     name: splunk-submit-event-hec
   dockerimage: demisto/splunksdk:1.0
