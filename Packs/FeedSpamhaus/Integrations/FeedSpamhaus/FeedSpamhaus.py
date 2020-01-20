@@ -40,7 +40,7 @@ def main():
         }
     }
 
-    params['feed_types'] = feed_url_to_config
+    params['feed_url_to_config'] = feed_url_to_config
 
     # Call the main execution of the HTTP API module.
     feed_main('Spamhaus Feed', params)
