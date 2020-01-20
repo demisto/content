@@ -187,9 +187,6 @@
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
         },
         {
-            "playbookID": "TestParseEmailHeaders"
-        },
-        {
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
@@ -2022,7 +2019,7 @@
         },
         {
             "playbookID": "PANW - Hunting and threat detection by indicator type Test",
-            "fromversion": "4.5.0",
+            "fromversion": "5.0.0",
             "timeout": 1200,
             "integrations": ["Panorama","Palo Alto Networks Cortex","AutoFocus V2","VirusTotal"],
             "instance_names": ["palo_alto_panorama","virus_total_general"]
@@ -2059,7 +2056,7 @@
             "playbookID": "PolySwarm-Test"
         },
         {
-            "integrations": "Kenna",
+            "integrations": "Kennav2",
             "playbookID": "Kenna Test"
         },
         {
@@ -2117,6 +2114,10 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "GetValuesOfMultipleFIelds Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
@@ -2150,7 +2151,6 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
         "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
@@ -2288,6 +2288,7 @@
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
-        "GoogleCloudTranslate": "google translate sdk does not support proxy"
+        "GoogleCloudTranslate": "google translate sdk does not support proxy",
+        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233"
     }
 }
