@@ -4,6 +4,7 @@ contentitemfields:
   propagationLabels:
   - all
 name: Tanium Threat Response - Request File Download
+description: Request file download from Tanium.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,7 +19,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -58,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 720
+          "y": 370
         }
       }
     note: false
@@ -68,10 +69,10 @@ tasks:
     quiet: false
   "2":
     id: "2"
-    taskid: 0c9aa392-4a09-4d29-8c3a-07a49de57bd7
+    taskid: ba08ebe9-6939-4b3e-85ce-ea9cd96b8311
     type: playbook
     task:
-      id: 0c9aa392-4a09-4d29-8c3a-07a49de57bd7
+      id: ba08ebe9-6939-4b3e-85ce-ea9cd96b8311
       version: -1
       name: GenericPolling
       description: |-
@@ -88,26 +89,24 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "12"
     scriptarguments:
       AdditionalPollingCommandArgNames:
         simple: host,path
       AdditionalPollingCommandArgValues:
         simple: ${inputs.connection-id},${inputs.path}
       Ids:
-        complex:
-          root: Tanium
-          accessor: FileDownload.ID
+        simple: ${Tanium.FileDownload.Downloaded}
       Interval:
         simple: "1"
       PollingCommandArgName:
-        simple: date
+        simple: request-date
       PollingCommandName:
         simple: tanium-tr-get-download-file-request-status
       Timeout:
         simple: "10"
       dt:
-        simple: Tanium.DownloadFileRequest(Status!='Completed').ID
+        simple: Tanium.FileDownload(val.Status != 'Completed').ID
     separatecontext: true
     loop:
       iscommand: false
@@ -118,7 +117,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 895
+          "y": 545
         }
       }
     note: false
@@ -143,43 +142,6 @@ tasks:
         "position": {
           "x": 162.5,
           "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "4":
-    id: "4"
-    taskid: b4d7ff47-6cb3-4395-87fb-8e404a3903cd
-    type: regular
-    task:
-      id: b4d7ff47-6cb3-4395-87fb-8e404a3903cd
-      version: -1
-      name: tanium-tr-create-connection
-      description: Creates a local or remote connection.
-      script: Tanium Threat Response|||tanium-tr-create-connection
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      connection-timeout: {}
-      destination:
-        simple: ${inputs.connection-id}
-      destination-type:
-        simple: ${inputs.destination-type}
-      remote:
-        simple: "True"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
         }
       }
     note: false
@@ -212,90 +174,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "6":
-    id: "6"
-    taskid: a8bf4a48-e1b1-4b70-86de-2029191db32d
-    type: regular
-    task:
-      id: a8bf4a48-e1b1-4b70-86de-2029191db32d
-      version: -1
-      name: Get connection by name
-      description: Returns a connection object based on name.
-      script: Tanium Threat Response|||tanium-tr-get-connection-by-name
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      connection-name:
-        simple: ${inputs.connection-id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "7":
-    id: "7"
-    taskid: 0f4cff77-fcf3-476d-8d82-882ede2aba3a
-    type: condition
-    task:
-      id: 0f4cff77-fcf3-476d-8d82-882ede2aba3a
-      version: -1
-      name: Is connection active?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Tanium
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Tanium.Connection.Name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.connection-id
-                      iscontext: true
-                accessor: Connection.State
-            iscontext: true
-          right:
-            value:
-              simple: active
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
         }
       }
     note: false
@@ -345,10 +223,10 @@ tasks:
     quiet: false
   "9":
     id: "9"
-    taskid: 777b5dc2-7f7f-4d44-84ff-def483e11cf5
+    taskid: 766877f7-638d-45ca-8d30-274da1f6aeaf
     type: regular
     task:
-      id: 777b5dc2-7f7f-4d44-84ff-def483e11cf5
+      id: 766877f7-638d-45ca-8d30-274da1f6aeaf
       version: -1
       name: Get downloaded file
       description: Get the actual content of a downloaded file by file ID.
@@ -361,13 +239,152 @@ tasks:
       - "8"
     scriptarguments:
       file-id:
-        simple: ${Tanium.FileDownloadRequest.ID}
+        complex:
+          root: Tanium
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.FileDownload.Path
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.path
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Tanium.FileDownload.Host
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.connection-id
+                iscontext: true
+          accessor: FileDownload.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "10":
+    id: "10"
+    taskid: 64bba2d4-252f-4a4a-8ed2-287d40c94def
+    type: condition
+    task:
+      id: 64bba2d4-252f-4a4a-8ed2-287d40c94def
+      version: -1
+      name: Should the file be downloaded?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.download-file
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "11":
+    id: "11"
+    taskid: 19fbd9c1-0372-4363-88a1-3d2f1937475c
+    type: playbook
+    task:
+      id: 19fbd9c1-0372-4363-88a1-3d2f1937475c
+      version: -1
+      name: Tanium Threat Response - Create Connection
+      playbookName: Tanium Threat Response - Create Connection
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      connection-id:
+        simple: ${inputs.connection-id}
+      connection-timeout:
+        simple: ${inputs.connection-timeout}
+      destination-type:
+        simple: ${inputs.destination-type}
+      remote:
+        simple: ${inputs.remote}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "12":
+    id: "12"
+    taskid: a54d98f3-e4c0-4031-82d0-12408af79302
+    type: regular
+    task:
+      id: a54d98f3-e4c0-4031-82d0-12408af79302
+      version: -1
+      name: tanium-tr-get-download-file-request-status
+      description: Get the status of the download file request.
+      script: Tanium Threat Response|||tanium-tr-get-download-file-request-status
+      type: regular
+      iscommand: true
+      brand: Tanium Threat Response
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      host:
+        simple: ${Tanium.FileDownload.Host}
+      path:
+        simple: ${Tanium.FileDownload.Path}
+      request-date:
+        simple: ${Tanium.FileDownload.Downloaded}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
@@ -417,4 +434,17 @@ inputs:
   description: If true, the connection will be deleted in the end of the playbook,
     otherwise, it will remain open.
   playbookInputQuery: null
-outputs: []
+- key: remote
+  value: {}
+  required: true
+  description: True if remote connection.
+  playbookInputQuery: null
+- key: connection-timeout
+  value: {}
+  required: false
+  description: Connection timeout, in milliseconds.
+  playbookInputQuery: null
+outputs:
+- contextPath: File.ID
+  description: File download entry ID.
+  type: string

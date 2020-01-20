@@ -622,7 +622,7 @@ def get_events_by_connection(client, data_args):
     filter_dict = filter_to_tanium_api_syntax(data_args.get('filter'))
     match = data_args.get('match')
 
-    g1 = ','.join([str(i) for i in range(len(filter_dict)//3)])  # A weird param that must be passed
+    g1 = ','.join([str(i) for i in range(len(filter_dict) // 3)])  # A weird param that must be passed
 
     params = {
         'limit': limit,
@@ -867,6 +867,7 @@ def get_file_download_request_status(client, data_args):
     downloaded = data_args.get('request-date')
     host = data_args.get('host')
     path = data_args.get('path')
+
     params = {'downloaded>': downloaded}
     if host:
         params['host'] = host
