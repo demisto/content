@@ -11,7 +11,6 @@ from distutils.version import LooseVersion
 import time
 import sys
 
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
@@ -19,7 +18,6 @@ sys.path.append(CONTENT_DIR)
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
     LOG_COLORS, print_color, run_command, print_error, print_warning  # noqa: E402
-
 
 CHECKED_TYPES_REGEXES = (
     # Integrations
@@ -552,10 +550,10 @@ def has_duplicate(id_set, id_to_check):
         # C: 3.5.2 - 3.5.4
         # D: 4.5.0 - 99.99.99
         if any([
-                dict1_from_version <= dict2_from_version < dict1_to_version,  # will catch (B, C), (A, B), (A, C)
-                dict1_from_version < dict2_to_version <= dict1_to_version,  # will catch (B, C), (A, C)
-                dict2_from_version <= dict1_from_version < dict2_to_version,  # will catch (C, B), (B, A), (C, A)
-                dict2_from_version < dict1_to_version <= dict2_to_version,  # will catch (C, B), (C, A)
+            dict1_from_version <= dict2_from_version < dict1_to_version,  # will catch (B, C), (A, B), (A, C)
+            dict1_from_version < dict2_to_version <= dict1_to_version,  # will catch (B, C), (A, C)
+            dict2_from_version <= dict1_from_version < dict2_to_version,  # will catch (C, B), (B, A), (C, A)
+            dict2_from_version < dict1_to_version <= dict2_to_version,  # will catch (C, B), (C, A)
         ]):
             return True
 
@@ -678,19 +676,44 @@ def update_id_set():
     print("Finished updating id_set.json")
 
 
+def validate_playbook_dependencies(id_set_list):
+    # type: (dict) -> None
+    """Gets all playbook dependencies and checks if the playbook exists.
+
+    Args:
+        id_set_list: list of ids
+
+    Raises:
+        KeyError if playbook is missing in the list.
+    """
+    print_color("Starting validate playbook's dependencies.", LOG_COLORS.GREEN)
+    playbook_list = list()
+    playbook_list.extend(id_set_list.get('playbooks', []))
+    playbook_list.extend(id_set_list.get('TestPlaybooks', []))
+    playbook_names = [playbook["name"] for playbook in playbook_list]
+    for playbook in playbook_list:
+        for dependency in playbook.get('implementing_playbooks', []):
+            if dependency not in playbook_names:
+                raise KeyError("Could not find playbook ID: `{}` in playbooks.".format(dependency))
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-r', '--reCreate', action='store_true', help='Is re-create id_set or update it')
     options = parser.parse_args()
 
+    id_set_path = './Tests/id_set.json'
     if options.reCreate:
         print("Re creating the id_set.json")
         re_create_id_set()
 
     else:
-        if os.path.isfile('./Tests/id_set.json'):
+        if os.path.isfile(id_set_path):
             print("Updating the id_set.json")
             update_id_set()
         else:
             print("./Tests/id_set.json is missing. Recreating...")
             re_create_id_set()
+    with open(id_set_path) as f:
+        id_set = json.load(f)
+    validate_playbook_dependencies(id_set)

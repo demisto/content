@@ -1,6 +1,7 @@
 import unittest
 import pytest
-from Tests.scripts.update_id_set import has_duplicate, get_integration_data, get_script_data, get_playbook_data
+from Tests.scripts.update_id_set import has_duplicate, get_integration_data, get_script_data, get_playbook_data, \
+    validate_playbook_dependencies
 
 MOCKED_DATA = [
     (
@@ -159,6 +160,32 @@ class TestIntegration(unittest.TestCase):
         self.assertSetEqual(set(data['implementing_playbooks']), set(PLAYBOOK_DATA['implementing_playbooks']))
         self.assertListEqual(data['tests'], PLAYBOOK_DATA['tests'])
         self.assertDictEqual(data['command_to_integration'], PLAYBOOK_DATA['command_to_integration'])
+
+
+PLAYBOOK_DATA2 = PLAYBOOK_DATA.copy()
+PLAYBOOK_DATA2["implementing_playbooks"] = ["Cortex XDR Incident Handling"]
+PLAYBOOK_DATA2["name"] = "Calculate Severity - Standard"
+
+PLAYBOOK_DATA3 = PLAYBOOK_DATA.copy()
+PLAYBOOK_DATA3["implementing_playbooks"] = ["Cortex XDR Incident Handling"]
+PLAYBOOK_DATA3["name"] = "Palo Alto Networks - Malware Remediation"
+
+playbook_deps = [
+    ({"playbooks": [PLAYBOOK_DATA]}, True),
+    ({"playbooks": [PLAYBOOK_DATA, PLAYBOOK_DATA2, PLAYBOOK_DATA3]}, False),
+    ({}, False),
+    ({"playbooks": [PLAYBOOK_DATA], "TestPlaybooks": [PLAYBOOK_DATA2, PLAYBOOK_DATA3]}, False),
+    ({"playbooks": [PLAYBOOK_DATA], "TestPlaybooks": [PLAYBOOK_DATA2]}, True)
+]
+
+
+@pytest.mark.parametrize('input_data, expected_error', playbook_deps)
+def test_validate_playbook_deps(input_data, expected_error):
+    if expected_error:
+        with pytest.raises(KeyError):
+            validate_playbook_dependencies(input_data)
+    else:
+        validate_playbook_dependencies(input_data)
 
 
 if __name__ == '__main__':
