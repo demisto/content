@@ -131,21 +131,19 @@ def get_edl_mimetype() -> str:
     return ctx.get(EDL_MIMETYPE_KEY, 'text/plain')
 
 
-def get_edl_ioc_values(params) -> str:
+def get_edl_ioc_values(on_demand, edl_size, indicator_query='', out_format='text', last_run=None,
+                       cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the edl
     """
-    out_format = params.get('format')
-    on_demand = params.get('on_demand')
-    limit = try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
+    out_format = out_format
+    on_demand = on_demand
+    limit = try_parse_integer(edl_size, EDL_LIMIT_ERR_MSG)
     # on_demand ignores cache
     if on_demand:
         values_str = get_ioc_values_str_from_context()
     else:
-        last_run = demisto.getLastRun().get('last_run')
-        indicator_query = params.get('indicators_query')
         if last_run:
-            cache_refresh_rate = params.get('cache_refresh_rate')
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             if last_run <= cache_time:
                 values_str = refresh_edl_context(indicator_query, out_format, limit=limit)
@@ -183,7 +181,15 @@ def route_edl_values() -> Response:
     """
     Main handler for values saved in the integration context
     """
-    values = get_edl_ioc_values(demisto.params())
+    params = demisto.params()
+    values = get_edl_ioc_values(
+        out_format=params.get('format'),
+        on_demand=params.get('on_demand'),
+        edl_size=params.get('edl_size'),
+        last_run=demisto.getLastRun().get('last_run'),
+        indicator_query=params.get('indicators_query'),
+        cache_refresh_rate=params.get('cache_refresh_rate')
+    )
     mimetype = get_edl_mimetype()
     return Response(values, status=200, mimetype=mimetype)
 
