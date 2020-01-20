@@ -65,10 +65,10 @@ args:
   secret: false
 comment: Fetch indicators from a file.
 commonfields:
-  id: Fetch Indicators From File
+  id: FetchIndicatorsFromFile
   version: -1
 enabled: false
-name: Fetch Indicators From File
+name: FetchIndicatorsFromFile
 outputs:
 - contextPath: Indicator.Value
   description: The value of the indicator.
