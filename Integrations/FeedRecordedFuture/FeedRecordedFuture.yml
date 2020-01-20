@@ -87,7 +87,7 @@ configuration:
 - additionalinfo: |-
     Limit the indicators list to a specific risk rule.
     To see available risk rules please use the get-risk-rules command.
-    This parameter will be used only for connectApi sub feed.
+    This parameter will only be used for the 'connectApi' sub feed.
   display: risk rule
   hidden: false
   name: risk_rule
@@ -95,7 +95,7 @@ configuration:
   type: 0
 - additionalinfo: |-
     The path for the fusion file.
-    This parameter will be used only for fusion sub feed
+    This parameter will only be used for the 'fusion' sub feed.
   display: fusion file path
   hidden: false
   name: fusion_file_path
@@ -143,7 +143,7 @@ script:
       type: String
     - contextPath: RecordedFutureFeed.Indicator.Value
       description: The indicator value
-      type: Unknown
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -169,7 +169,7 @@ script:
       description: The risk rule description
       type: String
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
-      description: The risk tule criticality
+      description: The risk rule criticality
       type: String
   dockerimage: demisto/python3:3.7.5.4583
   feed: true
