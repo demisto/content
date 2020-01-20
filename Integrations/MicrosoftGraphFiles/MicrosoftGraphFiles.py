@@ -757,12 +757,12 @@ def main():
 
 
 def list_drives_site_for_test_module(token):
-    query_string = {"search": "*", "top": "1"}
+    query_string = {"top": "1"}
     requests.get(
-        url=demisto.params().get("host"),
+        url=demisto.params().get("host") + "/v1.0/sites/root",
         headers={"Authorization": f"Bearer {token}"},
         params=query_string,
-        timeout=7,
+        timeout=5,
     )
 
 
