@@ -56,18 +56,18 @@ tasks:
     view: |-
       {
         "position": {
-    taskid: b5ee7da2-7d43-426f-8870-f8dffc2f3b24
-    type: playbook
-    task:
-      "x": 450,
-      "y": 190
-  }
-  }
+          "x": 450,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-    '9':
-      id: '9'
+  '9':
+    id: '9'
+    taskid: b5ee7da2-7d43-426f-8870-f8dffc2f3b24
+    type: playbook
+    task:
       id: b5ee7da2-7d43-426f-8870-f8dffc2f3b24
       version: -1
       name: QRadar Indicator Hunting V2
