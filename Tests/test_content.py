@@ -2,6 +2,7 @@ from __future__ import print_function
 import re
 import sys
 import json
+import time
 import urllib3
 import argparse
 import requests
@@ -104,6 +105,12 @@ class ParallelPrintsManager:
     def __init__(self, number_of_threads):
         self.threads_print_jobs = [[] for i in range(number_of_threads)]
         self.print_lock = threading.Lock()
+        self.threads_last_update_times = [time.time() for i in range(number_of_threads)]
+
+    def should_update_thread_status(self, thread_index):
+        current_time = time.time()
+        thread_last_update = self.threads_last_update_times[thread_index]
+        return current_time - thread_last_update > 300
 
     def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None):
         if print_color:
@@ -111,6 +118,9 @@ class ParallelPrintsManager:
         else:
             print_job = PrintJob(message_to_print, print_function_to_execute)
         self.threads_print_jobs[thread_index].append(print_job)
+        if self.should_update_thread_status(self, thread_index):
+            print("Thread {} is still running.".format(thread_index))
+            self.threads_last_update_times[thread_index] = time.time()
 
     def execute_thread_prints(self, thread_index):
         self.print_lock.acquire()
