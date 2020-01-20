@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(self, url: str, url_to_fieldnames: dict = None, fieldnames: str = '', insecure: bool = False,
-                 credentials: dict = None, ignore_regex: str = None, encoding: str = 'utf-8',
+                 credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
                  delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
                  **kwargs):
@@ -30,7 +30,7 @@ class Client(BaseClient):
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param credentials: username and password used for basic authentication
         :param ignore_regex: python regular expression for lines that should be ignored. Default: *null*
-        :param encoding: Encoding of the feed, UTF-8 by default.
+        :param encoding: Encoding of the feed, latin-1 by default.
         :param delimiter: see `csv Python module
             <https://docs.python.org/2/library/csv.html#dialects-and-formatting-parameters>`. Default: ,
         :param doublequote: see `csv Python module
