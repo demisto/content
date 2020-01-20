@@ -14,16 +14,14 @@ urllib3.disable_warnings()
 class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
-                 feed_url_to_config: dict = None, polling_timeout: int = 20,
-                 user_agent: str = None, proxy: bool = False, **kwargs):
+                 indicator: str = '', fields: str = '{}', feed_url_to_config: dict = None, polling_timeout: int = 20,
+                 headers: list = None, proxy: bool = False, **kwargs):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
         :param: polling_timeout: timeout of the polling request in seconds.
             Default: 20
-        :param: user_agent: string, value for the User-Agent header in HTTP
-            request. If ``MineMeld``, MineMeld/<version> is used.
-            Default: python ``requests`` default.
+        :param: headers: list, Optional list of headers to send in the request.
         :param: ignore_regex: Python regular expression for lines that should be
             ignored. Default: *null*
         :param: verify_cert: boolean, if *true* feed HTTPS server certificate is
@@ -31,6 +29,9 @@ class Client(BaseClient):
         :param: encoding: encoding of the feed, if not UTF-8. See
             ``str.decode`` for options. Default: *null*, meaning do
             nothing, (Assumes UTF-8).
+        :param: indicator: an *extraction dictionary* to extract the indicator from
+            the line. If *null*, the text until the first whitespace or newline
+            character is used as indicator. Default: *null*
         :param: feed_types: For each sub-feed, a dictionary to process indicators by.
         For example, ASN feed:
         'https://www.spamhaus.org/drop/asndrop.txt': {
@@ -81,17 +82,13 @@ class Client(BaseClient):
             whitespace is used as indicator::
                 url: https://ransomwaretracker.abuse.ch/downloads/CW_C2_URLBL.txt
                 ignore_regex: '^#'
-        Args:
-            name (str): node name, should be unique inside the graph
-            chassis (object): parent chassis instance
-            config (dict): node config.
         """
         super().__init__(base_url=url, verify=not insecure, proxy=proxy)
         try:
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
             raise ValueError('Please provide an integer value for "Request Timeout"')
-        self.user_agent = user_agent
+        self.headers = headers
         self.encoding = encoding
         self.feed_name = feed_name
         if not credentials:
@@ -99,10 +96,51 @@ class Client(BaseClient):
         self.username = credentials.get('identifier', None)
         self.password = credentials.get('password', None)
         self.indicator_type = indicator_type
-        self.feed_types = feed_url_to_config if feed_url_to_config else {}
+        if feed_url_to_config:
+            self.feed_url_to_config = feed_url_to_config
+        else:
+            self.feed_url_to_config = {url: self.get_feed_config(fields, indicator)}
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
+
+    def get_feed_config(self, fields_json: str = '', indicator_json: str = ''):
+        """
+        Get the feed configuration from the indicator and field JSON strings.
+        :param fields_json: JSON string of fields to extract.
+        :param indicator_json: JSON string of the indicator to extract.
+        :return: The feed configuration.
+        """
+        config = {}
+        if indicator_json is not None:
+            indicator = json.loads(indicator_json)
+            if 'regex' in indicator:
+                indicator['regex'] = re.compile(indicator['regex'])
+            else:
+                raise ValueError(f'{self.feed_name} - indicator stanza should have a regex')
+            if 'transform' not in indicator:
+                if indicator['regex'].groups > 0:
+                    LOG(f'{self.feed_name} - no transform string for indicator but pattern contains groups')
+                indicator['transform'] = r'\g<0>'
+
+            config['indicator'] = indicator
+        if fields_json:
+            fields = json.loads(fields_json)
+            config['fields'] = []
+            for f, fattrs in fields.items():
+                if 'regex' in fattrs:
+                    fattrs['regex'] = re.compile(fattrs['regex'])
+                else:
+                    raise ValueError(f'{self.feed_name} - {f} field does not have a regex')
+                if 'transform' not in fattrs:
+                    if fattrs['regex'].groups > 0:
+                        LOG(f'{self.feed_name} - no transform string for field {f} but pattern contains groups')
+                    fattrs['transform'] = r'\g<0>'
+                config['fields'].append({
+                    f: fattrs
+                })
+
+        return config
 
     def build_iterator(self, **kwargs):
         """
@@ -114,10 +152,8 @@ class Client(BaseClient):
         kwargs['verify'] = self._verify
         kwargs['timeout'] = self.polling_timeout
 
-        if self.user_agent is not None:
-            kwargs['headers'] = {
-                'User-Agent': self.user_agent
-            }
+        if self.headers is not None:
+            kwargs['headers'] = self.headers
 
         if self.username is not None and self.password is not None:
             kwargs['auth'] = (self.username, self.password)
@@ -134,8 +170,8 @@ class Client(BaseClient):
                 try:
                     r.raise_for_status()
                 except Exception:
-                    LOG(f'{self.feed_name} - exception in request:'  # type: ignore[str-bytes-safe]
-                        f' {r.status_code} {r.content}')
+                    LOG(f'{self.feed_name!r} - exception in request:'
+                        f' {r.status_code!r} {r.content!r}')
                     raise
                 url_to_response_list.append({url: r})
         except requests.ConnectionError:
@@ -176,7 +212,7 @@ def get_indicator_fields(line, url, client: Client):
     value = None
     indicator = None
     fields_to_extract = []
-    feed_type = client.feed_types.get(url, {})
+    feed_type = client.feed_url_to_config.get(url, {})
     if feed_type:
         if 'indicator' in feed_type:
             indicator = feed_type['indicator']
@@ -226,7 +262,7 @@ def get_indicator_fields(line, url, client: Client):
                 else:
                     attributes[f] = i
         attributes['value'] = value = extracted_indicator
-        attributes['type'] = feed_type['indicator_type']
+        attributes['type'] = feed_type.get('indicator_type', client.indicator_type)
     return attributes, value
 
 
@@ -240,7 +276,7 @@ def fetch_indicators_command(client, itype, **kwargs):
                 if value:
                     indicators.append({
                         "value": value,
-                        "type": client.feed_types.get(url, {}).get('indicator_type', itype),
+                        "type": client.feed_url_to_config.get(url, {}).get('indicator_type', itype),
                         "rawJSON": attributes,
                     })
     return indicators
@@ -284,5 +320,5 @@ def feed_main(feed_name, params):
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} feed [{e}]'  # FEED_NAME should be in the integration code
+        err_msg = f'Error in {feed_name} feed [{e}]'
         return_error(err_msg)
