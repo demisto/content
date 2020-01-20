@@ -12,10 +12,9 @@ INTEGRATION_NAME = 'Azure'
 AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519'  # disable-secrets-detection
 
 ERROR_TYPE_TO_MESSAGE = {
-    requests.ConnectionError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                              F'Check your Server URL parameter.\n\n',
+    requests.ConnectionError: F'Connection error in the API call to {INTEGRATION_NAME}.\n',
     requests.exceptions.SSLError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                                  F'Check your not secure parameter.\n\n',
+                                  F'Check your \'Trust any certificate\' parameter.\n\n',
     requests.exceptions.HTTPError: F'Error issuing the request call to {INTEGRATION_NAME}.\n\n',
 }
 
@@ -38,12 +37,12 @@ class Client(BaseClient):
         self._polling_timeout = polling_timeout
 
     @staticmethod
-    def build_ip_indicator(azure_address_prefix, **keywords) -> Dict:
+    def build_ip_indicator(azure_ip_address, **indicator_metadata) -> Dict:
         """Creates an IP data dict.
 
         Args:
-            azure_address_prefix (str): IP extracted from Azure.
-            **keywords (dict): Additional information related to the IP.
+            azure_ip_address (str): IP extracted from Azure.
+            **indicator_metadata (dict): Additional information related to the IP.
 
         Returns:
             Dict. IP data object.
@@ -51,15 +50,15 @@ class Client(BaseClient):
         is_CIDR = False
 
         try:
-            address_type = ipaddress.ip_address(azure_address_prefix)
+            address_type = ipaddress.ip_address(azure_ip_address)
 
         except Exception:
             try:
-                address_type = ipaddress.ip_network(azure_address_prefix)
+                address_type = ipaddress.ip_network(azure_ip_address)
                 is_CIDR = True
 
             except Exception:
-                demisto.debug(F'{INTEGRATION_NAME} - Invalid ip range: {azure_address_prefix}')
+                demisto.debug(F'{INTEGRATION_NAME} - Invalid ip range: {azure_ip_address}')
                 return {}
 
         if address_type.version == 4:
@@ -71,10 +70,10 @@ class Client(BaseClient):
             return {}
 
         ip_object = {
-            'value': azure_address_prefix,
+            'value': azure_ip_address,
             'type': type_,
         }
-        ip_object.update(keywords)
+        ip_object.update(indicator_metadata)
 
         return ip_object
 
@@ -90,11 +89,10 @@ class Client(BaseClient):
             url_suffix='',
             stream=False,
             timeout=self._polling_timeout,
-            resp_type='html'
+            resp_type='text'
         )
 
-        azure_url_response.raise_for_status()
-        download_link_search_regex = re.search(r'downloadData={.+(https://(.)+\.json)\",', azure_url_response.text)
+        download_link_search_regex = re.search(r'downloadData={.+(https://(.)+\.json)\",', azure_url_response)
         download_link = download_link_search_regex.group(1) if download_link_search_regex else None
 
         return download_link
@@ -109,7 +107,7 @@ class Client(BaseClient):
             Dict. Content of values section in the Azure downloaded file.
         """
         if download_link is None:
-            raise RuntimeError(F'{INTEGRATION_NAME} - failoverLink not found')
+            raise RuntimeError(F'{INTEGRATION_NAME} - Download link not found')
 
         demisto.debug(F'download link: {download_link}')
 
@@ -121,7 +119,7 @@ class Client(BaseClient):
             timeout=self._polling_timeout
         )
 
-        return file_download_response.get('values', None)
+        return file_download_response.get('values')
 
     @staticmethod
     def extract_metadata_of_indicators_group(indicators_group_data: Dict) -> Dict:
@@ -135,17 +133,17 @@ class Client(BaseClient):
         """
         indicator_metadata = dict()
 
-        indicator_metadata['id'] = indicators_group_data.get('id', None)
-        indicator_metadata['name'] = indicators_group_data.get('name', None)
-        indicator_properties = indicators_group_data.get('properties', None)
+        indicator_metadata['id'] = indicators_group_data.get('id')
+        indicator_metadata['name'] = indicators_group_data.get('name')
+        indicator_properties = indicators_group_data.get('properties')
 
-        if indicator_properties in [None, {}]:
+        if not indicator_properties:
             LOG(F'{INTEGRATION_NAME} - no properties for indicators group {indicator_metadata["name"]}')
             return {}
 
-        indicator_metadata['region'] = indicator_properties.get('region', None)
-        indicator_metadata['platform'] = indicator_properties.get('platform', None)
-        indicator_metadata['system_service'] = indicator_properties.get('systemService', None)
+        indicator_metadata['region'] = indicator_properties.get('region')
+        indicator_metadata['platform'] = indicator_properties.get('platform')
+        indicator_metadata['system_service'] = indicator_properties.get('systemService')
         indicator_metadata['address_prefixes'] = indicator_properties.get('addressPrefixes', [])
 
         return indicator_metadata
@@ -166,7 +164,7 @@ class Client(BaseClient):
             return []
 
         for indicators_group in values_from_file:
-            demisto.debug(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id", None)}')
+            demisto.debug(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id")}')
 
             indicator_metadata = self.extract_metadata_of_indicators_group(indicators_group)
             if not indicator_metadata:
@@ -281,23 +279,13 @@ def fetch_indicators(client: Client, limit: int = -1) -> Tuple[List[Dict], List]
         iterator = iterator[:limit]
 
     for indicator in iterator:
-        raw_data = {
-            'Value': indicator['value'],
-            'Type': indicator['type'],
-            'Azure_group_name': indicator['azure_name'],
-            'Azure_group_id': indicator['azure_id'],
-            'Azure_region': indicator['azure_region'],
-            'Azure_platform': indicator['azure_platform'],
-            'Azure_system_service': indicator['azure_system_service']
-        }
-
         indicators.append({
-            'Value': indicator['value'],
-            'Type': indicator['type'],
-            'rawJSON': raw_data
+            'value': indicator['value'],
+            'type': indicator['type'],
+            'rawJSON': indicator
         })
 
-        raw_response.append(raw_data)
+        raw_response.append(indicator)
 
     return indicators, raw_response
 
@@ -327,7 +315,7 @@ def main():
 
         commands = {
             'test-module': test_module,
-            'get-indicators': get_indicators_command
+            'azure-get-indicators': get_indicators_command
         }
 
         if command in commands:

@@ -1,18 +1,12 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: azureFeed
+  id: AzureFeed
   version: -1
 configuration:
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
   options:
-  - ''
-  - ''
-  - ''
-  - ''
-  - ''
-  - ''
   - A - Completely reliable
   - B - Usually reliable
   - C - Fairly reliable
@@ -21,9 +15,6 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: expiration
-  required: false
-  type: 17
 - defaultvalue: indicatorType
   hidden: true
   name: expirationPolicy
@@ -161,7 +152,7 @@ configuration:
   type: 0
 description: Azure.CloudIPs Feed Integration.
 display: Azure Feed
-name: azureFeed
+name: AzureFeed
 script:
   commands:
   - arguments:
@@ -175,7 +166,7 @@ script:
     deprecated: false
     description: Get indicators from the feed.
     execution: false
-    name: get-indicators
+    name: azure-get-indicators
     outputs:
     - contextPath: AzureFeed.Indicator.Value
       description: Indicator value.

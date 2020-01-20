@@ -1,5 +1,5 @@
 import pytest
-from azureFeed import Client
+from FeedAzure import Client
 
 
 @pytest.mark.parametrize('regions_list, services_list', [(['All'], ['All'])])
