@@ -907,6 +907,11 @@ class TestBaseClient:
         response.status_code = 400
         assert not self.client._is_status_code_valid(response)
 
+    def test_http_request_full_url_no_url_suffix(self, requests_mock):
+        requests_mock.get('http://fullurl.com/without/url/suffix', text=json.dumps(self.text))
+        res = self.client._http_request('get', full_url='http://fullurl.com/without/url/suffix')
+        assert res == self.text
+
 
 def test_parse_date_string():
     # test unconverted data remains: Z
