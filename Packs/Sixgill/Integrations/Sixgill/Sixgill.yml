@@ -57,10 +57,10 @@ script:
       type: String
     - contextPath: Sixgill.Bundle.FileID
       description: FileID of dumped JSON file
-      type: Unknown
+      type: String
     - contextPath: Sixgill.Bundle.FileName
       description: File name of dumped JSON file
-      type: Unknown
+      type: String
   dockerimage: demisto/sixgill:1.0.0.5676
   isfetch: false
   longRunning: false

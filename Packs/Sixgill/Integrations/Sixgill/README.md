@@ -8,10 +8,12 @@ Retrieving Sixgill's DarkFeed Threat Intelligence indicators (IOC)
 Retrieving Sixgill's Actionable Alerts as incidents
 
 This integration was integrated and tested with version 0.1.0 of Sixgill
-
 </p>
 <h2>Sixgill Playbook</h2>
-<p>playbook-Sixgill-Test</p>
+<p>
+playbook-Sixgill_-_DarkFeed_-_Indicators:
+The playbook extracts a STIX bundle then uses StixParser automation in order to parse and push indicators into demisto’s platform.
+</p>
 <h2>Use Cases</h2>
 <ul>
 <li>Fetching Sixgill's DarkFeed Threat Intelligence indicators.</li>
@@ -19,7 +21,7 @@ This integration was integrated and tested with version 0.1.0 of Sixgill
 </ul>
 <h2>Detailed Description</h2>
 <p>Configure an API account:</p>
-<p>To configure an instance of Sixgill's integration in Demisto, you need to supply your API key and client Secret. Please contact support at cybersixgill.com to receive these.</p>
+<p>To configure an instance of Sixgill's integration in Demisto, you need to supply your API key and client Secret. Please contact support@cybersixgill.com to receive these.</p>
 <h2>Fetch Incidents</h2>
 <p>Sixgill's alerts are pushed as incidents to Demisto platform. </p>
 <h2>Configure Sixgill on Demisto</h2>
@@ -46,7 +48,7 @@ This integration was integrated and tested with version 0.1.0 of Sixgill
 </p>
 <ol>
   <li>fetch-incidents: fetch-incidents</li>
-  <li>get-indicators: get-indicators</li>
+  <li>sixgill-get-indicators: sixgill-get-indicators</li>
 </ol>
 <h3>1. fetch-incidents</h3>
 <hr>
@@ -79,23 +81,8 @@ This integration was integrated and tested with version 0.1.0 of Sixgill
   </thead>
   <tbody>
     <tr>
-      <td>fetch_incidents_limit</td>
+      <td>maxIncidents</td>
       <td>Max number of incidents that can be fetched</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>sort_by</td>
-      <td>Sort alerts by field</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>sort_order</td>
-      <td>Alerts sort order</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>is_read</td>
-      <td>Filter alerts by field read</td>
       <td>Optional</td>
     </tr>
     <tr>
@@ -135,12 +122,12 @@ There are no context output for this command.
  -->
 </p>
 
-<h3>2. get-indicators</h3>
+<h3>2. sixgill-get-indicators</h3>
 <hr>
-<p>Fetching Sixgill's DarkFeed Threat Intelligence indicators</p>
+<p>Fetching Sixgill's DarkFeed Threat Intelligence indicators as a STIX V2.0 bundle format</p>
 <h5>Base Command</h5>
 <p>
-  <code>get-indicators</code>
+  <code>sixgill-get-indicators</code>
 </p>
 
 <h5>Required Permissions</h5>
@@ -166,7 +153,7 @@ There are no context output for this command.
   </thead>
   <tbody>
      <tr>
-      <td>fetch_indicators_limit</td>
+      <td>maxIndicators</td>
       <td>Max number of indicators that can be fetched</td>
       <td>Optional</td>
     </tr>
@@ -191,24 +178,19 @@ There are no context output for this command.
   </thead>
   <tbody>
     <tr>
-      <td>IP.Address</td>
-      <td>Unknown</td>
-      <td>IP address indicator</td>
+      <td>Sixgill.Bundle.BundleID</td>
+      <td>String</td>
+      <td>STIX bundle ID returned from Sixgill's API</td>
     </tr>
     <tr>
-      <td>Domain.Name</td>
-      <td>Unknown</td>
-      <td>Domain name indicator</td>
+      <td>Sixgill.Bundle.FileID</td>
+      <td>String</td>
+      <td>FileID of dumped JSON file</td>
     </tr>
     <tr>
-      <td>File.MD5</td>
-      <td>Unknown</td>
-      <td>File hash indicator</td>
-    </tr>
-    <tr>
-      <td>Sixgill.Indicator.Cryptocurrency.Address</td>
-      <td>Unknown</td>
-      <td>Cryptocurrency address indicator </td>
+      <td>Sixgill.Bundle.FileName</td>
+      <td>String</td>
+      <td>File name of dumped JSON file</td>
     </tr>
   </tbody>
 </table>
@@ -221,21 +203,20 @@ There are no context output for this command.
 
 <h5>Human Readable Output</h5>
 <pre>
-### Sixgill's DarkFeed indicators:
-|ID|Type|Indicator Value|Tags|
-|---|---|---|---|
-| 1 | IP | 1.1.1.1 | DarkWeb |
-| 2 | IP | 2.2.2.2 | DarkWeb |
-| 3 | File | abafbadfbafbafb | DarkWeb, MD5 |
+# Fetched <num_of_indicators> DarkFeed indicators
 </pre>
 
 <h5>Output</h5>
 <pre>
-### Sixgill's DarkFeed indicators:
-{
-'IP(val.Address == obj.Address)': [{'Address': '1.1.1.1'}, {'Address': '2.2.2.2'}], 
-'File(val.MD5 == obj.MD5)': [{'MD5': 'abafbadfbafbafb', 'Tags': 'DarkWeb, MD5'}]
-}
+{'Contents': '',
+ 'ContentsFormat': 'markdown',
+ 'Type': 3,
+ 'File': 'bundle--<id>.json',
+ 'FileID': '<fileID>',
+ 'HumanReadable': '# Fetched <num_of_indicators> DarkFeed indicators',
+ 'EntryContext': {'Sixgill.Bundle(val.BundleID == obj.BundleID)': {'BundleID': 'bundle--<id>',
+                   'FileID': '<fileID>',
+                   'FileName': 'bundle--<id>.json'}}}
 </pre>
 <p>
 
@@ -245,4 +226,4 @@ There are no context output for this command.
  alt="image" width="749" height="412"></a>
  -->
 </p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2><p>Contact us: support at cybersixgill.com</p>
+<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2><p>Contact us: support@cybersixgill.com</p>
