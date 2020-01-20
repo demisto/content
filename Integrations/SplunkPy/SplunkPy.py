@@ -517,11 +517,9 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 def splunk_submit_event_hec_command():
 
     hec_token = demisto.params().get('hec_token')
-    hec_port = demisto.params().get('hec_port')
-    if hec_port is None:
-        raise Exception('The HEC Port was not provided.')
-
-    baseurl = 'https://' + demisto.params()['host'] + ':' + hec_port
+    baseurl = demisto.params().get('hec_url')
+    if baseurl is None:
+        raise Exception('The HEC URL was not provided.')
 
     event = demisto.args().get('event')
     host = demisto.args().get('host')
