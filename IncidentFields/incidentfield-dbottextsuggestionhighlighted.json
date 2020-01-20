@@ -5,7 +5,7 @@
 	"name": "DBotTextSuggestionHighlighted",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "Indicates the text that contributed to the decision made by the machine learning model.",
+	"description": "Indicates the words in the text that contributed to the decision made by the machine-learning model.",
 	"cliName": "dbottextsuggestionhighlighted",
 	"type": "markdown",
 	"closeForm": false,
