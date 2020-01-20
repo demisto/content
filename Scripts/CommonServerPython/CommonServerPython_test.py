@@ -624,11 +624,26 @@ def test_return_error_fetch_incidents(mocker):
     assert returned_error
 
 
+def test_return_error_fetch_indicators(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-indicators
+    mocker.patch.object(demisto, 'command', return_value="fetch-indicators")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
 def test_return_error_long_running_execution(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"
 
-    # Test fetch-incidents
+    # Test long-running-execution
     mocker.patch.object(demisto, 'command', return_value="long-running-execution")
     returned_error = False
     try:
@@ -1011,10 +1026,15 @@ def test_argToBoolean():
 
 
 batch_params = [
-    # full batch
-    ([1, 2, 3], 2, [[1, 2], [3]]),
+    # full batch case
+    ([1, 2, 3], 1, [[1], [2], [3]]),
+    # empty case
     ([], 1, []),
-    ([1, 2, 3], 5, [[1, 2, 3]])
+    # out of index case
+    ([1, 2, 3], 5, [[1, 2, 3]]),
+    # out of index in end with batches
+    ([1, 2, 3, 4, 5], 2, [[1, 2], [3, 4], [5]]),
+    ([1] * 100, 2, [[1, 1]] * 50)
 ]
 
 
