@@ -2123,7 +2123,7 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "FeedRecordedFuture",
+            "integrations": "Feed Recorded Future",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
             "fromversion": "5.5.0"
