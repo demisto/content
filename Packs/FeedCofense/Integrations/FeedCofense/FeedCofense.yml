@@ -1,6 +1,6 @@
-category: Vulnerability Management
+category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CofenseFeed
+  id: Cofense Feed
   version: -1
 configuration:
 - defaultvalue: https://threathq.com
@@ -88,7 +88,7 @@ configuration:
   type: 19
 description: Use the Cofense Feed Integration to fetch indicators from the feed.
 display: Cofense Feed
-name: CofenseFeed
+name: Cofense Feed
 script:
   commands:
   - deprecated: false

@@ -18,7 +18,7 @@ class Client(BaseClient):
 
     available_fields = ["all", "malware", "phish"]
 
-    CofenseToIndicator = {
+    cofense_to_indicator = {
         "IPv4 Address": FeedIndicatorType.IP,
         "Domain Name": FeedIndicatorType.Domain,
         "URL": FeedIndicatorType.URL,
@@ -96,8 +96,8 @@ class Client(BaseClient):
         total_pages = 1
         while cur_page < total_pages:
             payload["page"] = cur_page
-            cjson = self._http_request("post", self.suffix, params=payload)
-            data = cjson.get("data", {})
+            raw_response = self._http_request("post", self.suffix, params=payload)
+            data = raw_response.get("data", {})
             if data:
                 if total_pages <= 1:
                     # Call to get all pages.
@@ -125,7 +125,7 @@ class Client(BaseClient):
             indicator type, value
         """
         indicator = block.get("blockType", "")
-        indicator = str(cls.CofenseToIndicator.get(indicator))
+        indicator = str(cls.cofense_to_indicator.get(indicator))
         # Only URL indicator has inside information in data_1
         if indicator == FeedIndicatorType.URL:
             value = block.get("data_1", {}).get("url")
@@ -180,20 +180,19 @@ def fetch_indicators_command(
         begin_time: Optional[int] = None,
         end_time: Optional[int] = None,
         limit: Optional[int] = None,
-) -> Union[Dict, List[Dict]]:
+) -> List[Dict]:
     """Fetches the indicators from client.
 
     Arguments:
         client {Client} -- Client derives from BaseClient
-        indicator_type {str} -- [description]
 
     Keyword Arguments:
-        update_context {bool} -- Should update context (default: {False})
-        limit {int} -- Maximum indicators to fetch (when update_context is True)
-        start_time {Optional[Union[str, int, dict]]} -- Last run object from Demisto or timestamp. (default: {None})
+        begin_time {Optional[int]} -- Time to start fetch from (default: {None})
+        end_time {Optional[int]} -- Time to stop fetch to (default: {None})
+        limit {Optional[int]} -- Maximum amount of indicators to fetch. (default: {None})
 
     Returns:
-        Union[Dict, List[Dict]] -- [description]
+        List[Dict] -- List of indicators from threat
     """
     indicators = list()
     for threat in client.build_iterator(begin_time=begin_time, end_time=end_time):
@@ -279,12 +278,10 @@ def get_now() -> int:
     return int(datetime.now().timestamp() / 1000)
 
 
-def main(params: dict):
+def main():
     """Main function
-
-    Arguments:
-        params {dict} -- demisto params
     """
+    params = demisto.params()
     # handle params
     url = params.get("url", "https://threathq.com")
     credentials = params.get("credentials", {})

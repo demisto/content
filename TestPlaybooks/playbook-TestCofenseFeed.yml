@@ -40,10 +40,10 @@ tasks:
       version: -1
       name: get-indicators
       description: Get indicators
-      script: CofenseFeed|||get-indicators
+      script: Cofense Feed|||get-indicators
       type: regular
       iscommand: true
-      brand: CofenseFeed
+      brand: Cofense Feed
     nexttasks:
       '#none#':
       - "2"

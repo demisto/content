@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "CofenseFeed",
+            "integrations": "Cofense Feed",
             "playbookID": "TestCofenseFeed",
             "fromversion": "5.5.0"
         },
