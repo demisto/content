@@ -431,7 +431,7 @@ def get_arguments_for_policy_command(args):
           args: Demisto arguments
 
       Returns:
-          Returning a tuple with all of policy arguments (Tuple).
+          tuple. policy arguments, and option to choose from the policy configuration.
      """
 
     description = args.get('description', '').encode('utf-8')
