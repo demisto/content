@@ -25,7 +25,6 @@ commonfields:
 enabled: true
 name: StixParser
 script: '-'
-subtype: python3
 system: true
 tags:
 - stix

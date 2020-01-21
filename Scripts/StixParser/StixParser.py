@@ -415,7 +415,7 @@ def main():
         with open(file_path) as f:
             txt = f.read()
     stx = convert_to_json(txt)
-    data = list()
+    data = list()  # type: List[dict]
     if stx:
         data = stix2_to_demisto(stx)
         to_context = demisto.args().get("to_context")
