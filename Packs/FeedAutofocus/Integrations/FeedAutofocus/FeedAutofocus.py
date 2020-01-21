@@ -240,9 +240,7 @@ def get_indicators_command(client: Client, args: dict):
         human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!autofocus-get-indicators " \
             f"limit={args.get('limit')} offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
 
-    return human_readable, {
-        f"{SOURCE_NAME}.Indicator(val.Value === obj.Value && val.Type === obj.Type)": hr_indicators
-    }, indicators
+    return human_readable, {}, indicators
 
 
 def fetch_indicators_command(client: Client):
