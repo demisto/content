@@ -245,3 +245,4 @@ def test_cve_latest(requests_mock):
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
     _, outputs, _ = cve_latest_command(client, {})
+    assert len(outputs['CVE(obj.ID==val.ID)']) == 1

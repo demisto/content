@@ -1,4 +1,5 @@
-from typing import Tuple, Dict, Any
+from typing import Tuple, Dict
+from collections import defaultdict
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -167,11 +168,12 @@ def cve_latest_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     threshold = int(demisto.params().get('threshold', DEFAULT_THRESHOLD))
     reports = client.get_recent_vulnerabilities()
 
-    total_context: Dict[str, Any] = {}
+    total_context: Dict[str, list] = defaultdict(list)
     total_markdown = ''
+
     for report in reports:
         cve_id = report.get('stdcode', [0])[0]
-        markdown, context, data = get_cve_results(cve_id, report, threshold)
+        markdown, context, _ = get_cve_results(cve_id, report, threshold)
 
         total_context['CVE(obj.ID==val.ID)'].append(context['CVE(obj.ID==val.ID)'])
         total_context['DBotScore'].append(context['DBotScore'])
