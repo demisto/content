@@ -711,8 +711,8 @@ def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=None):
     # we sort each time the whole set in case someone manually changed something
     # it shouldn't take too much time
     new_ids_dict['scripts'] = sort(scripts_list)
-    new_ids_dict['Playbooks'] = sort(playbooks_list)
-    new_ids_dict['Integrations'] = sort(integration_list)
+    new_ids_dict['playbooks'] = sort(playbooks_list)
+    new_ids_dict['integrations'] = sort(integration_list)
     new_ids_dict['TestPlaybooks'] = sort(testplaybooks_list)
     new_ids_dict['Classifiers'] = sort(classifiers_list)
     new_ids_dict['Dashboards'] = sort(dashboards_list)
