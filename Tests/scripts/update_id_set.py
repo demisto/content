@@ -688,7 +688,6 @@ def validate_playbook_dependencies(id_set_list):
     Raises:
         KeyError if playbook is missing in the list.
     """
-    print_color("Starting validate playbook's dependencies.", LOG_COLORS.GREEN)
     playbook_list = list()
     playbook_list.extend(id_set_list.get('playbooks', []))
     playbook_list.extend(id_set_list.get('TestPlaybooks', []))
@@ -715,17 +714,15 @@ if __name__ == '__main__':
     options = parser.parse_args()
 
     id_set_path = './Tests/id_set.json'
-    if options.reCreate:
-        print("Re creating the id_set.json")
+    if options.reCreate or not os.path.isfile(id_set_path):
+        print("Creating the id_set.json")
         re_create_id_set()
-
     else:
-        if os.path.isfile(id_set_path):
-            print("Updating the id_set.json")
-            update_id_set()
-        else:
-            print("./Tests/id_set.json is missing. Recreating...")
-            re_create_id_set()
+        print("Updating the id_set.json")
+        update_id_set()
+
     with open(id_set_path) as f:
         id_set = json.load(f)
+
+    print_color("Starting validate playbook's dependencies.", LOG_COLORS.GREEN)
     validate_playbook_dependencies(id_set)
