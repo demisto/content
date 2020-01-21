@@ -276,9 +276,9 @@ def get_general_data(path):
     fromversion = json_data.get('fromVersion')
     toversion = json_data.get('toVersion')
     pack = get_pack_name(path)
-    if brandname: # for classifiers
+    if brandname:  # for classifiers
         data['name'] = brandname
-    if name: # for the rest
+    if name:  # for the rest
         data['name'] = name
     if toversion:
         data['toversion'] = toversion
