@@ -128,6 +128,17 @@ PLAYBOOK_DATA = {
         "No Test"
     ]
 }
+PLAYBOOK_DATA_TEST = PLAYBOOK_DATA.copy()
+PLAYBOOK_DATA_TEST["implementing_playbooks"] = ["Calculate Severity - Standard"]
+PLAYBOOK_DATA_TEST["name"] = "Calculate Severity - Standard Test"
+
+PLAYBOOK_DATA2 = PLAYBOOK_DATA.copy()
+PLAYBOOK_DATA2["implementing_playbooks"] = ["Cortex XDR Incident Handling"]
+PLAYBOOK_DATA2["name"] = "Calculate Severity - Standard"
+
+PLAYBOOK_DATA3 = PLAYBOOK_DATA.copy()
+PLAYBOOK_DATA3["implementing_playbooks"] = ["Cortex XDR Incident Handling"]
+PLAYBOOK_DATA3["name"] = "Palo Alto Networks - Malware Remediation"
 
 
 class TestIntegration(unittest.TestCase):
@@ -162,15 +173,6 @@ class TestIntegration(unittest.TestCase):
         self.assertDictEqual(data['command_to_integration'], PLAYBOOK_DATA['command_to_integration'])
 
 
-PLAYBOOK_DATA2 = PLAYBOOK_DATA.copy()
-PLAYBOOK_DATA2["implementing_playbooks"] = ["Cortex XDR Incident Handling"]
-PLAYBOOK_DATA2["name"] = "Calculate Severity - Standard"
-
-PLAYBOOK_DATA3 = PLAYBOOK_DATA.copy()
-PLAYBOOK_DATA3["implementing_playbooks"] = ["Cortex XDR Incident Handling"]
-PLAYBOOK_DATA3["name"] = "Palo Alto Networks - Malware Remediation"
-
-
 class TestValidatePlaybook(object):
     playbook_deps = [
         # One playbook path, all depends on each other
@@ -178,8 +180,8 @@ class TestValidatePlaybook(object):
         # Empty case
         {},
         # Two paths, depends on each other
-        {"playbooks": [{"str": PLAYBOOK_DATA}],
-         "TestPlaybooks": [{"str": PLAYBOOK_DATA2}, {"str1": PLAYBOOK_DATA3}]},
+        {"TestPlaybooks": [{"str": PLAYBOOK_DATA_TEST}],
+         "playbooks": [{"str": PLAYBOOK_DATA2}, {"str1": PLAYBOOK_DATA3}, {"str2": PLAYBOOK_DATA}]},
     ]
 
     @pytest.mark.parametrize('input_data', playbook_deps)
@@ -190,7 +192,9 @@ class TestValidatePlaybook(object):
         # One dependency, no other playbook
         {"playbooks": [{"str": PLAYBOOK_DATA}]},
         # Two different paths playbooks, missing dependency
-        {"playbooks": [{"str": PLAYBOOK_DATA}], "TestPlaybooks": [{"str": PLAYBOOK_DATA2}]}
+        {"playbooks": [{"str": PLAYBOOK_DATA}], "TestPlaybooks": [{"str": PLAYBOOK_DATA2}]},
+        # Missing playbook
+        {"TestPlaybooks": [{"PLAYBOOK_DATA_TEST": PLAYBOOK_DATA_TEST}]}
 
     ]
 

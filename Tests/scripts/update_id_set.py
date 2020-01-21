@@ -678,6 +678,13 @@ def update_id_set():
     print("Finished updating id_set.json")
 
 
+def get_playbook_name(playbook):
+    # type: (dict) -> str
+    for playbook_obj in playbook.values():
+        name = playbook_obj["name"]
+        return name
+
+
 def validate_playbook_dependencies(id_set_list):
     # type: (Dict[List[dict]]) -> None
     """Gets all playbook dependencies and checks if the playbook exists.
@@ -689,19 +696,24 @@ def validate_playbook_dependencies(id_set_list):
         KeyError if playbook is missing in the list.
     """
     print_color("Starting validate playbook's dependencies.", LOG_COLORS.GREEN)
-    playbook_list = list()
-    playbook_list.extend(id_set_list.get('playbooks', []))
-    playbook_list.extend(id_set_list.get('TestPlaybooks', []))
-    playbook_names = list()
-    for playbook in playbook_list:
-        for _, playbook_obj in playbook.items():
-            name = playbook_obj["name"]
-            playbook_names.append(name)
+    playbooks = id_set_list.get('playbooks', [])
+    test_playbooks = id_set_list.get('TestPlaybooks', [])
+    playbook_names = [get_playbook_name(playbook) for playbook in playbooks]
+    test_playbook_names = [get_playbook_name(playbook) for playbook in test_playbooks]
+    all_playbooks_names = playbook_names + test_playbook_names
     failed = False
-    for playbook in playbook_list:
-        for _, playbook_obj in playbook.items():
+    for playbook in playbooks:
+        for playbook_obj in playbook.values():
             for dependency in playbook_obj.get('implementing_playbooks', []):
                 if dependency not in playbook_names:
+                    failed = True
+                    print_error(
+                        "Playbook `{}` is missing a playbook dependency: `{}`".format(playbook_obj["name"], dependency))
+
+    for playbook in test_playbooks:
+        for playbook_obj in playbook.values():
+            for dependency in playbook_obj.get('implementing_playbooks', []):
+                if dependency not in all_playbooks_names:
                     failed = True
                     print_error(
                         "Playbook `{}` is missing a playbook dependency: `{}`".format(playbook_obj["name"], dependency))
