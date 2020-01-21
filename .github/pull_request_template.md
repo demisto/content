@@ -1,13 +1,13 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
 
 ## Contributor - who are you?
-- [ ] Partner - [parter_id]
+- [ ] Partner - [**enter your PARTNER_ID here**]
 - [ ] Customer
 - [ ] CS / SE / SA
 
 ## Status
+- [x] In Progress
 - [ ] Ready
-- [ ] In Progress
 - [ ] In Hold - (Reason for hold)
 
 ## Related Issues
