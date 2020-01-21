@@ -125,18 +125,6 @@ class Client(BaseClient):
         return csvreader
 
 
-# # simple function to iterate list in batches
-def old_batch(iterable, batch_size=1):
-    current_batch = []
-    for item in iterable:
-        current_batch.append(item)
-        if len(current_batch) == batch_size:
-            yield current_batch
-            current_batch = []
-    if current_batch:
-        yield current_batch
-
-
 def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """Builds the iterator to check that the feed is accessible.
     Args:
@@ -258,7 +246,7 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
         })
     headers = ['Name', 'Description', 'Criticality']
     hr = tableToMarkdown(f'Available risk rules for {indicator_type}:', entry_result, headers)
-    return hr, {'RecordedFutureFeed.RiskRule': entry_result}, result
+    return hr, {'RecordedFutureFeed.RiskRule(val.Name == obj.Name)': entry_result}, result
 
 
 def main():
@@ -275,7 +263,7 @@ def main():
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client, client.indicator_type, None)
             # we submit the indicators in batches
-            for b in old_batch(indicators, batch_size=2000):  # TODO change to commonserverpython batch
+            for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
