@@ -99,7 +99,7 @@ configuration:
   type: 0
 - additionalinfo: Controls how instances of quotechar in a field should themselves
     be quoted. When True, the character is doubled.
-  display: Doublequote
+  display: Double quote
   name: doublequote
   required: false
   type: 8
