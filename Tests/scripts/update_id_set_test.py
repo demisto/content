@@ -108,7 +108,7 @@ def test_find_duplicates():
     json.dump(WIDGET_DATA, temp_classifier)
     temp_classifier.flush()
     os.fsync(temp_classifier.fileno())
-    temp_classifier2 = tempfile.NamedTemporaryFile(mode="w+", prefix='classifier-',
+    temp_classifier2 = tempfile.NamedTemporaryFile(mode="w+", prefix='classifier-',  # disable-secrets-detection
                                                    suffix='.json', dir='Classifiers')  # disable-secrets-detection
     json.dump(WIDGET_DATA, temp_classifier2)
     temp_classifier2.flush()
@@ -151,7 +151,7 @@ def test_find_duplicates():
     os.fsync(temp_indicator_field.fileno())
 
     # create temporary file for id_set
-    temp_id_set = tempfile.NamedTemporaryFile(mode="w+", prefix='temp_id_set-',
+    temp_id_set = tempfile.NamedTemporaryFile(mode="w+", prefix='temp_id_set-',   # disable-secrets-detection
                                               suffix='.json', dir='Tests/scripts')  # disable-secrets-detection
     json_path = temp_id_set.name
 
