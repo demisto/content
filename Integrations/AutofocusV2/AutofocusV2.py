@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 import re
 import json
 import requests
+import socket
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1022,20 +1023,39 @@ def find_indicator_type(indicator):
     Returns:
         str. The type of the indicator.
     """
-    type = check_for_ip(indicator)
+    # trying to catch X.X.X.X:portNum
+    if ':' in indicator and '/' not in indicator:
+        sub_indicator = indicator.split(':', 1)[0]
+        ip_type = check_for_ip(sub_indicator)
+        if ip_type:
+            return ip_type
 
-    if type:
-        return type
+    ip_type = check_for_ip(indicator)
+
+    if ip_type:
+        # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
+        if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
+            return FeedIndicatorType.URL
+
+        else:
+            return ip_type
 
     elif re.match(sha256Regex, indicator):
         return FeedIndicatorType.File
 
-    # in AutoFocus, URLs include '/' character while domains do not.
+    # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
     elif '/' in indicator:
         return FeedIndicatorType.URL
 
     else:
         return FeedIndicatorType.Domain
+
+
+def resolve_ip_address(ip):
+    if check_for_ip(ip):
+        return socket.gethostbyaddr(ip)[0]
+
+    return None
 
 
 ''' COMMANDS'''
@@ -1317,10 +1337,6 @@ def get_export_list_command(args):
     context_file = []
     for indicator_value in results.get('export_list'):
         indicator_type = find_indicator_type(indicator_value)
-        indicators.append({
-            'Type': indicator_type,
-            'Value': indicator_value,
-        })
         if indicator_type in [FeedIndicatorType.IP,
                               FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]:
             if '-' in indicator_value:
@@ -1329,6 +1345,11 @@ def get_export_list_command(args):
                 })
                 context_ip.append({
                     'Address': indicator_value.split('-')[1]
+                })
+
+            elif ":" in indicator_value:
+                context_ip.append({
+                    'Address': indicator_value.split(":", 1)[0]
                 })
 
             else:
@@ -1347,9 +1368,31 @@ def get_export_list_command(args):
             })
 
         elif indicator_type in [FeedIndicatorType.URL]:
+            if ":" in indicator_value:
+                resolved_address = resolve_ip_address(indicator_value.split(":", 1)[0])
+                semicolon_suffix = indicator_value.split(":", 1)[1]
+                slash_suffix = None
+
+            else:
+                resolved_address = resolve_ip_address(indicator_value.split("/", 1)[0])
+                slash_suffix = indicator_value.split("/", 1)[1]
+                semicolon_suffix = None
+
+            if resolved_address:
+                if semicolon_suffix:
+                    indicator_value = resolved_address + ":" + semicolon_suffix
+
+                else:
+                    indicator_value = resolved_address + "/" + slash_suffix
+
             context_url.append({
                 'Data': indicator_value,
             })
+
+        indicators.append({
+            'Type': indicator_type,
+            'Value': indicator_value,
+        })
 
     hr = tableToMarkdown(f"Export list {args.get('label')}", indicators, headers=['Type', 'Value'])
 
