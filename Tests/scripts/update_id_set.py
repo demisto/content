@@ -710,7 +710,7 @@ def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=None):
     new_ids_dict = OrderedDict()
     # we sort each time the whole set in case someone manually changed something
     # it shouldn't take too much time
-    new_ids_dict['Scripts'] = sort(scripts_list)
+    new_ids_dict['scripts'] = sort(scripts_list)
     new_ids_dict['Playbooks'] = sort(playbooks_list)
     new_ids_dict['Integrations'] = sort(integration_list)
     new_ids_dict['TestPlaybooks'] = sort(testplaybooks_list)
@@ -736,7 +736,7 @@ def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=None):
 def find_duplicates(id_set):
     lists_to_return = []
 
-    objects_to_check = ['Integrations', 'Scripts', 'Playbooks', 'TestPlaybooks', 'Classifiers', 'Dashboards',
+    objects_to_check = ['Integrations', 'scripts', 'Playbooks', 'TestPlaybooks', 'Classifiers', 'Dashboards',
                         'Layouts', 'Reports', 'Widgets']
     for object_type in objects_to_check:
         print_color("Checking diff for {}".format(object_type), LOG_COLORS.GREEN)
