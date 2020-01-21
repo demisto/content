@@ -1,5 +1,4 @@
-import pytest
-from Integrations.XForceExchange.XForceExchange import Client, ip_command
+from XForceExchange import Client, ip_command
 
 MOCK_BASE_URL = 'https://www.this-is-a-fake-url.com'
 MOCK_API_KEY = 'FAKE-API-KEY'
@@ -58,10 +57,7 @@ MOCK_IP_RESP = {
 def test_ip(requests_mock):
     requests_mock.get(MOCK_BASE_URL + f'/ipr/{MOCK_IP}', json=MOCK_IP_RESP)
 
-    client = Client(MOCK_BASE_URL,
-                    MOCK_API_KEY,
-                    MOCK_PASSWORD,
-                    True, False)
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
     args = {
         'ip': MOCK_IP
     }

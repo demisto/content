@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
+- display: API K0ey
   name: credentials
   required: true
   type: 9
