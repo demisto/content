@@ -30,11 +30,13 @@ configuration:
   name: output_feed_name
   required: false
   type: 0
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
   name: bypassExclusionList
   required: false
   type: 8
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
@@ -87,14 +89,15 @@ script:
   commands:
   - arguments:
     - default: false
+      defaultValue: '10'
       description: How many indicators should be returned
       isArray: false
       name: limit
-      required: false
+      required: true
       secret: false
     - default: false
       defaultValue: '0'
-      description: 'The index of the first indicator to fetch'
+      description: The index of the first indicator to fetch
       isArray: false
       name: offset
       required: false
@@ -103,19 +106,13 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-    outputs:
-    - contextPath: AutoFocusFeed.Indicator.Type
-      description: The type of the indicator.
-      type: String
-    - contextPath: AutoFocusFeed.Indicator.Value
-      description: The value of the indicator
-      type: String
   dockerimage: demisto/python3:3.7.4.2245
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 fromversion: 5.5.0
