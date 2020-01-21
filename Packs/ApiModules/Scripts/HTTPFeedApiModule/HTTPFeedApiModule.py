@@ -324,5 +324,5 @@ def feed_main(feed_name, params, prefix=''):
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} feed [{e}]'
+        err_msg = f'Error in {feed_name} integration [{e}]'
         return_error(err_msg)
