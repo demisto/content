@@ -1,5 +1,8 @@
 ## [Unreleased]
+Added the argument *emailBodyHTML*, which enables you to pass the raw HTML of the email body.
 
+## [20.1.0] - 2020-01-07
+    -
 
 ## [19.12.1] - 2019-12-25
     - Added Support for highlighting in the text.
