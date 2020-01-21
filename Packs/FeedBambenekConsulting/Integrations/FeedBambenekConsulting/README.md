@@ -14,7 +14,6 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
     * __Sub-Feeds__
     * __Fetch indicators__
     * __Fetch Interval__
-    * __Indicator Type__
     * __Reliability__
     * __Skip Exclusion List__
     * __Indicator reputation__
