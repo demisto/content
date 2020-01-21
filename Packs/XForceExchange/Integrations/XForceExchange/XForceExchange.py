@@ -154,7 +154,7 @@ def cve_latest_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
          report: the raw data from X-Force client (used for debugging).
     """
 
-    threshold = demisto.args().get('threshold', DEFAULT_THRESHOLD)
+    threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
     reports = client.get_recent_vulnerabilities()
 
     total_context: Dict[str, Any] = {}
@@ -188,7 +188,7 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
     report = client.cve_report(args['cve_id'])
 
-    return get_cve_results(args['cve_id'], report, threshold)
+    return get_cve_results(args['cve_id'], report[0], threshold)
 
 
 def main():
