@@ -12,7 +12,7 @@ from multiprocessing import Pool, cpu_count
 from distutils.version import LooseVersion
 import time
 import sys
-from constants import *  # noqa: E402
+from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_json, get_to_version, get_from_version, collect_ids,\
     get_script_or_integration_id, get_pack_name, LOG_COLORS, print_color,\
     run_command, print_error, print_warning  # noqa: E402
