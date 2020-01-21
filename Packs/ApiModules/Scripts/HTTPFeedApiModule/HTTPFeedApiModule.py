@@ -299,16 +299,18 @@ def test_module(client, args):
     return 'ok', {}, {}
 
 
-def feed_main(feed_name, params):
+def feed_main(feed_name, params, prefix=''):
     params['feed_name'] = feed_name
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':
         demisto.info('Command being called is {}'.format(command))
+    if prefix and not prefix.endswith('-'):
+        prefix += '-'
     # Switch case
     commands: dict = {
         'test-module': test_module,
-        'get-indicators': get_indicators_command
+        f'{prefix}get-indicators': get_indicators_command
     }
     try:
         if command == 'fetch-indicators':
