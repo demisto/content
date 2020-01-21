@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Add support to unicode default value
+- Consider "None" string as empty
 
 ## [20.1.0] - 2020-01-07
 Fixed an issue where the transformer would fail when applied to a number field.
