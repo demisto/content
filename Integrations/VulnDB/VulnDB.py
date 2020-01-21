@@ -49,10 +49,15 @@ def get_oath_token():
 
 def http_request(url, size=None):
     params = {'size': size} if size else None
-    return requests.get(url,
-                        verify=USE_SSL,
-                        headers={'Authorization': f'Bearer {get_oath_token()}'},
-                        params=params).json()
+    try:
+        res = requests.get(url,
+                           verify=USE_SSL,
+                           headers={'Authorization': f'Bearer {get_oath_token()}'},
+                           params=params)
+        res.raise_for_status()
+    except requests.exceptions.RequestException as err:
+        return_error(str(err))
+    return res.json()
 
 
 def vulndb_vulnerability_to_entry(vuln):
