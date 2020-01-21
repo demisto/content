@@ -133,28 +133,30 @@ class Client(BaseClient):
         return results
 
 
-def module_test_command(client: Client, indicator_type, args):
-    if not FeedIndicatorType.is_valid_type(indicator_type):
-        supported_values = ', '.join((
-            FeedIndicatorType.Account,
-            FeedIndicatorType.CVE,
-            FeedIndicatorType.Domain,
-            FeedIndicatorType.Email,
-            FeedIndicatorType.File,
-            FeedIndicatorType.MD5,
-            FeedIndicatorType.SHA1,
-            FeedIndicatorType.SHA256,
-            FeedIndicatorType.Host,
-            FeedIndicatorType.IP,
-            FeedIndicatorType.CIDR,
-            FeedIndicatorType.IPv6,
-            FeedIndicatorType.IPv6CIDR,
-            FeedIndicatorType.Registry,
-            FeedIndicatorType.SSDeep,
-            FeedIndicatorType.URL
-        ))
-        raise ValueError(f'Indicator type of {indicator_type} is not supported. Supported values are:'
-                         f' {supported_values}')
+def module_test_command(client: Client, args):
+    if not client.feed_url_to_config:
+        indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
+        if not FeedIndicatorType.is_valid_type(indicator_type):
+            supported_values = ', '.join((
+                FeedIndicatorType.Account,
+                FeedIndicatorType.CVE,
+                FeedIndicatorType.Domain,
+                FeedIndicatorType.Email,
+                FeedIndicatorType.File,
+                FeedIndicatorType.MD5,
+                FeedIndicatorType.SHA1,
+                FeedIndicatorType.SHA256,
+                FeedIndicatorType.Host,
+                FeedIndicatorType.IP,
+                FeedIndicatorType.CIDR,
+                FeedIndicatorType.IPv6,
+                FeedIndicatorType.IPv6CIDR,
+                FeedIndicatorType.Registry,
+                FeedIndicatorType.SSDeep,
+                FeedIndicatorType.URL
+            ))
+            raise ValueError(f'Indicator type of {indicator_type} is not supported. Supported values are:'
+                             f' {supported_values}')
     client.build_iterator()
     return 'ok', {}, {}
 
