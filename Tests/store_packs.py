@@ -10,6 +10,8 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Tests.test_utils import run_command, print_error, collect_pack_script_tags, collect_content_items_data
 
+STORAGE_BASE_PATH = "content/packs"
+
 DIR_NAME_TO_CONTENT_TYPE = {
     "Scripts": "Automations",
     "IncidentFields": "Incident Fields",
@@ -20,31 +22,38 @@ DIR_NAME_TO_CONTENT_TYPE = {
     "Reports": "Reports",
     "Dashboards": "Dashboards"
 }
-PACK_ROOT_FILES = {
-    "CHANGELOG": "changelog.json",
-    "README": "README.md",
-    "METADATA": "metadata.json"
-}
 
 
 class Pack:
     PACK_INITIAL_VERSION = "1.0.0"
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+    CHANGELOG = "changelog.json"
+    README = "README.md"
+    METADATA = "metadata.json"
+    EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
 
     def __init__(self, pack_name, pack_path, storage_bucket):
-        self.pack_name = pack_name
-        self.pack_path = pack_path
-        self.storage_bucket = storage_bucket
+        self._pack_name = pack_name
+        self._pack_path = pack_path
+        self._storage_bucket = storage_bucket
+
+    @property
+    def name(self):
+        return self._pack_name
+
+    @property
+    def path(self):
+        return self._pack_path
 
     @property
     def latest_version(self):
         return self._get_latest_version()
 
     def _get_latest_version(self):
-        if PACK_ROOT_FILES["CHANGELOG"] not in os.listdir(self.pack_path):
+        if Pack.CHANGELOG not in os.listdir(self._pack_path):
             return self.PACK_INITIAL_VERSION
 
-        changelog_path = os.path.join(self.pack_path, PACK_ROOT_FILES["CHANGELOG"])
+        changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG)
 
         with open(changelog_path, "r") as changelog:
             changelog_json = json.load(changelog)
@@ -57,6 +66,8 @@ class Pack:
 
     def _parse_pack_metadata(self, user_metadata):
         pack_metadata = {}
+        # todo add id to metadata
+        pack_metadata['id'] = self._pack_name
         pack_metadata['displayName'] = user_metadata.get('name', '')
         pack_metadata['description'] = user_metadata.get('description', '')
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
@@ -80,14 +91,14 @@ class Pack:
             pack_metadata['supportDetails']['email'] = support_email
 
         pack_metadata['general'] = user_metadata.get('general', [])
-        pack_metadata['tags'] = collect_pack_script_tags(self.pack_path)
+        pack_metadata['tags'] = collect_pack_script_tags(self._pack_path)
         pack_metadata['categories'] = user_metadata.get('categories', [])
         content_items_data = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in
-                              collect_content_items_data(self.pack_path).items() if k in DIR_NAME_TO_CONTENT_TYPE}
+                              collect_content_items_data(self._pack_path).items() if k in DIR_NAME_TO_CONTENT_TYPE}
         pack_metadata['contentItems'] = content_items_data
         pack_metadata["contentItemTypes"] = list(content_items_data.keys())
         # todo collect all integrations display name
-        # pack_metadata["integrations"] = collect_integration_display_names(self.pack_path)
+        # pack_metadata["integrations"] = collect_integration_display_names(self._pack_path)
         pack_metadata["useCases"] = user_metadata.get('useCases', [])
         pack_metadata["keywords"] = user_metadata.get('keywords', [])
         # pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
@@ -95,40 +106,43 @@ class Pack:
         return pack_metadata
 
     def zip_pack(self):
-        zip_pack_path = f"{self.pack_path}.zip"
+        zip_pack_path = f"{self._pack_path}.zip"
 
         with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
-            for root, dirs, files in os.walk(self.pack_path):
+            for root, dirs, files in os.walk(self._pack_path, topdown=True):
+                dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
+
                 for f in files:
                     full_file_path = os.path.join(root, f)
-                    relative_file_path = os.path.relpath(full_file_path, self.pack_path)
+                    relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                     pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
         return zip_pack_path
 
     def upload_to_storage(self, zip_pack_path, latest_version):
-        version_pack_path = f"content/packs/{self.pack_name}/{latest_version}"
-        existing_files = [f.name for f in self.storage_bucket.list_blobs(prefix=version_pack_path)]
+        version_pack_path = os.path.join(STORAGE_BASE_PATH, self._pack_name, latest_version)
+        existing_files = [f.name for f in self._storage_bucket.list_blobs(prefix=version_pack_path)]
 
         if len(existing_files) > 0:
             print_error(f"The following packs already exist at storage: {', '.join(existing_files)}")
-            print_error(f"Skipping step of uploading {self.pack_name}.zip to storage.")
+            print_error(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             sys.exit(1)
 
-        pack_full_path = f"{version_pack_path}/{self.pack_name}.zip"
-        blob = self.storage_bucket.blob(pack_full_path)
+        pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
+        blob = self._storage_bucket.blob(pack_full_path)
 
         with open(zip_pack_path, "rb") as pack_zip:
             blob.upload_from_file(pack_zip)
+            os.remove(zip_pack_path)
 
-        print(f"Uploaded {self.pack_name} pack to {pack_full_path} path.")
+        print(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
 
-    def format_metadata_file(self):
-        if PACK_ROOT_FILES['METADATA'] not in os.listdir(self.pack_path):
-            print_error(f"{self.pack_name} pack is missing {PACK_ROOT_FILES['METADATA']} file.")
+    def format_metadata(self):
+        if Pack.METADATA not in os.listdir(self._pack_path):
+            print_error(f"{self._pack_name} pack is missing {Pack.METADATA} file.")
             sys.exit(1)
 
-        metadata_path = os.path.join(self.pack_path, PACK_ROOT_FILES['METADATA'])
+        metadata_path = os.path.join(self._pack_path, Pack.METADATA)
 
         with open(metadata_path, "r+") as metadata_file:
             user_metadata = json.load(metadata_file)
@@ -137,10 +151,10 @@ class Pack:
             json.dump(formatted_metadata, metadata_file, indent=4)
 
     def prepare_for_index_upload(self):
-        files_to_leave = PACK_ROOT_FILES.values()
+        files_to_leave = [Pack.METADATA, Pack.CHANGELOG, Pack.README]
 
-        for file_or_folder in os.listdir(self.pack_path):
-            files_or_folder_path = os.path.join(self.pack_path, file_or_folder)
+        for file_or_folder in os.listdir(self._pack_path):
+            files_or_folder_path = os.path.join(self._pack_path, file_or_folder)
 
             if file_or_folder in files_to_leave:
                 continue
@@ -149,6 +163,10 @@ class Pack:
                 shutil.rmtree(files_or_folder_path)
             else:
                 os.remove(files_or_folder_path)
+
+    def cleanup(self):
+        if os.path.exists(self._pack_path):
+            shutil.rmtree(self._pack_path)
 
 
 def get_modified_packs(is_circle=False, specific_pack=None):
@@ -185,6 +203,49 @@ def init_storage_client(is_circle=False, service_account_key_file=None):
         return storage.Client(credentials=credentials, project=project)
 
 
+def download_and_extract_index(storage_bucket, extract_destination_path, index_file_name="index"):
+    index_storage_path = os.path.join(STORAGE_BASE_PATH, f"{index_file_name}.zip")
+    download_index_path = os.path.join(extract_destination_path, f"{index_file_name}.zip")
+
+    index_blob = storage_bucket.blob(index_storage_path)
+    index_blob.download_to_filename(download_index_path)
+
+    if os.path.exists(download_index_path):
+        with ZipFile(download_index_path, 'r') as index_zip:
+            index_zip.extractall(extract_destination_path)
+
+        if index_file_name not in os.listdir(extract_destination_path):
+            print_error(f"Extracted index folder name does not match: {index_file_name}")
+            sys.exit(1)
+
+        os.remove(download_index_path)
+
+        return os.path.join(extract_destination_path, index_file_name), index_blob
+    else:
+        print_error(f"Failed to download {index_file_name} file from cloud storage.")
+        sys.exit(1)
+
+
+def update_index_folder(index_folder_path, pack_name, pack_path):
+    index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
+                                   os.path.isdir(os.path.join(index_folder_path, d))]
+    index_pack_path = os.path.join(index_folder_path, pack_name)
+
+    if pack_name in index_folder_subdirectories:
+        shutil.rmtree(index_pack_path)
+    shutil.copytree(pack_path, index_pack_path)
+
+
+def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob):
+    index_file_name = os.path.basename(index_folder_path)
+    index_zip_path = shutil.make_archive(os.path.join(extract_destination_path, index_file_name), format="zip",
+                                         root_dir=index_folder_path)
+    index_blob.upload_from_filename(index_zip_path)
+
+    shutil.rmtree(index_folder_path)
+    os.remove(index_zip_path)
+
+
 def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     parser.add_argument('-a', '--artifactsPath', help="The full path of packs artifacts", required=True)
@@ -213,13 +274,19 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), storage_bucket)
                   for pack_name in modified_packs]
 
+    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+
     for pack in packs_list:
-        latest_version = pack.latest_version
-        pack.format_metadata_file()
+        pack.format_metadata()
         zip_pack_path = pack.zip_pack()
-        pack.upload_to_storage(zip_pack_path, latest_version)
-        os.remove(zip_pack_path)
+        pack.upload_to_storage(zip_pack_path, pack.latest_version)
         pack.prepare_for_index_upload()
+        update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
+        pack.cleanup()
+
+    # todo need permissions to override index.zip in the bucket
+    # todo create new index.json file
+    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob)
 
 
 if __name__ == '__main__':
