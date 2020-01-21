@@ -1,17 +1,18 @@
-id: playbook-FeedAutofocus_test.yml
+id: playbook-FeedAutofocus_test
 version: -1
 contentitemexportablefields:
   contentitemfields:
-    propagationLabels: []
-name: playbook-FeedAutofocus_test.yml
+    propagationLabels:
+    - all
+name: playbook-FeedAutofocus_test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "1"
+    taskid: "7"
     type: start
     task:
-      id: "1"
+      id: "7"
       version: -1
       name: ""
       iscommand: false
@@ -23,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 450,
           "y": 50
         }
       }
@@ -34,15 +35,16 @@ tasks:
     quiet: false
   "1":
     id: "1"
-    taskid: "2"
+    taskid: "8"
     type: regular
     task:
-      id: "2"
+      id: "8"
       version: -1
       name: DeleteContext
-      script: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
@@ -50,12 +52,16 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 200
+          "x": 450,
+          "y": 230
         }
       }
     note: false
@@ -65,12 +71,13 @@ tasks:
     quiet: false
   "2":
     id: "2"
-    taskid: "6"
+    taskid: "9"
     type: regular
     task:
-      id: "6"
+      id: "9"
       version: -1
       name: autofocus-get-indicators
+      description: Gets the indicators from AutoFocus.
       script: '|||autofocus-get-indicators'
       type: regular
       iscommand: true
@@ -79,16 +86,16 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      limit:
-        simple: "100"
-      offset:
-        simple: "0"
+      extend-context:
+        simple: Indicator=.[0]
+      limit: {}
+      offset: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 400
+          "x": 450,
+          "y": 410
         }
       }
     note: false
@@ -98,10 +105,10 @@ tasks:
     quiet: false
   "3":
     id: "3"
-    taskid: "4"
+    taskid: "10"
     type: condition
     task:
-      id: "4"
+      id: "10"
       version: -1
       name: Verify Outputs
       type: condition
@@ -117,18 +124,23 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AutoFocusFeed.Indicator.Type
+              simple: Indicator.rawJSON
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: AutoFocusFeed.Indicator.Value
+              simple: Indicator.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.type
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 600
+          "x": 450,
+          "y": 590
         }
       }
     note: false
@@ -138,12 +150,12 @@ tasks:
     quiet: false
   "4":
     id: "4"
-    taskid: "5"
+    taskid: "11"
     type: title
     task:
-      id: "5"
+      id: "11"
       version: -1
-      name: Test Done
+      name: Done
       type: title
       iscommand: false
       brand: ""
@@ -151,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 800
+          "x": 450,
+          "y": 810
         }
       }
     note: false
@@ -165,9 +177,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 815,
+        "height": 825,
         "width": 380,
-        "x": 50,
+        "x": 450,
         "y": 50
       }
     }
