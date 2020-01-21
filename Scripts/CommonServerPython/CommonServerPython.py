@@ -4,16 +4,17 @@ Please notice that to add custom common code, add it to the CommonServerUserPyth
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
 from __future__ import print_function
-import socket
-import time
+
+import base64
 import json
-import sys
+import logging
 import os
 import re
-import base64
-import logging
-from collections import OrderedDict
+import socket
+import sys
+import time
 import xml.etree.cElementTree as ET
+from collections import OrderedDict
 from datetime import datetime, timedelta
 
 import demistomock as demisto
@@ -102,6 +103,52 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ctph': 'file',
     'ssdeep': 'file'
 }
+
+
+class FeedIndicatorType(object):
+    """Type of Indicator (Reputations), used in TIP integrations"""
+    Account = "Account"
+    CVE = "CVE"
+    Domain = "Domain"
+    Email = "Email"
+    File = "File"
+    FQDN = "Domain"
+    MD5 = "File MD5"
+    SHA1 = "File SHA-1"
+    SHA256 = "File SHA-256"
+    Host = "Host"
+    IP = "IP"
+    CIDR = "CIDR"
+    IPv6 = "IPv6"
+    IPv6CIDR = "IPv6CIDR"
+    Registry = "Registry Key"
+    SSDeep = "ssdeep"
+    URL = "URL"
+
+    @staticmethod
+    def is_valid_type(_type):
+        return _type in (
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
+        )
+
+
+
+
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -588,6 +635,23 @@ def b64_encode(text):
     if IS_PY3:
         res = res.decode('utf-8')  # type: ignore
     return res
+
+
+def encode_string_results(text):
+    """
+    Encode string as utf-8, if any unicode character exists.
+
+    :param text: string to encode
+    :type text: str
+    :return: encoded string
+    :rtype: str
+    """
+    if not isinstance(text, STRING_OBJ_TYPES):
+        return text
+    try:
+        return str(text)
+    except UnicodeEncodeError as exception:
+        return text.encode("utf8", "replace")
 
 
 class IntegrationLogger(object):
@@ -1550,7 +1614,8 @@ def return_error(message, error='', outputs=None):
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution',
+                                                             'fetch-indicators'):
         raise Exception(message)
     else:
         demisto.results({
@@ -2305,10 +2370,11 @@ if 'requests' in sys.modules:
             :type files: ``dict``
             :param files: The file data to send in a 'POST' request.
 
-            :type timeout: ``float``
+            :type timeout: ``float`` or ``tuple``
             :param timeout:
                 The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
 
             :type resp_type: ``str``
             :param resp_type:
@@ -2326,7 +2392,7 @@ if 'requests' in sys.modules:
             """
             try:
                 # Replace params if supplied
-                address = full_url if full_url else self._base_url + url_suffix
+                address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 # Execute
@@ -2415,6 +2481,7 @@ if 'requests' in sys.modules:
 class DemistoException(Exception):
     pass
 
+
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.
 
@@ -2432,4 +2499,4 @@ def batch(iterable, batch_size=1):
     while current_batch:
         yield current_batch
         current_batch = not_batched[:batch_size]
-        not_batched = current_batch[batch_size:]
+        not_batched = not_batched[batch_size:]
