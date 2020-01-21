@@ -1,7 +1,7 @@
 commonfields:
-  id: SearchIncidents_v2 v2
+  id: SearchIncidents v2
   version: -1
-name: SearchIncidents_v2 v2
+name: SearchIncidents v2
 script: '-'
 system: false
 timeout: '0'
