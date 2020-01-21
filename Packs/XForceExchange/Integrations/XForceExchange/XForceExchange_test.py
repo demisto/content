@@ -1,5 +1,4 @@
-import pytest
-from Integrations.XForceExchange.XForceExchange import Client, ip_command
+from XForceExchange import Client, ip_command
 
 MOCK_BASE_URL = 'https://www.this-is-a-fake-url.com'
 MOCK_API_KEY = 'FAKE-API-KEY'
