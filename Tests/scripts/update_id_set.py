@@ -736,7 +736,7 @@ def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=None):
 def find_duplicates(id_set):
     lists_to_return = []
 
-    objects_to_check = ['Integrations', 'scripts', 'Playbooks', 'TestPlaybooks', 'Classifiers', 'Dashboards',
+    objects_to_check = ['integrations', 'scripts', 'playbooks', 'TestPlaybooks', 'Classifiers', 'Dashboards',
                         'Layouts', 'Reports', 'Widgets']
     for object_type in objects_to_check:
         print_color("Checking diff for {}".format(object_type), LOG_COLORS.GREEN)
