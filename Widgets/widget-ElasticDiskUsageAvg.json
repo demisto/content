@@ -2,7 +2,7 @@
   "id": "es-disk-current-usage",
   "version": -1,
   "fromVersion": "5.5.0",
-  "name": "Elastic Disk Current Usage %",
+  "name": "Elastic Disk Current Usage",
   "dataType": "system",
   "widgetType": "number",
   "query": "es-disk.usedPercent",
