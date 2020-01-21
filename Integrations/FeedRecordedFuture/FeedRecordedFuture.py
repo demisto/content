@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 # IMPORTS
 import csv
 import requests
-import ipaddress
 import urllib.parse
 from typing import Tuple
 
@@ -42,9 +41,6 @@ class Client(BaseClient):
         """
 
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
-        if proxy:
-            handle_proxy()
-
         try:
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
@@ -155,33 +151,6 @@ def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
     return 'ok', {}, {}
 
 
-def get_ip_type(indicator):
-    """Checks the indicator type
-    Args:
-        indicator: IP
-    Returns:
-        The IP type per the indicators defined in Demisto
-    """
-    is_CIDR = False
-    try:
-        address_type = ipaddress.ip_address(indicator)
-    except Exception:
-        try:
-            address_type = ipaddress.ip_network(indicator)
-            is_CIDR = True
-        except Exception:
-            demisto.debug(F'{INTEGRATION_NAME} - Invalid ip range: {indicator}')
-            return {}
-    if address_type.version == 4:
-        type_ = 'CIDR' if is_CIDR else 'IP'
-    elif address_type.version == 6:
-        type_ = 'IPv6CIDR' if is_CIDR else 'IPv6'
-    else:
-        LOG(F'{INTEGRATION_NAME} - Unknown IP version: {address_type.version}')
-        return {}
-    return type_
-
-
 def get_indicator_type(indicator_type, item):
     """Returns the indicator type in Demisto
     Args:
@@ -192,7 +161,7 @@ def get_indicator_type(indicator_type, item):
     """
 
     if indicator_type == 'ip':
-        return get_ip_type(item.get('Name'))
+        return FeedIndicatorType.ip_to_indicator_type(item.get('Name'))
     elif indicator_type == 'hash':
         return FeedIndicatorType.File
     elif indicator_type == 'domain':
