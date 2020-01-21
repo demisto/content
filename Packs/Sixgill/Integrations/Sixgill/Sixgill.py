@@ -40,7 +40,7 @@ def to_demisto_score(score):
 
 def get_limit(str_limit, default_limit):
     try:
-        return int(str_limit, default_limit)
+        return int(str_limit)
     except Exception:
         return default_limit
 
