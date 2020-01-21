@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
+- display: API K0ey
   name: credentials
   required: true
   type: 9
@@ -20,6 +20,27 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: '7'
+  display: IP Threshold. Minimum risk score for the IP to be consodered malicious
+    (ranges from 1 to 10).
+  hidden: false
+  name: ip_threshold
+  required: false
+  type: 0
+- defaultvalue: '7'
+  display: URL Threshold. Minimum risk score for the URL to be consodered malicious
+    (ranges from 1 to 10).
+  hidden: false
+  name: url_threshold
+  required: false
+  type: 0
+- defaultvalue: '5'
+  display: CVE Threshold. Minimum risk score for the URL to be consodered malicious
+    (ranges from 1 to 10).
+  hidden: false
+  name: cve_threshold
+  required: false
+  type: 0
 description: IBM X-Force Exchange lets you receive threat intelligence about applications,
   IP addresses, URls and hashes
 display: XForceExchange
@@ -50,7 +71,6 @@ script:
     description: IP to check
     execution: false
     name: ip
-<<<<<<< HEAD
     outputs:
     - contextPath: IP.Address
       description: Bad IP found
@@ -291,19 +311,6 @@ script:
     - contextPath: CVE.Description
       description: The CVE description
       type: Unknown
-=======
-  - arguments:
-    - default: true
-      description: URL to check
-      isArray: false
-      name: url
-      required: true
-      secret: false
-    deprecated: false
-    description: URL reputation
-    execution: false
-    name: url
->>>>>>> 115f6ccab34b466a07de04f7606aa531a8896fa2
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: false
@@ -340,6 +347,16 @@ script:
 
 
     def calculate_score(score: int, threshold: int) -> int:
+        """
+
+        Args:
+            score:
+            threshold:
+
+        Returns:
+            the total score of
+        """
+
         if score > threshold:
             return 3
         elif score > threshold / 2:
@@ -398,7 +415,7 @@ script:
             report - the raw data from X-Force client (used for debugging).
         """
 
-        threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
+        threshold = int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))
         report = client.ip_report(args['ip'])
 
         outputs = {'Address': report['ip'],
@@ -437,7 +454,7 @@ script:
          """
 
         report = client.url_report(args['url'])
-        threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
+        threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
 
         outputs = {'Data': report['url'], 'Malicious': {'Vendor': 'XFE'}}
         dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
@@ -467,7 +484,7 @@ script:
              report: the raw data from X-Force client (used for debugging).
         """
 
-        threshold = demisto.args().get('threshold', DEFAULT_THRESHOLD)
+        threshold = int(demisto.args().get('cve_threshold', DEFAULT_THRESHOLD))
         reports = client.get_recent_vulnerabilities()
 
         total_context: Dict[str, Any] = {}
@@ -498,7 +515,7 @@ script:
              report - the raw data from X-Force client (used for debugging).
          """
 
-        threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
+        threshold = demisto.params().get('cve_threshold', DEFAULT_THRESHOLD)
         report = client.cve_report(args['cve_id'])
 
         return get_cve_results(args['cve_id'], report, threshold)
