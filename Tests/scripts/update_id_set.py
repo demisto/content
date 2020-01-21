@@ -254,8 +254,6 @@ def get_layout_data(path):
         data['typename'] = typeName
     if name:
         data['name'] = name
-    if not name:
-        data['name'] = '-'
     if toversion:
         data['toversion'] = toversion
     if fromversion:
@@ -264,6 +262,7 @@ def get_layout_data(path):
         data['pack'] = pack
 
     return {id: data}
+
 
 def get_general_data(path):
     data = OrderedDict()
@@ -288,23 +287,6 @@ def get_general_data(path):
 
     return {id: data}
 
-def get_dashboard_data(classifier_path):
-    classifier_data = OrderedDict()
-    json_data = get_json(classifier_path)
-    id = json_data.get('id', '-')
-    classifier_data['name'] = json_data.get('brandName', '')
-    fromversion = json_data.get('fromversion')
-    toversion = json_data.get('toversion')
-    pack = get_pack_name(classifier_path)
-
-    if toversion:
-        classifier_data['toversion'] = toversion
-    if fromversion:
-        classifier_data['fromversion'] = fromversion
-    if pack:
-        classifier_data['pack'] = pack
-
-    return {id: classifier_data}
 
 def get_depends_on(data_dict):
     depends_on = data_dict.get('dependson', {}).get('must', [])
@@ -479,7 +461,8 @@ def process_dashboards(file_path):
         res.append(get_general_data(file_path))
     return res
 
-def process_incidet_fields(file_path):
+
+def process_incident_fields(file_path):
     """
     Process a incident_fields JSON file
     Args:
@@ -625,10 +608,10 @@ def get_playbooks_paths():
     return playbook_files
 
 
-def get_general_paths(path, name_forpacks):
+def get_general_paths(path):
     path_list = [
-        [path, '*'], #
-        ['Packs', '*', name_forpacks, '*']
+        [path, '*'],
+        ['Packs', '*', path, '*']
     ]
     files = list()
     for path in path_list:
@@ -637,11 +620,10 @@ def get_general_paths(path, name_forpacks):
     return files
 
 
-def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=['Integrations', 'Scripts', 'Playbooks',
-                                                                           'TestPlaybooks', 'Classifiers',
-                                                                           'Dashboards', 'IncidentFields',
-                                                                           'IndicatorFields', 'Layouts',
-                                                                           'Reports', 'Widgets']):
+def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=None):
+    if objects_to_create is None:
+        objects_to_create = ['Integrations', 'Scripts', 'Playbooks', 'TestPlaybooks', 'Classifiers',
+                             'Dashboards', 'IncidentFields', 'IndicatorFields', 'Layouts', 'Reports', 'Widgets']
     start_time = time.time()
     scripts_list = []
     playbooks_list = []
@@ -672,12 +654,12 @@ def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=['Inte
 
     if 'Scripts' in objects_to_create:
         print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
-        for arr in pool.map(process_script, get_general_paths(SCRIPTS_DIR, 'Scripts')):
+        for arr in pool.map(process_script, get_general_paths(SCRIPTS_DIR)):
             scripts_list.extend(arr)
 
     if 'TestPlaybooks' in objects_to_create:
         print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
-        for pair in pool.map(process_test_playbook_path, get_general_paths(TEST_PLAYBOOKS_DIR, 'TestPlaybooks')):
+        for pair in pool.map(process_test_playbook_path, get_general_paths(TEST_PLAYBOOKS_DIR)):
             if pair[0]:
                 testplaybooks_list.append(pair[0])
             if pair[1]:
@@ -685,42 +667,42 @@ def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=['Inte
 
     if 'Classifiers' in objects_to_create:
         print_color("Starting iterating over Classifiers", LOG_COLORS.GREEN)
-        for arr in pool.map(process_classifier, get_general_paths(CLASSIFIERS_DIR, 'Classifiers')):
+        for arr in pool.map(process_classifier, get_general_paths(CLASSIFIERS_DIR)):
             classifiers_list.extend(arr)
 
     if 'Dashboards' in objects_to_create:
         print_color("Starting iterating over Dashboards", LOG_COLORS.GREEN)
-        for arr in pool.map(process_dashboards, get_general_paths(DASHBOARDS_DIR, 'Dashboards')):
+        for arr in pool.map(process_dashboards, get_general_paths(DASHBOARDS_DIR)):
             dashboards_list.extend(arr)
 
     if 'IncidentFields' in objects_to_create:
         print_color("Starting iterating over Incident Fields", LOG_COLORS.GREEN)
-        for arr in pool.map(process_incidet_fields, get_general_paths(INCIDENT_FIELDS_DIR, 'IncidentFields')):
+        for arr in pool.map(process_incident_fields, get_general_paths(INCIDENT_FIELDS_DIR)):
             incident_fields_list.extend(arr)
 
     if 'IncidentTypes' in objects_to_create:
         print_color("Starting iterating over Incident Types", LOG_COLORS.GREEN)
-        for arr in pool.map(process_incident_types, get_general_paths(INCIDENT_TYPES_DIR, 'IncidentTypes')):
+        for arr in pool.map(process_incident_types, get_general_paths(INCIDENT_TYPES_DIR)):
             incident_type_list.extend(arr)
 
     if 'IndicatorFields' in objects_to_create:
         print_color("Starting iterating over Indicator Fields", LOG_COLORS.GREEN)
-        for arr in pool.map(process_indicator_fields, get_general_paths(INDICATOR_FIELDS_DIR, 'IndicatorFields')):
+        for arr in pool.map(process_indicator_fields, get_general_paths(INDICATOR_FIELDS_DIR)):
             indicator_fields_list.extend(arr)
 
     if 'Layouts' in objects_to_create:
         print_color("Starting iterating over Layouts", LOG_COLORS.GREEN)
-        for arr in pool.map(process_layouts, get_general_paths(LAYOUTS_DIR, 'Layouts')):
+        for arr in pool.map(process_layouts, get_general_paths(LAYOUTS_DIR)):
             layouts_list.extend(arr)
 
     if 'Reports' in objects_to_create:
         print_color("Starting iterating over Reports", LOG_COLORS.GREEN)
-        for arr in pool.map(process_reports, get_general_paths(REPORTS_DIR, 'Reports')):
+        for arr in pool.map(process_reports, get_general_paths(REPORTS_DIR)):
             reports_list.extend(arr)
 
     if 'Widgets' in objects_to_create:
         print_color("Starting iterating over Widgets", LOG_COLORS.GREEN)
-        for arr in pool.map(process_widgets, get_general_paths(WIDGETS_DIR, 'Widgets')):
+        for arr in pool.map(process_widgets, get_general_paths(WIDGETS_DIR)):
             widgets_list.extend(arr)
 
     new_ids_dict = OrderedDict()
@@ -750,45 +732,10 @@ def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=['Inte
 
 
 def find_duplicates(id_set):
-    print_color("Checking diff for Scripts", LOG_COLORS.GREEN)
-    scripts = id_set['Scripts']
-    script_ids = set(list(script.keys())[0] for script in scripts)
+    lists_to_return = []
 
-    scripts_list = []
-    for script_id in script_ids:
-        if has_duplicate(scripts, script_id, 'Scripts'):
-            scripts_list.append(script_id)
-
-    print_color("Checking diff for Integrations", LOG_COLORS.GREEN)
-    integrations = id_set['Integrations']
-    integration_ids = set(list(integration.keys())[0] for integration in integrations)
-
-    integration_list = []
-    for integration_id in integration_ids:
-        if has_duplicate(integrations, integration_id, 'Integrations'):
-            integration_list.append(integration_id)
-
-    print_color("Checking diff for Playbooks", LOG_COLORS.GREEN)
-    playbooks = id_set['Playbooks']
-    playbook_ids = set(list(playbook.keys())[0] for playbook in playbooks)
-
-    playbooks_list = []
-    for playbook_id in playbook_ids:
-        if has_duplicate(playbooks, playbook_id, 'Playbooks'):
-            integration_list.append(playbook_id)
-
-    print_color("Checking diff for Test Playbooks", LOG_COLORS.GREEN)
-    test_playbooks = id_set['TestPlaybooks']
-    test_playbook_ids = set(list(test_playbook.keys())[0] for test_playbook in test_playbooks)
-
-    test_playbooks_list = []
-    for test_playbook_id in test_playbook_ids:
-        if has_duplicate(test_playbooks, test_playbook_id, 'Test Playbooks'):
-            test_playbooks_list.append(test_playbook_id)
-
-    lists_to_return = [scripts_list, integration_list, playbooks_list, test_playbooks_list]
-
-    objects_to_check = ['Classifiers', 'Dashboards', 'Layouts', 'Reports', 'Widgets']
+    objects_to_check = ['Integrations', 'Scripts', 'Playbooks', 'TestPlaybooks', 'Classifiers', 'Dashboards',
+                        'Layouts', 'Reports', 'Widgets']
     for object_type in objects_to_check:
         print_color("Checking diff for {}".format(object_type), LOG_COLORS.GREEN)
         objects = id_set.get(object_type)
