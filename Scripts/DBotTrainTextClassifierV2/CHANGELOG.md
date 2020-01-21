@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added error messages for cases when the total number of incidents is lower than the default threshold.
 
 ## [19.12.1] - 2019-12-25
 Added new evaluation methodology and metrics to the logic of the trained model.
