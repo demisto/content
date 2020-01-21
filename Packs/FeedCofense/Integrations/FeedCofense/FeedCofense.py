@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-from typing import List, Dict, Union, Optional, Tuple, Generator
+from typing import List, Dict, Optional, Tuple, Generator
 import urllib3
 
 # disable insecure warnings
