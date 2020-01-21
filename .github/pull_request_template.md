@@ -28,5 +28,8 @@ Paste here any images that will help the reviewer
 - [ ] Documentation 
 
 ## Demisto Partner?
+- [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**
+- [ ] Add **Partner** label
+
 *The title of the pull request must contain your [Partner ID], in the following format:*
 <br/>**[YOUR_PARTNER_ID] short description**
