@@ -60,7 +60,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Type of the indicator in the feed.
-  display: indicator type
+  display: Indicator type
   hidden: false
   name: indicator_type
   options:
@@ -70,13 +70,13 @@ configuration:
   - url
   required: false
   type: 15
-- display: api token
+- display: API token
   hidden: false
   name: api_token
   required: true
   type: 4
 - defaultvalue: connectApi
-  display: sub feed
+  display: Sub Feed
   hidden: false
   name: sub_feed
   options:
@@ -88,15 +88,16 @@ configuration:
     Limit the indicators list to a specific risk rule.
     To see available risk rules please use the rf-feed-get-risk-rules command.
     This parameter will only be used for the 'connectApi' sub feed.
-  display: risk rule
+  display: Risk Rule
   hidden: false
   name: risk_rule
   required: false
   type: 0
 - additionalinfo: |-
-    The path for the fusion file.
+    Load a custom risklist from a specified Recorded Future file path.
+    If no file path is specified, the default risklist file is used.
     This parameter will only be used for the 'fusion' sub feed.
-  display: fusion file path
+  display: Fusion File Path
   hidden: false
   name: fusion_file_path
   required: false
