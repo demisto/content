@@ -2125,6 +2125,10 @@
         {
             "integrations": "Sixgill",
             "playbookID": "Sixgill-Test"
+        },
+        {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill - Darkfeed - Indicators-Test"
         }
     ],
     "skipped_tests": {
@@ -2155,8 +2159,7 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "ssdeepreputationtest": "Issue #20953",
-        "Sixgill - DarkFeed - Indicators": "skipped on purpose - until Stix V2.0 is supported"
+        "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
