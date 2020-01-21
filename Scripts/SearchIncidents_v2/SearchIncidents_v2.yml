@@ -1,26 +1,13 @@
 commonfields:
-  id: SearchIncidents_v2
+  id: SearchIncidents_v2 v2
   version: -1
-name: SearchIncidents_v2
-script: |-
-  var arrArgs = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'system', 'owner', 'type'];
-  for (var i=0; i<arrArgs.length; i++) {
-      var tmp = argToList(args[arrArgs[i]]);
-      if (tmp && tmp.length > 0) {
-          args[arrArgs[i]] = tmp.join(',');
-      }
-  }
-  // Clean all the empty ones
-  Object.keys(args).forEach(function(a) {if (!args[a]) delete args[a];});
-  var res = executeCommand('getIncidents', args);
-  if (isValidRes(res)) {
-      var data = res[0].Contents.data;
-      var md = tableToMarkdown('Incidents found', data, ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']);
-      return {Type: entryTypes.note, Contents: data, ContentsFormat: formats.json, HumanReadable: md, EntryContext: {foundIncidents: data}};
-  } else {
-      return res;
-  }
-type: javascript
+name: SearchIncidents_v2 v2
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.7.4.2245
 tags:
 - Utility
 comment: Searches Demisto incidents
@@ -98,4 +85,3 @@ outputs:
   description: Due dates of the found incidents
 - contextPath: foundIncidents.phase
   description: Phases of the found incidents
-scripttarget: 0
