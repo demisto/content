@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 # IMPORTS
 import re
 import requests
+import socket
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -67,6 +68,22 @@ class Client(BaseClient):
         res.raise_for_status()
         return res.text.split('\n')
 
+    def is_ip_type(self, indicator):
+        if re.match(ipv4cidrRegex, indicator):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv6cidrRegex, indicator):
+            return FeedIndicatorType.IPv6CIDR
+
+        elif re.match(ipv4Regex, indicator):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6Regex, indicator):
+            return FeedIndicatorType.IPv6
+
+        else:
+            return None
+
     def find_indicator_type(self, indicator):
         """Infer the type of the indicator.
 
@@ -76,27 +93,38 @@ class Client(BaseClient):
         Returns:
             str. The type of the indicator.
         """
-        if re.match(ipv4cidrRegex, indicator):
-            return FeedIndicatorType.CIDR
 
-        if re.match(ipv6cidrRegex, indicator):
-            return FeedIndicatorType.IPv6CIDR
+        # trying to catch X.X.X.X:portNum
+        if ':' in indicator and '/' not in indicator:
+            sub_indicator = indicator.split(':', 1)[0]
+            ip_type = self.is_ip_type(sub_indicator)
+            if ip_type:
+                return ip_type
 
-        if re.match(ipv4Regex, indicator):
-            return FeedIndicatorType.IP
+        ip_type = self.is_ip_type(indicator)
+        if ip_type:
+            # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
+            if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
+                return FeedIndicatorType.URL
 
-        if re.match(ipv6Regex, indicator):
-            return FeedIndicatorType.IPv6
+            else:
+                return ip_type
 
         elif re.match(sha256Regex, indicator):
             return FeedIndicatorType.File
 
-        # in AutoFocus, URLs include '/' character while domains do not.
+        # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
         elif '/' in indicator:
             return FeedIndicatorType.URL
 
         else:
             return FeedIndicatorType.Domain
+
+    def resolve_ip_address(self, ip):
+        if self.is_ip_type(ip):
+            return socket.gethostbyaddr(ip)[0]
+
+        return None
 
     def build_iterator(self):
         """Builds a list of indicators.
@@ -117,6 +145,29 @@ class Client(BaseClient):
         for indicator in indicators:
             if indicator:
                 indicator_type = self.find_indicator_type(indicator)
+
+                # catch ip of the form X.X.X.X:portNum and extract the IP without the port.
+                if indicator_type in [FeedIndicatorType.IP, FeedIndicatorType.CIDR,
+                                      FeedIndicatorType.IPv6CIDR, FeedIndicatorType.IPv6] and ":" in indicator:
+                    indicator = indicator.split(":", 1)[0]
+
+                elif indicator_type == FeedIndicatorType.URL:
+                    if ":" in indicator:
+                        resolved_address = self.resolve_ip_address(indicator.split(":", 1)[0])
+                        semicolon_suffix = indicator.split(":", 1)[1]
+                        slash_suffix = None
+
+                    else:
+                        resolved_address = self.resolve_ip_address(indicator.split("/", 1)[0])
+                        slash_suffix = indicator.split("/", 1)[1]
+                        semicolon_suffix = None
+
+                    if resolved_address:
+                        if semicolon_suffix:
+                            indicator = resolved_address + ":" + semicolon_suffix
+
+                        else:
+                            indicator = resolved_address + "/" + slash_suffix
 
                 parsed_indicators.append({
                     "type": indicator_type,
@@ -186,7 +237,7 @@ def get_indicators_command(client: Client, args: dict):
                                      headers=['Value', 'Type'], removeNull=True)
 
     if args.get('limit'):
-        human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!get-indicators " \
+        human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!autofocus-get-indicators " \
             f"limit={args.get('limit')} offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
 
     return human_readable, {
