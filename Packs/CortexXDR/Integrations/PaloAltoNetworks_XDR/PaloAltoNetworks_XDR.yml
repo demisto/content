@@ -729,7 +729,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies whether the endpoint was isolated or unisolated. Can be "isolated" or "unisolated".
+      description: |-
+        "Specifies whether the endpoint was isolated or unisolated. Can be "isolated" or "unisolated".
       isArray: false
       name: isolate
       predefined:
