@@ -43,7 +43,7 @@ def main():
     params['feed_url_to_config'] = feed_url_to_config
 
     # Call the main execution of the HTTP API module.
-    feed_main('Spamhaus Feed', params)
+    feed_main('Spamhaus Feed', params, 'spamhaus')
 
 
 from HTTPFeedApiModule import *  # noqa: E402
