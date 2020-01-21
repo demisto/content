@@ -241,6 +241,8 @@ tasks:
       - "9"
     scriptarguments:
       device-group: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
       name:
         complex:
           root: inputs.URLListName
@@ -561,6 +563,8 @@ tasks:
       command: {}
       dst: {}
       element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
       from: {}
       job-id: {}
       key: {}
@@ -613,6 +617,8 @@ tasks:
       command: {}
       dst: {}
       element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
       from: {}
       job-id: {}
       key: {}
