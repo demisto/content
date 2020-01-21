@@ -683,6 +683,7 @@ def get_playbook_name(playbook):
     for playbook_obj in playbook.values():
         name = playbook_obj["name"]
         return name
+    return ""
 
 
 def validate_playbook_dependencies(id_set_list):
