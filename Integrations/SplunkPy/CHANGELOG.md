@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Removed newlines from Markdown headers to facilitate converting Markdown entries to HTML.
 
 ## [20.1.0] - 2020-01-07
 Fixed an issue with the access to a non-existing key when fetching non-ES events.
