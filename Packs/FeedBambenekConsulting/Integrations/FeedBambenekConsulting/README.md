@@ -11,52 +11,14 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 2. Search for Bambenek Consulting Feed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Sub-Feeds__
-    * __Fetch indicators__
-    * __Fetch Interval__
-    * __Reliability__
-    * __Skip Exclusion List__
-    * __Indicator reputation__
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-    * __Request Timeout__
+    * __Sub-Feeds__: Sub-Feeds of Bambenek Consulting to fetch indicators from.
+    * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
+    * __Fetch Interval__: Interval of the fetches.
+    * __Reliability__: Reliability of the feed.  
+    * __Skip Exclusion List__: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system. 
+    * __Indicator reputation__: Indicators from this integration instance will be marked with this
+    reputation.
+    * __Request Timeout__: Timeout of the polling request in seconds.
 4. Click __Test__ to validate the URLs, token, and connection.
-## Fetched Incidents Data
----
-
-## Commands
----
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. get-indicators
-### 1. bambenek-get-indicators
----
-Gets the feed indicators.
-
-##### Base Command
-
-`bambenek-get-indicators`
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 50. | Optional | 
-| indicator_type | The indicator type. | Optional | 
-
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| BambenekConsultingFeed.Indicator.Value | String | The indicator value. | 
-| BambenekConsultingFeed.Indicator.Type | String | The indicator type. | 
-| BambenekConsultingFeed.Indicator.Rawjson | Unknown | Indicator rawJSON value. | 
-
-
-##### Command Example
-```!bambenek-get-indicators limit=20```
-
-##### Human Readable Output
-| **Value** | **Type** | **Rawjson** |
-| --- | --- | --- |
-| 5.79.79.211 | The maximum number of results to return. The default value is 50. | Optional |  
