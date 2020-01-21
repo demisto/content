@@ -30,13 +30,13 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. get-indicators
-### 1. get-indicators
+### 1. bambenek-get-indicators
 ---
 Gets the feed indicators.
 
 ##### Base Command
 
-`get-indicators`
+`bambenek-get-indicators`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,7 +55,7 @@ Gets the feed indicators.
 
 
 ##### Command Example
-```!get-indicators limit=20```
+```!bambenek-get-indicators limit=20```
 
 ##### Human Readable Output
 | **Value** | **Type** | **Rawjson** |
