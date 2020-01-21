@@ -719,7 +719,9 @@ def validate_playbook_dependencies(id_set_list):
                     print_error(
                         "Playbook `{}` is missing a playbook dependency: `{}`".format(playbook_obj["name"], dependency))
     if failed:
+        print_error("Finished validating playbook's dependencies\n, missing dependencies are presented.")
         sys.exit(1)
+    print_color("Finished validating playbook's dependencies", LOG_COLORS.GREEN)
 
 
 if __name__ == '__main__':
