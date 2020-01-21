@@ -3769,6 +3769,7 @@ inputs:
     value but not recommended as it creates a very large output.
     These fields are in addition to the investigation fields so
     no need to provide the same fields as in the investigation fields inputs.
+    Recommended fields to use should contain the timestamp, log source, event name etc.
 outputs:
 - contextPath: Splunk.DetectedUsers
   description: Users detected based on the username field in your search.
