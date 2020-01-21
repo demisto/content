@@ -1,4 +1,4 @@
-fromversion: 4.0.0
+fromversion: 4.5.0
 id: Sixgill - DarkFeed - Indicators
 version: -1
 name: Sixgill - DarkFeed - Indicators
@@ -147,4 +147,4 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
+description: 'The playbook extracts a STIX bundle then uses StixParser automation in order to parse and push indicators into demisto’s platform.'

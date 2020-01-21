@@ -12,7 +12,7 @@ This integration was integrated and tested with version 0.1.0 of Sixgill
 </p>
 <h2>Sixgill Playbook</h2>
 <p>
-playbook-Sixgill_-_DarkFeed_-_Indicators:
+Sixgill - DarkFeed - Indicators:
 The playbook extracts a STIX bundle then uses StixParser automation in order to parse and push indicators into demisto’s platform.
 </p>
 <h2>Use Cases</h2>
@@ -114,6 +114,23 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
+Sixgill's Alert:
+<pre>
+{
+    'alert_name': 'someAlert', 
+    'content': '', 
+    'date': '2019-08-06 23:20:35', 
+    'id': '<id>',
+    'lang': 'English', 
+    'langcode': 'en', 
+    'read': False, 
+    'severity': 10,
+    'threat_level': 'emerging', 
+    'threats': [<threats_tags>], 
+    'title': 'some alert',
+    'user_id': '<user_id>'
+}
+</pre>
 <p>
 
 <!-- remove the following comments to manually add an image: -->
@@ -209,15 +226,20 @@ There are no context output for this command.
 
 <h5>Output</h5>
 <pre>
-{'Contents': '',
- 'ContentsFormat': 'markdown',
- 'Type': 3,
- 'File': 'bundle--<id>.json',
- 'FileID': '<fileID>',
- 'HumanReadable': '# Fetched <num_of_indicators> DarkFeed indicators',
- 'EntryContext': {'Sixgill.Bundle(val.BundleID == obj.BundleID)': {'BundleID': 'bundle--<id>',
-                   'FileID': '<fileID>',
-                   'FileName': 'bundle--<id>.json'}}}
+{
+"id": "bundle--9fe23422-1339-47db-9ef0-117bd0b5cb84", 
+"objects": 
+    [
+        {"created": "2017-01-20T00:00:00.000Z", "definition": {"tlp": "amber"}, "definition_type": "tlp", "id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82", "type": "marking-definition"}, 
+        {"created": "2019-12-26T00:00:00Z", "definition": {"statement": "Copyright Sixgill 2020. All rights reserved."}, "definition_type": "statement", "id": "marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4", "type": "marking-definition"}, 
+        {"created": "2020-01-21T12:31:13.822Z", "description": "Shell access to this domain is being sold on dark web markets", "external_reference": [{"description": "Mitre attack tactics and technique reference", "mitre_attack_tactic": "Establish & Maintain Infrastructure", "mitre_attack_tactic_id": "TA0022", "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0022/", "mitre_attack_technique": "Compromise 3rd party infrastructure to support delivery", "mitre_attack_technique_id": "T1334", "mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1334/", "source_name": "mitre-attack"}], "id": "indicator--54c285d5-931c-43b2-829b-b4374da993b2", "labels": ["compromised", "shell", "webshell", "Establish & Maintain Infrastructure", "Compromise 3rd party infrastructure to support delivery"], "lang": "en", "modified": "2020-01-21T12:31:13.822Z", "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4", "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], "pattern": "[domain-name:value = 'http://lyweixinyijia.com']", "sixgill_actor": "belgrad", "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_001", "sixgill_feedname": "compromised_sites", "sixgill_postid": "4dd781acdfa683c0e96b830d95481e4a38b3184c", "sixgill_posttitle": "Shop designer furniture and unique furniture  from lush sofas to dining tables for your bedroom, living room, dining room and more       http://lyweixinyijia.com", "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator", "valid_from": "2019-12-20T14:08:19Z", "score": "High"}, 
+        {"created": "2020-01-21T12:31:13.907Z", "description": "Shell access to this domain is being sold on dark web markets", "external_reference": [{"description": "Mitre attack tactics and technique reference", "mitre_attack_tactic": "Establish & Maintain Infrastructure", "mitre_attack_tactic_id": "TA0022", "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0022/", "mitre_attack_technique": "Compromise 3rd party infrastructure to support delivery", "mitre_attack_technique_id": "T1334", "mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1334/", "source_name": "mitre-attack"}], "id": "indicator--560d6f92-0513-409f-989e-f9f3ee290d9b", "labels": ["compromised", "shell", "webshell", "Establish & Maintain Infrastructure", "Compromise 3rd party infrastructure to support delivery"], "lang": "en", "modified": "2020-01-21T12:31:13.907Z", "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4", "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], "pattern": "[domain-name:value = 'http://mypersonalizedhealthcare.com']", "sixgill_actor": "cpanel", "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_001", "sixgill_feedname": "compromised_sites", "sixgill_postid": "ae3c4cbafb8244aa0bc0b8eb9bdaf0d0eef84e30", "sixgill_posttitle": "Our site is currently under Cons       http://mypersonalizedhealthcare.com", "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator", "valid_from": "2019-12-20T14:37:18Z", "score": "High"}, 
+        {"created": "2020-01-21T12:31:13.913Z", "description": "Shell access to this domain is being sold on dark web markets", "external_reference": [{"description": "Mitre attack tactics and technique reference", "mitre_attack_tactic": "Establish & Maintain Infrastructure", "mitre_attack_tactic_id": "TA0022", "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0022/", "mitre_attack_technique": "Compromise 3rd party infrastructure to support delivery", "mitre_attack_technique_id": "T1334", "mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1334/", "source_name": "mitre-attack"}], "id": "indicator--8c8c3e32-4c8c-454c-bb79-fcc6eee96138", "labels": ["compromised", "shell", "webshell", "Establish & Maintain Infrastructure", "Compromise 3rd party infrastructure to support delivery"], "lang": "en", "modified": "2020-01-21T12:31:13.913Z", "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4", "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], "pattern": "[domain-name:value = 'http://sokesi.com']", "sixgill_actor": "belgrad", "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_001", "sixgill_feedname": "compromised_sites", "sixgill_postid": "f8c79be04c95711d548d4e1014442722b5cd0889", "sixgill_posttitle": "Cool Car DVD Player and Headrest - Naviskauto       http://sokesi.com", "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator", "valid_from": "2019-12-20T14:21:07Z", "score": "High"}, 
+        {"created": "2020-01-21T12:31:13.919Z", "description": "Shell access to this domain is being sold on dark web markets", "external_reference": [{"description": "Mitre attack tactics and technique reference", "mitre_attack_tactic": "Establish & Maintain Infrastructure", "mitre_attack_tactic_id": "TA0022", "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0022/", "mitre_attack_technique": "Compromise 3rd party infrastructure to support delivery", "mitre_attack_technique_id": "T1334", "mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1334/", "source_name": "mitre-attack"}], "id": "indicator--32d46830-d626-4a29-b1be-1c85ac328587", "labels": ["compromised", "shell", "webshell", "Establish & Maintain Infrastructure", "Compromise 3rd party infrastructure to support delivery"], "lang": "en", "modified": "2020-01-21T12:31:13.919Z", "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4", "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], "pattern": "[domain-name:value = 'https://floridahbpa.com']", "sixgill_actor": "nitupme", "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_001", "sixgill_feedname": "compromised_sites", "sixgill_postid": "eae819a9d97867bb994318772d9beaa51d943ce5", "sixgill_posttitle": "Home - Florida HBPA | Florida Thoroughbred Racing       https://floridahbpa.com", "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator", "valid_from": "2019-12-20T14:32:22Z", "score": "High"}
+    ], 
+"spec_version": "2.0", 
+"type": "bundle"
+}
 </pre>
 <p>
 
