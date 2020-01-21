@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedRecordedFuture
+  id: Recorded Future Feed
   version: -1
 configuration:
 - defaultvalue: F - Reliability cannot be judged
@@ -86,7 +86,7 @@ configuration:
   type: 16
 - additionalinfo: |-
     Limit the indicators list to a specific risk rule.
-    To see available risk rules please use the get-risk-rules command.
+    To see available risk rules please use the rf-feed-get-risk-rules command.
     This parameter will only be used for the 'connectApi' sub feed.
   display: risk rule
   hidden: false
@@ -108,18 +108,18 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
-description: Use the Recorded Future feed integration to get indicators from the feed.
+description: Ingest indicators from Recorded Future feeds into Demisto.
 display: Recorded Future Feed
-name: FeedRecordedFuture
+name: Recorded Future Feed
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       defaultValue: '10'
       description: Limit the number of results. Default is 10.
       isArray: false
       name: limit
-      required: false
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
@@ -136,7 +136,7 @@ script:
     deprecated: false
     description: Get indicators from the feed
     execution: false
-    name: recordedFuture-get-indicators
+    name: rf-feed-get-indicators
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -151,9 +151,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a list of the risk rules available for an indicator
+    description: |-
+      Get a list of the risk rules available for an indicator,
+      To limit the 'connectApi' sub feed indicators list.
     execution: false
-    name: recordedFuture-get-risk-rules
+    name: rf-feed-get-risk-rules
     outputs:
     - contextPath: RecordedFutureFeed.RiskRule.Name
       description: The risk rule name
