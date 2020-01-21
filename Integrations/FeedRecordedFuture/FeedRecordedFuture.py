@@ -1,27 +1,18 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Tuple
 from CommonServerUserPython import *
 # IMPORTS
+import csv
 import requests
 import ipaddress
-import csv
+import urllib.parse
+from typing import Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 INTEGRATION_NAME = 'Recorded Future'
 
 # CONSTANTS
-SOURCE_NAME = 'recordedfuture.masterrisklist'
-BASE_URL = 'https://api.recordedfuture.com/v2/'
-PARAMS = {'output_format': 'csv/splunk'}
-HEADERS = {'X-RF-User-Agent': 'Demisto',
-           'content-type': 'application/json'}
-HASH_DT = {
-    'MD5': 'File.MD5(val.MD5 && obj.MD5 === val.MD5)',
-    'SHA256': 'File.SHA256(val.SHA256 && obj.SHA256 === val.SHA256)',
-    'SHA1': 'File.SHA1(val.SHA1 && obj.SHA1 === val.SHA1)'
-}
 
 
 class Client(BaseClient):
@@ -29,6 +20,11 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+    SOURCE_NAME = 'recordedfuture.masterrisklist'
+    BASE_URL = 'https://api.recordedfuture.com/v2/'
+    PARAMS = {'output_format': 'csv/splunk'}
+    HEADERS = {'X-RF-User-Agent': 'Demisto',
+               'content-type': 'application/json'}
 
     def __init__(self, indicator_type: str, api_token: str, sub_feed: str, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
@@ -45,7 +41,9 @@ class Client(BaseClient):
              proxy: Sets whether use proxy when sending requests
         """
 
-        super().__init__(BASE_URL, proxy=proxy, verify=not insecure)
+        super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
+        if proxy:
+            handle_proxy()
 
         try:
             self.polling_timeout = int(polling_timeout)
@@ -54,51 +52,60 @@ class Client(BaseClient):
 
         self.risk_rule = risk_rule
         self.fusion_file_path = fusion_file_path
-        self.api_token = HEADERS['X-RFToken'] = api_token
+        self.api_token = self.HEADERS['X-RFToken'] = api_token
         self.sub_feed = sub_feed
         self.indicator_type = indicator_type
 
     def _build_request(self, sub_feed, indicator_type):
+        """Builds the request for the Recorded Future feed.
+        Args:
+            sub_feed (str): The sub feed from recorded future. Can be 'connectApi' or 'fusion'
+            indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
+
+        Returns:
+            requests.PreparedRequest: The prepared request which will be sent to the server
+        """
         if sub_feed == 'connectApi':
             if self.risk_rule is None:
-                url = BASE_URL + indicator_type + '/risklist'
+                url = self.BASE_URL + indicator_type + '/risklist'
             else:
-                url = BASE_URL + indicator_type + '/risklist?list=' + self.risk_rule
+                url = self.BASE_URL + indicator_type + '/risklist?list=' + self.risk_rule
 
-            r = requests.Request(
+            response = requests.Request(
                 'GET',
                 url,
-                headers=HEADERS,
-                params=PARAMS
+                headers=self.HEADERS,
+                params=self.PARAMS
             )
-            return r.prepare()
 
-        if sub_feed == 'fusion':
-            url = BASE_URL + 'fusion/files/?path='
+        elif sub_feed == 'fusion':
+            url = self.BASE_URL + 'fusion/files/?path='
             if self.fusion_file_path is None:
                 fusion_path = '/public/risklists/default_' + indicator_type + '_risklist.csv'
             else:
                 fusion_path = self.fusion_file_path
 
-            fusion_path = fusion_path.replace('/', '%2F')
-            r = requests.Request('GET',
-                                 url + fusion_path,
-                                 headers=HEADERS,
-                                 params=PARAMS)
-            return r.prepare()
+            fusion_path = urllib.parse.quote_plus(fusion_path)
+            response = requests.Request('GET',
+                                        url + fusion_path,
+                                        headers=self.HEADERS,
+                                        params=self.PARAMS)
+        return response.prepare()
 
     def build_iterator(self, sub_feed, indicator_type):
         """Retrieves all entries from the feed.
         Args:
+            sub_feed (str): The sub feed from recorded future. Can be 'connectApi' or 'fusion'
+            indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
 
         Returns:
-        csv iterator
+            csv.DictReader: Iterates the csv returned from the api request
         """
         _session = requests.Session()
-        prepreq = self._build_request(sub_feed, indicator_type)
+        prepared_request = self._build_request(sub_feed, indicator_type)
         # this is to honour the proxy environment variables
         rkwargs = _session.merge_environment_settings(
-            prepreq.url,
+            prepared_request.url,
             {}, None, None, None  # defaults
         )
         rkwargs['stream'] = True
@@ -106,16 +113,17 @@ class Client(BaseClient):
         rkwargs['timeout'] = self.polling_timeout
 
         try:
-            response = _session.send(prepreq, **rkwargs)
-        except requests.ConnectionError:
-            raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
+            response = _session.send(prepared_request, **rkwargs)
+        except requests.ConnectionError as e:
+            raise requests.ConnectionError(f'Failed to establish a new connection: {str(e)}')
         try:
             response.raise_for_status()
         except Exception:
-            return_error('{} - exception in request: {} {}'.format(SOURCE_NAME, response.status_code, response.content))
+            return_error(
+                '{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
             raise
 
-        data = r.content.decode('latin-1').split('\n')
+        data = response.text.split('\n')
 
         csvreader = csv.DictReader(data)
 
@@ -137,9 +145,10 @@ def old_batch(iterable, batch_size=1):
 def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """Builds the iterator to check that the feed is accessible.
     Args:
-        client: Client object.
+        client(Client): Recorded Future Feed client.
+        args(dict): demisto.args()
     Returns:
-        Outputs.
+        'ok' if test passed, anything else will fail the test.
     """
 
     client.build_iterator('connectApi', 'ip')
@@ -174,9 +183,9 @@ def get_ip_type(indicator):
 
 
 def get_indicator_type(indicator_type, item):
-    """Checks the indicator type
+    """Returns the indicator type in Demisto
     Args:
-        indicator_type: IP, URL, domain or hash
+        indicator_type: ip, url, domain or hash
         item: the indicator row from the csv response
     Returns:
         The indicator type per the indicators defined in Demisto
@@ -185,7 +194,7 @@ def get_indicator_type(indicator_type, item):
     if indicator_type == 'ip':
         return get_ip_type(item.get('Name'))
     elif indicator_type == 'hash':
-        return 'File ' + item.get('Algorithm')
+        return FeedIndicatorType.File
     elif indicator_type == 'domain':
         return FeedIndicatorType.Domain
     elif indicator_type == 'url':
@@ -193,102 +202,60 @@ def get_indicator_type(indicator_type, item):
 
 
 def fetch_indicators_command(client, indicator_type):
-    """Fetches indicators from the feed to the indicators tab.
+    """Fetches indicators from the Recorded Future feeds to the indicators tab.
     Args:
-        client: Client object with request
+        client(Client): Recorded Future Feed client.
+        indicator_type(str): The indicator type
     Returns:
-        Indicators.
+        list. List of indicators from the feed
     """
     indicators = []
-    indicator_context = []
     for feed in client.sub_feed:
         iterator = client.build_iterator(feed, indicator_type)
         for item in iterator:
             raw_json = dict(item)
             raw_json['value'] = value = item.get('Name')
-            raw_json['type'] = demisto_indicator_type = get_indicator_type(indicator_type, item)
+            raw_json['type'] = get_indicator_type(indicator_type, item)
             indicators.append({
                 "value": value,
                 "type": raw_json['type'],
                 "rawJSON": raw_json,
             })
 
-            indicator_context.append(get_indicator_context(demisto_indicator_type, value))
-
-    return indicators, indicator_context
-
-
-def get_indicator_context(indicator_type, value):
-    if indicator_type == 'IP':
-        return {'Address': value}
-
-    elif indicator_type == 'Domain':
-        return {'Name': value}
-
-    elif indicator_type == 'File SHA-256':
-        return {'SHA256': value}
-
-    elif indicator_type == 'File MD5':
-        return {'MD5': value}
-
-    elif indicator_type == 'File SHA-1':
-        return {'SHA1': value}
-
-    elif indicator_type == 'URL':
-        return {'Data': value}
-
-
-def split_hash_context(entry_result):
-    sha256_context = []
-    md5_context = []
-    sha1_context = []
-
-    for entry in entry_result:
-        if entry['Type'] == 'MD5':
-            md5_context.append(entry['Value'])
-        elif entry['Type'] == 'SHA-1':
-            sha1_context.append(entry['Value'])
-        else:
-            sha256_context.append(entry['Value'])
-
-    return sha256_context, md5_context, sha1_context
+    return indicators
 
 
 def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
-    """Retrieves indicators from the feed to the war-room.
+    """Retrieves indicators from the Recorded Future feed to the war-room.
         Args:
-            client: Client object with request
-            args: demisto.args()
+            client(Client): Recorded Future Feed client.
+            args(dict): demisto.args()
         Returns:
-            Outputs.
+            str, dict, list. the markdown table, context JSON and list of indicators
         """
     indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
-    indicators_list, indicator_context = fetch_indicators_command(client, indicator_type)
+    indicators_list = fetch_indicators_command(client, indicator_type)
     entry_result = camelize(indicators_list[:limit])
-    indicator_context = indicator_context[:limit]
     hr = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_result, headers=['Value', 'Type'])
-    if indicator_type == 'hash':
-        sha256_context, md5_context, sha1_context = split_hash_context(entry_result)
-        result_dict = {'RecordedFutureFeed.Indicator': entry_result,
-                       HASH_DT['MD5']: md5_context,
-                       HASH_DT['SHA256']: sha256_context,
-                       HASH_DT['SHA1']: sha1_context}
 
-    else:
-        result_dict = {'RecordedFutureFeed.Indicator': entry_result,
-                       outputPaths[indicator_type]: indicator_context}
-
-    return hr, result_dict, indicators_list
+    return hr, {}, indicators_list
 
 
 def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
+    """Retrieves all risk rules available from Recorded Future to the war-room.
+        Args:
+            client(Client): Recorded Future Feed client.
+            args(dict): demisto.args()
+        Returns:
+            str, dict, list. the markdown table, context JSON and list of risk rules
+        """
     indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
     result = client._http_request(
         method='GET',
         url_suffix=indicator_type + '/riskrules',
-        params=PARAMS,
-        headers=HEADERS
+        params=client.PARAMS,
+        headers=client.HEADERS
     )
     entry_result = []
     for entry in result['data']['results']:
@@ -303,19 +270,18 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
 
 
 def main():
-    handle_proxy()
     client = Client(**demisto.params())
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case
     commands = {
         'test-module': test_module,
-        'get-indicators': get_indicators_command,
-        'get-risk-rules': get_risk_rules_command
+        'recordedFuture-get-indicators': get_indicators_command,
+        'recordedFuture-get-risk-rules': get_risk_rules_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client, client.indicator_type)
+            indicators = fetch_indicators_command(client, client.indicator_type)
             # we submit the indicators in batches
             for b in old_batch(indicators, batch_size=2000):  # TODO change to commonserverpython batch
                 demisto.createIndicators(b)
