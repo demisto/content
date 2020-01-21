@@ -3,15 +3,19 @@ commonfields:
   id: CSVFeed
   version: -1
 configuration:
+- display: URL
+  name: url
+  required: true
+  type: 0
 - display: Fetch indicators
   name: feed
   required: false
   type: 8
-- display: Fetch Interval
+- defaultvalue: '240'
+  display: Fetch Interval
   name: feedFetchInterval
-  defaultvalue: 240
-  type: 19
   required: true
+  type: 19
 - additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
   name: indicator_type
@@ -32,12 +36,11 @@ configuration:
 - name: expiration
   required: false
   type: 17
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
   name: bypassExclusionList
-  defaultvalue: ""
-  type: 8
   required: false
-  additionalinfo: When selected, the exclusion list will be ignored for this feed.
+  type: 8
 - defaultvalue: feedInstanceReputationNotSet
   display: Mark as reputation
   name: feedInstanceReputation
@@ -57,16 +60,11 @@ configuration:
   name: expirationInterval
   required: false
   type: 1
-- display: URL
-  name: url
-  required: true
-  type: 0
 - display: Username
   name: credentials
   required: false
   type: 9
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -85,21 +83,22 @@ configuration:
   name: ignore_regex
   required: false
   type: 0
-- additionalinfo: Name of the field names in the CSV feed. If several are given, will use
-    "indicator" as the default indicator value field.
+- additionalinfo: Name of the field names in the CSV feed. If several are given, will
+    use "indicator" as the default indicator value field.
   defaultvalue: indicator
   display: Field Names
   name: fieldnames
   required: false
   type: 0
-- additionalinfo: A one-character string used to separate fields. For example, a comma ",".
+- additionalinfo: A one-character string used to separate fields. For example, a comma
+    ",".
   defaultvalue: ','
   display: Delimiter
   name: delimiter
   required: false
   type: 0
-- additionalinfo: Controls how instances of quotechar in a field should
-    themselves be quoted. When True, the character is doubled.
+- additionalinfo: Controls how instances of quotechar in a field should themselves
+    be quoted. When True, the character is doubled.
   display: Doublequote
   name: doublequote
   required: false
@@ -162,6 +161,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
 tests:
 - CSV_Feed_Test
+fromversion: 5.5.0
