@@ -39,7 +39,7 @@ tasks:
       version: -1
       name: Get Indicators
       description: Get the feed indicators.
-      script: SpamhausFeed|||get-indicators
+      script: SpamhausFeed|||spamhaus-get-indicators
       type: regular
       iscommand: true
       brand: SpamhausFeed

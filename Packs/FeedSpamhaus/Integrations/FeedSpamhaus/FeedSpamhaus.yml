@@ -107,7 +107,7 @@ script:
     deprecated: false
     description: Gets the feed indicators.
     execution: false
-    name: get-indicators
+    name: spamhaus-get-indicators
     outputs:
     - contextPath: SpamhausFeed.Indicator.Value
       description: The indicator value.
