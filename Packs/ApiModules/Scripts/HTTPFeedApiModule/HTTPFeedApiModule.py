@@ -109,8 +109,21 @@ class Client(BaseClient):
     def get_feed_config(self, fields_json: str = '', indicator_json: str = ''):
         """
         Get the feed configuration from the indicator and field JSON strings.
-        :param fields_json: JSON string of fields to extract.
-        :param indicator_json: JSON string of the indicator to extract.
+        :param fields_json: JSON string of fields to extract, for example:
+            {
+                'fieldname': {
+                    'regex': regex,
+                    'transform': r'\1'
+                }
+            },
+            {
+                'asndrop_org': {
+                    'regex': regex,
+                    'transform': r'\1'
+                }
+            }
+        :param indicator_json: JSON string of the indicator to extract, for example:
+            {'regex': regex}
         :return: The feed configuration.
         """
         config = {}
@@ -214,10 +227,10 @@ def get_indicator_fields(line, url, client: Client):
     value = None
     indicator = None
     fields_to_extract = []
-    feed_type = client.feed_url_to_config.get(url, {})
-    if feed_type:
-        if 'indicator' in feed_type:
-            indicator = feed_type['indicator']
+    feed_config = client.feed_url_to_config.get(url, {})
+    if feed_config:
+        if 'indicator' in feed_config:
+            indicator = feed_config['indicator']
             if 'regex' in indicator:
                 indicator['regex'] = re.compile(indicator['regex'])
             if 'transform' not in indicator:
@@ -225,8 +238,8 @@ def get_indicator_fields(line, url, client: Client):
     else:
         indicator = None
 
-    if 'fields' in feed_type:
-        fields = feed_type['fields']
+    if 'fields' in feed_config:
+        fields = feed_config['fields']
         for field in fields:
             for f, fattrs in field.items():
                 field = {f: {}}
@@ -264,7 +277,7 @@ def get_indicator_fields(line, url, client: Client):
                 else:
                     attributes[f] = i
         attributes['value'] = value = extracted_indicator
-        attributes['type'] = feed_type.get('indicator_type', client.indicator_type)
+        attributes['type'] = feed_config.get('indicator_type', client.indicator_type)
     return attributes, value
 
 
