@@ -4,8 +4,9 @@ from CommonServerUserPython import *
 # IMPORTS
 import csv
 import requests
+import itertools
 import urllib.parse
-from typing import Tuple
+from typing import Tuple, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -22,7 +23,7 @@ class Client(BaseClient):
     SOURCE_NAME = 'recordedfuture.masterrisklist'
     BASE_URL = 'https://api.recordedfuture.com/v2/'
     PARAMS = {'output_format': 'csv/splunk'}
-    HEADERS = {'X-RF-User-Agent': 'Demisto',
+    headers = {'X-RF-User-Agent': 'Demisto',
                'content-type': 'application/json'}
 
     def __init__(self, indicator_type: str, api_token: str, sub_feed: str, risk_rule: str = None,
@@ -48,7 +49,7 @@ class Client(BaseClient):
 
         self.risk_rule = risk_rule
         self.fusion_file_path = fusion_file_path
-        self.api_token = self.HEADERS['X-RFToken'] = api_token
+        self.api_token = self.headers['X-RFToken'] = api_token
         self.sub_feed = sub_feed
         self.indicator_type = indicator_type
 
@@ -70,7 +71,7 @@ class Client(BaseClient):
             response = requests.Request(
                 'GET',
                 url,
-                headers=self.HEADERS,
+                headers=self.headers,
                 params=self.PARAMS
             )
 
@@ -84,7 +85,7 @@ class Client(BaseClient):
             fusion_path = urllib.parse.quote_plus(fusion_path)
             response = requests.Request('GET',
                                         url + fusion_path,
-                                        headers=self.HEADERS,
+                                        headers=self.headers,
                                         params=self.PARAMS)
         return response.prepare()
 
@@ -114,10 +115,8 @@ class Client(BaseClient):
             raise requests.ConnectionError(f'Failed to establish a new connection: {str(e)}')
         try:
             response.raise_for_status()
-        except Exception:
-            return_error(
-                '{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
-            raise
+        except requests.exceptions.HTTPError:
+            return_error('{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
 
         data = response.text.split('\n')
 
@@ -161,7 +160,7 @@ def get_indicator_type(indicator_type, item):
     """
 
     if indicator_type == 'ip':
-        return FeedIndicatorType.ip_to_indicator_type(item.get('Name'))
+        return ip_to_indicator_type(item.get('Name'))
     elif indicator_type == 'hash':
         return FeedIndicatorType.File
     elif indicator_type == 'domain':
@@ -170,18 +169,42 @@ def get_indicator_type(indicator_type, item):
         return FeedIndicatorType.URL
 
 
-def fetch_indicators_command(client, indicator_type):
-    """Fetches indicators from the Recorded Future feeds to the indicators tab.
+def ip_to_indicator_type(ip):
+    """Returns the indicator type of the input IP.
+    :type ip: ``str``
+    :param ip: IP address to get it's indicator type.
+    :rtype: ``str``
+    :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
+    """
+    if re.match(ipv4cidrRegex, ip):
+        return FeedIndicatorType.CIDR
+
+    elif re.match(ipv4Regex, ip):
+        return FeedIndicatorType.IP
+
+    elif re.match(ipv6cidrRegex, ip):
+        return FeedIndicatorType.IPv6CIDR
+
+    elif re.match(ipv6Regex, ip):
+        return FeedIndicatorType.IPv6
+
+    else:
+        return None
+
+
+def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
+    """Fetches indicators from the Recorded Future feeds.
     Args:
         client(Client): Recorded Future Feed client.
         indicator_type(str): The indicator type
+        limit(int): Optional. The number of the indicators to fetch
     Returns:
         list. List of indicators from the feed
     """
     indicators = []
     for feed in client.sub_feed:
         iterator = client.build_iterator(feed, indicator_type)
-        for item in iterator:
+        for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
             raw_json = dict(item)
             raw_json['value'] = value = item.get('Name')
             raw_json['type'] = get_indicator_type(indicator_type, item)
@@ -204,11 +227,11 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
         """
     indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
-    indicators_list = fetch_indicators_command(client, indicator_type)
-    entry_result = camelize(indicators_list[:limit])
+    indicators_list = fetch_indicators_command(client, indicator_type, limit)
+    entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_result, headers=['Value', 'Type'])
 
-    return hr, {}, indicators_list
+    return hr, {}, entry_result
 
 
 def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
@@ -224,7 +247,7 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
         method='GET',
         url_suffix=indicator_type + '/riskrules',
         params=client.PARAMS,
-        headers=client.HEADERS
+        headers=client.headers
     )
     entry_result = []
     for entry in result['data']['results']:
@@ -245,12 +268,12 @@ def main():
     # Switch case
     commands = {
         'test-module': test_module,
-        'recordedFuture-get-indicators': get_indicators_command,
-        'recordedFuture-get-risk-rules': get_risk_rules_command
+        'rf-feed-get-indicators': get_indicators_command,
+        'rf-feed-get-risk-rules': get_risk_rules_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, client.indicator_type)
+            indicators = fetch_indicators_command(client, client.indicator_type, None)
             # we submit the indicators in batches
             for b in old_batch(indicators, batch_size=2000):  # TODO change to commonserverpython batch
                 demisto.createIndicators(b)

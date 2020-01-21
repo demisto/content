@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 920,
           "y": 50
         }
       }
@@ -62,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 920,
           "y": 195
         }
       }
@@ -73,21 +73,23 @@ tasks:
     quiet: false
   "2":
     id: "2"
-    taskid: 12927a9d-0e7b-441e-8114-3e68214a86e0
+    taskid: 20d3515d-cad0-4b79-8b60-60d8668c1c33
     type: regular
     task:
-      id: 12927a9d-0e7b-441e-8114-3e68214a86e0
+      id: 20d3515d-cad0-4b79-8b60-60d8668c1c33
       version: -1
       name: get-indicators-ip
       description: Get indicators from the feed
-      script: FeedRecordedFuture|||get-indicators
+      script: '|||rf-feed-get-indicators'
       type: regular
       iscommand: true
-      brand: FeedRecordedFuture
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
+      extend-context:
+        simple: first_object=.[0]
       indicator_type:
         simple: ip
       limit:
@@ -96,7 +98,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 370
         }
       }
@@ -107,21 +109,23 @@ tasks:
     quiet: false
   "3":
     id: "3"
-    taskid: fe2259b6-c9fc-40a3-8ca1-804bdb800cf0
+    taskid: c7d38988-955c-4307-860a-8ebe7aa95546
     type: regular
     task:
-      id: fe2259b6-c9fc-40a3-8ca1-804bdb800cf0
+      id: c7d38988-955c-4307-860a-8ebe7aa95546
       version: -1
       name: get-indicators-domain
       description: Get indicators from the feed
-      script: FeedRecordedFuture|||get-indicators
+      script: '|||rf-feed-get-indicators'
       type: regular
       iscommand: true
-      brand: FeedRecordedFuture
+      brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "15"
     scriptarguments:
+      extend-context:
+        simple: first_object=.[0]
       indicator_type:
         simple: domain
       limit:
@@ -130,7 +134,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 705,
           "y": 370
         }
       }
@@ -141,21 +145,23 @@ tasks:
     quiet: false
   "4":
     id: "4"
-    taskid: e8136895-3a41-4306-8fb9-8b43244269d6
+    taskid: af99edb0-a22a-46d2-8868-446d7356fbce
     type: regular
     task:
-      id: e8136895-3a41-4306-8fb9-8b43244269d6
+      id: af99edb0-a22a-46d2-8868-446d7356fbce
       version: -1
       name: get-indicators-hash
       description: Get indicators from the feed
-      script: FeedRecordedFuture|||get-indicators
+      script: '|||rf-feed-get-indicators'
       type: regular
       iscommand: true
-      brand: FeedRecordedFuture
+      brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "17"
     scriptarguments:
+      extend-context:
+        simple: first_object=.[0]
       indicator_type:
         simple: hash
       limit:
@@ -164,7 +170,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1565,
           "y": 370
         }
       }
@@ -175,21 +181,23 @@ tasks:
     quiet: false
   "5":
     id: "5"
-    taskid: 69433423-3ad3-47cd-8066-3003400d3395
+    taskid: 270eacaf-86b4-4951-8c75-7a8c12d4911c
     type: regular
     task:
-      id: 69433423-3ad3-47cd-8066-3003400d3395
+      id: 270eacaf-86b4-4951-8c75-7a8c12d4911c
       version: -1
       name: get-indicators-url
       description: Get indicators from the feed
-      script: FeedRecordedFuture|||get-indicators
+      script: '|||rf-feed-get-indicators'
       type: regular
       iscommand: true
-      brand: FeedRecordedFuture
+      brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
+      extend-context:
+        simple: first_object=.[0]
       indicator_type:
         simple: url
       limit:
@@ -198,7 +206,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1135,
           "y": 370
         }
       }
@@ -209,10 +217,10 @@ tasks:
     quiet: false
   "6":
     id: "6"
-    taskid: 4b48e968-9ae1-402e-8356-bcc6113814cf
+    taskid: 8445f312-116f-4d67-823b-72684f14e946
     type: condition
     task:
-      id: 4b48e968-9ae1-402e-8356-bcc6113814cf
+      id: 8445f312-116f-4d67-823b-72684f14e946
       version: -1
       name: verify get indicators-ip
       type: condition
@@ -227,152 +235,25 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: RecordedFutureFeed.Indicator.Type
+              simple: first_object.Type
             iscontext: true
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: RecordedFutureFeed.Indicator.Value
+              simple: first_object.Rawjson
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "7":
-    id: "7"
-    taskid: 0d219d5b-730d-4d6b-8a9d-914fd558a493
-    type: condition
-    task:
-      id: 0d219d5b-730d-4d6b-8a9d-914fd558a493
-      version: -1
-      name: verify get indicators-domain
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: RecordedFutureFeed.Indicator.Type
-            iscontext: true
-          right:
-            value:
-              simple: Domain
-      - - operator: isExists
-          left:
-            value:
-              simple: RecordedFutureFeed.Indicator.Value
+              simple: first_object.Value
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "8":
-    id: "8"
-    taskid: 8150b4a2-30db-49f8-8a7e-5c1e23f70254
-    type: condition
-    task:
-      id: 8150b4a2-30db-49f8-8a7e-5c1e23f70254
-      version: -1
-      name: verify get indicators-url
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: RecordedFutureFeed.Indicator.Type
-            iscontext: true
-          right:
-            value:
-              simple: URL
-      - - operator: isExists
-          left:
-            value:
-              simple: RecordedFutureFeed.Indicator.Value
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "9":
-    id: "9"
-    taskid: 160cb36b-c153-4b83-86bc-460e42ab73dd
-    type: condition
-    task:
-      id: 160cb36b-c153-4b83-86bc-460e42ab73dd
-      version: -1
-      name: verify get indicators-hash
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: RecordedFutureFeed.Indicator.Type
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: RecordedFutureFeed.Indicator.Value
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1340,
+          "x": 60,
           "y": 545
         }
       }
@@ -383,12 +264,12 @@ tasks:
     quiet: false
   "10":
     id: "10"
-    taskid: c009081c-1222-4298-8072-f0f7e3450f9f
+    taskid: 68055c45-f67e-455a-827e-a8a1b8a8e7f8
     type: regular
     task:
-      id: c009081c-1222-4298-8072-f0f7e3450f9f
+      id: 68055c45-f67e-455a-827e-a8a1b8a8e7f8
       version: -1
-      name: get-indicators error
+      name: get-indicators error-ip
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
@@ -396,12 +277,12 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Get-indicator failed
+        simple: get-indicator failed on indicator type - ip
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 720
         }
       }
@@ -412,17 +293,19 @@ tasks:
     quiet: false
   "11":
     id: "11"
-    taskid: 1c58cfb3-b6c3-4a4c-8788-29bd92c68506
+    taskid: cbc22c6a-858a-4737-8e8d-d10b37845cb6
     type: regular
     task:
-      id: 1c58cfb3-b6c3-4a4c-8788-29bd92c68506
+      id: cbc22c6a-858a-4737-8e8d-d10b37845cb6
       version: -1
       name: get-risk-rules
-      description: Get a list of the risk rules available for an indicator
-      script: FeedRecordedFuture|||get-risk-rules
+      description: |-
+        Get a list of the risk rules available for an indicator,
+        To limit the 'connectApi' sub feed indicators list.
+      script: '|||rf-feed-get-risk-rules'
       type: regular
       iscommand: true
-      brand: FeedRecordedFuture
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -433,7 +316,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 480,
           "y": 720
         }
       }
@@ -480,7 +363,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 480,
           "y": 895
         }
       }
@@ -509,7 +392,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
+          "x": 265,
           "y": 1070
         }
       }
@@ -533,8 +416,236 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 695,
           "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "15":
+    id: "15"
+    taskid: 1697fafd-1986-473b-8753-67c8fab9264f
+    type: condition
+    task:
+      id: 1697fafd-1986-473b-8753-67c8fab9264f
+      version: -1
+      name: verify get indicators-domian
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Rawjson
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "16":
+    id: "16"
+    taskid: 5e3da0e2-b053-424b-84d3-58e1abb3d61c
+    type: condition
+    task:
+      id: 5e3da0e2-b053-424b-84d3-58e1abb3d61c
+      version: -1
+      name: verify get indicators-url
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Rawjson
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "17":
+    id: "17"
+    taskid: 73cc6925-8b86-4742-81c8-a84983e47b05
+    type: condition
+    task:
+      id: 73cc6925-8b86-4742-81c8-a84983e47b05
+      version: -1
+      name: verify get indicators-hash
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Rawjson
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.Value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "18":
+    id: "18"
+    taskid: 56eb0dc3-0600-4737-8bab-b0c17a40ef5b
+    type: regular
+    task:
+      id: 56eb0dc3-0600-4737-8bab-b0c17a40ef5b
+      version: -1
+      name: get-indicators error-domian
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: get-indicator failed on indicator type - domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "19":
+    id: "19"
+    taskid: 1c07854e-c923-47f1-8a3d-a128c0a4d12c
+    type: regular
+    task:
+      id: 1c07854e-c923-47f1-8a3d-a128c0a4d12c
+      version: -1
+      name: get-indicators error-url
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: get-indicator failed on indicator type - url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "20":
+    id: "20"
+    taskid: ccb5b686-85c8-4364-828d-990840ae5b7b
+    type: regular
+    task:
+      id: ccb5b686-85c8-4364-828d-990840ae5b7b
+      version: -1
+      name: get-indicators error-hash
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: get-indicator failed on indicator type - hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 720
         }
       }
     note: false
@@ -548,7 +659,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1115,
-        "width": 1895,
+        "width": 2325,
         "x": 50,
         "y": 50
       }
