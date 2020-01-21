@@ -312,7 +312,7 @@ def stix2_to_demisto(stx_obj):
     Args:
         stx_obj: json object
     """
-    data = list()
+    data = list()  # type: List[dict]
     if isinstance(stx_obj, dict):
         indicators, indicators_dict = extract_indicators(stx_obj)
         entry = build_entry(indicators, indicators_dict, stx_obj.get("id"))
@@ -405,7 +405,7 @@ def build_context_entries(data):
 
 def main():
     args = demisto.args()
-    txt = args.get("iocXml", "").encode("utf-8")
+    txt = args.get("iocXml", "stix2_data").encode("utf-8")
     if not txt:
         entry_id = args.get("entry_id")
         # get file from entry_id
