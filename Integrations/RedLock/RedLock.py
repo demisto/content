@@ -234,7 +234,7 @@ def search_alerts():
     context = {context_path: []}  # type: dict
     for alert in response:
         alerts.append(alert_to_readable(alert))
-        context[context_path].append(alert_to_context(k))
+        context[context_path].append(alert_to_context(alert))
     context['Redlock.Metadata.CountOfAlerts'] = len(response)
     demisto.results({
         'Type': entryTypes['note'],
