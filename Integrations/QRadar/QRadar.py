@@ -7,6 +7,7 @@ import requests
 import traceback
 import urllib
 import re
+import ast
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
@@ -14,7 +15,7 @@ from copy import deepcopy
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+SERVER = demisto.params().get('server')[:-1] if str(demisto.params().get('server')).endswith('/') else demisto.params().get('server')
 CREDENTIALS = demisto.params().get('credentials')
 USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
 PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
@@ -25,6 +26,7 @@ if TOKEN:
     AUTH_HEADERS['SEC'] = str(TOKEN)
 OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
 OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
+PAGE_SIZE = 200
 
 if not TOKEN and not (USERNAME and PASSWORD):
     raise Exception('Either credentials or auth token should be provided.')
@@ -201,16 +203,16 @@ def dict_values_to_comma_separated_string(dic):
 
 
 # Sends request to the server using the given method, url, headers and params
-def send_request(method, url, headers=AUTH_HEADERS, params=None):
+def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
     try:
         log_hdr = deepcopy(headers)
         log_hdr.pop('SEC', None)
         LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
             .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
         if TOKEN:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data)
         else:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data,
                                    auth=(USERNAME, PASSWORD))
         res.raise_for_status()
     except HTTPError:
@@ -1038,6 +1040,89 @@ def get_domains_by_id_command():
         }
 
 
+def upload_indicators_list_request(reference_name, indicators_list):
+    """
+          Upload indicators list to the reference set
+    """
+    url = '{0}/api/reference_data/sets/bulk_load/{1}'.format(SERVER, urllib.quote(reference_name, safe=''))
+    params = {'name': reference_name}
+    return send_request('POST', url, params=params, data=json.dumps(indicators_list))
+
+
+def upload_indicators_command():
+    """
+        Finds indicators according to user query and updates QRadar reference set
+    """
+    args = demisto.args()
+    reference_name = args.get('ref_name')
+    if not check_ref_set_exist(reference_name):
+        element_type = args.get('element_type')
+        if element_type:
+            create_reference_set(reference_name, args.get('element_type'), args.get('timeout_type'),
+                                 args.get('time_to_live'))
+        else:
+            return_error("There isn't reference set with the name {0}. To create a reference set,"
+                         " you have to enter element type")
+    query = args.get('query')
+    value_indicators_list, indicators_data_list = get_indicators_list(query)
+    if len(value_indicators_list) == 0:
+        return {
+            'Type': entryTypes['note'],
+            'Contents': {},
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': "No indicators found in reference set {0} didn't change".format(reference_name)
+        }
+    else:
+        raw_response = upload_indicators_list_request(reference_name, value_indicators_list)
+        ref_set_data = unicode_to_str_recur(get_reference_by_name(reference_name))
+        indicator_headers = ['value', 'indicator_type']
+        ref_set_headers = ['name', 'element_type', 'timeout_type', 'creation_time', 'number_of_elements']
+        return {
+            'Type': entryTypes['note'],
+            'Contents': raw_response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("reference set {0} was updated", ref_set_data,
+                                             headers=ref_set_headers).format(reference_name) +
+                             tableToMarkdown("Indicators list", indicators_data_list, headers=indicator_headers)
+        }
+
+
+def check_ref_set_exist(ref_set_name):
+    """
+        Checks if reference set is exist
+    """
+    try:
+        return get_reference_by_name(ref_set_name)
+    except Exception as e:
+        if '1002' in str(e):
+            return None
+        raise e
+
+
+def get_indicators_list(indicator_query):
+    """
+        Get Demisto indicators list using demisto.findIndicators
+        Returns: list of indicators value and a list with all indicators data
+    """
+    last_found_len = PAGE_SIZE
+    value_indicators_list = []
+    indicators_data_list = []
+    page = 0
+    while last_found_len == PAGE_SIZE:
+        fetched_iocs = demisto.findIndicators(query=indicator_query, page=page, size=PAGE_SIZE).get('iocs')
+        for indicator in fetched_iocs:
+            value_indicators_list.append(indicator['value'])
+            indicators_data_list.append({
+                'value': indicator['value'],
+                'indicator_type': indicator['indicator_type']
+            })
+        last_found_len = len(fetched_iocs)
+        page += 1
+    return value_indicators_list, indicators_data_list
+
+
 # Command selector
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))
@@ -1081,6 +1166,8 @@ try:
         demisto.results(get_domains_command())
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
+    elif demisto.command() == 'qradar-upload-indicators':
+        demisto.results(upload_indicators_command())
 except Exception as e:
     message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
@@ -1091,3 +1178,4 @@ except Exception as e:
         raise Exception(error)
     else:
         return_error(error)
+
