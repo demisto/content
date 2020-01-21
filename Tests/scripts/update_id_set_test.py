@@ -109,7 +109,7 @@ def test_find_duplicates():
     temp_classifier.flush()
     os.fsync(temp_classifier.fileno())
     temp_classifier2 = tempfile.NamedTemporaryFile(mode="w+", prefix='classifier-',
-                                                   suffix='.json', dir='Classifiers') # disable-secrets-detection
+                                                   suffix='.json', dir='Classifiers')  # disable-secrets-detection
     json.dump(WIDGET_DATA, temp_classifier2)
     temp_classifier2.flush()
     os.fsync(temp_classifier2.fileno())
@@ -121,7 +121,7 @@ def test_find_duplicates():
     temp_layout.flush()
     os.fsync(temp_layout.fileno())
     temp_layout2 = tempfile.NamedTemporaryFile(mode="w+", prefix='layout-', suffix='.json',  # disable-secrets-detection
-                                               dir='Packs/CortexXDR/Layouts') # disable-secrets-detection
+                                               dir='Packs/CortexXDR/Layouts')  # disable-secrets-detection
     json.dump(LAYOUT_DATA, temp_layout2)
     temp_layout2.flush()
     os.fsync(temp_layout2.fileno())
