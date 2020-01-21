@@ -2155,7 +2155,8 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "ssdeepreputationtest": "Issue #20953"
+        "ssdeepreputationtest": "Issue #20953",
+        "Sixgill - DarkFeed - Indicators": "skipped on purpose - until Stix V2.0 is supported"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
