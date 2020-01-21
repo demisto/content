@@ -1,4 +1,7 @@
 ## [Unreleased]
+ - Added 2 commands.
+   - ***ad-create-group*** 
+   - ***ad-delete-group***
 
 
 ## [19.12.1] - 2019-12-25
