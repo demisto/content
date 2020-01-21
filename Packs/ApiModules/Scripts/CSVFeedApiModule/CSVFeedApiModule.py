@@ -12,8 +12,8 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, url_to_fieldnames: dict = None, fieldnames: str = '', insecure: bool = False,
-                 credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
+    def __init__(self, url: str, url_to_fieldnames: Optional[Dict[str, list]] = None, fieldnames: str = '',
+                 insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
                  delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
                  **kwargs):
@@ -62,7 +62,7 @@ class Client(BaseClient):
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
-        self.url_to_fieldnames: Dict[str, list] = url_to_fieldnames
+        self.url_to_fieldnames: Optional[Dict[str, list]] = url_to_fieldnames
         self.fieldnames = argToList(fieldnames)
         self.dialect: Dict[str, Any] = {
             'delimiter': delimiter,
@@ -112,7 +112,10 @@ class Client(BaseClient):
                 raise
 
             response = r.content.decode(self.encoding).split('\n')
-            fieldnames = self.url_to_fieldnames.get(url, []) or self.fieldnames
+            if self.url_to_fieldnames:
+                fieldnames = self.url_to_fieldnames.get(url, [])
+            else:
+                fieldnames = self.fieldnames
             if self.ignore_regex is not None:
                 response = filter(
                     lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
