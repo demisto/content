@@ -111,6 +111,12 @@ script:
       name: long
       required: false
       secret: false
+    - default: true
+      description: The URL to check
+      isArray: false
+      name: url
+      required: true
+      secret: false
     deprecated: false
     description: Check the given URL reputation
     execution: false
@@ -192,13 +198,12 @@ script:
       description: The actual score
       type: Unknown
   - arguments:
-    - auto: PREDEFINED
-      default: true
+    - default: true
       description: The domain to check
       isArray: false
-      name: domin
+      name: domain
       predefined:
-      - comma seperated optional values
+      - ''
       required: true
       secret: false
     - auto: PREDEFINED
@@ -318,7 +323,8 @@ script:
   longRunningPort: false
   runonce: false
   script: |-
-    from typing import Tuple, Dict, Any
+    from typing import Tuple, Dict
+    from collections import defaultdict
 
 
 
@@ -484,14 +490,15 @@ script:
              report: the raw data from X-Force client (used for debugging).
         """
 
-        threshold = int(demisto.args().get('cve_threshold', DEFAULT_THRESHOLD))
+        threshold = int(demisto.params().get('threshold', DEFAULT_THRESHOLD))
         reports = client.get_recent_vulnerabilities()
 
-        total_context: Dict[str, Any] = {}
+        total_context: Dict[str, list] = defaultdict(list)
         total_markdown = ''
+
         for report in reports:
             cve_id = report.get('stdcode', [0])[0]
-            markdown, context, data = get_cve_results(cve_id, report, threshold)
+            markdown, context, _ = get_cve_results(cve_id, report, threshold)
 
             total_context['CVE(obj.ID==val.ID)'].append(context['CVE(obj.ID==val.ID)'])
             total_context['DBotScore'].append(context['DBotScore'])
@@ -518,7 +525,7 @@ script:
         threshold = demisto.params().get('cve_threshold', DEFAULT_THRESHOLD)
         report = client.cve_report(args['cve_id'])
 
-        return get_cve_results(args['cve_id'], report, threshold)
+        return get_cve_results(args['cve_id'], report[0], threshold)
 
 
     def main():

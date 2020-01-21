@@ -111,6 +111,12 @@ script:
       name: long
       required: false
       secret: false
+    - default: true
+      description: The URL to check
+      isArray: false
+      name: url
+      required: true
+      secret: false
     deprecated: false
     description: Check the given URL reputation
     execution: false
@@ -192,13 +198,12 @@ script:
       description: The actual score
       type: Unknown
   - arguments:
-    - auto: PREDEFINED
-      default: true
+    - default: true
       description: The domain to check
       isArray: false
-      name: domin
+      name: domain
       predefined:
-      - comma seperated optional values
+      - ''
       required: true
       secret: false
     - auto: PREDEFINED
