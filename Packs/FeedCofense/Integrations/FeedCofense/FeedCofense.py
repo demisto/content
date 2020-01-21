@@ -124,14 +124,14 @@ class Client(BaseClient):
         Returns:
             indicator type, value
         """
-        indicator = block.get("blockType", "")
-        indicator = str(cls.cofense_to_indicator.get(indicator))
+        indicator_type = block.get("blockType", "")
+        indicator_type = str(cls.cofense_to_indicator.get(indicator_type))
         # Only URL indicator has inside information in data_1
-        if indicator == FeedIndicatorType.URL:
+        if indicator_type == FeedIndicatorType.URL:
             value = block.get("data_1", {}).get("url")
         else:
             value = block.get("data_1")
-        return indicator, value
+        return indicator_type, value
 
     @classmethod
     def process_item(cls, threat: dict) -> List[dict]:
@@ -150,12 +150,12 @@ class Client(BaseClient):
         """
         results = list()
         block_set: List[dict] = threat.get("blockSet", [])
-        thread_id = threat.get("id")
+        threat_id = threat.get("id")
         for block in block_set:
             indicator, value = cls._convert_block(block)
             block["value"] = value
             block["type"] = indicator
-            block["threat_id"] = thread_id
+            block["threat_id"] = threat_id
             if indicator:
                 results.append({"value": value, "type": indicator, "rawJSON": block})
 
@@ -297,7 +297,7 @@ def main():
             return_outputs(test_module(client))
         elif demisto.command() == "fetch-indicators":
             fetch_indicators_builder(client, params.get("fetch_time", "3 days"))
-        elif demisto.command() == "get-indicators":
+        elif demisto.command() == "cofense-get-indicators":
             # dummy command for testing
             return_outputs(*get_indicators_command(client, demisto.args()))
     except Exception as err:

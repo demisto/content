@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: get-indicators
       description: Get indicators
-      script: Cofense Feed|||get-indicators
+      script: Cofense Feed|||cofense-get-indicators
       type: regular
       iscommand: true
       brand: Cofense Feed

@@ -115,7 +115,7 @@ script:
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
-    name: get-indicators
+    name: cofense-get-indicators
     outputs:
     - contextPath: Cofense.Indicator
       description: The indicators returned from the feed.
