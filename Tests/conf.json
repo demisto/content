@@ -2085,7 +2085,7 @@
           "integrations": "QRadar",
           "playbookID": "QRadar Indicator Hunting Test",
           "timeout": 1200,
-          "fromversion": "4.5.0"
+          "fromversion": "5.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",
@@ -2212,7 +2212,6 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
-        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
