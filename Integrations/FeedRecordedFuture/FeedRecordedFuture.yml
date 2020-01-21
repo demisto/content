@@ -31,6 +31,10 @@ configuration:
   name: feed
   required: false
   type: 8
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  required: false
+  type: 8
 - name: skipExclusionList
   required: false
   type: 8
