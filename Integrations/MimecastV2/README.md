@@ -3209,8 +3209,6 @@ There are no context output for this command.
   <code>mimecast-update-policy</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
