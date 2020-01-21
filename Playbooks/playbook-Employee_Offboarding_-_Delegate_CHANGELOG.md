@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where the playbook would open to a non-centered location.
 
 ## [20.1.0] - 2020-01-07
 #### New Playbook

@@ -75,6 +75,7 @@ def test_parse_data_from_response(mocker):
         'Domain': 'WORKGROUP',
         'Platform': 'windows',
         'Status': 'active',
+        'ScanStatus': 'success',
         'IP': 'xxx.xx.xx.xxx',
         'ComputerSid': 'S-1-5-21-202186053-2642234773-3690463397',
         'IsCompromised': False,
