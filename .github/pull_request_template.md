@@ -1,10 +1,4 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
-
-## Contributor - who are you?
-- [ ] Partner - [**enter your PARTNER_ID here**]
-- [ ] Customer
-- [ ] CS / SE / SA
-
 ## Status
 - [x] In Progress
 - [ ] Ready
@@ -19,7 +13,7 @@ A few sentences describing the overall goals of the pull request's commits.
 ## Screenshots
 Paste here any images that will help the reviewer
 
-## Required version of Demisto
+## Minimum version of Demisto
 - [ ] 4.5.0
 - [ ] 5.0.0
 - [ ] 5.5.0
@@ -31,4 +25,7 @@ Paste here any images that will help the reviewer
 
 ## Must have
 - [ ] Tests
-- [ ] Documentation (with link to it)
+- [ ] Documentation 
+
+## Demisto Partner?
+*ENTER YOUR PARTNER_ID HERE*
