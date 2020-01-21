@@ -27,6 +27,16 @@ class Client(BaseClient):
 
 
 def calculate_score(score: int, threshold: int) -> int:
+    """
+
+    Args:
+        score:
+        threshold:
+
+    Returns:
+        the total score of
+    """
+
     if score > threshold:
         return 3
     elif score > threshold / 2:
@@ -85,7 +95,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
         report - the raw data from X-Force client (used for debugging).
     """
 
-    threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
+    threshold = int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))
     report = client.ip_report(args['ip'])
 
     outputs = {'Address': report['ip'],
@@ -124,7 +134,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
      """
 
     report = client.url_report(args['url'])
-    threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
+    threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
 
     outputs = {'Data': report['url'], 'Malicious': {'Vendor': 'XFE'}}
     dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
@@ -154,7 +164,7 @@ def cve_latest_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
          report: the raw data from X-Force client (used for debugging).
     """
 
-    threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
+    threshold = int(demisto.params().get('threshold', DEFAULT_THRESHOLD))
     reports = client.get_recent_vulnerabilities()
 
     total_context: Dict[str, Any] = {}
@@ -185,7 +195,7 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
          report - the raw data from X-Force client (used for debugging).
      """
 
-    threshold = demisto.params().get('threshold', DEFAULT_THRESHOLD)
+    threshold = demisto.params().get('cve_threshold', DEFAULT_THRESHOLD)
     report = client.cve_report(args['cve_id'])
 
     return get_cve_results(args['cve_id'], report[0], threshold)
