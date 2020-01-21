@@ -255,8 +255,7 @@ def get_layout_data(path):
         data['typeID'] = typeID
     if typeName:
         data['typename'] = typeName
-    if name:
-        data['name'] = name
+    data['name'] = name
     if toversion:
         data['toversion'] = toversion
     if fromversion:
