@@ -39,7 +39,7 @@ tasks:
       version: -1
       name: Get Indicators
       description: Gets the feed indicators.
-      script: Bambenek Consulting Feed|||get-indicators
+      script: Bambenek Consulting Feed|||bc-get-indicators
       type: regular
       iscommand: true
       brand: Bambenek Consulting Feed
