@@ -56,7 +56,7 @@ def validate_certificates_format():
         return_error(
             "The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
     if not demisto.params()['cert_file'].startswith('-----BEGIN CERTIFICATE-----'):
-        return_error("The client certificates content seem to be "
+        return_error("pThe client certificates content seem to be "
                      "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
     if not demisto.params()['cert_file'].endswith('-----END CERTIFICATE-----'):
         return_error(
