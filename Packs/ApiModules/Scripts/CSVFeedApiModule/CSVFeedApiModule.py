@@ -172,9 +172,8 @@ def fetch_indicators_command(client: Client, itype: str, **kwargs):
                     value = next(iter(item.values()))
                 if value:
                     raw_json['value'] = value
-                    feed_config = client.feed_url_to_config.get(url, {})  # type: ignore[union-attr]
-                    if feed_config:
-                        indicator_type = feed_config.get('indicator_type')
+                    if client.feed_url_to_config:
+                        indicator_type = client.feed_url_to_config.get(url, {}).get('indicator_type')
                         raw_json['type'] = indicator_type
                     else:
                         raw_json['type'] = itype
