@@ -125,7 +125,7 @@ MOCK_CVE_RESP = [
         "consequences": "Denial of Service",
         "references": [
             {
-                "link_target": "https://h20564.www2.hp.com/portal/site/hpsc/public/kb/docDisplay?docId=emr_na-c04244787",
+                "link_target": "https://h20564.www2.hp.com",
                 "link_name": "HPSBHF03006",
                 "description": "HP Integrated Lights-Out 2 (iLO 2) Denial of Service"
             },
@@ -140,7 +140,7 @@ MOCK_CVE_RESP = [
                 "description": "HP Integrated Lights-Out 2 Denial of Service Vulnerability"
             },
             {
-                "link_target": "http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-2601",
+                "link_target": "http://cve.mitre.org",
                 "link_name": "CVE-2014-2601",
                 "description": "The server in HP Integrated Lights-Out 2"
             }
