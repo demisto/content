@@ -12,14 +12,14 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, url_to_fieldnames: Optional[Dict[str, list]] = None, fieldnames: str = '',
+    def __init__(self, url: str, feed_url_to_config: Optional[Dict[str, dict]] = None, fieldnames: str = '',
                  insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
                  delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
                  **kwargs):
         """
         :param url: URL of the feed.
-        :param url_to_fieldnames: for each URL, a list of field names in the file.
+        :param feed_url_to_config: for each URL, a list of field names in the file.
          If *null* the values in the first row of the file are used as names. Default: *null*
          Example:
          url_to_fieldnames = {
@@ -62,7 +62,7 @@ class Client(BaseClient):
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
-        self.url_to_fieldnames: Optional[Dict[str, list]] = url_to_fieldnames
+        self.feed_url_to_config: Optional[Dict[str, dict]] = feed_url_to_config
         self.fieldnames = argToList(fieldnames)
         self.dialect: Dict[str, Any] = {
             'delimiter': delimiter,
@@ -112,8 +112,8 @@ class Client(BaseClient):
                 raise
 
             response = r.content.decode(self.encoding).split('\n')
-            if self.url_to_fieldnames:
-                fieldnames = self.url_to_fieldnames.get(url, [])
+            if self.feed_url_to_config:
+                fieldnames = self.feed_url_to_config.get(url, {}).get('fieldnames', [])
             else:
                 fieldnames = self.fieldnames
             if self.ignore_regex is not None:
@@ -128,7 +128,7 @@ class Client(BaseClient):
                 **self.dialect
             )
 
-            results.append(csvreader)
+            results.append({url: csvreader})
 
         return results
 
@@ -138,23 +138,30 @@ def module_test_command(client: Client, args):
     return 'ok', {}, {}
 
 
-def fetch_indicators_command(client, itype, **kwargs):
+def fetch_indicators_command(client: Client, itype: str, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
-    for reader in iterator:
-        for item in reader:
-            raw_json = dict(item)
-            value = item.get('indicator')
-            if not value and len(item) == 1:
-                value = next(iter(item.values()))
-            if value:
-                raw_json['value'] = value
-                raw_json['type'] = itype
-                indicators.append({
-                    "value": value,
-                    "type": itype,
-                    "rawJSON": raw_json,
-                })
+
+    for url_to_reader in iterator:
+        for url, reader in url_to_reader.items():
+            for item in reader:
+                raw_json = dict(item)
+                value = item.get('indicator')
+                if not value and len(item) == 1:
+                    value = next(iter(item.values()))
+                if value:
+                    raw_json['value'] = value
+                    feed_config = client.feed_url_to_config.get(url, {})  # type: ignore[union-attr]
+                    if feed_config:
+                        indicator_type = feed_config.get('indicator_type')
+                        raw_json['type'] = indicator_type
+                    else:
+                        raw_json['type'] = itype
+                    indicators.append({
+                        "value": value,
+                        "type": itype,
+                        "rawJSON": raw_json,
+                    })
     return indicators
 
 
