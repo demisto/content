@@ -16,7 +16,7 @@ TYPE_REGEX = r'Type: (.+)'
 '''HELPER FUNCTIONS'''
 
 
-def strip(s: str, bad_chars=BAD_CHARS):
+def strip(s: str, bad_chars=None):
     """
 
     Args:
@@ -26,6 +26,8 @@ def strip(s: str, bad_chars=BAD_CHARS):
     Returns:
         The input s without the bac_chars
     """
+    if bad_chars is None:
+        bad_chars = BAD_CHARS
     temp = s
     for char in bad_chars:
         temp = temp.replace(char, '')
@@ -138,7 +140,7 @@ def add_to_data(d: dict, data: dict) -> None:
     """
 
     Args:
-        d: a Dictionary of ID: data to which we want to update the data accordint to ID
+        d: a Dictionary of ID: data to which we want to update the data according to ID
         data: the data to update. data must have an "ID" field.
 
     Returns:
@@ -171,21 +173,21 @@ def main():
     # file_path = "/Users/olichter/Downloads/iseries.cap"
 
     # PC Script
-    # file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
-    # entry_id = ''
-    #
-    # decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-    # conversation_number_to_display = 15
-    # is_flows = True
-    # is_dns = True
-    # is_http = True
-    # is_reg_extract = True
-    # is_llmnr = False
-    # is_syslog = False
-    # pcap_filter = 'dns'
-    # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
-    # homemade_regex = ''  # 'Layer (.+):'
-    # pcap_filter_new_file_path = ''
+#    file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
+#     entry_id = ''
+#
+#     decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
+#     conversation_number_to_display = 15
+#     is_flows = True
+#     is_dns = True
+#     is_http = True
+#     is_reg_extract = True
+#     is_llmnr = False
+#     is_syslog = False
+#     pcap_filter = 'dns'
+#     pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
+#     homemade_regex = ''  # 'Layer (.+):'
+#     pcap_filter_new_file_path = ''
 
     # Demisto Script
     entry_id = demisto.args().get('entry_id', '')
@@ -195,8 +197,16 @@ def main():
 
     file_path = file_path[0]["Contents"]["path"]
 
-    decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-    conversation_number_to_display = 15
+    decrypt_key = ""
+
+    decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
+    if decrypt_key_entry_id:
+        decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
+        if is_error(decrypt_key_file_path):
+            return_error(get_error(decrypt_key_file_path))
+        decrypt_key = file_path = decrypt_key_file_path[0]["Contents"]["path"]
+
+    conversation_number_to_display = int(demisto.args().get('convs_to_display', '15'))
     context_outputs = argToList(demisto.args().get('context_output', ''))
     is_flows = True
     is_dns = 'DNS' in context_outputs
