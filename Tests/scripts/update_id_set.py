@@ -559,6 +559,7 @@ def process_widgets(file_path):
         res.append(get_general_data(file_path))
     return res
 
+
 def process_test_playbook_path(file_path):
     """
     Process a yml file in the testplyabook dir. Maybe either a script or playbook
