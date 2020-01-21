@@ -165,7 +165,7 @@ def get_indicators_command(client, args):
     return hr, {f'{feed_name_context}.Indicator': entry_result}, indicators_list
 
 
-def feed_main(feed_name, params=None):
+def feed_main(feed_name, params=None, prefix=''):
     if not params:
         params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
@@ -173,10 +173,12 @@ def feed_main(feed_name, params=None):
     command = demisto.command()
     if command != 'fetch-indicators':
         demisto.info('Command being called is {}'.format(command))
+    if prefix and not prefix.endswith('-'):
+        prefix += '-'
     # Switch case
     commands = {
         'test-module': module_test_command,
-        'get-indicators': get_indicators_command
+        f'{prefix}get-indicators': get_indicators_command
     }
     try:
         if command == 'fetch-indicators':
