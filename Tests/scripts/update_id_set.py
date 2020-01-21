@@ -216,6 +216,7 @@ def get_script_data(file_path, script_code=None):
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
     script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
+    pack = get_pack_name(file_path)
 
     script_data['name'] = name
     script_data['file_path'] = file_path
@@ -233,6 +234,8 @@ def get_script_data(file_path, script_code=None):
         script_data['command_to_integration'] = command_to_integration
     if tests:
         script_data['tests'] = tests
+    if pack:
+        script_data['pack'] = pack
 
     return {id: script_data}
 
