@@ -1,5 +1,5 @@
 ## [Unreleased]
-Replace searchIncidents with SearchIncidents_v2
+Replace searchIncidents with SearchIncidentsv2
 
 ## [19.11.0] - 2019-11-12
 #### New Playbook
