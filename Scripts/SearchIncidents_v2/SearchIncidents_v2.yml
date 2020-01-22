@@ -1,4 +1,5 @@
 commonfields:
+  id: SearchIncidents v2
   version: -1
 name: SearchIncidents v2
 script: '-'
