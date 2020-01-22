@@ -1,3 +1,4 @@
+# coding=utf-8
 from SetIfEmpty import get_value_to_set
 
 
@@ -87,3 +88,26 @@ def test_when_value_is_dict():
     result = get_value_to_set({'value': value, 'defaultValue': "defaultValue", 'applyIfEmpty': 'true'})
 
     assert result == value
+
+
+def test_when_value_is_empty_and_default_value_is_unicode():
+    s = u"בדיקה"
+    expectedOutput = s.encode('utf8')
+    result = get_value_to_set({'value': [""], 'defaultValue': s, 'applyIfEmpty': 'true'})
+
+    assert expectedOutput == result
+
+
+def test_when_value_is_null_or_none_string_and_default_value():
+    s = u"test"
+    result = get_value_to_set({'value': ["None"], 'defaultValue': s, 'applyIfEmpty': 'true'})
+    assert s == result
+
+    result = get_value_to_set({'value': ["none"], 'defaultValue': s, 'applyIfEmpty': 'true'})
+    assert s == result
+
+    result = get_value_to_set({'value': ["NULL"], 'defaultValue': s, 'applyIfEmpty': 'true'})
+    assert s == result
+
+    result = get_value_to_set({'value': ["Null"], 'defaultValue': s, 'applyIfEmpty': 'true'})
+    assert s == result
