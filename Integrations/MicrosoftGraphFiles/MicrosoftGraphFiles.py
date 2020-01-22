@@ -187,7 +187,6 @@ class Client(BaseClient):
         self.access_token = self.get_access_token()
         self.headers = {"Authorization": f"Bearer {self.access_token}"}
 
-
     def http_call(self, *args, **kwargs):
         """
         this function performs http requests
@@ -757,9 +756,6 @@ def main():
 """ COMMANDS + REQUESTS FUNCTIONS """
 
 
-
-
-
 def module_test(client, args=None):
     """
     Performs basic get request to get item samples
@@ -767,11 +763,19 @@ def module_test(client, args=None):
     result = client.get_access_token()
     if result:
         try:
-            client.http_call(full_url=client.base_url + "/sites/root", headers=client.headers,
-                             params={"top": "1"}, timeout=7, url_suffix="", method="GET")
+            client.http_call(
+                full_url=client.base_url + "/sites/root",
+                headers=client.headers,
+                params={"top": "1"},
+                timeout=7,
+                url_suffix="",
+                method="GET",
+            )
 
         except Exception as e:
-            raise DemistoException(f"Test failed. please check if Server Url is correct. \n {e}")
+            raise DemistoException(
+                f"Test failed. please check if Server Url is correct. \n {e}"
+            )
         else:
             return "ok"
     else:
