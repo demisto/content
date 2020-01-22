@@ -977,11 +977,16 @@ def delete_reference_set_command():
 
 def update_reference_set_value_command():
     args = demisto.args()
+    values = argToList(args.get('value'))
     if args.get('date_value') == 'True':
-        value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        values = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for value in values]
+    if len(values) > 1:
+        raw_ref = upload_indicators_list_request(args.get('ref_name'), values)
+        demisto.results(raw_ref)
+    elif len(values) == 1:
+        raw_ref = update_reference_set_value(args.get('ref_name'), values[0], args.get('source'))
     else:
-        value = args.get('value')
-    raw_ref = update_reference_set_value(args.get('ref_name'), value, args.get('source'))
+        raise DemistoException('Expected at least a single value, cant create or update an empty value')
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     enrich_reference_set_result(ref)
     return get_entry_for_reference_set(ref, title='Element value was updated successfully in reference set:')
