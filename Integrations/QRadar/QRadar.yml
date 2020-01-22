@@ -1561,3 +1561,4 @@ script:
   type: python
 tests:
 - test_Qradar
+fromversion: 5.5.0
