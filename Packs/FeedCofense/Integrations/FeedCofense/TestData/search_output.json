@@ -1292,7 +1292,7 @@
         "hasReport": true,
         "reportURL": "https://www.threathq.com/api/l/activethreatreport/reportid/html",
         "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/reportid/html",
-        "threatDetailURL": "https://www.threathq.com/p42/search/default?m=reportid",
+        "threatDetailURL": "https://www.threathq.comno-secret",
         "threatType": "MALWARE",
         "naicsCodes": []
       },
@@ -1677,7 +1677,7 @@
         "hasReport": true,
         "reportURL": "https://www.threathq.com/api/l/activethreatreport/reportid/html",
         "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/reportid/html",
-        "threatDetailURL": "https://www.threathq.com/p42/search/default?m=reportid",
+        "threatDetailURL": "https://www.threathq.comno-secret",
         "threatType": "MALWARE",
         "naicsCodes": []
       }
