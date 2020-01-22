@@ -134,7 +134,8 @@ def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
         'ok' if test passed, anything else will fail the test.
     """
 
-    client.build_iterator('connectApi', 'ip')
+    for feed in client.sub_feed:
+        client.build_iterator(feed, client.indicator_type)
     return 'ok', {}, {}
 
 
