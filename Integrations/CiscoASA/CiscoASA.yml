@@ -234,23 +234,6 @@ script:
     name: cisco-asa-create-rule
   - arguments:
     - default: false
-      description: The name of the backup file. (i.e "backup.cfg")
-      isArray: false
-      name: backup_name
-      required: false
-      secret: false
-    - default: false
-      description: The passphrase for the backup.
-      isArray: false
-      name: passphrase
-      required: false
-      secret: false
-    deprecated: false
-    description: Restore an existing backup.
-    execution: false
-    name: cisco-asa-restore
-  - arguments:
-    - default: false
       description: The rule's ID.
       isArray: false
       name: rule_id
@@ -293,7 +276,7 @@ script:
       description: The interface's name.
       isArray: false
       name: interface_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: The rule ID

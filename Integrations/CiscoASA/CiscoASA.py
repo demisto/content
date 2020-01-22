@@ -167,6 +167,11 @@ def raw_to_rules(raw_rules):
                       "ID": rule.get('objectId'),
                       'Permit': rule.get('permit')
                       })
+        if not rules[-1].get('SourceIP'):
+            rules[-1]['SourceIP'] = rule.get('sourceAddress', {}).get('objectId')
+        if not rules[-1].get('DestIP'):
+            rules[-1]['DestIP'] = rule.get('destinationAddress', {}).get('objectId')
+
     return rules
 
 
@@ -451,7 +456,7 @@ def test_command(client: Client):
 
 
 '''MAIN'''
-
+headers_for_ASAv = {'X-Auth-Token': '661A9A@4096@A1EC@504D0ECDFD77D759AE5694FA138476FF75B21D47'}
 
 def main():
     username = demisto.params().get('credentials').get('identifier')
@@ -468,14 +473,14 @@ def main():
         f'{INTEGRATION_COMMAND}-backup': backup_command,
         f'{INTEGRATION_COMMAND}-get-rule-by-id': rule_by_id_command,
         f'{INTEGRATION_COMMAND}-create-rule': create_rule_command,
-        f'{INTEGRATION_COMMAND}-restore': restore_command,
         f'{INTEGRATION_COMMAND}-delete-rule': delete_rule_command,
         f'{INTEGRATION_COMMAND}-edit-rule': edit_rule_command
     }
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-        client = Client(server_url, auth=(username, password), verify=verify_certificate, proxy=proxy)
+        client = Client(server_url, auth=(username, password), verify=verify_certificate, proxy=proxy,
+                        headers=headers_for_ASAv)
 
         if demisto.command() == 'test-module':
             test_command(client)
