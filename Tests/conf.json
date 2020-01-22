@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+         {
+            "integrations": "SpamhausFeed",
+            "playbookID": "Spamhaus_Feed_Test",
+            "fromversion": "5.5.0"
+        },
         {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
@@ -1667,7 +1672,8 @@
         },
         {
             "integrations": "TAXIIFeed",
-            "playbookID": "TAXII_Feed_Test"
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Traps",
@@ -2091,7 +2097,7 @@
           "integrations": "QRadar",
           "playbookID": "QRadar Indicator Hunting Test",
           "timeout": 1200,
-          "fromversion": "4.5.0"
+          "fromversion": "5.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",
@@ -2161,6 +2167,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
@@ -2218,7 +2225,6 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
-        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2233,6 +2239,7 @@
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
+        "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
