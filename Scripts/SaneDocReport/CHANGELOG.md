@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Fixed an issue where investigation reports crashed by a JSON edge case.
+Fixed an issue where in rare cases the investigation reports crashed.
 
 ## [19.12.1] - 2019-12-25
   - Fixed an issue where the line chart x-axis was not readable.
