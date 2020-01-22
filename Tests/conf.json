@@ -13,7 +13,7 @@
         {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test",
-            "fromversion": "4.5.0"
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Digital Shadows",
