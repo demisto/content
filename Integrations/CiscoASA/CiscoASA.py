@@ -261,6 +261,9 @@ def rule_by_id_command(client: Client, args):
     rule_id = args.get('rule_id')
     interface_type = args.get('interface_type')
     interface = args.get('interface_name')
+
+    if interface_type != "Global" and not interface:
+        raise ValueError("Please state the name of the interface when it's not a global interface.")
     interface = "" if interface_type == "Global" else interface
 
     raw_rules = client.rule_action(rule_id, interface, interface_type, 'GET')
@@ -355,6 +358,9 @@ def delete_rule_command(client: Client, args):
     rule_id = args.get('rule_id')
     interface = args.get('interface_name')
     interface_type = args.get('interface_type')
+    if interface_type != "Global" and not interface:
+        raise ValueError("Please state the name of the interface when it's not a global interface.")
+
     try:
         client.rule_action(rule_id, interface, interface_type, 'DELETE')
     except Exception as e:
@@ -369,6 +375,9 @@ def edit_rule_command(client: Client, args):
     interface = args.get('interface_name')
     interface_type = args.get('interface_type')
     rule_id = args.get('rule_id')
+
+    if interface_type != "Global" and not interface:
+        raise ValueError("Please state the name of the interface when it's not a global interface.")
 
     interface = "" if interface_type == "Global" else interface
 
@@ -424,8 +433,14 @@ def edit_rule_command(client: Client, args):
         rule_body['ruleLogging'] = {'logStatus': log_level}
 
     try:
-        client.rule_action(rule_id, interface, interface_type, "PATCH", rule_body)
-        raw_rule = client.rule_action(rule_id, interface, interface_type, 'GET')
+        rule = client.rule_action(rule_id, interface, interface_type, "PATCH", rule_body)
+        try:
+            raw_rule = client.rule_action(rule_id, interface, interface_type, 'GET')
+        except Exception:
+            location = rule.headers._store.get('location')[1]
+            rule_id = location[location.rfind('/')+1:]
+            raw_rule = client.rule_action(rule_id, interface, interface_type, 'GET')
+
         rules = raw_to_rules([raw_rule])
 
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
@@ -456,7 +471,7 @@ def test_command(client: Client):
 
 
 '''MAIN'''
-headers_for_ASAv = {'X-Auth-Token': '661A9A@4096@A1EC@504D0ECDFD77D759AE5694FA138476FF75B21D47'}
+headers_for_ASAv = {'X-Auth-Token': '7CCB8E@4096@EEBE@15D54E66F2AE8544F14F82C74F7C836102599258'}
 
 def main():
     username = demisto.params().get('credentials').get('identifier')
