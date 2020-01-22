@@ -88,7 +88,29 @@ class Client:
         return results
 
 
-def test_module(client) -> str:
+def test_module(client, params) -> str:
+    indicator_type = params.get('indicator_type')
+    if 'feed_name_to_config' not in params and not FeedIndicatorType.is_valid_type(indicator_type):
+        supported_values = ', '.join((
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
+        ))
+        raise ValueError(f'Indicator type of {indicator_type} is not supported. Supported values are:'
+                         f' {supported_values}')
     client.build_iterator()
     return 'ok'
 
@@ -134,7 +156,7 @@ def feed_main(params, feed_name, prefix):
         demisto.info(f'Command being called is {demisto.command()}')
     try:
         if command == 'test-module':
-            return_outputs(test_module(client))
+            return_outputs(test_module(client, params))
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, indicator_type, feed_name=feed_name)

@@ -12,12 +12,12 @@ Use the AWS feed integration to fetch indicators from the feed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Sub-Feeds__: Sub-Feeds of AWS to fetch indicators from: 
-        * Amazon
-        * EC2
-        * ROUTE53
-        * ROUTE53_HEALTHCHECKS
-        * CLOUDFRONT
-        * S3
+        * AMAZON - All AMAZON ranges.
+        * EC2 - EC2 ranges.
+        * ROUTE53 - ROUTE53 ranges. 
+        * ROUTE53_HEALTHCHECKS - ROUTE53_HEALTHCHECKS ranges.
+        * CLOUDFRONT - CLOUDFRONT ranges.
+        * S3 - S3 ranges.
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Reliability__: Reliability of the feed.  
