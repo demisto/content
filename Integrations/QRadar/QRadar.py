@@ -7,7 +7,6 @@ import requests
 import traceback
 import urllib
 import re
-import ast
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
@@ -15,7 +14,8 @@ from copy import deepcopy
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params().get('server')[:-1] if str(demisto.params().get('server')).endswith('/') else demisto.params().get('server')
+SERVER = demisto.params().get('server')[:-1] if str(demisto.params().get('server')).endswith('/') \
+    else demisto.params().get('server')
 CREDENTIALS = demisto.params().get('credentials')
 USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
 PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
@@ -1047,7 +1047,13 @@ def get_domains_by_id_command():
 
 def upload_indicators_list_request(reference_name, indicators_list):
     """
-          Upload indicators list to the reference set
+        Upload indicators list to the reference set
+
+        Args:
+              reference_name (str): Reference set name
+              indicators_list (List): Indicators values list
+        Returns:
+            Dict. Reference set object
     """
     url = '{0}/api/reference_data/sets/bulk_load/{1}'.format(SERVER, urllib.quote(reference_name, safe=''))
     params = {'name': reference_name}
@@ -1056,46 +1062,52 @@ def upload_indicators_list_request(reference_name, indicators_list):
 
 def upload_indicators_command():
     """
-    The function finds indicators according to user query and updates QRadar reference set
+        The function finds indicators according to user query and updates QRadar reference set
     """
-    args = demisto.args()
-    reference_name = args.get('ref_name')
-    element_type = args.get('element_type')
-    if not check_ref_set_exist(reference_name):
-        if element_type:
-            create_reference_set(reference_name, args.get('element_type'), args.get('timeout_type'),
-                                 args.get('time_to_live'))
+    try:
+        args = demisto.args()
+        reference_name = args.get('ref_name')
+        element_type = args.get('element_type')
+        if not check_ref_set_exist(reference_name):
+            if element_type:
+                create_reference_set(reference_name, args.get('element_type'), args.get('timeout_type'),
+                                     args.get('time_to_live'))
+            else:
+                return_error("There isn't a reference set with the name {0}. To create a reference set,"
+                             " you have to enter an element type".format(reference_name))
         else:
-            return_error("There isn't a reference set with the name {0}. To create a reference set,"
-                         " you have to enter element type".format(reference_name))
-    else:
-        if element_type:
-            return_error("The reference set {0} is already exist. You are not supposed to enter element type,"
-                         " Try again".format(reference_name))
-    query = args.get('query')
-    value_indicators_list, indicators_data_list = get_indicators_list(query)
-    if len(value_indicators_list) == 0:
-        return {
-            'Type': entryTypes['note'],
-            'Contents': {},
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': "No indicators found in reference set {0} didn't change".format(reference_name)
-        }
-    else:
-        raw_response = upload_indicators_list_request(reference_name, value_indicators_list)
-        ref_set_data = unicode_to_str_recur(get_reference_by_name(reference_name))
-        indicator_headers = ['value', 'indicator_type']
-        ref_set_headers = ['name', 'element_type', 'timeout_type', 'creation_time', 'number_of_elements']
-        return {
-            'Type': entryTypes['note'],
-            'Contents': raw_response,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown("reference set {0} was updated", ref_set_data,
-                                             headers=ref_set_headers).format(reference_name) +
-                             tableToMarkdown("Indicators list", indicators_data_list, headers=indicator_headers)
-        }
+            if element_type:
+                return_error("The reference set {0} is already exist. You are not supposed to enter element type,"
+                             " Try again".format(reference_name))
+        query = args.get('query')
+        value_indicators_list, indicators_data_list = get_indicators_list(query)
+        if len(value_indicators_list) == 0:
+            return {
+                'Type': entryTypes['note'],
+                'Contents': {},
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': "No indicators found, Reference set {0} didn't change".format(reference_name)
+            }
+        else:
+            raw_response = upload_indicators_list_request(reference_name, value_indicators_list)
+            ref_set_data = unicode_to_str_recur(get_reference_by_name(reference_name))
+            indicator_headers = ['value', 'indicator_type']
+            ref_set_headers = ['name', 'element_type', 'timeout_type', 'creation_time', 'number_of_elements']
+            return {
+                'Type': entryTypes['note'],
+                'Contents': raw_response,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable':
+                    tableToMarkdown("reference set {0} was updated".format(reference_name), ref_set_data,
+                                    headers=ref_set_headers) + tableToMarkdown("Indicators list",
+                                                                               indicators_data_list,
+                                                                               headers=indicator_headers)}
+    except Exception as e:
+        if '1005' in str(e):
+            return "You tried to add indicators that dont match to reference set type"
+        raise e
 
 
 def check_ref_set_exist(ref_set_name):
@@ -1103,12 +1115,10 @@ def check_ref_set_exist(ref_set_name):
         The function checks if reference set is exist
 
     Args:
-        ref_set_name (str): reference set name
+        ref_set_name (str): Reference set name
 
     Returns:
         Dict. If found - Reference set object, else - Error
-
-
     """
 
     try:
@@ -1121,15 +1131,19 @@ def check_ref_set_exist(ref_set_name):
 
 def get_indicators_list(indicator_query):
     """
-        Get Demisto indicators list using demisto.findIndicators
-        Returns: list of indicators value and a list with all indicators data
+        Get Demisto indicators list using demisto.searchIndicators
+
+        Args:
+              indicator_query (str): The query demisto.searchIndicators use to find indicators
+        Returns:
+             list of indicators value and a list with all indicators data
     """
     last_found_len = PAGE_SIZE
     value_indicators_list = []
     indicators_data_list = []
     page = 0
     while last_found_len == PAGE_SIZE:
-        fetched_iocs = demisto.findIndicators(query=indicator_query, page=page, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=page, size=PAGE_SIZE).get('iocs')
         for indicator in fetched_iocs:
             value_indicators_list.append(indicator['value'])
             indicators_data_list.append({
@@ -1196,4 +1210,3 @@ except Exception as e:
         raise Exception(error)
     else:
         return_error(error)
-

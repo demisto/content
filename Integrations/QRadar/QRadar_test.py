@@ -515,7 +515,7 @@ REF_SET_DATA = {
 INDICATORS_LIST = [{'indicator_type': 'File', 'value': 'file_test'},
                    {'indicator_type': 'Domain', 'value': 'domain.com'}]
 
-RAW_RESPONSE={
+RAW_RESPONSE = {
     'timeout_type': 'UNKNOWN',
     'element_type': 'ALN',
     'creation_time': '00000',
