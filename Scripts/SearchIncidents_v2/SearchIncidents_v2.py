@@ -1,10 +1,10 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def outputs_handel(res):
+def outputs_handel(res) -> Tuple[str, Dict, List]:
     if isinstance(res, list) and res:
         if 'data' in res[0].get('Contents', {}):
             data = res[0]['Contents']['data']
@@ -22,15 +22,16 @@ def outputs_handel(res):
         return_error('', DemistoException(f'failed to get incidents from demisto got {str(res)}'))
 
 
-def crate_search(args: Dict = {}) -> Dict:
-
-
-def main():
+def crate_search(args: Dict) -> Dict:
     array_fields: List = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'owner', 'type', 'query']
-    args: Dict = demisto.args()
     for _key in array_fields:
         if _key in args:
             args[_key] = argToList(args[_key])
+    return args
+
+
+def main():
+    args: Dict = crate_search(demisto.args())
     res = demisto.executeCommand('getIncidents', args)
     human_readable, context_entry, raw = outputs_handel(res)
     return_outputs(human_readable, context_entry, raw)
