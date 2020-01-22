@@ -9,7 +9,8 @@
         },
         {
             "integrations": "AWS Feed",
-            "playbookID": "AWS Feed Test"
+            "playbookID": "AWS Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Digital Defense FrontlineVM",

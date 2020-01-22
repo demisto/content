@@ -11,8 +11,14 @@ Use the AWS feed integration to fetch indicators from the feed.
 2. Search for SpamhausFeed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Sub-Feeds__: Sub-Feeds of AWS to fetch indicators from.
-     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
+    * __Sub-Feeds__: Sub-Feeds of AWS to fetch indicators from: 
+        * Amazon
+        * EC2
+        * ROUTE53
+        * ROUTE53_HEALTHCHECKS
+        * CLOUDFRONT
+        * S3
+    * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Reliability__: Reliability of the feed.  
     * __Skip Exclusion List__: When selected, the exclusion list is ignored for indicators from

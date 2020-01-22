@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import *
 
 
 def get_feed_config(sub_feeds):
@@ -47,17 +48,16 @@ def get_feed_config(sub_feeds):
         }
     }
 
-    return [feed for feed in feed_name_to_config if feed in sub_feeds]
-
+    return {feed_name: feed_name_to_config[feed_name] for feed_name in sub_feeds}
 
 
 from JSONFeedApiModule import *  # noqa: E402
 
 
 def main():
-    params = demisto.params()
+    params = {k: v for k, v in demisto.params().items() if v is not None}
     params['feed_name_to_config'] = get_feed_config(params.get('sub_feeds', ['AMAZON']))
-    feed_main(params, 'AWS Feed')
+    feed_main(params, 'AWS Feed', 'aws')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
