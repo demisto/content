@@ -24,7 +24,7 @@ class LOG_COLORS:
 
 # print srt in the given color
 def print_color(obj, color):
-    print('{}{}{}'.format(color, obj, LOG_COLORS.NATIVE))
+    print(u'{}{}{}'.format(color, obj, LOG_COLORS.NATIVE))
 
 
 def print_error(error_str):

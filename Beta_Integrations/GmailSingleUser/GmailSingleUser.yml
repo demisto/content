@@ -207,5 +207,5 @@ script:
   script: '-'
   type: python
   subtype: python3
-  tests:
+tests:
   - Gmail Single User - Test
