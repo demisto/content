@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 import uuid
 import json
 import requests
@@ -102,7 +102,11 @@ PAN_OS_ERROR_DICT = {
     '22': 'Session timed out - The session for this query timed out.'
 }
 
-''' HELPERS '''
+
+class PAN_OS_Not_Found(Exception):
+    """ PAN-OS Error. """
+    def __init__(self, *args, **kwargs):  # real signature unknown
+        pass
 
 
 def http_request(uri: str, method: str, headers: Dict = {},
@@ -121,7 +125,7 @@ def http_request(uri: str, method: str, headers: Dict = {},
     )
 
     if result.status_code < 200 or result.status_code >= 300:
-        return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
+        raise Exception('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
     if params.get('type') == 'export':
@@ -134,20 +138,20 @@ def http_request(uri: str, method: str, headers: Dict = {},
         if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
             # catch non existing object error and display a meaningful message
             if json_result['response']['msg']['line'] == 'No such node':
-                return_error(
+                raise Exception(
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
             #  catch urlfiltering error and display a meaningful message
             elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
-                return_error('The URL filtering license is either expired or not active.'
-                             ' Please contact your PAN-OS representative.')
+                raise Exception('The URL filtering license is either expired or not active.'
+                                ' Please contact your PAN-OS representative.')
 
             # catch non valid jobID errors and display a meaningful message
             elif isinstance(json_result['response']['msg']['line'], str) and \
                     json_result['response']['msg']['line'].find('job') != -1 and \
                     (json_result['response']['msg']['line'].find('not found') != -1
                      or json_result['response']['msg']['line'].find('No such query job')) != -1:
-                return_error('Invalid Job ID error: ' + json_result['response']['msg']['line'])
+                raise Exception('Invalid Job ID error: ' + json_result['response']['msg']['line'])
 
             # catch already at the top/bottom error for rules and return this as an entry.note
             elif str(json_result['response']['msg']['line']).find('already at the') != -1:
@@ -172,11 +176,11 @@ def http_request(uri: str, method: str, headers: Dict = {},
                 sys.exit(0)
 
         if '@code' in json_result['response']:
-            return_error(
+            raise Exception(
                 'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
                     json_result['response']['msg']['line']))
         else:
-            return_error('Request Failed.\n' + str(json_result['response']))
+            raise Exception('Request Failed.\n' + str(json_result['response']))
 
     # handle @code
     if 'response' in json_result and '@code' in json_result['response']:
@@ -188,20 +192,20 @@ def http_request(uri: str, method: str, headers: Dict = {},
                     error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
                                       f' The available Device Groups for this instance:'
                                       f' {", ".join(device_group_names)}.')
-            return_error(error_message)
+            raise PAN_OS_Not_Found(error_message)
         if json_result['response']['@code'] not in ['19', '20']:
             # error code non exist in dict and not of success
             if 'msg' in json_result['response']:
-                return_error(
+                raise Exception(
                     'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
                         json_result['response']['msg']))
             else:
-                return_error('Request Failed.\n' + str(json_result['response']))
+                raise Exception('Request Failed.\n' + str(json_result['response']))
 
     return json_result
 
 
-def add_argument_list(arg: Any, field_name: str, member: Optional[bool]) -> str:
+def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
         for item in arg:
@@ -212,6 +216,11 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool]) -> str:
             return '<' + field_name + '>' + member_stringify_list + '</' + field_name + '>'
         else:
             return '<' + field_name + '>' + arg + '</' + field_name + '>'
+    if any_:
+        if member:
+            return '<' + field_name + '><member>any</member></' + field_name + '>'
+        else:
+            return '<' + field_name + '>any</' + field_name + '>'
     else:
         return ''
 
@@ -258,11 +267,30 @@ def add_argument_target(arg: Optional[str], field_name: str) -> str:
         return ''
 
 
-def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: str = None,
-                                 destination: str = None, negate_source: str = None, negate_destination: str = None,
-                                 action: str = None, service: str = None, disable: str = None, application: str = None,
-                                 source_user: str = None, category: str = None, from_: str = None, to: str = None,
-                                 description: str = None, target: str = None, log_forwarding: str = None,
+def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
+    """
+    Setting template xpath relevant to panorama instances.
+    """
+    if template:
+        if not DEVICE_GROUP or VSYS:
+            raise Exception('Template is only relevant for Panorama instances.')
+    if not template:
+        template = demisto.params().get('template', None)
+    # setting network xpath relevant to FW or panorama management
+    if DEVICE_GROUP:
+        xpath_network = f'/config/devices/entry[@name=\'localhost.localdomain\']/template/entry[@name=\'{template}\']' \
+                        f'/config/devices/entry[@name=\'localhost.localdomain\']/network'
+    else:
+        xpath_network = "/config/devices/entry[@name='localhost.localdomain']/network"
+    return xpath_network, template
+
+
+def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: Any = None,
+                                 destination: Any = None, negate_source: str = None,
+                                 negate_destination: str = None, action: str = None, service: List[str] = None,
+                                 disable: str = None, application: str = None, source_user: str = None,
+                                 category: List[str] = None, from_: str = None, to: str = None, description: str = None,
+                                 target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None) -> Dict:
     rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
     params = {
@@ -272,14 +300,14 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'element': add_argument_open(action, 'action', False)
                 + add_argument_target(target, 'target')
                 + add_argument_open(description, 'description', False)
-                + add_argument_open(source, 'source', True)
-                + add_argument_open(destination, 'destination', True)
-                + add_argument_open(application, 'application', True)
-                + add_argument_open(category, 'category', True)
+                + add_argument_list(source, 'source', True, True)
+                + add_argument_list(destination, 'destination', True, True)
+                + add_argument_list(application, 'application', True)
+                + add_argument_list(category, 'category', True)
                 + add_argument_open(source_user, 'source-user', True)
                 + add_argument_open(from_, 'from', True)  # default from will always be any
                 + add_argument_open(to, 'to', True)  # default to will always be any
-                + add_argument_open(service, 'service', True)
+                + add_argument_list(service, 'service', True, True)
                 + add_argument_yes_no(negate_source, 'negate-source')
                 + add_argument_yes_no(negate_destination, 'negate-destination')
                 + add_argument_yes_no(disable, 'disabled')
@@ -289,13 +317,13 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
     }
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
-            return_error('Please provide the pre_post argument when configuring a security rule in Panorama instance.')
+            raise Exception('Please provide the pre_post argument when configuring'
+                            ' a security rule in Panorama instance.')
         else:
             params['xpath'] = XPATH_SECURITY_RULES + demisto.args()[
                 'pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-
     return params
 
 
@@ -346,6 +374,10 @@ def panorama_test():
     if DEVICE_GROUP and DEVICE_GROUP != 'shared':
         device_group_test()
 
+    _, template = set_xpath_network()
+    if template:
+        template_test(template)
+
     demisto.results('ok')
 
 
@@ -384,8 +416,47 @@ def device_group_test():
     """
     device_group_names = get_device_groups_names()
     if DEVICE_GROUP not in device_group_names:
-        return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
-                     f' The available Device Groups for this instance: {", ".join(device_group_names)}.')
+        raise Exception(f'Device Group: {DEVICE_GROUP} does not exist.'
+                        f' The available Device Groups for this instance: {", ".join(device_group_names)}.')
+
+
+def get_templates_names():
+    """
+    Get templates names in the Panorama
+    """
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': "/config/devices/entry[@name=\'localhost.localdomain\']/template/entry",
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    templates = result['response']['result']['entry']
+    template_names = []
+    if isinstance(templates, dict):
+        # only one device group in the panorama
+        template_names.append(templates.get('@name'))
+    else:
+        for template in templates:
+            template_names.append(template.get('@name'))
+
+    return template_names
+
+
+def template_test(template):
+    """
+    Test module for the Template specified
+    """
+    template_names = get_templates_names()
+    if template not in template_names:
+        raise Exception(f'Template: {template} does not exist.'
+                        f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
 @logger
@@ -479,7 +550,7 @@ def panorama_commit_status_command():
     result = panorama_commit_status()
 
     if result['response']['result']['job']['type'] != 'Commit':
-        return_error('JobID given is not of a commit')
+        raise Exception('JobID given is not of a commit.')
 
     commit_status_output = {'JobID': result['response']['result']['job']['id']}
     if result['response']['result']['job']['status'] == 'FIN':
@@ -528,7 +599,7 @@ def panorama_push_to_device_group_command():
     Push Panorama configuration and show message in warroom
     """
     if not DEVICE_GROUP:
-        return_error("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
+        raise Exception("The 'panorama-push-to-device-group' command is relevant for a Palo Alto Panorama instance.")
 
     result = panorama_push_to_device_group()
     if 'result' in result['response']:
@@ -576,7 +647,7 @@ def panorama_push_status_command():
     """
     result = panorama_push_status()
     if result['response']['result']['job']['type'] != 'CommitAll':
-        return_error('JobID given is not of a Push.')
+        raise Exception('JobID given is not of a Push.')
 
     push_status_output = {'JobID': result['response']['result']['job']['id']}
     if result['response']['result']['job']['status'] == 'FIN':
@@ -585,7 +656,13 @@ def panorama_push_status_command():
         else:
             # result['response']['job']['result'] == 'FAIL'
             push_status_output['Status'] = 'Failed'
-        push_status_output['Details'] = result['response']['result']['job']['devices']['entry']['status']
+
+        devices = result['response']['result']['job']['devices']['entry']
+        if isinstance(devices, list):
+            devices_details = [device.get('status') for device in devices]
+            push_status_output['Details'] = devices_details
+        elif isinstance(devices, dict):
+            push_status_output['Details'] = devices.get('status')
 
     if result['response']['result']['job']['status'] == 'PEND':
         push_status_output['Status'] = 'Pending'
@@ -770,10 +847,10 @@ def panorama_create_address_command():
     ip_range = demisto.args().get('ip_range')
 
     if not fqdn and not ip_netmask and not ip_range:
-        return_error('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
+        raise Exception('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
 
     if (fqdn and ip_netmask) or (fqdn and ip_range) or (ip_netmask and ip_range):
-        return_error('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
+        raise Exception('Please specify exactly one of the following: fqdn, ip_netmask, ip_range.')
 
     address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description, tags)
 
@@ -1032,13 +1109,13 @@ def panorama_create_address_group_command():
     match = demisto.args().get('match')
     addresses = argToList(demisto.args()['addresses']) if 'addresses' in demisto.args() else None
     if match and addresses:
-        return_error('Please specify only one of the following: addresses, match.')
+        raise Exception('Please specify only one of the following: addresses, match.')
     if type_ == 'static':
         if not addresses:
-            return_error('Please specify addresses in order to create a static address group.')
+            raise Exception('Please specify addresses in order to create a static address group.')
     if type_ == 'dynamic':
         if not match:
-            return_error('Please specify a match in order to create a dynamic address group.')
+            raise Exception('Please specify a match in order to create a dynamic address group.')
 
     if type_ == 'static':
         result = panorama_create_static_address_group(address_group_name, addresses, description, tags)
@@ -1127,14 +1204,14 @@ def panorama_edit_address_group_command():
 
     if type_ == 'dynamic':
         if not match:
-            return_error('To edit a Dynamic Address group, Please provide a match.')
+            raise Exception('To edit a Dynamic Address group, Please provide a match.')
         match_param = add_argument_open(match, 'filter', False)
         match_path = XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']/dynamic/filter"
 
     if type_ == 'static':
         if (element_to_add and element_to_remove) or (not element_to_add and not element_to_remove):
-            return_error('To edit a Static Address group,'
-                         'Please specify exactly one of the following: element_to_add, element_to_remove.')
+            raise Exception('To edit a Static Address group,'
+                            'Please specify exactly one of the following: element_to_add, element_to_remove.')
         address_group_prev = panorama_get_address_group(address_group_name)
         address_group_list: List[str] = []
         if 'static' in address_group_prev:
@@ -1728,10 +1805,10 @@ def panorama_edit_service_group_command():
     tag = argToList(demisto.args()['tag']) if 'tag' in demisto.args() else None
 
     if not services_to_add and not services_to_remove and not tag:
-        return_error('Specify at least one of the following arguments: services_to_add, services_to_remove, tag')
+        raise Exception('Specify at least one of the following arguments: services_to_add, services_to_remove, tag')
 
     if services_to_add and services_to_remove:
-        return_error('Specify at most one of the following arguments: services_to_add, services_to_remove')
+        raise Exception('Specify at most one of the following arguments: services_to_add, services_to_remove')
 
     services: List[str] = []
     if services_to_add or services_to_remove:
@@ -1743,7 +1820,7 @@ def panorama_edit_service_group_command():
             services = [item for item in service_group_list if item not in services_to_remove]
 
         if len(services) == 0:
-            return_error('A Service group must have at least one service.')
+            raise Exception('A Service group must have at least one service.')
 
     result = panorama_edit_service_group(service_group_name, services, tag)
 
@@ -1840,15 +1917,15 @@ def panorama_create_custom_url_category(custom_url_category_name: str, type_: An
     element = add_argument(description, 'description', False)
     if major_version <= 8:
         if type_ or categories:
-            return_error('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
+            raise Exception('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
         element += add_argument_list(sites, 'list', True)
     else:  # major is 9.x
         if not type_:
-            return_error('The type argument is mandatory for PAN-OS 9.x versions.')
+            raise Exception('The type argument is mandatory for PAN-OS 9.x versions.')
         if (not sites and not categories) or (sites and categories):
-            return_error('Exactly one of the sites and categories arguments should be defined.')
+            raise Exception('Exactly one of the sites and categories arguments should be defined.')
         if (type_ == 'URL List' and categories) or (type_ == 'Category Match' and sites):
-            return_error('URL List type is only for sites, Category Match is only for categories.')
+            raise Exception('URL List type is only for sites, Category Match is only for categories.')
 
         if type_ == 'URL List':
             element += add_argument_list(sites, 'list', True)
@@ -1958,7 +2035,7 @@ def panorama_edit_custom_url_category(custom_url_category_name, type_, items, de
 
     if major_version <= 8:
         if type_ == 'Category Match':
-            return_error('The Categories argument is only relevant for PAN-OS 9.x versions.')
+            raise Exception('The Categories argument is only relevant for PAN-OS 9.x versions.')
         element = f"<entry name='{custom_url_category_name}'>{description_element}{items_element}</entry>"
     else:
         type_element = add_argument(type_, 'type', False)
@@ -1997,7 +2074,7 @@ def panorama_custom_url_category_add_items(custom_url_category_name, items, type
     """
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
-        return_error('Please commit the instance prior to editing the Custom URL Category.')
+        raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
     custom_url_category_items: List[str] = []
@@ -2028,14 +2105,14 @@ def panorama_custom_url_category_remove_items(custom_url_category_name, items, t
     """
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
-        return_error('Please commit the instance prior to editing the Custom URL Category.')
+        raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
     if 'list' in custom_url_category:
         if 'member' in custom_url_category['list']:
             custom_url_category_items = custom_url_category['list']['member']
     if not custom_url_category_items:
-        return_error('Custom url category does not contain sites or categories.')
+        raise Exception('Custom url category does not contain sites or categories.')
 
     subtracted_items = [item for item in custom_url_category_items if item not in items]
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
@@ -2306,7 +2383,7 @@ def panorama_create_url_filter_command():
 def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element=None):
     url_filter_prev = panorama_get_url_filter(url_filter_name)
     if '@dirtyId' in url_filter_prev:
-        return_error('Please commit the instance prior to editing the URL Filter')
+        raise Exception('Please commit the instance prior to editing the URL Filter.')
 
     url_filter_output = {'Name': url_filter_name}
     if DEVICE_GROUP:
@@ -2490,7 +2567,7 @@ def panorama_list_rules_command():
     """
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
-            return_error('Please provide the pre_post argument when listing rules in Panorama instance.')
+            raise Exception('Please provide the pre_post argument when listing rules in Panorama instance.')
         else:
             xpath = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry'
     else:
@@ -2531,7 +2608,7 @@ def panorama_move_rule_command():
 
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
-            return_error('Please provide the pre_post argument when moving a rule in Panorama instance.')
+            raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
         else:
             params['xpath'] = XPATH_SECURITY_RULES + demisto.args()[
                 'pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
@@ -2567,14 +2644,14 @@ def panorama_create_rule_command():
     Create a security rule
     """
     rulename = demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
-    source = demisto.args().get('source')
-    destination = demisto.args().get('destination')
+    source = argToList(demisto.args().get('source'))
+    destination = argToList(demisto.args().get('destination'))
     negate_source = demisto.args().get('negate_source')
     negate_destination = demisto.args().get('negate_destination')
     action = demisto.args().get('action')
     service = demisto.args().get('service')
     disable = demisto.args().get('disable')
-    application = demisto.args().get('application')
+    application = argToList(demisto.args().get('application'))
     source_user = demisto.args().get('source_user')
     disable_server_response_inspection = demisto.args().get('disable_server_response_inspection')
     description = demisto.args().get('description')
@@ -2584,9 +2661,9 @@ def panorama_create_rule_command():
 
     if not DEVICE_GROUP:
         if target:
-            return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
+            raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
         elif log_forwarding:
-            return_error('The log_forwarding argument is relevant only for a Palo Alto Panorama instance.')
+            raise Exception('The log_forwarding argument is relevant only for a Palo Alto Panorama instance.')
 
     params = prepare_security_rule_params(api_action='set', rulename=rulename, source=source, destination=destination,
                                           negate_source=negate_source, negate_destination=negate_destination,
@@ -2595,7 +2672,6 @@ def panorama_create_rule_command():
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
                                           log_forwarding=log_forwarding, tags=tags)
-
     result = http_request(
         URL,
         'POST',
@@ -2620,18 +2696,40 @@ def panorama_create_rule_command():
 
 
 @logger
-def panorama_edit_rule_command():
+def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
     """
-    Edit a security rule
+    Get the current element value from
     """
-    rulename = demisto.args()['rulename']
-    element_to_change = demisto.args()['element_to_change']
-    if element_to_change == 'log-forwarding':
-        element_to_change = 'log-setting'
-    element_value = demisto.args()['element_value']
+    params = {
+        'type': 'config',
+        'action': 'get',
+        'xpath': xpath,
+        'key': API_KEY
+    }
+    try:
+        response = http_request(URL, 'GET', params=params)
+    except PAN_OS_Not_Found:
+        return []
 
+    result = response.get('response').get('result')
+    if '@dirtyId' in result:
+        raise Exception('Please commit the instance prior to editing the Security rule.')
+    current_object = result.get(element_to_change)
+    if 'list' in current_object:
+        current_objects_items = argToList(current_object['list']['member'])
+    elif 'member' in current_object:
+        current_objects_items = argToList(current_object.get('member'))
+
+    return current_objects_items
+
+
+@logger
+def panorama_edit_rule_items(rulename: str, element_to_change: str, element_value: List[str], behaviour: str):
+    listable_elements = ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']
+    if element_to_change not in listable_elements:
+        raise Exception(f'Adding objects is only available for the following Objects types:{listable_elements}')
     if element_to_change == 'target' and not DEVICE_GROUP:
-        return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
+        raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
 
     params = {
         'type': 'config',
@@ -2639,39 +2737,32 @@ def panorama_edit_rule_command():
         'key': API_KEY
     }
 
-    if element_to_change in ['action', 'description', 'log-setting']:
-        params['element'] = add_argument_open(element_value, element_to_change, False)
-    elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service']:
-        params['element'] = add_argument_open(element_value, element_to_change, True)
-    elif element_to_change == 'target':
-        params['element'] = add_argument_target(element_value, 'target')
-    elif element_to_change == 'tag':
-        tags = argToList(element_value)
-        params['element'] = add_argument_list(tags, 'tag', True)
-    else:  # element_to_change in ['negate_source', 'negate_destination', 'disable']
-        params['element'] = add_argument_yes_no(element_value, element_to_change)
-
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
-            return_error('please provide the pre_post argument when editing a rule in Panorama instance.')
+            raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
         else:
             params['xpath'] = XPATH_SECURITY_RULES + demisto.args()[
                 'pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
-
     params['xpath'] += '/' + element_to_change
 
-    result = http_request(
-        URL,
-        'POST',
-        params=params
-    )
+    current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
+    if behaviour == 'add':
+        values = list((set(current_objects_items)).union(set(element_value)))
+    else:  # remove
+        values = [item for item in current_objects_items if item not in element_value]
+        if not values:
+            raise Exception(f'The object: {element_to_change} must have at least one item.')
 
-    rule_output = {'Name': rulename}
+    params['element'] = add_argument_list(values, element_to_change, True)
+    result = http_request(URL, 'POST', params=params)
+    rule_output = {
+        'Name': rulename,
+        SECURITY_RULE_ARGS[element_to_change]: values
+    }
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
-    rule_output[SECURITY_RULE_ARGS[element_to_change]] = element_value
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -2683,6 +2774,71 @@ def panorama_edit_rule_command():
             "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
         }
     })
+
+
+@logger
+def panorama_edit_rule_command():
+    """
+    Edit a security rule
+    """
+    rulename = demisto.args()['rulename']
+    element_to_change = demisto.args()['element_to_change']
+    if element_to_change == 'log-forwarding':
+        element_to_change = 'log-setting'
+    element_value = demisto.args()['element_value']
+
+    if element_to_change == 'target' and not DEVICE_GROUP:
+        raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
+
+    behaviour = demisto.args().get('behaviour') if 'behaviour' in demisto.args() else 'replace'
+    if behaviour != 'replace':
+        panorama_edit_rule_items(rulename, element_to_change, argToList(element_value), behaviour)
+    else:
+        params = {
+            'type': 'config',
+            'action': 'edit',
+            'key': API_KEY
+        }
+
+        if element_to_change in ['action', 'description', 'log-setting']:
+            params['element'] = add_argument_open(element_value, element_to_change, False)
+        elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']:
+            element_value = argToList(element_value)
+            params['element'] = add_argument_list(element_value, element_to_change, True)
+        elif element_to_change == 'target':
+            params['element'] = add_argument_target(element_value, 'target')
+        else:
+            params['element'] = add_argument_yes_no(element_value, element_to_change)
+
+        if DEVICE_GROUP:
+            if 'pre_post' not in demisto.args():
+                raise Exception('please provide the pre_post argument when editing a rule in Panorama instance.')
+            else:
+                params['xpath'] = XPATH_SECURITY_RULES + demisto.args()[
+                    'pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+        params['xpath'] += '/' + element_to_change
+
+        result = http_request(URL, 'POST', params=params)
+
+        rule_output = {
+            'Name': rulename,
+            SECURITY_RULE_ARGS[element_to_change]: element_value
+        }
+        if DEVICE_GROUP:
+            rule_output['DeviceGroup'] = DEVICE_GROUP
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Rule edited successfully.',
+            'EntryContext': {
+                "Panorama.SecurityRule(val.Name == obj.Name)": rule_output
+            }
+        })
 
 
 @logger
@@ -2699,7 +2855,7 @@ def panorama_delete_rule_command():
     }
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
-            return_error('Please provide the pre_post argument when moving a rule in Panorama instance.')
+            raise Exception('Please provide the pre_post argument when moving a rule in Panorama instance.')
         else:
             params['xpath'] = XPATH_SECURITY_RULES + demisto.args()[
                 'pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
@@ -2727,20 +2883,20 @@ def panorama_custom_block_rule_command():
     Block an object in Panorama
     """
     object_type = demisto.args()['object_type']
-    object_value = demisto.args()['object_value']
+    object_value = argToList(demisto.args()['object_value'])
     direction = demisto.args()['direction'] if 'direction' in demisto.args() else 'both'
     rulename = demisto.args()['rulename'] if 'rulename' in demisto.args() else ('demisto-' + (str(uuid.uuid4()))[:8])
     block_destination = False if direction == 'from' else True
     block_source = False if direction == 'to' else True
-    target = demisto.args().get('target')
+    target = argToList(demisto.args().get('target')) if 'target' in demisto.args() else None
     log_forwarding = demisto.args().get('log_forwarding', None)
     tags = argToList(demisto.args()['tags']) if 'tags' in demisto.args() else None
 
     if not DEVICE_GROUP:
         if target:
-            return_error('The target argument is relevant only for a Palo Alto Panorama instance.')
+            raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
         elif log_forwarding:
-            return_error('The log_forwarding argument is relevant only for a Palo Alto Panorama instance.')
+            raise Exception('The log_forwarding argument is relevant only for a Palo Alto Panorama instance.')
 
     custom_block_output = {
         'Name': rulename,
@@ -2816,37 +2972,60 @@ def panorama_list_pcaps_command():
     """
     Get list of pcap files
     """
+    if DEVICE_GROUP:
+        raise Exception('PCAP listing is only supported on Firewall (not Panorama).')
+    pcap_type = demisto.args()['pcapType']
     params = {
         'type': 'export',
         'key': API_KEY,
-        'category': demisto.args()['pcapType']
+        'category': pcap_type
     }
 
     if 'password' in demisto.args():
         params['dlp-password'] = demisto.args()['password']
     elif demisto.args()['pcapType'] == 'dlp-pcap':
-        return_error('can not provide dlp-pcap without password')
+        raise Exception('can not provide dlp-pcap without password')
 
     result = http_request(URL, 'GET', params=params)
-
     json_result = json.loads(xml2json(result.text))['response']
     if json_result['@status'] != 'success':
-        return_error('Request to get list of Pcaps Failed.\nStatus code: ' + str(
+        raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
             json_result['response']['@code']) + '\nWith message: ' + str(json_result['response']['msg']['line']))
 
-    pcap_list = json_result['result']['dir-listing']['file']
-    pcap_list = [pcap[1:] for pcap in pcap_list]
+    dir_listing = json_result['result']['dir-listing']
+    if 'file' not in dir_listing:
+        demisto.results(f'PAN-OS has no Pcaps of type: {pcap_type}.')
+    else:
+        pcaps = dir_listing['file']
+        pcap_list = [pcap[1:] for pcap in pcaps]
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': json_result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('List of Pcaps:', pcap_list, ['Pcap name']),
+            'EntryContext': {
+                "Panorama.Pcaps(val.Name == obj.Name)": pcap_list
+            }
+        })
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': json_result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('List of Pcaps:', pcap_list, ['Pcap name']),
-        'EntryContext': {
-            "Panorama.Pcaps(val.Name == obj.Name)": pcap_list
-        }
-    })
+
+def validate_search_time(search_time: str) -> str:
+    """
+    Validate search_time is of format YYYY/MM/DD HH:MM:SS or YYYY/MM/DD and pad with zeroes
+    """
+    try:
+        datetime.strptime(search_time, '%Y/%m/%d')
+        search_time += ' 00:00:00'
+        return search_time
+    except ValueError:
+        pass
+    try:
+        datetime.strptime(search_time, '%Y/%m/%d %H:%M:%S')
+        return search_time
+    except ValueError as err:
+        raise ValueError(f"Incorrect data format. searchTime should be of: YYYY/MM/DD HH:MM:SS or YYYY/MM/DD.\n"
+                         f"Error is: {str(err)}")
 
 
 @logger
@@ -2854,21 +3033,24 @@ def panorama_get_pcap_command():
     """
     Get pcap file
     """
+    if DEVICE_GROUP:
+        raise Exception('Getting a PCAP file is only supported on Firewall (not Panorama).')
+    pcap_type = demisto.args()['pcapType']
     params = {
         'type': 'export',
         'key': API_KEY,
-        'category': demisto.args()['pcapType']
+        'category': pcap_type
     }
 
-    if 'password' in demisto.args():
-        params['dlp-password'] = demisto.args()['password']
-    elif demisto.args()['pcapType'] == 'dlp-pcap':
-        return_error('can not provide dlp-pcap without password')
-
-    if 'pcapID' in demisto.args():
-        params['pcap-id'] = demisto.args()['pcapID']
-    elif demisto.args()['pcapType'] == 'threat-pcap':
-        return_error('can not provide threat-pcap without pcap-id')
+    password = demisto.args().get('password')
+    pcap_id = demisto.args().get('pcapID')
+    search_time = demisto.args().get('searchTime')
+    if pcap_type == 'dlp-pcap' and not password:
+        raise Exception('Can not provide dlp-pcap without password.')
+    else:
+        params['dlp-password'] = password
+    if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
+        raise Exception('Can not provide threat-pcap without pcap-id and the searchTime arguments.')
 
     pcap_name = demisto.args().get('from')
     local_name = demisto.args().get('localName')
@@ -2876,6 +3058,8 @@ def panorama_get_pcap_command():
     search_time = demisto.args().get('searchTime')
 
     file_name = None
+    if pcap_id:
+        params['pcap-id'] = pcap_id
     if pcap_name:
         params['from'] = pcap_name
         file_name = pcap_name
@@ -2885,8 +3069,8 @@ def panorama_get_pcap_command():
     if serial_no:
         params['serialno'] = serial_no
     if search_time:
+        search_time = validate_search_time(search_time)
         params['search-time'] = search_time
-
     # set file name to the current time if from/to were not specified
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
@@ -2895,8 +3079,8 @@ def panorama_get_pcap_command():
 
     # due pcap file size limitation in the product, for more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
-        return_error(
-            'PCAP download failed. Most likely cause is the file size limitation.'
+        raise Exception(
+            'PCAP download failed. Most likely cause is the file size limitation.\n'
             'For information on how to download manually, see the documentation for this integration.')
 
     file = fileResult(file_name + ".pcap", result.content)
@@ -3153,7 +3337,7 @@ def panorama_create_edl_command():
 def panorama_edit_edl(edl_name, element_to_change, element_value):
     edl_prev = panorama_get_edl(edl_name)
     if '@dirtyId' in edl_prev:
-        return_error('Please commit the instance prior to editing the External Dynamic List')
+        raise Exception('Please commit the instance prior to editing the External Dynamic List')
     edl_type = ''.join(edl_prev['type'].keys())
     edl_output = {'Name': edl_name}
     if DEVICE_GROUP:
@@ -3180,7 +3364,7 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
     # element_to_change == 'recurring'
     else:
         if element_value not in ['five-minute', 'hourly']:
-            return_error('Recurring segment must be five-minute or hourly')
+            raise Exception('Recurring segment must be five-minute or hourly')
         params['element'] = '<recurring><' + element_value + '/></recurring>'
         result = http_request(URL, 'POST', params=params)
         edl_output['Recurring'] = element_value
@@ -3276,7 +3460,7 @@ def panorama_refresh_edl_command():
     Refresh an EDL
     """
     if DEVICE_GROUP:
-        return_error('EDL refresh is only supported on Firewall (not Panorama).')
+        raise Exception('EDL refresh is only supported on Firewall (not Panorama).')
 
     edl_name = demisto.args()['name']
 
@@ -3467,8 +3651,8 @@ def panorama_query_traffic_logs_command():
     action = demisto.args().get('action')
 
     if query and (source or destination or receive_time or application or to_port or action):
-        return_error('Use the query argument or the '
-                     'source, destination, receive_time, application, to_port, action arguments to build your query')
+        raise Exception('Use the query argument or the '
+                        'source, destination, receive_time, application, to_port, action arguments to build your query')
 
     result = panorama_query_traffic_logs(number_of_logs, direction, query,
                                          source, destination, receive_time, application, to_port, action)
@@ -3476,12 +3660,12 @@ def panorama_query_traffic_logs_command():
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
             message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query traffic logs failed' + message)
+            raise Exception('Query traffic logs failed' + message)
         else:
-            return_error('Query traffic logs failed')
+            raise Exception('Query traffic logs failed.')
 
     if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-        return_error('Missing JobID in response')
+        raise Exception('Missing JobID in response.')
     query_traffic_output = {
         'JobID': result['response']['result']['job'],
         'Status': 'Pending'
@@ -3523,9 +3707,9 @@ def panorama_check_traffic_logs_status_command():
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
             message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query traffic logs failed' + message)
+            raise Exception('Query traffic logs failed' + message)
         else:
-            return_error('Query traffic logs failed')
+            raise Exception('Query traffic logs failed.')
 
     query_traffic_status_output = {
         'JobID': job_id,
@@ -3534,7 +3718,7 @@ def panorama_check_traffic_logs_status_command():
 
     if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
             or 'status' not in result['response']['result']['job']:
-        return_error('Missing JobID status in response')
+        raise Exception('Missing JobID status in response.')
     if result['response']['result']['job']['status'] == 'FIN':
         query_traffic_status_output['Status'] = 'Completed'
 
@@ -3597,9 +3781,9 @@ def panorama_get_traffic_logs_command():
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
             message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query traffic logs failed' + message)
+            raise Exception('Query traffic logs failed' + message)
         else:
-            return_error('Query traffic logs failed')
+            raise Exception('Query traffic logs failed.')
 
     query_traffic_logs_output = {
         'JobID': job_id,
@@ -3608,7 +3792,7 @@ def panorama_get_traffic_logs_command():
 
     if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
             or 'status' not in result['response']['result']['job']:
-        return_error('Missing JobID status in response')
+        raise Exception('Missing JobID status in response.')
 
     if result['response']['result']['job']['status'] != 'FIN':
         demisto.results({
@@ -3624,7 +3808,7 @@ def panorama_get_traffic_logs_command():
         query_traffic_logs_output['Status'] = 'Completed'
         if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
                 or 'logs' not in result['response']['result']['log']:
-            return_error('Missing logs in response')
+            raise Exception('Missing logs in response.')
 
         logs = result['response']['result']['log']['logs']
         if logs['@count'] == '0':
@@ -3728,15 +3912,15 @@ def panorama_query_logs(log_type, number_of_logs, query, address_src, address_ds
     }
 
     if filedigest and log_type != 'wildfire':
-        return_error('The filedigest argument is only relevant to wildfire log type.')
+        raise Exception('The filedigest argument is only relevant to wildfire log type.')
     if url and log_type == 'traffic':
-        return_error('The url argument is not relevant to traffic log type.')
+        raise Exception('The url argument is not relevant to traffic log type.')
 
     if query:
         params['query'] = query
     else:
         if ip_ and (address_src or address_dst):
-            return_error('The ip argument cannot be used with the address-source or the address-destination arguments.')
+            raise Exception('The ip argument cannot be used with the address-source or the address-destination arguments.')
         params['query'] = build_logs_query(address_src, address_dst, ip_,
                                            zone_src, zone_dst, time_generated, action,
                                            port_dst, rule, url, filedigest)
@@ -3775,7 +3959,7 @@ def panorama_query_logs_command():
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
-        return_error('Use the free query argument or the fixed search parameters arguments to build your query')
+        raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
     result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                                  zone_src, zone_dst, time_generated, action,
@@ -3784,12 +3968,12 @@ def panorama_query_logs_command():
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
             message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query traffic logs failed' + message)
+            raise Exception('Query logs failed' + message)
         else:
-            return_error('Query traffic logs failed')
+            raise Exception('Query logs failed.')
 
     if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-        return_error('Missing JobID in response')
+        raise Exception('Missing JobID in response.')
 
     query_logs_output = {
         'JobID': result['response']['result']['job'],
@@ -3819,9 +4003,9 @@ def panorama_check_logs_status_command():
         if result['response']['@status'] == 'error':
             if 'msg' in result['response'] and 'line' in result['response']['msg']:
                 message = '. Reason is: ' + result['response']['msg']['line']
-                return_error('Query logs failed' + message)
+                raise Exception('Query logs failed' + message)
             else:
-                return_error('Query logs failed')
+                raise Exception('Query logs failed.')
 
         query_logs_status_output = {
             'JobID': job_id,
@@ -3830,7 +4014,7 @@ def panorama_check_logs_status_command():
 
         if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
                 or 'status' not in result['response']['result']['job']:
-            return_error('Missing JobID status in response')
+            raise Exception('Missing JobID status in response.')
         if result['response']['result']['job']['status'] == 'FIN':
             query_logs_status_output['Status'] = 'Completed'
 
@@ -3950,9 +4134,9 @@ def panorama_get_logs_command():
         if result['response']['@status'] == 'error':
             if 'msg' in result['response'] and 'line' in result['response']['msg']:
                 message = '. Reason is: ' + result['response']['msg']['line']
-                return_error('Query logs failed' + message)
+                raise Exception('Query logs failed' + message)
             else:
-                return_error('Query logs failed.')
+                raise Exception('Query logs failed.')
 
         query_logs_output = {
             'JobID': job_id,
@@ -3961,7 +4145,7 @@ def panorama_get_logs_command():
 
         if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
                 or 'status' not in result['response']['result']['job']:
-            return_error('Missing JobID status in response.')
+            raise Exception('Missing JobID status in response.')
 
         if result['response']['result']['job']['status'] != 'FIN':
             demisto.results({
@@ -3977,7 +4161,7 @@ def panorama_get_logs_command():
             query_logs_output['Status'] = 'Completed'
             if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
                     or 'logs' not in result['response']['result']['log']:
-                return_error('Missing logs in response.')
+                raise Exception('Missing logs in response.')
 
             logs = result['response']['result']['log']['logs']
             if logs['@count'] == '0':
@@ -4099,7 +4283,7 @@ def prettify_query_fields(application=None, category=None,
 
 def panorama_security_policy_match_command():
     if not VSYS:
-        return_error("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+        raise Exception("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
 
     application = demisto.args().get('application')
     category = demisto.args().get('category')
@@ -4133,11 +4317,252 @@ def panorama_security_policy_match_command():
         })
 
 
-''' EXECUTION '''
+''' Static Routes'''
+
+
+def prettify_static_route(static_route: Dict, virtual_router: str, template: Optional[str] = None) -> Dict[str, str]:
+    pretty_static_route: Dict = {}
+
+    if '@name' in static_route:
+        pretty_static_route['Name'] = static_route['@name']
+    if 'bfd' in static_route and 'profile' in static_route['bfd']:
+        pretty_static_route['BFDprofile'] = static_route['bfd']['profile']
+    if 'destination' in static_route:
+        if '@dirtyId' in static_route['destination']:
+            pretty_static_route['Uncommitted'] = True
+        else:
+            pretty_static_route['Destination'] = static_route['destination']
+    if 'metric' in static_route:
+        pretty_static_route['Metric'] = int(static_route['metric'])
+    if 'nexthop' in static_route:
+        if '@dirtyId' in static_route['destination']:
+            pretty_static_route['Uncommitted'] = True
+        else:
+            nexthop: Dict[str, str] = static_route['nexthop']
+            if 'ip-address' in nexthop:
+                pretty_static_route['NextHop'] = nexthop['ip-address']
+            elif 'next-vr' in static_route['nexthop']:
+                pretty_static_route['NextHop'] = nexthop['next-vr']
+            elif 'fqdn' in static_route['nexthop']:
+                pretty_static_route['NextHop'] = nexthop['fqdn']
+            elif 'discard' in static_route['nexthop']:
+                pretty_static_route['NextHop'] = nexthop['discard']
+    if 'route-table' in static_route:
+        route_table = static_route['route-table']
+        if 'unicast' in route_table:
+            pretty_static_route['RouteTable'] = 'Unicast'
+        elif 'multicast' in route_table:
+            pretty_static_route['RouteTable'] = 'Multicast'
+        elif 'both' in route_table:
+            pretty_static_route['RouteTable'] = 'Both'
+        else:  # route table is no-install
+            pretty_static_route['RouteTable'] = 'No install'
+    pretty_static_route['VirtualRouter'] = virtual_router
+    if template:
+        pretty_static_route['Template'] = template
+
+    return pretty_static_route
+
+
+def prettify_static_routes(static_routes, virtual_router: str, template: Optional[str] = None):
+    if not isinstance(static_routes, list):  # handle case of only one static route in a virtual router
+        return prettify_static_route(static_routes, virtual_router, template)
+
+    pretty_static_route_arr = []
+    for static_route in static_routes:
+        pretty_static_route = prettify_static_route(static_route, virtual_router, template)
+        pretty_static_route_arr.append(pretty_static_route)
+
+    return pretty_static_route_arr
+
+
+@logger
+def panorama_list_static_routes(xpath_network: str, virtual_router: str, show_uncommitted: str) -> Dict[str, str]:
+    action = 'get' if show_uncommitted else 'show'
+    params = {
+        'action': action,
+        'type': 'config',
+        'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/routing-table/ip/static-route',
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+    return result['response']['result']
+
+
+def panorama_list_static_routes_command():
+    """
+    List all static routes of a virtual Router
+    """
+    template = demisto.args().get('template')
+    xpath_network, template = set_xpath_network(template)
+    virtual_router = demisto.args()['virtual_router']
+    show_uncommitted = demisto.args().get('show_uncommitted') == 'true'
+    virtual_router_object = panorama_list_static_routes(xpath_network, virtual_router, show_uncommitted)
+
+    if 'static-route' not in virtual_router_object or 'entry' not in virtual_router_object['static-route']:
+        human_readable = 'The Virtual Router has does not exist or has no static routes configured.'
+        static_routes = virtual_router_object
+    else:
+        static_routes = prettify_static_routes(virtual_router_object['static-route']['entry'], virtual_router, template)
+        table_header = f'Displaying all Static Routes for the Virtual Router: {virtual_router}'
+        headers = ['Name', 'Destination', 'NextHop', 'Uncommitted', 'RouteTable', 'Metric', 'BFDprofile']
+        human_readable = tableToMarkdown(name=table_header, t=static_routes, headers=headers, removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': virtual_router_object,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {"Panorama.StaticRoutes(val.Name == obj.Name)": static_routes}
+    })
+
+
+@logger
+def panorama_get_static_route(xpath_network: str, virtual_router: str, static_route_name: str) -> Dict[str, str]:
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/routing-table/ip/'
+                 f'static-route/entry[@name=\'{static_route_name}\']',
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+    return result['response']['result']
+
+
+def panorama_get_static_route_command():
+    """
+    Get a static route of a virtual router
+    """
+    template = demisto.args().get('template')
+    xpath_network, template = set_xpath_network(template)
+    virtual_router = demisto.args()['virtual_router']
+    static_route_name = demisto.args()['static_route']
+    static_route_object = panorama_get_static_route(xpath_network, virtual_router, static_route_name)
+    if '@count' in static_route_object and int(static_route_object['@count']) < 1:
+        raise Exception('Static route does not exist.')
+    static_route = prettify_static_route(static_route_object['entry'], virtual_router, template)
+    table_header = f'Static route: {static_route_name}'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': static_route_object,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(name=table_header, t=static_route, removeNull=True),
+        'EntryContext': {
+            "Panorama.StaticRoutes(val.Name == obj.Name)": static_route
+        }
+    })
+
+
+@logger
+def panorama_add_static_route(xpath_network: str, virtual_router: str, static_route_name: str, destination: str,
+                              nexthop_type: str, nexthop_value: str, interface: str = None,
+                              metric: str = None) -> Dict[str, str]:
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'key': API_KEY,
+        'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/'
+                f'routing-table/ip/static-route/entry[@name=\'{static_route_name}\']',
+        'element': f'<destination>{destination}</destination>'
+                   f'<nexthop><{nexthop_type}>{nexthop_value}</{nexthop_type}></nexthop>'
+    }
+    if interface:
+        params['element'] += f'<interface>{interface}</interface>'
+    if metric:
+        params['element'] += f'<metric>{metric}</metric>'
+
+    result = http_request(URL, 'GET', params=params)
+    return result['response']
+
+
+def panorama_add_static_route_command():
+    """
+    Add a Static Route
+    """
+    template = demisto.args().get('template')
+    xpath_network, template = set_xpath_network(template)
+    virtual_router = demisto.args().get('virtual_router')
+    static_route_name = demisto.args().get('static_route')
+    destination = demisto.args().get('destination')
+    nexthop_type = demisto.args().get('nexthop_type')
+    nexthop_value = demisto.args().get('nexthop_value')
+    interface = demisto.args().get('interface', None)
+    metric = demisto.args().get('metric', None)
+
+    if nexthop_type == 'fqdn':
+        # Only from PAN-OS 9.x, creating a static route based on FQDN nexthop is available.
+        major_version = get_pan_os_major_version()
+
+        if major_version <= 8:
+            raise Exception('Next Hop of type FQDN is only available for PAN-OS 9.x instances.')
+    static_route = panorama_add_static_route(xpath_network, virtual_router, static_route_name, destination,
+                                             nexthop_type, nexthop_value, interface, metric)
+    human_readable = f'New uncommitted static route {static_route_name} configuration added.'
+    entry_context = {
+        'Name': static_route_name,
+        'VirtualRouter': virtual_router,
+        'Destination': destination,
+        'NextHop': nexthop_value,
+    }
+    if interface:
+        entry_context['Interface'] = interface
+    if metric:
+        entry_context['Metric'] = metric
+    if template:
+        entry_context['Template'] = template
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': static_route,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {"Panorama.StaticRoutes(val.Name == obj.Name)": static_route}
+    })
+
+
+@logger
+def panorama_delete_static_route(xpath_network: str, virtual_router: str, route_name: str) -> Dict[str, str]:
+    params = {
+        'action': 'delete',
+        'type': 'config',
+        'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/'
+                 f'routing-table/ip/static-route/entry[@name=\'{route_name}\']',
+        'key': API_KEY
+    }
+    result = http_request(URL, 'DELETE', params=params)
+    return result
+
+
+def panorama_delete_static_route_command():
+    """
+    Delete a Static Route
+    """
+    template = demisto.args().get('template')
+    xpath_network, template = set_xpath_network(template)
+    virtual_router = demisto.args()['virtual_router']
+    route_name = demisto.args()['route_name']
+    deleted_static_route = panorama_delete_static_route(xpath_network, virtual_router, route_name)
+    entry_context = {
+        'Name': route_name,
+        'Deleted': True
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': deleted_static_route,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': f'The static route: {route_name} was deleted. Changes are not committed.',
+        'EntryContext': {"Panorama.StaticRoutes(val.Name == obj.Name)": entry_context}  # add key -> deleted: true
+    })
 
 
 def main():
-    LOG('command is %s' % (demisto.command(),))
+    LOG(f'Command being called is: {demisto.command()}')
 
     try:
         # Remove proxy if not set to true in params
@@ -4336,8 +4761,24 @@ def main():
         elif demisto.command() == 'panorama-security-policy-match':
             panorama_security_policy_match_command()
 
-    except Exception as ex:
-        return_error(str(ex))
+        # Static Routes
+        elif demisto.command() == 'panorama-list-static-routes':
+            panorama_list_static_routes_command()
+
+        elif demisto.command() == 'panorama-get-static-route':
+            panorama_get_static_route_command()
+
+        elif demisto.command() == 'panorama-add-static-route':
+            panorama_add_static_route_command()
+
+        elif demisto.command() == 'panorama-delete-static-route':
+            panorama_delete_static_route_command()
+
+        else:
+            raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
+
+    except Exception as err:
+        return_error(str(err))
 
     finally:
         LOG.print_log()
