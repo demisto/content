@@ -1,8 +1,8 @@
-id: TAXII_Feed_Test
+id: Spamhaus_Feed_Test
 version: -1
 contentitemfields:
   propagationLabels: []
-name: TAXII_Feed_Test
+name: Spamhaus_Feed_Test
 starttaskid: "0"
 tasks:
   "0":
@@ -32,25 +32,25 @@ tasks:
     skipunavailable: false
   "1":
     id: "1"
-    taskid: c3764c40-9251-4198-85cb-cc403a040f1b
+    taskid: cb2f9784-b8a9-4736-8770-a26a88852c9d
     type: regular
     task:
-      id: c3764c40-9251-4198-85cb-cc403a040f1b
+      id: cb2f9784-b8a9-4736-8770-a26a88852c9d
       version: -1
       name: Get Indicators
       description: Get the feed indicators.
-      script: TAXIIFeed|||get-indicators
+      script: SpamhausFeed|||spamhaus-get-indicators
       type: regular
       iscommand: true
-      brand: TAXIIFeed
+      brand: SpamhausFeed
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
+      indicator_type:
+        simple: IP
       limit:
         simple: "10"
-      initial_interval:
-        simple: "50 days"
     separatecontext: false
     view: |-
       {
@@ -65,10 +65,10 @@ tasks:
     skipunavailable: false
   "2":
     id: "2"
-    taskid: 2956dd1c-409d-4154-8837-37195cefb1c1
+    taskid: 08488b5a-a7d0-454f-8e07-ad6a3364b560
     type: condition
     task:
-      id: 2956dd1c-409d-4154-8837-37195cefb1c1
+      id: 08488b5a-a7d0-454f-8e07-ad6a3364b560
       version: -1
       name: Assert Output
       description: Asserts output.
@@ -86,28 +86,31 @@ tasks:
           left:
             value:
               complex:
-                root: TAXII
+                root: SpamhausFeed
                 accessor: Indicator.Value
             iscontext: true
-      - - operator: isExists
+      - - operator: containsGeneral
           left:
             value:
               complex:
-                root: TAXII
+                root: SpamhausFeed
                 accessor: Indicator.Type
             iscontext: true
+          right:
+            value:
+              simple: ASN
       - - operator: isExists
           left:
             value:
               complex:
-                root: TAXII
+                root: SpamhausFeed
                 accessor: Indicator.Rawjson.type
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
-                root: TAXII
+                root: SpamhausFeed
                 accessor: Indicator.Rawjson.value
             iscontext: true
     view: |-
@@ -194,4 +197,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 8b67d530-5b0f-4085-82b9-4429228f211e
+sourceplaybookid: Spamhaus_Feed_Test
