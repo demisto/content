@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-import itertools
-import re
-import os
-
-import glob
-import json
 import argparse
-from collections import OrderedDict
-from multiprocessing import Pool, cpu_count
-from distutils.version import LooseVersion
-import time
+import glob
+import itertools
+import json
+import os
+import re
 import sys
+import time
+from collections import OrderedDict
+from distutils.version import LooseVersion
+from multiprocessing import Pool, cpu_count
+
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_json, get_to_version, get_from_version, collect_ids, \
     get_script_or_integration_id, get_pack_name, LOG_COLORS, print_color, \
@@ -986,5 +986,5 @@ if __name__ == '__main__':
         update_id_set()
 
     with open(id_set_path) as f:
-        id_set = json.load(f)
+        id_set = json.load(f)  # type: Final
     validate_playbook_dependencies(id_set)
