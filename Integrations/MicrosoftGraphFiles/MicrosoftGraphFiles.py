@@ -187,6 +187,7 @@ class Client(BaseClient):
         self.access_token = self.get_access_token()
         self.headers = {"Authorization": f"Bearer {self.access_token}"}
 
+
     def http_call(self, *args, **kwargs):
         """
         this function performs http requests
@@ -194,7 +195,7 @@ class Client(BaseClient):
         :param kwargs: http requests parameters
         :return: raw response from api
         """
-        demisto.log(f"Sending: ")
+        LOG(f"Sending: ")
         kwargs["timeout"] = 15
         res = self._http_request(*args, **kwargs)
         if "status_code" in res and res.status_code == 401:
@@ -756,15 +757,7 @@ def main():
 """ COMMANDS + REQUESTS FUNCTIONS """
 
 
-def list_drives_site_for_test_module(token):
-    query_string = {"top": "1"}
-    requests.get(
-        url=demisto.params().get("host") + "/v1.0/sites/root",
-        headers={"Authorization": f"Bearer {token}"},
-        params=query_string,
-        timeout=7,
-        verify=False
-    )
+
 
 
 def module_test(client, args=None):
@@ -773,12 +766,14 @@ def module_test(client, args=None):
     """
     result = client.get_access_token()
     if result:
-        # try:
-        list_drives_site_for_test_module(result)
-        # except Exception:
-        #     raise DemistoException("Test failed. please check if Server Url is correct")
-        # else:
-        return "ok"
+        try:
+            client.http_call(full_url=client.base_url + "/sites/root", headers=client.headers,
+                             params={"top": "1"}, timeout=7, url_suffix="", method="GET")
+
+        except Exception as e:
+            raise DemistoException(f"Test failed. please check if Server Url is correct. \n {e}")
+        else:
+            return "ok"
     else:
         return "Test failed because could not get access token"
 
