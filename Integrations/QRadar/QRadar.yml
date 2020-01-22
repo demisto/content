@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: QRadar_bar
+  id: QRadar
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -47,8 +47,8 @@ configuration:
   required: false
   type: 8
 description: Fetch offenses as incidents and search QRadar
-display: QRadar_bar
-name: QRadar_bar
+display: QRadar
+name: QRadar
 script:
   commands:
   - arguments:
