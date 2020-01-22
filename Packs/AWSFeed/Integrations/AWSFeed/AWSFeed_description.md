@@ -1,0 +1,1 @@
+Use the AWS feed integration to fetch indicators from the feed.
