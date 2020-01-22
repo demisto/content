@@ -762,7 +762,8 @@ def list_drives_site_for_test_module(token):
         url=demisto.params().get("host") + "/v1.0/sites/root",
         headers={"Authorization": f"Bearer {token}"},
         params=query_string,
-        timeout=5,
+        timeout=7,
+        verify=False
     )
 
 
