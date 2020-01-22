@@ -75,7 +75,6 @@ INCIDENT_FIELD_DATA = {
 }
 
 
-
 MOCKED_DATA = [
     (
         [
