@@ -1,6 +1,6 @@
 ## [Unreleased]
-Added **Full Incident Enrichment** instance parameter. Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.
-
+ - Added **Full Incident Enrichment** instance parameter. Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.
+ - Added **Upload Indicators** command which allows to add indicators from Demisto to QRadar reference set 
 
 ## [20.1.0] - 2020-01-07
 Fixed an issue with ***fetch-incidents*** which caused incident name to be cut short if it had newlines in its description.
