@@ -15,11 +15,11 @@ configuration:
 - display: Token (received from the admin consent - see Detailed Instructions)
   name: tenant_id
   required: false
-  type: 0
+  type: 4
 - display: Key (received from the admin consent - see Detailed Instructions)
   name: enc_key
   required: false
-  type: 0
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -470,7 +470,7 @@ script:
     deprecated: false
     description: This command list all the drive's files and folders
     execution: false
-    name: msgraph-list-drive-children
+    name: msgraph-list-drive-content
     outputs:
     - contextPath: MsGraphFiles.ListChildren.Children.Value.OdataNextLink
       description: The URL for the next results page.
@@ -533,7 +533,7 @@ script:
   - deprecated: false
     description: Returns a list of the tenant Sites
     execution: false
-    name: msgraph-list-tenant-sites
+    name: msgraph-list-share-point-sites
     outputs:
     - contextPath: MsGraph.Sites
       description: Graph's site object

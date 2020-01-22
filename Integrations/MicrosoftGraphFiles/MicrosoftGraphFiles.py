@@ -267,7 +267,7 @@ class Client(BaseClient):
         else:
             return self.return_token_and_save_it_in_context(access_token_res)
 
-    def list_tenant_sites(self):
+    def list_share_point_sites(self):
         """
         This function returns a list of the tenant sites
         :return: graph api raw response
@@ -312,7 +312,7 @@ class Client(BaseClient):
             "GET", full_url=url, params=params, headers=self.headers, url_suffix=""
         )
 
-    def list_drive_children(
+    def list_drive_content(
         self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None
     ):
         """
@@ -456,7 +456,7 @@ class Client(BaseClient):
             "GET", full_url=url, headers=self.headers, url_suffix="", resp_type=""
         )  # it needs
         # resp_type='' to stay empty because if response type is empty http_requests returned the raw response.
-        # I need it because graph api returnes an response as text without content so res.text fails
+        # I need it because graph api returns an response as text without content so res.text fails
         return res
 
     def create_new_folder(self, object_type, object_type_id, parent_id, folder_name):
@@ -505,7 +505,21 @@ def download_file_command(client, args):
     return stored_img
 
 
-def list_drive_children_command(client, args):
+def list_drive_content_human_readable_object(parsed_drive_items):
+    human_readable_content_obj = {
+        "Name": parsed_drive_items.get("Name"),
+        "ID": parsed_drive_items.get("ID"),
+        "CreatedBy": parsed_drive_items.get("CreatedBy").get("DisplayName"),
+        "CreatedDateTime": parsed_drive_items.get("CreatedDateTime"),
+        "Description": parsed_drive_items.get("Description"),
+        "Size": parsed_drive_items.get("Size"),
+        "LastModifiedDateTime": parsed_drive_items.get("LastModifiedDateTime"),
+        "WebUrl": parsed_drive_items.get("WebUrl"),
+    }
+    return human_readable_content_obj
+
+
+def list_drive_content_command(client, args):
     """
     This function runs list drive children command
     :return: human_readable, context, result
@@ -519,7 +533,7 @@ def list_drive_children_command(client, args):
     if not item_id:
         item_id = "root"
 
-    result = client.list_drive_children(
+    result = client.list_drive_content(
         object_type=object_type,
         object_type_id=object_type_id,
         item_id=item_id,
@@ -530,8 +544,11 @@ def list_drive_children_command(client, args):
     title = f"{INTEGRATION_NAME} - drivesItems information:"
 
     parsed_drive_items = [parse_key_to_context(item) for item in result["value"]]
+    human_readable_content = [
+        list_drive_content_human_readable_object(item) for item in parsed_drive_items
+    ]
     human_readable = tableToMarkdown(
-        title, parsed_drive_items, headerTransform=pascalToSpace
+        title, human_readable_content, headerTransform=pascalToSpace
     )
 
     drive_items_outputs = {
@@ -548,14 +565,30 @@ def list_drive_children_command(client, args):
     return (human_readable, context, result)
 
 
-def list_tenant_sites_command(client, args):
+def list_share_point_sites_human_readable_object(parsed_drive_items):
+    human_readable_content_obj = {
+        "Name": parsed_drive_items.get("Name"),
+        "ID": parsed_drive_items.get("ID"),
+        "CreatedDateTime": parsed_drive_items.get("CreatedDateTime"),
+        "LastModifiedDateTime": parsed_drive_items.get("LastModifiedDateTime"),
+        "WebUrl": parsed_drive_items.get("WebUrl"),
+    }
+    return human_readable_content_obj
+
+
+def list_share_point_sites_command(client, args):
     """
     This function runs list tenant site command
     :return: human_readable, context, result
     """
-    result = client.list_tenant_sites()
+    result = client.list_share_point_sites()
 
     parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
+
+    human_readable_content = [
+        list_share_point_sites_human_readable_object(item)
+        for item in parsed_sites_items
+    ]
 
     context_entry = {
         "OdataContext": result.get("@odata.context"),
@@ -565,10 +598,24 @@ def list_tenant_sites_command(client, args):
 
     title = "List Sites:"
     human_readable = tableToMarkdown(
-        title, parsed_sites_items, headerTransform=pascalToSpace
+        title, human_readable_content, headerTransform=pascalToSpace
     )
 
     return (human_readable, context, result)
+
+
+def list_drives_human_readable_object(parsed_drive_items):
+    human_readable_content_obj = {
+        "Name": parsed_drive_items.get("Name"),
+        "ID": parsed_drive_items.get("ID"),
+        "CreatedBy": parsed_drive_items.get("CreatedBy").get("DisplayName"),
+        "CreatedDateTime": parsed_drive_items.get("CreatedDateTime"),
+        "Description": parsed_drive_items.get("Description"),
+        "DriveType": parsed_drive_items.get("DriveType"),
+        "LastModifiedDateTime": parsed_drive_items.get("LastModifiedDateTime"),
+        "WebUrl": parsed_drive_items.get("WebUrl"),
+    }
+    return human_readable_content_obj
 
 
 def list_drives_in_site_command(client, args):
@@ -588,6 +635,10 @@ def list_drives_in_site_command(client, args):
     )
     parsed_drive_items = [parse_key_to_context(item) for item in result["value"]]
 
+    human_readable_content = [
+        list_drives_human_readable_object(item) for item in parsed_drive_items
+    ]
+
     context_entry = {
         "OdataContext": result.get("@odata.context", None),
         "Value": parsed_drive_items,
@@ -596,7 +647,7 @@ def list_drives_in_site_command(client, args):
     title = f"{INTEGRATION_NAME} - Drives information:"
     # Creating human readable for War room
     human_readable = tableToMarkdown(
-        title, parsed_drive_items, headerTransform=pascalToSpace
+        title, human_readable_content, headerTransform=pascalToSpace
     )
 
     # context == output
@@ -620,10 +671,20 @@ def replace_an_existing_file_command(client, args):
     )
     context_entry = parse_key_to_context(result)
 
+    human_readable_content = {
+        "ID": context_entry.get("ID"),
+        "Name": context_entry.get("Name"),
+        "CreatedBy": context_entry.get("CreatedBy").get("DisplayName"),
+        "CreatedDateTime": context_entry.get("CreatedDateTime"),
+        "LastModifiedBy": context_entry.get("LastModifiedBy").get("DisplayName"),
+        "Size": context_entry.get("Size"),
+        "WebUrl": context_entry.get("WebUrl"),
+    }
+
     title = f"{INTEGRATION_NAME} - File information:"
     # Creating human readable for War room
     human_readable = tableToMarkdown(
-        title, context_entry, headerTransform=pascalToSpace
+        title, human_readable_content, headerTransform=pascalToSpace
     )
 
     # context == output
@@ -647,9 +708,20 @@ def upload_new_file_command(client, args):
         object_type, object_type_id, parent_id, file_name, entry_id
     )
     context_entry = parse_key_to_context(result)
+
+    human_readable_content = {
+        "ID": context_entry.get("ID"),
+        "Name": context_entry.get("Name"),
+        "CreatedBy": context_entry.get("CreatedBy").get("DisplayName"),
+        "CreatedDateTime": context_entry.get("CreatedDateTime"),
+        "LastModifiedBy": context_entry.get("LastModifiedBy").get("DisplayName"),
+        "Size": context_entry.get("Size"),
+        "WebUrl": context_entry.get("WebUrl"),
+    }
+
     title = f"{INTEGRATION_NAME} - File information:"
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry)
+    human_readable = tableToMarkdown(title, human_readable_content)
 
     # context == output
     context = {f"{INTEGRATION_NAME}.UploadedFiles(val.ID === obj.ID)": context_entry}
@@ -673,10 +745,21 @@ def create_new_folder_command(client, args):
 
     context_entry = parse_key_to_context(result)
 
+    human_readable_content = {
+        "ID": context_entry.get("ID"),
+        "Name": context_entry.get("Name"),
+        "CreatedBy": context_entry.get("CreatedBy").get("DisplayName"),
+        "CreatedDateTime": context_entry.get("CreatedDateTime"),
+        "ChildCount": context_entry.get("Folder"),
+        "LastModifiedBy": context_entry.get("LastModifiedBy").get("DisplayName"),
+        "Size": context_entry.get("Size"),
+        "WebUrl": context_entry.get("WebUrl"),
+    }
     title = f"{INTEGRATION_NAME} - Folder information:"
     # Creating human readable for War room
+
     human_readable = tableToMarkdown(
-        title, context_entry, headerTransform=pascalToSpace
+        title, human_readable_content, headerTransform=pascalToSpace
     )
 
     # context == output
@@ -733,10 +816,10 @@ def main():
             )  # it has to be demisto.results instead
             # of return_outputs. because fileResult contains 'content': '' and if that key is empty return_outputs
             # returns error
-        elif demisto.command() == "msgraph-list-tenant-sites":
-            return_outputs(*list_tenant_sites_command(client, demisto.args()))
-        elif demisto.command() == "msgraph-list-drive-children":
-            return_outputs(*list_drive_children_command(client, demisto.args()))
+        elif demisto.command() == "msgraph-list-share-point-sites":
+            return_outputs(*list_share_point_sites_command(client, demisto.args()))
+        elif demisto.command() == "msgraph-list-drive-content":
+            return_outputs(*list_drive_content_command(client, demisto.args()))
         elif demisto.command() == "msgraph-create-new-folder":
             return_outputs(*create_new_folder_command(client, demisto.args()))
         elif demisto.command() == "msgraph-replace-existing-file":
