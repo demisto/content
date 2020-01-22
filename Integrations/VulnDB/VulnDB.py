@@ -55,9 +55,12 @@ def http_request(url, size=None):
                            headers={'Authorization': f'Bearer {get_oath_token()}'},
                            params=params)
         res.raise_for_status()
+        response = res.json()
     except requests.exceptions.RequestException as err:
         return_error(str(err))
-    return res.json()
+    except json.decoder.JSONDecodeError:
+        return_error("Failed to parse HTTP response to JSON. Original response: \n\n{}".format(res.text))
+    return response
 
 
 def vulndb_vulnerability_to_entry(vuln):
@@ -77,7 +80,7 @@ def vulndb_vulnerability_to_entry(vuln):
                                 vuln.get('ext_references', [])]
 
     cvss_metrics_details = [{
-        'Id': cvss_metrics_data.get('id', 0),
+        'Id': cvss_metrics_data.get('cve_id', 0),
         'AccessVector': cvss_metrics_data.get('access_vector', ''),
         'AccessComplexity': cvss_metrics_data.get('access_complexity', ''),
         'Authentication': cvss_metrics_data.get('authentication', ''),
@@ -122,41 +125,24 @@ def vulndb_vulnerability_to_entry(vuln):
 def vulndb_vulnerability_results_to_demisto_results(res):
     if 'error' in res:
         return_error(res['error'])
+    if 'vulnerability' in res:
+        results = [res['vulnerability']]
+    elif 'results' in res:
+        results = res['results']
     else:
-        if 'vulnerability' in res:
-            results = [res['vulnerability']]
-        elif 'results' in res:
-            results = res['results']
-        else:
-            demisto.results({
-                'Type': entryTypes['error'],
-                'Contents': res,
-                'ContentsFormat': formats['json'],
-                'HumanReadable': 'No "vulnerability" or "results" keys in the returned JSON',
-                'HumanReadableFormat': formats['text']
-            })
-            return
+        return_error('No "vulnerability" or "results" keys in the returned JSON')
+    for result in results:
+        ec = {
+            'VulnDB': vulndb_vulnerability_to_entry(result)
+        }
+        human_readable = tableToMarkdown(f'Result for vulnerability ID: {ec["VulnDB"]["Vulnerability"]["ID"]}', {
+            'Title': ec['VulnDB']['Vulnerability']['Title'],
+            'Description': ec['VulnDB']['Vulnerability']['Description'],
+            'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
+            'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
+        })
 
-        for result in results:
-            ec = {
-                'VulnDB': vulndb_vulnerability_to_entry(result)
-            }
-
-            human_readable = tableToMarkdown(f'Result for vulnerability ID: {ec["VulnDB"]["Vulnerability"]["ID"]}', {
-                'Title': ec['VulnDB']['Vulnerability']['Title'],
-                'Description': ec['VulnDB']['Vulnerability']['Description'],
-                'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
-                'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
-            })
-
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': res,
-                'ContentsFormat': formats['json'],
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 
 
 def vulndb_vendor_to_entry(vendor):
@@ -409,6 +395,30 @@ def vulndb_get_version_command():
     vulndb_product_results_to_demisto_results(res)
 
 
+def vulndb_get_cve_command():
+    cve_id = demisto.args()['cve_id']
+    max_size = demisto.args().get('max_size')
+
+    res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
+    if 'error' in res:
+        return_error(res['error'])
+    results = res.get("results")
+    if not results:
+        return_error('Could not find "results" in the returned JSON')
+    result = results[0]
+    cvss_metrics_details = result.get("cvss_metrics", [])
+    data = {
+        "ID": cve_id,
+        "CVSS": cvss_metrics_details[0].get("score", "0") if cvss_metrics_details else "0",
+        "Published": result.get('vulndb_published_date', '').rstrip('Z'),
+        "Modified": result.get('vulndb_last_modified', '').rstrip('Z'),
+        "Description": result.get("description", '')
+    }
+    human_readable = tableToMarkdown(f'Result for CVE ID: {cve_id}', data)
+    ec = {'CVE(val.ID === obj.ID)': data}
+    return_outputs(human_readable, outputs=ec, raw_response=res)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -437,3 +447,5 @@ elif demisto.command() == 'vulndb-get-version':
     vulndb_get_version_command()
 elif demisto.command() == 'vulndb-get-updates-by-dates-or-hours':
     vulndb_get_updates_by_dates_or_hours_command()
+elif demisto.command() == 'cve':
+    vulndb_get_cve_command()
