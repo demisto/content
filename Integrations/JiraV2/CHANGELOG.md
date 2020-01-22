@@ -1,4 +1,5 @@
 ## [Unreleased]
+Fixed the description of the *reporter* argument in the ***jira-create-issue*** command.
 Fixed an issue where trying to fetch incidents when the idOffset was not configured would raise an error.
 
 ## [19.12.0] - 2019-12-10
