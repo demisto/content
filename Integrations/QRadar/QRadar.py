@@ -1051,18 +1051,22 @@ def upload_indicators_list_request(reference_name, indicators_list):
 
 def upload_indicators_command():
     """
-        Finds indicators according to user query and updates QRadar reference set
+    The function finds indicators according to user query and updates QRadar reference set
     """
     args = demisto.args()
     reference_name = args.get('ref_name')
+    element_type = args.get('element_type')
     if not check_ref_set_exist(reference_name):
-        element_type = args.get('element_type')
         if element_type:
             create_reference_set(reference_name, args.get('element_type'), args.get('timeout_type'),
                                  args.get('time_to_live'))
         else:
-            return_error("There isn't reference set with the name {0}. To create a reference set,"
-                         " you have to enter element type")
+            return_error("There isn't a reference set with the name {0}. To create a reference set,"
+                         " you have to enter element type".format(reference_name))
+    else:
+        if element_type:
+            return_error("The reference set {0} is already exist. You are not supposed to enter element type,"
+                         " Try again".format(reference_name))
     query = args.get('query')
     value_indicators_list, indicators_data_list = get_indicators_list(query)
     if len(value_indicators_list) == 0:
@@ -1091,8 +1095,17 @@ def upload_indicators_command():
 
 def check_ref_set_exist(ref_set_name):
     """
-        Checks if reference set is exist
+        The function checks if reference set is exist
+
+    Args:
+        ref_set_name (str): reference set name
+
+    Returns:
+        Dict. If found - Reference set object, else - Error
+
+
     """
+
     try:
         return get_reference_by_name(ref_set_name)
     except Exception as e:
