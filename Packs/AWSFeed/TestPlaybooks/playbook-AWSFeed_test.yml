@@ -72,8 +72,8 @@ tasks:
     task:
       id: 196d15c5-6767-4672-8fc7-93db22649b3e
       version: -1
-      name: get-indicators
-      script: '|||get-indicators'
+      name: aws-get-indicators
+      script: '|||aws-get-indicators'
       type: regular
       iscommand: true
       brand: ""
