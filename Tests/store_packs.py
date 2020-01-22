@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import shutil
+import uuid
 import google.auth
 from google.cloud import storage
 from distutils.util import strtobool
@@ -30,6 +31,7 @@ class Pack:
     CHANGELOG = "changelog.json"
     README = "README.md"
     METADATA = "metadata.json"
+    INDEX_JSON = "index.json"
     EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
 
     def __init__(self, pack_name, pack_path, storage_bucket):
@@ -90,7 +92,7 @@ class Pack:
         if support_email:
             pack_metadata['supportDetails']['email'] = support_email
 
-        pack_metadata['general'] = user_metadata.get('general', [])
+        # pack_metadata['general'] = user_metadata.get('general', [])
         pack_metadata['tags'] = collect_pack_script_tags(self._pack_path)
         pack_metadata['categories'] = user_metadata.get('categories', [])
         content_items_data = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in
@@ -236,14 +238,28 @@ def update_index_folder(index_folder_path, pack_name, pack_path):
     shutil.copytree(pack_path, index_pack_path)
 
 
-def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob):
-    index_file_name = os.path.basename(index_folder_path)
-    index_zip_path = shutil.make_archive(os.path.join(extract_destination_path, index_file_name), format="zip",
-                                         root_dir=index_folder_path)
-    index_blob.upload_from_filename(index_zip_path)
+def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number):
+    index_zip_name = os.path.basename(index_folder_path)
 
-    shutil.rmtree(index_folder_path)
+    if Pack.INDEX_JSON not in os.listdir(index_folder_path):
+        # todo create new index.json in case index doesn't exist
+        # todo remove exit statement when creation code implemented
+        sys.exit()
+
+    with open(os.path.join(index_folder_path, Pack.INDEX_JSON), "r+") as index_file:
+        index = json.load(index_file)
+        index['revision'] = build_number
+        index['modified'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
+        index_file.seek(0)
+        json.dump(index, index_file, indent=4)
+        index_file.truncate()
+
+    index_zip_path = shutil.make_archive(os.path.join(extract_destination_path, index_zip_name), format="zip",
+                                         root_dir=index_folder_path)
+
+    index_blob.upload_from_filename(index_zip_path)
     os.remove(index_zip_path)
+    shutil.rmtree(index_folder_path)
 
 
 def option_handler():
@@ -254,6 +270,8 @@ def option_handler():
     parser.add_argument('-p', '--packName', help="Use only in local mode, the target pack name to store.",
                         required=False, default="")
     parser.add_argument('-b', '--bucketName', help="Storage bucket name", required=True)
+    parser.add_argument('-n', '--ciBuildNumber',
+                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
 
     return parser.parse_args()
 
@@ -265,6 +283,7 @@ def main():
     storage_bucket_name = option.bucketName
     is_circle = option.circleCi
     specific_pack = option.packName
+    build_number = option.ciBuildNumber if option.ciBuildNumber else str(uuid.uuid4())
 
     storage_client = init_storage_client(is_circle)
     storage_bucket = storage_client.get_bucket(storage_bucket_name)
@@ -285,8 +304,7 @@ def main():
         pack.cleanup()
 
     # todo need permissions to override index.zip in the bucket
-    # todo create new index.json file
-    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob)
+    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
 
 
 if __name__ == '__main__':
