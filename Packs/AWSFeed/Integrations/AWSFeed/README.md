@@ -4,7 +4,7 @@
 Use the AWS feed integration to fetch indicators from the feed.
 
 
-## Configure SpamhausFeed on Demisto
+## Configure AWS Feed on Demisto
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -20,7 +20,6 @@ Use the AWS feed integration to fetch indicators from the feed.
     list, the indicator might still be added to the system. 
     * __Indicator reputation__: Indicators from this integration instance will be marked with this
     reputation.
-    * __Request Timeout__: Timeout of the polling request in seconds.
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
