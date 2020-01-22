@@ -1,2 +1,2 @@
 ## [Unreleased]
-Replace searchIncidents with searchIncidents v2
+Replace searchIncidents with SearchIncidents_v2

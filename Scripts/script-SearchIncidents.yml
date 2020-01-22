@@ -4,6 +4,33 @@ commonfields:
 name: SearchIncidents
 deprecated: true
 script: |-
+  function invalideEscape(str) {
+      var i;
+      var special = 'nt';
+      for (i = 0; i < str.length - 1; i++) {
+          if (str[i] === '\\') {
+              if (special.indexOf(str[i + 1] == -1)) {
+                  return str.substr(0, i);
+              }
+          }
+      }
+      return str;
+  }
+
+
+  // Clean all the empty ones
+  Object.keys(args).forEach(function(a) {if (!args[a]) delete args[a];});
+  var keys = Object.keys(args);
+  var i;
+  for (i = 0; i < keys.length; i++) {
+      temp = invalideEscape(args[keys[i]]);
+      if (temp.length != args[keys[i]].length) {
+          var md = "##### error in parse '" + keys[i] +
+          "'\n##### success parse untill\n- " + temp;
+          return {Type: entryTypes.error, Contents: md, ContentsFormat: formats.markdown, HumanReadable: md};
+      }
+  }
+
   var arrArgs = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'system', 'owner', 'type'];
   for (var i=0; i<arrArgs.length; i++) {
       var tmp = argToList(args[arrArgs[i]]);
@@ -11,8 +38,8 @@ script: |-
           args[arrArgs[i]] = tmp.join(',');
       }
   }
-  // Clean all the empty ones
-  Object.keys(args).forEach(function(a) {if (!args[a]) delete args[a];});
+
+
   var res = executeCommand('getIncidents', args);
   if (isValidRes(res)) {
       var data = res[0].Contents.data;
@@ -21,10 +48,11 @@ script: |-
   } else {
       return res;
   }
+
 type: javascript
 tags:
 - Utility
-comment: Searches Demisto incidents\ndeprecated! use SearchIncidents v2 instead
+comment: deprecated! use SearchIncidents_v2 instead
 enabled: true
 args:
 - name: id
