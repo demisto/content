@@ -1,111 +1,180 @@
-category: Data Enrichment & Threat Intelligence
-commonfields:
-  id: AWS Feed
-  version: -1
-configuration:
-- display: Sub-Feeds
-  name: sub_feeds
-  options:
-  - AMAZON
-  - EC2
-  - ROUTE53
-  - ROUTE53_HEALTHCHECKS
-  - CLOUDFRONT
-  - S3
-  required: true
-  type: 16
-- display: Feed Fetch Interval
-  name: feedFetchInterval
-  defaultvalue: "240"
-  type: 19
-  required: false
-- display: Source Reliability
-  name: feedInstanceReliability
-  defaultvalue: F - Reliability cannot be judged
-  type: 15
-  required: true
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
-- display: ""
-  name: expiration
-  defaultvalue: ""
-  type: 17
-  required: false
-  description: AWS Feed Integration
-- display: ""
-  name: expirationPolicy
-  defaultvalue: indicatorType
-  type: 0
-  required: false
-  hidden: true
-- display: ""
-  name: expirationInterval
-  defaultvalue: ""
-  type: 1
-  required: false
-  hidden: true
-- display: Fetch indicators
-  name: feed
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Bypass exclusion list
-  name: bypassExclusionList
-  defaultvalue: ""
-  type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list will be ignored for this feed.
-- display: Mark As Reputation
-  name: feedInstanceReputation
-  defaultvalue: feedInstanceReputationNotSet
-  type: 18
-  required: false
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-display: AWS Feed
-name: AWS Feed
-script:
-  commands:
-  - arguments:
-    - default: false
-      defaultValue: '50'
-      description: limits the number of context indicators to output
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Fetches indicators from the feed.
-    execution: false
-    name: aws-get-indicators
-    outputs:
-    - contextPath: AWS.Indicator
-      description: The indicators from client.
-      type: Unknown
-  dockerimage: demisto/jmespath:1.0.0.5129
-  feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
-  script: '-'
-  subtype: python3
-  type: python
-fromversion: 5.5.0
+id: AWSFeed-Test
+version: -1
+contentitemfields:
+  propagationLabels:
+  - all
+name: AWSFeed-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db605e5e-22c7-4510-807c-5498bc676486
+    type: start
+    task:
+      id: db605e5e-22c7-4510-807c-5498bc676486
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: d917ba08-5a1a-4fdc-8764-bff21002631f
+    type: regular
+    task:
+      id: d917ba08-5a1a-4fdc-8764-bff21002631f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: cae48bae-be17-48fe-8dcf-ecf5eebe8949
+    type: regular
+    task:
+      id: cae48bae-be17-48fe-8dcf-ecf5eebe8949
+      version: -1
+      name: get-indicators-ip
+      description: Fetches indicators from the feed.
+      script: AWS Feed|||aws-get-indicators
+      type: regular
+      iscommand: true
+      brand: AWS Feed
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: Type=Type
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "6":
+    id: "6"
+    taskid: eaab7819-ebdc-4acc-8cbb-6ac9552bc5e7
+    type: condition
+    task:
+      id: eaab7819-ebdc-4acc-8cbb-6ac9552bc5e7
+      version: -1
+      name: verify get indicators
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "14":
+    id: "14"
+    taskid: 89544cf6-bf4e-4bd2-84ce-c50b39c2825c
+    type: title
+    task:
+      id: 89544cf6-bf4e-4bd2-84ce-c50b39c2825c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

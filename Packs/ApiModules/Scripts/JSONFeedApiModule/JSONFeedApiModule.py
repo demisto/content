@@ -1,17 +1,15 @@
 from CommonServerPython import *
 ''' IMPORTS '''
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 import jmespath
 import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
-FEED_NAME: str
-
 
 class Client:
-    def __init__(self, url: str, credentials: Dict[str, str] = None,
+    def __init__(self, url: str = '', credentials: Dict[str, str] = None,
                  feed_name_to_config: Dict[str, dict] = None, source_name: str = 'JSON',
                  extractor: str = '', indicator: str = 'indicator', fields: Union[List, str] = None,
                  insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None, **_):
@@ -58,10 +56,9 @@ class Client:
         # Request related attributes
         self.url = url
         self.verify = not insecure
+        self.auth: Optional[tuple] = None
         if credentials:
             self.auth = (credentials.get('username'), credentials.get('password'))
-        else:
-            self.auth = None
 
         # Hidden params
         self.headers = headers
@@ -71,7 +68,7 @@ class Client:
         results = []
         for feed_name, feed in self.feed_name_to_config.items():
             r = requests.get(
-                url=feed.get('url'),
+                url=feed.get('url', self.url),
                 verify=self.verify,
                 auth=self.auth,
                 cert=self.cert,
@@ -96,51 +93,43 @@ def test_module(client) -> str:
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, indicator_type: str, update_context: bool = False,
-                             limit: int = None, feed_name: str = 'JSON', **kwargs) -> Union[Dict, List[Dict]]:
+def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
     :param indicator_type: the default indicator type
-    :param update_context: if *True* will also update the context with the indicators
-    :param limit: limits the number of context indicators to output
-    :param feed_name: The name of the feed.
     """
     indicators = []
     for result in client.build_iterator(**kwargs):
         for sub_feed_name, items in result.items():
-            feed_config = client.feed_name_to_config.get(sub_feed_name, client.source_name)
+            feed_config = client.feed_name_to_config.get(sub_feed_name, {})
             indicator_field = feed_config.get('indicator', 'indicator')
             indicator_type = feed_config.get('indicator_type', indicator_type)
             fields = feed_config.get('fields', [])
             for item in items:
                 attributes = {'source_name': sub_feed_name}
-                attributes.update({f: item.get(f) for f in fields or item.keys() if f is not indicator_field})
+                for f in fields:
+                    attributes[f] = item.get(f)
                 indicator_value = item.get(indicator_field)
-                indicator = {'value': indicator_value, 'type': indicator_type}
+                indicator = {'Value': indicator_value, 'Type': indicator_type}
 
                 attributes.update(indicator)
-                indicator['rawJSON'] = attributes
+                indicator['Rawjson'] = attributes
 
                 indicators.append(indicator)
-
-    if update_context:
-        feed_name = feed_name.replace(' ', '')
-        context_output = {f"{feed_name}.Indicator": jmespath.search(expression='[].rawJSON',
-                                                                    data=indicators)[:limit or 50]}
-        return context_output
 
     return indicators
 
 
-def feed_main(params, feed_name):
+def feed_main(params, feed_name, prefix):
     # handle proxy settings
     handle_proxy()
 
     client = Client(**params)
     indicator_type = params.get('indicator_type')
     command = demisto.command()
-
+    if prefix and not prefix.endswith('-'):
+        prefix += '-'
     if command != 'fetch-indicators':
         demisto.info(f'Command being called is {demisto.command()}')
     try:
@@ -152,12 +141,11 @@ def feed_main(params, feed_name):
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
-        elif command == 'get-indicators':
+        elif command == f'{prefix}get-indicators':
             # dummy command for testing
-            limit = int(demisto.args().get('limit', 50))
-            indicators = fetch_indicators_command(client, indicator_type, update_context=True, limit=limit,
-                                                  feed_name=feed_name)
-            return_outputs('', indicators)
+            limit = int(demisto.args().get('limit', 10))
+            indicators = fetch_indicators_command(client, indicator_type)[:limit]
+            demisto.results(indicators)
 
     except Exception as err:
         return_error(str(err))
