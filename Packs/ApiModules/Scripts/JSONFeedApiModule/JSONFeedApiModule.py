@@ -11,16 +11,17 @@ FEED_NAME: str
 
 
 class Client:
-    def __init__(self, url: str, credentials: Dict[str, str] = None, extractors: list = None,
-                 indicator: str = 'indicator', fields: Union[List, str] = None, insecure: bool = False,
-                 cert_file: str = None, key_file: str = None, headers: str = None, **_):
+    def __init__(self, url: str, credentials: Dict[str, str] = None,
+                 feed_name_to_config: Dict[str, dict] = None, source_name: str = 'JSON',
+                 extractor: str = '', indicator: str = 'indicator', fields: Union[List, str] = None,
+                 insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
         :param url: URL of the feed.
         :param credentials:
             username: username for BasicAuth authentication
             password: password for BasicAuth authentication
-        :param extractors: JMESPath expression for extracting the indicators from
+        :param extractor: JMESPath expression for extracting the indicators from
         :param indicator: the JSON attribute to use as indicator. Default: indicator
         :param source_name: feed source name
         :param fields: list of JSON attributes to include in the indicator value.
@@ -33,17 +34,26 @@ class Client:
         Example: headers = {'user-agent': 'my-app/0.0.1'} or Authorization: Bearer
         (curl -H "Authorization: Bearer " "https://api-url.com/api/v1/iocs?first_seen_since=2016-1-1")
          Example:
-            Example config in YAML::
-                url: https://ip-ranges.amazonaws.com/ip-ranges.json
-                extractor: "prefixes[?service=='AMAZON']"
-                prefix: aws
-                indicator: ip_prefix
-                headers: {'Authorization': '12345668900', 'user-agent': 'my-app/0.0.1'}
-                fields: region, service
+            Example feed config:
+            'AMAZON': {
+                'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+                'extractor': "prefixes[?service=='AMAZON']",
+                'indicator': 'ip_prefix',
+                'fields': ['region', 'service']
+            }
         """
-        self.extractors = extractors or ['@']
-        self.indicator = indicator or 'indicator'
-        self.fields = argToList(fields)
+
+        self.source_name = source_name or 'JSON'
+        if feed_name_to_config:
+            self.feed_name_to_config = feed_name_to_config
+        else:
+            self.feed_name_to_config = {
+                self.source_name: {
+                    'url': url,
+                    'indicator': indicator or 'indicator',
+                    'extractor': extractor or '@',
+                    'fields': argToList(fields)
+                }}
 
         # Request related attributes
         self.url = url
@@ -58,27 +68,27 @@ class Client:
         self.cert = (cert_file, key_file) if cert_file and key_file else None
 
     def build_iterator(self, **kwargs) -> List:
-        r = requests.get(
-            url=self.url,
-            verify=self.verify,
-            auth=self.auth,
-            cert=self.cert,
-            headers=self.headers,
-            **kwargs
-        )
-
         results = []
-        try:
-            r.raise_for_status()
-            data = r.json()
-            for extractor in self.extractors:
-                result = jmespath.search(expression=extractor, data=data)
-                results.append(result)
-            # flatten the results
-            return [result for sublist in results for result in sublist]
+        for feed_name, feed in self.feed_name_to_config.items():
+            r = requests.get(
+                url=feed.get('url'),
+                verify=self.verify,
+                auth=self.auth,
+                cert=self.cert,
+                headers=self.headers,
+                **kwargs
+            )
 
-        except ValueError as VE:
-            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
+            try:
+                r.raise_for_status()
+                data = r.json()
+                result = jmespath.search(expression=feed.get('extractor'), data=data)
+                results.append({feed_name: result})
+
+            except ValueError as VE:
+                raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
+
+        return results
 
 
 def test_module(client) -> str:
@@ -91,24 +101,28 @@ def fetch_indicators_command(client: Client, indicator_type: str, update_context
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
-    :param indicator_type: the type of indicators to create
+    :param indicator_type: the default indicator type
     :param update_context: if *True* will also update the context with the indicators
     :param limit: limits the number of context indicators to output
-    :param feed_name: The name of the feed
+    :param feed_name: The name of the feed.
     """
     indicators = []
-    for item in client.build_iterator(**kwargs):
-        indicator_value = item.get(client.indicator)
+    for result in client.build_iterator(**kwargs):
+        for sub_feed_name, items in result.items():
+            feed_config = client.feed_name_to_config.get(sub_feed_name, client.source_name)
+            indicator_field = feed_config.get('indicator', 'indicator')
+            indicator_type = feed_config.get('indicator_type', indicator_type)
+            fields = feed_config.get('fields', [])
+            for item in items:
+                attributes = {'source_name': sub_feed_name}
+                attributes.update({f: item.get(f) for f in fields or item.keys() if f is not indicator_field})
+                indicator_value = item.get(indicator_field)
+                indicator = {'value': indicator_value, 'type': indicator_type}
 
-        attributes = {'source_name': feed_name}
-        attributes.update({f: item.get(f) for f in client.fields or item.keys() if f is not client.indicator})
+                attributes.update(indicator)
+                indicator['rawJSON'] = attributes
 
-        indicator = {'value': indicator_value, 'type': indicator_type}
-
-        attributes.update(indicator)
-        indicator['rawJSON'] = attributes
-
-        indicators.append(indicator)
+                indicators.append(indicator)
 
     if update_context:
         feed_name = feed_name.replace(' ', '')

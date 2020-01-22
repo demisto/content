@@ -3,75 +3,8 @@ commonfields:
   id: AWS Feed
   version: -1
 configuration:
-- defaultvalue: https://ip-ranges.amazonaws.com/ip-ranges.json
-  display: Server URL
-  name: url
-  required: true
-  type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- display: Fetch Interval
-  name: feedFetchInterval
-  defaultvalue: 240
-  type: 19
-  required: true
-- additionalinfo: Type of the indicator in the feed.
-  defaultvalue: IP
-  display: Indicator Type
-  name: indicator_type
-  required: true
-  type: 0
-- defaultvalue: F - Reliability cannot be judged
-  display: Reliability
-  name: feedInstanceReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- name: expiration
-  required: false
-  type: 17
-- additionalinfo: When selected, the exclusion list will be ignored for this feed.
-  display: Bypass exclusion list
-  name: skipExclusionList
-  required: false
-  type: 8
-- defaultvalue: feedInstanceReputationNotSet
-  display: Mark as reputation
-  name: feedInstanceReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
 - display: Sub-Feeds
-  name: extractors
+  name: sub_feeds
   options:
   - AMAZON
   - EC2
@@ -81,20 +14,71 @@ configuration:
   - S3
   required: true
   type: 16
-- defaultvalue: ip_prefix
-  display: JSON attribute to use as an indicator
-  name: indicator
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
   required: false
-  type: 0
-- display: CSV list of additional JSON attributes to include in the indicator value
-  name: fields
+- display: Source Reliability
+  name: feedInstanceReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: expiration
+  defaultvalue: ""
+  type: 17
   required: false
+  description: AWS Feed Integration
+- display: ""
+  name: expirationPolicy
+  defaultvalue: indicatorType
   type: 0
-- display: Optional headers to specify in the request
-  name: headers
   required: false
-  type: 0
-description: AWS Feed Integration
+  hidden: true
+- display: ""
+  name: expirationInterval
+  defaultvalue: ""
+  type: 1
+  required: false
+  hidden: true
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list will be ignored for this feed.
+- display: Mark As Reputation
+  name: feedInstanceReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 display: AWS Feed
 name: AWS Feed
 script:
@@ -108,9 +92,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Fetches indicators into the context data.
+    description: Fetches indicators from the feed.
     execution: false
-    name: get-indicators
+    name: aws-get-indicators
     outputs:
     - contextPath: AWS.Indicator
       description: The indicators from client.
@@ -122,6 +106,6 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 fromversion: 5.5.0
