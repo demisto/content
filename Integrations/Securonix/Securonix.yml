@@ -3,7 +3,7 @@ commonfields:
   id: Securonix
   version: -1
 configuration:
-- display: Host (To override the fdefault hostname, https://{tenant}.net/Snypr)
+- display: Host (To override the default hostname, https://{tenant}.net/Snypr)
   name: host
   required: false
   type: 0
