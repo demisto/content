@@ -1,9 +1,8 @@
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Any
 from collections import defaultdict
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 
 XFORCE_URL = 'https://exchange.xforce.ibmcloud.com'
 DEFAULT_THRESHOLD = 7
@@ -26,6 +25,9 @@ class Client(BaseClient):
                          auth=(api_key, password))
 
     def ip_report(self, ip: str) -> dict:
+        if not is_ip_valid(ip):
+            raise DemistoException('The given IP was invalid')
+
         return self._http_request('GET', f'/ipr/{ip}')
 
     def url_report(self, url: str) -> dict:
@@ -34,8 +36,24 @@ class Client(BaseClient):
     def cve_report(self, code: str) -> dict:
         return self._http_request('GET', f'/vulnerabilities/search/{code}')
 
-    def get_recent_vulnerabilities(self) -> dict:
-        return self._http_request('GET', f'/vulnerabilities')
+    def search_cves(self, q: str, start_date: str, end_date: str, bookmark: str) -> dict:
+        params = {'q': q, 'startDate': start_date, 'endDate': end_date, 'bookmark': bookmark}
+        params = {key: value for key, value in params.items() if value}
+        return self._http_request('GET', '/vulnerabilities/fulltext', params=params)
+
+    def file_report(self, file_hash: str) -> dict:
+        return self._http_request('GET', f'/malware/{file_hash}').get('malware')
+
+    def get_recent_vulnerabilities(self, start_date: str, end_date: str, limit: int) -> dict:
+        params = {'startDate': start_date, 'endDate': end_date, 'limit': limit}
+        params = {key: value for key, value in params.items() if value}
+        return self._http_request('GET', '/vulnerabilities', params=params)
+
+    def get_version(self) -> dict:
+        return self._http_request('GET', '/version')
+
+    def whois(self, host: str) -> dict:
+        return self._http_request('GET', f'/whois/{host}')
 
 
 def calculate_score(score: int, threshold: int) -> int:
@@ -104,12 +122,12 @@ def test_module(client: Client) -> str:
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     Args:
-        client (Client): X-Force client.
+        client (Client): X-Force Exchange client.
     Returns:
         str: 'ok' if test passed, anything else will fail the test.
     """
 
-    return 'ok' if client.ip_report('8.8.8.8').get('ip') == '8.8.8.8' else 'Connection failed.'
+    return 'ok' if ['build', 'created'] in client.get_version() else 'Connection failed.'
 
 
 def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
@@ -156,14 +174,15 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
 
      Args:
          client (Client): X-Force client.
-         args (Dict[str,str]): the arguments for the command.
+         args (Dict[str, str]): the arguments for the command.
      Returns:
          str: human readable presentation of the URL report.
          dict: the results to return into Demisto's context.
          dict: the raw data from X-Force client (used for debugging).
      """
 
-    report = client.url_report(args['url'])
+    url = args.get('url', '') or args.get('domain', '')
+    report = client.url_report(url)
     threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
 
     outputs = {'Data': report['url'], 'Malicious': {'Vendor': 'XFE'}}
@@ -173,55 +192,65 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     context = {'URL(obj.Data==val.Data)': outputs, 'DBotScore': dbot_score}
 
     table = {'Score': report['score'],
-             'Categories': '\n'.join(report['cats'].keys())
-             }
+             'Categories': '\n'.join(report['cats'].keys())}
     markdown = tableToMarkdown(f'X-Force URL Reputation for: {report["url"]}\n'
                                f'{XFORCE_URL}/ip/{report["url"]}', table, removeNull=True)
 
     return markdown, context, report
 
 
-def cve_latest_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     """
-     Get details from latest vulnerabilities from X-Force Exchange.
+     Get details about vulnerabilities (latest / search) from X-Force Exchange.
 
      Args:
          client (Client): X-Force client.
          args (Dict[str, str]): the arguments for the command.
      Returns:
-         str: human readable presentation of the IP report.
+         str: human readable presentation of the CVEs reports.
          context: the results to return into Demisto's context.
-         report: the raw data from X-Force client (used for debugging).
+         report: the raw data from X-Force Exchange client (used for debugging).
     """
 
-    threshold = int(demisto.params().get('threshold', DEFAULT_THRESHOLD))
-    reports = client.get_recent_vulnerabilities()
+    threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
 
-    total_context: Dict[str, list] = defaultdict(list)
+    if 'q' in args:
+        reports = client.search_cves(args['q'], args.get('start_date', ''), args.get('end_date', ''),
+                                     args.get('bookmark', ''))
+        reports, total_rows, bookmark = reports['rows'], reports['total_rows'], reports['bookmark']
+    else:
+        reports = client.get_recent_vulnerabilities(args.get('start_date', ''), args.get('end_date', ''),
+                                                    int(args.get('limit', 0)))
+        total_rows, bookmark = '', ''
+
+    total_context: Dict[str, Any] = defaultdict(list)
     total_markdown = ''
 
     for report in reports:
-        cve_id = report.get('stdcode', [0])[0]
+        cve_id = report.get('stdcode', [''])[0]
         markdown, context, _ = get_cve_results(cve_id, report, threshold)
 
-        total_context['CVE(obj.ID==val.ID)'].append(context['CVE(obj.ID==val.ID)'])
-        total_context['DBotScore'].append(context['DBotScore'])
-        total_context['XFE.CVE(obj.ID==val.ID)'].append(context['XFE.CVE(obj.ID==val.ID)'])
+        for key, value in context.items():
+            total_context[key].append(value)
 
         total_markdown += markdown
+
+    if total_rows and bookmark:
+        total_context['XFE.CVESearch'] = {'TotalRows': total_rows, 'Bookmark': bookmark}
 
     return total_markdown, total_context, reports
 
 
-def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     """
      Executes CVE enrichment against X-Force Exchange.
 
      Args:
-         client (Client): X-Force client.
-         args (Dict[str,str]): the arguments for the command.
+         client (Client): X-Force Exchange client.
+         args (Dict[str, str]): the arguments for the command.
+
      Returns:
-         str: human readable presentation of the URL report.
+         str: human readable presentation of the CVE report.
          dict: the results to return into Demisto's context.
          dict: the raw data from X-Force client (used for debugging).
      """
@@ -232,11 +261,72 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     return get_cve_results(args['cve_id'], report[0], threshold)
 
 
+def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    """
+    Executes file hash enrichment against X-Force Exchange.
+
+    Args:
+        client (Client): X-Force Exchange client.
+        args (Dict[str, str]): the arguments for the command.
+
+    Returns:
+         str: human readable presentation of the file hash report.
+         dict: the results to return into Demisto's context.
+         dict: the raw data from X-Force Exchange client (used for debugging).
+    """
+
+    report = client.file_report(args.get('file', ''))
+    hash_type = report['type']
+
+    scores = {'high': 3, 'medium': 2, 'low': 1}
+    context = build_dbot_entry(args.get('file'), indicator_type=report['type'],
+                               vendor='XFE', score=scores.get(report['risk'], 0))
+    file_key = f'XFE.{next(filter(lambda k: "File" in k, context.keys()), "File")}'  # type: ignore
+
+    hash_info = {**report['origins'], 'Family': report['family'], 'FamilyMembers': report['familyMembers']}
+    context[file_key] = hash_info
+
+    download_servers = ','.join(server['ip'] for server in hash_info.get('downloadServers', {}).get('rows', []))
+    cnc_servers = ','.join(server['domain'] for server in hash_info.get('CnCServers', {}).get('rows', []))
+    table = {'CnC Servers': cnc_servers, 'Download Servers': download_servers,
+             'Source': hash_info.get('external', {}).get('source'), 'Created Date': report['created'],
+             'Type': hash_info.get('external', {}).get('malwareType')}
+    markdown = tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
+                               f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
+
+    return markdown, context, report
+
+
+def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    """
+    Gets information about the given host address.
+
+    Args:
+        client (Client): X-Force Exchange client.
+        args (Dict[str, str]): the arguments for the command.
+
+    Returns:
+         str: human readable presentation of the information about the host.
+         dict: the results to return into Demisto's context.
+         dict: the raw data from X-Force Exchange client (used for debugging).
+    """
+
+    result = client.whois(args['host'])
+
+    outputs = {'Host': args['host'], 'RegistrarName': result.get('registrarName'),
+               'Created': result.get('createdDate'), 'Updated': result.get('updatedDate'),
+               'Expires': result.get('expiresDate'), 'Email': result.get('contactEmail'),
+               'Contact': [{k.title(): v for k, v in contact.items()} for contact in result.get('contact', [])]}
+    context = {'XFE.Whois(obj.Host==val.Host)': outputs}
+    markdown = tableToMarkdown(f'X-Force Whois result for {args["host"]}', outputs, removeNull=True)
+
+    return markdown, context, result
+
+
 def main():
     params = demisto.params()
     credentials = params.get('credentials')
 
-    LOG(f'Command being called is {demisto.command()}')
     client = Client(params.get('url'),
                     credentials.get('identifier'), credentials.get('password'),
                     use_ssl=not params.get('insecure', False),
@@ -245,11 +335,15 @@ def main():
         'ip': ip_command,
         'url': url_command,
         'domain': url_command,
-        'cve-latest': cve_latest_command,
-        'cve-search': cve_search_command
+        'cve-latest': cve_search_command,
+        'cve-search': cve_get_command,
+        'file': file_command,
+        'xfe-whois': whois_command,
+        'xfe-search-cves': cve_search_command
     }
 
     command = demisto.command()
+    LOG(f'Command being called is {command}')
 
     try:
         if command == 'test-module':

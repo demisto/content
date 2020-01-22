@@ -1,4 +1,5 @@
-from XForceExchange import Client, ip_command, url_command, cve_search_command, cve_latest_command
+from XForceExchange import Client, ip_command, url_command, cve_get_command, \
+    cve_search_command, file_command, whois_command
 
 MOCK_BASE_URL = 'https://www.this-is-a-fake-url.com'
 MOCK_API_KEY = 'FAKE-API-KEY'
@@ -7,6 +8,9 @@ MOCK_PASSWORD = 'FAKE-PASSWORD'
 MOCK_IP = '8.8.8.8'
 MOCK_URL = 'https://www.google.com'
 MOCK_CVE = 'CVE-2014-2601'
+MOCK_HASH = '474B9CCF5AB9D72CA8A333889BBB34F0'
+MOCK_HOST = 'google.com'
+MOCK_CVE_QUERY = 'hello'
 
 MOCK_IP_RESP = {
     "ip": "8.8.8.8",
@@ -54,6 +58,7 @@ MOCK_IP_RESP = {
     "categoryDescriptions": {},
     "tags": []
 }
+
 MOCK_URL_RESP = {
     "result": {
         "url": "https://www.google.com",
@@ -89,6 +94,7 @@ MOCK_URL_RESP = {
     ],
     "tags": []
 }
+
 MOCK_CVE_RESP = [
     {
         "type": "vulnerability",
@@ -149,6 +155,7 @@ MOCK_CVE_RESP = [
         "uuid": "7d71d8e3856c692cb73c4b7daf1c21ce"
     }
 ]
+
 MOCK_RECENT_CVE_RESP = [
     {
         "type": "vulnerability",
@@ -206,43 +213,215 @@ MOCK_RECENT_CVE_RESP = [
     }
 ]
 
+MOCK_HASH_RESP = {
+    "malware": {
+        "origins": {
+            "emails": {
+
+            },
+            "CnCServers": {
+                "rows": [
+                    {
+                        "type": "CnC",
+                        "md5": "474B9CCF5AB9D72CA8A333889BBB34F0",
+                        "domain": "pc-guard.net",
+                        "firstseen": "2014-10-20T23:19:00Z",
+                        "lastseen": "2014-10-20T23:19:00Z",
+                        "ip": "61.255.239.86",
+                        "count": 483,
+                        "schema": "http",
+                        "filepath": "v.html",
+                        "origin": "CnC",
+                        "uri": "http://pc-guard.net/v.html"
+                    }
+                ],
+                "count": 1
+            },
+            "downloadServers": {
+
+            },
+            "subjects": {
+
+            },
+            "external": {
+                "source": "reversingLabs",
+                "firstSeen": "2014-12-09T06:10:00Z",
+                "lastSeen": "2018-12-16T20:55:00Z",
+                "malwareType": "Trojan",
+                "platform": "Win32",
+                "detectionCoverage": 43,
+                "family": [
+                    "badur"
+                ]
+            }
+        },
+        "type": "md5",
+        "md5": "0x474B9CCF5AB9D72CA8A333889BBB34F0",
+        "hash": "0x474B9CCF5AB9D72CA8A333889BBB34F0",
+        "created": "2014-10-20T23:19:00Z",
+        "family": [
+            "tsunami"
+        ],
+        "familyMembers": {
+            "tsunami": {
+                "count": 61
+            }
+        },
+        "risk": "high"
+    },
+    "tags": [
+
+    ]
+}
+
+MOCK_HOST_RESP = {
+    "createdDate": "1997-09-15T07:00:00.000Z",
+    "updatedDate": "2019-09-09T15:39:04.000Z",
+    "expiresDate": "2028-09-13T07:00:00.000Z",
+    "contactEmail": "abusecomplaints@markmonitor.com",
+    "registrarName": "MarkMonitor, Inc.",
+    "contact": [
+        {
+            "type": "registrant",
+            "organization": "Google LLC",
+            "country": "United States"
+        }
+    ],
+    "extended": {
+        "createdDate": "1997-09-15T07:00:00.000Z",
+        "updatedDate": "2019-09-09T15:39:04.000Z",
+        "expiresDate": "2028-09-13T07:00:00.000Z",
+        "contactEmail": "abusecomplaints@markmonitor.com",
+        "registrarName": "MarkMonitor, Inc.",
+        "contact": [
+            {
+                "type": "registrant",
+                "organization": "Google LLC",
+                "country": "United States"
+            }
+        ]
+    }
+}
+
+MOCK_CVE_SEARCH_RESP = {'total_rows': 1,
+                        'bookmark': 'g1AAAAMHeJzLYWBg4MhgTmFQTUlKzi9KdUhJstDLTMrVrUjLL0pONTAw1EvOyS9NScwr0ctLLckBKmdKZ',
+                        'rows': [{'type': 'vulnerability',
+                                  'xfdbid': 161573,
+                                  'updateid': 66943,
+                                  'inserted': True,
+                                  'variant': 'single',
+                                  'title': 'wolfSSL DoPreSharedKeys function buffer overflow',
+                                  'description': 'wolfSSL is vulnerable to a buffer overflow.',
+                                  'risk_level': 9.8,
+                                  'cvss': {'version': '3.0',
+                                           'privilegesrequired': 'None',
+                                           'userinteraction': 'None',
+                                           'scope': 'Unchanged',
+                                           'access_vector': 'Network',
+                                           'access_complexity': 'Low',
+                                           'confidentiality_impact': 'High',
+                                           'integrity_impact': 'High',
+                                           'availability_impact': 'High',
+                                           'remediation_level': 'Official Fix'},
+                                  'temporal_score': 8.5,
+                                  'remedy': 'Refer to wolfssl GIT Repository for patch.',
+                                  'remedy_fmt': 'Refer to wolfssl GIT Repository for patch',
+                                  'reported': '2019-05-15T00:00:00Z',
+                                  'tagname': 'wolfssl-cve201911873-bo',
+                                  'stdcode': ['CVE-2019-11873'],
+                                  'platforms_affected': ['wolfSSL wolfSSL 4.0.0'],
+                                  'exploitability': 'Unproven',
+                                  'consequences': 'Gain Access',
+                                  'references': [{
+                                      'link_target': 'https://www.telekom.com/en/corporate-responsibility',
+                                      'link_name': 'Telekom Web site',
+                                      'description': 'Critical remote buffer overflow vulnerability in wolfSSL library'},
+                                      {'link_target': 'https://github.com/wolfSSL/wolfssl/pull/2239',
+                                       'link_name': 'wolfssl GIT Repository',
+                                       'description': 'add sanity check on length of PSK identity #2239'},
+                                      {'link_target': '',
+                                       'link_name': 'CVE-2019-11873',
+                                       'description': 'wolfSSL 4.0.0 has a Buffer Overflow.'}],
+                                  'report_confidence': 'Confirmed'}]}
+
 
 def test_ip(requests_mock):
-    requests_mock.get(MOCK_BASE_URL + f'/ipr/{MOCK_IP}', json=MOCK_IP_RESP)
+    requests_mock.get(f'{MOCK_BASE_URL}/ipr/{MOCK_IP}', json=MOCK_IP_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
     args = {
         'ip': MOCK_IP
     }
     _, outputs, _ = ip_command(client, args)
+
     assert outputs['IP(obj.Address==val.Address)']['Address'] == MOCK_IP
 
 
 def test_url(requests_mock):
-    requests_mock.get(MOCK_BASE_URL + f'/url/{MOCK_URL}', json=MOCK_URL_RESP)
+    requests_mock.get(f'{MOCK_BASE_URL}/url/{MOCK_URL}', json=MOCK_URL_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
     args = {
         'url': MOCK_URL
     }
     _, outputs, _ = url_command(client, args)
+
     assert outputs['URL(obj.Data==val.Data)']['Data'] == MOCK_URL
 
 
-def test_cve_search(requests_mock):
-    requests_mock.get(MOCK_BASE_URL + f'/vulnerabilities/search/{MOCK_CVE}', json=MOCK_CVE_RESP)
+def test_get_cve(requests_mock):
+    requests_mock.get(f'{MOCK_BASE_URL}/vulnerabilities/search/{MOCK_CVE}', json=MOCK_CVE_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
     args = {
         'cve_id': MOCK_CVE
     }
-    _, outputs, _ = cve_search_command(client, args)
+    _, outputs, _ = cve_get_command(client, args)
+
     assert outputs['CVE(obj.ID==val.ID)']['ID'] == MOCK_CVE
+    assert outputs['DBotScore']['Indicator'] == MOCK_CVE, 'The indicator is not matched'
+    assert outputs['DBotScore']['Type'] == 'cve', 'The indicator type should be cve'
+    assert 1 <= outputs['DBotScore']['Score'] <= 3, 'Invalid indicator score range'
 
 
 def test_cve_latest(requests_mock):
-    requests_mock.get(MOCK_BASE_URL + f'/vulnerabilities', json=MOCK_RECENT_CVE_RESP)
+    requests_mock.get(f'{MOCK_BASE_URL}/vulnerabilities', json=MOCK_RECENT_CVE_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
-    _, outputs, _ = cve_latest_command(client, {})
-    assert len(outputs['CVE(obj.ID==val.ID)']) == 1
+    _, outputs, _ = cve_search_command(client, {})
+    assert len(outputs['CVE(obj.ID==val.ID)']) == 1, 'CVE output length should be 1'
+
+
+def test_file(requests_mock):
+    requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH}', json=MOCK_HASH_RESP)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    _, outputs, _ = file_command(client, {'file': MOCK_HASH})
+
+    file_key = next(filter(lambda k: 'File' in k, outputs.keys()), 'File')
+
+    assert outputs[file_key].get('MD5', '') == MOCK_HASH, 'The indicator value is wrong'
+    assert outputs['DBotScore']['Indicator'] == MOCK_HASH, 'The indicator is not matched'
+    assert outputs['DBotScore']['Type'] == 'file', 'The indicator type should be file'
+    assert 1 <= outputs['DBotScore']['Score'] <= 3, 'Invalid indicator score range'
+
+
+def test_whois(requests_mock):
+    requests_mock.get(f'{MOCK_BASE_URL}/whois/{MOCK_HOST}', json=MOCK_HOST_RESP)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    _, outputs, _ = whois_command(client, {'host': MOCK_HOST})
+
+    whois_result = outputs['XFE.Whois(obj.Host==val.Host)']
+
+    assert whois_result['Host'] == MOCK_HOST, 'The host from output is different'
+    assert isinstance(whois_result['Contact'], list), 'Contact information should be list'
+
+
+def test_cve_search(requests_mock):
+    requests_mock.get(f'{MOCK_BASE_URL}/vulnerabilities/fulltext?q={MOCK_CVE_QUERY}', json=MOCK_CVE_SEARCH_RESP)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    _, outputs, _ = cve_search_command(client, {'q': MOCK_CVE_QUERY})
+
+    assert outputs['XFE.CVESearch']['TotalRows'] == len(outputs['CVE(obj.ID==val.ID)']), 'Mismatch rows and outputs'

@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API K0ey
+- display: API Key
   name: credentials
   required: true
   type: 9
@@ -89,12 +89,21 @@ script:
       type: Unknown
     - contextPath: DBotScore.Type
       description: The type of the indicator
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
       type: Unknown
     - contextPath: DBotScore.Score
       description: The actual score
+      type: Unknown
+    - contextPath: XFE.IP(obj.Address==val.Address).Reason
+      description: The reason for the given score from X-Force Exchange
+      type: String
+    - contextPath: XFE.IP(obj.Address==val.Address).Reasondescription
+      description: Additional details of the score's reason
+      type: String
+    - contextPath: XFE.IP(obj.Address==val.Address).Subnets
+      description: The subnets of the IP
       type: Unknown
   - arguments:
     - default: false
@@ -122,30 +131,24 @@ script:
     execution: false
     name: url
     outputs:
-    - contextPath: URL.Data
-      description: Bad URLs found
-      type: Unknown
-    - contextPath: URL.Malicious.Vendor
+    - contextPath: URL(obj.Data==val.Data).Data
+      description: The given URL from the user
+      type: String
+    - contextPath: URL(obj.Data==val.Data).Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
-      type: Unknown
-    - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
-      type: Unknown
-    - contextPath: URL.Malicious.Score
-      description: For malicious URLs, the score from the vendor
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Type
       description: The type of the indicator
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score
-      type: Unknown
+      type: Number
   - arguments:
     - auto: PREDEFINED
       default: true
@@ -169,33 +172,45 @@ script:
     outputs:
     - contextPath: File.MD5
       description: Bad hash MD5
-      type: Unknown
+      type: String
     - contextPath: File.SHA1
       description: Bad hash SHA1
-      type: Unknown
+      type: String
     - contextPath: File.SHA256
       description: Bad hash SHA256
-      type: Unknown
+      type: String
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
-      type: Unknown
+      type: String
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
-      type: Unknown
-    - contextPath: File.Malicious.Score
-      description: For malicious files, the score from the vendor
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Type
       description: The type of the indicator
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score
+      type: Number
+    - contextPath: XFE.File.CnCServers
+      description: C&C servers related to the given file
+      type: Unknown
+    - contextPath: XFE.File.emails
+      description: Emails related to the given file
+      type: Unknown
+    - contextPath: XFE.File.downloadServers
+      description: Download servers related to the given file
+      type: Unknown
+    - contextPath: XFE.File.subjects
+      description: Subjects related to the given file
+      type: Unknown
+    - contextPath: XFE.File.external
+      description: Additional information about the given file
       type: Unknown
   - arguments:
     - default: true
@@ -232,36 +247,30 @@ script:
     execution: false
     name: domain
     outputs:
-    - contextPath: URL.Data
+    - contextPath: URL(obj.Data==val.Data).Data
       description: Bad URLs found
-      type: Unknown
-    - contextPath: URL.Malicious.Vendor
+      type: String
+    - contextPath: URL(obj.Data==val.Data).Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
-      type: Unknown
-    - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
-      type: Unknown
-    - contextPath: URL.Malicious.Score
-      description: For malicious URLs, the score from the vendor
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Type
       description: The type of the indicator
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score
-      type: Unknown
+      type: Number
   - arguments:
     - auto: PREDEFINED
       default: true
       description: The cve to search for
       isArray: false
-      name: cveId
+      name: cve_id
       predefined:
       - comma seperated optional values
       required: true
@@ -271,24 +280,48 @@ script:
     execution: false
     name: cve-search
     outputs:
-    - contextPath: CVE.ID
+    - contextPath: CVE(obj.ID==val.ID).ID
       description: The ID of the CVE
-      type: Unknown
-    - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE
-      type: Unknown
-    - contextPath: CVE.Published
+      type: String
+    - contextPath: CVE(obj.ID==val.ID).CVSS
+      description: The CVSS of the CVE
+      type: String
+    - contextPath: CVE(obj.ID==val.ID).Published
       description: The date this was published
-      type: Unknown
-    - contextPath: CVE.Modified
-      description: When CVE was last modified
-      type: Unknown
-    - contextPath: CVE.Description
+      type: Date
+    - contextPath: CVE(obj.ID==val.ID).Description
       description: The CVE description
       type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+      description: The XFBID of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
+      description: The risk level of the CVE
+      type: Number
+    - contextPath: XFE.CVE(obj.ID==val.ID).Reported
+      description: The reported date of the CVE
+      type: Date
+    - contextPath: XFE.CVE(obj.ID==val.ID).Cvss
+      description: The CVSS information of the CVE
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Stdcode
+      description: The CVE stdcodes
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Title
+      description: the title of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).Description
+      description: The description of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).PlatformsAffected
+      description: The affetcted platforms due to the CVE
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Exploitability
+      description: The exploitability of the CVE.
+      type: String
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
       description: The number of results to return
       isArray: false
       name: limit
@@ -296,26 +329,170 @@ script:
       - comma seperated optional values
       required: false
       secret: false
+    - default: false
+      description: The start of the date range for searching
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: The end of the date range for searching
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
     deprecated: false
     description: Return the latest vulnerabilities found
     execution: false
     name: cve-latest
     outputs:
-    - contextPath: CVE.ID
+    - contextPath: CVE(obj.ID==val.ID).ID
       description: The ID of the CVE
-      type: Unknown
-    - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE
-      type: Unknown
-    - contextPath: CVE.Published
+      type: String
+    - contextPath: CVE(obj.ID==val.ID).CVSS
+      description: The CVSS of the CVE
+      type: String
+    - contextPath: CVE(obj.ID==val.ID).Published
       description: The date this was published
-      type: Unknown
-    - contextPath: CVE.Modified
-      description: When CVE was last modified
-      type: Unknown
-    - contextPath: CVE.Description
+      type: Date
+    - contextPath: CVE(obj.ID==val.ID).Description
       description: The CVE description
       type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+      description: The XFBID of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
+      description: The risk level of the CVE
+      type: Number
+    - contextPath: XFE.CVE(obj.ID==val.ID).Reported
+      description: The reported date of the CVE
+      type: Date
+    - contextPath: XFE.CVE(obj.ID==val.ID).Cvss
+      description: The CVSS information of the CVE
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Stdcode
+      description: The CVE stdcodes
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Title
+      description: the title of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).Description
+      description: The description of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).PlatformsAffected
+      description: The affetcted platforms due to the CVE
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Exploitability
+      description: The exploitability of the CVE.
+      type: String
+  - arguments:
+    - default: true
+      description: The host or address to search inside X-Force Exchange (e.g. google.com)
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets information about the given host address
+    execution: false
+    name: xfe-whois
+    outputs:
+    - contextPath: XFE.Whois(obj.Host==val.Host).Host
+      description: The given host from the user.
+      type: String
+    - contextPath: XFE.Whois(obj.Host==val.Host).RegistrarName
+      description: The domain name registrar of the host.
+      type: String
+    - contextPath: XFE.Whois(obj.Host==val.Host).Created
+      description: The date the host was created.
+      type: Date
+    - contextPath: XFE.Whois(obj.Host==val.Host).Updated
+      description: The date the host's information has been updated.
+      type: Date
+    - contextPath: XFE.Whois(obj.Host==val.Host).Expires
+      description: The date the host will be expired
+      type: Date
+    - contextPath: XFE.Whois(obj.Host==val.Host).Email
+      description: The contact email of the host owners.
+      type: String
+    - contextPath: XFE.Whois(obj.Host==val.Host).Contact
+      description: Contact information of the host's organization
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The query for the search.
+      isArray: false
+      name: q
+      required: true
+      secret: false
+    - default: false
+      description: The start of the date range for searching.
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: The end of the date range for searching.
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    - default: false
+      description: Bookmark used to page through results.
+      isArray: false
+      name: bookmark
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets list of all vulnerabilities associated with the search term.
+    execution: false
+    name: xfe-search-cves
+    outputs:
+    - contextPath: CVE(obj.ID==val.ID).ID
+      description: The ID of the CVE
+      type: String
+    - contextPath: CVE(obj.ID==val.ID).CVSS
+      description: The CVSS of the CVE
+      type: String
+    - contextPath: CVE(obj.ID==val.ID).Published
+      description: The date this was published
+      type: Date
+    - contextPath: CVE(obj.ID==val.ID).Description
+      description: The CVE description
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+      description: The XFBID of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
+      description: The risk level of the CVE
+      type: Number
+    - contextPath: XFE.CVE(obj.ID==val.ID).Reported
+      description: The reported date of the CVE
+      type: Date
+    - contextPath: XFE.CVE(obj.ID==val.ID).Cvss
+      description: The CVSS information of the CVE
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Stdcode
+      description: The CVE stdcodes
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Title
+      description: the title of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).Description
+      description: The description of the CVE
+      type: String
+    - contextPath: XFE.CVE(obj.ID==val.ID).PlatformsAffected
+      description: The affetcted platforms due to the CVE
+      type: Unknown
+    - contextPath: XFE.CVE(obj.ID==val.ID).Exploitability
+      description: The exploitability of the CVE.
+      type: String
+    - contextPath: XFE.CVESearch.TotalRows
+      description: The total rows received after search
+      type: String
+    - contextPath: XFE.CVESearch.Bookmark
+      description: Bookmark used to page through results.
+      type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: false
@@ -334,12 +511,25 @@ script:
 
 
     class Client(BaseClient):
+        """
+        Client for X-Force Exchange RESTful API.
+
+        Args:
+              url (str): the URL of X-Force Exchange.
+              api_key (str): the API key of X-Force Exchange.
+              password (str): password for the API key (required for authentication).
+              use_ssl (bool): specifies whether to verify the SSL certificate or not.
+              use_proxy (bool): specifies if to use Demisto proxy settings.
+        """
+
         def __init__(self, url: str, api_key: str, password: str, use_ssl: bool, use_proxy: bool):
-            self.url = url
             super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'},
                              auth=(api_key, password))
 
         def ip_report(self, ip: str) -> dict:
+            if not is_ip_valid(ip):
+                raise DemistoException('The given IP was invalid')
+
             return self._http_request('GET', f'/ipr/{ip}')
 
         def url_report(self, url: str) -> dict:
@@ -348,19 +538,36 @@ script:
         def cve_report(self, code: str) -> dict:
             return self._http_request('GET', f'/vulnerabilities/search/{code}')
 
-        def get_recent_vulnerabilities(self) -> dict:
-            return self._http_request('GET', f'/vulnerabilities')
+        def search_cves(self, q: str, start_date: str, end_date: str, bookmark: str) -> dict:
+            params = {'q': q, 'startDate': start_date, 'endDate': end_date, 'bookmark': bookmark}
+            params = {key: value for key, value in params if value}
+            return self._http_request('GET', '/vulnerabilities/fulltext', params=params)
+
+        def file_report(self, file_hash: str) -> dict:
+            return self._http_request('GET', f'/malware/{file_hash}').get('malware')
+
+        def get_recent_vulnerabilities(self, start_date: str, end_date: str, limit: int) -> dict:
+            params = {'startDate': start_date, 'endDate': end_date, 'limit': limit}
+            params = {key: value for key, value in params if value}
+            return self._http_request('GET', '/vulnerabilities', params=params)
+
+        def get_version(self) -> dict:
+            return self._http_request('GET', '/version')
+
+        def whois(self, host: str) -> dict:
+            return self._http_request('GET', f'/whois/{host}')
 
 
     def calculate_score(score: int, threshold: int) -> int:
         """
+        Calculates and converts X-Force Exchange score into Demisto score.
 
         Args:
-            score:
-            threshold:
+            score (int): the score from X-Force Exchange for certain indicator (1-10).
+            threshold (int): the score threshold configured by the user.
 
         Returns:
-            the total score of
+            int - Demisto's score for the indicator
         """
 
         if score > threshold:
@@ -371,6 +578,20 @@ script:
 
 
     def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dict, dict]:
+        """
+        Formats CVE report from X-Force Exchange into Demisto's outputs.
+
+        Args:
+            cve_id (str): the id (code) of the CVE.
+            report (dict): the report from X-Force Exchange about the CVE.
+            threshold (int): the score threshold configured by the user.
+
+        Returns:
+            str: the markdown to display inside Demisto.
+            dict: the context to return into Demisto.
+            dict: the report from X-Force Exchange (used for debugging).
+        """
+
         outputs = {'ID': cve_id, 'CVSS': report.get('cvss', {}).get('version'),
                    'Published': report.get('reported'),
                    'Description': report.get('description')}
@@ -401,24 +622,27 @@ script:
     def test_module(client: Client) -> str:
         """
         Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+
         Args:
-            client: X-Force client
+            client (Client): X-Force Exchange client.
         Returns:
-            'ok' if test passed, anything else will fail the test.
+            str: 'ok' if test passed, anything else will fail the test.
         """
-        return 'ok' if client.ip_report('8.8.8.8').get('ip') == '8.8.8.8' else 'Connection failed.'
+
+        return 'ok' if ['build', 'created'] in client.get_version() else 'Connection failed.'
 
 
     def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
         """
         Executes IP enrichment against X-Force Exchange.
+
         Args:
-            client: X-Force client.
-            args: the arguments for the command.
+            client (Client): X-Force client.
+            args (Dict[str, str]): the arguments for the command.
         Returns:
-            markdown - human readable presentation of the IP report.
-            context - the results to return into Demisto's context.
-            report - the raw data from X-Force client (used for debugging).
+            str: human readable presentation of the IP report.
+            dict: the results to return into Demisto's context.
+            dict: the raw data from X-Force client (used for debugging).
         """
 
         threshold = int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))
@@ -451,15 +675,16 @@ script:
          Executes URL enrichment against X-Force Exchange.
 
          Args:
-             client: X-Force client.
-             args: the arguments for the command.
+             client (Client): X-Force client.
+             args (Dict[str, str]): the arguments for the command.
          Returns:
-             markdown - human readable presentation of the URL report.
-             context - the results to return into Demisto's context.
-             report - the raw data from X-Force client (used for debugging).
+             str: human readable presentation of the URL report.
+             dict: the results to return into Demisto's context.
+             dict: the raw data from X-Force client (used for debugging).
          """
 
-        report = client.url_report(args['url'])
+        url = args.get('url') or args.get('domain')
+        report = client.url_report(url)
         threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
 
         outputs = {'Data': report['url'], 'Malicious': {'Vendor': 'XFE'}}
@@ -469,57 +694,67 @@ script:
         context = {'URL(obj.Data==val.Data)': outputs, 'DBotScore': dbot_score}
 
         table = {'Score': report['score'],
-                 'Categories': '\n'.join(report['cats'].keys())
-                 }
+                 'Categories': '\n'.join(report['cats'].keys())}
         markdown = tableToMarkdown(f'X-Force URL Reputation for: {report["url"]}\n'
                                    f'{XFORCE_URL}/ip/{report["url"]}', table, removeNull=True)
 
         return markdown, context, report
 
 
-    def cve_latest_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
         """
-         Get details from latest vulnerabilities from X-Force Exchange.
+         Get details about vulnerabilities (latest / search) from X-Force Exchange.
 
          Args:
-             client: X-Force client.
-             args: the arguments for the command.
+             client (Client): X-Force client.
+             args (Dict[str, str]): the arguments for the command.
          Returns:
-             markdown: human readable presentation of the IP report.
+             str: human readable presentation of the CVEs reports.
              context: the results to return into Demisto's context.
-             report: the raw data from X-Force client (used for debugging).
+             report: the raw data from X-Force Exchange client (used for debugging).
         """
 
-        threshold = int(demisto.params().get('threshold', DEFAULT_THRESHOLD))
-        reports = client.get_recent_vulnerabilities()
+        threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
+
+        if 'q' in args:
+            reports = client.search_cves(args['q'], args.get('start_date'), args.get('end_date'),
+                                         args.get('bookmark'))
+            reports, total_rows, bookmark = reports['rows'], reports['total_rows'], reports['bookmark']
+        else:
+            reports = client.get_recent_vulnerabilities(args.get('start_date'), args.get('end_date'),
+                                                        int(args.get('limit')))
+            total_rows, bookmark = '', ''
 
         total_context: Dict[str, list] = defaultdict(list)
         total_markdown = ''
 
         for report in reports:
-            cve_id = report.get('stdcode', [0])[0]
+            cve_id = report.get('stdcode', [''])[0]
             markdown, context, _ = get_cve_results(cve_id, report, threshold)
 
-            total_context['CVE(obj.ID==val.ID)'].append(context['CVE(obj.ID==val.ID)'])
-            total_context['DBotScore'].append(context['DBotScore'])
-            total_context['XFE.CVE(obj.ID==val.ID)'].append(context['XFE.CVE(obj.ID==val.ID)'])
+            for key, value in context.items():
+                total_context[key].append(value)
 
             total_markdown += markdown
+
+        if total_rows and bookmark:
+            total_context['XFE.CVESearch'] = {'TotalRows': total_rows, 'Bookmark': bookmark}
 
         return total_markdown, total_context, reports
 
 
-    def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
         """
          Executes CVE enrichment against X-Force Exchange.
 
          Args:
-             client: X-Force client.
-             args: the arguments for the command.
+             client (Client): X-Force Exchange client.
+             args (Dict[str, str]): the arguments for the command.
+
          Returns:
-             markdown - human readable presentation of the URL report.
-             context - the results to return into Demisto's context.
-             report - the raw data from X-Force client (used for debugging).
+             str: human readable presentation of the CVE report.
+             dict: the results to return into Demisto's context.
+             dict: the raw data from X-Force client (used for debugging).
          """
 
         threshold = demisto.params().get('cve_threshold', DEFAULT_THRESHOLD)
@@ -528,11 +763,72 @@ script:
         return get_cve_results(args['cve_id'], report[0], threshold)
 
 
+    def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+        """
+        Executes file hash enrichment against X-Force Exchange.
+
+        Args:
+            client (Client): X-Force Exchange client.
+            args (Dict[str, str]): the arguments for the command.
+
+        Returns:
+             str: human readable presentation of the file hash report.
+             dict: the results to return into Demisto's context.
+             dict: the raw data from X-Force Exchange client (used for debugging).
+        """
+
+        report = client.file_report(args.get('file', ''))
+        hash_type = report['type']
+
+        scores = {'high': 3, 'medium': 2, 'low': 1}
+        context = build_dbot_entry(args.get('file'), indicator_type=report['type'],
+                                   vendor='XFE', score=scores.get(report['risk'], 0))
+        file_key = f'XFE.{next(filter(lambda k: "File" in k, context.keys()), "File")}'  # type: ignore
+
+        hash_info = {**report['origins'], 'Family': report['family'], 'FamilyMembers': report['familyMembers']}
+        context[file_key] = hash_info
+
+        download_servers = ','.join(server['ip'] for server in hash_info.get('downloadServers', {}).get('rows', []))
+        cnc_servers = ','.join(server['domain'] for server in hash_info.get('CnCServers', {}).get('rows', []))
+        table = {'CnC Servers': cnc_servers, 'Download Servers': download_servers,
+                 'Source': hash_info.get('external', {}).get('source'), 'Created Date': report['created'],
+                 'Type': hash_info.get('external', {}).get('malwareType')}
+        markdown = tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
+                                   f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
+
+        return markdown, context, report
+
+
+    def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+        """
+        Gets information about the given host address.
+
+        Args:
+            client (Client): X-Force Exchange client.
+            args (Dict[str, str]): the arguments for the command.
+
+        Returns:
+             str: human readable presentation of the information about the host.
+             dict: the results to return into Demisto's context.
+             dict: the raw data from X-Force Exchange client (used for debugging).
+        """
+
+        result = client.whois(args['host'])
+
+        outputs = {'Host': args['host'], 'RegistrarName': result.get('registrarName'),
+                   'Created': result.get('createdDate'), 'Updated': result.get('updatedDate'),
+                   'Expires': result.get('expiresDate'), 'Email': result.get('contactEmail'),
+                   'Contact': [{k.title(): v for k, v in contact.items()} for contact in result.get('contact', [])]}
+        context = {'XFE.Whois(obj.Host==val.Host)': outputs}
+        markdown = tableToMarkdown(f'X-Force Whois result for {args["host"]}', outputs, removeNull=True)
+
+        return markdown, context, result
+
+
     def main():
         params = demisto.params()
         credentials = params.get('credentials')
 
-        LOG(f'Command being called is {demisto.command()}')
         client = Client(params.get('url'),
                         credentials.get('identifier'), credentials.get('password'),
                         use_ssl=not params.get('insecure', False),
@@ -541,11 +837,15 @@ script:
             'ip': ip_command,
             'url': url_command,
             'domain': url_command,
-            'cve-latest': cve_latest_command,
-            'cve-search': cve_search_command
+            'cve-latest': cve_search_command,
+            'cve-search': cve_get_command,
+            'file': file_command,
+            'xfe-whois': whois_command,
+            'xfe-search-cves': cve_search_command
         }
 
         command = demisto.command()
+        LOG(f'Command being called is {command}')
 
         try:
             if command == 'test-module':
