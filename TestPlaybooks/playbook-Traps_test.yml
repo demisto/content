@@ -1,15 +1,17 @@
 id: Traps test
 version: -1
+contentitemfields:
+  propagationLabels: []
 name: Traps test
+description: Test for Traps integration
 starttaskid: "0"
-description: "Test for Traps integration"
 tasks:
   "0":
     id: "0"
-    taskid: 8539bd11-9c6a-407a-8b88-3f0db212c63a
+    taskid: cd141148-ace4-4eb1-866d-e6a904a177d3
     type: start
     task:
-      id: 8539bd11-9c6a-407a-8b88-3f0db212c63a
+      id: cd141148-ace4-4eb1-866d-e6a904a177d3
       version: -1
       name: ""
       iscommand: false
@@ -28,43 +30,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: fc769130-fd39-4473-8bc4-30e5261bd67e
-    type: regular
-    task:
-      id: fc769130-fd39-4473-8bc4-30e5261bd67e
-      version: -1
-      name: traps-get-endpoint-by-id
-      description: Get endpoint details by agent id.
-      script: Traps|||traps-get-endpoint-by-id
-      type: regular
-      iscommand: true
-      brand: Traps
-    nexttasks:
-      '#none#':
-      - "26"
-      - "27"
-    scriptarguments:
-      endpoint_id:
-        simple: d3339851f18f470182bf2bf98ad5db4b
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
   "2":
     id: "2"
-    taskid: 52f7b149-f0a0-4152-8cec-4bf9ede149b4
+    taskid: e3ebee45-4797-4a54-84df-c243015d50ef
     type: title
     task:
-      id: 52f7b149-f0a0-4152-8cec-4bf9ede149b4
+      id: e3ebee45-4797-4a54-84df-c243015d50ef
       version: -1
       name: 'Missing: get all endpoints'
       type: title
@@ -72,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "30"
     separatecontext: false
     view: |-
       {
@@ -84,12 +56,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "9":
     id: "9"
-    taskid: 70ac1ebd-1d12-4b94-86b9-9de004c926fa
+    taskid: dc8f10c1-851e-44dd-8fa6-ca488b3b90d6
     type: regular
     task:
-      id: 70ac1ebd-1d12-4b94-86b9-9de004c926fa
+      id: dc8f10c1-851e-44dd-8fa6-ca488b3b90d6
       version: -1
       name: traps-event-update
       description: Change status and add a comment to an existing event.
@@ -117,12 +90,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "10":
     id: "10"
-    taskid: cb5953df-3209-4981-8c88-ba510099c9fa
+    taskid: 575b27e1-0d5d-4fe0-803c-2432edb4c929
     type: title
     task:
-      id: cb5953df-3209-4981-8c88-ba510099c9fa
+      id: 575b27e1-0d5d-4fe0-803c-2432edb4c929
       version: -1
       name: 'Missing: Get events'
       type: title
@@ -142,12 +116,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "11":
     id: "11"
-    taskid: 0d7a5ae1-8800-4cc1-87e4-7605e771ff8f
+    taskid: 0474c8e7-3c72-454b-87e2-a474412e3cc9
     type: regular
     task:
-      id: 0d7a5ae1-8800-4cc1-87e4-7605e771ff8f
+      id: 0474c8e7-3c72-454b-87e2-a474412e3cc9
       version: -1
       name: traps-event-bulk-update-status
       description: Change the status of multiple events.
@@ -174,12 +149,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "14":
     id: "14"
-    taskid: 3e179924-1058-49f0-824d-55353d868e97
+    taskid: 20498bc5-61df-47b1-8f11-4b9dd2eb44e5
     type: regular
     task:
-      id: 3e179924-1058-49f0-824d-55353d868e97
+      id: 20498bc5-61df-47b1-8f11-4b9dd2eb44e5
       version: -1
       name: traps-hashes-blacklist-status
       description: Get blacklist status of guven hashes.
@@ -204,12 +180,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "15":
     id: "15"
-    taskid: bd81ecda-ab77-4359-87d3-0111e271f9c4
+    taskid: c3a1ddb3-5ee7-44d6-8da8-f959643b44d6
     type: regular
     task:
-      id: bd81ecda-ab77-4359-87d3-0111e271f9c4
+      id: c3a1ddb3-5ee7-44d6-8da8-f959643b44d6
       version: -1
       name: traps-hash-blacklist
       description: Blacklist specified hash.
@@ -234,12 +211,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "16":
     id: "16"
-    taskid: ea5c3bdd-69dd-460a-89e6-1af92c588384
+    taskid: 5a206db7-092a-4e38-8d5e-65fc65a450ed
     type: regular
     task:
-      id: ea5c3bdd-69dd-460a-89e6-1af92c588384
+      id: 5a206db7-092a-4e38-8d5e-65fc65a450ed
       version: -1
       name: traps-hash-blacklist-remove
       description: Remove a given hash from blacklist
@@ -264,12 +242,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "17":
     id: "17"
-    taskid: 35e75331-be26-4d48-84ab-0edeb5b8b780
+    taskid: cb1e029e-91c4-4c52-884e-8c45656f6b48
     type: condition
     task:
-      id: 35e75331-be26-4d48-84ab-0edeb5b8b780
+      id: cb1e029e-91c4-4c52-884e-8c45656f6b48
       version: -1
       name: Is blacklisted?
       type: condition
@@ -300,12 +279,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "18":
     id: "18"
-    taskid: cdb4f089-2d90-48b0-86dd-b5e578ef3462
+    taskid: 84df4f18-36b8-4c9c-84f9-1404045d7c3e
     type: condition
     task:
-      id: cdb4f089-2d90-48b0-86dd-b5e578ef3462
+      id: 84df4f18-36b8-4c9c-84f9-1404045d7c3e
       version: -1
       name: Verify context
       type: condition
@@ -359,12 +339,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "19":
     id: "19"
-    taskid: 8b8e43a7-b9fe-443c-8ec9-20fbb9a879ab
+    taskid: b4e6db43-ccc9-4825-88a6-c34e80372d3d
     type: condition
     task:
-      id: 8b8e43a7-b9fe-443c-8ec9-20fbb9a879ab
+      id: b4e6db43-ccc9-4825-88a6-c34e80372d3d
       version: -1
       name: Is not blacklisted?
       type: condition
@@ -395,12 +376,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "22":
     id: "22"
-    taskid: 4c55d3c3-1e47-4cd5-8ada-c008a11b962a
+    taskid: 82eabbf7-5a06-484b-8f9a-10f18a96f693
     type: regular
     task:
-      id: 4c55d3c3-1e47-4cd5-8ada-c008a11b962a
+      id: 82eabbf7-5a06-484b-8f9a-10f18a96f693
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -431,12 +413,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "25":
     id: "25"
-    taskid: 1500820d-ca65-4918-84cb-de657daf89f1
+    taskid: 04c5f9f8-a53d-46df-87ea-886bc46f5d0d
     type: title
     task:
-      id: 1500820d-ca65-4918-84cb-de657daf89f1
+      id: 04c5f9f8-a53d-46df-87ea-886bc46f5d0d
       version: -1
       name: DONE!
       type: title
@@ -453,12 +436,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "26":
     id: "26"
-    taskid: ef1f1874-e535-45be-88ce-66a231b02352
+    taskid: 0def5ef4-3b16-452b-8eb9-16ac3894e6ff
     type: playbook
     task:
-      id: ef1f1874-e535-45be-88ce-66a231b02352
+      id: 0def5ef4-3b16-452b-8eb9-16ac3894e6ff
       version: -1
       name: Traps Retrieve And Download Files
       playbookName: Traps Retrieve And Download Files
@@ -480,6 +464,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -490,14 +475,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "27":
     id: "27"
-    taskid: 2ef8ad33-4d9a-419f-84b7-282584ce4e3a
+    taskid: 2fbd4929-4ac4-4aac-853d-db5d8e2d6d12
     type: playbook
     task:
-      id: 2ef8ad33-4d9a-419f-84b7-282584ce4e3a
+      id: 2fbd4929-4ac4-4aac-853d-db5d8e2d6d12
       version: -1
       name: Traps Scan Endpoint
+      description: Use this playbook to initiate an endpoint scan and retrieve the
+        scan results.
       playbookName: Traps Scan Endpoint
       type: playbook
       iscommand: false
@@ -513,22 +501,24 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 720
+          "x": 500,
+          "y": 1165
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "28":
     id: "28"
-    taskid: dd7deec3-0bb0-4f6a-8e07-feabeca09ec1
+    taskid: fd8d033e-bc01-400d-884d-0f539314c274
     type: regular
     task:
-      id: dd7deec3-0bb0-4f6a-8e07-feabeca09ec1
+      id: fd8d033e-bc01-400d-884d-0f539314c274
       version: -1
       name: traps-event-update (revert)
       description: Change status and add a comment to an existing event.
@@ -556,12 +546,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "29":
     id: "29"
-    taskid: 8ac9b8a4-f0bf-4a67-8214-a03b87b982a3
+    taskid: 04d7e58f-c517-4689-8f4b-fd2b8a33446e
     type: regular
     task:
-      id: 8ac9b8a4-f0bf-4a67-8214-a03b87b982a3
+      id: 04d7e58f-c517-4689-8f4b-fd2b8a33446e
       version: -1
       name: traps-event-bulk-update-status (revert)
       description: Change the status of multiple events.
@@ -588,6 +579,81 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+  "30":
+    id: "30"
+    taskid: bbe837b7-5c91-44e1-8850-e63dd5927e9c
+    type: regular
+    task:
+      id: bbe837b7-5c91-44e1-8850-e63dd5927e9c
+      version: -1
+      name: traps-get-endpoint-by-id
+      description: Returns details for the specified endpoint.
+      script: '|||traps-get-endpoint-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+      - "26"
+    scriptarguments:
+      endpoint_id:
+        simple: d3339851f18f470182bf2bf98ad5db4b
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "31":
+    id: "31"
+    taskid: fe1156ed-fb93-4ed6-869b-31a8ed503f3d
+    type: condition
+    task:
+      id: fe1156ed-fb93-4ed6-869b-31a8ed503f3d
+      version: -1
+      name: Check if Scan status is not pending or in_progress
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notInList
+          left:
+            value:
+              complex:
+                root: Traps
+                accessor: Endpoint.ScanStatus
+            iscontext: true
+          right:
+            value:
+              simple: pending, in_progress
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {},
