@@ -72,46 +72,21 @@ class Client(BaseClient):
             'skipinitialspace': skipinitialspace
         }
 
-    def _build_request(self, url):
-        r = requests.Request(
-            'GET',
-            url,
-            auth=self._auth
-        )
-
-        return r.prepare()
-
-    def build_iterator(self, **kwargs):
+    def build_iterator(self):
         results = []
         urls = self._base_url
         if not isinstance(urls, list):
             urls = [urls]
         for url in urls:
-            _session = requests.Session()
-
-            prepreq = self._build_request(url)
-
-            # this is to honour the proxy environment variables
-            kwargs.update(_session.merge_environment_settings(
-                prepreq.url,
-                {}, None, None, None  # defaults
-            ))
-            kwargs['stream'] = True
-            kwargs['verify'] = self._verify
-            kwargs['timeout'] = self.polling_timeout
-
             try:
-                r = _session.send(prepreq, **kwargs)
-            except requests.ConnectionError:
-                raise requests.ConnectionError('Failed to establish a new connection.'
-                                               ' Please make sure your URL is valid.')
-            try:
-                r.raise_for_status()
-            except Exception:
-                return_error('Exception in request: {} {}'.format(r.status_code, r.content))
+                text = self._http_request(
+                    "GET", "", full_url=url, timeout=self.polling_timeout, stream=True, resp_type='text'
+                )
+            except Exception as exception:
+                return_error('Exception in request: {}'.format(exception))
                 raise
 
-            response = r.content.decode(self.encoding).split('\n')
+            response = text.split('\n')
             if self.feed_url_to_config:
                 fieldnames = self.feed_url_to_config.get(url, {}).get('fieldnames', [])
             else:
