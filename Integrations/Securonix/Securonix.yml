@@ -939,7 +939,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Cmoment for the new incident.
+      description: Comment for the new incident.
       isArray: false
       name: comment
       required: false
@@ -957,7 +957,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create an incident.
+    description: Create an incident. For more information regarding the requiered
+      arguments, see Securonix documentation.
     execution: false
     name: securonix-create-incident
     outputs:
