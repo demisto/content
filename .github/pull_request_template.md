@@ -1,4 +1,5 @@
 <!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->
+
 ## Status
 - [x] In Progress
 - [ ] Ready
@@ -29,4 +30,4 @@ Paste here any images that will help the reviewer
 
 ## Demisto Partner?
 - [ ] The title must be in the following format: **[YOUR_PARTNER_ID] short description**
-- [ ] Add a label: **Partner**
+
