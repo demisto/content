@@ -25,8 +25,8 @@ script: |-
   for (i = 0; i < keys.length; i++) {
       temp = invalideEscape(args[keys[i]]);
       if (temp.length != args[keys[i]].length) {
-          var md = "##### error in parse '" + keys[i] +
-          "'\n##### success parse untill\n- " + temp;
+          var md = "##### Error while parsing the argument: '" + keys[i] +
+          "'\n##### Succeeded parsing untill:\n- " + temp;
           return {Type: entryTypes.error, Contents: md, ContentsFormat: formats.markdown, HumanReadable: md};
       }
   }
