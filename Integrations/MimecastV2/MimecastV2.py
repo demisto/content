@@ -528,7 +528,7 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
         policy_id: (str) Policy ID
 
     Returns:
-          Returning a tuple with all of policy arguments filled with data (Tuple).
+          Tuple. Policy object, the option to configure on the policy, policy id.
      """
     empty_args_list = []
     # Add the empty arguments to empty args list
