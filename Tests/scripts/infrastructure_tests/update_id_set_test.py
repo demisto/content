@@ -174,34 +174,41 @@ class TestIntegration(unittest.TestCase):
 
 
 class TestValidatePlaybook(object):
+    # Mocked id_sets
+    id_set_all_depends_on_each_other = {
+        "playbooks": [{"str0": PLAYBOOK_DATA}, {"str1": PLAYBOOK_DATA2}, {"str2": PLAYBOOK_DATA3}]}
+    id_set_all_depends_with_testplaybooks = {"TestPlaybooks": [{"str": PLAYBOOK_DATA_TEST}],
+                                             "playbooks": [{"str": PLAYBOOK_DATA2}, {"str1": PLAYBOOK_DATA3},
+                                                           {"str2": PLAYBOOK_DATA}]}
     playbook_deps = [
         # One playbook path, all depends on each other
-        {"playbooks": [{"str0": PLAYBOOK_DATA}, {"str1": PLAYBOOK_DATA2}, {"str2": PLAYBOOK_DATA3}]},
+        (id_set_all_depends_on_each_other, "Found a missing dependency when its not presented"),
         # Empty case
-        {},
+        ({}, "Sent an empty case but found a dependency"),
         # Two paths, depends on each other
-        {"TestPlaybooks": [{"str": PLAYBOOK_DATA_TEST}],
-         "playbooks": [{"str": PLAYBOOK_DATA2}, {"str1": PLAYBOOK_DATA3}, {"str2": PLAYBOOK_DATA}]},
+        (id_set_all_depends_with_testplaybooks, "Sent an id_set with multiple paths, found a missing dependency"),
     ]
 
-    @pytest.mark.parametrize('input_data', playbook_deps)
-    def test_validate_playbook_deps(self, input_data):
-        validate_playbook_dependencies(input_data)
+    @pytest.mark.parametrize('id_set_data, description', playbook_deps)
+    def test_validate_playbook_deps(self, id_set_data, description):
+        assert validate_playbook_dependencies(id_set_data), description
 
+    # Mocked invalid id_sets
+    id_set_missing_dep = {"playbooks": [{"str": PLAYBOOK_DATA}]}
+    id_set_playbook_missing_dep = {"playbooks": [{"str": PLAYBOOK_DATA}], "TestPlaybooks": [{"str": PLAYBOOK_DATA2}]}
+    id_set_testplaybook_missing_dep = {"TestPlaybooks": [{"PLAYBOOK_DATA_TEST": PLAYBOOK_DATA_TEST}]}
     playbook_deps_invalid = [
         # One dependency, no other playbook
-        {"playbooks": [{"str": PLAYBOOK_DATA}]},
+        (id_set_missing_dep, "Sent a playbook with missing dependency but it was found."),
         # Two different paths playbooks, missing dependency
-        {"playbooks": [{"str": PLAYBOOK_DATA}], "TestPlaybooks": [{"str": PLAYBOOK_DATA2}]},
-        # Missing playbook
-        {"TestPlaybooks": [{"PLAYBOOK_DATA_TEST": PLAYBOOK_DATA_TEST}]}
-
+        (id_set_playbook_missing_dep, "Sent a playbook with missing dependency but it was found"),
+        # TestPlaybook with no playbook it depends on
+        (id_set_testplaybook_missing_dep, "Sent a test playbook with missing dependency but it was found"),
     ]
 
-    @pytest.mark.parametrize('input_data', playbook_deps_invalid)
-    def test_invalid_playbook_deps(self, input_data):
-        with pytest.raises(SystemExit):
-            validate_playbook_dependencies(input_data)
+    @pytest.mark.parametrize('id_set_data, description', playbook_deps_invalid)
+    def test_invalid_playbook_deps(self, id_set_data, description):
+        assert not validate_playbook_dependencies(id_set_data), description
 
 
 if __name__ == '__main__':

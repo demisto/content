@@ -675,7 +675,7 @@ def re_create_id_set(id_set_path="./Tests/id_set.json", objects_to_create=None):
 
     if 'TestPlaybooks' in objects_to_create:
         print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
-        for pair in pool.map(process_test_playbook_path, get_test_playbooks_paths):
+        for pair in pool.map(process_test_playbook_path, get_test_playbooks_paths()):
             if pair[0]:
                 testplaybooks_list.append(pair[0])
             if pair[1]:
@@ -935,14 +935,14 @@ def get_playbook_name(playbook):
 
 
 def validate_playbook_dependencies(id_set_list):
-    # type: (Dict[List[dict]]) -> None
+    # type: (Dict[List[dict]]) -> bool
     """Gets all playbook dependencies and checks if the playbook exists.
 
     Args:
         id_set_list: list of ids
 
-    Raises:
-        KeyError if playbook is missing in the list.
+    Returns:
+        True if all dependencies found, else False.
     """
     print_color("Starting validate playbook's dependencies.", LOG_COLORS.GREEN)
     playbooks = id_set_list.get('playbooks', [])
@@ -968,8 +968,9 @@ def validate_playbook_dependencies(id_set_list):
                         "Playbook `{}` is missing a playbook dependency: `{}`".format(playbook_obj["name"], dependency))
     if failed:
         print_error("Finished validating playbook's dependencies\n, missing dependencies are presented.")
-        sys.exit(1)
+        return False
     print_color("Finished validating playbook's dependencies", LOG_COLORS.GREEN)
+    return True
 
 
 if __name__ == '__main__':
@@ -987,4 +988,5 @@ if __name__ == '__main__':
 
     with open(id_set_path) as f:
         id_set = json.load(f)  # type: Final
-    validate_playbook_dependencies(id_set)
+    if not validate_playbook_dependencies(id_set):
+        sys.exit(1)
