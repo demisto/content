@@ -6,7 +6,7 @@ deprecated: true
 script: |-
   function invalideEscape(str) {
       var i;
-      var special = 'nt';
+      var special = ["n", "t"];
       for (i = 0; i < str.length - 1; i++) {
           if (str[i] === '\\') {
               if (special.indexOf(str[i + 1] == -1)) {
@@ -52,7 +52,7 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: deprecated! use SearchIncidents_v2 instead
+comment: deprecated! use SearchIncidentsv2 instead
 enabled: true
 args:
 - name: id
