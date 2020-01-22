@@ -12,14 +12,16 @@ DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp
                     'uploads/2018/07/Demisto-Icon-Dark.png'
 
 
-def http_request(url, params_dict=None):
+def http_request(url, params_dict=None, verify=True, text=False):
     res = requests.request("GET",
                            url,
-                           verify=True,
+                           verify=verify,
                            params=params_dict,
                            )
     res.raise_for_status()
 
+    if text:
+        return res.text
     return res.json()
 
 
@@ -44,11 +46,13 @@ def get_attachments(build_url, env_results_file_name):
     # TODO: update this code after switching to parallel tests using multiple server for nightly build
     instance_dns = env_results[0]['InstanceDNS']
     role = env_results[0]['Role']
+    build_number = build_url.split('/')[-1]
     success_file_path = "./Tests/is_build_passed_{}.txt".format(role.replace(' ', ''))
 
-    content_team_fields, content_fields, _, _ = get_fields()
-    color = 'good' if os.path.isfile(success_file_path) else 'danger'
-    title = 'Content Build - Success' if os.path.isfile(success_file_path) else 'Content Build - Failure'
+    content_team_fields, content_fields, _, failed_unit_tests = get_fields(build_number)
+    is_build_success = os.path.isfile(success_file_path) and not failed_unit_tests
+    color = 'good' if is_build_success else 'danger'
+    title = 'Content Build - Success' if is_build_success else 'Content Build - Failure'
 
     content_team_attachment = [{
         'fallback': title,
@@ -75,20 +79,24 @@ def get_attachments(build_url, env_results_file_name):
     return content_team_attachment, content_attachment
 
 
-def get_fields():
+def get_failing_unit_tests(build_number):
+    try:
+        failing_unit_tests_url = 'https://{0}-60525392-gh.circle-artifacts.com/1/artifacts/failed_unittests.txt'.format(
+            build_number)
+        res = http_request(failing_unit_tests_url, verify=False, text=True)
+        failing_ut_list = res.split('\n')
+    except Exception:
+        failing_ut_list = None
+    return failing_ut_list
+
+
+def get_fields(build_number):
     failed_tests = []
     if os.path.isfile('./Tests/failed_tests.txt'):
         print('Extracting failed_tests')
         with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
             failed_tests = failed_tests_file.readlines()
             failed_tests = [line.strip('\n') for line in failed_tests]
-
-    failed_unittests = []
-    if os.path.isfile('./Tests/failed_unittests.txt'):
-        print('Extracting failed_unittests')
-        with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
-            failed_unittests = failed_unittests_file.readlines()
-            failed_unittests = [line.strip('\n') for line in failed_unittests]
 
     skipped_tests = []
     if os.path.isfile('./Tests/skipped_tests.txt'):
@@ -106,7 +114,6 @@ def get_fields():
 
     content_team_fields = []
     content_fields = []
-
     if failed_tests:
         field_failed_tests = {
             "title": "Failed tests - ({})".format(len(failed_tests)),
@@ -116,6 +123,7 @@ def get_fields():
         content_team_fields.append(field_failed_tests)
         content_fields.append(field_failed_tests)
 
+    failed_unittests = get_failing_unit_tests(build_number)
     if failed_unittests:
         field_failed_unittests = {
             "title": "Failed unittests - ({})".format(len(failed_unittests)),

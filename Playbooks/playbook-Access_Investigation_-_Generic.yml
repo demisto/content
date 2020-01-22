@@ -446,7 +446,6 @@ tasks:
       id: 160c3d44-9b6f-4207-8df9-69f7c6ac3eb7
       version: -1
       name: IP Enrichment - Generic
-      description: ""
       playbookName: IP Enrichment - Generic
       description: ""
       type: playbook
