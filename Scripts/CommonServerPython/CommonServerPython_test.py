@@ -900,6 +900,8 @@ class TestCommandResults:
         }
 
     def test_create_dbot_score_with_invalid_score(self):
+        from CommonServerPython import DBotScore, DBotScoreType
+
         try:
             DBotScore(
                 indicator='8.8.8.8',
@@ -913,6 +915,8 @@ class TestCommandResults:
             assert True
 
     def test_create_ip(self):
+        from CommonServerPython import IP
+
         ip = IP(
             ip='8.8.8.8',
             asn='some asn',
@@ -926,6 +930,65 @@ class TestCommandResults:
         )
 
         assert ip is not None
+
+    def test_create_domain(self):
+        from CommonServerPython import CommandResults, Domain, WHOIS, EntryType, EntryFormat
+
+        domain = Domain(
+            domain='somedomain.com',
+            dns='dns.somedomain',
+            detection_engines=10,
+            positive_detections=5,
+            organazation='Some Organization',
+            whois=None,
+            sub_domains=[
+                'sub-domain1.somedomain.com',
+                'sub-domain2.somedomain.com',
+                'sub-domain3.somedomain.com'
+            ]
+        )
+
+        dbot_score = DBotScore(
+            indicator='somedomain.com',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.DOMAIN,
+            score=DBotScore.GOOD
+        )
+        domain.set_dbot_score(dbot_score)
+
+        results = CommandResults(
+            uniq_field=None,
+            output_prefix=None,
+            outputs=None,
+            indicators=[domain]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Domain(val.Name && val.Name == obj.Name)': {
+                    'Name': 'somedomain.com',
+                    'DNS': 'dns.somedomain',
+                    'DetectionEngines': 10,
+                    'PositiveEngines': 5,
+                    'Organization': 'Some Organization',
+                    'SubDomains': [
+                        'sub-domain1.somedomain.com',
+                        'sub-domain2.somedomain.com',
+                        'sub-domain3.somedomain.com'
+                    ]
+                },
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': 'somedomain.com',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'domain'
+                }
+            }
+        }
 
 
 class TestBaseClient:
