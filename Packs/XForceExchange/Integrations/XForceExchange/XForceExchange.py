@@ -4,13 +4,24 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 XFORCE_URL = 'https://exchange.xforce.ibmcloud.com'
 DEFAULT_THRESHOLD = 7
 
 
 class Client(BaseClient):
+    """
+    Client for X-Force Exchange RESTful API.
+
+    Args:
+          url (str): the URL of X-Force Exchange.
+          api_key (str): the API key of X-Force Exchange.
+          password (str): password for the API key (required for authentication).
+          use_ssl (bool): specifies whether to verify the SSL certificate or not.
+          use_proxy (bool): specifies if to use Demisto proxy settings.
+    """
+
     def __init__(self, url: str, api_key: str, password: str, use_ssl: bool, use_proxy: bool):
-        self.url = url
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'},
                          auth=(api_key, password))
 
@@ -29,13 +40,14 @@ class Client(BaseClient):
 
 def calculate_score(score: int, threshold: int) -> int:
     """
+    Calculates and converts X-Force Exchange score into Demisto score.
 
     Args:
-        score:
-        threshold:
+        score (int): the score from X-Force Exchange for certain indicator (1-10).
+        threshold (int): the score threshold configured by the user.
 
     Returns:
-        the total score of
+        int - Demisto's score for the indicator
     """
 
     if score > threshold:
@@ -46,6 +58,20 @@ def calculate_score(score: int, threshold: int) -> int:
 
 
 def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dict, dict]:
+    """
+    Formats CVE report from X-Force Exchange into Demisto's outputs.
+
+    Args:
+        cve_id (str): the id (code) of the CVE.
+        report (dict): the report from X-Force Exchange about the CVE.
+        threshold (int): the score threshold configured by the user.
+
+    Returns:
+        str: the markdown to display inside Demisto.
+        dict: the context to return into Demisto.
+        dict: the report from X-Force Exchange (used for debugging).
+    """
+
     outputs = {'ID': cve_id, 'CVSS': report.get('cvss', {}).get('version'),
                'Published': report.get('reported'),
                'Description': report.get('description')}
@@ -76,24 +102,27 @@ def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dic
 def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+
     Args:
-        client: X-Force client
+        client (Client): X-Force client.
     Returns:
-        'ok' if test passed, anything else will fail the test.
+        str: 'ok' if test passed, anything else will fail the test.
     """
+
     return 'ok' if client.ip_report('8.8.8.8').get('ip') == '8.8.8.8' else 'Connection failed.'
 
 
 def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     """
     Executes IP enrichment against X-Force Exchange.
+
     Args:
-        client: X-Force client.
-        args: the arguments for the command.
+        client (Client): X-Force client.
+        args (Dict[str, str]): the arguments for the command.
     Returns:
-        markdown - human readable presentation of the IP report.
-        context - the results to return into Demisto's context.
-        report - the raw data from X-Force client (used for debugging).
+        str: human readable presentation of the IP report.
+        dict: the results to return into Demisto's context.
+        dict: the raw data from X-Force client (used for debugging).
     """
 
     threshold = int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))
@@ -126,12 +155,12 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
      Executes URL enrichment against X-Force Exchange.
 
      Args:
-         client: X-Force client.
-         args: the arguments for the command.
+         client (Client): X-Force client.
+         args (Dict[str,str]): the arguments for the command.
      Returns:
-         markdown - human readable presentation of the URL report.
-         context - the results to return into Demisto's context.
-         report - the raw data from X-Force client (used for debugging).
+         str: human readable presentation of the URL report.
+         dict: the results to return into Demisto's context.
+         dict: the raw data from X-Force client (used for debugging).
      """
 
     report = client.url_report(args['url'])
@@ -157,10 +186,10 @@ def cve_latest_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
      Get details from latest vulnerabilities from X-Force Exchange.
 
      Args:
-         client: X-Force client.
-         args: the arguments for the command.
+         client (Client): X-Force client.
+         args (Dict[str, str]): the arguments for the command.
      Returns:
-         markdown: human readable presentation of the IP report.
+         str: human readable presentation of the IP report.
          context: the results to return into Demisto's context.
          report: the raw data from X-Force client (used for debugging).
     """
@@ -189,12 +218,12 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
      Executes CVE enrichment against X-Force Exchange.
 
      Args:
-         client: X-Force client.
-         args: the arguments for the command.
+         client (Client): X-Force client.
+         args (Dict[str,str]): the arguments for the command.
      Returns:
-         markdown - human readable presentation of the URL report.
-         context - the results to return into Demisto's context.
-         report - the raw data from X-Force client (used for debugging).
+         str: human readable presentation of the URL report.
+         dict: the results to return into Demisto's context.
+         dict: the raw data from X-Force client (used for debugging).
      """
 
     threshold = demisto.params().get('cve_threshold', DEFAULT_THRESHOLD)
