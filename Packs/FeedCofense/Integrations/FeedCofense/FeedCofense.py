@@ -64,7 +64,7 @@ class Client(BaseClient):
     def build_iterator(
             self, begin_time: Optional[int] = None, end_time: Optional[int] = None
     ) -> Generator:
-        """builds iterator from given timestamp, or by url
+        """Builds an iterator from given data filtered by start and end times.
 
         Keyword Arguments:
             begin_time {Optional[str, int]} --
@@ -205,25 +205,22 @@ def fetch_indicators_command(
     return indicators
 
 
-def fetch_indicators_builder(client: Client, fetch_time: str) -> None:
+def build_fetch_times(fetch_time: str, last_fetch: Optional[dict] = None) -> Tuple[int, int]:
     """Build the fetch_indicators and saves timestamp to lastRun
 
     Args:
-        client: Client derives from BaseClient
         fetch_time: fetch time (for example: "3 days")
+        last_fetch: Last fetch object
+
+    Returns:
+        begin_time, end_time
     """
-    last_fetch = demisto.getLastRun()
-    if isinstance(last_fetch, dict) and "timestamp" in last_fetch:
-        begin_time = last_fetch.get("timestamp")
+    if isinstance(last_fetch, dict) and last_fetch.get("timestamp"):
+        begin_time = last_fetch.get("timestamp", 0)  # type: int
         end_time = get_now()
     else:  # First fetch
         begin_time, end_time = parse_date_range_no_milliseconds(fetch_time)
-    indicators = fetch_indicators_command(client, begin_time, end_time)
-    # Send indicators to demisto
-    for b in batch(indicators, batch_size=2000):
-        demisto.createIndicators(b)
-    # set last run is end time
-    demisto.setLastRun({"timestamp": end_time})
+    return begin_time, end_time,
 
 
 def parse_date_range_no_milliseconds(from_time: str) -> Tuple[int, int]:
@@ -244,7 +241,7 @@ def parse_date_range_no_milliseconds(from_time: str) -> Tuple[int, int]:
     return int(begin_time / 1000), int(end_time / 1000)
 
 
-def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict]:
+def get_indicators_command(client: Client, args: dict) -> Tuple[str, list]:
     """Getting indicators into Demisto's incident.
 
     Arguments:
@@ -252,21 +249,19 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict]:
         args {dict} -- Usually demisto.args()
 
     Returns:
-        Tuple[dict, list] -- context_output, human_readable
+        Tuple[str, list] -- human_readable, raw_response
     """
     limit = int(args.get("limit", 10))
     from_time = args.get("from_time", "3 days")
-    begin_time, end_time = parse_date_range_no_milliseconds(from_time)
+    begin_time, end_time = build_fetch_times(from_time)
     indicators = fetch_indicators_command(
-        client, begin_time=begin_time, end_time=end_time, limit=limit
-    )
-    context_output = {"Cofense.Indicator": indicators[:limit]}
+        client, begin_time=begin_time, end_time=end_time, limit=limit)
     human_readable = tableToMarkdown(
         f"Results from {INTEGRATION_NAME}:",
         [indicator.get("rawJSON") for indicator in indicators],
         ["threat_id", "type", "value", "impact", "confidence", "roleDescription"],
     )
-    return human_readable, context_output
+    return human_readable, indicators
 
 
 def get_now() -> int:
@@ -287,7 +282,7 @@ def main():
     credentials = params.get("credentials", {})
     auth = (credentials.get("identifier"), credentials.get("password"))
     verify = not params.get("insecure")
-    proxy = bool(params.get("proxy"))
+    proxy = params.get("proxy")
     threat_type = params.get("threat_type")
     client = Client(url, auth=auth, verify=verify, proxy=proxy, threat_type=threat_type)
 
@@ -296,10 +291,16 @@ def main():
         if demisto.command() == "test-module":
             return_outputs(test_module(client))
         elif demisto.command() == "fetch-indicators":
-            fetch_indicators_builder(client, params.get("fetch_time", "3 days"))
+            begin_time, end_time = build_fetch_times(params.get("fetch_time", "3 days"), demisto.getLastRun())
+            indicators = fetch_indicators_command(client, begin_time, end_time)
+            # Send indicators to demisto
+            for b in batch(indicators, batch_size=2000):
+                demisto.createIndicators(b)
+            demisto.setLastRun({"timestamp": end_time})
         elif demisto.command() == "cofense-get-indicators":
             # dummy command for testing
-            return_outputs(*get_indicators_command(client, demisto.args()))
+            readable_outputs, raw_response = get_indicators_command(client, demisto.args())
+            return_outputs(readable_outputs, raw_response=raw_response)
     except Exception as err:
         return_error(str(err))
 
