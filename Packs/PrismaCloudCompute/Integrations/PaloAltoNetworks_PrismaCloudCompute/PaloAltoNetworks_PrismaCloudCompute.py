@@ -19,38 +19,18 @@ ALERT_TYPE_AUDIT = 'audit'
 
 
 class Client(BaseClient):
-    """Client to use in integrations with powerful _http_request
-            :type base_url: ``str``
-            :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
+    def __init__(self, base_url, verify, project, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        """
+        Extends the init method of BaseClient by adding the arguments below,
 
-            :type verify: ``str``
-            :param verify: Either a boolean, in which case it controls whether we verify
-            the server's TLS certificate, or a string, in which case it must be a path
-            to a CA bundle to use..
+        verify: A 'True' or 'False' string, in which case it controls whether we verify
+            the server's TLS certificate, or a string that represents a path to a CA bundle to use.
+        project: A projectID string, set in the integration parameters.
+            the projectID is saved under self._project
+        """
 
-            :type proxy: ``bool``
-            :param proxy: Whether to run the integration using the system proxy.
+        self._project = project
 
-            :type ok_codes: ``tuple``
-            :param ok_codes:
-                The request codes to accept as OK, for example: (200, 201, 204).
-                If you specify "None", will use requests.Response.ok
-
-            :type headers: ``dict``
-            :param headers:
-                The request headers, for example: {'Accept`: `application/json`}.
-                Can be None.
-
-            :type auth: ``dict`` or ``tuple``
-            :param auth:
-                The request authorization, for example: (username, password).
-                Can be None.
-
-            :return: No data returned
-            :rtype: ``None``
-            """
-
-    def __init__(self, base_url, verify, proxy=False, ok_codes=tuple(), headers=None, auth=None):
         if verify in ['True', 'False']:
             super().__init__(base_url, str_to_bool(verify), proxy, ok_codes, headers, auth)
         else:
@@ -58,25 +38,45 @@ class Client(BaseClient):
             super().__init__(base_url, True, proxy, ok_codes, headers, auth)
             self._verify = verify
 
+    def _http_request(self, method, url_suffix, full_url=None, headers=None,
+                      auth=None, json_data=None, params=None, data=None, files=None,
+                      timeout=10, resp_type='json', ok_codes=None, **kwargs):
+        """
+        Extends the _http_request method of BaseClient.
+        If self._project is available, a 'project=projectID' query param is automatically added to all requests.
+        """
+
+        # if project is given add it to params and call super method
+        if self._project:
+            params = params or {}
+            params.update({'project': self._project})
+
+        return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, data, files,
+                                     timeout, resp_type, ok_codes, **kwargs)
+
     def test(self):
         """
-        Sends a test request to check connectivity, authentication and authorization
+        Calls the fetch alerts endpoint with to=epoch_time to check connectivity, authentication and authorization
         """
+        return self.list_incidents(to_=time.strftime('%Y-%m-%d', time.gmtime(0)))
 
-        return self._http_request(
-            method='GET',
-            url_suffix='',
-            params={'to': time.strftime('%Y-%m-%d', time.gmtime(0))})
-
-    def list_incidents(self):
+    def list_incidents(self, to_=None, from_=None):
         """
         Sends a request to fetch available alerts from last call
         No need to pass here TO/FROM query params, the API returns new alerts from the last request
+        Can be used with TO/FROM query params to get alerts in a specific time period
+        REMARK: alerts are deleted from the endpoint once were successfully fetched
         """
+        params = {}
+        if to_:
+            params['to'] = to_
+        if from_:
+            params['from'] = from_
 
         return self._http_request(
             method='GET',
-            url_suffix='',
+            url_suffix='demisto-alerts',
+            params=params
         )
 
 
@@ -219,6 +219,7 @@ def main():
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     base_url = params.get('address')
+    project = params.get('project', '')
     verify_certificate = not params.get('insecure', False)
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
@@ -239,10 +240,11 @@ def main():
 
         # Init the client
         client = Client(
-            base_url=base_url,
+            base_url=urljoin(base_url, 'api/v1/'),
             verify=verify,
             auth=(username, password),
-            proxy=proxy)
+            proxy=proxy,
+            project=project)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button

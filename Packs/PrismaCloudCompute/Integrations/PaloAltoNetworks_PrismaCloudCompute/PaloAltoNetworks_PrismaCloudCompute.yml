@@ -7,13 +7,19 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: https://example.net:1234/demisto-alerts
-  display: "Prisma Cloud Compute Full URL \n(E.g. https://example.net:1234/demisto-alerts)"
+- defaultvalue: https://example.net:1234
+  display: |-
+    Prisma Cloud Compute Console URL
+    (E.g. https://example.net:1234)
   name: address
   required: true
   type: 0
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Prisma Cloud Compute Project Name (if applies)
+  hidden: false
+  name: project
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8

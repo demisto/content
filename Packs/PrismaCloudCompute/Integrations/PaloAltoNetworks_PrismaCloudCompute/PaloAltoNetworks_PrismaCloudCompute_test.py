@@ -335,7 +335,7 @@ def test_fetch_incidents(requests_mock):
                     '|\\n| ALAS-2019-1188 |  | 1.0.1m-r0 | libcrypto1.0 | medium | openssl | fixed in '
                     '1.0.2k-16.150.amzn1 |\\n"}'}]
 
-    requests_mock.get('https://test.com', json=json_incidents_mock_response)
-    client = Client(base_url='https://test.com', verify=False, auth=('test', 'test'))
+    requests_mock.get('https://test.com/demisto-alerts', json=json_incidents_mock_response)
+    client = Client(base_url='https://test.com', verify='False', project='', auth=('test', 'test'))
 
     assert fetch_incidents(client) == expected_incidents
