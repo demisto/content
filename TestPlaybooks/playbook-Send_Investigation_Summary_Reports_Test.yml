@@ -295,7 +295,7 @@ tasks:
       version: -1
       name: Get Incident
       description: Searches Demisto incidents
-      scriptName: SearchIncidents v2
+      scriptName: SearchIncidents_v2
       type: regular
       iscommand: false
       brand: ""
