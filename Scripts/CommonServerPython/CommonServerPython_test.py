@@ -1083,3 +1083,30 @@ def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
     # emulates re.fullmatch from py3.4
     assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
+
+
+url_join_test_inputs = [
+    ([], ""),
+    ([""], ""),
+    (["url", ""], "url",),
+    (["url", "suffix"], "url/suffix"),
+    (["url/", "suffix"], "url/suffix"),
+    (["url/", "/suffix"], "url/suffix"),
+    (["url", "/suffix"], "url/suffix"),
+    (["url", "suffix/"], "url/suffix/"),
+    (["url/", "suffix/"], "url/suffix/"),
+    (["url", "suffix", "second_suffix"], "url/suffix/second_suffix"),
+    (["url/", "suffix", "second_suffix"], "url/suffix/second_suffix"),
+    (["url/", "suffix/", "second_suffix"], "url/suffix/second_suffix"),
+    (["url/", "suffix/", "/second_suffix"], "url/suffix/second_suffix"),
+    (["url", "suffix", "/second_suffix"], "url/suffix/second_suffix"),
+    (["url", "/suffix", "/second_suffix"], "url/suffix/second_suffix"),
+    (["url", "suffix/", "/second_suffix/"], "url/suffix/second_suffix/"),
+    (["url", "/suffix", "/second_suffix/"], "url/suffix/second_suffix/"),
+]
+
+
+@pytest.mark.parametrize('input_data, expected', url_join_test_inputs)
+def test_url_path_join(input_data, expected):
+    from CommonServerPython import url_path_join
+    assert expected == url_path_join(*input_data)
