@@ -93,6 +93,20 @@ def incident_to_record(incident):
             }
 
 
+def pre_process_nlp(text_data):
+    res = demisto.executeCommand('WordTokenizerNLP', {
+        'value': json.dumps(text_data),
+        'isValueJson': 'yes',
+    })
+    if is_error(res):
+        return_error(get_error(res))
+    processed_text_data = res[0]['Contents']
+    if not isinstance(processed_text_data, list):
+        processed_text_data = [processed_text_data]
+    tokenized_text_data = map(lambda x: x.get('tokenizedText'), processed_text_data)
+    return tokenized_text_data
+
+
 incident = demisto.incidents()[0]
 incident_text = get_texts_from_incident(incident, TEXT_FIELDS)
 if len(incident_text) < MIN_TEXT_LENGTH:
@@ -108,7 +122,12 @@ map(lambda x: add_text_to_incident(x, TEXT_FIELDS), candidates)
 candidates = [x for x in candidates if len(x.get(INCIDENT_TEXT_FIELD, 0)) >= MIN_TEXT_LENGTH]
 
 # compare candidates to the orginial incident using TF-IDF
-similarity_vector = get_similar_texts(incident_text, map(lambda x: x[INCIDENT_TEXT_FIELD], candidates))
+candidates_text = map(lambda x: x[INCIDENT_TEXT_FIELD], candidates)
+if demisto.args()['preProcessText'] == 'true':
+    incident_text = pre_process_nlp(incident_text)
+    candidates_text = pre_process_nlp(candidates_text)
+
+similarity_vector = get_similar_texts(incident_text, candidates_text)
 similar_incidents = []
 for (i, similarity) in enumerate(similarity_vector):
     candidates[i]['similarity'] = similarity
