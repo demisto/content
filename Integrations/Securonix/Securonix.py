@@ -949,8 +949,8 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     entity_name = str(args.get('entity_name'))
     action_name = str(args.get('action_name'))
     workflow = str(args.get('workflow')) if 'workflow' in args else None
-    comment = args.get('comment')
-    criticality = args.get('criticality')
+    comment = str(args.get('comment')) if 'comment' in args else None
+    criticality = str(args.get('criticality')) if 'criticality' in args else None
 
     if 'create incident' in action_name and not workflow:
         raise Exception(f'Creating an incident with the action: {action_name}, Supply a workflow.')
