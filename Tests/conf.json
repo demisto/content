@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+         {
+            "integrations": "SpamhausFeed",
+            "playbookID": "Spamhaus_Feed_Test",
+            "fromversion": "5.5.0"
+        },
         {
             "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
