@@ -160,6 +160,46 @@ RESPONSE_GET_INCIDENT = {
         }
     }
 }
+RESPONSE_CREATE_INCIDENT = {
+    'status': 'OK',
+    'messages': ['Get incident details for incident ID [30053]'],
+    'result': {
+        'data': {
+            'totalIncidents': 1.0,
+            'incidentItems': [
+                {
+                    'violatorText': 'jon doe',
+                    'lastUpdateDate': 1579686449882,
+                    'violatorId': '3',
+                    'incidentType': 'Policy',
+                    'incidentId': '30053',
+                    'incidentStatus': 'Open',
+                    'riskscore': 0.0,
+                    'assignedUser': 'Admin Admin',
+                    'priority': 'Low',
+                    'reason': ['Resource: BLUECOAT', 'Policy: Uploads to personal websites',
+                               'Threat: Data egress via network uploads'],
+                    'violatorSubText': '1003',
+                    'entity': 'Users',
+                    'workflowName': 'SOCTeamReview',
+                    'url': 'url.com',
+                    'isWhitelisted': False,
+                    'watchlisted': True,
+                    'tenantInfo': {
+                        'tenantid': 1,
+                        'tenantname': 'Securonix',
+                        'tenantcolor': '#000000',
+                        'tenantshortcode': 'SE'
+                    },
+                    'statusCompleted': False,
+                    'sandBoxPolicy': False,
+                    'parentCaseId': '',
+                    'casecreatetime': 1579686449882
+                }
+            ]
+        }
+    }
+}
 RESPONSE_LIST_WATCHLISTS = {
     "result": [
         "Domain_Admin", "Privileged_Users", "Privileged_Accounts", "Recent_Hires"
@@ -239,3 +279,10 @@ RESPONSE_GET_WATCHLIST = {
     "to": "1536521067887",
     "totalDocuments": "1"
 }
+RESPONSE_CREATE_WATCHLIST = "New watchlist created successfully…!"
+RESPONSE_ENTITY_IN_WATCHLIST = {
+    'status': 'OK',
+    'messages': ['EntityId provided present in test234?'],
+    'result': ['YES']
+}
+RESPONSE_ADD_ENTITY_TO_WATCHLIST = "Add to watchlist successfull..!"
