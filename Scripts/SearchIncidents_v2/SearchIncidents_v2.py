@@ -22,6 +22,9 @@ def outputs_handel(res):
         return_error('', DemistoException(f'failed to get incidents from demisto got {str(res)}'))
 
 
+def crate_search(args: Dict = {}) -> Dict:
+
+
 def main():
     array_fields: List = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'owner', 'type', 'query']
     args: Dict = demisto.args()
