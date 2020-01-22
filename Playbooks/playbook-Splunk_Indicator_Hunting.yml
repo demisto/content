@@ -2,8 +2,8 @@ id: Splunk Indicator Hunting
 version: -1
 fromversion: 5.0.0
 name: Splunk Indicator Hunting
-description: The Playbook queries Splunk  for indicators such as file hashes, IP addresses,
-  domains or urls. and outputs detected users, ip addresses and hostnames related
+description: This playbook queries Splunk for indicators such as file hashes, IP addresses,
+  domains, or urls. It outputs detected users, ip addresses, and hostnames related
   to the indicators.
 starttaskid: '0'
 tasks:
@@ -202,7 +202,7 @@ tasks:
       id: 0c440cf7-d657-4778-830b-6a85b01e8370
       version: -1
       description: ''
-      name: Is there an Domain/Url to search?
+      name: Is there a Domain/Url to search?
       type: condition
       iscommand: false
       brand: ''
@@ -300,7 +300,7 @@ tasks:
       id: e4917145-e635-45b2-8637-eab516179d3e
       version: -1
       name: Set MD5 to array
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -377,7 +377,7 @@ tasks:
       id: a9d31dda-dd5a-49ad-8a4e-f9b118462a46
       version: -1
       description: ''
-      name: Is there an MD5 to search
+      name: Is there an MD5 to search?
       type: condition
       iscommand: false
       brand: ''
@@ -491,7 +491,7 @@ tasks:
       id: 219caccb-356b-4f28-8598-3a2b208c75c1
       version: -1
       description: ''
-      name: Is there an SHA1 to search
+      name: Is there a SHA1 hash to search
       type: condition
       iscommand: false
       brand: ''
@@ -590,7 +590,7 @@ tasks:
       id: 30cf6a20-efcf-48d0-80d5-31523a3e284e
       version: -1
       description: ''
-      name: Is there an SHA256 to search
+      name: Is there a SHA256 hash to search
       type: condition
       iscommand: false
       brand: ''
@@ -726,7 +726,7 @@ tasks:
       id: 3a34151e-f6ba-4406-82aa-137d5968b47d
       version: -1
       description: ''
-      name: Is Splunk enabled
+      name: Is Splunk enabled?
       type: condition
       iscommand: false
       brand: ''
@@ -780,7 +780,7 @@ tasks:
       id: 495bfdd5-ab80-45db-8c9f-85378eb36cfc
       version: -1
       name: Splunk search with custom fields
-      description: Searches Splunk for events.
+      description: Search Splunk for events using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -919,7 +919,7 @@ tasks:
       id: 639d2c54-566d-47a6-8e87-d728d44b6b01
       version: -1
       name: Splunk search with custom fields
-      description: Searches Splunk for events.
+      description: Search Splunk for events using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -1050,7 +1050,7 @@ tasks:
       id: fb833c21-b53b-4ce3-8ea4-f1e3fabb627f
       version: -1
       name: Splunk search without custom fields
-      description: Searches Splunk for events.
+      description: Search Splunk for events without using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -1166,7 +1166,7 @@ tasks:
       id: 898168d2-2593-461e-80a9-cd3626d95f4e
       version: -1
       name: Splunk search without custom fields
-      description: Searches Splunk for events.
+      description: Searches Splunk for events without using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -1289,7 +1289,7 @@ tasks:
       id: 4951f992-b5eb-4f5a-8200-26a0f72c367b
       version: -1
       name: Splunk search without custom fields
-      description: Searches Splunk for events.
+      description: Searches Splunk for events without using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -1412,7 +1412,7 @@ tasks:
       id: e01ebdb8-7e0e-4dcf-83d5-1c4bf81556fb
       version: -1
       name: Splunk search without custom fields
-      description: Searches Splunk for events.
+      description: Searches Splunk for events without using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -1542,7 +1542,7 @@ tasks:
       id: 1b729bc6-9db4-4c63-8153-4c59611d5789
       version: -1
       name: Splunk search with custom fields
-      description: Searches Splunk for events.
+      description: Searches Splunk for events using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -1673,7 +1673,7 @@ tasks:
       id: 38dcbf43-2671-4e89-8082-54fd66440e58
       version: -1
       name: Splunk search with custom fields
-      description: Searches Splunk for events.
+      description: Searches Splunk for events using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -1952,7 +1952,7 @@ tasks:
     task:
       id: 544cebf0-17ea-436d-8af1-17013ec9bb75
       version: -1
-      name: Splunk free text query
+      name: Splunk-free text query
       type: title
       iscommand: false
       brand: ''
@@ -2004,7 +2004,7 @@ tasks:
     task:
       id: 28407ef8-72d6-4667-8d9e-7fb1f3255cd9
       version: -1
-      name: Splunk free text query
+      name: Splunk-free text query
       type: title
       iscommand: false
       brand: ''
@@ -2056,7 +2056,7 @@ tasks:
     task:
       id: bdc4f04c-99d6-49ff-8cc5-c56a9461bbd1
       version: -1
-      name: Splunk free text query
+      name: Splunk-free text query
       type: title
       iscommand: false
       brand: ''
@@ -2108,7 +2108,7 @@ tasks:
     task:
       id: 084034f7-7f62-4e40-838f-e0b04b2ce0bd
       version: -1
-      name: Splunk free text query
+      name: Splunk-free text query
       type: title
       iscommand: false
       brand: ''
@@ -2134,7 +2134,7 @@ tasks:
     task:
       id: 1e86e491-b889-48dc-8fe0-a5a2a22a8069
       version: -1
-      name: Splunk free text query
+      name: Splunk-free text query
       type: title
       iscommand: false
       brand: ''
@@ -2160,7 +2160,7 @@ tasks:
     task:
       id: df5ab634-da64-450b-80e9-3ad8f6fd93fe
       version: -1
-      name: Splunk query with custom fields
+      name: Splunk-query with custom fields
       type: title
       iscommand: false
       brand: ''
@@ -2187,7 +2187,7 @@ tasks:
       id: 8d981267-254f-4feb-8267-8ad20a93a8e9
       version: -1
       description: ''
-      name: Is MD5 file hash detected by Splunk?
+      name: Is there an MD5 file hash detected by Splunk?
       type: condition
       iscommand: false
       brand: ''
@@ -2228,8 +2228,8 @@ tasks:
       id: 94b84a05-2fa4-4ff1-8fcc-f636d6abd6f3
       version: -1
       name: Set detected IP addresses
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the IP addresses were returned in the search results. If the IP addresses were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2277,8 +2277,8 @@ tasks:
       id: 6eda5e85-d4bc-4823-875e-9970bac10e5e
       version: -1
       name: Set detected usernames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the usernames were returned in the search results. If the usernames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2326,8 +2326,8 @@ tasks:
       id: 336ec037-669b-4eeb-8bb9-b26c787ded68
       version: -1
       name: Set detected internal hostnames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the internal hostnames were returned in the search results. If the internal hostnames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2375,7 +2375,7 @@ tasks:
       id: 92ef76c6-1a0b-439b-8819-35b0c062c6c4
       version: -1
       description: ''
-      name: Is SHA1 file hash detected by Splunk?
+      name: Has a SHA1 file hash been detected by Splunk?
       type: condition
       iscommand: false
       brand: ''
@@ -2416,8 +2416,8 @@ tasks:
       id: b97817c4-b589-428f-8138-44ceaa186b24
       version: -1
       name: Set detected IP addresses
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the IP addresses were returned in the search results. If the IP addresses were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2465,8 +2465,8 @@ tasks:
       id: 7dbd17dc-dbef-4226-88a6-a97686ba8704
       version: -1
       name: Set detected usernames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the usernames were returned in the search results. If the usernames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2514,8 +2514,8 @@ tasks:
       id: 38c75384-c2ea-4ca9-8ba1-7fd406f58c02
       version: -1
       name: Set internal detected hostnames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the internal detected hostnames were returned in the search results. If the internal detected hostnames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2563,7 +2563,7 @@ tasks:
       id: 8669c6d1-b8cf-4b20-8360-08f82c40e17c
       version: -1
       description: ''
-      name: Is SHA256 file hash detected by Splunk?
+      name: Has a SHA256 file hash been detected by Splunk?
       type: condition
       iscommand: false
       brand: ''
@@ -2604,8 +2604,8 @@ tasks:
       id: a221d901-f40f-402a-87b6-e1df22ee8f9d
       version: -1
       name: Set detected IP addresses
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the IP addresses were returned in the search results. If the usernames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2653,8 +2653,8 @@ tasks:
       id: a7f7303d-aeed-4852-8f05-f9a403457a7a
       version: -1
       name: Set detected usernames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the usernames were returned in the search results. If the usernames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2702,8 +2702,8 @@ tasks:
       id: 7f51ee03-b000-48b2-80a4-935d2bf3bd39
       version: -1
       name: Set detected internal hostnames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the detected internal hostnames were returned in the search results. If the detected internal hostnames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2792,8 +2792,8 @@ tasks:
       id: 4b14e9bc-81ca-4c92-80a7-2b910ed21980
       version: -1
       name: Set detected IP addresses
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the IP addresses were returned in the search results. If the IP addresses were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2841,8 +2841,8 @@ tasks:
       id: 7fc7ed62-428a-474f-8a49-10b1e4b0b08e
       version: -1
       name: Set detected usernames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the usernames were returned in the search results. If the usernames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2890,8 +2890,8 @@ tasks:
       id: ef498832-a6dc-406b-8a50-19fb2ae44a0d
       version: -1
       name: Set detected internal hostnames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the detected internal hostnames were returned in the search results. If the detected internal hostnames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2939,7 +2939,7 @@ tasks:
       id: 48e88921-e6e6-4982-84ce-22ef329a6b02
       version: -1
       description: ''
-      name: Is domain or url detected by Splunk?
+      name: Has a domain or url been detected by Splunk?
       type: condition
       iscommand: false
       brand: ''
@@ -2980,8 +2980,8 @@ tasks:
       id: 2de1cfc9-1da0-47e1-8b53-370bd65f1d49
       version: -1
       name: Set detected IP addresses
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the IP addresses were returned in the search results. If the IP addresses were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3029,8 +3029,8 @@ tasks:
       id: dfbde74c-b316-4bde-80a5-0b4e41bbd93f
       version: -1
       name: Set detected usernames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the usernames were returned in the search results. If the usernames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3078,8 +3078,8 @@ tasks:
       id: 94a5f71b-4ae1-463a-859f-cf60fe6a3f26
       version: -1
       name: Set detected internal hostnames
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the detected internal hostnames were returned in the search results. If the detected internal hostnames were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3126,8 +3126,8 @@ tasks:
     task:
       id: b6ce6e08-69ea-4517-8ac1-da4eb3487294
       version: -1
-      name: Set SHA1 to array
-      description: Sets a value into the context with the given context key
+      name: Set a SHA1 hash to array
+      description: Sets a SHA1 hash value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3167,8 +3167,8 @@ tasks:
     task:
       id: 548fe013-8333-45de-80db-e415d70b6e16
       version: -1
-      name: Set SHA256 to array
-      description: Sets a value into the context with the given context key
+      name: Set a SHA256 hash to array
+      description: Sets a SHA256 hash value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3209,8 +3209,8 @@ tasks:
     task:
       id: 53d80aaa-cbac-4944-8949-7286084013b5
       version: -1
-      name: Set IP to array
-      description: Sets a value into the context with the given context key
+      name: Set an IP address to array
+      description: Sets a value for an IP address into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3252,7 +3252,7 @@ tasks:
       id: cbdaeae0-6502-4e16-8aa7-3bfdbaa87597
       version: -1
       name: Set DomainUrl to array
-      description: Sets a value into the context with the given context key
+      description: Sets a Domain or URL value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3355,8 +3355,7 @@ tasks:
       id: 4e2ab47f-d7b4-486a-8de1-323b8afa43f3
       version: -1
       name: Determine whether the IP address is internal or external
-      description: Returns yes if the IP is in one of the ranges provided, returns
-        no otherwise.
+      description: If the IP address is in one of the ranges provided, a yes value is returned. Otherwise, a no is returned.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -3388,8 +3387,8 @@ tasks:
       id: 66c11991-c44b-407c-86b5-bf0f88ad385b
       version: -1
       name: Set detected IP addresses as internal
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the IP addresses were returned in the search results. If the IP addresses were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3437,8 +3436,8 @@ tasks:
       id: ab721c94-cabf-4c81-8d4d-53c1b0aa9a52
       version: -1
       name: Set detected IP addresses as external
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set it context.
+      description: Checks if the IP addresses were returned in the search results. If the IP addresses were returned,
+        they are set in Context. Otherwise, no value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3509,7 +3508,7 @@ tasks:
       id: 07cbfcea-1459-43af-88c0-1b80d3af4f9c
       version: -1
       name: Splunk search with custom fields
-      description: Searches Splunk for events.
+      description: Searches Splunk for events using custom fields.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -3648,40 +3647,36 @@ inputs:
 - key: MD5
   value: {}
   required: false
-  description: MD5 hash file or an array of hashes to search.
+  description: MD5 hash file or an array of hashes for which to search.
 - key: SplunkMD5Field
   value: {}
   required: false
-  description: MD5 field to search in Splunk. If non are specified the search will
-    use quick filter.
+  description: MD5 field to search in Splunk. If no field is specified, the search uses quick filter.
 - key: SHA1
   value: {}
   required: false
-  description: SHA1 hash file or an array of hashes to search.
+  description: SHA1 hash file or an array of hashes on which to search.
 - key: SplunkSHA1Field
   value: {}
   required: false
-  description: SHA1 field to search in Splunk. If non are specified the search will
-    use quick filter.
+  description: SHA1 field to search in Splunk. If no field is specified, the search uses quick filter.
 - key: SHA256
   value: {}
   required: false
-  description: SHA256 hash file or an array of hashes to search.
+  description: SHA256 hash file or an array of hashes on which to search.
 - key: SplunkSHA256Field
   value: {}
   required: false
-  description: SHA256 field to search in Splunk. If non are specified the search will
-    use quick filter.
+  description: SHA256 field to search in Splunk. If no field is specified, the search uses quick filter.
 - key: IPAddress
   value: {}
   required: false
   description: |
-    Source or destination IP to search. Can be a single address or an array of addresses.
+    Source or destination IP on which to search. Can be a single address or an array of addresses.
 - key: SplunkIPField
   value: {}
   required: false
-  description: IP field to search in Splunk. If non are specified the search will
-    use sourceip or destinationip (combined).
+  description: IP field on which to search in Splunk. If no field is specified, the search uses sourceip or destinationip (combined).
 - key: URLDomain
   value: {}
   required: false
@@ -3690,8 +3685,8 @@ inputs:
 - key: SplunkURLDomainField
   value: {}
   required: false
-  description: URL/Domain field to search in Splunk. If non are specified the search
-    will use quick filter. Only one field can be used in this parameter.
+  description: URL/Domain field on which to search in Splunk. If no field is specified, the search
+    uses quick filter. Only one field can be used in this parameter.
 - key: earliest_time
   value:
     simple: -1d
@@ -3709,7 +3704,7 @@ inputs:
     For more examples view
     https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
 
-    Its recommended to set a limit for the time frame.
+    It is recommended to set a limit for the time frame.
 - key: latest_time
   value: {}
   required: false
@@ -3726,13 +3721,13 @@ inputs:
     For more examples view
     https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
 
-    Its recommended to set a limit for the time frame.
+    It is recommended to set a limit for the time frame.
 - key: event_limit
   value:
     simple: '100'
   required: true
-  description: Limit number of events returned by query. This argument is not mandatory
-    for the command but is needed for the playbook.
+  description: Limit the number of events returned by query. This argument is not mandatory
+    for the command, but is mandatory for the playbook.
 - key: InvestigationIPFields
   value: {}
   required: true
@@ -3752,10 +3747,10 @@ inputs:
   value: {}
   required: false
   description: 'A list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation, separated by commas. An example of a list
-    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use default list provided in the IsIPInRanges
-    script (the known IPv4 private address ranges).'
+    should be provided in CIDR format, separated by commas. An example of a list
+    of ranges would be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16.
+    If a list of IP ranges is not provided, the list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges) is used by default.'
 - key: IndexName
   value:
     simple: '*'
@@ -3766,10 +3761,9 @@ inputs:
   required: false
   description: These fields can be used to further enrich the Splunk results.
     Use comma delimited field names as they appear in Splunk. * is an acceptable
-    value but not recommended as it creates a very large output.
-    These fields are in addition to the investigation fields so
-    no need to provide the same fields as in the investigation fields inputs.
-    Recommended fields to use should contain the timestamp, log source, event name etc.
+    value, but not recommended as it creates a very large output.
+    These fields are in addition to the investigation fields so there is
+    no need to repeat the fields in the investigation fields listing.
 outputs:
 - contextPath: Splunk.DetectedUsers
   description: Users detected based on the username field in your search.
