@@ -10,6 +10,10 @@
         },
         {
             "integrations": "CloudShark",
+            "playbookID": "CloudsharkTest"
+        },
+        {
+            "integrations": "CloudShark",
             "playbookID": "Cloudshark-Test"
         },
         {
