@@ -8,7 +8,7 @@ with open("TestData/search_output.json") as f:
 
 data = raw["data"]
 threats = data["threats"]
-client = Client("https://threathq.com", ("username", "password"))
+client = Client("https://www.threathq.com", ("username", "password"))
 
 
 class TestFetchIndicators:
