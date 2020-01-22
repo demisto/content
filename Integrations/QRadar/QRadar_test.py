@@ -239,11 +239,12 @@ def test_upload_indicators_command_no_indicators_found(mocker):
     """
 
     import QRadar as qradar
-    mocker.patch.object(demisto, 'args', return_value='test_ref_set')
+    mocker.patch.object(demisto, 'args', return_value={'ref_name': 'test_ref_set'})
     mocker.patch.object(qradar, 'check_ref_set_exist', return_value=REF_SET_DATA_NO_INDICATORS)
     mocker.patch.object(qradar, 'get_indicators_list', return_value=([], []))
     res = qradar.upload_indicators_command()
     assert res['HumanReadable'] == "No indicators found in reference set test_ref_set didn't change"
+    assert res['Contents'] == {}
 
 
 """ CONSTANTS """
