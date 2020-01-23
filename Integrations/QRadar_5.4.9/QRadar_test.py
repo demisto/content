@@ -207,46 +207,6 @@ def test_create_incident_from_offense_new_line_description():
     assert description_asserted
 
 
-def test_upload_indicators_command_indicators_found(mocker):
-    """
-    Given:
-        - There are indicators in Demisto
-    When:
-        - Need to upload indicators to QRadar reference set
-    Then:
-        - The function will upload indicators to QRadar reference set
-    """
-
-    import QRadar as qradar
-    mocker.patch.object(qradar, 'check_ref_set_exist', return_value=REF_SET_DATA)
-    mocker.patch.object(qradar, 'get_indicators_list', return_value=INDICATORS_LIST)
-    mocker.patch.object(qradar, 'get_reference_by_name', return_value=RAW_RESPONSE)
-    mocker.patch.object(qradar, 'upload_indicators_list_request', return_value=RAW_RESPONSE)
-    res = qradar.upload_indicators_command()
-    assert res['Contents']['name'] == 'test_ref_set'
-    assert res['Contents']['number_of_elements'] == 42
-    assert res['Contents']['element_type'] == 'ALN'
-
-
-def test_upload_indicators_command_no_indicators_found(mocker):
-    """
-    Given:
-        - There are no indicators in Demisto
-    When:
-        - Need to upload indicators to QRadar reference set
-    Then:
-        - The function will not upload indicators to QRadar reference set
-    """
-
-    import QRadar as qradar
-    mocker.patch.object(demisto, 'args', return_value={'ref_name': 'test_ref_set'})
-    mocker.patch.object(qradar, 'check_ref_set_exist', return_value=REF_SET_DATA_NO_INDICATORS)
-    mocker.patch.object(qradar, 'get_indicators_list', return_value=([], []))
-    res = qradar.upload_indicators_command()
-    assert res['HumanReadable'] == "No indicators found, Reference set test_ref_set didn't change"
-    assert res['Contents'] == {}
-
-
 """ CONSTANTS """
 REQUEST_HEADERS = {'Content-Type': 'application/json', 'SEC': 'token'}
 NON_URL_SAFE_MSG = 'non-safe/;/?:@=&"<>#%{}|\\^~[] `'
@@ -512,28 +472,6 @@ REF_SET_DATA = {
     'number_of_elements': 42,
     'element_type': 'ALN'
 }
+
 INDICATORS_LIST = [{'indicator_type': 'File', 'value': 'file_test'},
                    {'indicator_type': 'Domain', 'value': 'domain.com'}]
-
-RAW_RESPONSE = {
-    'timeout_type': 'UNKNOWN',
-    'element_type': 'ALN',
-    'creation_time': '00000',
-    'number_of_elements': 42,
-    'name': 'test_ref_set'
-}
-
-REF_SET_DATA_NO_INDICATORS = {
-    'name': 'test_ref_set',
-    'number_of_elements': 0,
-    'element_type': 'ALN'
-}
-
-
-RAW_RESPONSE_NO_INDICATORS = {
-    'timeout_type': 'UNKNOWN',
-    'element_type': 'ALN',
-    'creation_time': '00000',
-    'number_of_elements': 0,
-    'name': 'test_ref_set'
-}
