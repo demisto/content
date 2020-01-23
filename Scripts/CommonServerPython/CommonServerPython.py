@@ -235,24 +235,10 @@ def url_concat(*args):
         :type args: ``string``
         :param args: arguments to join
     """
-    if len(args) == 2:
-        url = args[0]
-        suffix = args[1]
-        # Nothing to join, return URL itself
-        if not suffix:
-            return url
-        # Add
-        if url[-1:] != "/":
-            url = url + "/"
-
-        if suffix.startswith("/"):
-            suffix = suffix[1:]
-        return url + suffix
-    if len(args) == 1:
-        return args[0]
-    if not args:
-        return ""
-    return urljoin(urljoin(args[0], args[1]), *args[2:])
+    if args:
+        url = "/".join(element.strip("/") for element in args if element)
+        return url + "/" if args[-1].endswith("/") else url
+    return ""
 
 
 def positiveUrl(entry):
