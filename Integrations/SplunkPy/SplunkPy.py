@@ -584,7 +584,7 @@ def test_module():
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
         searchquery_oneshot = demisto.params()['fetchQuery']
-        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         reader = results.ResultsReader(oneshotsearch_results)
         for item in reader:
             if item:
