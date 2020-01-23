@@ -1,4 +1,4 @@
-# How to Access the Indicators Outbound Service
+# How to Access the Export Indicators Service
 
 There are two ways that you can access the service:
 - **https://*demisto_address*/instance/execute/*instance_name*** 
