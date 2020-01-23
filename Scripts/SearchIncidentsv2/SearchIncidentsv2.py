@@ -52,11 +52,6 @@ def search_incidents(args: Dict):
 
 
 def main():
-    try:
-        sys.exit(1)
-    except SystemExit as e:
-        print(e.code == 1)
-        print(e.args == 1)
     args: Dict = demisto.args()
     search_incidents(args)
 
