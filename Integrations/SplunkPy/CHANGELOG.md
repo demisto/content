@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.1.2] - 2020-01-22
 Added the ***splunk-submit-event-hec*** command.
 
 ## [20.1.0] - 2020-01-07
