@@ -234,6 +234,9 @@ def url_concat(*args):
 
         :type args: ``string``
         :param args: arguments to join
+
+        :rtype: ``string``
+        :return: Full joined url
     """
     if args:
         url = "/".join(element.strip("/") for element in args if element)
