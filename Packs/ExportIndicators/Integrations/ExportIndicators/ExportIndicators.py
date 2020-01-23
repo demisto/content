@@ -8,11 +8,11 @@ from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any
 
 ''' GLOBAL VARIABLES '''
-INTEGRATION_NAME: str = 'Outbound Indicators Integration'
+INTEGRATION_NAME: str = 'Export Indicators Service'
 PAGE_SIZE: int = 200
-APP: Flask = Flask('demisto-goi')
-CTX_VALUES_KEY: str = 'dmst_goi_values'
-CTX_MIMETYPE_KEY: str = 'dmst_goi_mimetype'
+APP: Flask = Flask('demisto-export_iocs')
+CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
+CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
 FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
@@ -69,7 +69,7 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
 
 
 def save_context(now: datetime, out_dict: dict):
-    """Saves GOI state and refresh time to context"""
+    """Saves export_iocs state and refresh time to context"""
     demisto.setLastRun({'last_run': date_to_timestamp(now)})
     demisto.setIntegrationContext(out_dict)
 
@@ -91,7 +91,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
     if not last_found_len:
         last_found_len = total_fetched
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = demisto.findIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
@@ -126,7 +126,7 @@ def create_values_out_dict(iocs: list, out_format: str) -> dict:
 
 
 def get_outbound_mimetype() -> str:
-    """Returns the mimetype of the GOI"""
+    """Returns the mimetype of the export_iocs"""
     ctx = demisto.getIntegrationContext()
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
@@ -203,7 +203,7 @@ def test_module(args, params):
     get_params_port(params)
     on_demand = params.get('on_demand', None)
     if not on_demand:
-        try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)  # validate GOI Size was set
+        try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)  # validate export_iocs Size was set
         query = params.get('indicators_query')  # validate indicators_query isn't empty
         if not query:
             raise ValueError('"Indicator Query" is required. Provide a valid query.')
@@ -267,12 +267,12 @@ def run_long_running(params):
 
 def update_outbound_command(args, params):
     """
-    Updates the GOI values and format on demand
+    Updates the export_iocs values and format on demand
     """
     on_demand = demisto.params().get('on_demand')
     if not on_demand:
         raise DemistoException(
-            '"Update GOI On Demand" is off. If you want to update the GOI manually please toggle it on.')
+            '"Update exported IOCs On Demand" is off. If you want to update manually please toggle it on.')
     limit = try_parse_integer(args.get('list_size', params.get('list_size')), CTX_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
     query = args.get('query')
