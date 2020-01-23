@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 5.5.0
 commonfields:
   id: CSVFeed
   version: -1
