@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added the traffic to common ports playbook to support UDP.
 
 
 ## [20.1.2] - 2020-01-22
