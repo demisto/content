@@ -4,19 +4,19 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-special = ['n', 't', '\\', '"', '\'']
+special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
 
 def errors_handel(res: List) -> Union[None, str]:
     error_msg: Union[None, str] = None
-    if res and isinstance(res[0].get('Contents'), dict):
-        if not res[0]['Contents'].get('data', False):
+    if res and isinstance(res, list) and isinstance(res[0].get('Contents'), dict):
+        if 'data' not in res[0]['Contents']:
+            error_msg = res[0].get('Contents')
+        elif res[0]['Contents']['data'] is None:
             error_msg = "Incidents not found."
 
-    if not error_msg:
-        error_msg = res[0].get('Contents')
-        if not error_msg:
-            error_msg = f'failed to get incidents from demisto got {res}'
+    else:
+        error_msg = f'failed to get incidents from demisto got {res}'
 
     return error_msg
 
@@ -27,7 +27,6 @@ def is_valid_args(args: Dict):
         while i < len(value):
             if value[i] == '\\':
                 if value[i + 1] not in special:
-                    demisto.log(f'{value[i-1]}{value[i]} + {value[i + 1]}{value[i + 2]}')
                     error_msg: str = f'Error while parsing the argument: "{_key}" ' \
                                      f'\nSucceeded parsing untill:\n- "{value[0:i]}"'
                     return_error(error_msg, DemistoException(error_msg.replace('\n', ' ')))
@@ -53,6 +52,11 @@ def search_incidents(args: Dict):
 
 
 def main():
+    try:
+        sys.exit(1)
+    except SystemExit as e:
+        print(e.code == 1)
+        print(e.args == 1)
     args: Dict = demisto.args()
     search_incidents(args)
 
