@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: IBM QRadar
+  id: IBM QRadar 5.5
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -47,8 +47,8 @@ configuration:
   required: false
   type: 8
 description: Fetch offenses as incidents and search QRadar
-display: IBM QRadar
-name: IBM QRadar
+display: IBM QRadar 5.5
+name: IBM QRadar 5.5
 script:
   commands:
   - arguments:
@@ -1503,6 +1503,54 @@ script:
     - contextPath: QRadar.Domains.TenantID
       description: ID of the Domain tenant.
       type: Number
+  - arguments:
+    - default: false
+      description: The name of the reference set to add or update a value in.
+      isArray: false
+      name: ref_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The element type for the values allowed in the reference set.
+        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
+        IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date
+        values need to be represented in milliseconds since the Unix Epoch January
+        1st 1970.'
+      isArray: false
+      name: element_type
+      predefined:
+      - ALN
+      - ALNIC
+      - IP
+      - NUM
+      - PORT
+      - DATE
+      required: false
+      secret: false
+    - default: false
+      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
+        default value is UNKNOWN.
+      isArray: false
+      name: timeout_type
+      required: false
+      secret: false
+    - default: false
+      description: 'The time to live interval, for example: "1 month" or "5 minutes"'
+      isArray: false
+      name: time_to_live
+      required: false
+      secret: false
+    - default: false
+      description: The query you would like to ask to get the indicators
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Upload indicators from Demisto to Qradar
+    execution: false
+    name: qradar-upload-indicators
   feed: false
   isfetch: true
   longRunning: false
@@ -1513,3 +1561,4 @@ script:
   type: python
 tests:
 - test_Qradar
+fromversion: 5.5.0
