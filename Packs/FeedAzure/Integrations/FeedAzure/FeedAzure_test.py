@@ -1,5 +1,6 @@
 import pytest
-from FeedAzure import Client
+from CommonServerPython import *
+from FeedAzure import Client, main
 
 
 @pytest.mark.parametrize('regions_list, services_list', [(['All'], ['All'])])
@@ -191,3 +192,15 @@ EXTRACT_INDICATORS_PACK = [
 def test_extract_indicators(regions_list, services_list, values_group_section, expected_result):
     client = Client(regions_list, services_list)
     assert (client.extract_indicators_from_values_dict(values_group_section) == expected_result)
+
+
+def test_get_indicators(mocker):
+    mocker.patch.object(demisto, 'args', return_value={
+        'regions': 'norwaye, westus',
+        'services': 'AzureBackup, AzureAppService',
+    })
+    mocker.patch.object(demisto, 'command', return_value='azure-get-indicators')
+    mocker.patch.object(demisto, 'results')
+
+    main()
+    assert demisto.results.call_args[0][0]['Contents']

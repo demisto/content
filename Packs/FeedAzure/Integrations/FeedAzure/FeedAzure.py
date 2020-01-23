@@ -281,18 +281,18 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    regions_list = argToList(demisto.params().get('regions', ''))
+    regions_list = argToList(demisto.params().get('regions'))
     if not regions_list:
         regions_list = ['All']
 
-    services_list = argToList(demisto.params().get('services', ''))
+    services_list = argToList(demisto.params().get('services'))
     if not services_list:
         services_list = ['All']
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
     insecure = demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy')
+    proxy = demisto.params().get('proxy', False)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -311,15 +311,14 @@ def main():
         elif command == 'fetch-indicators':
             indicators, _ = fetch_indicators_command(client)
 
-            for single_batch in batch(indicators, batch_size=500):
+            for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
-    except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
-        return_error(err_msg)
+    except Exception:
+        raise
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
