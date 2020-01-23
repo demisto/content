@@ -465,13 +465,3 @@ INCIDENT_RESULT = {
                "ces\": [{\"type_name\": \"EventCRE\", \"type_id\": 18, \"id\": 115, \"name\": \"Custom Rule Engine\"}, "
                "{\"type_name\": \"FortiGate\", \"type_id\": 73, \"id\": 2439, \"name\": \"FortiGate 02\"}]}"
 }
-
-
-REF_SET_DATA = {
-    'name': 'test_ref_set',
-    'number_of_elements': 42,
-    'element_type': 'ALN'
-}
-
-INDICATORS_LIST = [{'indicator_type': 'File', 'value': 'file_test'},
-                   {'indicator_type': 'Domain', 'value': 'domain.com'}]
