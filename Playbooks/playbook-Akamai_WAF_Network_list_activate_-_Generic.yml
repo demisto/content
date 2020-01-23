@@ -1,0 +1,299 @@
+id: Akamai WAF Network list activate generic polling
+version: -1
+contentitemfields:
+  propagationLabels:
+  - all
+name: Akamai WAF Network list activate generic polling
+description: The playbook activate network lists in Staging or Production on Akamai
+  WAF, the playbook finish its running when the network list is active on the requested
+  enviorment.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6db69c54-1ff3-4b46-8b6c-60506443f3ef
+    type: start
+    task:
+      id: 6db69c54-1ff3-4b46-8b6c-60506443f3ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: fb437f2c-767d-46d7-8000-482a1b4a77c4
+    type: regular
+    task:
+      id: fb437f2c-767d-46d7-8000-482a1b4a77c4
+      version: -1
+      name: Activate network list in chosen enviorment
+      description: Activates a network list on the specified environment.
+      script: '|||akamai-activate-network-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      comment:
+        simple: ${inputs.comment}
+      env:
+        simple: ${inputs.env}
+      network_list_ids:
+        simple: ${inputs.network_list_ids}
+      notify:
+        simple: ${inputs.notify}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "3":
+    id: "3"
+    taskid: e74b46f9-4d31-4520-84cf-8b05d070ab29
+    type: playbook
+    task:
+      id: e74b46f9-4d31-4520-84cf-8b05d070ab29
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: env
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.env}
+      Ids:
+        simple: ${inputs.network_list_ids}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: network_list_ids
+      PollingCommandName:
+        simple: akamai-get-network-list-activation-status
+      Timeout:
+        simple: "30"
+      dt:
+        simple: Akamai.NetworkLists.ActivationStatus(val.StagingStatus != 'ACTIVE').UniqueID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "4":
+    id: "4"
+    taskid: 0f81a60a-8b9b-4e5d-8e81-a87fa0a83372
+    type: condition
+    task:
+      id: 0f81a60a-8b9b-4e5d-8e81-a87fa0a83372
+      version: -1
+      name: Staging or Production enviorment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.env
+            iscontext: true
+          right:
+            value:
+              simple: PRODUCTION
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "5":
+    id: "5"
+    taskid: e406cad5-9503-498d-8595-4e64281daf62
+    type: playbook
+    task:
+      id: e406cad5-9503-498d-8595-4e64281daf62
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: env
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.env}
+      Ids:
+        simple: ${inputs.network_list_ids}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: network_list_ids
+      PollingCommandName:
+        simple: akamai-get-network-list-activation-status
+      Timeout:
+        simple: "30"
+      dt:
+        simple: Akamai.NetworkLists.ActivationStatus(val.StagingStatus != 'ACTIVE'
+          ).UniqueID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "7":
+    id: "7"
+    taskid: 85bfe24f-9929-4200-88d8-12da83e72e87
+    type: regular
+    task:
+      id: 85bfe24f-9929-4200-88d8-12da83e72e87
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Akamai networklists - activation **${inputs.network_list_ids}** in
+          **${inputs.env}** finished **succefully**
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: network_list_ids
+  value: {}
+  required: true
+  description: Network list ids to be activate - for example id_list1,id_list2
+  playbookInputQuery: null
+- key: env
+  value: {}
+  required: true
+  description: Enviorment to activate network list (STAGING or PRODUCTION)
+  playbookInputQuery: null
+- key: comment
+  value: {}
+  required: false
+  description: Comment to be logged when activating
+  playbookInputQuery: null
+- key: notify
+  value: {}
+  required: false
+  description: List of emails to be notified on activation
+  playbookInputQuery: null
+outputs:
+- type: unknown
+tests:
+  - No test

@@ -58,43 +58,43 @@ script:
     execution: false
     name: akamai-get-network-lists
     outputs:
-    - contextPath: Akamai.NetworkLists.Name
+    - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
       type: String
-    - contextPath: Akamai.NetworkLists.Type
+    - contextPath: Akamai.NetworkLists.Lists.Type
       description: The network list type.
       type: String
-    - contextPath: Akamai.NetworkLists.UniqueID
+    - contextPath: Akamai.NetworkLists.Lists.UniqueID
       description: The network list unique ID.
       type: String
-    - contextPath: Akamai.NetworkLists.ElementCount
+    - contextPath: Akamai.NetworkLists.Lists.ElementCount
       description: The number of network list elements.
       type: String
-    - contextPath: Akamai.NetworkLists.CreateDate
+    - contextPath: Akamai.NetworkLists.Lists.CreateDate
       description: The network list creation date.
       type: Date
-    - contextPath: Akamai.NetworkLists.CreatedBy
+    - contextPath: Akamai.NetworkLists.Lists.CreatedBy
       description: The network list creator.
       type: String
-    - contextPath: Akamai.NetworkLists.ExpeditedProductionActivationStatus
+    - contextPath: Akamai.NetworkLists.Lists.ExpeditedProductionActivationStatus
       description: The expedited production activation status.
       type: String
-    - contextPath: Akamai.NetworkLists.ExpeditedStagingActivationStatus
+    - contextPath: Akamai.NetworkLists.Lists.ExpeditedStagingActivationStatus
       description: The expedited staging activation status.
       type: String
-    - contextPath: Akamai.NetworkLists.ProductionActivationStatus
+    - contextPath: Akamai.NetworkLists.Lists.ProductionActivationStatus
       description: The production activation status.
       type: String
-    - contextPath: Akamai.NetworkLists.StagingActivationStatus
+    - contextPath: Akamai.NetworkLists.Lists.StagingActivationStatus
       description: The staging activation status.
       type: String
-    - contextPath: Akamai.NetworkLists.UpdateDate
+    - contextPath: Akamai.NetworkLists.Lists.UpdateDate
       description: The date that the network list was updated.
       type: String
-    - contextPath: Akamai.NetworkLists.UpdatedBy
+    - contextPath: Akamai.NetworkLists.Lists.UpdatedBy
       description: The last user that updated the network list.
       type: String
-    - contextPath: Akamai.NetworkLists.Elements
+    - contextPath: Akamai.NetworkLists.Lists.Elements
       description: The elements in the network list.
       type: String
   - arguments:
@@ -109,43 +109,43 @@ script:
     execution: false
     name: akamai-get-network-list-by-id
     outputs:
-    - contextPath: Akamai.NetworkLists.Name
+    - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
       type: String
-    - contextPath: Akamai.NetworkLists.Type
+    - contextPath: Akamai.NetworkLists.Lists.Type
       description: The network list type.
       type: String
-    - contextPath: Akamai.NetworkLists.UniqueID
+    - contextPath: Akamai.NetworkLists.Lists.UniqueID
       description: The network list unique ID.
       type: String
-    - contextPath: Akamai.NetworkLists.ElementCount
+    - contextPath: Akamai.NetworkLists.Lists.ElementCount
       description: The number of network list elements.
       type: String
-    - contextPath: Akamai.NetworkLists.CreateDate
+    - contextPath: Akamai.NetworkLists.Lists.CreateDate
       description: The network list creation date.
       type: Date
-    - contextPath: Akamai.NetworkLists.CreatedBy
+    - contextPath: Akamai.NetworkLists.Lists.CreatedBy
       description: The network list creator.
       type: String
-    - contextPath: Akamai.NetworkLists.ExpeditedProductionActivationStatus
+    - contextPath: Akamai.NetworkLists.Lists.ExpeditedProductionActivationStatus
       description: The expedited production activation status.
       type: String
-    - contextPath: Akamai.NetworkLists.ExpeditedStagingActivationStatus
+    - contextPath: Akamai.NetworkLists.Lists.ExpeditedStagingActivationStatus
       description: The expedited staging activation status.
       type: String
-    - contextPath: Akamai.NetworkLists.ProductionActivationStatus
+    - contextPath: Akamai.NetworkLists.Lists.ProductionActivationStatus
       description: The production activation status.
       type: String
-    - contextPath: Akamai.NetworkLists.StagingActivationStatus
+    - contextPath: Akamai.NetworkLists.Lists.StagingActivationStatus
       description: The staging activation status.
       type: String
-    - contextPath: Akamai.NetworkLists.UpdateDate
+    - contextPath: Akamai.NetworkLists.Lists.UpdateDate
       description: The network list update date.
       type: String
-    - contextPath: Akamai.NetworkLists.UpdatedBy
+    - contextPath: Akamai.NetworkLists.Lists.UpdatedBy
       description: The last user that updated the network list.
       type: String
-    - contextPath: Akamai.NetworkLists.Elements
+    - contextPath: Akamai.NetworkLists.Lists.Elements
       description: The elements in the network list.
       type: String
   - arguments:
@@ -188,19 +188,19 @@ script:
     execution: false
     name: akamai-create-network-list
     outputs:
-    - contextPath: Akamai.NetworkLists.Name
+    - contextPath: Akamai.NetworkLists.Lists.Name
       description: The network list name.
       type: String
-    - contextPath: Akamai.NetworkLists.UniqueID
+    - contextPath: Akamai.NetworkLists.Lists.UniqueID
       description: The network list ID.
       type: String
-    - contextPath: Akamai.NetworkLists.Type
+    - contextPath: Akamai.NetworkLists.Lists.Type
       description: The network list type.
       type: String
-    - contextPath: Akamai.NetworkLists.ElementCount
+    - contextPath: Akamai.NetworkLists.Lists.ElementCount
       description: The number of elements in the list.
       type: Number
-    - contextPath: Akamai.NetworkLists.Elements
+    - contextPath: Akamai.NetworkLists.Lists.Elements
       description: The elements in the list.
       type: String
   - arguments:
@@ -314,10 +314,10 @@ script:
     - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID
       description: The network list ID.
       type: String
-    - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID.Enviorment
+    - contextPath: Akamai.NetworkLists.ActivationStatus.StagingStatus
       description: The network list enviorment.
       type: String
-    - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID.Status
+    - contextPath: Akamai.NetworkLists.ActivationStatus.ProductionStatus
       description: The network list enviorment activation status
       type: String
   dockerimage: demisto/akamai:1.0.0.5063

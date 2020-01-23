@@ -290,7 +290,7 @@ def get_network_lists_command(client: Client, search: str = None, list_type: str
         title = f'{INTEGRATION_NAME} - network lists'
         entry_context, human_readable_ec = get_network_lists_ec(raw_response.get('networkLists'))
         context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
+            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
             f" val.UpdateDate == obj.UpdateDate)": entry_context
         }
         human_readable = tableToMarkdown(name=title,
@@ -318,8 +318,8 @@ def get_network_list_by_id_command(client: Client, network_list_id: str) -> Tupl
         title = f'{INTEGRATION_NAME} - network list {network_list_id}'
         entry_context, human_readable_ec = get_network_lists_ec([raw_response])
         context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
-            f" val.UpdateDate == obj.UpdateDate)": entry_context
+            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID &&"
+            f" val.UpdateDate && val.UpdateDate == obj.UpdateDate)": entry_context
         }
         human_readable = tableToMarkdown(name=title,
                                          t=human_readable_ec,
@@ -494,6 +494,7 @@ def get_activation_status_command(client: Client, network_list_ids: Union[str, l
     network_list_ids = argToList(network_list_ids)
     raws = []
     ecs = []
+    context_entry: Dict = {}
     human_readable = ""
     for network_list_id in network_list_ids:
         try:
@@ -501,11 +502,18 @@ def get_activation_status_command(client: Client, network_list_ids: Union[str, l
                                                               env=env)
             if raw_response:
                 raws.append(raw_response)
-                ecs.append({
-                    "UniqueID": raw_response.get('uniqueId'),
-                    "Enviorment": env,
-                    "Status": raw_response.get('activationStatus')
-                })
+                if env == "PRODUCTION":
+                    ecs.append({
+                        "UniqueID": network_list_id,
+                        "ProductionStatus": raw_response.get('activationStatus')
+
+                    })
+                elif env == "STAGING":
+                    ecs.append({
+                        "UniqueID": network_list_id,
+                        "StagingStatus": raw_response.get('activationStatus')
+
+                    })
                 human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** is **{raw_response.get('activationStatus')}** in **{env}**\n"
         except DemistoException as e:
             if "The Network List ID should be of the format" in e.args[0]:
@@ -513,9 +521,15 @@ def get_activation_status_command(client: Client, network_list_ids: Union[str, l
         except requests.exceptions.RequestException as e:
             human_readable += f'{INTEGRATION_NAME} - Could not find any results for given query\n'
 
-    context_entry: Dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID && val.UniqueID == obj.UniqueID)": ecs
-    }
+    if env == "PRODUCTION":
+        context_entry = {
+            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs
+        }
+    elif env == "STAGING":
+        context_entry = {
+            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID == obj.UniqueID)": ecs
+        }
+
     return human_readable, context_entry, raws
 
 
