@@ -1,6 +1,10 @@
 Manage a common set of lists for use in various Akamai security products such as Kona Site Defender, Web App Protector,
 and Bot Manager. This integration was integrated and tested with [Network Lists API v2.0](https://developer.akamai.com/api/cloud_security/network_lists/v2.html)
 
+##  Playbooks
+
+* Akamai WAF Network list activate generic polling
+
 ## Use Cases
 
 *   Get network list details - activations status, elements etc
@@ -86,53 +90,59 @@ Returns a list of all network lists available for an authenticated user who belo
 
 ##### Command Example
 
-`!akamai-get-network-lists`, `!akamai-get-network-lists type=IP search="192.168.0.1"`, `!akamai-get-network-lists type=GEO search=IL`
+`!akamai-get-network-lists` 
+
+`!akamai-get-network-lists type=IP search="192.168.0.1"`
+
+ `!akamai-get-network-lists type=GEO search=IL`
 
 ##### Context Example
-   
+
 ```
 {
     "Akamai":{
-        "NetworkLists":[
-            {
-                "CreatedBy": "user",
-                "ElementCount": 2,
-                "Elements": [
-                    "8.8.8.8",
-                    "8.8.8.8"
-                ],
-                "ExpeditedProductionActivationStatus": "INACTIVE",
-                "ExpeditedStagingActivationStatus": "INACTIVE",
-                "Name": "Test",
-                "ProductionActivationStatus": "PENDING_ACTIVATION",
-                "StagingActivationStatus": "INACTIVE",
-                "Type": "IP",
-                "UniqueID": "uniq_id",
-                "UpdateDate": "2020-01-13T18:57:05.99Z",
-                "UpdatedBy": "user"
-            },
-            {
-                "CreatedBy": "akamai",
-                "ElementCount": 18,
-                "Elements": [
-                    "iq",
-                    "mm",
-                    "ir",
-                    "ye",
-                    "so",
-                    "sd"
-                ],
-                "ExpeditedProductionActivationStatus": "INACTIVE",
-                "ExpeditedStagingActivationStatus": "INACTIVE",
-                "Name": "Test",
-                "ProductionActivationStatus": "PENDING_ACTIVATION",
-                "StagingActivationStatus": "INACTIVE",
-                "Type": "IP",
-                "UniqueID": "uniq_id",
-                "UpdateDate": "2020-01-13T18:57:05.99Z",
-                "UpdatedBy": "user"
-            }
-        ]
+        "NetworkLists":{ 
+        	"Lists": [
+              {
+                  "CreatedBy": "user",
+                  "ElementCount": 2,
+                  "Elements": [
+                      "8.8.8.8",
+                      "8.8.8.8"
+                  ],
+                  "ExpeditedProductionActivationStatus": "INACTIVE",
+                  "ExpeditedStagingActivationStatus": "INACTIVE",
+                  "Name": "Test",
+                  "ProductionActivationStatus": "PENDING_ACTIVATION",
+                  "StagingActivationStatus": "INACTIVE",
+                  "Type": "IP",
+                  "UniqueID": "uniq_id",
+                  "UpdateDate": "2020-01-13T18:57:05.99Z",
+                  "UpdatedBy": "user"
+              },
+              {
+                  "CreatedBy": "akamai",
+                  "ElementCount": 18,
+                  "Elements": [
+                      "iq",
+                      "mm",
+                      "ir",
+                      "ye",
+                      "so",
+                      "sd"
+                  ],
+                  "ExpeditedProductionActivationStatus": "INACTIVE",
+                  "ExpeditedStagingActivationStatus": "INACTIVE",
+                  "Name": "Test",
+                  "ProductionActivationStatus": "PENDING_ACTIVATION",
+                  "StagingActivationStatus": "INACTIVE",
+                  "Type": "IP",
+                  "UniqueID": "uniq_id",
+                  "UpdateDate": "2020-01-13T18:57:05.99Z",
+                  "UpdatedBy": "user"
+              }
+          ]
+       }
     }
 }
 ```
@@ -149,8 +159,6 @@ Returns a list of all network lists available for an authenticated user who belo
 * * *
 
 2. ### akamai-get-network-list-by-id
-
-
 
 Gets a network list by the network list ID.
 
@@ -190,27 +198,28 @@ Gets a network list by the network list ID.
 ##### Context Example
 
 ```
-{
-    "Akamai": {
-        "NetworkLists": [
+{ 
+	"Akamai": {
+		"NetworkLists": {
+			"Lists": [
             {
-                "CreatedBy": "user",
-                "ElementCount": 2,
-                "Elements": [
-                    "8.8.8.8",
-                    "8.8.8.8"
-                ],
-                "ExpeditedProductionActivationStatus": "INACTIVE",
-                "ExpeditedStagingActivationStatus": "INACTIVE",
-                "Name": "Test",
-                "ProductionActivationStatus": "PENDING_ACTIVATION",
-                "StagingActivationStatus": "INACTIVE",
-                "Type": "IP",
-                "UniqueID": "unique_id",
-                "UpdateDate": "2020-01-13T18:57:05.99Z",
-                "UpdatedBy": "user"
+              "CreatedBy": "user",
+              "ElementCount": 2,
+              "Elements": [
+              "8.8.8.8",
+              "8.8.8.8"
+              ],
+              "ExpeditedProductionActivationStatus": "INACTIVE",
+              "ExpeditedStagingActivationStatus": "INACTIVE",
+              "Name": "Test",
+              "ProductionActivationStatus": "PENDING_ACTIVATION",
+              "StagingActivationStatus": "INACTIVE",
+              "Type": "IP",
+              "UniqueID": "unique_id",
+              "UpdateDate": "2020-01-13T18:57:05.99Z",
+              "UpdatedBy": "user"
             }
-        ]
+        ]    
     }
 }
 ```
@@ -396,8 +405,7 @@ There are no context output for this command.
 
 |**elements**|
 |--- |
-|8.8.8.8,  
-9.9.9.9|
+|8.8.8.8, 9.9.9.9|
 
 * * *
 
@@ -461,7 +469,9 @@ Gets the activation status of the specified network list
 
 ##### Command Example
 
-`!akamai-get-network-list-activation-status network_list_id=69988_TEST env=PRODUCTION`, `!akamai-get-network-list-activation-status network_list_id=69988_TEST, 69989_TEST env=PRODUCTION`
+`!akamai-get-network-list-activation-status network_list_id=69988_TEST env=PRODUCTION`
+
+`!akamai-get-network-list-activation-status network_list_id=69988_TEST, 69989_TEST env=PRODUCTION`
 
 ##### Context Example
 
