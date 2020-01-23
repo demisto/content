@@ -976,6 +976,9 @@ def delete_reference_set_command():
 
 
 def update_reference_set_value_command():
+    """
+        The function creates or updates values in QRadar reference set
+    """
     args = demisto.args()
     values = argToList(args.get('value'))
     if args.get('date_value') == 'True':
