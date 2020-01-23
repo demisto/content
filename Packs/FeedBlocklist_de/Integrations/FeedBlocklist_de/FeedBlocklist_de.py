@@ -19,16 +19,10 @@ def main():
     for subfeed in argToList(demisto.params().get('subfeeds', [])):
         chosen_subfeeds.append(F'https://lists.blocklist.de/lists/{subfeed}.txt')
 
-    params['feed_url_to_config'] = feed_types
-
-    chosen_subfeeds = list()
-    for subfeed in argToList(demisto.params().get('subfeeds', [])):
-        chosen_subfeeds.append(F'https://lists.blocklist.de/lists/{subfeed}.txt')
-
     params['url'] = chosen_subfeeds
 
     # Call the main execution of the HTTP API module.
-    feed_main('Blocklist_de Feed', params)
+    feed_main('Blocklist_de Feed', params, 'blocklist_de')
 
 
 from HTTPFeedApiModule import *  # noqa: E402
