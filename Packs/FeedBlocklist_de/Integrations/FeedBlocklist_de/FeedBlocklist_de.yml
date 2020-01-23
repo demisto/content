@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Blocklist_de
+  id: Blocklist_deFeed
   version: -1
 configuration:
 - display: Fetch indicators
@@ -90,7 +90,7 @@ configuration:
   type: 16
 description: Use the Blocklist.de feed integration to fetch indicators from the feed.
 display: Blocklist_de Feed
-name: Blocklist_de
+name: Blocklist_deFeed
 script:
   commands:
   - arguments:
@@ -110,7 +110,7 @@ script:
     deprecated: false
     description: Gets the feed indicators.
     execution: false
-    name: get-indicators
+    name: blocklist_de-get-indicators
     outputs:
   dockerimage: demisto/python3:3.7.5.4583
   feed: true

@@ -303,8 +303,7 @@ def get_indicators_command(client: Client, args):
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = camelize(indicators_list[:limit])
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
-    feed_name = args.get('feed_name', 'HTTP').replace(' ', '')
-    return hr, {f'{feed_name}.Indicator': entry_result}, indicators_list
+    return hr, {}, indicators_list
 
 
 def test_module(client, args):
