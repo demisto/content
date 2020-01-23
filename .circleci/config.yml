@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.1.1"
+      CONTENT_VERSION: "20.1.2"
       SERVER_VERSION: "5.0.1"
-      GIT_SHA1: "a3c93edfbd64fbc5a4d94e2a42acfbc6c32a12dd" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "899b28ac9128640a98f81f9c30ba36cf8c45aba8" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
