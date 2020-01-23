@@ -80,8 +80,10 @@ def create_auth(api_key):
 
 
 def clear_trailing_whitespace(res):
-    for k, v in res.items():
-        res[k] = v.rstrip()
+    if len(res) > 0:
+        for item in res:
+            for k, v in item.items():
+                item[k] = v.rstrip()
     return res
 
 
