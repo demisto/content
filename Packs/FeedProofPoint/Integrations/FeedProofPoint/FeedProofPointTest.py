@@ -1,4 +1,3 @@
-import pytest
 from FeedProofPoint import Client, fetch_indicators_command
 
 url = "https://example.com"
