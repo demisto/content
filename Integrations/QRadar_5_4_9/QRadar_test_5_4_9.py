@@ -17,7 +17,7 @@ def test_enrich_offense_res_with_source_and_destination_address_normal(mocker):
     Then
         - The offense result will have the source and destination addresses
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
     # Given:
     #     - Offense raw response was fetched successfully with source and destination addresses IDs
     mocker.patch.object(qradar, 'extract_source_and_destination_addresses_ids',
@@ -43,7 +43,7 @@ def test_enrich_offense_res_with_source_and_destination_address_exception(mocker
     Then
         - The offense result will be the same as the raw offense response
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
     # Given:
     #     - Offense raw response was fetched successfully with source and destination addresses IDs
     mocker.patch.object(qradar, 'extract_source_and_destination_addresses_ids',
@@ -65,7 +65,7 @@ def test_get_reference_by_name(mocker):
     Then
         - The rest API endpoint will be called with URL safe chars
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
     mocker.patch.object(qradar, 'send_request')
     # Given:
     #     - There's a reference set with non-url safe chars
@@ -87,7 +87,7 @@ def test_delete_reference_set(mocker):
     Then
         - The rest API endpoint will be called with URL safe chars
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
     mocker.patch.object(qradar, 'send_request')
     # Given:
     #     - There's a reference set with non-url safe chars
@@ -109,7 +109,7 @@ def test_update_reference_set_value(mocker):
     Then
         - The rest API endpoint will be called with URL safe chars
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
     mocker.patch.object(qradar, 'send_request')
     # Given:
     #     - There's a reference set with non-url safe chars
@@ -131,7 +131,7 @@ def test_delete_reference_set_value(mocker):
     Then
         - The rest API endpoint will be called with URL safe chars
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
     mocker.patch.object(qradar, 'send_request')
     # Given:
     #     - There's a reference set with non-url safe chars
@@ -153,7 +153,7 @@ def test_create_incident_from_offense():
     Then:
         - The function will create an incident from the offense
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
     incident = qradar.create_incident_from_offense(OFFENSE_RAW_RESULT[0])
     assert incident['name'] == INCIDENT_RESULT['name']
 
@@ -167,7 +167,7 @@ def test_create_incident_from_offense_no_description():
     Then:
         - The function will create an incident from the offense
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
     expected_incident_name = '49473 '
 
     raw_offense = copy.deepcopy(OFFENSE_RAW_RESULT[0])
@@ -189,7 +189,7 @@ def test_create_incident_from_offense_new_line_description():
     Then:
         - The function will create an incident from the offense without \n in the incident name
     """
-    import QRadar as qradar
+    import QRadar_5_4_9 as qradar
 
     raw_offense = copy.deepcopy(OFFENSE_RAW_RESULT[0])
     raw_offense['description'] = '\n{}\n'.format(raw_offense['description'])

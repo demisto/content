@@ -2,8 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: IBM QRadar
   version: -1
-  configuration:
-  toversion: 5.4.9
+configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
   required: true
@@ -1514,4 +1513,4 @@ script:
   type: python
 tests:
 - test_Qradar
-fromversion: 5.5.0
+toversion: 5.4.9
