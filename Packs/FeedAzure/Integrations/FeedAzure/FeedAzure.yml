@@ -170,12 +170,6 @@ script:
     execution: false
     name: azure-get-indicators
     outputs:
-    - contextPath: AzureFeed.Indicator.Value
-      description: Indicator value.
-      type: number
-    - contextPath: AzureFeed.Indicator.Type
-      description: Indicator type.
-      type: string
   dockerimage: demisto/python3:3.7.5.4583
   feed: true
   isfetch: false

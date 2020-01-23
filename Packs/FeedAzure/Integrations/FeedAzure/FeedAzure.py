@@ -24,8 +24,8 @@ class Client(BaseClient):
     Args:
         regions_list (list): List of regions to filter.
         services_list (list): List of services to filter.
-        insecure (bool): False if feed HTTPS server certificate is verified, True otherwise.
-        proxy (bool):False if feed HTTPS server certificate will not use proxies, True otherwise.
+        insecure (bool): False if feed HTTPS server certificate should be verified, True otherwise.
+        proxy (bool): False if feed HTTPS server certificate will not use proxies, True otherwise.
     """
 
     def __init__(self, regions_list: list, services_list: list, polling_timeout: int = 20, insecure: bool = False,
@@ -88,6 +88,11 @@ class Client(BaseClient):
         download_link_search_regex = re.search(r'downloadData={.+(https://(.)+\.json)\",', azure_url_response)
         download_link = download_link_search_regex.group(1) if download_link_search_regex else None
 
+        if download_link is None:
+            raise RuntimeError(F'{INTEGRATION_NAME} - Download link not found')
+
+        demisto.debug(F'download link: {download_link}')
+
         return download_link
 
     def get_download_file_content_values(self, download_link: str) -> Dict:
@@ -99,11 +104,6 @@ class Client(BaseClient):
         Returns:
             Dict. Content of values section in the Azure downloaded file.
         """
-        if download_link is None:
-            raise RuntimeError(F'{INTEGRATION_NAME} - Download link not found')
-
-        demisto.debug(F'download link: {download_link}')
-
         file_download_response = self._http_request(
             method='GET',
             full_url=download_link,
@@ -199,17 +199,13 @@ class Client(BaseClient):
             demisto.debug(str(err))
             raise Exception(ERROR_TYPE_TO_MESSAGE[err.__class__] + str(err))
 
-        except AttributeError as err:
+        except RuntimeError as err:
             demisto.debug(str(err))
-            raise AttributeError(F'Could not fetch download link from Azure')
+            raise RuntimeError(F'Could not fetch download link from Azure')
 
         except ValueError as err:
             demisto.debug(str(err))
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
-
-        except RuntimeError as err:
-            demisto.debug(str(err))
-            raise Exception(err)
 
 
 def test_module(client: Client) -> Tuple[str, Dict, Dict]:
@@ -239,21 +235,19 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
     Returns:
         Tuple of:
             str. Information to be printed to war room.
-            Dict. Data to be entered to context.
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
 
-    indicators, raw_response = fetch_indicators(client, limit)
+    indicators, raw_response = fetch_indicators_command(client, limit)
 
     human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
-                                     headers=['Value', 'Type'], removeNull=True)
+                                     headers=['value', 'type'], removeNull=True)
 
-    return human_readable, {f'{INTEGRATION_NAME}Feed.Indicator(val.value === obj.value)': indicators}, {
-        'raw_response': raw_response}
+    return human_readable, {}, {'raw_response': raw_response}
 
 
-def fetch_indicators(client: Client, limit: int = -1) -> Tuple[List[Dict], List]:
+def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List[Dict], List]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
@@ -298,7 +292,7 @@ def main():
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
     insecure = demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy') == 'true'
+    proxy = demisto.params().get('proxy')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -315,7 +309,7 @@ def main():
             return_outputs(*commands[command](client))
 
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators(client)
+            indicators, _ = fetch_indicators_command(client)
 
             for single_batch in batch(indicators, batch_size=500):
                 demisto.createIndicators(single_batch)
