@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c31ed5ca-5f32-4160-8f82-45771831350b
+    taskid: db605e5e-22c7-4510-807c-5498bc676486
     type: start
     task:
-      id: c31ed5ca-5f32-4160-8f82-45771831350b
+      id: db605e5e-22c7-4510-807c-5498bc676486
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -30,14 +30,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "1":
     id: "1"
-    taskid: 11e97b13-56cb-4026-8601-02b698bc6528
+    taskid: d917ba08-5a1a-4fdc-8764-bff21002631f
     type: regular
     task:
-      id: 11e97b13-56cb-4026-8601-02b698bc6528
+      id: d917ba08-5a1a-4fdc-8764-bff21002631f
       version: -1
-      name: Delete Context
+      name: DeleteContext
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -57,83 +58,93 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 200
+          "x": 50,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "2":
     id: "2"
-    taskid: 196d15c5-6767-4672-8fc7-93db22649b3e
+    taskid: cae48bae-be17-48fe-8dcf-ecf5eebe8949
     type: regular
     task:
-      id: 196d15c5-6767-4672-8fc7-93db22649b3e
+      id: cae48bae-be17-48fe-8dcf-ecf5eebe8949
       version: -1
-      name: aws-get-indicators
-      script: '|||aws-get-indicators'
+      name: get-indicators-ip
+      description: Fetches indicators from the feed.
+      script: AWS Feed|||aws-get-indicators
       type: regular
       iscommand: true
-      brand: ""
+      brand: AWS Feed
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: Type=Type
+      limit:
+        simple: "1"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 390
+          "x": 50,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  "3":
-    id: "3"
-    taskid: 615afcc2-99bf-4433-869b-217fa10bdb5d
+    quiet: false
+  "6":
+    id: "6"
+    taskid: eaab7819-ebdc-4acc-8cbb-6ac9552bc5e7
     type: condition
     task:
-      id: 615afcc2-99bf-4433-869b-217fa10bdb5d
+      id: eaab7819-ebdc-4acc-8cbb-6ac9552bc5e7
       version: -1
-      name: Test
+      name: verify get indicators
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isEqualString
           left:
             value:
-              complex:
-                root: AWSFeed
-                accessor: Indicator
+              simple: Type
             iscontext: true
+          right:
+            value:
+              simple: CIDR
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 560
+          "x": 50,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  "4":
-    id: "4"
-    taskid: c6171f16-df5d-443c-87c5-d15fd68f2742
+    quiet: false
+  "14":
+    id: "14"
+    taskid: 89544cf6-bf4e-4bd2-84ce-c50b39c2825c
     type: title
     task:
-      id: c6171f16-df5d-443c-87c5-d15fd68f2742
+      id: 89544cf6-bf4e-4bd2-84ce-c50b39c2825c
       version: -1
       name: Done
       type: title
@@ -143,7 +154,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 720
         }
       }
@@ -151,6 +162,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -158,7 +170,7 @@ view: |-
       "dimensions": {
         "height": 735,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
