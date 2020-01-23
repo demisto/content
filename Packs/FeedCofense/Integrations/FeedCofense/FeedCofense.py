@@ -91,7 +91,7 @@ class Client(BaseClient):
             payload["beginTimestamp"] = str(end_time)
             del payload["endTimestamp"]
 
-        demisto.debug(f"{INTEGRATION_NAME} - polling {begin_time}/{end_time}")
+        demisto.debug(f"{INTEGRATION_NAME} - pulling {begin_time}/{end_time}")
         cur_page = 0
         total_pages = 1
         while cur_page < total_pages:
@@ -109,7 +109,7 @@ class Client(BaseClient):
                 threats = data.get("threats", [])
                 for t in threats:
                     yield t
-                demisto.debug(f"{INTEGRATION_NAME} - polling {cur_page}/{total_pages}")
+                demisto.debug(f"{INTEGRATION_NAME} - pulling {cur_page}/{total_pages}. page size: {_RESULTS_PER_PAGE}")
                 cur_page += 1
             else:
                 return_error(f'{INTEGRATION_NAME} - no "data" in response')
@@ -291,12 +291,11 @@ def main():
         if demisto.command() == "test-module":
             return_outputs(test_module(client))
         elif demisto.command() == "fetch-indicators":
-            begin_time, end_time = build_fetch_times(params.get("fetch_time", "3 days"), demisto.getLastRun())
+            begin_time, end_time = build_fetch_times(params.get("fetch_time", "3 days"))
             indicators = fetch_indicators_command(client, begin_time, end_time)
             # Send indicators to demisto
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
-            demisto.setLastRun({"timestamp": end_time})
         elif demisto.command() == "cofense-get-indicators":
             # dummy command for testing
             readable_outputs, raw_response = get_indicators_command(client, demisto.args())
