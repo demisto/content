@@ -71,6 +71,7 @@ configuration:
   name: proxy
   required: false
   type: 8
+description: Use the AWS feed integration to fetch indicators from the feed.
 display: AWS Feed
 name: AWS Feed
 script:
