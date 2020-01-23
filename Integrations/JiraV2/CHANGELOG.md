@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 
+## [20.1.2] - 2020-01-22
+Fixed the description of the *reporter* argument in the ***jira-create-issue*** command.
+Fixed an issue where trying to fetch incidents when the idOffset was not configured would raise an error.
+
 ## [19.12.0] - 2019-12-10
 - API token parameter is now encrypted.
 - Improved authentication methods support - Basic, OAuth 1.0 (only from 5.0) 
