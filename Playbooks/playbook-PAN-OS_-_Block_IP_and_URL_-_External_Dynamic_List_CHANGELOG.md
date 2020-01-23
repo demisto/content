@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.1.2] - 2020-01-22
 - Fixed an issue with EDL refresh for Panorama.
 
 ## [19.12.1] - 2019-12-25
