@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Fixes issue where some data had trailing whitespaces.
+- Fixed an issue where some alerts had trailing whitespaces.
 
 
 ## [19.11.0] - 2019-11-12
