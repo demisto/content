@@ -14,13 +14,13 @@ configuration:
   - S3
   required: true
   type: 16
-- defaultvalue: '240'
+- defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedInstanceReliability
   options:
@@ -53,7 +53,7 @@ configuration:
   name: bypassExclusionList
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
+- defaultvalue: Good
   display: Mark As Reputation
   name: feedInstanceReputation
   options:
