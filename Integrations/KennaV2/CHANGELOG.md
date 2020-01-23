@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.1.2] - 2020-01-22
  - Rewrote the integration in Python.
  - Added 4 commands.
     - ***search assets*** 
