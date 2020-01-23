@@ -95,7 +95,7 @@ def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dic
                'Description': report.get('description')}
     dbot_score = {'Indicator': cve_id, 'Type': 'cve', 'Vendor': 'XFE',
                   'Score': calculate_score(round(report.get('risk_level', 0)), threshold)}
-    additional_headers = ['xfbid', 'risk_level', 'reported', 'cvss', 'tagname', 'stdcode',
+    additional_headers = ['xfdbid', 'risk_level', 'reported', 'cvss', 'tagname', 'stdcode',
                           'title', 'description', 'platforms_affected', 'exploitability']
     additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
 
@@ -255,7 +255,7 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, di
          dict: the raw data from X-Force client (used for debugging).
      """
 
-    threshold = demisto.params().get('cve_threshold', DEFAULT_THRESHOLD)
+    threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
     report = client.cve_report(args['cve_id'])
 
     return get_cve_results(args['cve_id'], report[0], threshold)

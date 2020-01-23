@@ -292,7 +292,7 @@ script:
     - contextPath: CVE(obj.ID==val.ID).Description
       description: The CVE description
       type: Unknown
-    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfdbid
       description: The XFBID of the CVE
       type: String
     - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
@@ -358,7 +358,7 @@ script:
     - contextPath: CVE(obj.ID==val.ID).Description
       description: The CVE description
       type: Unknown
-    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfdbid
       description: The XFBID of the CVE
       type: String
     - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
@@ -460,7 +460,7 @@ script:
     - contextPath: CVE(obj.ID==val.ID).Description
       description: The CVE description
       type: Unknown
-    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfdbid
       description: The XFBID of the CVE
       type: String
     - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
@@ -500,7 +500,7 @@ script:
   longRunningPort: false
   runonce: false
   script: |-
-    from typing import Tuple, Dict
+    from typing import Tuple, Dict, Any
     from collections import defaultdict
 
 
@@ -540,7 +540,7 @@ script:
 
         def search_cves(self, q: str, start_date: str, end_date: str, bookmark: str) -> dict:
             params = {'q': q, 'startDate': start_date, 'endDate': end_date, 'bookmark': bookmark}
-            params = {key: value for key, value in params if value}
+            params = {key: value for key, value in params.items() if value}
             return self._http_request('GET', '/vulnerabilities/fulltext', params=params)
 
         def file_report(self, file_hash: str) -> dict:
@@ -548,7 +548,7 @@ script:
 
         def get_recent_vulnerabilities(self, start_date: str, end_date: str, limit: int) -> dict:
             params = {'startDate': start_date, 'endDate': end_date, 'limit': limit}
-            params = {key: value for key, value in params if value}
+            params = {key: value for key, value in params.items() if value}
             return self._http_request('GET', '/vulnerabilities', params=params)
 
         def get_version(self) -> dict:
@@ -597,7 +597,7 @@ script:
                    'Description': report.get('description')}
         dbot_score = {'Indicator': cve_id, 'Type': 'cve', 'Vendor': 'XFE',
                       'Score': calculate_score(round(report.get('risk_level', 0)), threshold)}
-        additional_headers = ['xfbid', 'risk_level', 'reported', 'cvss', 'tagname', 'stdcode',
+        additional_headers = ['xfdbid', 'risk_level', 'reported', 'cvss', 'tagname', 'stdcode',
                               'title', 'description', 'platforms_affected', 'exploitability']
         additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
 
@@ -683,7 +683,7 @@ script:
              dict: the raw data from X-Force client (used for debugging).
          """
 
-        url = args.get('url') or args.get('domain')
+        url = args.get('url', '') or args.get('domain', '')
         report = client.url_report(url)
         threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
 
@@ -717,15 +717,15 @@ script:
         threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
 
         if 'q' in args:
-            reports = client.search_cves(args['q'], args.get('start_date'), args.get('end_date'),
-                                         args.get('bookmark'))
+            reports = client.search_cves(args['q'], args.get('start_date', ''), args.get('end_date', ''),
+                                         args.get('bookmark', ''))
             reports, total_rows, bookmark = reports['rows'], reports['total_rows'], reports['bookmark']
         else:
-            reports = client.get_recent_vulnerabilities(args.get('start_date'), args.get('end_date'),
-                                                        int(args.get('limit')))
+            reports = client.get_recent_vulnerabilities(args.get('start_date', ''), args.get('end_date', ''),
+                                                        int(args.get('limit', 0)))
             total_rows, bookmark = '', ''
 
-        total_context: Dict[str, list] = defaultdict(list)
+        total_context: Dict[str, Any] = defaultdict(list)
         total_markdown = ''
 
         for report in reports:
@@ -757,7 +757,7 @@ script:
              dict: the raw data from X-Force client (used for debugging).
          """
 
-        threshold = demisto.params().get('cve_threshold', DEFAULT_THRESHOLD)
+        threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
         report = client.cve_report(args['cve_id'])
 
         return get_cve_results(args['cve_id'], report[0], threshold)

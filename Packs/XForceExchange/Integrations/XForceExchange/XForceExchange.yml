@@ -292,7 +292,7 @@ script:
     - contextPath: CVE(obj.ID==val.ID).Description
       description: The CVE description
       type: Unknown
-    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfdbid
       description: The XFBID of the CVE
       type: String
     - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
@@ -358,7 +358,7 @@ script:
     - contextPath: CVE(obj.ID==val.ID).Description
       description: The CVE description
       type: Unknown
-    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfdbid
       description: The XFBID of the CVE
       type: String
     - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
@@ -460,7 +460,7 @@ script:
     - contextPath: CVE(obj.ID==val.ID).Description
       description: The CVE description
       type: Unknown
-    - contextPath: XFE.CVE(obj.ID==val.ID).Xfbid
+    - contextPath: XFE.CVE(obj.ID==val.ID).Xfdbid
       description: The XFBID of the CVE
       type: String
     - contextPath: XFE.CVE(obj.ID==val.ID).RiskLevel
