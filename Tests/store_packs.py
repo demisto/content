@@ -68,15 +68,19 @@ class Pack:
 
     def _parse_pack_metadata(self, user_metadata):
         pack_metadata = {}
-        # todo add id to metadata
         pack_metadata['id'] = self._pack_name
-        pack_metadata['displayName'] = user_metadata.get('name', '')
+        pack_metadata['displayName'] = user_metadata.get('displayName', '')
         pack_metadata['description'] = user_metadata.get('description', '')
+        pack_metadata['created'] = user_metadata.get('created', '')
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
         pack_metadata['support'] = user_metadata.get('support', '')
-        pack_metadata['beta'] = bool(strtobool(user_metadata.get('beta')))
-        pack_metadata['deprecated'] = bool(strtobool(user_metadata.get('deprecated')))
+        # pack_metadata['beta'] = bool(strtobool(user_metadata.get('beta')))
+        is_beta = user_metadata.get('beta')
+        pack_metadata['beta'] = bool(strtobool(is_beta)) if isinstance(is_beta, str) else is_beta
+        # pack_metadata['deprecated'] = bool(strtobool(user_metadata.get('deprecated')))
         pack_metadata['certification'] = user_metadata.get('certification', '')
+        is_deprecated = user_metadata.get('deprecated')
+        pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
@@ -171,9 +175,9 @@ class Pack:
             shutil.rmtree(self._pack_path)
 
 
-def get_modified_packs(is_circle=False, specific_pack=None):
+def get_modified_packs(is_circle=False, specific_packs=None):
     if not is_circle:
-        return {specific_pack}
+        return [p.strip() for p in specific_packs.split(',')]
 
     cmd = f"git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
     modified_packs_path = run_command(cmd, use_shell=True).splitlines()
@@ -267,7 +271,8 @@ def option_handler():
     parser.add_argument('-a', '--artifactsPath', help="The full path of packs artifacts", required=True)
     parser.add_argument('-e', '--extractPath', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-c', '--circleCi', help="Whether run script locally or in circleCi", default=False)
-    parser.add_argument('-p', '--packName', help="Use only in local mode, the target pack name to store.",
+    parser.add_argument('-p', '--packNames',
+                        help="Use only in local mode, comma separated list of target pack names to store.",
                         required=False, default="")
     parser.add_argument('-b', '--bucketName', help="Storage bucket name", required=True)
     parser.add_argument('-n', '--ciBuildNumber',
@@ -282,13 +287,13 @@ def main():
     extract_destination_path = option.extractPath
     storage_bucket_name = option.bucketName
     is_circle = option.circleCi
-    specific_pack = option.packName
+    specific_packs = option.packNames
     build_number = option.ciBuildNumber if option.ciBuildNumber else str(uuid.uuid4())
 
     storage_client = init_storage_client(is_circle)
     storage_bucket = storage_client.get_bucket(storage_bucket_name)
 
-    modified_packs = get_modified_packs(is_circle, specific_pack)
+    modified_packs = get_modified_packs(is_circle, specific_packs)
     extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), storage_bucket)
                   for pack_name in modified_packs]
