@@ -405,7 +405,7 @@ def build_context_entries(data):
 
 def main():
     args = demisto.args()
-    txt = args.get("iocXml", "stix2_data").encode("utf-8")
+    txt = args.get("iocXml", "").encode("utf-8")
     if not txt:
         entry_id = args.get("entry_id")
         # get file from entry_id
