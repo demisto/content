@@ -696,18 +696,13 @@ script:
       name: incident_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Action to perform on the incident. Can be "CLAIM", "ASSIGN TO SECOPS",
-        "ASSIGN TO ANALYST", "RELEASE", or "COMMENT".
+    - default: false
+      description: 'Action to perform on the incident. You can see them using securonix-get-incident-available-actions.
+        e.g: "CLAIM", "ASSIGN TO SECOPS", "ASSIGN TO ANALYST", "RELEASE", or "COMMENT".'
       isArray: false
       name: action
       predefined:
-      - CLAIM
-      - ASSIGN TO SECOPS
-      - ASSIGN TO ANALYST
-      - RELEASE
-      - COMMENT
+      - ''
       required: true
       secret: false
     deprecated: false
