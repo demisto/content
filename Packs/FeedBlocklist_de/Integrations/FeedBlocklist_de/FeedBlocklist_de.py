@@ -22,7 +22,7 @@ def main():
     params['url'] = chosen_subfeeds
 
     # Call the main execution of the HTTP API module.
-    feed_main('Blocklist_de Feed', params, 'blocklist_de')
+    feed_main('Blocklist_de Feed', params, 'blocklist_de-')
 
 
 from HTTPFeedApiModule import *  # noqa: E402
