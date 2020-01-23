@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GenericOutboundIndicators
+  id: ExportIndicators
   version: -1
 configuration:
 - additionalinfo: The query to run to update its list. To view expected results, you can run the following command from the Demisto CLI
@@ -66,8 +66,8 @@ configuration:
   type: 8
 description: This integration provides an endpoint with a list of indicators as a service for
   the system indicators.
-display: Outbound Indicators Service
-name: GenericOutboundIndicators
+display: Export Indicators Service
+name: ExportIndicators
 script:
   commands:
   - arguments:
