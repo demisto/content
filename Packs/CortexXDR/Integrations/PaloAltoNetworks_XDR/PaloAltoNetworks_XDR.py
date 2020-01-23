@@ -79,6 +79,12 @@ def create_auth(api_key):
     return nonce, timestamp, m.hexdigest()
 
 
+def clear_trailing_whitespace(res):
+    for k, v in res.iteritems():
+        res[k] = v.rstrip()
+    return res
+
+
 # nonce, timestamp, auth = create_auth(API_KEY)
 nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
 timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
@@ -292,7 +298,8 @@ def get_incident_extra_data_command():
 
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
-    alerts = raw_incident.get('alerts').get('data')
+    raw_alerts = raw_incident.get('alerts').get('data')
+    alerts = clear_trailing_whitespace(raw_alerts)
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
