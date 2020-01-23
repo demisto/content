@@ -159,7 +159,7 @@ def feed_main(params, feed_name, prefix):
             return_outputs(test_module(client, params))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, indicator_type, feed_name=feed_name)
+            indicators = fetch_indicators_command(client, indicator_type)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
@@ -170,4 +170,5 @@ def feed_main(params, feed_name, prefix):
             demisto.results(indicators)
 
     except Exception as err:
-        return_error(str(err))
+        err_msg = f'Error in {feed_name} integration [{err}]'
+        return_error(err_msg)
