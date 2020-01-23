@@ -7,7 +7,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: '240'
+- defaultvalue: '360'
   display: Fetch Interval
   name: feedFetchInterval
   required: true
@@ -19,7 +19,7 @@ configuration:
   - IP
   required: true
   type: 15
-- defaultvalue: F - Reliability cannot be judged
+- defaultvalue: C - Fairly reliable
   display: Reliability
   name: feedInstanceReliability
   options:
@@ -40,7 +40,7 @@ configuration:
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Bad
   display: Indicator reputation
   name: feedInstanceReputation
   options:
@@ -112,15 +112,6 @@ script:
     execution: false
     name: get-indicators
     outputs:
-    - contextPath: Blocklist_deFeed.Indicator.Value
-      description: The indicator value.
-      type: String
-    - contextPath: Blocklist_deFeed.Indicator.Type
-      description: The indicator type.
-      type: String
-    - contextPath: Blocklist_deFeed.Indicator.RawJSON
-      description: The indicator rawJSON value.
-      type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
   feed: true
   isfetch: false
