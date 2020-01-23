@@ -24,7 +24,7 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: 'true'
+- defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
   required: false
