@@ -559,7 +559,7 @@ def get_indicators_search_scan():
 
 def results_to_indicator(hit):
     ioc_dict = hit.to_dict()
-    ioc_dict['value'] = ioc_dict.get('value')
+    ioc_dict['value'] = ioc_dict.get('name')
     ioc_dict['rawJSON'] = dict(ioc_dict)
     return ioc_dict
 
