@@ -975,7 +975,7 @@ def main():
             'securonix-list-watchlists': list_watchlists,
             'securonix-get-watchlist': get_watchlist
         }
-        if command == 'fetch-incidents' or command == 'securonix-list-workflows':
+        if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time')
             incident_types = params.get('incident_types') if 'incident_types' in params else 'opened'
             incidents = fetch_incidents(client, fetch_time, incident_types, last_run=demisto.getLastRun())
