@@ -6,7 +6,7 @@
 		"TypeName": "",
 		"id": "Employee Offboarding",
 		"kind": "details",
-		"modified": "2020-01-06T19:06:01.741250338Z",
+		"modified": "2020-01-23T15:37:54.835146515Z",
 		"name": "",
 		"system": false,
 		"tabs": [
@@ -89,20 +89,30 @@
 						"i": "qdjwqktnvs-21d966a0-21be-11ea-95fc-6bfcf7f8d70f",
 						"items": [
 							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "offboardingdate",
+								"height": 55,
+								"id": "37a46030-3df6-11ea-a6e9-c9270dc69f9b",
+								"index": 0,
+								"listId": "qdjwqktnvs-21d966a0-21be-11ea-95fc-6bfcf7f8d70f",
+								"startCol": 0
+							},
+							{
 								"endCol": 2,
 								"fieldId": "offboardingstage",
-								"height": 24,
+								"height": 55,
 								"id": "25984360-21be-11ea-95fc-6bfcf7f8d70f",
-								"index": 0,
+								"index": 1,
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "googledisplayname",
-								"height": 24,
+								"height": 55,
 								"id": "358f3d80-309d-11ea-bf1f-41f04c42df82",
-								"index": 1,
+								"index": 2,
 								"listId": "qdjwqktnvs-21d966a0-21be-11ea-95fc-6bfcf7f8d70f",
 								"startCol": 0
 							},
@@ -110,34 +120,34 @@
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "activedirectorydisplayname",
-								"height": 24,
+								"height": 55,
 								"id": "3104fa70-309d-11ea-bf1f-41f04c42df82",
-								"index": 2,
+								"index": 3,
 								"listId": "qdjwqktnvs-21d966a0-21be-11ea-95fc-6bfcf7f8d70f",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
 								"fieldId": "employeeemail",
-								"height": 24,
+								"height": 55,
 								"id": "4c2ed330-309c-11ea-bf1f-41f04c42df82",
-								"index": 3,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "employeedisplayname",
-								"height": 24,
-								"id": "4dede850-309c-11ea-bf1f-41f04c42df82",
 								"index": 4,
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "employeemanageremail",
-								"height": 24,
-								"id": "4eda4420-309c-11ea-bf1f-41f04c42df82",
+								"fieldId": "employeedisplayname",
+								"height": 55,
+								"id": "4dede850-309c-11ea-bf1f-41f04c42df82",
 								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "employeemanageremail",
+								"height": 55,
+								"id": "4eda4420-309c-11ea-bf1f-41f04c42df82",
+								"index": 6,
 								"startCol": 0
 							}
 						],
