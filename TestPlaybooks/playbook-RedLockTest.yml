@@ -1,5 +1,9 @@
 id: RedLockTest
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 name: RedLockTest
 starttaskid: "0"
 tasks:
@@ -20,12 +24,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "1":
     id: "1"
     taskid: 2d1678e6-819b-424f-8bb8-816a01c31d77
@@ -50,26 +57,28 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "2":
     id: "2"
-    taskid: 8914bb6a-d9be-43bd-85dc-130a48b3feda
+    taskid: "7"
     type: regular
     task:
-      id: 8914bb6a-d9be-43bd-85dc-130a48b3feda
+      id: "7"
       version: -1
       name: Retrieve all open alerts between 2 given dates
-      description: Check IP reputation (when information is available, returns a JSON
-        with details).  Uses all configured Threat Intelligence feeds
-      script: RedLock|||redlock-search-alerts
+      description: Search alerts on the RedLock platform
+      script: '|||redlock-search-alerts'
       type: regular
       iscommand: true
-      brand: RedLock
+      brand: ""
     nexttasks:
       '#none#':
       - "21"
@@ -99,12 +108,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "12":
     id: "12"
     taskid: f7f00d46-71fb-4943-87bc-5471d0f10e6a
@@ -112,7 +124,7 @@ tasks:
     task:
       id: f7f00d46-71fb-4943-87bc-5471d0f10e6a
       version: -1
-      name: get alert P-576 status
+      name: get alert P-953 status
       script: '|||redlock-get-alert-details'
       type: regular
       iscommand: true
@@ -122,26 +134,29 @@ tasks:
       - "13"
     scriptarguments:
       alert-id:
-        simple: P-576
+        simple: P-953
       detailed: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "13":
     id: "13"
-    taskid: 37488f7a-c6e0-438a-888f-d96ef00d81b7
+    taskid: "10"
     type: condition
     task:
-      id: 37488f7a-c6e0-438a-888f-d96ef00d81b7
+      id: "10"
       version: -1
-      name: is status open?
+      name: is alert status open? (will alternate each run)
       type: condition
       iscommand: false
       brand: ""
@@ -157,19 +172,22 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${Redlock.Alert(val.ID === 'P-576').Status}
+              simple: ${Redlock.Alert(val.ID === 'P-953').Status}
           right:
             value:
               simple: open
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "14":
     id: "14"
     taskid: 37a0987f-eccc-41d5-89cc-7f987917a128
@@ -184,10 +202,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+      - "16"
     scriptarguments:
       alert-id:
-        simple: P-576
+        simple: P-953
       alert-rule-name: {}
       alert-status: {}
       cloud-account: {}
@@ -214,11 +232,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "15":
     id: "15"
     taskid: 8481993b-5c2a-4e36-8ab5-da34951deb42
@@ -233,10 +254,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "16"
     scriptarguments:
       alert-id:
-        simple: P-576
+        simple: P-953
       alert-rule-name: {}
       alert-status: {}
       cloud-account: {}
@@ -259,12 +280,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 480,
           "y": 1245
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "16":
     id: "16"
     taskid: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
@@ -272,7 +296,7 @@ tasks:
     task:
       id: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
       version: -1
-      name: get alert P-576 status
+      name: get alert P-953 status
       script: '|||redlock-get-alert-details'
       type: regular
       iscommand: true
@@ -282,26 +306,29 @@ tasks:
       - "18"
     scriptarguments:
       alert-id:
-        simple: P-576
+        simple: P-953
       detailed: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "18":
     id: "18"
-    taskid: 66d57546-2be4-44c2-85da-bb8d8e65479e
+    taskid: "8"
     type: condition
     task:
-      id: 66d57546-2be4-44c2-85da-bb8d8e65479e
+      id: "8"
       version: -1
-      name: verify that P-576 is dismissed
+      name: verify that P-953 statuses concur
       type: condition
       iscommand: false
       brand: ""
@@ -315,19 +342,35 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${Redlock.Alert(val.ID === 'P-576').Status}
+              complex:
+                root: Redlock
+                accessor: Alert.Status
+            iscontext: true
           right:
             value:
               simple: dismissed
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Redlock
+                accessor: Alert.Status
+            iscontext: true
+          right:
+            value:
+              simple: open
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "19":
     id: "19"
     taskid: 3c767729-75c6-4a1d-8a3a-54af50369164
@@ -352,18 +395,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "21":
     id: "21"
-    taskid: 525f5447-c57b-43b0-8372-f574e3257dde
+    taskid: "9"
     type: condition
     task:
-      id: 525f5447-c57b-43b0-8372-f574e3257dde
+      id: "9"
       version: -1
       name: Check for response
       type: condition
@@ -389,12 +435,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "22":
     id: "22"
     taskid: 0c5ef584-57d1-45f7-858d-344ef3aab3e5
@@ -410,70 +459,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-  "23":
-    id: "23"
-    taskid: e66c985c-5291-4111-8a20-f0777ba5ac31
-    type: regular
-    task:
-      id: e66c985c-5291-4111-8a20-f0777ba5ac31
-      version: -1
-      name: wait 5 seconds
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      seconds:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-  "24":
-    id: "24"
-    taskid: 0d7af680-6e89-443d-8e64-246e426279e9
-    type: regular
-    task:
-      id: 0d7af680-6e89-443d-8e64-246e426279e9
-      version: -1
-      name: wait 5 seconds
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      seconds:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
+          "x": 265,
           "y": 1770
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -482,8 +476,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2310,
-        "width": 492.5,
+        "height": 1785,
+        "width": 810,
         "x": 50,
         "y": 50
       }
