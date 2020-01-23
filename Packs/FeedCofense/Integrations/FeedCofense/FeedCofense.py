@@ -109,7 +109,7 @@ class Client(BaseClient):
                 threats = data.get("threats", [])
                 for t in threats:
                     yield t
-                demisto.debug(f"{INTEGRATION_NAME} - pulling {cur_page}/{total_pages}. page size: {_RESULTS_PER_PAGE}")
+                demisto.debug(f"{INTEGRATION_NAME} - pulling {cur_page+1}/{total_pages}. page size: {_RESULTS_PER_PAGE}")
                 cur_page += 1
             else:
                 return_error(f'{INTEGRATION_NAME} - no "data" in response')
