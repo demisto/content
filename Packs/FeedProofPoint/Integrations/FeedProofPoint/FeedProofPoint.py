@@ -110,6 +110,8 @@ def get_indicators_command(client, args) -> Tuple[str, dict, list]:
             f"one of {client.TYPES}"
         )
     limit = int(args.get("limit"))
+    if limit < 1:
+        return_error("Limit must be above 1")
     if indicator_type == client.ALL_TYPE:
         inside_limit = int((limit + 1) / 2)
         indicators_list = (
