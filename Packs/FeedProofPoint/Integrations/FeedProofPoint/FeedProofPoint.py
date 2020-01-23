@@ -111,9 +111,9 @@ def get_indicators_command(client, args) -> Tuple[str, dict, list]:
         )
     limit = int(args.get("limit"))
     if limit < 1:
-        return_error("Limit must be above 1")
+        limit = 1
     if indicator_type == client.ALL_TYPE:
-        inside_limit = int((limit + 1) / 2)
+        inside_limit = int(((limit + 1) / 2))
         indicators_list = (
             client.get_indicators_ip()[:inside_limit]
             + client.get_indicators_domain()[:inside_limit]
