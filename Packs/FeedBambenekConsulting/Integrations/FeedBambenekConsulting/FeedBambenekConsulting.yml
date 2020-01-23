@@ -113,7 +113,7 @@ script:
     - contextPath: BambenekConsultingFeed.Indicator.Rawjson
       description: Indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/python3:3.7.5.4583
+  dockerimage: demisto/python3:3.7.5.5420
   feed: true
   isfetch: false
   longRunning: false
