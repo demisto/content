@@ -3,7 +3,7 @@ commonfields:
   id: AzureFeed
   version: -1
 configuration:
-- defaultvalue: F - Reliability cannot be judged
+- defaultvalue: A - Completely reliable
   display: Source reliability
   name: feedInstanceReliability
   options:
@@ -37,7 +37,7 @@ configuration:
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Good
   display: Indicator reputation
   name: feedInstanceReputation
   options:
@@ -47,7 +47,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: '240'
+- defaultvalue: '5'
   display: Fetch Interval
   name: feedFetchInterval
   required: true
