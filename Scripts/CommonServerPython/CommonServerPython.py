@@ -224,12 +224,12 @@ def urljoin(url, suffix=""):
 
     return url + suffix
 
-def url_path_join(*args):
+def url_concat(*args):
     # type: (str) -> str
     """Return joined urls
 
         Example:
-        >>> url_path_join("https://example.com", "path", "file.txt")
+        >>> url_concat("https://example.com", "path", "file.txt")
         'https://example.com/path/file.txt'
 
         :type args: ``string``

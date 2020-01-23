@@ -1107,6 +1107,6 @@ url_join_test_inputs = [
 
 
 @pytest.mark.parametrize('input_data, expected', url_join_test_inputs)
-def test_url_path_join(input_data, expected):
-    from CommonServerPython import url_path_join
-    assert expected == url_path_join(*input_data)
+def test_url_concat(input_data, expected):
+    from CommonServerPython import url_concat
+    assert expected == url_concat(*input_data)
