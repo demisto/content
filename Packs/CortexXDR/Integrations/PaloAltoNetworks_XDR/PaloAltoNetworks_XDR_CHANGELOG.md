@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Fixes issue where some data had trailing whitespaces.
 
 
 ## [19.11.0] - 2019-11-12
