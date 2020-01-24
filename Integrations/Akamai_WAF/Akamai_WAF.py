@@ -360,7 +360,7 @@ def create_network_list_command(client: Client, list_name: str, list_type: str, 
     if raw_response:
         title = f'{INTEGRATION_NAME} - network list {list_name} created successfully'
         context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
+            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.Lists(val.UniqueID && val.UniqueID == obj.UniqueID && val.UpdateDate &&"
             f" val.UpdateDate == obj.UpdateDate)": entry_context
         }
         human_readable = tableToMarkdown(name=title,
@@ -427,8 +427,8 @@ def activate_network_list_command(client: Client, network_list_ids: str, env: st
 
 @logger
 def add_elements_to_network_list_command(client: Client, network_list_id: str, entry_id: Optional[str] = None,
-                                         elements: Optional[Union[str, list]] = None) -> Tuple[
-    object, dict, Union[List, Dict]]:
+                                         elements: Optional[Union[str, list]] = None) \
+        -> Tuple[object, dict, Union[List, Dict]]:
     """Add elements to network list by ID
 
     Args:
@@ -514,7 +514,8 @@ def get_activation_status_command(client: Client, network_list_ids: Union[str, l
                         "StagingStatus": raw_response.get('activationStatus')
 
                     })
-                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** is **{raw_response.get('activationStatus')}** in **{env}**\n"
+                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** is " \
+                                  f"**{raw_response.get('activationStatus')}** in **{env}**\n"
         except DemistoException as e:
             if "The Network List ID should be of the format" in e.args[0]:
                 human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** canot be found\n"

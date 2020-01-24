@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 39e914e4-16c5-4105-8e00-50e699b68fab
+    taskid: 9e46a5ab-2147-41ff-840b-8d2cdff65971
     type: start
     task:
-      id: 39e914e4-16c5-4105-8e00-50e699b68fab
+      id: 9e46a5ab-2147-41ff-840b-8d2cdff65971
       version: -1
       name: ""
       iscommand: false
@@ -30,12 +30,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "1":
     id: "1"
-    taskid: bf0a719b-59a2-459a-87c4-3602dc7a7cc5
+    taskid: c7cee15a-2a0f-442a-83de-c3fa6288cdd6
     type: regular
     task:
-      id: bf0a719b-59a2-459a-87c4-3602dc7a7cc5
+      id: c7cee15a-2a0f-442a-83de-c3fa6288cdd6
       version: -1
       name: Create network list command
       description: Create new network list (Support txt file upload for elements)
@@ -67,12 +68,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "2":
     id: "2"
-    taskid: 6182475b-876b-42f6-8fde-21de03b6ea34
+    taskid: d20cbf5a-d1e5-4007-82b2-819b093c398b
     type: condition
     task:
-      id: 6182475b-876b-42f6-8fde-21de03b6ea34
+      id: d20cbf5a-d1e5-4007-82b2-819b093c398b
       version: -1
       name: Check create network list command
       type: condition
@@ -88,7 +90,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Akamai.NetworkLists.Name
+              simple: Akamai.NetworkLists.Lists.Name
             iscontext: true
           right:
             value:
@@ -104,12 +106,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "3":
     id: "3"
-    taskid: c0ab9469-145b-4b9f-87f8-ddb7fa21451a
+    taskid: d562c3cb-037c-41a0-80f7-e95cf31c4e56
     type: regular
     task:
-      id: c0ab9469-145b-4b9f-87f8-ddb7fa21451a
+      id: d562c3cb-037c-41a0-80f7-e95cf31c4e56
       version: -1
       name: Get network list by ID command
       description: Get network list by ID
@@ -122,7 +125,7 @@ tasks:
       - "4"
     scriptarguments:
       network_list_id:
-        simple: ${Akamai.NetworkLists.UniqueID}
+        simple: ${Akamai.NetworkLists.Lists.UniqueID}
     separatecontext: false
     view: |-
       {
@@ -135,12 +138,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "4":
     id: "4"
-    taskid: 8e33480c-4452-46bd-8a04-5a6d00f2e680
+    taskid: 138f408a-9143-4dee-8785-9ca3af85cb43
     type: condition
     task:
-      id: 8e33480c-4452-46bd-8a04-5a6d00f2e680
+      id: 138f408a-9143-4dee-8785-9ca3af85cb43
       version: -1
       name: Check get network list by ID command
       type: condition
@@ -156,7 +160,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Akamai.NetworkLists.Name
+              simple: Akamai.NetworkLists.Lists.Name
             iscontext: true
           right:
             value:
@@ -172,12 +176,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "5":
     id: "5"
-    taskid: b2eef0c6-9ee8-45e5-8db3-bcac85c58612
+    taskid: 0be79620-1c10-49b4-89f9-310d858ed760
     type: regular
     task:
-      id: b2eef0c6-9ee8-45e5-8db3-bcac85c58612
+      id: 0be79620-1c10-49b4-89f9-310d858ed760
       version: -1
       name: Remove element from network list command
       description: Remove element from network list
@@ -192,7 +197,7 @@ tasks:
       element:
         simple: 192.168.0.1
       network_list_id:
-        simple: ${Akamai.NetworkLists.[0].UniqueID}
+        simple: ${Akamai.NetworkLists.Lists.[0].UniqueID}
     separatecontext: false
     view: |-
       {
@@ -205,12 +210,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "6":
     id: "6"
-    taskid: 9d7c2710-8bad-492f-82fc-9c8ba55a94b7
+    taskid: 8e9ccc51-35f9-476d-89cd-6dc622a98465
     type: regular
     task:
-      id: 9d7c2710-8bad-492f-82fc-9c8ba55a94b7
+      id: 8e9ccc51-35f9-476d-89cd-6dc622a98465
       version: -1
       name: ' Add elements to network list command'
       description: Add elements to network list
@@ -226,7 +232,7 @@ tasks:
         simple: 192.168.0.3
       entry_id: {}
       network_list_id:
-        simple: ${Akamai.NetworkLists.[0].UniqueID}
+        simple: ${Akamai.NetworkLists.Lists.[0].UniqueID}
     separatecontext: false
     view: |-
       {
@@ -239,12 +245,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "7":
     id: "7"
-    taskid: a2d00817-60e6-4629-89a3-a8c9c4d58791
+    taskid: baeea2ee-ad14-4d64-8065-3470f796bea5
     type: regular
     task:
-      id: a2d00817-60e6-4629-89a3-a8c9c4d58791
+      id: baeea2ee-ad14-4d64-8065-3470f796bea5
       version: -1
       name: Get network list activation status command
       description: Get network list activation status in Production or staging
@@ -254,12 +261,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "14"
     scriptarguments:
       env:
         simple: PRODUCTION
       network_list_id:
         simple: ${Akamai.NetworkLists.[0].UniqueID}
+      network_list_ids:
+        simple: ${Akamai.NetworkLists.Lists.UniqueID}
     separatecontext: false
     view: |-
       {
@@ -272,12 +281,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "8":
     id: "8"
-    taskid: c843e395-3a4b-41a1-8094-6a9478232a2f
+    taskid: 7dabe538-80b9-4a7f-80dc-270edc485c10
     type: regular
     task:
-      id: c843e395-3a4b-41a1-8094-6a9478232a2f
+      id: 7dabe538-80b9-4a7f-80dc-270edc485c10
       version: -1
       name: Delete network list command
       description: Delete network list
@@ -287,32 +297,33 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "15"
     scriptarguments:
       network_list_id:
-        simple: ${Akamai.NetworkLists.[0].UniqueID}
+        simple: ${Akamai.NetworkLists.Lists.[0].UniqueID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "9":
     id: "9"
-    taskid: 93e1bb6e-e113-49af-867a-e3398a365f8a
+    taskid: e8589c31-7f5c-4cac-8852-609ddd91003e
     type: regular
     task:
-      id: 93e1bb6e-e113-49af-867a-e3398a365f8a
+      id: e8589c31-7f5c-4cac-8852-609ddd91003e
       version: -1
       name: Get network lists command
-      description: List all network lists available for an authenticated user who
-        belongs to a group.
+      description: Returns a list of all network lists available for an authenticated
+        user who belongs to a group.
       script: '|||akamai-get-network-lists'
       type: regular
       iscommand: true
@@ -329,19 +340,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "10":
     id: "10"
-    taskid: 0d0ef63e-2bbe-467b-89de-eb7186a104f5
+    taskid: f5288747-7402-42a4-8175-6e71a9504dbe
     type: condition
     task:
-      id: 0d0ef63e-2bbe-467b-89de-eb7186a104f5
+      id: f5288747-7402-42a4-8175-6e71a9504dbe
       version: -1
       name: Check get network lists command
       type: condition
@@ -357,25 +369,26 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Akamai.NetworkLists.[4].Name
+              simple: Akamai.NetworkLists.Lists.[0].Name
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "11":
     id: "11"
-    taskid: 0546721c-ed22-447a-802a-82644b3a9a4b
+    taskid: 4a979285-8663-4f93-89be-32312eeaf89b
     type: regular
     task:
-      id: 0546721c-ed22-447a-802a-82644b3a9a4b
+      id: 4a979285-8663-4f93-89be-32312eeaf89b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -405,12 +418,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
   "12":
     id: "12"
-    taskid: 071089c4-39cc-4a6c-895b-b8fdb084a379
+    taskid: 45d69bbc-3d6e-477c-815c-7591ddf477c3
     type: regular
     task:
-      id: 071089c4-39cc-4a6c-895b-b8fdb084a379
+      id: 45d69bbc-3d6e-477c-815c-7591ddf477c3
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -420,25 +434,97 @@ tasks:
       brand: ""
     scriptarguments:
       outputformat:
-        simple: ${Akamai.NetworkLists.Name}
+        simple: Akamai WAF network lists finished succesfully
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2125
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quiet: false
+  "14":
+    id: "14"
+    taskid: 31683c15-1ebf-41ed-8b21-f6cc7109e3b0
+    type: condition
+    task:
+      id: 31683c15-1ebf-41ed-8b21-f6cc7109e3b0
+      version: -1
+      name: Check get network list activation status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Akamai.NetworkLists.ActivationStatus.UniqueID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "15":
+    id: "15"
+    taskid: 0339a02a-26e0-4e62-8eff-f42a7f6b8daf
+    type: regular
+    task:
+      id: 0339a02a-26e0-4e62-8eff-f42a7f6b8daf
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2170,
+        "height": 2515,
         "width": 380,
         "x": 50,
         "y": 50
