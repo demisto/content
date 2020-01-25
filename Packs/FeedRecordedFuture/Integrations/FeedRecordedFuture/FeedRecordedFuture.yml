@@ -80,9 +80,9 @@ configuration:
   required: true
   type: 4
 - defaultvalue: connectApi
-  display: Sub Feed
+  display: Sub Feeds
   hidden: false
-  name: sub_feed
+  name: sub_feeds
   options:
   - connectApi
   - fusion
@@ -112,6 +112,14 @@ configuration:
   hidden: false
   name: polling_timeout
   required: true
+  type: 0
+- additionalinfo: The minimum score from the feed in order to to determine whether
+    the indicator is malicious. Default is "65"
+  defaultvalue: '65'
+  display: Threshold
+  hidden: false
+  name: threshold
+  required: false
   type: 0
 description: Ingest indicators from Recorded Future feeds into Demisto.
 display: Recorded Future Feed
