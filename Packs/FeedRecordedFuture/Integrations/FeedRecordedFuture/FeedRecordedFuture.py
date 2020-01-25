@@ -26,19 +26,20 @@ class Client(BaseClient):
     headers = {'X-RF-User-Agent': 'Demisto',
                'content-type': 'application/json'}
 
-    def __init__(self, indicator_type: str, api_token: str, sub_feed: str, risk_rule: str = None,
+    def __init__(self, indicator_type: str, api_token: str, sub_feeds: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False, **kwargs):
+                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, **kwargs):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
              api_token: string, the api token for RecordedFuture.
-             sub_feed: list, the sub feeds from RecordedFuture.
+             sub_feeds: list, the sub feeds from RecordedFuture.
              risk_rule: string, an optional argument to the 'ConnectApi' sub feed request.
              fusion_file_path: string, an optional argument to the 'Fusion' sub feed request.
              insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
              polling_timeout: timeout of the polling request in seconds. Default: 20
              proxy: Sets whether use proxy when sending requests
+             threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
         """
 
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
@@ -50,8 +51,9 @@ class Client(BaseClient):
         self.risk_rule = risk_rule
         self.fusion_file_path = fusion_file_path
         self.api_token = self.headers['X-RFToken'] = api_token
-        self.sub_feed = sub_feed
+        self.sub_feeds = sub_feeds
         self.indicator_type = indicator_type
+        self.threshold = int(threshold)
 
     def _build_request(self, sub_feed, indicator_type):
         """Builds the request for the Recorded Future feed.
@@ -124,6 +126,22 @@ class Client(BaseClient):
 
         return csvreader
 
+    def calculate_indicator_score(self, risk_from_feed):
+        """Calculates the Dbot score of an indicator based on its Risk value from the feed.
+        Args:
+            risk_from_feed (str): The indicator's risk value from the feed
+        Returns:
+            int. The indicator's Dbot score
+        """
+        dbot_score = 0
+        risk_from_feed = int(risk_from_feed)
+        if risk_from_feed >= self.threshold:
+            dbot_score = 3
+        elif risk_from_feed >= 5:
+            dbot_score = 2
+
+        return dbot_score
+
 
 def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """Builds the iterator to check that the feed is accessible.
@@ -134,18 +152,18 @@ def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
         'ok' if test passed, anything else will fail the test.
     """
 
-    for feed in client.sub_feed:
-        client.build_iterator(feed, client.indicator_type)
+    for sub_feed in client.sub_feeds:
+        client.build_iterator(sub_feed, client.indicator_type)
     return 'ok', {}, {}
 
 
 def get_indicator_type(indicator_type, item):
     """Returns the indicator type in Demisto
     Args:
-        indicator_type: ip, url, domain or hash
-        item: the indicator row from the csv response
+        indicator_type (str): ip, url, domain or hash
+        item (dict): the indicator row from the csv response
     Returns:
-        The indicator type per the indicators defined in Demisto
+        str. The indicator type per the indicators defined in Demisto
     """
 
     if indicator_type == 'ip':
@@ -191,16 +209,18 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
         list. List of indicators from the feed
     """
     indicators = []
-    for feed in client.sub_feed:
-        iterator = client.build_iterator(feed, indicator_type)
+    for sub_feed in client.sub_feeds:
+        iterator = client.build_iterator(sub_feed, indicator_type)
         for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
             raw_json = dict(item)
             raw_json['value'] = value = item.get('Name')
             raw_json['type'] = get_indicator_type(indicator_type, item)
+            raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
             indicators.append({
                 "value": value,
                 "type": raw_json['type'],
                 "rawJSON": raw_json,
+                "score": score
             })
 
     return indicators
