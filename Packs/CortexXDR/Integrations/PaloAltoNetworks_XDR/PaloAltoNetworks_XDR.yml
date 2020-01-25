@@ -139,7 +139,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
       description: Incident severity assigned by the user. This does not affect the
-        calculated severity.
+        calculated severity. Can be "low", "medium", "high"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_description
       description: Incident description provided by the user.
