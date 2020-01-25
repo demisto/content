@@ -1,0 +1,402 @@
+id: 2fe126e0-1b93-40f4-8179-b989f20dd710
+version: 5
+contentitemfields:
+  propagationLabels: []
+name: ms-management-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 01322098-5afb-41fd-8cf7-30598a88d14b
+    type: start
+    task:
+      id: 01322098-5afb-41fd-8cf7-30598a88d14b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: 0841b9bd-eb5f-41fc-824b-39f374c96453
+    type: title
+    task:
+      id: 0841b9bd-eb5f-41fc-824b-39f374c96453
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: f5c7a324-4f1a-4d66-8169-ea3ee30b761b
+    type: regular
+    task:
+      id: f5c7a324-4f1a-4d66-8169-ea3ee30b761b
+      version: -1
+      name: List current subscriptions
+      description: List the content types you are currently subscribed to
+      script: '|||ms-management-list-subscriptions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "3":
+    id: "3"
+    taskid: 774d9303-84a7-45f7-8da0-ad5ffd12e56a
+    type: regular
+    task:
+      id: 774d9303-84a7-45f7-8da0-ad5ffd12e56a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "4":
+    id: "4"
+    taskid: 5cd9dcbb-580c-4ad0-8483-3ed7c9dd60e1
+    type: condition
+    task:
+      id: 5cd9dcbb-580c-4ad0-8483-3ed7c9dd60e1
+      version: -1
+      name: Verify no current subscriptions
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: MicrosoftManagement.Subscription
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "5":
+    id: "5"
+    taskid: adcf2821-bd2e-49a1-8de0-49e25bd62ba7
+    type: regular
+    task:
+      id: adcf2821-bd2e-49a1-8de0-49e25bd62ba7
+      version: -1
+      name: Add subscription
+      description: Starts a subscription to a given content type
+      script: '|||ms-management-start-subscription'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      content_type:
+        simple: Audit.General
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "6":
+    id: "6"
+    taskid: 2532639f-508f-4a32-810b-4dea98bb234b
+    type: regular
+    task:
+      id: 2532639f-508f-4a32-810b-4dea98bb234b
+      version: -1
+      name: List current subscriptions
+      description: List the content types you are currently subscribed to
+      script: '|||ms-management-list-subscriptions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "7":
+    id: "7"
+    taskid: 1c1a107c-bfbb-4022-8670-35f67189a2bd
+    type: condition
+    task:
+      id: 1c1a107c-bfbb-4022-8670-35f67189a2bd
+      version: -1
+      name: Verify subscription was added
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MicrosoftManagement.Subscription
+            iscontext: true
+          right:
+            value:
+              simple: audit.general
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "8":
+    id: "8"
+    taskid: 5525e4e5-4e98-45a2-8e1c-b6103e03c16e
+    type: regular
+    task:
+      id: 5525e4e5-4e98-45a2-8e1c-b6103e03c16e
+      version: -1
+      name: Stop subscription
+      description: Stops a subscription to a given content type
+      script: '|||ms-management-stop-subscription'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      content_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "9":
+    id: "9"
+    taskid: 75205ca4-7cb2-4833-8edf-ae21263e5dbe
+    type: condition
+    task:
+      id: 75205ca4-7cb2-4833-8edf-ae21263e5dbe
+      version: -1
+      name: Verify subscription was removed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: MicrosoftManagement.Subscription
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "10":
+    id: "10"
+    taskid: 45034843-69d1-49ff-8f39-5011fcc88e82
+    type: regular
+    task:
+      id: 45034843-69d1-49ff-8f39-5011fcc88e82
+      version: -1
+      name: Re-subscribe
+      description: Starts a subscription to a given content type
+      script: '|||ms-management-start-subscription'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      content_type:
+        simple: Audit.General
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "11":
+    id: "11"
+    taskid: b7edcc5b-28c8-4d2d-824d-58846be53d7f
+    type: regular
+    task:
+      id: b7edcc5b-28c8-4d2d-824d-58846be53d7f
+      version: -1
+      name: List available content
+      description: Returns all content of a specific content type.
+      script: '|||ms-management-list-content'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      content_type:
+        simple: Audit.General
+      end_time: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2035,
+        "width": 380,
+        "x": 450,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []
