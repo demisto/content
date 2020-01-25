@@ -205,7 +205,7 @@ def http_request(uri: str, method: str, headers: Dict = {},
     return json_result
 
 
-def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any: Optional[bool] = False) -> str:
+def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
         for item in arg:
@@ -216,7 +216,7 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any: Op
             return '<' + field_name + '>' + member_stringify_list + '</' + field_name + '>'
         else:
             return '<' + field_name + '>' + arg + '</' + field_name + '>'
-    if any:
+    if any_:
         if member:
             return '<' + field_name + '><member>any</member></' + field_name + '>'
         else:
@@ -307,7 +307,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                 + add_argument_open(source_user, 'source-user', True)
                 + add_argument_open(from_, 'from', True)  # default from will always be any
                 + add_argument_open(to, 'to', True)  # default to will always be any
-                + add_argument_list(service, 'service', True)
+                + add_argument_list(service, 'service', True, True)
                 + add_argument_yes_no(negate_source, 'negate-source')
                 + add_argument_yes_no(negate_destination, 'negate-destination')
                 + add_argument_yes_no(disable, 'disabled')
@@ -656,7 +656,13 @@ def panorama_push_status_command():
         else:
             # result['response']['job']['result'] == 'FAIL'
             push_status_output['Status'] = 'Failed'
-        push_status_output['Details'] = result['response']['result']['job']['devices']['entry']['status']
+
+        devices = result['response']['result']['job']['devices']['entry']
+        if isinstance(devices, list):
+            devices_details = [device.get('status') for device in devices]
+            push_status_output['Details'] = devices_details
+        elif isinstance(devices, dict):
+            push_status_output['Details'] = devices.get('status')
 
     if result['response']['result']['job']['status'] == 'PEND':
         push_status_output['Status'] = 'Pending'
@@ -3037,13 +3043,13 @@ def panorama_get_pcap_command():
     }
 
     password = demisto.args().get('password')
-    pcap_id = demisto.args()['pcapID']
+    pcap_id = demisto.args().get('pcapID')
     search_time = demisto.args().get('searchTime')
     if pcap_type == 'dlp-pcap' and not password:
         raise Exception('Can not provide dlp-pcap without password.')
     else:
         params['dlp-password'] = password
-    if pcap_type == 'threat-pcap' and not pcap_id or not search_time:
+    if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
         raise Exception('Can not provide threat-pcap without pcap-id and the searchTime arguments.')
 
     pcap_name = demisto.args().get('from')
