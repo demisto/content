@@ -119,7 +119,7 @@ jobs:
                 exit 0
             fi
 
-            demisto-sdk secrets --post-commit
+            demisto-sdk secrets --post-commit --ignore-entropy
       - run:
           name: Configure Test Filter
           when: always
