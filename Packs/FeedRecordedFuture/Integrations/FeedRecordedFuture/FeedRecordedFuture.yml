@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: F - Reliability cannot be judged
-  display: Reliability
+  display: Source reliability
   name: feedInstanceReliability
   options:
   - A - Completely reliable
@@ -31,7 +31,10 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
   name: bypassExclusionList
   required: false
   type: 8
@@ -90,8 +93,8 @@ configuration:
   type: 16
 - additionalinfo: |-
     Limit the indicators list to a specific risk rule.
-    To see available risk rules please use the rf-feed-get-risk-rules command.
-    This parameter will only be used for the 'connectApi' sub feed.
+    To see available risk rules run the rf-feed-get-risk-rules command.
+    This parameter will only be used for the 'connectApi' sub-feed.
   display: Risk Rule
   hidden: false
   name: risk_rule
@@ -100,13 +103,13 @@ configuration:
 - additionalinfo: |-
     Load a custom risklist from a specified Recorded Future file path.
     If no file path is specified, the default risklist file is used.
-    This parameter will only be used for the 'fusion' sub feed.
+    This parameter will only be used for the 'fusion' sub-feed.
   display: Fusion File Path
   hidden: false
   name: fusion_file_path
   required: false
   type: 0
-- additionalinfo: Time in seconds before http requests timeout.
+- additionalinfo: Time in seconds before HTTP requests timeout.
   defaultvalue: '20'
   display: Request Timeout
   hidden: false
@@ -121,7 +124,7 @@ configuration:
   name: threshold
   required: false
   type: 0
-description: Ingest indicators from Recorded Future feeds into Demisto.
+description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future Feed
 name: Recorded Future Feed
 script:
@@ -129,14 +132,14 @@ script:
   - arguments:
     - default: true
       defaultValue: '10'
-      description: Limit the number of results. Default is 10.
+      description: The maximum number of results to return. The default value is 10.
       isArray: false
       name: limit
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The indicator type
+      description: The indicator type. Can be "ip", "domain", "hash", or "url".
       isArray: false
       name: indicator_type
       predefined:
@@ -147,7 +150,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get indicators from the feed
+    description: Gets indicators from the feed.
     execution: false
     name: rf-feed-get-indicators
   - arguments:
@@ -171,13 +174,13 @@ script:
     name: rf-feed-get-risk-rules
     outputs:
     - contextPath: RecordedFutureFeed.RiskRule.Name
-      description: The risk rule name
+      description: The risk rule name.
       type: String
     - contextPath: RecordedFutureFeed.RiskRule.Description
-      description: The risk rule description
+      description: The risk rule description.
       type: String
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
-      description: The risk rule criticality
+      description: The risk rule criticality.
       type: String
   dockerimage: demisto/python3:3.7.5.4583
   feed: true
