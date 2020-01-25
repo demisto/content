@@ -60,7 +60,7 @@ class Client(BaseClient):
         refresh_token_response = self.refresh_token_request()
 
         access_token_jwt = refresh_token_response.get('access_token')
-        # TODO: We can use the expiration date to save requests if we so desire. Your call.
+
         expiration = refresh_token_response.get('expires_on')
         token_data = jwt.decode(access_token_jwt, verify=False)
         return access_token_jwt, token_data
@@ -175,7 +175,7 @@ def list_subscriptions_command(client):
     # Since subscriptions are defined by there content type, we need the content types of enabled subscriptions
     enabled_subscriptions = get_all_subscribed_content_types(client)
     human_readable = tableToMarkdown('Current Subscriptions', enabled_subscriptions)
-    # TODO: verify that no duplicates are entered and that this works
+
     entry_context = {
         'MicrosoftManagement.Subscription(val && val == obj)': enabled_subscriptions
     }
@@ -236,7 +236,7 @@ def create_events_human_readable(events_context, content_type):
 
 
 def list_content_command(client, args):
-    # TODO: handle pagination
+
     content_type = args['content_type']
     start_time = args.get("start_time")
     end_time = args.get("end_time")
@@ -304,9 +304,6 @@ def fetch_incidents(client, last_run, first_fetch_delta):
         incidents: Incidents that will be created in Demisto
     """
     # Get the last fetch time, if exists
-    # TODO: not sure what about how to handle timezone when sending startTime and endTime on list_content
-    # TODO: add results limit
-    # TODO: first fetch delta param must be in minutes
 
     start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_delta)
 
