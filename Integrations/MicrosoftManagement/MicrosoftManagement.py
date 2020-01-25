@@ -29,6 +29,7 @@ class Client(BaseClient):
         self.tenant_id = None
         self.suffix_template = "{}/activity/feed/subscriptions/{}"
         self.tenant_id_suffix = ''
+        self.access_token = None
         self._login()
 
     def refresh_token_request(self):
@@ -66,7 +67,7 @@ class Client(BaseClient):
         return access_token_jwt, token_data
 
     def get_blob_data_request(self, blob_url):
-        auth_string = 'Bearer {}'.format(ACCESS_TOKEN)
+        auth_string = 'Bearer {}'.format(self.access_token)
         headers = {
             'Content-Type':'application/json',
             'Authorization':auth_string
@@ -80,7 +81,7 @@ class Client(BaseClient):
         return response
 
     def list_content_request(self, content_type, start_time, end_time):
-        auth_string = 'Bearer {}'.format(ACCESS_TOKEN)
+        auth_string = 'Bearer {}'.format(self.access_token)
         headers = {
             'Authorization':auth_string
         }
@@ -100,7 +101,7 @@ class Client(BaseClient):
         return response
 
     def list_subscriptions_request(self):
-        auth_string = 'Bearer {}'.format(ACCESS_TOKEN)
+        auth_string = 'Bearer {}'.format(self.access_token)
         headers = {
             'Authorization':auth_string
         }
@@ -112,7 +113,7 @@ class Client(BaseClient):
         return response
 
     def start_or_stop_subscription_request(self, content_type, start_or_stop_suffix):
-        auth_string = 'Bearer {}'.format(ACCESS_TOKEN)
+        auth_string = 'Bearer {}'.format(self.access_token)
         headers = {
             'Authorization':auth_string
         }
@@ -358,6 +359,10 @@ def main():
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy)
+
+        access_token, token_data = client.get_access_token_data()
+        client.access_token = access_token
+        client.tenant_id = token_data["tid"]
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
