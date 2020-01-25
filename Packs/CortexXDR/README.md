@@ -55,7 +55,7 @@ You need to collect several pieces of information in order to configure the inte
     * __Name__: a textual name for the integration instance.
     * __Fetch incidents__
     * __Incident type__
-    * __Server URL (copy url from XDR - press ? to see more info)__
+    * __Server URL (copy URL from XDR - click ? to see more info.)__
     * __API Key ID__
     * __API Key__
     * __Trust any certificate (not secure)__
@@ -105,8 +105,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 14. xdr-get-audit-agent-reports
 ### 1. xdr-get-incidents
 ---
-Returns a list of incidents, which you can filter by a list of incident IDs (max 100), the time the incident was last modified, and the time the incident was created.
-If you pass multiple filtering argument, they will be concatenated using the AND condition. The OR condition is not supported.
+Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -134,7 +134,7 @@ If you pass multiple filtering argument, they will be concatenated using the AND
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Incident.incident_id | String | Unique ID assigned to each returned incident. | 
-| PaloAltoNetworksXDR.Incident.manual_severity | String | Incident severity assigned by the user. This does not affect the calculated severity "low","medium","high" | 
+| PaloAltoNetworksXDR.Incident.manual_severity | String | Incident severity assigned by the user. This does not affect the calculated severity. Can be "low","medium","high" | 
 | PaloAltoNetworksXDR.Incident.manual_description | String | Incident description provided by the user. | 
 | PaloAltoNetworksXDR.Incident.assigned_user_mail | String | Email address of the assigned user. | 
 | PaloAltoNetworksXDR.Incident.high_severity_alert_count | String | Number of alerts with the severity HIGH. | 
@@ -148,7 +148,7 @@ If you pass multiple filtering argument, they will be concatenated using the AND
 "low","medium","high"
  | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive" or "resolved_other"
  | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
@@ -753,7 +753,7 @@ Alerts inserted successfully
 
 ### 6. xdr-isolate-endpoint
 ---
-Isolate a specific endpoint
+Isolates the specified endpoint.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -763,7 +763,7 @@ Isolate a specific endpoint
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | String that identifies the endpoint. You can it from xdr-get-endpoints command. | Required | 
+| endpoint_id | The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints | Required | 
 
 
 ##### Context Output
@@ -778,7 +778,7 @@ Endpoint f8a2f58846b542579c12090652e79f3d has isolated successfully
 
 ### 7. xdr-unisolate-endpoint
 ---
-Reverse an endpoint isolation.
+Reverses the isolation of an endpoint.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -788,7 +788,7 @@ Reverse an endpoint isolation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | String that identifies the endpoint. You can it from xdr-get-endpoints command. | Required | 
+| endpoint_id | The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints | Required | 
 
 
 ##### Context Output
@@ -803,7 +803,7 @@ Endpoint f8a2f58846b542579c12090652e79f3d already unisolated
 
 ### 8. xdr-get-endpoints
 ---
-Gets a list of filtered endpoints. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -813,13 +813,13 @@ Gets a list of filtered endpoints. Filtering by multiple fields will be concaten
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id_list | Endpoint IDs | Optional | 
-| dist_name | Distribution / Installation Package name. <br>Example: dist_name1,dist_name2 | Optional | 
-| ip_list | List of IPs<br>Example: 8.8.8.8,1.1.1.1 | Optional | 
-| group_name | Group name the agent belongs to.<br>Example: group_name1,group_name2 | Optional | 
-| platform | Platform: windows,linux,macos,android | Optional | 
-| alias_name | Alias name<br>Examples: alias_name1,alias_name2 | Optional | 
-| isolate | If the endpoint was isolated. Choose of the options <br>isolated,unisolated | Optional | 
+| endpoint_id_list | A comma-separated list of endpoint IDs. | Optional | 
+| dist_name | A comma-separated list of distribution package names or installation package names. <br>Example: dist_name1,dist_name2 | Optional | 
+| ip_list | A comma-separated list of IP addresses.<br>Example: 8.8.8.8,1.1.1.1 | Optional | 
+| group_name | The group name to which the agent belongs.<br>Example: group_name1,group_name2 | Optional | 
+| platform | The endpoint platform. Can be "windows", "linux", "macos", or "android".  | Optional | 
+| alias_name | A comma-separated list of alias names.<br>Examples: alias_name1,alias_name2 | Optional | 
+| isolate | "Specifies whether the endpoint was isolated or unisolated. Can be "isolated" or "unisolated". | Optional | 
 | hostname | Hostname<br>Example: hostname1,hostname2 | Optional | 
 | first_seen_gte | All the agents that were first seen after {first_seen_gte}.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
 | first_seen_lte | All the agents that were first seen before {first_seen_lte}.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
@@ -827,32 +827,32 @@ Gets a list of filtered endpoints. Filtering by multiple fields will be concaten
 | last_seen_lte | All the agents that were last seen before {last_seen_lte}.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of endpoints to return per page. The default and maximum is 30. | Optional | 
-| sort_by | Sort endpoints by first_seen or last_seen | Optional | 
-| sort_order | Sort order asc (ascending) or desc( descending). Default set to asc | Optional | 
+| sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". | Optional | 
+| sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.Endpoint.endpoint_id | String | Endpoint ID | 
-| PaloAltoNetworksXDR.Endpoint.endpoint_name | String | Endpoint name | 
-| PaloAltoNetworksXDR.Endpoint.endpoint_type | String | Possible values: AGENT_TYPE_SERVER | 
-| PaloAltoNetworksXDR.Endpoint.endpoint_status | String | Possible values: CONNECTED, DISCONNECTED | 
-| PaloAltoNetworksXDR.Endpoint.os_type | String | Possible values: AGENT_OS_LINUX, AGENT_OS_MACOS, AGENT_OS_WINDOWS | 
-| PaloAltoNetworksXDR.Endpoint.ip | Unknown | List of IPs | 
-| PaloAltoNetworksXDR.Endpoint.users | Unknown | List of users | 
-| PaloAltoNetworksXDR.Endpoint.domain | String | Endpoint Domain | 
-| PaloAltoNetworksXDR.Endpoint.alias | String | Alias | 
-| PaloAltoNetworksXDR.Endpoint.first_seen | Unknown | First seen in epoch (milliseconds) | 
-| PaloAltoNetworksXDR.Endpoint.last_seen | Date | Last seen in epoch (milliseconds) | 
-| PaloAltoNetworksXDR.Endpoint.content_version | String | Content version | 
-| PaloAltoNetworksXDR.Endpoint.installation_package | String | Installation package | 
-| PaloAltoNetworksXDR.Endpoint.active_directory | String | Active directory | 
-| PaloAltoNetworksXDR.Endpoint.install_date | Date | Install date in epoch (milliseconds) | 
-| PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version (e.g. 7.0.0.1915) | 
-| PaloAltoNetworksXDR.Endpoint.is_isolated | String | Possible values: AGENT_ISOLATED, AGENT_UNISOLATED, null (also indicates that endpoint is NOT isolated) | 
-| PaloAltoNetworksXDR.Endpoint.group_name | String | Group name | 
+| PaloAltoNetworksXDR.Endpoint.endpoint_id | String | The endpoint ID. | 
+| PaloAltoNetworksXDR.Endpoint.endpoint_name | String | The endpoint name. | 
+| PaloAltoNetworksXDR.Endpoint.endpoint_type | String | The endpoint type. | 
+| PaloAltoNetworksXDR.Endpoint.endpoint_status | String | The status of the endpoint' | 
+| PaloAltoNetworksXDR.Endpoint.os_type | String | The endpoint OS type. | 
+| PaloAltoNetworksXDR.Endpoint.ip | Unknown | A list of IP addresses. | 
+| PaloAltoNetworksXDR.Endpoint.users | Unknown | A list of users. | 
+| PaloAltoNetworksXDR.Endpoint.domain | String | The endpoint domain. | 
+| PaloAltoNetworksXDR.Endpoint.alias | String | The endpoint's aliases. | 
+| PaloAltoNetworksXDR.Endpoint.first_seen | Unknown | First seen date/time in Epoch (milliseconds). | 
+| PaloAltoNetworksXDR.Endpoint.last_seen | Date | Last seen date/time in Epoch (milliseconds). | 
+| PaloAltoNetworksXDR.Endpoint.content_version | String | Content version. | 
+| PaloAltoNetworksXDR.Endpoint.installation_package | String | Installation package. | 
+| PaloAltoNetworksXDR.Endpoint.active_directory | String | Active directory. | 
+| PaloAltoNetworksXDR.Endpoint.install_date | Date | Install date in Epoch (milliseconds). | 
+| PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version. | 
+| PaloAltoNetworksXDR.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
+| PaloAltoNetworksXDR.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
 
 
 ##### Command Example
@@ -924,7 +924,7 @@ Gets a list of filtered endpoints. Filtering by multiple fields will be concaten
 
 ### 9. xdr-get-distribution-versions
 ---
-Get a list of all the agent versions to use for creating a distribution list.
+Gets a list of all the agent versions to use for creating a distribution list.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -938,9 +938,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.DistributionVersions.windows | Unknown | String list of Windows agent versions. | 
-| PaloAltoNetworksXDR.DistributionVersions.linux | Unknown | String list of Linux agent versions. | 
-| PaloAltoNetworksXDR.DistributionVersions.macos | Unknown | String list of Mac agent versions. | 
+| PaloAltoNetworksXDR.DistributionVersions.windows | Unknown | A list of Windows agent versions. | 
+| PaloAltoNetworksXDR.DistributionVersions.linux | Unknown | A list of Linux agent versions. | 
+| PaloAltoNetworksXDR.DistributionVersions.macos | Unknown | A list of Mac agent versions. | 
 
 
 ##### Command Example
@@ -994,7 +994,7 @@ There are no input arguments for this command.
 
 ### 10. xdr-create-distribution
 ---
-Create an installation package. This is an async call that returns the distribution ID, it does not mean that the creation succeeded. To confirm the package has been created, check the status of the distribution by running the Get Distribution Status API.
+Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -1008,7 +1008,7 @@ Create an installation package. This is an async call that returns the distribut
 | platform | String, valid values are:<br>• windows <br>• linux<br>• macos <br>• android | Required | 
 | package_type | A string representing the type of package to create.<br>standalone - An installation for a new agent<br>upgrade - An upgrade of an agent from ESM | Required | 
 | agent_version | agent_version returned from xdr-get-distribution-versions. Not required for Android platfom | Required | 
-| description | String representing information about the package. | Optional | 
+| description | Information about the package. | Optional | 
 
 
 ##### Context Output
@@ -1016,10 +1016,10 @@ Create an installation package. This is an async call that returns the distribut
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Distribution.id | String | The installation package ID. | 
-| PaloAltoNetworksXDR.Distribution.name | String | A string representing the name of the installation package. | 
-| PaloAltoNetworksXDR.Distribution.platform | String | windows,linux,macos,android | 
-| PaloAltoNetworksXDR.Distribution.agent_version | String | Agent version | 
-| PaloAltoNetworksXDR.Distribution.description | String | String representing information about the package. | 
+| PaloAltoNetworksXDR.Distribution.name | String | The name of the installation package. | 
+| PaloAltoNetworksXDR.Distribution.platform | String | The installation OS. | 
+| PaloAltoNetworksXDR.Distribution.agent_version | String | Agent version. | 
+| PaloAltoNetworksXDR.Distribution.description | String | Information about the package. | 
 
 
 ##### Command Example
@@ -1044,7 +1044,7 @@ Distribution 43aede7f846846fa92b50149663fbb25 created successfully
 
 ### 11. xdr-get-distribution-url
 ---
-Get the distribution URL for downloading the installation package.
+Gets the distribution URL for downloading the installation package.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -1054,15 +1054,15 @@ Get the distribution URL for downloading the installation package.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| distribution_id | A string representing the ID of the installation package.<br>distribution_id can be copied from Endpoints -> Agent Installation page. Copy from `id` field | Required | 
-| package_type | A string representing the type of installation package. Valid<br>values are:<br>• upgrade<br>• sh - For Linux<br>• rpm - For Linux<br>• deb - For Linux<br>• pkg - For Mac<br>• x86 - For Windows<br>• x64 - For Windows | Required | 
+| distribution_id | The ID of the installation package.<br>Copy the distribution_id from the "id" field on Endpoints > Agent Installation page. | Required | 
+| package_type | The installation package type. Valid<br>values are:<br>• upgrade<br>• sh - For Linux<br>• rpm - For Linux<br>• deb - For Linux<br>• pkg - For Mac<br>• x86 - For Windows<br>• x64 - For Windows | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.Distribution.id | String | Distribution ID | 
+| PaloAltoNetworksXDR.Distribution.id | String | Distribution ID. | 
 | PaloAltoNetworksXDR.Distribution.url | String | URL for downloading the installation package. | 
 
 
@@ -1074,7 +1074,7 @@ Get the distribution URL for downloading the installation package.
 
 ### 12. xdr-get-create-distribution-status
 ---
-Check the status of the installation package.
+Gets the status of the installation package.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -1084,15 +1084,15 @@ Check the status of the installation package.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| distribution_ids | List of distribution IDs | Required | 
+| distribution_ids | A comma-separated list of distribution IDs to get the status of. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.Distribution.id | String | Distribution ID | 
-| PaloAltoNetworksXDR.Distribution.status | String | A string representing the status of installation package. "Completed","In Progress" | 
+| PaloAltoNetworksXDR.Distribution.id | String | Distribution ID. | 
+| PaloAltoNetworksXDR.Distribution.status | String | The status of installation package. | 
 
 
 ##### Command Example
@@ -1119,7 +1119,7 @@ Check the status of the installation package.
 
 ### 13. xdr-get-audit-management-logs
 ---
-Get management logs. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
+Gets management logs. You can filter by multiple fields, which will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -1129,35 +1129,35 @@ Get management logs. Filtering by multiple fields will be concatenated using AND
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | User’s email address | Optional | 
-| type | Type of audit log | Optional | 
-| sub_type | Subtype of audit log | Optional | 
+| email | User’s email address. | Optional | 
+| type | The audit log type. | Optional | 
+| sub_type | The audit log subtype. | Optional | 
 | result | Result type | Optional | 
-| timestamp_gte | Return logs that their timestamp is greater than 'log_time_after'.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
-| timestamp_lte | Return logs that their timestamp is lesser than 'log_time_after'.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
+| timestamp_gte | Return logs for which the timestamp is after 'log_time_after'.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
+| timestamp_lte | Return logs for which the timestamp is before the 'log_time_after'.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of audit logs to return per page. The default and maximum is 30. | Optional | 
-| sort_by | Identifies the sort order for the result set. By default the sort is defined as creation-time and DESC. | Optional | 
-| sort_order | Default set to DESC.  | Optional | 
+| sort_by | Specifies the field by which to sort the results. By default the sort is defined as creation-time and DESC. Can be "type", "sub_type", "result", or "timestamp". | Optional | 
+| sort_order | The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc".  | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ID | Number | Audit Log ID | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_NAME | String | Audit owner name | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_EMAIL | String | Audit owner email | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_JSON | String | Asset JSON | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_NAMES | String | Audit asset names | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_HOSTNAME | String | hostname | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_RESULT | String | Audit result | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_REASON | String | Audit reason | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_DESCRIPTION | String | Description | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY | String | Audit entity (e.g. AUTH, DISTRIBUTIONS) | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE | String | Entity subtype (e.g Login, Create) | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_CASE_ID | Number | Audit case id | 
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_INSERT_TIME | Date | Insert time of the log | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ID | Number | Audit log ID. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_NAME | String | Audit owner name. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_EMAIL | String | Audit owner email address. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_JSON | String | Asset JSON. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_NAMES | String | Audit asset names. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_HOSTNAME | String | Host name. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_RESULT | String | Audit result. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_REASON | String | Audit reason. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_DESCRIPTION | String | Description of the audit. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY | String | Audit entity (e.g., AUTH, DISTRIBUTIONS). | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE | String | Entity subtype (e.g., Login, Create). | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_CASE_ID | Number | Audit case ID. | 
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_INSERT_TIME | Date | Log's insert time. | 
 
 
 ##### Command Example
@@ -1213,7 +1213,7 @@ Get management logs. Filtering by multiple fields will be concatenated using AND
 
 ### 14. xdr-get-audit-agent-reports
 ---
-Get agent event reports. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
+Gets agent event reports. You can filter by multiple fields, which will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -1223,35 +1223,35 @@ Get agent event reports. Filtering by multiple fields will be concatenated using
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | list of endpoint ids (could be comma separated) | Optional | 
-| endpoint_names | list of endpoint names (could be comma separated) | Optional | 
-| type | Type of report | Optional | 
-| sub_type | Subtype of report | Optional | 
-| result | Result type. If not passed, the returns all | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. | Optional | 
+| endpoint_names | A comma-separated list of endpoint names. | Optional | 
+| type | The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status". | Optional | 
+| sub_type | The report subtype. | Optional | 
+| result | The result type. Can be "Success" or "Fail". If not passed, returns all event reports. | Optional | 
 | timestamp_gte | Return logs that their timestamp is greater than 'log_time_after'.<br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
-| timestamp_lte | Return logs that their timestamp is lesser than 'timestamp_lte'.<br><br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
+| timestamp_lte | Return logs for which the timestamp is before the 'timestamp_lte'.<br><br>Supported values:<br>1579039377301 (time in milliseconds)<br>"3 days" (relative date)<br>"2019-10-21T23:45:00" (date) | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
-| limit | Limit the number of reports returned. Default set to 30. | Optional | 
-| sort_by | Sort by one of the following fields (type, subtype, trapsversion, timestamp, domain) | Optional | 
-| sort_order | A string, either asc (ascending order) or desc (descending order).  | Optional | 
+| limit | The maximum number of reports to return. Default and maximum is 30. | Optional | 
+| sort_by | The field by which to sort results. Can be "type", "category", "trapsversion", "timestamp", or "domain"). | Optional | 
+| sort_order | The sort order. Can be "asc" (ascending) or "desc" (descending). Default is "asc".  | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTID | String | Endpoint ID | 
-| PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTNAME | String | Endpoint name | 
-| PaloAltoNetworksXDR.AuditAgentReports.DOMAIN | String | Agent domain | 
-| PaloAltoNetworksXDR.AuditAgentReports.TRAPSVERSION | String | Traps version | 
-| PaloAltoNetworksXDR.AuditAgentReports.RECEIVEDTIME | Date | Received time in epoch time | 
-| PaloAltoNetworksXDR.AuditAgentReports.TIMESTAMP | Date | Timestamp in epoch time | 
-| PaloAltoNetworksXDR.AuditAgentReports.CATEGORY | String | Report category (e.g Audit) | 
-| PaloAltoNetworksXDR.AuditAgentReports.TYPE | String | Report type (e.g Action, Policy) | 
-| PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE | String | Subtype (e.g Fully Protected,Policy Update,Cancel Isolation) | 
-| PaloAltoNetworksXDR.AuditAgentReports.RESULT | String | Report Result | 
-| PaloAltoNetworksXDR.AuditAgentReports.REASON | String | Reason | 
-| PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION | String | Agent report description | 
+| PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTID | String | Endpoint ID. | 
+| PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTNAME | String | Endpoint name. | 
+| PaloAltoNetworksXDR.AuditAgentReports.DOMAIN | String | Agent domain. | 
+| PaloAltoNetworksXDR.AuditAgentReports.TRAPSVERSION | String | Traps version. | 
+| PaloAltoNetworksXDR.AuditAgentReports.RECEIVEDTIME | Date | Received time in Epoch time. | 
+| PaloAltoNetworksXDR.AuditAgentReports.TIMESTAMP | Date | Timestamp in Epoch time. | 
+| PaloAltoNetworksXDR.AuditAgentReports.CATEGORY | String | Report category (e.g., Audit). | 
+| PaloAltoNetworksXDR.AuditAgentReports.TYPE | String | Report type (e.g., Action, Policy). | 
+| PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE | String | Report subtype (e.g., Fully Protected,Policy Update,Cancel Isolation). | 
+| PaloAltoNetworksXDR.AuditAgentReports.RESULT | String | Report result. | 
+| PaloAltoNetworksXDR.AuditAgentReports.REASON | String | Report reason. | 
+| PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION | String | Agent report description. | 
 
 
 ##### Command Example
