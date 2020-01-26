@@ -38,9 +38,35 @@ class Client(BaseClient):
         elif 'Custom Feed' in indicator_feeds:
             self.custom_feed_url_list = custom_feed_urls.split(',')
 
+            url_list = []  # type:List
+            for url in self.custom_feed_url_list:
+                url_list.append(self.url_format(url))
+
+            self.custom_feed_url_list = url_list
+
         self.verify = not insecure
         if proxy:
             handle_proxy()
+
+    def url_format(self, url):
+        """Make sure the URL is in the format:
+        https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID}/{Name}
+
+        Args:
+            url(str): The URL to format.
+
+        Returns:
+            str. The reformatted URL.
+        """
+        if "https://autofocus.paloaltonetworks.com/IOCFeed/" in url:
+            url = url.replace("https://autofocus.paloaltonetworks.com/IOCFeed/",
+                              "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/")
+
+        elif "autofocus.paloaltonetworks.com/IOCFeed/" in url:
+            url = url.replace("autofocus.paloaltonetworks.com/IOCFeed/",
+                              "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/")
+
+        return url
 
     def http_request(self, feed_type) -> list:
         """The HTTP request for the feed.
