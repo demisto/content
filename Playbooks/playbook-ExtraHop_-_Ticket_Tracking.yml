@@ -253,7 +253,7 @@ tasks:
       name: Search for any untracked ExtraHop Detections
       description: Searches Demisto incidents for any ExtraHop Detections that are
         untracked.
-      scriptName: SearchIncidentsv2
+      scriptName: SearchIncidents
       type: regular
       iscommand: false
       brand: ""

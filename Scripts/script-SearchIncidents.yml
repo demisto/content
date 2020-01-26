@@ -2,7 +2,7 @@ commonfields:
   id: SearchIncidents
   version: -1
 name: SearchIncidents
-deprecated: true
+toversion: 4.9.9
 script: |-
   function invalideEscape(str) {
       var i;
@@ -56,7 +56,7 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Deprecated. use SearchIncidentsv2 instead.
+comment: Deprecated. use SearchIncidents instead.
 enabled: true
 args:
 - name: id
