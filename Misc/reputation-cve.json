@@ -52,7 +52,7 @@
         ]
       }
     },
-    "indicatorIndicatorId": {
+    "indicator_id": {
       "simple": "",
       "complex": {
         "root": "CVE",
