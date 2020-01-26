@@ -1,5 +1,4 @@
 ## [Unreleased]
-Deprecated. use SearchIncidentsv2 instead.
 
 ## [19.11.0] - 2019-11-12
 

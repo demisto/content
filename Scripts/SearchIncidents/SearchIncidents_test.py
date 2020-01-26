@@ -1,4 +1,4 @@
-from SearchIncidentsv2 import *
+from SearchIncidents import *
 import pytest
 
 data_test_check_if_found_incident = [
