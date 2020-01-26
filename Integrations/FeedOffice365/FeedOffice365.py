@@ -1,4 +1,3 @@
-import ipaddress
 from typing import Dict, List, Tuple, Any, Callable
 
 import uuid
@@ -36,38 +35,6 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[
                 'FeedURL': url
             })
     return urls_list
-
-
-def check_indicator_type(indicator):
-    """Checks the indicator type
-
-    Args:
-        indicator: IP
-
-    Returns:
-        The IP type per the indicators defined in Demisto
-    """
-    if '/' in indicator:  # check for network
-        try:
-            ip_ = ipaddress.ip_network(indicator)
-        except Exception:
-            return 'URL'
-        if ip_.version == 4:
-            return 'CIDR'
-        if ip_.version == 6:
-            return 'IPv6CIDR'
-        demisto.debug(f'Office365 feed indicator type unknown: {str(indicator)}')
-        return None
-    try:
-        ip_ = ipaddress.ip_address(indicator)
-    except Exception:
-        return 'URL'
-    if ip_.version == 4:
-        return 'IPv4'
-    if ip_.version == 6:
-        return 'IPv6'
-    demisto.debug(f'Office365 feed indicator type unknown: {str(indicator)}')
-    return None
 
 
 class Client(BaseClient):
@@ -131,6 +98,27 @@ class Client(BaseClient):
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
         return result
 
+    def check_indicator_type(self, indicator):
+        """Checks the indicator type
+
+        Args:
+            indicator: indicator value
+
+        Returns:
+            The type of the indicator
+        """
+        if re.match(ipv4cidrRegex, indicator):
+            return FeedIndicatorType.CIDR
+        if re.match(ipv6cidrRegex, indicator):
+            return FeedIndicatorType.IPv6CIDR
+        if re.match(ipv4Regex, indicator):
+            return FeedIndicatorType.IP
+        if re.match(ipv6Regex, indicator):
+            return FeedIndicatorType.IPv6
+        if re.match(urlRegex, indicator):
+            return FeedIndicatorType.URL
+        return FeedIndicatorType.Domain
+
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
@@ -172,7 +160,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
             values = item.get(indicator_type_lower)
         if values:
             for value in values:
-                type_ = check_indicator_type(value)
+                type_ = client.check_indicator_type(value)
                 indicators.append({
                     "Value": value,
                     "Type": type_,
@@ -182,9 +170,9 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
                     'value': value,
                     'type': type_
                 }
-                for k, v in item.items():
-                    if k not in ['ips', 'urls']:
-                        raw_data.update({k: v})
+                for key, val in item.items():
+                    if key not in ['ips', 'urls']:
+                        raw_data.update({key: val})
                 raw_response.append(raw_data)
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
@@ -212,14 +200,14 @@ def fetch_indicators_command(client: Client, *_) -> List[Dict]:
             values = item.get(indicator_type_lower)
         if values:
             for value in values:
-                type_ = check_indicator_type(value)
+                type_ = client.check_indicator_type(value)
                 raw_data = {
                     'value': value,
                     'type': type_,
                 }
-                for k, v in item.items():
-                    if k not in ['ips', 'urls']:
-                        raw_data.update({k: v})
+                for key, val in item.items():
+                    if key not in ['ips', 'urls']:
+                        raw_data.update({key: val})
                 indicators.append({
                     "value": value,
                     "type": type_,

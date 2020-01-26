@@ -4,7 +4,8 @@ RESPOSNE_DATA = [
         "serviceArea": "SharePoint",
         "serviceAreaDisplayName": "SharePoint Online and OneDrive for Business",
         "urls": [
-            "*.sharepoint.com"
+            "*.sharepoint.com",
+            "www.sharepoint.com"
         ],
         "ips": [
             "7.7.7.7",
