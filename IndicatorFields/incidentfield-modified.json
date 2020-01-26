@@ -1,11 +1,11 @@
 {
   "sortValues": null,
   "closeForm": false,
-  "cliName": "CVEmodified",
+  "cliName": "modified",
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
-  "id": "indicatorCVEmodified",
+  "id": "indicator_modified",
   "validatedError": "",
   "group": 2,
   "script": "",
