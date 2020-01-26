@@ -251,7 +251,7 @@ def get_indicators_command(client: Client, args: dict):
     Returns:
         str, dict, list. the markdown table, context JSON and list of indicators
     """
-    indicators = client.build_iterator()
+    indicators = fetch_indicators_command(client)
     if args.get('offset'):
         indicators = indicators[int(str(args.get('offset'))):]
 
