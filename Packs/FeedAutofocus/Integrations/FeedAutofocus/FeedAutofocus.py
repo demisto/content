@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import re
 import requests
 import socket
-
+from typing import List
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -57,7 +57,7 @@ class Client(BaseClient):
         else:
             urls = self.custom_feed_url_list
 
-        indicator_list = []
+        indicator_list = []  # type:List
         for url in urls:
             res = requests.request(
                 method="GET",
