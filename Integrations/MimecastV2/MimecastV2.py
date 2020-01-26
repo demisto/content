@@ -480,6 +480,12 @@ def create_policy():
             'Domain': receiver.get('emailDomain'),
             'Type': receiver.get('type')
         },
+        'Reciever': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
         'Bidirectional': policy.get('bidirectional'),
         'Start': policy.get('fromDate'),
         'End': policy.get('toDate')
@@ -496,6 +502,12 @@ def create_policy():
         'Receiver': {
             'Group': receiver.get('groupId'),
             'Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
+        },
+        'Reciever': {
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
             'Domain': receiver.get('emailDomain'),
             'Type': receiver.get('type')
         },
