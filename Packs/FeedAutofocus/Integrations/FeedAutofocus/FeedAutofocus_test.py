@@ -36,3 +36,13 @@ def test_resolve_address():
     client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
     resolved_address = client.resolve_ip_address("8.8.8.8")
     assert resolved_address == "dns.google"
+    resolved_address = client.resolve_ip_address("NOT AN IP")
+    assert resolved_address is None
+
+
+def test_url_format():
+    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
+    url1 = "https://autofocus.paloaltonetworks.com/IOCFeed/{ID}/{Name}"
+    url2 = "autofocus.paloaltonetworks.com/IOCFeed/{ID2}/{Name2}"
+    assert client.url_format(url1) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID}/{Name}"
+    assert client.url_format(url2) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID2}/{Name2}"
