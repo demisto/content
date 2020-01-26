@@ -175,7 +175,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
                         raw_data.update({key: val})
                 raw_response.append(raw_data)
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
-                                     headers=['Value', 'Type'], removeNull=True)
+                                     headers=['value', 'type'], removeNull=True)
 
     return human_readable, {}, {'raw_response': raw_response}
 

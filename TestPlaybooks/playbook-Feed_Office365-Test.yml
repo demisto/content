@@ -32,12 +32,13 @@ tasks:
     skipunavailable: false
   "1":
     id: "1"
-    taskid: 19b89a01-0070-40e5-8163-6bd761da2672
+    taskid: d5d22ac6-1f42-497c-860b-6ea2514b7501
     type: regular
     task:
-      id: 19b89a01-0070-40e5-8163-6bd761da2672
+      id: d5d22ac6-1f42-497c-860b-6ea2514b7501
       version: -1
-      name: Get Indicators - Ofiice365
+      name: Get Indicators - Office365
+      description: Gets indicators from the feed.
       script: '|||office365-get-indicators'
       type: regular
       iscommand: true
@@ -47,7 +48,7 @@ tasks:
       - "2"
     scriptarguments:
       extend-context:
-        simple: Indicator.[0]
+        simple: Indicator=.
       indicator_type:
         simple: ips
       limit:
@@ -66,10 +67,10 @@ tasks:
     skipunavailable: false
   "2":
     id: "2"
-    taskid: 8a4e3ec3-44cc-464c-84c9-6a0759b0641e
+    taskid: 465fe2c0-0ee9-4726-83b3-64996dd631c5
     type: condition
     task:
-      id: 8a4e3ec3-44cc-464c-84c9-6a0759b0641e
+      id: 465fe2c0-0ee9-4726-83b3-64996dd631c5
       version: -1
       name: Assert Output
       description: Asserts output.
@@ -88,12 +89,14 @@ tasks:
             value:
               complex:
                 root: Indicator
-                accessor: type
+                accessor: raw_response.[0].type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Indicator.value
+              complex:
+                root: Indicator
+                accessor: raw_response.[0].value
             iscontext: true
     view: |-
       {
