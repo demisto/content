@@ -118,7 +118,12 @@ class Client(BaseClient):
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            return_error('{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
+            if "Insufficient credits" in response.text:
+                return_error("'Insufficient Credits' error was returned from Recorded Future. \n"
+                             "Try increasing the integration's fetch interval in order to decrease the amount of API"
+                             " requests from Recorded Future. ")
+            else:
+                return_error('{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
 
         data = response.text.split('\n')
 
@@ -135,7 +140,7 @@ class Client(BaseClient):
         """
         dbot_score = 0
         risk_from_feed = int(risk_from_feed)
-        if risk_from_feed >= self.threshold:
+        if risk_from_feed >= self.threshold or risk_from_feed >= 65:
             dbot_score = 3
         elif risk_from_feed >= 5:
             dbot_score = 2

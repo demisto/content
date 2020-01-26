@@ -89,7 +89,7 @@ def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, v
 
 CALCULATE_DBOT_SCORE_INPUTS = [
     ('97', '65', 3),
-    ('90', '91', 2),
+    ('90', '91', 3),
     ('50', '65', 2),
     ('0', '65', 0),
     ('0', '0', 3),
