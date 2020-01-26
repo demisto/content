@@ -14,7 +14,7 @@ configuration:
   - Worldwide
   required: true
   type: 16
-- defaultvalue: Any
+- defaultvalue: All
   display: Services
   name: services
   options:
