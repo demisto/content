@@ -28,16 +28,11 @@ configuration:
   name: custom_feed_urls
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: bypassExclusionList
-  required: false
-  type: 8
-- defaultvalue: F - Reliability cannot be judged
-  display: Source reliability
+- display: Source Reliability
   name: feedInstanceReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -45,41 +40,53 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
-- name: expiration
-  required: false
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: expiration
+  defaultvalue: ""
   type: 17
-- defaultvalue: indicatorType
+  required: false
+- display: ""
   name: expirationPolicy
-  required: false
+  defaultvalue: indicatorType
   type: 0
-- name: expirationInterval
   required: false
+  hidden: true
+- display: ""
+  name: expirationInterval
+  defaultvalue: ""
   type: 1
+  required: false
+  hidden: true
 - display: Fetch indicators
   name: feed
-  required: false
+  defaultvalue: ""
   type: 8
+  required: false
 - display: Bypass exclusion list
   name: bypassExclusionList
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
-  display: Indicators reputation
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- display: Indicator Reputation
   name: feedInstanceReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  required: false
-  type: 18
-- defaultvalue: '240'
-  display: Fetch Interval
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
+  defaultvalue: "240"
   type: 19
+  required: false
 description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 display: AutoFocus Feed
 name: AutoFocus Feed
@@ -106,7 +113,7 @@ script:
     execution: false
     name: autofocus-get-indicators
   dockerimage: demisto/python3:3.8.1.5734
-  feed: false
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
