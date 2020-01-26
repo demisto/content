@@ -1,20 +1,24 @@
 from SearchIncidentsv2 import *
 import pytest
 
-data_test_errors_handel = [
-    ([], 'failed to get incidents from demisto got []'),
-    (None, 'failed to get incidents from demisto got None'),
-    ('', 'failed to get incidents from demisto got '),
+data_test_check_if_found_incident = [
+    ([], 'failed to get incidents from demisto.\nGot: []'),
+    (None, 'failed to get incidents from demisto.\nGot: None'),
+    ('', 'failed to get incidents from demisto.\nGot: '),
     ([{'Contents': {'data': None}}], 'Incidents not found.'),
     ([{'Contents': {'data': 'test'}}], None),
     ([{'Contents': {'test': 'test'}}], {'test': 'test'}),
 ]
 
 
-@pytest.mark.parametrize('_input, expected_output', data_test_errors_handel)
-def test_errors_handel(_input, expected_output):
-    output = errors_handel(_input)
-    assert output == expected_output, f'errors_handel({_input}) returns: {output}. expected: {expected_output}'
+@pytest.mark.parametrize('_input, expected_output', data_test_check_if_found_incident)
+def test_check_if_found_incident(_input, expected_output):
+    output = str(None)
+    try:
+        check_if_found_incident(_input)
+    except DemistoException as error:
+        output = str(error)
+    assert output == str(expected_output), f'check_if_found_incident({_input}) returns: {output}. expected: {expected_output}'
 
 
 data_test_is_valid_args = [
