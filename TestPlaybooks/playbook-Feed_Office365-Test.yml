@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 82c7bbc3-3e98-466c-87a1-570e352d3436
+    taskid: 1ce6cfef-55ee-4279-880b-7f29ae5a8d75
     type: start
     task:
-      id: 82c7bbc3-3e98-466c-87a1-570e352d3436
+      id: 1ce6cfef-55ee-4279-880b-7f29ae5a8d75
       version: -1
       name: ""
       iscommand: false
@@ -32,20 +32,22 @@ tasks:
     skipunavailable: false
   "1":
     id: "1"
-    taskid: f6c1a59c-1389-4678-8a27-11a5424ed832
+    taskid: 19b89a01-0070-40e5-8163-6bd761da2672
     type: regular
     task:
-      id: f6c1a59c-1389-4678-8a27-11a5424ed832
+      id: 19b89a01-0070-40e5-8163-6bd761da2672
       version: -1
       name: Get Indicators - Ofiice365
-      script: FeedOffice365|||get-indicators
+      script: '|||office365-get-indicators'
       type: regular
       iscommand: true
-      brand: FeedOffice365
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
+      extend-context:
+        simple: Indicator.[0]
       indicator_type:
         simple: ips
       limit:
@@ -64,10 +66,10 @@ tasks:
     skipunavailable: false
   "2":
     id: "2"
-    taskid: 48b93d1c-c385-4ac6-8435-613b6d3afabc
+    taskid: 8a4e3ec3-44cc-464c-84c9-6a0759b0641e
     type: condition
     task:
-      id: 48b93d1c-c385-4ac6-8435-613b6d3afabc
+      id: 8a4e3ec3-44cc-464c-84c9-6a0759b0641e
       version: -1
       name: Assert Output
       description: Asserts output.
@@ -81,12 +83,17 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: Office365
-                accessor: Indicator.value
+                root: Indicator
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.value
             iscontext: true
     view: |-
       {
@@ -101,10 +108,10 @@ tasks:
     skipunavailable: false
   "3":
     id: "3"
-    taskid: 37c8a531-1195-45e9-8872-11cf13c5a7a1
+    taskid: b02bb7f3-68bb-452f-850f-cbbaeb7fca2a
     type: title
     task:
-      id: 37c8a531-1195-45e9-8872-11cf13c5a7a1
+      id: b02bb7f3-68bb-452f-850f-cbbaeb7fca2a
       version: -1
       name: Done
       description: Done
@@ -125,10 +132,10 @@ tasks:
     skipunavailable: false
   "4":
     id: "4"
-    taskid: d234849e-f64c-4cc7-8650-977f4364bc3f
+    taskid: 23ee64fd-251d-43d4-870b-d72b8f7bc761
     type: regular
     task:
-      id: d234849e-f64c-4cc7-8650-977f4364bc3f
+      id: 23ee64fd-251d-43d4-870b-d72b8f7bc761
       version: -1
       name: Delete Context
       description: Delete field from context.

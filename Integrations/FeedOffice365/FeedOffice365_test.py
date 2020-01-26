@@ -30,19 +30,15 @@ def test_commands(command, args, response, length, mocker):
     client = Client([url_dict], args, False, False)
     mocker.patch.object(client, 'build_iterator', return_value=response)
     human_readable, indicators_ec, raw_json = command(client, args)
-    indicators_ec = indicators_ec.get('Office365.Indicator')
-    assert len(indicators_ec) == length
-    for indicator_json in indicators_ec:
+    indicators = raw_json.get('raw_response')
+    assert len(indicators) == length
+    for indicator_json in indicators:
         indicator_val = indicator_json.get('value')
         indicator_type = indicator_json.get('type')
-        indicator_rawjson = indicator_json.get('rawJSON')
         assert indicator_val
         if indicator_type == 'URL':
             assert indicator_type == args.get('indicator_type')[:-1]
-            assert indicator_rawjson['type'] == indicator_type
         elif indicator_type == 'Domain':
-            assert indicator_rawjson['type'] == indicator_type
+            pass
         else:
             assert indicator_type.startswith(args.get('indicator_type')[:-1])
-            assert indicator_type.startswith(indicator_rawjson['type'])
-        assert indicator_rawjson['value'] == indicator_val

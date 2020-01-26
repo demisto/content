@@ -177,7 +177,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
-    return human_readable, {f'{INTEGRATION_NAME}.Indicator': indicators}, {'raw_response': raw_response}
+    return human_readable, {}, {'raw_response': raw_response}
 
 
 def fetch_indicators_command(client: Client, *_) -> List[Dict]:
@@ -235,7 +235,7 @@ def main():
         client = Client(urls_list, indicator, insecure, proxy)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
-            'get-indicators': get_indicators_command
+            'office365-get-indicators': get_indicators_command
         }
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
