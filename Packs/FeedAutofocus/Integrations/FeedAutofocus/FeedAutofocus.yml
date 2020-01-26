@@ -22,6 +22,11 @@ configuration:
   name: api_key
   required: true
   type: 4
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
 - additionalinfo: Only necessary in case a Custom Feed is fetched. Can also support
     a CSV of Custom feed URLs.
   display: The URL for the custom feed to fetch
@@ -58,11 +63,6 @@ configuration:
   type: 1
   required: false
   hidden: true
-- display: Fetch indicators
-  name: feed
-  defaultvalue: ""
-  type: 8
-  required: false
 - display: Bypass exclusion list
   name: bypassExclusionList
   required: false
