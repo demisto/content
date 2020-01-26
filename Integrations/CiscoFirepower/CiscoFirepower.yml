@@ -1,0 +1,968 @@
+category: Network Security
+commonfields:
+  id: moshe
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Username
+  name: username
+  required: true
+  type: 0
+- display: Password
+  name: password
+  required: true
+  type: 0
+description: Integration Template
+display: cisco-fp
+name: moshe
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves list of all security zone objects.
+    execution: false
+    name: cisco-fp-list-zones
+  - arguments:
+    - default: true
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves list of all port objects.
+    execution: false
+    name: cisco-fp-list-ports
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves list of all url category objects.
+    execution: false
+    name: cisco-fp-list-url-categories
+  - arguments:
+    - default: false
+      description: id of the object you are interested
+      isArray: false
+      name: object_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the network objects associated with the specified ID. If
+      not input ID  retrieves list of all network objects.
+    execution: false
+    name: cisco-fp-get-network-object
+  - arguments:
+    - default: false
+      description: Set the name of the new object.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: value of the network.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: New object description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Boolean indicating whether object values can be overridden.
+      isArray: false
+      name: overridable
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
+    description: creats network object
+    execution: false
+    name: cisco-fp-create-network-object
+  - arguments:
+    - default: false
+      description: ID of the object to update.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the object.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: value of the object.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: description of the object.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean indicating whether object values can be overridden.
+      isArray: false
+      name: overridable
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
+    description: update network object
+    execution: false
+    name: cisco-fp-update-network-object
+  - arguments:
+    - default: false
+      description: id of the object group you are interested
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the groups of network objects associated with the specified
+      ID. If not input ID retrieves list of all network objects.
+    execution: false
+    name: cisco-fp-get-network-groups-object
+  - arguments:
+    - default: false
+      description: the name of the group
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of object id to add to the group
+      isArray: false
+      name: id_list
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of value to add the group
+      isArray: false
+      name: value_list
+      required: false
+      secret: false
+    - default: false
+      description: New object description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean indicating whether object values can be overridden.
+      isArray: false
+      name: overridable
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
+    description: create group of network objects
+    execution: false
+    name: cisco-fp-create-network-groups-objects
+  - arguments:
+    - default: false
+      description: The id of the group you want to update
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of object id to add the group
+      isArray: false
+      name: id_list
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of value to add group
+      isArray: false
+      name: value_list
+      required: false
+      secret: false
+    - default: false
+      description: New object description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Boolean indicating whether object values can be overridden.
+      isArray: false
+      name: overridable
+      predefined:
+      - 'true'
+      - ' false'
+      required: false
+      secret: false
+    - default: false
+      description: the name of the group
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: update group of network objects
+    execution: false
+    name: cisco-fp-update-network-groups-objects
+  - arguments:
+    - default: false
+      description: ID of the object to delete.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: delete group of network objects
+    execution: false
+    name: cisco-fp-delete-network-groups-objects
+  - arguments:
+    - default: false
+      description: id of the object you are interested
+      isArray: false
+      name: object_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the groups of host objects associated with the specified
+      ID. If not input ID retrieves list of all network objects.
+    execution: false
+    name: cisco-fp-get-host-object
+  - arguments:
+    - default: false
+      description: Set the name of the new object
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: value of the network.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: New object description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Boolean indicating whether object values can be overridden.
+      isArray: false
+      name: overridable
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
+    description: create host object
+    execution: false
+    name: cisco-fp-create-host-object
+  - arguments:
+    - default: false
+      description: ID of the object to update.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the object.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: value of the object.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: description of the object.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean indicating whether object values can be overridden.
+      isArray: false
+      name: overridable
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
+    description: update host object
+    execution: false
+    name: cisco-fp-update-host-object
+  - arguments:
+    - default: false
+      description: ID of the object to delete.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: delete network object
+    execution: false
+    name: cisco-fp-delete-network-object
+  - arguments:
+    - default: false
+      description: ID of the object to delete.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: delete host object
+    execution: false
+    name: cisco-fp-delete-host-object
+  - arguments:
+    - default: false
+      description: id of the access policy you are interested
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the access control policy associated with the specified
+      ID. Also, retrieves list of all access control policies
+    execution: false
+    name: cisco-fp-get-access-policy
+  - arguments:
+    - default: false
+      description: Set the name of the new access policy.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Action—A rule's action determines how the system handles matching
+        traffic
+      isArray: false
+      name: action
+      predefined:
+      - BLOCK
+      - TRUST
+      - PERMIT
+      - NETWORK_DISCOVERY
+      required: true
+      secret: false
+    deprecated: false
+    description: create access control policy
+    execution: false
+    name: cisco-fp-create-access-policy
+  - arguments:
+    - default: false
+      description: access policy name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: id of access policy
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: id_of_default_action
+      isArray: false
+      name: default_action_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Action to take
+      isArray: false
+      name: action
+      predefined:
+      - BLOCK
+      - TRUST
+      - PERMIT
+      - NETWORK_DISCOVERY
+      required: true
+      secret: false
+    deprecated: false
+    description: update access control policy
+    execution: false
+    name: cisco-fp-update-access-policy
+  - arguments:
+    - default: false
+      description: id of access policy
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: delete access control policy
+    execution: false
+    name: cisco-fp-delete-access-policy
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves list of all custom security group tag objects.
+    execution: false
+    name: cisco-fp-list-security-group-tags
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves list of all ISE security group tag objects.
+    execution: false
+    name: cisco-fp-list-ise-security-group-tags
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves list of all vlantag objects.
+    execution: false
+    name: cisco-fp-list-vlan-tags
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves list of all vlan group tag objects.
+    execution: false
+    name: cisco-fp-list-vlan-tags-group
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves list of all application objects.
+    execution: false
+    name: cisco-fp-list-applications
+  - arguments:
+    - default: false
+      description: policy id of the roles
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: rule ID toget specified role
+      isArray: false
+      name: rule_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the access control rule associated with the specified policy
+      ID and rule ID. If no rule ID is specified, retrieves list of all access rules
+      associated with the specified policy ID.
+    execution: false
+    name: cisco-fp-get-access-rules
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Action—A rule's action determines how the system handles matching
+        traffic
+      isArray: false
+      name: action
+      predefined:
+      - ALLOW
+      - TRUST
+      - BLOCK
+      - MONITOR
+      - BLOCK_RESET
+      - BLOCK_INTERACTIVE
+      - BLOCK_RESET_INTERACTIVE
+      required: true
+      secret: false
+    - default: false
+      description: the role name
+      isArray: false
+      name: rule_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      description: Boolean indicating to enable or not.
+      isArray: false
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'list of source Zones object id '
+      isArray: true
+      name: source_zone_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: policy id to create there the new role
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: 'list of destination Zones object id '
+      isArray: true
+      name: destination_zone_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'list of vlan Tags object id '
+      isArray: true
+      name: vlan_tag_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of network object id
+      isArray: true
+      name: source_network_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of addresses
+      isArray: true
+      name: source_network_addresses
+      required: false
+      secret: false
+    - default: false
+      description: source_network_object_ids
+      isArray: true
+      name: destination_network_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of addresses
+      isArray: true
+      name: destination_network_addresses
+      required: false
+      secret: false
+    - default: false
+      description: list of port object id
+      isArray: false
+      name: source_port_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of port object id
+      isArray: false
+      name: destination_port_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of security group tag object id
+      isArray: false
+      name: source_security_group_tag_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of application object id
+      isArray: true
+      name: application_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of url object id
+      isArray: true
+      name: url_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of url_addresses
+      isArray: true
+      name: url_addresses
+      required: false
+      secret: false
+    deprecated: false
+    description: create access control rule
+    execution: false
+    name: cisco-fp-create-access-rules
+  - arguments:
+    - default: false
+      description: the policy id
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: the role id to delete
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    deprecated: false
+    description: delete access control rule
+    execution: false
+    name: cisco-fp-delete-access-rules
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves list of all policy assignments to target devices.
+    execution: false
+    name: cisco-fp-list-policy-assignments
+  - arguments:
+    - default: false
+      description: policy id
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: list of device id
+      isArray: true
+      name: device_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of device group id
+      isArray: true
+      name: device_group_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: create policy assignments to target devices.
+    execution: false
+    name: cisco-fp-create-policy-assignments
+  - arguments:
+    - default: false
+      description: polisy id
+      isArray: false
+      name: policy_id
+      required: false
+      secret: false
+    - default: false
+      description: list of device id
+      isArray: false
+      name: device_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of device group id
+      isArray: false
+      name: device_group_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: update policy assignments to target devices.
+    execution: false
+    name: cisco-fp-update-policy-assignments
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves list of all devices with configuration changes, ready to
+      be deployed.
+    execution: false
+    name: cisco-fp-get-deployable-devices
+  - arguments:
+    - default: false
+      description: |-
+        Number of items to return.
+        by default is 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Index of first item to return.
+        by default is 0
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves list of all device records.
+    execution: false
+    name: cisco-fp-get-device-records
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Boolean of force deploy
+      isArray: false
+      name: force_deploy
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean of ignore_warning
+      isArray: false
+      name: ignore_warning
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: list of device id
+      isArray: true
+      name: device_ids
+      required: true
+      secret: false
+    - default: false
+      description: the version to deploy
+      isArray: false
+      name: version
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a request for deploying configuration changes to devices.
+    execution: false
+    name: cisco-fp-deploy-to-devices
+  - arguments:
+    - default: false
+      description: the id of the task to check the status
+      isArray: false
+      name: task_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves information about a previously submitted pending job/task
+      with the specified ID. Used for deploying
+    execution: false
+    name: cisco-fp-get-task-status
+  dockerimage: demisto/python3:3.8.1.5734
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
