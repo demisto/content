@@ -44,14 +44,6 @@ configuration:
   - Both
   required: true
   type: 15
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
@@ -67,11 +59,21 @@ configuration:
 - name: expiration
   required: false
   type: 17
-- additionalinfo: When selected, the exclusion list will be ignored for this feed.
-  display: Bypass exclusion list
-  name: bypassExclusionList
+- defaultvalue: indicatorType
+  hidden: true
+  name: expirationPolicy
   required: false
+  type: 0
+- hidden: true
+  name: expirationInterval
+  required: false
+  type: 1
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
   type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list will be ignored for this feed.
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: feedInstanceReputationNotSet
   display: Mark as reputation
@@ -83,15 +85,14 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
+  type: 8
+- display: Use system proxy settings
+  name: proxy
   required: false
-  type: 1
+  type: 8
 description: Use the Office365 feed integration to get indicators from the feed.
 display: Office365 Feed
 name: FeedOffice365
