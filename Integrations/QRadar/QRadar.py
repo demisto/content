@@ -26,7 +26,6 @@ if TOKEN:
     AUTH_HEADERS['SEC'] = str(TOKEN)
 OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
 OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
-PAGE_SIZE = 200
 
 if not TOKEN and not (USERNAME and PASSWORD):
     raise Exception('Either credentials or auth token should be provided.')
@@ -1065,6 +1064,9 @@ def upload_indicators_list_request(reference_name, indicators_list):
 def upload_indicators_command():
     """
         The function finds indicators according to user query and updates QRadar reference set
+
+        Returns:
+            String, Dict: Human readable and the raw response
     """
     try:
         args = demisto.args()
@@ -1076,21 +1078,20 @@ def upload_indicators_command():
         page = int(args.get('page'))
         if not check_ref_set_exist(reference_name):
             if element_type:
-                create_reference_set(reference_name, element_type, args.get('timeout_type'),
-                                     args.get('time_to_live'))
+                create_reference_set(reference_name, element_type, timeout_type, time_to_live)
             else:
-                return_error("There isn't a reference set with the name {0}. To create a reference set,"
-                             " you have to enter an element type".format(reference_name))
+                return_error("There isn't a reference set with the name {0}. To create one,"
+                             " please enter an element type".format(reference_name))
         else:
             if element_type or time_to_live or timeout_type:
-                return_error("The reference set {0} is already exist. You are not supposed to enter element type, "
-                             "time to live or time to live, Try again".format(reference_name))
+                return_error("The reference set {0} is already exist. Element type, time to live or timeout type "
+                             "cannot be modified".format(reference_name))
         query = args.get('query')
-        value_indicators_list, indicators_data_list = get_indicators_list(query, limit, page)
-        if len(value_indicators_list) == 0:
+        indicators_values_list, indicators_data_list = get_indicators_list(query, limit, page)
+        if len(indicators_values_list) == 0:
             return ["No indicators found, Reference set {0} didn't change".format(reference_name), {}]
         else:
-            raw_response = upload_indicators_list_request(reference_name, value_indicators_list)
+            raw_response = upload_indicators_list_request(reference_name, indicators_values_list)
             ref_set_data = unicode_to_str_recur(get_reference_by_name(reference_name))
             indicator_headers = ['value', 'indicator_type']
             ref_set_headers = ['name', 'element_type', 'timeout_type', 'creation_time', 'number_of_elements']
@@ -1133,18 +1134,18 @@ def get_indicators_list(indicator_query, limit, page):
               limit (int): The amount of indicators the user want to add to reference set
               page (int): Page's number the user would like to start from
         Returns:
-             list of indicators value and a list with all indicators data
+             list of indicators values and a list with all indicators data
     """
-    value_indicators_list = []
+    indicators_values_list = []
     indicators_data_list = []
     fetched_iocs = demisto.searchIndicators(query=indicator_query, page=page, size=limit).get('iocs')
     for indicator in fetched_iocs:
-        value_indicators_list.append(indicator['value'])
+        indicators_values_list.append(indicator['value'])
         indicators_data_list.append({
             'value': indicator['value'],
             'indicator_type': indicator['indicator_type']
         })
-    return value_indicators_list, indicators_data_list
+    return indicators_values_list, indicators_data_list
 
 
 # Command selector
