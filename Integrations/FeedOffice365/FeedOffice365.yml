@@ -35,7 +35,7 @@ configuration:
   required: true
   type: 19
 - additionalinfo: 'IPs contains: IPv4, CIDR, IPv6, IPv6CIDR. URLs contains: URLs and Domains.'
-  defaultvalue: IPS
+  defaultvalue: IPs
   display: JSON attribute to use as an indicator
   name: indicator
   options:
