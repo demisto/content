@@ -7,7 +7,7 @@ configuration:
   name: indicator_feeds
   options:
   - Daily Threat Feed
-  - URL Feed
+  - Custom Feed
   required: true
   type: 16
 - display: Trust any certificate (not secure)
@@ -22,12 +22,10 @@ configuration:
   name: api_key
   required: true
   type: 4
-- display: The URL feed ID to fetch
-  name: output_feed_id
-  required: false
-  type: 0
-- display: The name of the feed ID to fetch
-  name: output_feed_name
+- additionalinfo: Only necessary in case a Custom Feed is fetched. Can also support
+    a CSV of Custom feed URLs.
+  display: The URL for the custom feed to fetch
+  name: custom_feed_urls
   required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
