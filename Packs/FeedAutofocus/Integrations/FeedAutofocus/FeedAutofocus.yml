@@ -36,7 +36,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: F - Reliability cannot be judged
-  display: Reliability
+  display: Source reliability
   name: feedInstanceReliability
   options:
   - A - Completely reliable
@@ -66,7 +66,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: feedInstanceReputationNotSet
-  display: Mark as reputation
+  display: Indicators reputation
   name: feedInstanceReputation
   options:
   - None
@@ -80,7 +80,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-description: Indicators Fetched from AutoFocus Feeds
+description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 display: AutoFocus Feed
 name: AutoFocus Feed
 script:
@@ -88,14 +88,14 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: How many indicators should be returned
+      description: The maximum number of indicators to return. The default value is 10.
       isArray: false
       name: limit
       required: true
       secret: false
     - default: false
       defaultValue: '0'
-      description: The index of the first indicator to fetch
+      description: The index of the first indicator to fetch.
       isArray: false
       name: offset
       required: false
