@@ -1512,5 +1512,5 @@ script:
   subtype: python2
   type: python
 tests:
-- test_Qradar_5_4_9
+- test_Qradar
 toversion: 5.4.9
