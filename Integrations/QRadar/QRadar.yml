@@ -1285,10 +1285,11 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The value to add or update in the reference set. Note: Date values
-        must be represented in milliseconds since the Unix Epoch January 1st 1970.'
+      description: 'The value/s to add or update in the reference set. Note: Date
+        values must be represented in milliseconds since the Unix Epoch January 1st
+        1970.'
       isArray: true
-      name: value
+      name: values
       required: true
       secret: false
     - default: false
@@ -1531,7 +1532,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
+      description: The timeout_type can be "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
         default value is UNKNOWN. You need to use it just for creating new refernce
         set
       isArray: false
