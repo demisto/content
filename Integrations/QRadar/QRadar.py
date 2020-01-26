@@ -985,7 +985,6 @@ def update_reference_set_value_command():
         values = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for value in values]
     if len(values) > 1:
         raw_ref = upload_indicators_list_request(args.get('ref_name'), values)
-        demisto.results(raw_ref)
     elif len(values) == 1:
         raw_ref = update_reference_set_value(args.get('ref_name'), values[0], args.get('source'))
     else:
@@ -1071,42 +1070,34 @@ def upload_indicators_command():
         args = demisto.args()
         reference_name = args.get('ref_name')
         element_type = args.get('element_type')
+        timeout_type = args.get('timeout_type')
+        time_to_live = args.get('time_to_live')
+        limit = int(args.get('limit'))
+        page = int(args.get('page'))
         if not check_ref_set_exist(reference_name):
             if element_type:
-                create_reference_set(reference_name, args.get('element_type'), args.get('timeout_type'),
+                create_reference_set(reference_name, element_type, args.get('timeout_type'),
                                      args.get('time_to_live'))
             else:
                 return_error("There isn't a reference set with the name {0}. To create a reference set,"
                              " you have to enter an element type".format(reference_name))
         else:
-            if element_type:
-                return_error("The reference set {0} is already exist. You are not supposed to enter element type,"
-                             " Try again".format(reference_name))
+            if element_type or time_to_live or timeout_type:
+                return_error("The reference set {0} is already exist. You are not supposed to enter element type, "
+                             "time to live or time to live, Try again".format(reference_name))
         query = args.get('query')
-        value_indicators_list, indicators_data_list = get_indicators_list(query)
+        value_indicators_list, indicators_data_list = get_indicators_list(query, limit, page)
         if len(value_indicators_list) == 0:
-            return {
-                'Type': entryTypes['note'],
-                'Contents': {},
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': "No indicators found, Reference set {0} didn't change".format(reference_name)
-            }
+            return ["No indicators found, Reference set {0} didn't change".format(reference_name), {}]
         else:
             raw_response = upload_indicators_list_request(reference_name, value_indicators_list)
             ref_set_data = unicode_to_str_recur(get_reference_by_name(reference_name))
             indicator_headers = ['value', 'indicator_type']
             ref_set_headers = ['name', 'element_type', 'timeout_type', 'creation_time', 'number_of_elements']
-            return {
-                'Type': entryTypes['note'],
-                'Contents': raw_response,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable':
-                    tableToMarkdown("reference set {0} was updated".format(reference_name), ref_set_data,
+            return [tableToMarkdown("reference set {0} was updated".format(reference_name), ref_set_data,
                                     headers=ref_set_headers) + tableToMarkdown("Indicators list",
                                                                                indicators_data_list,
-                                                                               headers=indicator_headers)}
+                                                                               headers=indicator_headers), raw_response]
     except Exception as e:
         if '1005' in str(e):
             return "You tried to add indicators that dont match to reference set type"
@@ -1126,35 +1117,33 @@ def check_ref_set_exist(ref_set_name):
 
     try:
         return get_reference_by_name(ref_set_name)
+    # If reference set does not exist, return None
     except Exception as e:
         if '1002' in str(e):
             return None
         raise e
 
 
-def get_indicators_list(indicator_query):
+def get_indicators_list(indicator_query, limit, page):
     """
         Get Demisto indicators list using demisto.searchIndicators
 
         Args:
               indicator_query (str): The query demisto.searchIndicators use to find indicators
+              limit (int): The amount of indicators the user want to add to reference set
+              page (int): Page's number the user would like to start from
         Returns:
              list of indicators value and a list with all indicators data
     """
-    last_found_len = PAGE_SIZE
     value_indicators_list = []
     indicators_data_list = []
-    page = 0
-    while last_found_len == PAGE_SIZE:
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=page, size=PAGE_SIZE).get('iocs')
-        for indicator in fetched_iocs:
-            value_indicators_list.append(indicator['value'])
-            indicators_data_list.append({
-                'value': indicator['value'],
-                'indicator_type': indicator['indicator_type']
-            })
-        last_found_len = len(fetched_iocs)
-        page += 1
+    fetched_iocs = demisto.searchIndicators(query=indicator_query, page=page, size=limit).get('iocs')
+    for indicator in fetched_iocs:
+        value_indicators_list.append(indicator['value'])
+        indicators_data_list.append({
+            'value': indicator['value'],
+            'indicator_type': indicator['indicator_type']
+        })
     return value_indicators_list, indicators_data_list
 
 
@@ -1202,7 +1191,7 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
     elif demisto.command() == 'qradar-upload-indicators':
-        demisto.results(upload_indicators_command())
+        return_outputs(*upload_indicators_command())
 except Exception as e:
     message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)

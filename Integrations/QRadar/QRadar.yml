@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: IBM QRadar 5.5
+  id: IBM QRadar
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -47,8 +47,8 @@ configuration:
   required: false
   type: 8
 description: Fetch offenses as incidents and search QRadar
-display: IBM QRadar 5.5
-name: IBM QRadar 5.5
+display: IBM QRadar
+name: IBM QRadar
 script:
   commands:
   - arguments:
@@ -1505,7 +1505,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The name of the reference set to add or update a value in.
+      description: The name of the reference set to add or update a value in. If you
+        would like to create a new reference set you will  need to set element type
       isArray: false
       name: ref_name
       required: true
@@ -1513,10 +1514,10 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The element type for the values allowed in the reference set.
-        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
-        IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date
-        values need to be represented in milliseconds since the Unix Epoch January
-        1st 1970.'
+        You need to use it only for creating new reference set. The allowed values
+        are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address),
+        NUM (numeric), PORT (port number) or DATE. Note that date values need to be
+        represented in milliseconds since the Unix Epoch January 1st 1970.'
       isArray: false
       name: element_type
       predefined:
@@ -1528,15 +1529,22 @@ script:
       - DATE
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
-        default value is UNKNOWN.
+        default value is UNKNOWN. You need to use it just for creating new refernce
+        set
       isArray: false
       name: timeout_type
+      predefined:
+      - FIRST_SEEN
+      - LAST_SEEN
+      - UNKNOWN
       required: false
       secret: false
     - default: false
-      description: 'The time to live interval, for example: "1 month" or "5 minutes"'
+      description: 'The time to live interval, for example: "1 month" or "5 minutes".
+        You need to use it just for creating new refernce set'
       isArray: false
       name: time_to_live
       required: false
@@ -1546,6 +1554,20 @@ script:
       isArray: false
       name: query
       required: true
+      secret: false
+    - default: false
+      defaultValue: '1000'
+      description: The amount of indicators that will appear on the screen
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: From which page to take the indicators
+      isArray: false
+      name: page
+      required: false
       secret: false
     deprecated: false
     description: Upload indicators from Demisto to Qradar
