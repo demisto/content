@@ -1,7 +1,7 @@
 commonfields:
-  id: IPReputation_sample
+  id: IPReputation
   version: -1
-name: IPReputation_sample
+name: IPReputation
 script: |-
   results = demisto.executeCommand('ip', {'ip': demisto.get(demisto.args(),'ip')})
 
