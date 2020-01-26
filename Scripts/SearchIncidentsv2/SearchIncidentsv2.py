@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -7,42 +7,42 @@ from CommonServerUserPython import *
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
 
-def errors_handel(res: List) -> Union[None, str]:
-    error_msg: Union[None, str] = None
+def check_if_found_incident(res: List):
     if res and isinstance(res, list) and isinstance(res[0].get('Contents'), dict):
         if 'data' not in res[0]['Contents']:
-            error_msg = res[0].get('Contents')
+            raise DemistoException(res[0].get('Contents'))
         elif res[0]['Contents']['data'] is None:
-            error_msg = "Incidents not found."
+            raise DemistoException("Incidents not found.")
 
     else:
-        error_msg = f'failed to get incidents from demisto got {res}'
-
-    return error_msg
+        raise DemistoException(f'failed to get incidents from demisto.\nGot: {res}')
 
 
 def is_valid_args(args: Dict):
+    error_msg: List[str] = []
     for _key, value in args.items():
         i = 0
         while i < len(value):
             if value[i] == '\\':
                 if value[i + 1] not in special:
-                    error_msg: str = f'Error while parsing the argument: "{_key}" ' \
-                                     f'\nSucceeded parsing untill:\n- "{value[0:i]}"'
-                    return_error(error_msg, DemistoException(error_msg.replace('\n', ' ')))
-                    return False
+                    error_msg.append(f'Error while parsing the argument: "{_key}" '
+                                     f'\nSucceeded parsing untill:\n- "{value[0:i]}"')
                 else:
                     i += 1
             i += 1
-    return True
+    if len(error_msg) != 0:
+        return_error('\n'.join(error_msg))
+    else:
+        return True
 
 
 def search_incidents(args: Dict):
     if is_valid_args(args):
         res: List = demisto.executeCommand('getIncidents', args)
-        error: Union[None, str] = errors_handel(res)
-        if error is not None:
-            return_error(error, DemistoException(error))
+        try:
+            check_if_found_incident(res)
+        except DemistoException as error:
+            return_error(str(error), error)
         else:
             data: Dict = res[0]['Contents']['data']
             context_entry: Dict = {'foundIncidents': data}
