@@ -1,11 +1,11 @@
 {
   "sortValues": null,
   "closeForm": false,
-  "cliName": "RegistryName",
+  "cliName": "name",
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
-  "id": "indicatorRegistryName",
+  "id": "indicator_name",
   "validatedError": "",
   "group": 2,
   "script": "",
