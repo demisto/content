@@ -2,12 +2,10 @@ id: Phishing Investigation - Generic v2
 version: -1
 fromversion: 4.5.0
 name: Phishing Investigation - Generic v2
-description: 'Use this playbook to investigate and remediate a potential phishing
-  incident. The playbook simultaneously engages with the user that triggered the incident,
-  while investigating the incident itself.
+description: |-
+  Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
-
-  The final remediation tasks are always decided by a human analyst.'
+  The final remediation tasks are always decided by a human analyst.
 starttaskid: '0'
 tasks:
   '0':
@@ -25,7 +23,13 @@ tasks:
       '#none#':
       - '39'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": -90\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -90
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -55,7 +59,13 @@ tasks:
       username: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 642.5,\n    \"y\": 2810\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 2810
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -76,7 +86,13 @@ tasks:
       '#none#':
       - '33'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 130,\n    \"y\": 3305\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 3305
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -106,7 +122,13 @@ tasks:
       timefield1: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 710,\n    \"y\": 5050\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 5050
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -126,7 +148,13 @@ tasks:
       '#none#':
       - '26'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 7.5,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 7.5,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -157,7 +185,13 @@ tasks:
           accessor: labels.Email/from
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1182.5,\n    \"y\": 350\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1182.5,
+          "y": 350
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -169,10 +203,8 @@ tasks:
       id: 9551bc3f-272d-4db9-8a40-30b48d1ba33b
       version: -1
       name: Acknowledge incident was received
-      description: 'Send an auto-response to user that reported the incident, informing
-        them the incident was received and being handled.
-
-        '
+      description: |
+        Send an auto-response to user that reported the incident, informing them the incident was received and being handled.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -188,11 +220,12 @@ tasks:
       bcc: {}
       body:
         simple: "Hi ${.=function(val) { var reporter = val.ReporterAddress ;var account\
-          \ = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && acc.Email\
-          \ && acc.Email.Address === reporter }); return account && account[0] && account[0].DisplayName\
-          \ || reporter || ''; }(val)},\nWe've received your email and are investigating.\n\
-          Please do not touch the email until further notice.\n\nCordially, \n  Your\
-          \ friendly neighborhood security team"
+          \ = val.Account && val.Account.filter(function(acc) { return acc.DisplayName\
+          \ && acc.Email && acc.Email.Address === reporter }); return account && account[0]\
+          \ && account[0].DisplayName || reporter || ''; }(val)},\nWe've received\
+          \ your email and are investigating.\nPlease do not touch the email until\
+          \ further notice.\n\nCordially, \n  Your friendly neighborhood security\
+          \ team"
       cc: {}
       from: {}
       htmlBody: {}
@@ -209,7 +242,13 @@ tasks:
       transientFileContent: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1182.5,\n    \"y\": 710\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1182.5,
+          "y": 710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -242,7 +281,13 @@ tasks:
           right:
             value:
               simple: '2'
-    view: "{\n  \"position\": {\n    \"x\": 642.5,\n    \"y\": 2985\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 2985
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -267,11 +312,13 @@ tasks:
       attachIDs: {}
       bcc: {}
       body:
-        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']\
-          \ ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've\
-          \ concluded that the email you forwarded to us is safe.\nThank you for your\
-          \ alertness and your participation in keeping our organization secure.\n\
-          \nCordially,\n  Your security team"
+        simple: |-
+          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          We've concluded that the email you forwarded to us is safe.
+          Thank you for your alertness and your participation in keeping our organization secure.
+
+          Cordially,
+            Your security team
       cc: {}
       htmlBody: {}
       noteEntryID: {}
@@ -282,7 +329,13 @@ tasks:
         simple: ${incident.labels.Email/from}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 130,\n    \"y\": 3930\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 3930
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -310,11 +363,12 @@ tasks:
       attachNames: {}
       bcc: {}
       body:
-        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']\
-          \ ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've\
-          \ concluded that the email you forwarded to us is malicious. No further\
-          \ action is required on your part. Good job on detecting and forwarding\
-          \ it to us!\n\nAll the best,\n  Your security team"
+        simple: |-
+          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          We've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!
+
+          All the best,
+            Your security team
       cc: {}
       htmlBody: {}
       replyTo: {}
@@ -325,7 +379,13 @@ tasks:
       transientFile: {}
       transientFileContent: {}
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 3940\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 3940
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -347,7 +407,13 @@ tasks:
       '#none#':
       - '12'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1182.5,\n    \"y\": 195\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1182.5,
+          "y": 195
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -368,7 +434,13 @@ tasks:
       '#none#':
       - '56'
     separatecontext: true
-    view: "{\n  \"position\": {\n    \"x\": 272.5,\n    \"y\": 530\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 272.5,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -389,8 +461,15 @@ tasks:
       '#none#':
       - '55'
       - '22'
+      - '88'
     separatecontext: true
-    view: "{\n  \"position\": {\n    \"x\": 7.5,\n    \"y\": 340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 7.5,
+          "y": 340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -412,7 +491,13 @@ tasks:
       - '36'
       - '34'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 4140\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 4140
+        }
+      }
     note: false
     timertriggers:
     - fieldname: remediationsla
@@ -435,7 +520,13 @@ tasks:
       '#none#':
       - '43'
     separatecontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1062.5,\n    \"y\": 4515\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 4515
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -452,7 +543,13 @@ tasks:
       brand: ''
       description: ''
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 715,\n    \"y\": 5215\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 5215
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -472,7 +569,13 @@ tasks:
       '#none#':
       - '17'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1062.5,\n    \"y\": 3160\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 3160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -492,7 +595,13 @@ tasks:
       '#none#':
       - '7'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 130,\n    \"y\": 3160\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 3160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -514,7 +623,13 @@ tasks:
       'Yes':
       - '17'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 130,\n    \"y\": 3470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 3470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -526,17 +641,10 @@ tasks:
       id: 945915a4-395f-444f-8500-c80791cddcfd
       version: -1
       name: Manually remediate  the incident
-      description: 'Consider the following:
-
-        1. Search for and delete similar emails
-
-        2. Inform the organization about the threat
-
-        3. Hunt the relevant IOCs
-
-        4. Update proxies and firewalls as necessary
-
-        5. Block the malicious sender/ domain in the mail-gateway '
+      description: "Consider the following:\n1. Search for and delete similar emails\n\
+        2. Inform the organization about the threat\n3. Hunt the relevant IOCs\n4.\
+        \ Update proxies and firewalls as necessary\n5. Block the malicious sender/\
+        \ domain in the mail-gateway "
       type: regular
       iscommand: false
       brand: ''
@@ -544,7 +652,13 @@ tasks:
       '#none#':
       - '43'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 620,\n    \"y\": 4310\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 4310
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -585,7 +699,13 @@ tasks:
                         simple: 'True'
                     ignorecase: true
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1070,\n    \"y\": 4310\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 4310
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -626,7 +746,13 @@ tasks:
                         simple: 'True'
                     ignorecase: true
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1510,\n    \"y\": 4310\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 4310
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -647,7 +773,13 @@ tasks:
       '#none#':
       - '43'
     separatecontext: true
-    view: "{\n  \"position\": {\n    \"x\": 1510,\n    \"y\": 4515\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 4515
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -668,7 +800,13 @@ tasks:
       - '18'
       - '11'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": 40\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 40
+        }
+      }
     note: false
     timertriggers:
     - fieldname: detectionsla
@@ -690,7 +828,13 @@ tasks:
       '#none#':
       - '8'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 710,\n    \"y\": 4910\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 4910
+        }
+      }
     note: false
     timertriggers:
     - fieldname: remediationsla
@@ -704,11 +848,11 @@ tasks:
       id: 9d139a23-b310-40bd-8c57-925fd2737e4c
       version: -1
       name: File Enrichment - Generic v2
-      description: ''
       playbookName: File Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '56'
@@ -736,7 +880,13 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": -490,\n    \"y\": 860\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -748,11 +898,11 @@ tasks:
       id: cc58bc17-c526-423c-8450-291cf70d3beb
       version: -1
       name: IP Enrichment - External - Generic v2
-      description: ''
       playbookName: IP Enrichment - External - Generic v2
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '56'
@@ -771,7 +921,13 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": -52.5,\n    \"y\": 860\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -52.5,
+          "y": 860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -783,11 +939,11 @@ tasks:
       id: 81a1c597-fa66-4ebc-86cb-7155baa405de
       version: -1
       name: Email Address Enrichment - Generic v2.1
-      description: ''
       playbookName: Email Address Enrichment - Generic v2.1
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '56'
@@ -810,7 +966,13 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": -490,\n    \"y\": 1020\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 1020
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -822,11 +984,11 @@ tasks:
       id: 6b8f702e-45cc-4004-8009-e4c985f01338
       version: -1
       name: URL Enrichment - Generic v2
-      description: ''
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '56'
@@ -846,7 +1008,13 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": -52.5,\n    \"y\": 1020\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -52.5,
+          "y": 1020
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -858,11 +1026,11 @@ tasks:
       id: a4b8af21-21d7-471c-8290-0deb9ee23e89
       version: -1
       name: Domain Enrichment - Generic v2
-      description: ''
       playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '56'
@@ -878,7 +1046,13 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": -52.5,\n    \"y\": 1180\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -52.5,
+          "y": 1180
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -902,7 +1076,13 @@ tasks:
       - '49'
       - '51'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -272.5,\n    \"y\": 710\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -272.5,
+          "y": 710
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -914,11 +1094,11 @@ tasks:
       id: 9efe139c-3485-464d-8122-1a3bc8587888
       version: -1
       name: Email Address Enrichment - Generic v2.1
-      description: ''
       playbookName: Email Address Enrichment - Generic v2.1
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '13'
@@ -939,7 +1119,13 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": 1182.5,\n    \"y\": 530\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1182.5,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -960,7 +1146,13 @@ tasks:
       '#none#':
       - '52'
     separatecontext: true
-    view: "{\n  \"position\": {\n    \"x\": -272.5,\n    \"y\": 530\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -272.5,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -980,7 +1172,13 @@ tasks:
       '#none#':
       - '79'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1510\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1510
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1023,7 +1221,13 @@ tasks:
                 root: Email
                 accessor: HeadersMap
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1680\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1680
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1043,7 +1247,13 @@ tasks:
       '#none#':
       - '82'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 1910\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 1910
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1092,7 +1302,13 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 2080\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 2080
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1299,7 +1515,13 @@ tasks:
       xdr: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": -260,\n    \"y\": 2255\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 2255
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1320,7 +1542,13 @@ tasks:
       '#none#':
       - '2'
     separatecontext: true
-    view: "{\n  \"position\": {\n    \"x\": 212.5,\n    \"y\": 2560\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 212.5,
+          "y": 2560
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1509,7 +1737,13 @@ tasks:
       xdrusercount: {}
     reputationcalc: 1
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 1650,\n    \"y\": 530\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1545,15 +1779,448 @@ tasks:
       iscommand: false
       exitCondition: ''
       wait: 1
-    view: "{\n  \"position\": {\n    \"x\": -52.5,\n    \"y\": 1020\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -52.5,
+          "y": 1020
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"15_30_Malicious \": 0.48,\n    \"15_31_#default#\"\
-  : 0.44,\n    \"33_16_No\": 0.64,\n    \"33_17_Yes\": 0.19,\n    \"36_43_#default#\"\
-  : 0.39,\n    \"37_43_#default#\": 0.23,\n    \"79_80_yes\": 0.49,\n    \"79_84_#default#\"\
-  : 0.34\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 5370,\n \
-  \     \"width\": 2520,\n      \"x\": -490,\n      \"y\": -90\n    }\n  }\n}"
+  '87':
+    id: '87'
+    taskid: bf7ea13b-64cd-46fb-8563-825432a1c808
+    type: regular
+    task:
+      id: bf7ea13b-64cd-46fb-8563-825432a1c808
+      version: -1
+      name: Predict phishing type using pre-trained phishing model
+      description: Predicts the specific type of phishing mail using a pre-trained machine learning
+        model, and highlights the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '90'
+    scriptarguments:
+      emailBody:
+        complex:
+          root: Email
+          accessor: Text
+          transformers:
+          - operator: uniq
+      emailBodyHTML:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: uniq
+      emailSubject:
+        complex:
+          root: Email
+          accessor: Subject
+          transformers:
+          - operator: uniq
+      hashSeed: {}
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      modelName:
+        simple: phishing_model
+      modelStoreType: {}
+      returnError:
+        simple: 'false'
+      topWordsLimit: {}
+      wordThreshold: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1142.5,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '88':
+    id: '88'
+    taskid: 601d6fe6-08ac-42f0-8ce1-cf65cd4fe1d1
+    type: title
+    task:
+      id: 601d6fe6-08ac-42f0-8ce1-cf65cd4fe1d1
+      version: -1
+      name: Machine Learning
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '87'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1142.5,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '89':
+    id: '89'
+    taskid: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
+    type: regular
+    task:
+      id: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
+      version: -1
+      name: Update incident with predictions
+      description: Updates incident fields with the predictions of the machine-learning
+        phishing model.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '56'
+    scriptarguments:
+      account: {}
+      accountid: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction:
+        complex:
+          root: DBotPredictPhishingWords
+          accessor: Label
+          transformers:
+          - operator: uniq
+      dbotpredictionprobability:
+        complex:
+          root: DBotPredictPhishingWords
+          accessor: Probability
+          transformers:
+          - operator: uniq
+      dbottextsuggestionhighlighted:
+        complex:
+          root: DBotPredictPhishingWords
+          accessor: TextTokensHighlighted
+          transformers:
+            - operator: uniq
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      hostname: {}
+      id: {}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      markdowntest: {}
+      measurestomitigate: {}
+      name: {}
+      niststage: {}
+      occurred: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1142.5,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '90':
+    id: '90'
+    taskid: 585dd252-1010-44ae-8c8d-1331c6d907ab
+    type: condition
+    task:
+      id: 585dd252-1010-44ae-8c8d-1331c6d907ab
+      version: -1
+      name: Did the model predict the phishing type?
+      description: Checks whether the model predicted the phishing type.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '56'
+      'yes':
+      - '89'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotPredictPhishingWords
+                accessor: Label
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotPredictPhishingWords
+                accessor: Probability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotPredictPhishingWords
+                accessor: TextTokensHighlighted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1142.5,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_30_Malicious ": 0.48,
+      "15_31_#default#": 0.44,
+      "33_16_No": 0.64,
+      "33_17_Yes": 0.19,
+      "36_43_#default#": 0.39,
+      "37_43_#default#": 0.23,
+      "79_80_yes": 0.49,
+      "79_84_#default#": 0.34,
+      "90_56_#default#": 0.3,
+      "90_89_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5370,
+        "width": 3172.5,
+        "x": -1142.5,
+        "y": -90
+      }
+    }
+  }
 inputs:
 - key: Role
   value:
@@ -1564,20 +2231,16 @@ inputs:
   value:
     simple: 'False'
   required: false
-  description: 'Enable the "Search and Delete" capability (can be either "True" or
-    "False").
-
-    In case of a malicious email, the "Search and Delete" sub-playbook will look for
-    other instances of the email and delete them pending analyst approval.'
+  description: |-
+    Enable the "Search and Delete" capability (can be either "True" or "False").
+    In case of a malicious email, the "Search and Delete" sub-playbook will look for other instances of the email and delete them pending analyst approval.
 - key: BlockIndicators
   value:
     simple: 'False'
   required: false
-  description: 'Enable the "Block Indicators" capability (can be either "True" or
-    "False").
-
-    In case of a malicious email, the "Block Indicators" sub-playbook will block all
-    malicious indicators in the relevant integrations.'
+  description: |-
+    Enable the "Block Indicators" capability (can be either "True" or "False").
+    In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
 - key: AuthenticateEmail
   value:
     simple: 'False'
