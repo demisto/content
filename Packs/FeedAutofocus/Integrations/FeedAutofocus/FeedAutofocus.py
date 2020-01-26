@@ -160,7 +160,7 @@ class Client(BaseClient):
         Returns:
             list. A list of JSON objects representing indicators fetched from a feed.
         """
-        indicators = []
+        indicators = []  # type:List
 
         if "Daily Threat Feed" in self.indicator_feeds:
             indicators.extend(self.http_request(feed_type="Daily Threat Feed"))
@@ -168,7 +168,7 @@ class Client(BaseClient):
         if "Custom Feed" in self.indicator_feeds:
             indicators.extend(self.http_request(feed_type="URL Feed"))
 
-        parsed_indicators = []
+        parsed_indicators = []  # type:List
 
         for indicator in indicators:
             if indicator:
