@@ -236,7 +236,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 
     try:
         response = client.create_incident(create_incident_request=create_incident_request)
-    except RuntimeError as err:
+    except ApiException as err:
         print_error(str(err))
 
     try:
