@@ -98,6 +98,6 @@ CALCULATE_DBOT_SCORE_INPUTS = [
 
 @pytest.mark.parametrize('risk_from_feed, threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
 def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
-    client = Client(indicator_type='ip', api_token='123', sub_feeds='fusion', threshold=threshold)
+    client = Client(indicator_type='ip', api_token='123', sub_feeds=['fusion'], threshold=threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
