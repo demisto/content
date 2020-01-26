@@ -695,7 +695,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'list of source Zones object id '
+      description: list of source Zones object id
       isArray: true
       name: source_zone_object_ids
       required: false
@@ -707,13 +707,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'list of destination Zones object id '
+      description: list of destination Zones object id
       isArray: true
       name: destination_zone_object_ids
       required: false
       secret: false
     - default: false
-      description: 'list of vlan Tags object id '
+      description: list of vlan Tags object id
       isArray: true
       name: vlan_tag_object_ids
       required: false
