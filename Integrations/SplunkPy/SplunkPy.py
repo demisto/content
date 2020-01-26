@@ -187,7 +187,7 @@ def notable_to_incident(event):
     if demisto.get(event, "_time"):
         incident["occurred"] = event["_time"]
     else:
-        incident["occurred"] = datetime.now()
+        incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
     incident["rawJSON"] = json.dumps(event)
     labels = []
     if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
