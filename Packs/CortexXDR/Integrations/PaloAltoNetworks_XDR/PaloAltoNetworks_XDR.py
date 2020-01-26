@@ -69,7 +69,7 @@ def clear_trailing_whitespace(res):
     while index < len(res):
         for key, value in res[index].items():
             if isinstance(value, str):
-                key = value.rstrip()
+                res[index][key] = value.rstrip()
         index += 1
     return res
 
