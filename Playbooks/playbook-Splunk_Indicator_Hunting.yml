@@ -3743,7 +3743,7 @@ inputs:
   required: true
   description: The values of these Splunk fields will be used for the playbook host
     name outputs.
-- key: InternalRange
+- key: InternalIPRange
   value: {}
   required: false
   description: 'A list of internal IP ranges to check IP addresses against. The list
