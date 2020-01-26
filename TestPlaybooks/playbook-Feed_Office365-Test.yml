@@ -86,7 +86,7 @@ tasks:
             value:
               complex:
                 root: Office365
-                accessor: Indicator.Value
+                accessor: Indicator.value
             iscontext: true
     view: |-
       {

@@ -162,9 +162,9 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
             for value in values:
                 type_ = client.check_indicator_type(value)
                 indicators.append({
-                    "Value": value,
-                    "Type": type_,
-                    'rawJSON': {"Value": value, "Type": type_}
+                    "value": value,
+                    "type": type_,
+                    'rawJSON': {"value": value, "type": type_}
                 })
                 raw_data = {
                     'value': value,

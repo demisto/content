@@ -29,11 +29,11 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: Fetch Interval
+- defaultvalue: '240'
+  display: Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "240"
-  type: 19
   required: true
+  type: 19
 - defaultvalue: IPS
   display: JSON attribute to use as an indicator
   name: indicator
@@ -43,8 +43,7 @@ configuration:
   - Both
   required: true
   type: 15
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -64,39 +63,33 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- display: ""
-  name: expiration
-  defaultvalue: ""
+- name: expiration
+  required: false
   type: 17
-  required: false
-- display: Bypass exclusion list
+- additionalInfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
   name: bypassExclusionList
-  defaultvalue: ""
+  required: false
   type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list will be ignored for this feed.
-- display: Mark as reputation
+- defaultvalue: feedInstanceReputationNotSet
+  display: Mark as reputation
   name: feedInstanceReputation
-  defaultvalue: feedInstanceReputationNotSet
-  type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-- display: ""
+  required: false
+  type: 18
+- defaultvalue: indicatorType
+  hidden: true
   name: expirationPolicy
-  defaultvalue: indicatorType
+  required: false
   type: 0
-  required: false
-  hidden: true
-- display: ""
+- hidden: true
   name: expirationInterval
-  defaultvalue: ""
-  type: 1
   required: false
-  hidden: true
+  type: 1
 description: Use the Office365 feed integration to get indicators from the feed.
 display: Office365 Feed
 name: FeedOffice365
@@ -112,14 +105,15 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'IPS'
-      description: The indicator type. Can be "IPS", "URLS", or "Both". The default value is "IPS".
+      defaultValue: IPS
+      description: The indicator type. Can be "IPS", "URLS", or "Both". The default
+        value is "IPS".
       isArray: false
       name: indicator_type
       predefined:
-      - 'IPS'
-      - 'URLS'
-      - 'Both'
+      - IPS
+      - URLS
+      - Both
       required: false
       secret: false
     deprecated: false
@@ -127,15 +121,15 @@ script:
     execution: false
     name: get-indicators
     outputs:
-    - contextPath: O365.Indicator.Value
+    - contextPath: Office365.Indicator.Value
       description: The indicator value.
       type: String
-    - contextPath: O365.Indicator.Type
+    - contextPath: Office365Indicator.Type
       description: The indicator type.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4328
-  isfetch: false
   feed: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false

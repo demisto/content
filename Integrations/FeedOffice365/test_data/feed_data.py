@@ -1,4 +1,4 @@
-RESPOSNE_DATA = [
+RESPONSE_DATA = [
     {
         "id": 31,
         "serviceArea": "SharePoint",
