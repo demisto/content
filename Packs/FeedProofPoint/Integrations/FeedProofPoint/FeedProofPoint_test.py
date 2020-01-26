@@ -10,7 +10,7 @@ def test_fetch_ips(requests_mock):
     with open(ip_path) as f:
         data = f.read()
     requests_mock.get(
-        "https://example.com/cool/reputationdetailed-iprepdata.txt", text=data
+        "https://example.com/cool/reputation/detailed-iprepdata.txt", text=data
     )
     indicators = fetch_indicators_command(client, client.IP_TYPE)
     assert 4 == len(indicators)
@@ -21,7 +21,7 @@ def test_fetch_domains(requests_mock):
     with open(ip_path) as f:
         data = f.read()
     requests_mock.get(
-        "https://example.com/cool/reputationdetailed-domainrepdata.txt", text=data
+        "https://example.com/cool/reputation/detailed-domainrepdata.txt", text=data
     )
     indicators = fetch_indicators_command(client, client.DOMAIN_TYPE)
     assert 9 == len(indicators)
