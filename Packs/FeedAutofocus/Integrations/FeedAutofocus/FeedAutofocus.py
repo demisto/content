@@ -22,23 +22,21 @@ class Client(BaseClient):
         insecure(bool): Use SSH on http request.
         proxy(str): Use system proxy.
         indicator_feeds(List): A list of indicator feed types to bring from AutoFocus.
-        output_feed_id(str): The ID given to the custom feed.
-        output_feed_name(str): The name given to the custom feed.
+        custom_feed_urls(str): The URLs of the custom feeds to fetch.
     """
 
-    def __init__(self, api_key, insecure, proxy, indicator_feeds, output_feed_id="", output_feed_name=""):
-        self.url_feed_base_url = "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/"
+    def __init__(self, api_key, insecure, proxy, indicator_feeds, custom_feed_urls=None):
         self.daily_feed_base_url = "https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult"
         self.headers = {
             "apiKey": api_key,
             'Content-Type': "application/json"
         }
         self.indicator_feeds = indicator_feeds
-        if 'URL Feed' in indicator_feeds and (output_feed_name is None or output_feed_id is None):
+        if 'Custom Feed' in indicator_feeds and custom_feed_urls is None:
             return_error("Output Feed ID and Name are required for URL Feed")
 
-        elif 'URL Feed' in indicator_feeds:
-            self.url_feed_suffix = output_feed_id + "/" + output_feed_name
+        elif 'Custom Feed' in indicator_feeds:
+            self.custom_feed_url_list = custom_feed_urls.split(',')
 
         self.verify = not insecure
         if proxy:
@@ -54,19 +52,23 @@ class Client(BaseClient):
             list. A list of indicators fetched from the feed.
         """
         if feed_type == "Daily Threat Feed":
-            url = self.daily_feed_base_url
+            urls = [self.daily_feed_base_url]
 
         else:
-            url = self.url_feed_base_url + self.url_feed_suffix
+            urls = self.custom_feed_url_list
 
-        res = requests.request(
-            method="GET",
-            url=url,
-            verify=self.verify,
-            headers=self.headers
-        )
-        res.raise_for_status()
-        return res.text.split('\n')
+        indicator_list = []
+        for url in urls:
+            res = requests.request(
+                method="GET",
+                url=url,
+                verify=self.verify,
+                headers=self.headers
+            )
+            res.raise_for_status()
+            indicator_list.extend(res.text.split('\n'))
+
+        return indicator_list
 
     def is_ip_type(self, indicator):
         if re.match(ipv4cidrRegex, indicator):
@@ -137,7 +139,7 @@ class Client(BaseClient):
         if "Daily Threat Feed" in self.indicator_feeds:
             indicators.extend(self.http_request(feed_type="Daily Threat Feed"))
 
-        if "URL Feed" in self.indicator_feeds:
+        if "Custom Feed" in self.indicator_feeds:
             indicators.extend(self.http_request(feed_type="URL Feed"))
 
         parsed_indicators = []
@@ -197,15 +199,19 @@ def module_test_command(client: Client, args: dict):
         try:
             client.build_iterator()
         except Exception:
-            raise Exception("Could not fetch Daily Threat Feed\n\nCheck your API key and your connection AutoFocus.")
+            raise Exception("Could not fetch Daily Threat Feed\n\nCheck your API key and your connection to AutoFocus.")
 
-    if 'URL Feed' in indicator_feeds:
-        client.indicator_feeds = ['URL Feed']
-        try:
-            client.build_iterator()
-        except Exception:
-            raise Exception(f"Could not fetch URL Feed {client.url_feed_suffix}\n\n"
-                            f"Check your API key the URL Feed ID and Name and Check if they are Enabled in AutoFocus.")
+    if 'Custom Feed' in indicator_feeds:
+        client.indicator_feeds = ['Custom Feed']
+        url_list = client.custom_feed_url_list
+        for url in url_list:
+            client.custom_feed_url_list = [url]
+            try:
+                client.build_iterator()
+            except Exception:
+                raise Exception(f"Could not fetch Custom Feed {url}\n\n"
+                                f"Check your API key the URL for the feed and Check if they are Enabled in AutoFocus.")
+
     return 'ok', {}, {}
 
 
@@ -264,8 +270,7 @@ def main():
                     params.get('insecure'),
                     params.get('proxy'),
                     params.get('indicator_feeds'),
-                    params.get('output_feed_id'),
-                    params.get('output_feed_name'))
+                    params.get('custom_feed_urls'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
