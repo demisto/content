@@ -39,7 +39,7 @@ class Client(BaseClient):
             )
             resp = resp.splitlines()
             csv_repr = csv.reader(resp)
-            headers = next(csv_repr, None)
+            headers: list = next(csv_repr, None)
             headers = [header.replace(" ", "").replace("(|)", "") for header in headers]
             for line in csv_repr:
                 yield {headers[i]: line[i] for i in range(len(headers))}
