@@ -351,12 +351,6 @@ def build_dbot(entry):
 def create_scores(data):
     # type: (list) -> dict
     dbot_path = outputPaths["dbotscore"]
-    # Create dict of dbot scores
-    dbot_scores_dict = {
-        output_path: list() for output_path in outputPaths.values()
-    }  # type: Dict[str, list]
-    # Remove DBotScore value
-    dbot_scores_dict.pop(dbot_path)
     # Create scores from each indicator
     dbot_scores = [build_dbot(entry) for entry in data]
     # Filter out empty values
@@ -411,14 +405,14 @@ def main():
         # get file from entry_id
         file_path = demisto.getFilePath(entry_id).get('path')
         if not file_path:
-            return_error("StixParser: No entry_id is provided.")
+            return_error("StixParser: No `entry_id` or `iocXml` arguments are provided.")
         with open(file_path) as f:
             txt = f.read()
     stx = convert_to_json(txt)
     data = list()  # type: List[dict]
     to_context = demisto.args().get("to_context")
     if not stx and to_context:
-        return_error("No STIX2 (JSON) file is loaded. If given file is STIX1, set `to_context` argument to `false`.")
+        return_error("No STIX2 (JSON) file is loaded. If given file is STIX1, set the `to_context` argument to `false`.")
     if stx:
         data = stix2_to_demisto(stx)
         to_context_bool = argToBoolean(to_context) if to_context else False
