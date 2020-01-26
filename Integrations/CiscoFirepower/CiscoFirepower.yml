@@ -288,6 +288,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Boolean indicating whether object values can be overridden.
+      description: Boolean indicating whether object values can be overridden.
       isArray: false
       name: overridable
       predefined:
