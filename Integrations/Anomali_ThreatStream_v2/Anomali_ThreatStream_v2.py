@@ -853,7 +853,6 @@ def main():
     try:
         handle_proxy()
         args = prepare_args(demisto.args())
-        demisto.log(str(args))
         if command == 'test-module':
             test_module()
         elif command == 'ip':
