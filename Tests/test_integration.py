@@ -236,7 +236,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 
     try:
         response = client.create_incident(create_incident_request=create_incident_request)
-    except RuntimeError as err:
+    except ApiException as err:
         print_error(str(err))
 
     try:
@@ -266,8 +266,8 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
     except ApiException as err:
         print(err)
 
-    # poll the incidents queue for a max time of 25 seconds
-    timeout = time.time() + 25
+    # poll the incidents queue for a max time of 40 seconds
+    timeout = time.time() + 40
     while incidents['total'] != 1:
         try:
             incidents = client.search_incidents(filter=search_filter)
