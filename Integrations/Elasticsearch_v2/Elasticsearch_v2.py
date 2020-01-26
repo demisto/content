@@ -516,14 +516,10 @@ def results_to_incidents_datetime(response, last_fetch):
 def get_indicators_command():
     search, _ = get_indicators_search_scan()
     limit = int(demisto.args().get('limit', FETCH_SIZE))
-    indicators_list = []
-    i = 0
+    indicators_list: list = []
     for hit in search.scan():
-        ioc = results_to_indicator(hit)
-        if ioc.get('value'):
-            indicators_list.append(ioc)
-        i += 1
-        if i >= limit:
+        indicators_list.extend(extract_indicators_from_insight_hit(hit))
+        if len(indicators_list) >= limit:
             break
     hr = tableToMarkdown('Indicators', indicators_list, ['name'])
     return_outputs(hr, {'ElasticsearchFeed.SharedIndicators': indicators_list}, indicators_list)
@@ -531,11 +527,9 @@ def get_indicators_command():
 
 def fetch_indicators_command():
     search, now = get_indicators_search_scan()
-    ioc_lst = []
+    ioc_lst: list = []
     for hit in search.scan():
-        ioc = results_to_indicator(hit)
-        if ioc.get('value'):
-            ioc_lst.append(ioc)
+        ioc_lst.extend(extract_indicators_from_insight_hit(hit))
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
@@ -555,6 +549,18 @@ def get_indicators_search_scan():
     indexes = f'*-shared*,-*{tenant_hash}*-shared*'
     search = Search(using=es, index=indexes).filter({'range': range_field}).query(query)
     return search, str(now.timestamp())
+
+
+def extract_indicators_from_insight_hit(hit):
+    ioc_lst = []
+    ioc = results_to_indicator(hit)
+    if ioc.get('value'):
+        ioc_lst.append(ioc)
+        module_to_feedmap = ioc.pop('moduleToFeedMap', {})
+        for key, val in module_to_feedmap.items():
+            val['isEnrichment'] = True
+            ioc_lst.append(val)
+    return ioc_lst
 
 
 def results_to_indicator(hit):
