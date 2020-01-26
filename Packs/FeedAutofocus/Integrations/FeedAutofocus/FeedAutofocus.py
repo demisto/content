@@ -32,14 +32,12 @@ class Client(BaseClient):
             'Content-Type': "application/json"
         }
         self.indicator_feeds = indicator_feeds
-        if 'Custom Feed' in indicator_feeds and custom_feed_urls is None:
-            return_error("Output Feed ID and Name are required for URL Feed")
+        if 'Custom Feed' in indicator_feeds and (custom_feed_urls is None or custom_feed_urls == ''):
+            return_error("Output Feed ID and Name are required for Custom Feed")
 
         elif 'Custom Feed' in indicator_feeds:
-            self.custom_feed_url_list = custom_feed_urls.split(',')
-
             url_list = []  # type:List
-            for url in self.custom_feed_url_list:
+            for url in custom_feed_urls.split(','):
                 url_list.append(self.url_format(url))
 
             self.custom_feed_url_list = url_list
@@ -96,7 +94,7 @@ class Client(BaseClient):
 
         return indicator_list
 
-    def is_ip_type(self, indicator):
+    def get_ip_type(self, indicator):
         if re.match(ipv4cidrRegex, indicator):
             return FeedIndicatorType.CIDR
 
@@ -125,11 +123,11 @@ class Client(BaseClient):
         # trying to catch X.X.X.X:portNum
         if ':' in indicator and '/' not in indicator:
             sub_indicator = indicator.split(':', 1)[0]
-            ip_type = self.is_ip_type(sub_indicator)
+            ip_type = self.get_ip_type(sub_indicator)
             if ip_type:
                 return ip_type
 
-        ip_type = self.is_ip_type(indicator)
+        ip_type = self.get_ip_type(indicator)
         if ip_type:
             # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
             if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
@@ -149,7 +147,7 @@ class Client(BaseClient):
             return FeedIndicatorType.Domain
 
     def resolve_ip_address(self, ip):
-        if self.is_ip_type(ip):
+        if self.get_ip_type(ip):
             return socket.gethostbyaddr(ip)[0]
 
         return None
@@ -166,7 +164,7 @@ class Client(BaseClient):
             indicators.extend(self.http_request(feed_type="Daily Threat Feed"))
 
         if "Custom Feed" in self.indicator_feeds:
-            indicators.extend(self.http_request(feed_type="URL Feed"))
+            indicators.extend(self.http_request(feed_type="Custom Feed"))
 
         parsed_indicators = []  # type:List
 
@@ -220,12 +218,14 @@ def module_test_command(client: Client, args: dict):
         'ok' if test passed, anything else will fail the test.
     """
     indicator_feeds = client.indicator_feeds
+    exception_list = []  # type:List
     if 'Daily Threat Feed' in indicator_feeds:
         client.indicator_feeds = ['Daily Threat Feed']
         try:
             client.build_iterator()
         except Exception:
-            raise Exception("Could not fetch Daily Threat Feed\n\nCheck your API key and your connection to AutoFocus.")
+            exception_list.append("Could not fetch Daily Threat Feed\n"
+                                  "\nCheck your API key and your connection to AutoFocus.")
 
     if 'Custom Feed' in indicator_feeds:
         client.indicator_feeds = ['Custom Feed']
@@ -235,8 +235,12 @@ def module_test_command(client: Client, args: dict):
             try:
                 client.build_iterator()
             except Exception:
-                raise Exception(f"Could not fetch Custom Feed {url}\n\n"
-                                f"Check your API key the URL for the feed and Check if they are Enabled in AutoFocus.")
+                exception_list.append(f"Could not fetch Custom Feed {url}\n"
+                                      f"\nCheck your API key the URL for the feed and Check "
+                                      f"if they are Enabled in AutoFocus.")
+
+    if len(exception_list) > 0:
+        raise Exception("\n".join(exception_list))
 
     return 'ok', {}, {}
 
