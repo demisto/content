@@ -6,7 +6,7 @@ deprecated: true
 script: |-
   function invalideEscape(str) {
       var i;
-      var special = ["n", "t"];
+      var special = ["n", "t", "r", "'", "\"", "7"];
       for (i = 0; i < str.length - 1; i++) {
           if (str[i] === '\\') {
               if (special.indexOf(str[i + 1] == -1)) {
@@ -22,13 +22,17 @@ script: |-
   Object.keys(args).forEach(function(a) {if (!args[a]) delete args[a];});
   var keys = Object.keys(args);
   var i;
+  var md;
   for (i = 0; i < keys.length; i++) {
       temp = invalideEscape(args[keys[i]]);
       if (temp.length != args[keys[i]].length) {
-          var md = "##### Error while parsing the argument: '" + keys[i] +
+          md += "\n##### Error while parsing the argument: '" + keys[i] +
           "'\n##### Succeeded parsing untill:\n- " + temp;
-          return {Type: entryTypes.error, Contents: md, ContentsFormat: formats.markdown, HumanReadable: md};
+
       }
+  }
+  if (!!md) {
+      return {Type: entryTypes.error, Contents: md, ContentsFormat: formats.markdown, HumanReadable: md};
   }
 
   var arrArgs = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'system', 'owner', 'type'];
@@ -52,7 +56,7 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: deprecated! use SearchIncidentsv2 instead
+comment: Deprecated. use SearchIncidentsv2 instead.
 enabled: true
 args:
 - name: id
