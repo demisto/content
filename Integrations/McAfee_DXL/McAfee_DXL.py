@@ -48,6 +48,9 @@ class EventSender:
         self.client = DxlClient(self.get_client_config())
         self.client.connect()
 
+    def __del__(self):
+        event_sender.client.disconnect()
+
     def push_ip(self, ip, trust_level, topic):
         if not is_ip_valid(ip):
             raise ValueError(f'argument ip {ip} is not a valid IP')
@@ -109,19 +112,22 @@ class EventSender:
 
 
 def validate_certificates_format():
-    if not demisto.params()['private_key'].startswith('-----BEGIN PRIVATE KEY-----'):
+    if '-----BEGIN PRIVATE KEY-----' not in demisto.params()['private_key']:
         return_error(
             "The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
-    if not demisto.params()['cert_file'].startswith('-----BEGIN CERTIFICATE-----'):
+    if '-----END PRIVATE KEY-----' not in demisto.params()['private_key']:
+        return_error(
+            "The private key content seems to be incorrect as it doesn't end with -----END PRIVATE KEY-----")
+    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['cert_file']:
         return_error("The client certificates content seem to be "
                      "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
-    if not demisto.params()['cert_file'].endswith('-----END CERTIFICATE-----'):
+    if '-----END CERTIFICATE-----' not in demisto.params()['cert_file']:
         return_error(
             "The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")
-    if not demisto.params()['broker_ca_bundle'].startswith('-----BEGIN CERTIFICATE-----'):
+    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['broker_ca_bundle']:
         return_error(
             "The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
-    if not demisto.params()['broker_ca_bundle'].endswith('-----END CERTIFICATE-----'):
+    if '-----END CERTIFICATE-----' not in demisto.params()['broker_ca_bundle']:
         return_error(
             "The broker certificate seem to be incorrect as they don't end with '-----END CERTIFICATE-----'")
 
@@ -129,9 +135,8 @@ def validate_certificates_format():
 def main():
     args = demisto.args()
     command = demisto.command()
-    event_sender = EventSender(demisto.params())
-    validate_certificates_format()
     try:
+        event_sender = EventSender(demisto.params())
         result = ''
         if command == 'test-module':
             event_sender.send_event('TEST', 'test')
@@ -159,9 +164,8 @@ def main():
 
         return_outputs(result)
     except Exception as error:
+        validate_certificates_format()
         return_error(f'error in {INTEGRATION_NAME} {str(error)}.', error)
-    finally:
-        event_sender.client.disconnect()
 
 
 if __name__ in ('__builtin__', 'builtins'):

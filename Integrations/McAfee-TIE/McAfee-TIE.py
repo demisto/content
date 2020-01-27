@@ -52,22 +52,22 @@ POVIDER = {
 
 
 def validate_certificates_format():
-    if not demisto.params()['private_key'].startswith('-----BEGIN PRIVATE KEY-----'):
+    if '-----BEGIN PRIVATE KEY-----' not in demisto.params()['private_key']:
         return_error(
             "The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
-    if not demisto.params()['private_key'].endswith('-----END PRIVATE KEY-----'):
+    if '-----END PRIVATE KEY-----' not in demisto.params()['private_key']:
         return_error(
             "The private key content seems to be incorrect as it doesn't end with -----END PRIVATE KEY-----")
-    if not demisto.params()['cert_file'].startswith('-----BEGIN CERTIFICATE-----'):
+    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['cert_file']:
         return_error("The client certificates content seem to be "
                      "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
-    if not demisto.params()['cert_file'].endswith('-----END CERTIFICATE-----'):
+    if '-----END CERTIFICATE-----' not in demisto.params()['cert_file']:
         return_error(
             "The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")
-    if not demisto.params()['broker_ca_bundle'].startswith('-----BEGIN CERTIFICATE-----'):
+    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['broker_ca_bundle']:
         return_error(
             "The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
-    if not demisto.params()['broker_ca_bundle'].endswith('-----END CERTIFICATE-----'):
+    if '-----END CERTIFICATE-----' not in demisto.params()['broker_ca_bundle']:
         return_error(
             "The broker certificate seem to be incorrect as they don't end with '-----END CERTIFICATE-----'")
 
@@ -305,26 +305,28 @@ def set_file_reputation(hash, trust_level, filename, comment):
             return create_error_entry(str(ex))
 
 
-validate_certificates_format()
-args = demisto.args()
-if demisto.command() == 'test-module':
-    test()
-    demisto.results('ok')
-    sys.exit(0)
-elif demisto.command() == 'file':
-    results = file(args.get('file'))
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'tie-file-references':
-    results = file_references(args.get('file'))
-    demisto.results(results)
-    sys.exit(0)
-elif demisto.command() == 'tie-set-file-reputation':
-    results = set_file_reputation(
-        args.get('file'),
-        args.get('trust_level'),
-        args.get('filename'),
-        args.get('comment')
-    )
-    demisto.results(results)
-    sys.exit(0)
+try:
+    args = demisto.args()
+    if demisto.command() == 'test-module':
+        test()
+        demisto.results('ok')
+        sys.exit(0)
+    elif demisto.command() == 'file':
+        results = file(args.get('file'))
+        demisto.results(results)
+        sys.exit(0)
+    elif demisto.command() == 'tie-file-references':
+        results = file_references(args.get('file'))
+        demisto.results(results)
+        sys.exit(0)
+    elif demisto.command() == 'tie-set-file-reputation':
+        results = set_file_reputation(
+            args.get('file'),
+            args.get('trust_level'),
+            args.get('filename'),
+            args.get('comment')
+        )
+        demisto.results(results)
+        sys.exit(0)
+except Exception:
+    validate_certificates_format()
