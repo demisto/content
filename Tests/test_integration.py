@@ -29,7 +29,6 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
     body = {
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
     }
-    # print(body)
     try:
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                       method='POST', body=body)
@@ -50,6 +49,7 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
 
         time.sleep(SLEEP_INTERVAL)
         total_sleep += SLEEP_INTERVAL
+
     all_configurations = res['configurations']
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
 
@@ -57,7 +57,6 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
         prints_manager.add_print_job('integration was not found', print_error, thread_index)
         return None
 
-    # print(match_configurations[0])
     return match_configurations[0]
 
 
@@ -252,7 +251,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, thr
 
     try:
         response = client.create_incident(create_incident_request=create_incident_request)
-    except RuntimeError as err:
+    except ApiException as err:
         prints_manager.add_print_job(str(err), print_error, thread_index)
 
     try:
@@ -282,8 +281,8 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, thr
     except ApiException as err:
         prints_manager.add_print_job(err, print, thread_index)
 
-    # poll the incidents queue for a max time of 25 seconds
-    timeout = time.time() + 25
+    # poll the incidents queue for a max time of 40 seconds
+    timeout = time.time() + 40
     while incidents['total'] != 1:
         try:
             incidents = client.search_incidents(filter=search_filter)
