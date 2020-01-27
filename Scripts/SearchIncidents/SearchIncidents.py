@@ -31,29 +31,28 @@ def is_valid_args(args: Dict):
                     i += 1
             i += 1
     if len(error_msg) != 0:
-        return_error('\n'.join(error_msg))
-    else:
-        return True
+        raise DemistoException('\n'.join(error_msg))
+
+    return True
 
 
 def search_incidents(args: Dict):
     if is_valid_args(args):
         res: List = demisto.executeCommand('getIncidents', args)
-        try:
-            check_if_found_incident(res)
-        except DemistoException as error:
-            return_error(str(error), error)
-        else:
-            data: Dict = res[0]['Contents']['data']
-            context_entry: Dict = {'foundIncidents': data}
-            headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
-            md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
-            return_outputs(md, context_entry, res)
+        check_if_found_incident(res)
+        data: Dict = res[0]['Contents']['data']
+        context_entry: Dict = {'foundIncidents': data}
+        headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
+        md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
+        return_outputs(md, context_entry, res)
 
 
 def main():
     args: Dict = demisto.args()
-    search_incidents(args)
+    try:
+        search_incidents(args)
+    except DemistoException as error:
+        return_error(str(error), error)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
