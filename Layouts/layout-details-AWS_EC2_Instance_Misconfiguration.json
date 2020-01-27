@@ -1,14 +1,15 @@
 {
-	"TypeName": "AWS EC2 Instance Misconfiguration",
+	"TypeName": "",
+	"id": "AWS EC2 Instance Misconfiguration",
 	"kind": "details",
-        "fromVersion": "5.0.0",
-        "layout": {     
-                "TypeName": "",
-                "id": "AWS EC2 Instance Misconfiguration",
-                "kind": "details",
-                "modified": "2019-12-17T22:12:21.768434567Z",
-                "name": "",
-                "system": false,
+	"fromVersion": "5.0.0",
+	"layout": {     
+		"TypeName": "",
+		"id": "AWS EC2 Instance Misconfiguration",
+		"kind": "details",
+		"modified": "2019-12-17T22:12:21.768434567Z",
+		"name": "",
+		"system": false,
 	"tabs": [
 		{
 			"hidden": false,
@@ -690,7 +691,7 @@
 	],
 	"typeId": "AWS EC2 Instance Misconfiguration",
 	"version": -1
-        },
-        "typeId": "AWS EC2 Instance Misconfiguration",
-        "version": -1
+	},
+	"typeId": "AWS EC2 Instance Misconfiguration",
+	"version": -1
 }
