@@ -1,4 +1,4 @@
-from FeedProofPoint import Client, fetch_indicators_command
+from FeedProofpoint import Client, fetch_indicators_command
 
 url = "https://example.com"
 auth_code = "cool"
