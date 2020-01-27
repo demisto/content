@@ -1,8 +1,8 @@
-id: Test_GOI
+id: Test_export_indicators_service
 version: -1
 contentitemfields:
   propagationLabels: []
-name: Test_GOI
+name: Test_export_indicators_service
 starttaskid: "0"
 tasks:
   "0":

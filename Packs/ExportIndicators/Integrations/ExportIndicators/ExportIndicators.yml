@@ -121,5 +121,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Test_GOI
+- Test_export_indicators_service
 fromversion: 5.5.0
