@@ -34,7 +34,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: F - Reliability cannot be judged
+- defaultvalue: A - Completely reliable
   display: Reliability
   name: feedInstanceReliability
   options:
