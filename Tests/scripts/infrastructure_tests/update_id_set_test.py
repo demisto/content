@@ -205,7 +205,7 @@ PLAYBOOK_DATA = {
 
 
 class TestIntegration(unittest.TestCase):
-    # @unittest.skip("Unittest depends on a changing content.")
+    @unittest.skip("Unittest depends on a changing content.")
     def test_get_integration_data(self):
         """
         Test for getting all the integration data
@@ -214,7 +214,7 @@ class TestIntegration(unittest.TestCase):
         data = get_integration_data(file_path)
         self.assertDictEqual(data, INTEGRATION_DATA)
 
-    # @unittest.skip("Unittest depends on a changing content.")
+    @unittest.skip("Unittest depends on a changing content.")
     def test_get_script_data(self):
         """
         Test for getting the script data
@@ -223,7 +223,7 @@ class TestIntegration(unittest.TestCase):
         data = get_script_data(file_path)
         self.assertDictEqual(data, SCRIPT_DATA)
 
-    # @unittest.skip("Unittest depends on a changing content.")
+    @unittest.skip("Unittest depends on a changing content.")
     def test_get_playbook_data(self):
         """
         Test for getting the playbook data
