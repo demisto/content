@@ -52,7 +52,7 @@
         ]
       }
     },
-    "indicatorIdentification": {
+    "indicatorid": {
       "simple": "",
       "complex": {
         "root": "CVE",
@@ -70,7 +70,7 @@
         ]
       }
     },
-    "CVEmodified": {
+    "cvemodified": {
       "simple": "",
       "complex": {
         "root": "CVE",
