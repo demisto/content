@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added new command !cve
+Added the ***cve*** command, which returns CVE information.
