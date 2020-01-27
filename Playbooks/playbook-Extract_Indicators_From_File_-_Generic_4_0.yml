@@ -427,5 +427,3 @@ outputs:
   description: Extracted SHA256
 - contextPath: IP.Address
   description: Extracted IPs
-tests:
-  - Extract Indicators From File - test
