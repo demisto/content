@@ -1,6 +1,9 @@
 ## [Unreleased]
- - Added ***ip_to_indicator_type*** command.
- - Added encode string results - safe handle unicode strings to demisto results
+Added ***ip_to_indicator_type*** command.
+
+
+## [20.1.2] - 2020-01-22
+Added encode string results - safe handle unicode strings to demisto results
 
 ## [20.1.0] - 2020-01-07
  - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
