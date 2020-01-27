@@ -1,6 +1,6 @@
-id: Cortex XDR Incident Handling
+id: Dummy Playbook
 version: -1
-name: Cortex XDR Incident Handling
+name: Dummy Playbook
 description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR
   incident. \nThe playbook syncs and updates new XDR alerts that construct the incident.
   It enriches indicators using Threat Intelligence integrations and Palo Alto Networks
@@ -48,7 +48,7 @@ tasks:
       id: 41f6acc5-4a08-47d9-8886-ea034c4f1a74
       version: -1
       name: Perform XDR Alerts Sync with Incident
-      description: This script compares the Demisto and XDR incidents 
+      description: This script compares the Demisto and XDR incidents
         and updates both incidents, respectively. This script always uses xdr-get-incident-extra-data
         and outputs the whole incident JSON to the context. If the incident in XDR is
         updated, the Demisto incident is updated accordingly and the playbook will
