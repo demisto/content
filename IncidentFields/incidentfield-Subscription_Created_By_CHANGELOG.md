@@ -1,5 +1,5 @@
 ## [Unreleased]
-Associated to 'AWS EC2 Instance Misconfiguration' incident type.
+Associated to new 'AWS EC2 Instance Misconfiguration' incident type.
 
 
 ## [20.1.2] - 2020-01-22

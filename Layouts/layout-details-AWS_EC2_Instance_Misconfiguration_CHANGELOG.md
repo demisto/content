@@ -1,2 +1,2 @@
 ## [Unreleased]
-Associated to 'AWS EC2 Instance Misconfiguration' incident type.
+New layout for 'AWS EC2 Instance Misconfiguration.'
