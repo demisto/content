@@ -74,7 +74,7 @@ def save_context(now: datetime, out_dict: dict):
     demisto.setIntegrationContext(out_dict)
 
 
-def find_indicators_to_limit(indicator_query: str, limit: int) -> list:
+def find_indicators_with_limit(indicator_query: str, limit: int) -> list:
     """
     Finds indicators using demisto.findIndicators
     """
