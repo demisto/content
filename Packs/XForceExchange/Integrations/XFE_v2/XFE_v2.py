@@ -96,7 +96,8 @@ def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dic
                           'title', 'description', 'platforms_affected', 'exploitability']
     additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
 
-    context = {'CVE(obj.ID==val.ID)': outputs, 'DBotScore': dbot_score,
+    context = {outputPaths['cve']: outputs,
+               'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbot_score,
                'XFE.CVE(obj.ID==val.ID)': additional_info}
 
     table_headers = ['title', 'description', 'risk_level', 'reported', 'exploitability']
@@ -153,9 +154,9 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
                   'Score': calculate_score(report['score'], threshold)}
 
-    context = {'IP(obj.Address==val.Address)': outputs,
+    context = {outputPaths['ip']: outputs,
                'XFE.IP(obj.Address==val.Address)': additional_info,
-               'DBotScore': dbot_score}
+               'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbot_score}
     table = {'Score': report['score'],
              'Reason': f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}',
              'Subnets': ', '.join(subnet.get('subnet') for subnet in additional_info['Subnets'])}
@@ -186,7 +187,8 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
                   'Score': calculate_score(report['score'], threshold)}
 
-    context = {'URL(obj.Data==val.Data)': outputs, 'DBotScore': dbot_score}
+    context = {outputPaths['url']: outputs,
+               'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbot_score}
 
     table = {'Score': report['score'],
              'Categories': '\n'.join(report['cats'].keys())}
