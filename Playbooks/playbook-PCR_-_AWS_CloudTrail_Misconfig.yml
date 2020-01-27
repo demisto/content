@@ -1,0 +1,516 @@
+id: Prisma Cloud Remediation - AWS CloudTrail Misconfiguration
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - AWS CloudTrail Misconfiguration
+description: |-
+  This playbook remediates Prisma Cloud AWS CloudTrail alerts.  It calls sub-playbooks that perform the actual remediation steps.
+
+  Remediation:
+   - AWS CloudTrail Trail Log Validation Is Not Enabled In All Regions
+   - AWS CloudTrail is not enabled in all regions
+   - AWS CloudTrail Trail Is Not Integrated With CloudWatch Logs
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 972c2cba-e9e8-4b4e-8f92-407ca7fb7917
+    type: start
+    task:
+      id: 972c2cba-e9e8-4b4e-8f92-407ca7fb7917
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c7b0a190-405e-414e-895c-0253fb4b0e1e
+    type: condition
+    task:
+      id: c7b0a190-405e-414e-895c-0253fb4b0e1e
+      version: -1
+      name: Is AWS - CloudTrail integration enabled?
+      description: Verifies that AWS - CloudTrail integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - CloudTrail
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - CloudTrail
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 6f48c062-98f6-4d8a-8df1-d11d2a1ba64c
+    type: condition
+    task:
+      id: 6f48c062-98f6-4d8a-8df1-d11d2a1ba64c
+      version: -1
+      name: Update CloudTrail automatically?
+      description: Should we auto-remediate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoUpdateCloudTrail
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 487765e6-e403-4cb8-8a80-833b80b07f1e
+    type: condition
+    task:
+      id: 487765e6-e403-4cb8-8a80-833b80b07f1e
+      version: -1
+      name: Auto remediate?
+      description: Determine whether or not to auto-remediate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "Yes":
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: ${incident.id} Autoremediate?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "6":
+    id: "6"
+    taskid: 5507d5d4-3a53-4c07-83c3-a64c8e43b11e
+    type: regular
+    task:
+      id: 5507d5d4-3a53-4c07-83c3-a64c8e43b11e
+      version: -1
+      name: Manually update CloudTrail
+      description: |
+        1. Login to the AWS console and navigate to the CloudTrail dashboard
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 599730fe-9f1e-4a63-89c5-e941732683b6
+    type: regular
+    task:
+      id: 599730fe-9f1e-4a63-89c5-e941732683b6
+      version: -1
+      name: Close investigation
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: a8d06dc1-f186-4459-87b6-3d05d85f70d0
+    type: title
+    task:
+      id: a8d06dc1-f186-4459-87b6-3d05d85f70d0
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 6cb3b30f-0f8d-4fc4-8baa-77ec96b56276
+    type: regular
+    task:
+      id: 6cb3b30f-0f8d-4fc4-8baa-77ec96b56276
+      version: -1
+      name: Dismiss Prisma Cloud alert
+      description: Dismiss the alerts matching the given filter. Must provide either
+        policy IDs or alert IDs.
+      script: RedLock|||redlock-dismiss-alerts
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alert-id:
+        complex:
+          root: incident
+          accessor: labels
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      alert-rule-name: {}
+      alert-status: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      dismissal-note:
+        simple: ${incident.labels.id} has been remediated by Demisto.
+      policy-compliance-standard: {}
+      policy-id:
+        complex:
+          root: incident
+          accessor: labels.policy
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: policyId
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: b3f96a4a-9b1a-4486-874f-65b3ea7eed07
+    type: condition
+    task:
+      id: b3f96a4a-9b1a-4486-874f-65b3ea7eed07
+      version: -1
+      name: Execute playbook
+      description: Execute the appropriate sub-playbook to perform the actual remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      trailMisconfig:
+      - "14"
+    separatecontext: false
+    defaultassigneecomplex: {}
+    conditions:
+    - label: integrationCW
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 0d07ac51-fbfe-44fe-8edb-3314c9995ee0
+    - label: trailMisconfig
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 38e3d3cf-b694-46ec-8bd2-8f02194b5040
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 36a5345a-230d-438e-a04c-a287a513e3dc
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: f1d05ce7-d65b-425d-8b66-9d565b77f557
+    type: condition
+    task:
+      id: f1d05ce7-d65b-425d-8b66-9d565b77f557
+      version: -1
+      name: Is there a policy to remediate?
+      description: Verify that a Prisma Cloud policy ID exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 5a898bb5-6f8e-4c9f-8dd9-d064da965868
+    type: playbook
+    task:
+      id: 5a898bb5-6f8e-4c9f-8dd9-d064da965868
+      version: -1
+      name: Prisma Cloud Remediation - AWS CloudTrail Trail Misconfiguration
+      description: ""
+      playbookName: Prisma Cloud Remediation - AWS CloudTrail Trail Misconfiguration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      policyId:
+        complex:
+          root: inputs.policyId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_14_trailMisconfig": 0.51,
+      "13_3_yes": 0.29,
+      "13_6_#default#": 0.27,
+      "1_13_yes": 0.56,
+      "1_8_#default#": 0.12,
+      "3_10_yes": 0.48,
+      "3_5_#default#": 0.48,
+      "5_10_Yes": 0.51,
+      "5_6_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1575,
+        "width": 1220,
+        "x": -150,
+        "y": -190
+      }
+    }
+  }
+inputs:
+- key: AutoUpdateCloudTrail
+  value:
+    simple: "no"
+  required: false
+  description: Update AWS CloudTrail automatically?
+- key: policyId
+  value:
+    complex:
+      root: incident
+      accessor: labels.policy
+      transformers:
+      - operator: ParseJSON
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: policyId
+  required: false
+  description: Get the Prisma Cloud policy ID.
+outputs: []
+tests:
+- No Test
