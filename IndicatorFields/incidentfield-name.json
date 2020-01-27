@@ -1,7 +1,7 @@
 {
   "sortValues": null,
   "closeForm": false,
-  "cliName": "name",
+  "cliName": "registryName",
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
