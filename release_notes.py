@@ -17,8 +17,6 @@ from Tests.test_utils import print_error, print_warning, get_last_release_versio
 from Tests.scripts.validate_files import FilesValidator
 
 CONTENT_LIB_PATH = "./"
-# minimal server version that release notes will be included for
-MINIMAL_SERVER_VERSION = "4.5.0"
 
 NEW_RN = "New"
 MODIFIED_RN = "Improved"
@@ -158,10 +156,12 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                     from_version = cnt.get("fromversion") or cnt.get("fromVersion")
                     to_version = cnt.get("toversion") or cnt.get("toVersion")
                     if from_version is not None and server_version_compare(current_server_version, from_version) < 0:
-                        print(f'Skipped because of version greater than max server version: {from_version}')
+                        print(f'Skipped because from version: {from_version}'
+                              f' is greater than current server version: {current_server_version}')
                         continue
-                    if to_version is not None and server_version_compare(to_version, MINIMAL_SERVER_VERSION) < 0:
-                        print(f'Skipped because of version small than min server version: {to_version}')
+                    if to_version is not None and server_version_compare(to_version, current_server_version) < 0:
+                        print(f'Skipped because of to version" {to_version}' 
+                              f' is smaller: than current server version: {current_server_version}')
                         continue
                     if title_prefix == NEW_RN:
                         ans = self.added_release_notes(path, cnt)
