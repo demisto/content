@@ -223,6 +223,7 @@ def test_upload_indicators_command_indicators_found(mocker):
     mocker.patch.object(qradar, 'get_indicators_list', return_value=INDICATORS_LIST)
     mocker.patch.object(qradar, 'get_reference_by_name', return_value=RAW_RESPONSE)
     mocker.patch.object(qradar, 'upload_indicators_list_request', return_value=RAW_RESPONSE)
+    mocker.patch.object(qradar, 'enrich_reference_set_result', return_value=REF_SET_DATA)
     res = qradar.upload_indicators_command()
     assert res[1]['name'] == 'test_ref_set'
     assert res[1]['number_of_elements'] == 42
@@ -507,13 +508,6 @@ INCIDENT_RESULT = {
                "{\"type_name\": \"FortiGate\", \"type_id\": 73, \"id\": 2439, \"name\": \"FortiGate 02\"}]}"
 }
 
-
-REF_SET_DATA = {
-    'name': 'test_ref_set',
-    'number_of_elements': 42,
-    'element_type': 'ALN',
-    'timeout_type': 'UNKNOWN'
-}
 INDICATORS_LIST = [{'indicator_type': 'File', 'value': 'file_test'},
                    {'indicator_type': 'Domain', 'value': 'domain.com'}]
 
@@ -524,19 +518,27 @@ RAW_RESPONSE = {
     'number_of_elements': 42,
     'name': 'test_ref_set'
 }
+REF_SET_DATA = {
+    'TimeoutType': 'UNKNOWN',
+    'ElementType': 'ALN',
+    'CreationTime': '00000',
+    'NumberOfElements': 42,
+    'Name': 'test_ref_set'
+}
+
 
 REF_SET_DATA_NO_INDICATORS = {
-    'name': 'test_ref_set',
-    'number_of_elements': 0,
-    'element_type': 'ALN',
-    'timeout_type': 'UNKNOWN',
+    'Name': 'test_ref_set',
+    'NumberOfElements': 0,
+    'ElementType': 'ALN',
+    'TimeoutType': 'UNKNOWN',
 }
 
 
 RAW_RESPONSE_NO_INDICATORS = {
-    'timeout_type': 'UNKNOWN',
-    'element_type': 'ALN',
-    'creation_time': '00000',
-    'number_of_elements': 0,
-    'name': 'test_ref_set'
+    'TimeoutType': 'UNKNOWN',
+    'ElementType': 'ALN',
+    'CreationTime': '00000',
+    'NumberOfElements': 0,
+    'Name': 'test_ref_set'
 }
