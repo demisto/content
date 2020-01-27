@@ -55,7 +55,7 @@ configuration:
   required: false
   type: 8
 description: This integration provides External Dynamic List (EDL) as a service for
-  the system indicators (Outbound feed)
+  the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service
 name: EDL
 script:
