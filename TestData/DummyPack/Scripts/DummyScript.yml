@@ -1,7 +1,7 @@
 commonfields:
-  id: EntryWidgetNumberHostsXDR
+  id: DummyScript
   version: -1
-name: EntryWidgetNumberHostsXDR
+name: DummyScript
 script: ''
 type: python
 tags:
