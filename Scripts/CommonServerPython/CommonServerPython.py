@@ -4,16 +4,17 @@ Please notice that to add custom common code, add it to the CommonServerUserPyth
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
 from __future__ import print_function
-import socket
-import time
+
+import base64
 import json
-import sys
+import logging
 import os
 import re
-import base64
-import logging
-from collections import OrderedDict
+import socket
+import sys
+import time
 import xml.etree.cElementTree as ET
+from collections import OrderedDict
 from datetime import datetime, timedelta
 
 import demistomock as demisto
@@ -634,6 +635,23 @@ def b64_encode(text):
     if IS_PY3:
         res = res.decode('utf-8')  # type: ignore
     return res
+
+
+def encode_string_results(text):
+    """
+    Encode string as utf-8, if any unicode character exists.
+
+    :param text: string to encode
+    :type text: str
+    :return: encoded string
+    :rtype: str
+    """
+    if not isinstance(text, STRING_OBJ_TYPES):
+        return text
+    try:
+        return str(text)
+    except UnicodeEncodeError as exception:
+        return text.encode("utf8", "replace")
 
 
 class IntegrationLogger(object):
@@ -2462,6 +2480,7 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
 
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.
