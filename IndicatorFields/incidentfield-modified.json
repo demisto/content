@@ -1,7 +1,7 @@
 {
   "sortValues": null,
   "closeForm": false,
-  "cliName": "CVEModified",
+  "cliName": "cvemodified",
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
