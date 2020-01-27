@@ -94,7 +94,7 @@
                 ]
             }
         },
-        "indicatorIdentification": {
+        "indicatorid": {
             "simple": "",
             "complex": {
                 "root": "Host",
