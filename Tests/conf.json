@@ -2125,7 +2125,7 @@
             "fromversion": "4.5.0"
         },
         {
-            "playbookID": "IsInternalHostName",
+            "playbookID": "IsInternalHostName Test",
             "fromversion": "4.5.0"
         },
         {
