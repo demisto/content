@@ -64,6 +64,16 @@ def create_auth(api_key):
     return nonce, timestamp, m.hexdigest()
 
 
+def clear_trailing_whitespace(res):
+    index = 0
+    while index < len(res):
+        for key, value in res[index].items():
+            if isinstance(value, str):
+                res[index][key] = value.rstrip()
+        index += 1
+    return res
+
+
 class Client(BaseClient):
     def test_module(self, first_fetch_time):
         """
@@ -690,7 +700,8 @@ def get_incident_extra_data_command(client, args):
 
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
-    alerts = raw_incident.get('alerts').get('data')
+    raw_alerts = raw_incident.get('alerts').get('data')
+    alerts = clear_trailing_whitespace(raw_alerts)
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
