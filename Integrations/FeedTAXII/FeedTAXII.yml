@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+fromversion: 5.5.0
 commonfields:
   id: TAXIIFeed
   version: -1
@@ -36,6 +37,12 @@ configuration:
   name: expirationInterval
   required: false
   type: 1
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list will be ignored for this feed.
 - defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
