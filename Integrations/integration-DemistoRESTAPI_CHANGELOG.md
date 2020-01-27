@@ -1,2 +1,2 @@
 ## [Unreleased]
-Description improvements.
+Improved descriptions and fixed a typo.
