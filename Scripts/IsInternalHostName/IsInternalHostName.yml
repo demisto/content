@@ -1,0 +1,42 @@
+commonfields:
+  id: IsInternalHostName
+  version: -1
+name: IsInternalHostName
+script: ''
+type: python
+tags:
+- Utility
+comment: Returns yes if the host name provided matches the organizations internal
+  nameing convenstion or has the domain suffix.
+enabled: true
+args:
+- name: hostName
+  required: true
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - ""
+  - ""
+  description: Hostname to check. Value can be comma delimited hosts
+  isArray: true
+- name: internalRegex
+  description: The regex pattern for the organizations host name for example \w\w\w\d|\w\w\w\d\.
+    for hosts that look like pcx1 or pcx.
+- name: domainName
+  required: true
+  description: The domain name for the organization. For example bla.com
+outputs:
+- contextPath: Endpoint.Hostname
+  description: The host name
+  type: string
+- contextPath: Endpoint.IsInternal
+  description: Does the given value matchs the organizations nameing convenstion (could
+    be 'true' or 'false')
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+runas: DBotWeakRole
+
+tests:
+- IsInternalHostName Test
