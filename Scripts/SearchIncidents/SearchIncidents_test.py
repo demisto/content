@@ -38,7 +38,7 @@ data_test_is_valid_args = [
 def test_is_valid_args(_input, expected_output):
     try:
         output = is_valid_args({'test': _input})
-    except SystemExit as system_exit:
-        output = system_exit.code == 1
+    except DemistoException:
+        output = False
 
     assert output == expected_output, f'is_valid_args({_input}) returns: {output}. expected: {expected_output}'
