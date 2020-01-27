@@ -1,6 +1,9 @@
 import json
+import logging
+import uuid
 
 integrationContext = {}
+is_debug = False  # type: bool
 
 exampleIncidents = [
     {
@@ -376,6 +379,8 @@ exampleDemistoUrls = {
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
 
+callingContext = {}
+
 
 def params():
     return {}
@@ -390,7 +395,7 @@ def command():
 
 
 def log(msg):
-    print (msg)
+    logging.getLogger().info(msg)
 
 
 def get(obj, field):
@@ -413,7 +418,7 @@ def context():
 
 
 def uniqueFile():
-    return "4fa3f70d-2d5d-4482-ab73-43dc24063a18"
+    return str(uuid.uuid4())
 
 
 def getLastRun():
@@ -429,7 +434,8 @@ def info(*args):
 
 
 def error(*args):
-    log(args)
+    # print to stdout so pytest fail if not mocked
+    print(args)
 
 
 def debug(*args):
@@ -443,11 +449,11 @@ def getAllSupportedCommands():
 def results(results):
     if type(results) is dict and results.get("contents"):
         results = results.get("contents")
-    print ("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
+    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
 
 
 def credentials(credentials):
-    print ("credentials: {}".format(credentials))
+    log("credentials: {}".format(credentials))
 
 
 def getFilePath(id):
@@ -487,10 +493,24 @@ def getIntegrationContext():
     return integrationContext
 
 
-def incidents(incidents):
-    return results(
-        {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
-    )
+def incidents(incidents=None):
+    """
+    In Scripts this returns the `Incidents` list from the context
+
+    In integrations this is used to return incidents to the server
+
+    Arguments:
+        incidents {list with objects} -- List with incident objects
+
+    Returns:
+        [type] -- [description]
+    """
+    if incidents is None:
+        return exampleIncidents[0]['Contents']['data']
+    else:
+        return results(
+            {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
+        )
 
 
 def setContext(contextPath, value):
@@ -504,6 +524,45 @@ def demistoUrls():
 def appendContext(key, data, dedup=False):
     return None
 
+
 def dt(obj=None, trnsfrm=None):
     return ""
 
+
+def addEntry(id, entry, username=None, email=None, footer=None):
+    return ""
+
+
+def mirrorInvestigation(id, mirrorType, autoClose=False):
+    return ""
+
+
+def updateModuleHealth(error):
+    return ""
+
+def directMessage(message, username = None, email = None, anyoneCanOpenIncidents = None):
+    return ""
+
+def createIncidents(incidents, lastRun = None, userID = None):
+    return []
+
+def findUser(username = None, email = None):
+    return {}
+
+def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
+    return {}
+
+def demistoVersion():
+    return {}
+
+def integrationInstance():
+    return ""
+
+def createIndicators(indicators_batch):
+    return ""
+
+def findIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '', value = ''):
+    return {}
+
+def getIndexHash():
+    return ''

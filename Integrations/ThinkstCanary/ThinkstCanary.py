@@ -62,8 +62,18 @@ def http_request(method, url, params=None):
     )
 
     if not res.ok:
-        demisto.debug(res.text)
-        return_error('Could not execute the request')
+        try:
+            res_json = res.json()
+            if 'message' in res_json:
+                LOG(str(res.text))
+                LOG(res_json.get('message'))
+                return_error(res_json.get('message'))
+        except ValueError:
+            LOG(str(res.text))
+            return_error(str(res.text))
+        except Exception as ex:
+            LOG(res.text)
+            return_error(str(ex))
 
     try:
         res_json = res.json()
@@ -381,5 +391,5 @@ try:
         alert_status_command()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents_command()
-except Exception, e:
+except Exception as e:
     return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))

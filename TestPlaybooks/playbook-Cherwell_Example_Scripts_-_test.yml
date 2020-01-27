@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 674cdb44-008e-4eeb-8165-d51d29d15c25
+    taskid: dae78645-0ec8-4d24-8ec8-6d8cdb244f5c
     type: start
     task:
-      id: 674cdb44-008e-4eeb-8165-d51d29d15c25
+      id: dae78645-0ec8-4d24-8ec8-6d8cdb244f5c
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 040357c3-b866-4889-8a8e-d4174775b2a3
+    taskid: 02688c4e-0a73-466a-8880-16fe64babbc3
     type: regular
     task:
-      id: 040357c3-b866-4889-8a8e-d4174775b2a3
+      id: 02688c4e-0a73-466a-8880-16fe64babbc3
       version: -1
       name: Cherwell Create Incident - script
       description: This script is an example script of how to create an incident in
@@ -69,10 +69,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: bda86488-fd9b-4df3-8414-32d5b610381a
+    taskid: 29f49fcc-09fb-4b26-8b6b-fb2e7fbe9763
     type: regular
     task:
-      id: bda86488-fd9b-4df3-8414-32d5b610381a
+      id: 29f49fcc-09fb-4b26-8b6b-fb2e7fbe9763
       version: -1
       name: Cherwell Create Task - command
       description: Create a business object
@@ -103,10 +103,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: dad626cf-5a97-4b36-8af5-417d4e0cce91
+    taskid: d4029e9f-00d7-4519-889b-a33df5d2c4c9
     type: regular
     task:
-      id: dad626cf-5a97-4b36-8af5-417d4e0cce91
+      id: d4029e9f-00d7-4519-889b-a33df5d2c4c9
       version: -1
       name: Cherwell Get Incident
       description: This script is an example script of how to retreive an incident
@@ -139,10 +139,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: af10d747-90fc-4739-8d73-fb185b562ebe
+    taskid: b01c3e70-66ae-4f27-80d6-950bba2fda78
     type: regular
     task:
-      id: af10d747-90fc-4739-8d73-fb185b562ebe
+      id: b01c3e70-66ae-4f27-80d6-950bba2fda78
       version: -1
       name: Cherwell Update Incident
       description: This script is an example script of how to update an incident in
@@ -180,10 +180,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: e76a825b-0d16-4b5e-81e5-ca0ae2ed1542
+    taskid: e5ac0def-5ae1-4ee8-8998-5a96b229eb6b
     type: regular
     task:
-      id: e76a825b-0d16-4b5e-81e5-ca0ae2ed1542
+      id: e5ac0def-5ae1-4ee8-8998-5a96b229eb6b
       version: -1
       name: Cherwell Query Incident
       description: This script is an example script of how to query incidents from
@@ -200,17 +200,7 @@ tasks:
       - "16"
     scriptarguments:
       query:
-        complex:
-          root: Example scripts
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: '[["Priority","lt","3"],["Description","contains","'
-              suffix:
-                value:
-                  simple: '"]]'
+        simple: '[["Priority","lt","3"],["Description","contains","Example scripts"]]'
     separatecontext: false
     view: |-
       {
@@ -224,10 +214,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 5ae9173e-b57f-4db3-8b5c-41a88e1d8b44
+    taskid: af82e97d-2eff-42af-8168-6ea751a23b73
     type: condition
     task:
-      id: 5ae9173e-b57f-4db3-8b5c-41a88e1d8b44
+      id: af82e97d-2eff-42af-8168-6ea751a23b73
       version: -1
       name: Validate Create Incident
       type: condition
@@ -262,10 +252,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: aa4ec6fd-d256-4577-89f4-8d364bb9fef9
+    taskid: 0500316a-49e0-45cc-8e53-83050fc7c5d0
     type: condition
     task:
-      id: aa4ec6fd-d256-4577-89f4-8d364bb9fef9
+      id: 0500316a-49e0-45cc-8e53-83050fc7c5d0
       version: -1
       name: Validate Get Incident
       type: condition
@@ -347,10 +337,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 031a8f28-32ff-4536-84dd-ee82379a92c0
+    taskid: cfe5411a-35b4-443d-8cae-43c5811c4a6d
     type: regular
     task:
-      id: 031a8f28-32ff-4536-84dd-ee82379a92c0
+      id: cfe5411a-35b4-443d-8cae-43c5811c4a6d
       version: -1
       name: Cherwell Incident Own Task
       description: This script is an example script of how to link an Incident to
@@ -383,10 +373,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: c780343b-5f25-4e25-836c-59fca30748d9
+    taskid: db216a1e-8b39-4add-8268-0e8b528dd5c3
     type: regular
     task:
-      id: c780343b-5f25-4e25-836c-59fca30748d9
+      id: db216a1e-8b39-4add-8268-0e8b528dd5c3
       version: -1
       name: Cherwell Get Task
       description: Get a business objects by an id
@@ -417,10 +407,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: f445c4b8-c7c7-4fa2-8885-b0cf07dce6bb
+    taskid: 24f8e464-e893-48ef-8fda-8316f96a18d2
     type: regular
     task:
-      id: f445c4b8-c7c7-4fa2-8885-b0cf07dce6bb
+      id: 24f8e464-e893-48ef-8fda-8316f96a18d2
       version: -1
       name: Cherwell Incident Unlink Task
       description: This script is an example script of how to unlink a Task from am
@@ -453,10 +443,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 8ffa243e-bbe0-4394-874b-8dcaf5a13838
+    taskid: 702740e9-6931-46af-8280-47589da43934
     type: title
     task:
-      id: 8ffa243e-bbe0-4394-874b-8dcaf5a13838
+      id: 702740e9-6931-46af-8280-47589da43934
       version: -1
       name: Done
       type: title
@@ -475,10 +465,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 64f296cd-acc4-44af-87a7-9c5b75da8d5f
+    taskid: c5909faf-c6b1-4f88-8848-bcc815c99baa
     type: regular
     task:
-      id: 64f296cd-acc4-44af-87a7-9c5b75da8d5f
+      id: c5909faf-c6b1-4f88-8848-bcc815c99baa
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -509,10 +499,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 1a6a733b-556e-4b5f-8364-064d7207cfb7
+    taskid: f9711ad0-98a6-4beb-83e9-e6fe37e6d035
     type: condition
     task:
-      id: 1a6a733b-556e-4b5f-8364-064d7207cfb7
+      id: f9711ad0-98a6-4beb-83e9-e6fe37e6d035
       version: -1
       name: Validate Incident Own Task
       type: condition
@@ -562,10 +552,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 055cd3f0-fb15-4669-8abc-525f7d2694e1
+    taskid: 1b2e85b6-a871-4e4d-8a55-3dc9c941c02f
     type: condition
     task:
-      id: 055cd3f0-fb15-4669-8abc-525f7d2694e1
+      id: 1b2e85b6-a871-4e4d-8a55-3dc9c941c02f
       version: -1
       name: Validate Get Incident
       type: condition
@@ -650,10 +640,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: b49c5447-bb74-4e11-8153-fbcbc1e6efd3
+    taskid: 53f03aad-53ef-4baf-88ff-64c38e463bd4
     type: condition
     task:
-      id: b49c5447-bb74-4e11-8153-fbcbc1e6efd3
+      id: 53f03aad-53ef-4baf-88ff-64c38e463bd4
       version: -1
       name: Validate Incident Unlink Task
       type: condition
@@ -684,10 +674,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 21e9cbd7-76c2-4c5a-858b-9cee51d5a983
+    taskid: ae8e0f4b-0093-4a23-8425-11bbb6937570
     type: regular
     task:
-      id: 21e9cbd7-76c2-4c5a-858b-9cee51d5a983
+      id: ae8e0f4b-0093-4a23-8425-11bbb6937570
       version: -1
       name: 'Delete Incident '
       description: Delete a given business object
@@ -718,10 +708,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 570eacbd-c602-41bc-8fa7-39b774643eb0
+    taskid: bfa4a8ff-6ba8-45fa-822e-5e9e98ae5ee2
     type: regular
     task:
-      id: 570eacbd-c602-41bc-8fa7-39b774643eb0
+      id: bfa4a8ff-6ba8-45fa-822e-5e9e98ae5ee2
       version: -1
       name: 'Delete Task '
       description: Delete a given business object
@@ -752,10 +742,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 6eb2e4b9-378b-4256-877b-712bd7d862cb
+    taskid: 3d2c94cf-3b01-4832-8ce7-1de36d94ca65
     type: regular
     task:
-      id: 6eb2e4b9-378b-4256-877b-712bd7d862cb
+      id: 3d2c94cf-3b01-4832-8ce7-1de36d94ca65
       version: -1
       name: Cherwell Get Task
       description: Get a business objects by an id

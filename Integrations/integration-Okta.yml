@@ -74,10 +74,10 @@ script:
         'manager'
     ];
 
-    var API_POSTFIX = 'api/v1/'
+    var API_POSTFIX = 'api/v1/';
     var SERVER_URL = fixUrl(params.url) + API_POSTFIX;
     var DEFAULT_SEARCH_LIMIT = 200;
-    var CLIENT_USERAGENT = 'Demisto/1.0'
+    var CLIENT_USERAGENT = 'Demisto/1.0';
 
     function createReadableLog(log){
         var logObject = {};
@@ -239,8 +239,8 @@ script:
             }
         } else {
             md += 'ID|Login|First Name|Last Name|Mobile Phone|Last Login|Status\n-|-|-|-|-|-|-\n';
-            for (var i=0;i<users.length;i++) {
-                user = users[i];
+            for (var j=0; j<users.length; j++) {
+                user = users[j];
                 md += user.id + '|';
                 md += user.profile.login + '|';
                 md += user.profile.firstName+'|';
@@ -261,7 +261,7 @@ script:
         }
         for (var i=0;i<users.length;i++) {
             var user=users[i];
-            var ecItem={id:user.id, ID:user.id,Type:'Okta'};
+            var ecItem={id:user.id, ID:user.id, Type:'Okta'};
             if (user.profile.firstName || user.profile.lastName) {
                 var displayName='';
                 displayName += (user.profile.firstName)? user.profile.firstName + ' ' : '';
@@ -273,6 +273,9 @@ script:
             }
             if (user.profile.login) {
                 ecItem.Username = user.profile.login;
+            }
+            if (user.status) {
+                ecItem.Status = user.status;
             }
             if (user.objectClass) {
                 ecItem.Groups = user.objectClass;
@@ -327,7 +330,7 @@ script:
         if(pagination){
             return {
                 body: JSON.parse(res.Body),
-                link: res.Headers['Link']
+                link: res.Headers.Link
             };
         }
 
@@ -474,7 +477,7 @@ script:
         };
 
         var md = '### Okta groups for user ' + args.username + '\n';
-        md += 'User ID: ' + userId + '\n';;
+        md += 'User ID: ' + userId + '\n';
         md += tableToMarkdown('Groups', hr);
         return {
             Type: entryTypes.note,
@@ -585,7 +588,7 @@ script:
     }
 
     function getGroupMembers(groupId, limit){
-        queryParams = {}
+        queryParams = {};
 
         if(limit){
             queryParams.limit = limit;
@@ -791,7 +794,7 @@ script:
             EntryContext: {
                 'Account(val.ID===obj.ID)': account
             }
-        }
+        };
     }
 
     function getUserFactors(userId){
@@ -964,7 +967,7 @@ script:
         var queryParams = {};
 
         if(filter){
-            queryParams.filter =  encodeURIComponent(filter);
+            queryParams.filter =  filter;
         }
 
         if(query){
@@ -987,7 +990,7 @@ script:
             queryParams.limit = limit;
         }
 
-        return getPagedResults('logs', queryParams)
+        return getPagedResults('logs', queryParams);
     }
 
     function getFailedLoginsCommand(){
@@ -1210,7 +1213,7 @@ script:
     - name: username
       required: true
       default: true
-      description: Username in Okta to unlock
+      description: Unlocks a specified user.
     description: Unlock user
     execution: true
   - name: okta-deactivate-user
@@ -1218,7 +1221,7 @@ script:
     - name: username
       required: true
       default: true
-      description: Username in Okta to deactivate
+      description: Deactivates a specified user.
     description: Deactivate user
     execution: true
   - name: okta-activate-user
@@ -1227,7 +1230,7 @@ script:
       required: true
       default: true
       description: Username in Okta to activate
-    description: Activate user
+    description: Activates a specific user.
     execution: true
   - name: okta-suspend-user
     arguments:
@@ -1243,63 +1246,63 @@ script:
     - name: username
       required: true
       default: true
-      description: Username in Okta to unsuspend
-    description: Unsuspends a user and returns them to the ACTIVE state.  This operation
+      description: Okta username you want to change to ACTIVE status.
+    description: Returns a user to ACTIVE status.  This operation
       can only be performed on users that have a SUSPENDED status.
     execution: true
   - name: okta-get-user-factors
     arguments:
     - name: userId
-      description: The user Id
+      description: User ID of the user in which to get enrolled factors.
     - name: username
       description: The user name
     outputs:
     - contextPath: Account.ID
-      description: Okta account ID
+      description: Okta account ID.
       type: string
     - contextPath: Account.Factor.ID
-      description: Okta account factor ID
+      description: Okta account factor ID.
       type: string
     - contextPath: Account.Factor.FactorType
-      description: Okta account factor type
+      description: Okta account factor type.
       type: string
     - contextPath: Account.Factor.Provider
-      description: Okta account factor provider
+      description: Okta account factor provider.
       type: string
     - contextPath: Account.Factor.Status
-      description: Okta account factor status
+      description: Okta account factor status.
       type: string
     - contextPath: Account.Factor.Profile
-      description: Okta account factor profile
+      description: Okta account factor profile.
       type: string
-    description: Enumerates all the enrolled factors for the specified user.
+    description: Returns all the enrolled factors for the specified user.
   - name: okta-verify-push-factor
     arguments:
     - name: userId
       required: true
-      description: The id of the user to challenge
+      description: The id of the user to verify.
     - name: factorId
       required: true
-      description: The push factor id
+      description: The push factor ID.
     outputs:
     - contextPath: Account.ID
-      description: Okta user ID
+      description: Okta user ID.
       type: string
     - contextPath: Account.VerifyPushResult
-      description: Okta user verify push factor result
+      description: Okta user push factor result.
       type: string
-    description: Creates and verifies a push factor for a specified user.
+    description: Enrolls and verifies a push factor for a specified user.
     execution: true
   - name: okta-reset-factor
     arguments:
     - name: userId
-      description: The user id
+      description: The user ID.
     - name: username
-      description: The user name
+      description: The user name.
     - name: factorId
       required: true
-      description: The id of the factor to reset
-    description: Unenrolls an existing factor for the specified user, allowing the
+      description: The ID of the factor to reset.
+    description: Unenrolls an existing factor for the specified user, which enables the
       user to enroll a new factor.
     execution: true
   - name: okta-get-groups
@@ -1307,192 +1310,192 @@ script:
     - name: username
       required: true
       default: true
-      description: Username in Okta to get groups for
+      description: Username in Okta in whih to get groups.
     outputs:
     - contextPath: Account.Group
-      description: Okta groups the account is associated with
+      description: Okta groups in which the account is associated.
     - contextPath: Account.ID
-      description: Okta account ID
+      description: Okta account ID.
       type: string
     - contextPath: Account.Type
-      description: Account type - Okta
+      description: Account type - Okta.
       type: string
     - contextPath: Account.Group.ID
-      description: Unique key for group
+      description: Unique key for the group.
       type: string
     - contextPath: Account.Group.Created
-      description: Timestamp when group was created
+      description: Timestamp when the group was created.
       type: date
     - contextPath: Account.Group.ObjectClass
-      description: Determines the group’s profile
+      description: Determines the group’s profile.
       type: string
     - contextPath: Account.Group.LastUpdated
-      description: Timestamp when group’s profile was last updated
+      description: Timestamp when the group’s profile was last updated.
       type: date
     - contextPath: Account.Group.LastMembershipUpdated
-      description: Timestamp when group’s memberships were last updated
+      description: Timestamp when the group’s memberships were last updated.
       type: date
     - contextPath: Account.Group.Type
-      description: Determines how a group’s profile and memberships are managed
+      description: Determines how a group’s profile and memberships are managed.
       type: string
     - contextPath: Account.Group.Name
-      description: Name of the group
+      description: Name of the group.
       type: string
     - contextPath: Account.Group.Description
-      description: Description of the group
+      description: Description of the group.
       type: string
-    description: Get all user groups
+    description: Returns all user groups associated with a specified user.
   - name: okta-set-password
     arguments:
     - name: username
       required: true
       default: true
-      description: Username in Okta to set the password for
+      description: Okta username in which to set the password.
     - name: password
       required: true
-      description: The new password to set for the user
-    description: Creates a user without a recovery question & answer  The new user
-      is able to login immediately after activation with the assigned password. This
-      flow is common when developing a custom user registration experience.
+      description: The new password to set for the user.
+    description: Creates a user without a recovery question and answer requirement. The new user
+      can log in after activation with the assigned password. 
     execution: true
   - name: okta-search
     arguments:
     - name: term
       required: true
       default: true
-      description: Term to search for, this term can be first name, last name or email
+      description: Term in which to search. This term can be a first name, last name, or email.
     - name: limit
-      description: Max number of results to return (defaults to 200)
+      description: Max number of results to return (defaults to 200).
     - name: verbose
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Print all details of users that match search term
+      description: Returns details of users that match the found term.
     outputs:
     - contextPath: Account.ID
-      description: Okta account IDs returned by search
+      description: Okta account IDs returned by search.
       type: string
     - contextPath: Account.Username
-      description: Okta account usernames returned by search
+      description: Okta account usernames returned by search.
       type: string
     - contextPath: Account.Email
-      description: Okta account emails returned by search
+      description: Okta account emails returned by search.
       type: string
     - contextPath: Accout.DisplayName
-      description: Okta account display names returned by search
+      description: Okta account display names returned by search.
       type: string
     - contextPath: Account.Type
-      description: Account type returned by search - Okta
+      description: Account type returned by search - Okta.
       type: string
     description: Search for Okta users
   - name: okta-get-user
     arguments:
     - name: username
-      description: Username of requested user, please note that this will not work
-        for usernames that contains a '/' character
+      description: Returns information for a specified user. You cannot use usernames that contains a '/' character.
     - name: userid
-      description: User ID of requested user
+      description: User ID of requested user.
     - name: verbose
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Print all details of user
+      description: Returns all details of the user.
     outputs:
     - contextPath: Account.ID
-      description: Okta account ID
+      description: Okta account ID.
       type: string
     - contextPath: Account.Email
-      description: Okta account email
+      description: Okta account email.
       type: string
     - contextPath: Account.Username
-      description: Okta account username
+      description: Okta account username.
       type: string
     - contextPath: Account.DisplayName
-      description: Okta account display name
+      description: Okta account display name.
       type: string
     - contextPath: Account.Type
-      description: Account type - Okta
+      description: Account type - Okta.
       type: string
-    description: Fetches a specific user given you know the user’s login, please note
-      that one of the parameters bellow is mandatory.
+    - contextPath: Account.Status
+      description: Okta account status.
+      type: string
+    description: Fetches information for a specific user. You must enter one or more parameters for the command to run.
   - name: okta-create-user
     arguments:
     - name: firstName
       required: true
-      description: Given name of the user (givenName)
+      description: First name of the user (givenName).
     - name: lastName
       required: true
-      description: Family name of the user (familyName)
+      description: Family name of the user (familyName).
     - name: email
       required: true
-      description: primary email address of user
+      description: primary Email address of the user.
     - name: login
       required: true
-      description: Unique identifier for the user (username)
+      description: Unique identifier for the user (username).
     - name: secondEmail
-      description: Secondary email address of user typically used for account recovery
+      description: Secondary email address of user. Usually for account recovery.
     - name: middleName
-      description: "Middle name(s) of the user\t"
+      description: Middle name(s) of the user.
     - name: honorificPrefix
-      description: Honorific prefix(es) of the user, or title in most Western languages
+      description: Honorific prefix(es) of the user, or title in most Western languages. Supports multiple input.
     - name: honorificSuffix
-      description: honorific suffix(es) of the user
+      description: honorific suffix(es) of the user. Supports multuiple input.
     - name: title
-      description: User’s title, such as “Vice President”
+      description: User’s title. For example, Vice President.
     - name: displayName
-      description: Name of the user, suitable for display to end-users
+      description: Name of the user, suitable for display to end users.
     - name: nickName
-      description: Casual way to address the user in real life
+      description: Casual way to address the user.
     - name: profileUrl
-      description: Url of user’s online profile (e.g. a web page)
+      description: Url of user online profile. For example, a web page.
     - name: primaryPhone
-      description: "Primary phone number of user such as home number\t"
+      description: Primary phone number of user.
     - name: mobilePhone
-      description: mobile phone number of user
+      description: Mobile phone number of user.
     - name: streetAddress
-      description: Full street address component of user’s address
+      description: Full street address component of user’s address.
     - name: city
-      description: City or locality component of user’s address (locality)
+      description: City or locality component of user’s address (locality).
     - name: state
-      description: State or region component of user’s address (region)
+      description: State or region component of user’s address (region).
     - name: zipCode
-      description: Zipcode or postal code component of user’s address (postalCode)
+      description: Zipcode or postal code component of user’s address (postalCode).
     - name: countryCode
-      description: Country name component of user’s address (country)
+      description: Country name component of user’s address (country).
     - name: postalAddress
-      description: Mailing address component of user’s address
+      description: Mailing address component of user’s address.
     - name: preferredLanguage
-      description: User’s preferred written or spoken languages
+      description: User’s preferred written or spoken languages.
     - name: locale
       description: User’s default location for purposes of localizing items such as
         currency, date time format, numerical representations, etc.
     - name: timezone
-      description: User’s time zone
+      description: User time zone.
     - name: userType
       description: Used to identify the organization to user relationship such as
-        “Employee” or “Contractor”
+        “Employee” or “Contractor”.
     - name: employeeNumber
-      description: Organization or company assigned unique identifier for the user
+      description: Organization or company assigned unique identifier for the user.
     - name: costCenter
-      description: name of a cost center assigned to
+      description: name of a cost center assigned to.
     - name: organization
-      description: Name of user’s organization
+      description: Name of user’s organization.
     - name: division
-      description: Name of user’s division
+      description: Name of user’s division.
     - name: department
-      description: Name of user’s department
+      description: Name of user’s department.
     - name: managerId
-      description: ID of a user’s manager
+      description: ID of a user’s manager.
     - name: manager
-      description: DisplayName of the user’s manager
+      description: DisplayName of the user’s manager.
     - name: password
-      description: Password for new user
+      description: Password for new user.
     - name: passwordQuestion
-      description: Password question for new user
+      description: Password question for new user.
     - name: passwordAnswer
-      description: Password answer for question supplied
+      description: Password answer for question supplied.
     - name: providerType
       auto: PREDEFINED
       predefined:
@@ -1503,27 +1506,27 @@ script:
       - SOCIAL
       description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
     - name: providerName
-      description: Name of provider
+      description: Name of provider.
     - name: groupIds
       description: Ids of groups that user will be immediately added to at time of
-        creation (Do not include default group)
+        creation (Do not include default group).
     - name: activate
-      description: Executes activation lifecycle operation when creating the user
+      description: Activates lifecycle operation when creating the user.
     outputs:
     - contextPath: Account.ID
-      description: Created okta account ID
+      description: Created okta account ID.
       type: string
     - contextPath: Account.Email
-      description: Created okta account email
+      description: Created okta account email.
       type: string
     - contextPath: Account.Username
-      description: Created okta account username
+      description: Created okta account username.
       type: string
     - contextPath: Account.DisplayName
-      description: Created okta account display name
+      description: Created okta account display name.
       type: string
     - contextPath: Account.Type
-      description: Type of create account - Okta
+      description: Type of create account - Okta.
       type: string
     description: Creates a new user with an option of setting password, recovery question
       and answer. The new user will immediately be able to login after activation
@@ -1533,24 +1536,24 @@ script:
   - name: okta-update-user
     arguments:
     - name: firstName
-      description: Given name of the user (givenName)
+      description: First name of the user (givenName).
     - name: lastName
-      description: Family name of the user (familyName)
+      description: Family name of the user (familyName).
     - name: email
-      description: primary email address of user
+      description: Primary Email address of user.
     - name: username
       required: true
-      description: Unique identifier for the user (login)
+      description: Unique identifier for the user (login).
     - name: secondEmail
-      description: Secondary email address of user typically used for account recovery
+      description: Secondary email address of user typically used for account recovery.
     - name: middleName
-      description: "Middle name(s) of the user\t"
+      description: Middle name(s) of the user.
     - name: honorificPrefix
       description: Honorific prefix(es) of the user, or title in most Western languages
     - name: honorificSuffix
       description: honorific suffix(es) of the user
     - name: title
-      description: User’s title, such as “Vice President”
+      description: User’s title. For example, Vice President.
     - name: displayName
       description: Name of the user, suitable for display to end-users
     - name: nickName
@@ -1558,11 +1561,11 @@ script:
     - name: profileUrl
       description: Url of user’s online profile (e.g. a web page)
     - name: primaryPhone
-      description: "Primary phone number of user such as home number\t"
+      description: Primary phone number of user.
     - name: mobilePhone
-      description: mobile phone number of user
+      description: Mobile phone number of user.
     - name: streetAddress
-      description: Full street address component of user’s address
+      description: Full street address component of user’s address.
     - name: city
       description: City or locality component of user’s address (locality)
     - name: state
@@ -1574,35 +1577,35 @@ script:
     - name: postalAddress
       description: Mailing address component of user’s address
     - name: "preferredLanguage\t"
-      description: User’s preferred written or spoken languages
+      description: User’s preferred written or spoken languages.
     - name: locale
       description: User’s default location for purposes of localizing items such as
         currency, date time format, numerical representations, etc.
     - name: "timezone\t"
-      description: User’s time zone
+      description: User time zone.
     - name: userType
       description: Used to identify the organization to user relationship such as
         “Employee” or “Contractor”
     - name: employeeNumber
-      description: Organization or company assigned unique identifier for the user
+      description: Organization or company assigned unique identifier for the user.
     - name: costCenter
-      description: name of a cost center assigned to
+      description: Name of a cost center assigned to.
     - name: organization
-      description: Name of user’s organization
+      description: Name of user’s organization.
     - name: division
-      description: Name of user’s division
+      description: Name of user’s division.
     - name: department
-      description: Name of user’s department
+      description: Name of user’s department.
     - name: managerId
-      description: ID of a user’s manager
+      description: ID of a user’s manager.
     - name: manager
-      description: DisplayName of the user’s manager
+      description: DisplayName of the user’s manager.
     - name: password
-      description: Password for new user
+      description: Password for new user.
     - name: passwordQuestion
-      description: Password question for new user
+      description: Password question for new user.
     - name: passwordAnswer
-      description: Password answer for question supplied
+      description: Password answer for question supplied.
     - name: providerType
       auto: PREDEFINED
       predefined:
@@ -1613,7 +1616,7 @@ script:
       - SOCIAL
       description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
     - name: providerName
-      description: Name of provider
+      description: Name of provider.
     description: Update user with a given login, all fields are optional, fields which
       are not set will not be overriden
     execution: true
@@ -1650,21 +1653,20 @@ script:
         OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The Operating System the client runs on (e.g. Windows 10)
+      description: The Operating System on which the client runs. For example, Microsoft Windows 10.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.browser
-      description: If the client is a web browser, this field identifies the type
-        of web browser (e.g. CHROME, FIREFOX)
+      description: Identifies the browser type, if relevant. For example, Chrome.
       type: string
     - contextPath: Okta.Logs.Events.client.device
-      description: Type of device that the client operated from (e.g. Computer)
+      description: Type of device that client operated from (e.g. Computer).
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests this is the id of the OAuth client making the
-        request. For SSWS token requests, this is the id of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the
+        request. For SSWS token requests, the ID of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
-      description: Ip address that the client made its request from
+      description: IP address in which the client made its request.
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
@@ -1739,13 +1741,12 @@ script:
       description: Type of a target
       type: string
     - contextPath: Okta.Logs.Events.target.alternateId
-      description: Alternative id of a target
+      description: Alternative ID of a target
       type: string
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target
       type: string
-    description: Get events for when Okta issued a session to a user who is authenticating
-      and the user failed to log-in
+    description: Returns event details for when a user is added to a group.
   - name: okta-get-group-assignments
     arguments:
     - name: since
@@ -1779,21 +1780,20 @@ script:
         OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The Operating System the client runs on (e.g. Windows 10)
+      description: The Operating System on which the client runs. For example, Microsoft Windows 10.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.browser
-      description: If the client is a web browser, this field identifies the type
-        of web browser (e.g. CHROME, FIREFOX)
+      description: The type of web browser, if relevant. For example, Chrome.
       type: string
     - contextPath: Okta.Logs.Events.client.device
-      description: Type of device that the client operated from (e.g. Computer)
+      description: Type of device that the client operated from (e.g. Computer).
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests this is the id of the OAuth client making the
-        request. For SSWS token requests, this is the id of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the
+        request. For SSWS token requests, the ID of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
-      description: Ip address that the client made its request from
+      description: IP address that the client made its request from.
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
@@ -1808,10 +1808,10 @@ script:
         coordinates (e.g. France, Uganda)
       type: string
     - contextPath: Okta.Logs.Events.displayMessage
-      description: The display message for an event
+      description: The display message for an event.
       type: string
     - contextPath: Okta.Logs.Events.eventType
-      description: Type of event that was published
+      description: Type of event that was published.
       type: string
     - contextPath: Okta.Logs.Events.outcome.result
       description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
@@ -1907,11 +1907,10 @@ script:
         OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The Operating System the client runs on (e.g. Windows 10)
+      description: The Operating System on which the client runs. For example, Microsoft Windows 10.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.browser
-      description: If the client is a web browser, this field identifies the type
-        of web browser (e.g. CHROME, FIREFOX)
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
       type: string
     - contextPath: Okta.Logs.Events.client.device
       description: Type of device that the client operated from (e.g. Computer)
@@ -2001,7 +2000,7 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target
       type: string
-    description: Get events for when a user was assigned to an application.
+    description: Returns events for when a user was assigned to an application.
   - name: okta-get-application-authentication
     arguments:
     - name: since
@@ -2035,18 +2034,17 @@ script:
         OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The Operating System the client runs on (e.g. Windows 10)
+      description: The Operating System on which the client runs. For example, Microsoft Windows 10.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.browser
-      description: If the client is a web browser, this field identifies the type
-        of web browser (e.g. CHROME, FIREFOX)
+      description: Identifies the type of the web browser. For example, Chrome.
       type: string
     - contextPath: Okta.Logs.Events.client.device
       description: Type of device that the client operated from (e.g. Computer)
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests this is the id of the OAuth client making the
-        request. For SSWS token requests, this is the id of the agent making the request.
+      description: For OAuth requests, the id of the OAuth client making the
+        request. For SSWS token requests, the id of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
       description: Ip address that the client made its request from
@@ -2129,12 +2127,11 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target
       type: string
-    description: Get events for when a user attempted to SSO to an application managed
-      in Okta
+    description: Returns logs using specified filters.
   - name: okta-get-logs
     arguments:
     - name: filter
-      description: "An expression filter is useful for performing structured queries
+      description: "Useful for performing structured queries
         where constraints on LogEvent attribute values can be explicitly targeted.
         \ The following expressions are supported for events with the filter query
         parameter: eventType eq \":eventType\" -\tEvents that have a specific action;
@@ -2180,21 +2177,20 @@ script:
         OS fields can be derived from this field.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.os
-      description: The Operating System the client runs on (e.g. Windows 10)
+      description: The Operating System on which the client runs. For example, Microsoft Windows 10.
       type: string
     - contextPath: Okta.Logs.Events.client.userAgent.browser
-      description: If the client is a web browser, this field identifies the type
-        of web browser (e.g. CHROME, FIREFOX)
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
       type: string
     - contextPath: Okta.Logs.Events.client.device
       description: Type of device that the client operated from (e.g. Computer)
       type: string
     - contextPath: Okta.Logs.Events.client.id
-      description: For OAuth requests this is the id of the OAuth client making the
-        request. For SSWS token requests, this is the id of the agent making the request.
+      description: For OAuth requests, the ID of the OAuth client making the
+        request. For SSWS token requests, the ID of the agent making the request.
       type: string
     - contextPath: Okta.Logs.Events.client.ipAddress
-      description: Ip address that the client made its request from
+      description: IP address that the client made its request from.
       type: string
     - contextPath: Okta.Logs.Events.client.geographicalContext.city
       description: The city encompassing the area containing the geolocation coordinates,
@@ -2304,7 +2300,7 @@ script:
     - name: query
       description: Searches the name property of groups for matching value
     - name: filter
-      description: 'An expression filter is useful for performing structured queries
+      description: 'Useful for performing structured queries
         where constraints on group attribute values can be explicitly targeted. The
         following expressions are supported(among others) for groups with the filter
         query parameter: type eq "OKTA_GROUP" - Groups that have a type of OKTA_GROUP;
@@ -2341,7 +2337,7 @@ script:
     - contextPath: Okta.Group.Description
       description: Description of the group
       type: string
-    description: Enumerates groups in your organization. A subset of groups can be
+    description: Lists groups in your organization. A subset of groups can be
       returned that match a supported filter expression or query.
   - name: okta-get-group-members
     arguments:

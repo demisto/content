@@ -5,6 +5,8 @@ from CommonServerUserPython import *
 import json
 import shutil
 import requests
+import random
+import urllib
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -17,6 +19,7 @@ INSECURE = demisto.params().get('unsecure')
 PROXY = demisto.params().get('proxy')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 SESSION_ID = None
+ALERT_UUID_REGEX = re.compile('[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}')
 
 
 ''' HELPER FUNCTIONS '''
@@ -27,8 +30,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
     headers = {}  # type: Dict[str, str]
     if SESSION_ID is not None:
         headers['x-uid'] = SESSION_ID
-        if files is None:
-            headers['Content-Type'] = 'application/json'
+    if files is None:
+        headers['Content-Type'] = 'application/json'
 
     res = requests.request(
         method,
@@ -39,7 +42,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
         files=files,
         verify=not INSECURE,
     )
-
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
         if res.status_code == 500:
@@ -67,10 +69,16 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
 @logger
 def login():
     global SESSION_ID
+
+    data = {
+        'user': CREDENTIALS.get('identifier'),
+        'password': CREDENTIALS.get('password')
+    }
+
     if SESSION_ID is None:
-        url = '/j/rest/v1/access/login/{}/{}/'.format(CREDENTIALS['identifier'], CREDENTIALS['password'])
+        url = '/j/rest/v1/access/login/json/'
         try:
-            res = http_request('GET', url)
+            res = http_request('POST', url, data=data)
             if res.get('error') is not None:
                 raise requests.HTTPError('Failed to login: {}'.format(res['error']))
             SESSION_ID = res.get('uid')
@@ -110,6 +118,8 @@ def get_ioc_filter(ioc):
         return {'simple': {'column': 'SHA256', 'operator': '=', 'value': ioc}}
     elif sha1Regex.match(ioc):
         return {'simple': {'column': 'SHA1_HASH', 'operator': '=', 'value': ioc}}
+    elif ALERT_UUID_REGEX.match(ioc):
+        return {'simple': {'column': 'UUID', 'operator': '=', 'value': ioc}}
     else:
         return {'simple': {'column': 'ANY_STRING', 'operator': '=~', 'value': ioc}}
 
@@ -184,6 +194,7 @@ def get_alert_command():
         'Severity': alert['severity'],
         'Protocol': alert['protocol'],
         'Type': alert['alertType'],
+        'AlertUUID': alert['alertUUID'],
         'AssignedUser': alert['ticket']['assignedUserId'] if alert['ticket'] is not None else None,
     }
 
@@ -192,7 +203,8 @@ def get_alert_command():
         'ContentsFormat': formats['json'],
         'Contents': alert,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), output, headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), output, headerTransform=pascalToSpace,
+                                         removeNull=True),
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
         },
@@ -399,6 +411,99 @@ def list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, 
     return res['aaData']
 
 
+def list_alerts_by_ip_request(time_frame=None, start_time=None, end_time=None, src_ip=None, dest_ip=None):
+
+    filters = []
+    if src_ip is not None:
+        filters.append({'simple': {'column': 'SRC_IP', 'operator': 'IN', 'value': src_ip}})
+    if dest_ip is not None:
+        filters.append({'simple': {'column': 'DEST_IP', 'operator': 'IN', 'value': dest_ip}})
+
+    data = {
+        'commandPosts': [],
+        'filter': {
+            'composite': {
+                'logic': 'or',
+                'filters': filters
+            }
+        },
+        'order': [
+            {
+                'column': 'ALERT_TIME',
+                'direction': 'DESC'
+            }
+        ],
+        'pagination': {
+            'page': 1,
+            'size': 100
+        },
+        'columns': ['ALERT_TIME', 'UUID', 'ALERT_ID', 'DISTRIBUTED_ALERT_ID', 'USER_RATING', 'HOST_IP', 'ASSET_ID',
+                    'ALERT_TYPE', 'DEST_COUNTRY_NAME', 'SRC_COUNTRY_NAME', 'DEST_IP', 'SRC_IP'],
+
+        'timeSettings': generate_time_settings(time_frame, start_time, end_time)
+    }
+
+    res = http_request('POST', '/j/rest/v1/alert/search/', data=data)
+    return res['aaData']
+
+
+def list_alerts_by_ip():
+    """
+    List alerts by the source IP or destination IP
+    """
+    args = demisto.args()
+    time_frame = args.get('time_frame')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    src_ip = args.get('src_ip')
+    dest_ip = args.get('dest_ip')
+    headers = ['Time', 'AlertUUID', 'ID', 'DistributedAlertID', 'UserRating', 'HostIP', 'AssetID',
+               'Type', 'DestinationCountry', 'SourceCountry', 'DestinationIP', 'SourceIP']
+    results = list_alerts_by_ip_request(time_frame=time_frame, start_time=start_time, end_time=end_time, src_ip=src_ip,
+                                        dest_ip=dest_ip)
+    output = [{
+        'ID': alert.get('ALERT_ID'),
+        'Time': alert.get('ALERT_TIME'),
+        'AlertUUID': alert.get('UUID'),
+        'DistributedAlertID': alert.get('DISTRIBUTED_ALERT_ID'),
+        'Type': alert.get('ALERT_TYPE'),
+        'UserRating': alert.get('USER_RATING'),
+        'HostIP': alert.get('HOST_IP'),
+        'AssetID': alert.get('ASSET_ID'),
+        'DestinationCountry': alert.get('DEST_COUNTRY_NAME'),
+        'SourceCountry': alert.get('SRC_COUNTRY_NAME'),
+        'DestinationIP': alert.get('DEST_IP'),
+        'SourceIP': alert.get('SRC_IP')
+    } for alert in results]
+
+    context = {
+        'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
+    }
+
+    return_outputs(tableToMarkdown('Found {} Alerts:'.format(len(output)), output, headers), context, results)
+
+
+def get_alert_by_uuid():
+
+    alert_uuid = demisto.args().get('alert_uuid')
+
+    results = list_alerts(ioc=alert_uuid)
+
+    output = [{
+        'ID': alert['ALERT_ID'],
+        'Time': alert['ALERT_TIME'],
+        'Summary': alert['SUMMARY'],
+        'Severity': alert['SEVERITY'],
+        'Type': alert['ALERT_TYPE']
+    } for alert in results]
+
+    context = {
+        'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
+    }
+
+    return_outputs(tableToMarkdown('Found {} Alerts:'.format(len(output)), output), context, results)
+
+
 def upload_pcap_command():
     args = demisto.args()
     component_ip = args['component_ip']
@@ -471,6 +576,177 @@ def list_pcap_components():
     res = http_request('GET', '/j/rest/policy/pcap/components/')
 
     return res
+
+
+def list_metadata_request(time_frame=None, start_time=None, end_time=None, client_ip=None, server_ip=None,
+                          request_direction=None):
+
+    filters = []
+    if client_ip is not None:
+        filters.append({'simple': {'column': 'ClientIP', 'operator': '=', 'value': client_ip}})
+    if server_ip is not None:
+        filters.append({'simple': {'column': 'ServerIP', 'operator': '=', 'value': server_ip}})
+    if request_direction is not None:
+        filters.append({'simple': {'column': 'Direction', 'operator': '=', 'value': request_direction}})
+    search_id = str([random.randint(1, 9) for _ in range(8)])
+
+    data = {
+        'collectors': [],
+        'action': 'new',
+        'allCollectors': True,
+        'timeSettings': generate_time_settings(time_frame, start_time, end_time),
+        'displaySettings': {
+            'pageSize': 1000,
+            'currentPage': 1,
+            'pageNavigation': "",
+            'sorting': {
+                'column': 'Timestamp',
+                'sortingOrder': 'D'
+            }
+        },
+        'dataSettings': {
+            'composite': {
+                'logic': 'and',
+                'filters': filters
+            }
+        },
+        'searchId': search_id
+    }
+    res = http_request('POST', '/j/rest/metadata/search/', data=data)
+
+    return res.get('aaData')
+
+
+def list_metadata():
+
+    args = demisto.args()
+    time_frame = args.get('time_frame')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    client_ip = args.get('client_ip')
+    server_ip = args.get('server_ip')
+    request_direction = args.get('request_direction')
+
+    data = []
+    event_context = []
+
+    results = list_metadata_request(time_frame=time_frame, start_time=start_time, end_time=end_time,
+                                    client_ip=client_ip, server_ip=server_ip, request_direction=request_direction)
+    for event in results:
+        data.append({
+            'Timestamp': event.get('Timestamp'),
+            'ServerIP': event.get('ServerIP'),
+            'ServerPort': event.get('ServerPort'),
+            'ClientIP': event.get('ClientIP'),
+            'ClientPort': event.get('ClientPort')
+        })
+
+        event_context.append({
+            'Timestamp': event.get('Timestamp'),
+            'ServerIP': event.get('ServerIP'),
+            'ServerPort': event.get('ServerPort'),
+            'ServerCountry': event.get('ServerCountry'),
+            'ClientIP': event.get('ClientIP'),
+            'ClientPort': event.get('ClientPort'),
+            'ClientCountry': event.get('ClientCountry'),
+            'Type': event.get('Type'),
+            'SensorUUID': event.get('SensorUUID'),
+            'SessionStart': event.get('SessionStart'),
+            'SessionDuration': event.get('SessionDuration'),
+            'Protocol': event.get('Protocol'),
+            'URL': event.get('URL'),
+            'RequestDirection': event.get('RequestDirection'),
+            'UserAgent': event.get('UserAgent'),
+            'FileName': event.get('FileName'),
+            'FileType': event.get('FileType'),
+            'FileSize': event.get('FileSize'),
+            'MD5': event.get('MD5'),
+            'SHA256': event.get('SHA256'),
+            'MalwareName': event.get('MalwareName'),
+            'MalwareType': event.get('MalwareType'),
+            'MalwareSeverity': event.get('MalwareSeverity'),
+            'PcapFilename': event.get('PcapFilename'),
+            'PcapTimestamp': event.get('PcapTimestamp')
+
+        })
+    context = {
+        'Fidelis.Metadata(val.ID && val.ID == obj.ID)': event_context
+    }
+
+    return_outputs(tableToMarkdown('Found {} Metadata:'.format(len(data)), data), context, results)
+
+
+def request_dpath(alert_id):
+
+    res = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
+    dpath = res.get('decodingPaths')[0]
+    link_path = dpath.get('linkPath')
+    encoded_path = urllib.quote(link_path)
+    return encoded_path
+
+
+def download_malware_file_request(alert_id):
+
+    dpath = request_dpath(alert_id)
+    query_params = {
+        'uid': SESSION_ID,
+        'alert_id': alert_id,
+        'type': '1',
+        'params': dpath
+    }
+    res = http_request(
+        'GET',
+        '/query/tcpses_getfile.cgi',
+        params=query_params,
+        is_json=False)
+
+    return res
+
+
+def download_malware_file():
+    """
+    Download specific malware from the alert
+    """
+    alert_id = demisto.args().get('alert_id')
+    file_name = request_dpath(alert_id)
+    decoded_file_name = urllib.unquote(file_name)
+    results = download_malware_file_request(alert_id)
+
+    demisto.results(fileResult(
+        decoded_file_name + '.zip',
+        results,
+        file_type=entryTypes['file']))
+
+
+def download_pcap_request(alert_id):
+
+    query_params = {
+        'uid': SESSION_ID,
+        'alert_id': alert_id,
+        'commandpost': '127.0.0.1',
+    }
+
+    results = http_request(
+        'GET',
+        '/e.cgi',
+        params=query_params,
+        is_json=False
+    )
+
+    return results
+
+
+def download_pcap_file():
+    """
+    Download PCAP from an alert
+    """
+    alert_id = demisto.args().get('alert_id')
+
+    results = download_pcap_request(alert_id)
+    demisto.results(fileResult(
+        'Alert ID_' + alert_id + '.pcap',
+        results,
+        file_type=entryTypes['file']))
 
 
 def test_integration():
@@ -558,6 +834,16 @@ def main():
 
         elif command == 'fidelis-list-pcap-components':
             list_pcap_components_command()
+        elif command == 'fidelis-get-alert-by-uuid':
+            get_alert_by_uuid()
+        elif command == 'fidelis-list-metadata':
+            list_metadata()
+        elif command == 'fidelis-list-alerts-by-ip':
+            list_alerts_by_ip()
+        elif command == 'fidelis-download-malware-file':
+            download_malware_file()
+        elif command == 'fidelis-download-pcap-file':
+            download_pcap_file()
 
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))

@@ -42,7 +42,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Filter by LOW , MEDIUM , or HIGH threatLevel
+- display: Filter by  threat level (LOW, MEDIUM, or HIGH)
   name: threatLevel
   defaultvalue: ""
   type: 0
@@ -61,6 +61,11 @@ configuration:
   name: proxy
   defaultvalue: ""
   type: 8
+  required: false
+- display: "Maximum events to fetch per fetch"
+  name: maxFetch
+  defaultvalue: "50"
+  type: 0
   required: false
 script:
   script: |-
@@ -91,11 +96,12 @@ script:
                 params.insecure,
                 params.proxy
             );
+            var body;
             if (tokResult.StatusCode !== 200 && tokResult.StatusCode !== 201) {
                 throw 'Failed to create token, request status code: ' + tokResult.StatusCode + ', body: ' + tokResult.Body;
             }
             try {
-                var body = JSON.parse(tokResult.Body);
+                body = JSON.parse(tokResult.Body);
             } catch (ex) {
                 throw 'Error parsing token - ' + tokResult.Body + ' - ' + ex;
             }
@@ -181,7 +187,8 @@ script:
         return {
             "name": event.message,
             "labels": labels,
-            "rawJSON": JSON.stringify(event)
+            "rawJSON": JSON.stringify(event),
+            "occurred": convertTimestampToString(event.observedAt)
         };
     };
 
@@ -203,11 +210,15 @@ script:
                 params.threatCategory, null, null, null, null, null, null, null, token);
             try {
                 var res = JSON.parse(data).events;
+                res.reverse();  // events are fetched in descending order so reversing to process older first
             } catch (ex) {
                 throw 'Error parsing event fetch - ' + data + ' - ' + ex;
             }
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
+                if (incidents.length >= Math.min(parseInt(params.maxFetch), 50)) {
+                    break;
+                }
                 var skip = true;
                 if (params.messageFilter && res[i].message) {
                     filters = params.messageFilter.split(',');
@@ -222,9 +233,10 @@ script:
                 }
                 if(!skip) {
                     incidents.push(createIncidentFromEvent(res[i]));
+                    lastRun.time = Math.max(lastRun.time, res[i].startedAt)+1;
                 }
             }
-            setLastRun({time: now});
+            setLastRun(lastRun);
             return JSON.stringify(incidents);
         case 'sensors':
         case 'protectwise-show-sensors':
@@ -251,10 +263,11 @@ script:
             };
         case 'search':
         case 'protectwise-search-events':
+            var res;
             var raw = eventsSearch(args.start, args.end, args.eventType, args.killChainStage, args.threatLevel,
                 args.threatCategory, args.observationStage, args.ip, args.expandDetails, args.minLimit, args.maxLimit, args.reverseOrder, args.nextPage, token);
             try {
-                var res = JSON.parse(raw).events;
+                res = JSON.parse(raw).events;
             } catch (ex) {
                 throw 'Error parsing event search - ' + raw + ' - ' + ex;
             }
@@ -300,13 +313,13 @@ script:
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                 for(var i = 0; i < nf.length; i++) {
-                    nf[i]['srcIp'] = nf[i]['id.srcIp'];
-                    nf[i]['dstIp'] = nf[i]['id.dstIp'];
-                    nf[i]['srcPort']  = nf[i]['id.srcPort'];
-                    nf[i]['dstPort'] = nf[i]['id.dstPort'];
-                    nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
+                    nf[i].srcIp = nf[i]['id.srcIp'];
+                    nf[i].dstIp = nf[i]['id.dstIp'];
+                    nf[i].srcPort  = nf[i]['id.srcPort'];
+                    nf[i].dstPort = nf[i]['id.dstPort'];
+                    nf[i].layer4Proto = nf[i]['id.layer4Proto'];
                     }
-                event['Netflows'] = nf;
+                event.Netflows = nf;
                 md += '\n' + tableToMarkdown('Related Netflows', nf, DEFAULT_NETFLOW_HEADERS);
             }
 
@@ -319,7 +332,7 @@ script:
                        }
                    });
                 });
-                event['Observations'] = obs;
+                event.Observations = obs;
                 md += '\n' + tableToMarkdown('Related Observations', obs, DEFAULT_OBSERVATION_HEADERS);
             }
 
@@ -332,10 +345,11 @@ script:
             };
         case 'observation-search':
         case 'protectwise-search-observations':
+            var res;
             var raw = observationSearch(args.sensorId, args.start, args.end, args.type, args.killChainStage, args.threatLevel,
                 args.threatCategory, args.hasKillChain, args.ip, args.expandDetails, args.minLimit, args.maxLimit, args.reverseOrder, args.nextPage, args.signatureId, token);
             try {
-                var res = JSON.parse(raw).observations;
+                res = JSON.parse(raw).observations;
             } catch (ex) {
                 throw 'Error parsing observation search - ' + raw + ' - ' + ex;
             }
@@ -398,13 +412,13 @@ script:
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                     for(var i = 0; i < nf.length; i++) {
-                        nf[i]['srcIp'] = nf[i]['id.srcIp'];
-                        nf[i]['dstIp'] = nf[i]['id.dstIp'];
-                        nf[i]['srcPort']  = nf[i]['id.srcPort'];
-                        nf[i]['dstPort'] = nf[i]['id.dstPort'];
-                        nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
-                        }
-                event['Netflows'] = nf;
+                        nf[i].srcIp = nf[i]['id.srcIp'];
+                        nf[i].dstIp = nf[i]['id.dstIp'];
+                        nf[i].srcPort  = nf[i]['id.srcPort'];
+                        nf[i].dstPort = nf[i]['id.dstPort'];
+                        nf[i].layer4Proto = nf[i]['id.layer4Proto'];
+                    }
+                event.Netflows = nf;
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
@@ -429,13 +443,13 @@ script:
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                     for(var i = 0; i < nf.length; i++) {
-                        nf[i]['srcIp'] = nf[i]['id.srcIp'];
-                        nf[i]['dstIp'] = nf[i]['id.dstIp'];
-                        nf[i]['srcPort']  = nf[i]['id.srcPort'];
-                        nf[i]['dstPort'] = nf[i]['id.dstPort'];
-                        nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
+                        nf[i].srcIp = nf[i]['id.srcIp'];
+                        nf[i].dstIp = nf[i]['id.dstIp'];
+                        nf[i].srcPort  = nf[i]['id.srcPort'];
+                        nf[i].dstPort = nf[i]['id.dstPort'];
+                        nf[i].layer4Proto = nf[i]['id.layer4Proto'];
                     }
-                event['Netflows'] = nf;
+                event.Netflows = nf;
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
@@ -458,220 +472,217 @@ script:
     arguments:
     - name: sensorId
       default: true
-      description: The id of the individual sensor (if not provided will query all
-        available sensors)
-    description: Collection of all available sensors
+      description: The ID of the individual sensor. If empty, will query all
+        available sensors.
+    description: Returns the specified, or all available sensors.
   - name: protectwise-show-sensors
     arguments:
     - name: sensorId
       default: true
-      description: The id of the individual sensor (if not provided will query all
-        available sensors)
+      description: The ID of the individual sensor. If empty, will query all
+        available sensors.
     outputs:
     - contextPath: Protectwise.Sensor.id
-      description: Sensor ID
+      description: The ID of the sensor.
     - contextPath: Protectwise.Sensor.friendly_name
-      description: Sensor Name
+      description: The name of the sensor.
     - contextPath: Protectwise.Sensor.ip_address
-      description: Sensor IP address
+      description: The IP address of the sensor.
     - contextPath: Protectwise.Sensor.last_seen
-      description: Time when sensor was last seen
+      description: The time when the sensor was last seen.
     - contextPath: Protectwise.Sensor.customer_id
-      description: Sensor's Customer ID
+      description: The customer ID of the sensor.
     - contextPath: Protectwise.Sensor.enabled
-      description: Is the sensor enabled
-    description: Collection of all available sensors
+      description: Whether the sensor is enabled.
+    description: Returns all available sensors.
   - name: search
     deprecated: true
     arguments:
     - name: start
       required: true
-      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
-        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'The timestamp of the start time of the event. For example, 1401451200000,
+        or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event, Example: 1401451500000, or
-        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'The timestamp of the end of the event. For example, 1401451500000, or
+      2015-03-25T12:00:00.'
     - name: eventType
-      description: Filter by one or more event types (MaliciousFlow/KillChainEscalation/MaliciousConversation)
+      description: 'Filter by one or more event types. Can be: "MaliciousFlow", "KillChainEscalation", or "MaliciousConversation".'
     - name: killChainStage
-      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+      description: 'Filter by killchain stage. Can be: "Methodology", "Recon", "Delivery", "Exploit", "Beacon", "CnC", "Fortification", or Data_Theft".'
     - name: threatLevel
-      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+      description: 'Filter by the threat level. Can be: "NONE", "LOW", "MEDIUM", or "HIGH".'
     - name: threatCategory
-      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+      description: 'Filter by the threat category. Can be: "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
     - name: observationStage
-      description: Filter by Realtime or Retrospective
+      description: 'Filter by the observation stage. Can be: "Realtime" or "Retrospective".'
     - name: ip
-      description: Filter by events that are affected by a specific IP address
+      description: Filter by events that are affected by a specific IP address.
     - name: minLimit
-      description: Try to return at least this many results per page
+      description: The minimum number of results to return per page.
     - name: maxLimit
-      description: Do not return more than this many results
+      description: The maximum number of results to return per page.
     - name: reverseOrder
-      description: Return results sorted by descending timestamp (default = true)
+      description: Whether to sort results by descending timestamp. If "true", results are returned in descending timestamp order. If "false", results are returned in ascending timestamp order. Default is "true".
     - name: nextPage
-      description: An identifier to fetch the next page in the result set
-    description: search Events ,Events are resources that describe a threat and contains
-      a collection of observations.
+      description: An identifier to fetch the next page in the result set.
+    description: Searches for events. Events are resources that describe a threat and contain
+      a collection of observations. 
   - name: protectwise-search-events
     arguments:
     - name: start
       required: true
-      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
-        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'Timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event, Example: 1401451500000, or
-        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: Timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00.
     - name: eventType
-      description: Filter by one or more event types (MaliciousFlow/KillChainEscalation/MaliciousConversation)
+      description: 'Filters by one or more event types. Can be: "MaliciousFlow:, "KillChainEscalation", or "MaliciousConversation".'
     - name: killChainStage
-      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+      description: 'Filters by the killchain stage. Can be: "Methodology", "Recon", "Delivery", "Exploit", "Beacon", "CnC", "Fortification", or "Data_Theft".'
     - name: threatLevel
-      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+      description: 'Filters by Low, Medium, or High threats. Can be: "NONE", "LOW", "MEDIUM", or "HIGH".'
     - name: threatCategory
-      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+      description: 'Filters by threat category. Can be: "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
     - name: observationStage
-      description: Filter by Realtime or Retrospective
+      description: Filters by Realtime or Retrospective.
     - name: ip
-      description: Filter by events that are affected by a specific IP address
+      description: Filters by events that are affected by a specific IP address.
     - name: minLimit
-      description: Try to return at least this many results per page
+      description: Minimum number of results to return per page.
     - name: maxLimit
-      description: Do not return more than this many results
+      description: Maximum number of results to return per page.
     - name: reverseOrder
-      description: Return results sorted by descending timestamp (default = true)
+      description: Return results sorted by descending timestamp (default = true).
     - name: nextPage
-      description: An identifier to fetch the next page in the result set
+      description: An identifier which fetches the next page in the result set.
     outputs:
     - contextPath: Protectwise.Event.message
-      description: Name of the event
+      description: Name of the event.
     - contextPath: Protectwise.Event.id
-      description: Protectwise event ID
+      description: Protectwise event ID.
     - contextPath: Protectwise.Event.type
-      description: Event type
+      description: The type of the event.
     - contextPath: Protectwise.Event.sensorId
-      description: Detecting sensor's ID
+      description: The sensor ID of the event.
     - contextPath: Protectwise.Event.threatScore
-      description: Threat score 0-100
+      description: The threat score (0-100).
     - contextPath: Protectwise.Event.killChainStage
-      description: Killchain Stage
+      description: The Kill Chain Stage of the event.
     - contextPath: Protectwise.Event.confidence
-      description: Confidence level 0-100
+      description: The confidence level (0-100)
     - contextPath: Protectwise.Event.startedAt
-      description: Event time started
+      description: The time that Event started.
     - contextPath: Protectwise.Event.observedAt
-      description: Event time observed
+      description: The time the event was observed.
     - contextPath: Protectwise.Event.endedAt
-      description: Event time ended
+      description: The time the event ended.
     - contextPath: Protectwise.Event.observationCount
-      description: Number of observations related to this event
+      description: The number of observations related to this event.
     - contextPath: Protectwise.Event.netflowCount
-      description: Number of netflows related to this event
+      description: The number of netflows related to this event.
     - contextPath: Protectwise.Event.observedStage
-      description: Observed stage (Realtime or Retrospective)
-    description: search Events ,Events are resources that describe a threat and contains
-      a collection of observations.
+      description: The observed stage (Realtime or Retrospective).
+    description: Searches for events. Events are resources that describe a threat and contains
+      a collection of observations. Deprecated - use the protectwise-search-events command.
   - name: pw-event-get
     deprecated: true
     arguments:
     - name: id
       required: true
       default: true
-      description: event id
-    description: Lookup a single event and its associated observations for ProtectWise
+      description: The ID of the event to return.
+    description: Returns information about a single event and its associated observations.
   - name: protectwise-event-info
     arguments:
     - name: id
       required: true
       default: true
-      description: event id
+      description: The ID of the event.
     outputs:
     - contextPath: Protectwise.Event.message
-      description: Name of the event
+      description: Name of the event.
     - contextPath: Protectwise.Event.id
-      description: Protectwise event ID
+      description: The ID of the event.
     - contextPath: Protectwise.Event.type
-      description: Event type
+      description: The type of the event.
     - contextPath: Protectwise.Event.sensorId
-      description: Detecting sensor's ID
+      description: The sensor ID of the event.
     - contextPath: Protectwise.Event.threatScore
-      description: Threat score 0-100
+      description: The Threat score. From 0-100.
     - contextPath: Protectwise.Event.killChainStage
-      description: Killchain Stage
+      description: Kill Chain Stage of the event.
     - contextPath: Protectwise.Event.confidence
-      description: Confidence level 0-100
+      description: The Confidence level. From 0-100.
     - contextPath: Protectwise.Event.startedAt
-      description: Event time started
+      description: The time the event started.
     - contextPath: Protectwise.Event.observedAt
-      description: Event time observed
+      description: The time the event was observed.
     - contextPath: Protectwise.Event.endedAt
-      description: Event time ended
+      description: The time the event ended.
     - contextPath: Protectwise.Event.observationCount
-      description: Number of observations related to this event
+      description: The number of observations related to this event.
     - contextPath: Protectwise.Event.netflowCount
-      description: Number of netflows related to this event
+      description: The number of netflows related to this event.
     - contextPath: Protectwise.Event.observedStage
-      description: Observed stage (Realtime or Retrospective)
+      description: The observed stage (Realtime or Retrospective).
     - contextPath: Protectwise.Event.Netflows.key
-      description: Netflow key
-    - contextPath: Protectwise.Event.Netflows.id.srcIp
-      description: Netflow Source IP
-    - contextPath: Protectwise.Event.Netflows.id.dstIp
-      description: Netflow Dst IP
-    - contextPath: Protectwise.Event.Netflows.id.srcPort
-      description: Netflow Source Port
-    - contextPath: Protectwise.Event.Netflows.id.dstPort
-      description: Netflow Dst Port
-    - contextPath: Protectwise.Event.Netflows.id.layer4Proto
-      description: Netflow Layer 4 Protocol
+      description: The Netflow key.
+    - contextPath: Protectwise.Event.Netflows.srcIp
+      description: The Netflow Source IP.
+    - contextPath: Protectwise.Event.Netflows.dstIp
+      description: The Netflow Dst IP.
+    - contextPath: Protectwise.Event.Netflows.srcPort
+      description: The Netflow source port.
+    - contextPath: Protectwise.Event.Netflows.dstPort
+      description: The Netflow DST Port.
+    - contextPath: Protectwise.Event.Netflows.layer4Proto
+      description: The Netflow Layer 4 Protocol.
     - contextPath: Protectwise.Event.Observations.id
-      description: Observation ID
+      description: The observation ID.
     - contextPath: Protectwise.Event.Observations.killChainStage
-      description: Observation Killchain Stage
+      description: The Observation Killchain Stage.
     - contextPath: Protectwise.Event.Observations.source
-      description: Observation Source
+      description: The Observation Source.
     - contextPath: Protectwise.Event.Observations.sensorId
-      description: Observation's Sensor ID
+      description: The Observation's Sensor ID.
     - contextPath: Protectwise.Event.Observations.threatScore
-      description: Observation Threat Score
+      description: The Observation threat score.
     - contextPath: Protectwise.Event.Observations.severity
-      description: Observation Severity
+      description: The Observation Severity.
     - contextPath: Protectwise.Event.Observations.confidence
-      description: Observation confidence level (0-100)
+      description: The observation confidence level (0-100).
     - contextPath: Protectwise.Event.Observations.occurredAt
-      description: Observation - time occurred
+      description: The time the observation occurred.
     - contextPath: Protectwise.Event.Observations.observedAt
-      description: Observation - time observed
+      description: The time the observation observed.
     - contextPath: Protectwise.Event.Observations.endedAt
-      description: Observation - time ended
+      description: The time the observation ended.
     - contextPath: Protectwise.Event.Observations.netflowId
-      description: ID of related Netflow for this observation
+      description: The ID of the related Netflow for this observation.
     - contextPath: Protectwise.Event.Observations.observedStage
-      description: Observation - Observed stage
-    description: Lookup a single event and its associated observations for ProtectWise
+      description: The observed stage of the observation.
+    description: Searches for a single event in ProtectWise. Deprecated - use the protectwise-event-info command.
   - name: observation-search
     deprecated: true
     arguments:
     - name: sensorId
       required: true
-      description: the sensor id or a comma-separated list of sensor ids
+      description: The sensor ID or a comma-separated list of sensor IDs.
     - name: start
       required: true
-      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
-        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'The timestamp of the start time of the event. For example, 1401451200000,
+        or 2015-03-25T12:00:00'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event, Example: 1401451500000, or
-        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'The timestamp of the end of the event. For example, 1401451500000, or
+        2015-03-25T12:00:00'
     - name: type
-      description: Filter by observation type (ids http iprep urlrep protocol file
-        )
+      description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep", "protocol" or "file".'
     - name: hasKillChain
       description: Search for observations in every kill chain stage (true false)
     - name: killChainStage
-      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+      description: Filter by kill chain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
     - name: ip
       description: Filter observations by IP address in the src/dst fields
     - name: threatLevel
@@ -689,208 +700,207 @@ script:
       description: Return results sorted by descending timestamp (default = true)
     - name: nextPage
       description: An identifier to fetch the next page in the result set
-    description: search observations in ProtectWise
+    description: Searches for observations in ProtectWise.
   - name: protectwise-search-observations
     arguments:
     - name: sensorId
       required: true
-      description: the sensor id or a comma-separated list of sensor ids
+      description: The ID of the individual sensor or a comma-separated list of Sensor IDs. 
     - name: start
       required: true
-      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
-        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'Timestamp of the start time of the event. For example, 1401451200000,
+        or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event, Example: 1401451500000, or
-        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'Timestamp of the end of the event. For example, 1401451500000, or
+      2015-03-25T12:00:00'
     - name: type
-      description: Filter by observation type (ids http iprep urlrep protocol file
-        )
+      description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep", "protocol", or "file".'
     - name: hasKillChain
-      description: Search for observations in every kill chain stage (true false)
+      description: 'Searches for observations in every kill chain stage. Can be: "true" or "false".'
     - name: killChainStage
-      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+      description: 'Filter by killchain stage. Can be: "Methodology", "Recon", "Delivery", "Exploit", "Beacon", "CnC", "Fortification", or "Data_Theft".'
     - name: ip
-      description: Filter observations by IP address in the src/dst fields
+      description: Filter observations by IP address in the src/dst fields.
     - name: threatLevel
-      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+      description: 'Filter by Low, Medium, or High threats. Can be: "NONE", "LOW", "MEDIUM", or "HIGH".'
     - name: threatCategory
-      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+      description: 'Filter by threat category. Can be: "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
     - name: signatureId
-      description: 'Filter by threat signature (find observations of the same type
-        of threat) -  Example: 69020504'
+      description: 'Filter by threat signature. Finds observations of the same type
+        of threat). For example, 69020504.'
     - name: minLimit
-      description: Try to return at least this many results per page
+      description: Minimum number of results per page.
     - name: maxLimit
-      description: Do not return more than this many results
+      description: Maximum number of results per page.
     - name: reverseOrder
-      description: Return results sorted by descending timestamp (default = true)
+      description: Returns results sorted by descending timestamp. Default is true.
     - name: nextPage
-      description: An identifier to fetch the next page in the result set
+      description: An identifier to fetch the next page in the result set.
     outputs:
     - contextPath: Protectwise.Observation.id
-      description: "Observation ID"
+      description: The ID of the observation.
     - contextPath: Protectwise.Observation.killChainStage
-      description: "Observation's Killchain Stage"
+      description: The Killchain Stage of the observation.
     - contextPath: Protectwise.Observation.source
-      description: "Observation Source"
+      description: The source of the observation.
     - contextPath: Protectwise.Observation.sensorId
-      description: "ID of the Protectwise sensor that generated the Observation"
+      description: The ID of the protectwise sensor that generated the observation.
     - contextPath: Protectwise.Observation.threatScore
-      description: "Observation's Threat Score"
+      description: The threat score of the observation.
     - contextPath: Protectwise.Observation.severity
-      description: "Observation's Severity"
+      description: The severity of the observation.
     - contextPath: Protectwise.Observation.confidence
-      description: "Observation's Confidence level"
+      description: The confidence level of the observation.
     - contextPath: Protectwise.Observation.occurredAt
-      description: "Observation - Time Occurred"
+      description: The time the observation occurred.
     - contextPath: Protectwise.Observation.observedAt
-      description: "Observation - Time Observed"
+      description: The time the observation was observed.
     - contextPath: Protectwise.Observation.endedAt
-      description: "Observation - Time Ended"
+      description: The time the observation ended.
     - contextPath: Protectwise.Observation.netflowId
-      description: "ID of the Netflow tied to this Observation"
+      description: The ID of the Netflow attached to this observation.
     - contextPath: Protectwise.Observation.observedStage
-      description: "Attack stage reflected by the observation"
-    description: search observations in ProtectWise
+      description: The attack stage reflected by the observation.
+    description: Searches for observations in ProtectWise. Deprecated - use the protectwise-search-observations command.
   - name: pw-observation-get
     deprecated: true
     arguments:
     - name: id
       required: true
-      description: Observation id
+      description: The ID of the observation.
     - name: sensorId
       required: true
-      description: the sensor id or comma-separated list of ids
-    description: Lookup a single observation for ProtectWise
+      description: The ID of an individual sensor or a comma-separated list of sensor IDs.
+    description: Searches for a single observation in ProtectWise.
   - name: protectwise-observation-info
     arguments:
     - name: id
       required: true
-      description: Observation id
+      description: The ID of the observation.
     - name: sensorId
       required: true
-      description: the sensor id or comma-separated list of ids
+      description: The Sensor ID or a comma-separated list of Sensor IDs.
     outputs:
     - contextPath: Protectwise.Observation.id
-      description: "Observation ID"
+      description: The ID of the observation.
     - contextPath: Protectwise.Observation.killChainStage
-      description: "Observation's Killchain Stage"
+      description: The Killchain Stage of the observation.
     - contextPath: Protectwise.Observation.source
-      description: "Observation Source"
+      description: Observation Source
     - contextPath: Protectwise.Observation.sensorId
-      description: "ID of the Protectwise sensor that generated the Observation"
+      description: ID of the Protectwise sensor that generated the observation.
     - contextPath: Protectwise.Observation.threatScore
-      description: "Observation's Threat Score"
+      description: The threat Score of the observation.
     - contextPath: Protectwise.Observation.severity
-      description: "Observation's Severity"
+      description: The severity of the observation.
     - contextPath: Protectwise.Observation.confidence
-      description: "Observation's Confidence level"
+      description: The confidence level of the observation.
     - contextPath: Protectwise.Observation.occurredAt
-      description: "Observation - Time Occurred"
+      description: The time the observation occurred.
     - contextPath: Protectwise.Observation.observedAt
-      description: "Observation - Time Observed"
+      description: The time the observation was Observed.
     - contextPath: Protectwise.Observation.endedAt
-      description: "Observation - Time Ended"
+      description: The time the observation ended.
     - contextPath: Protectwise.Observation.netflowId
-      description: "ID of the Netflow tied to this Observation"
+      description: The ID of the Netflow tied to this observation.
     - contextPath: Protectwise.Observation.observedStage
-      description: "Attack stage reflected by the observation"
-    description: Lookup a single observation for ProtectWise
+      description: The attack stage reflected by the observation.
+    description: Lookup a single observation for ProtectWise. Deprecated - use the protectwise-event-pcap-download command.
   - name: event-pcap-download
     deprecated: true
     arguments:
     - name: eventId
       required: true
       default: true
-      description: The event ID
+      description: The event ID.
     - name: filename
-      description: Optionally provide a filename for the download
-    description: Event Pcap Download
+      description: The filename for download.
+    description: The Event PCAP file to download. 
   - name: protectwise-event-pcap-download
     arguments:
     - name: eventId
       required: true
       default: true
-      description: The event ID
+      description: The ID of the event.
     - name: filename
-      description: Optionally provide a filename for the download
-    description: Event Pcap Download
+      description: The filename for the download.
+    description: Event Pcap Download. Deprecated - use the protectwise-event-pcap-info command.
   - name: event-pcap-info
     deprecated: true
     arguments:
     - name: eventId
       required: true
       default: true
-      description: The event ID
-    description: Get ProtectWise Event Pcap info
+      description: The ID of the event.
+    description: Returns details of the ProtectWise Event PCAP files.
   - name: protectwise-event-pcap-info
     arguments:
     - name: eventId
       required: true
       default: true
-      description: The event ID
+      description: The event ID.
     outputs:
     - contextPath: Protectwise.Event.id
-      description: Event ID
+      description: The ID of the Event.
     - contextPath: Protectwise.Event.PCAPSize
-      description: Estimated PCAP size in bytes
-    description: Get ProtectWise Event Pcap info
+      description: Estimated PCAP size in bytes.
+    description: Get ProtectWise Event Pcap info. Deprecated - use the protectwise-observation-pcap-download command.
   - name: observation-pcap-download
     deprecated: true
     arguments:
     - name: id
       required: true
       default: true
-      description: The observation ID
+      description: The ID of the observation.
     - name: sensorId
       required: true
-      description: the sensor id
+      description: The ID of the sensor.
     - name: filename
-      description: Optionally provide a filename for the download
-    description: Observation Pcap Download
+      description: The filename for the download.
+    description: Downloads the observation PCAP file.
   - name: protectwise-observation-pcap-download
     arguments:
     - name: id
       required: true
       default: true
-      description: The observation ID
+      description: The ID of the observation.
     - name: sensorId
       required: true
-      description: the sensor id
+      description: The ID of the sensor.
     - name: filename
-      description: Optionally provide a filename for the download
-    description: Observation Pcap Download
+      description: The filename for the download.
+    description: Downloads the Observation PCAP file. Deprecated - use the protectwise-observation-pcap-info command.
   - name: observation-pcap-info
     deprecated: true
     arguments:
     - name: id
       required: true
-      description: The observation ID
+      description: The ID of the observation.
     - name: sensorId
       required: true
-      description: the sensor id
-    description: Get ProtectWise Observation Pcap info
+      description: The ID of the sensor.
+    description: Returns PCAP details of observations in Protectwise.
   - name: protectwise-observation-pcap-info
     arguments:
     - name: id
       required: true
-      description: The observation ID
+      description: The ID of the observation.
     - name: sensorId
       required: true
-      description: the sensor id
+      description: The ID of the Sensor.
     outputs:
     - contextPath: Protectwise.Observation.id
-      description: Observation ID
+      description: The ID of the observation.
     - contextPath: Protectwise.Observation.sensorId
-      description: Observation Sensor ID
+      description: The Sensor ID of the observation.
     - contextPath: Protectwise.Observation.PCAPSize
       description: Estimated PCAP size in bytes
-    description: Get ProtectWise Observation Pcap info
+    description: Returns ProtectWise Observation PCAP file information.
   - name: get-token
     deprecated: true
     arguments: []
-    description: Get API token, to use in integration configuration
+    description: Returns the API token, which is used in the integration configuration.
   isfetch: true
 fromversion: 3.5.0
 tests:

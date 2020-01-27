@@ -1,4 +1,4 @@
-The integration uses the Panorama XML API.
+The integration uses the Panorama XML API
 To obtain an API Key, run the following REST command and copy the key:
 https://[PanoramaIP]/api/?type=keygen&user=[user]&password=[password]
 

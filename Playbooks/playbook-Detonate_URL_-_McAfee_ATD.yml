@@ -13,7 +13,7 @@ tasks:
       id: d2f4d7dc-4562-4517-8d63-3539676ca81d
       version: -1
       name: ""
-      description: "-"
+      description: start
       iscommand: false
       brand: ""
     nexttasks:
@@ -363,10 +363,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 26775dbf-fff8-41c0-8379-28d0a99b8112
+    taskid: d9cb6357-65d3-489e-829a-32db7a9e54f1
     type: regular
     task:
-      id: 26775dbf-fff8-41c0-8379-28d0a99b8112
+      id: d9cb6357-65d3-489e-829a-32db7a9e54f1
       version: -1
       name: atd-check-status
       description: Updates the status of the tasks in the context.
@@ -382,6 +382,15 @@ tasks:
       taskId:
         complex:
           root: ATD
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
           accessor: Task.taskId
     separatecontext: false
     view: |-
@@ -396,10 +405,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 230fe216-0869-44e5-885a-8f7f32e4a7fa
+    taskid: e67fe4e6-2060-46ff-8f61-c87a4b88cf93
     type: regular
     task:
-      id: 230fe216-0869-44e5-885a-8f7f32e4a7fa
+      id: e67fe4e6-2060-46ff-8f61-c87a4b88cf93
       version: -1
       name: Set Context
       description: '-'
@@ -417,6 +426,15 @@ tasks:
       value:
         complex:
           root: ATD
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
           accessor: Task
     separatecontext: false
     view: |-

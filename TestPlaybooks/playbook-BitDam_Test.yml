@@ -136,7 +136,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: CLEAN
+              simple: Approved
         - operator: isEqualString
           left:
             value:
@@ -144,7 +144,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: MALICIOUS
+              simple: Malicious
       - - operator: isEqualString
           left:
             value:

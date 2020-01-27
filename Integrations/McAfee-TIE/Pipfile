@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+requests-mock = "*"
+
+[packages]
+dxlclient = "==3.1.0.587"
+dxlmarclient = "==0.1.2"
+dxltieclient = "==0.1.0"
+virtualenv = "==15.0.3"
+
+[requires]
+python_version = "2.7"

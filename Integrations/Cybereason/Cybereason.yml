@@ -1,0 +1,735 @@
+category: Endpoint
+commonfields:
+  id: Cybereason
+  version: -1
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: MALOP CREATION TIME
+  display: Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop
+    update time might create duplicates of Malops as incidents)
+  name: fetch_by
+  required: false
+  type: 0
+description: Endpoint detection and response to manage and query malops, connections
+  and processes.
+display: Cybereason
+name: Cybereason
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The hostname of the machine.
+      isArray: false
+      name: machine
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Show only suspicious processes.
+      isArray: false
+      name: onlySuspicious
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10000'
+      description: Maximum number of results to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Process name to filter by.
+      isArray: false
+      name: processName
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If true, save the result to the context.
+      isArray: false
+      name: saveToContext
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Filter only processes with incoming connections.
+      isArray: false
+      name: hasIncomingConnection
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Filter only processes with outgoing connections.
+      isArray: false
+      name: hasOutgoingConnection
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If process has external connection
+      isArray: false
+      name: hasExternalConnection
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If process is not known to reputation services and its image file
+        is unsigned
+      isArray: false
+      name: unsignedUnknownReputation
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If process is running from temporary folder
+      isArray: false
+      name: fromTemporaryFolder
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If process was identified elevating its privileges to local system
+        user
+      isArray: false
+      name: privilegesEscalation
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If the process was executed by PsExec service and is suspicious
+        as being executed maliciously
+      isArray: false
+      name: maliciousPsExec
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for processes with various filters.
+    execution: false
+    name: cybereason-query-processes
+    outputs:
+    - contextPath: Process.Name
+      description: The process name
+      type: Unknown
+    - contextPath: Process.Malicious
+      description: Malicious status of the process
+      type: Unknown
+    - contextPath: Process.CreationTime
+      description: The process creation time
+      type: Unknown
+    - contextPath: Process.EndTime
+      description: The process end time
+      type: Unknown
+    - contextPath: Process.CommandLine
+      description: The command line of the process
+      type: Unknown
+    - contextPath: Process.SignedAndVerified
+      description: Is the process signed and verified
+      type: Unknown
+    - contextPath: Process.ProductType
+      description: The product type
+      type: Unknown
+    - contextPath: Process.Children
+      description: Children of the process
+      type: Unknown
+    - contextPath: Process.Parent
+      description: The parent process
+      type: Unknown
+    - contextPath: Process.OwnerMachine
+      description: The machine's hostname
+      type: Unknown
+    - contextPath: Process.User
+      description: The user who ran the process
+      type: Unknown
+    - contextPath: Process.ImageFile
+      description: Image file of the process
+      type: Unknown
+    - contextPath: Process.SHA1
+      description: SHA1 of the process file
+      type: Unknown
+    - contextPath: Process.MD5
+      description: MD5 of the process file
+      type: Unknown
+    - contextPath: Process.CompanyName
+      description: The company's name
+      type: Unknown
+    - contextPath: Process.ProductName
+      description: The product's name
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The hostname of the machine to check.
+      isArray: false
+      name: machine
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks if the machine is currently connected to the Cybereason server
+    execution: false
+    name: cybereason-is-probe-connected
+    outputs:
+    - contextPath: Cybereason.Machine.isConnected
+      description: true if machine is connected, else false
+      type: boolean
+    - contextPath: Cybereason.Machine.Name
+      description: Machine name
+      type: string
+  - arguments:
+    - default: false
+      description: Filter connections which contain this IP (in or out).
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Filter connections on the given machine.
+      isArray: false
+      name: machine
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If true, save the result to the context.
+      isArray: false
+      name: saveToContext
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for connections.
+    execution: false
+    name: cybereason-query-connections
+    outputs:
+    - contextPath: Connection.Name
+      description: The connection's name
+      type: Unknown
+    - contextPath: Connection.Direction
+      description: OUTGOING/INCOMING
+      type: Unknown
+    - contextPath: Connection.ServerAddress
+      description: Address of the Cybereason machine
+      type: Unknown
+    - contextPath: Connection.ServerPort
+      description: Port of the Cybereason machine
+      type: Unknown
+    - contextPath: Connection.PortType
+      description: Type of the connection
+      type: Unknown
+    - contextPath: Connection.ReceivedBytes
+      description: Received bytes count
+      type: Unknown
+    - contextPath: Connection.TransmittedBytes
+      description: Transmitted bytes count
+      type: Unknown
+    - contextPath: Connection.RemoteCountry
+      description: The connection's remote country
+      type: Unknown
+    - contextPath: Connection.OwnerMachine
+      description: The machine's hostname
+      type: Unknown
+    - contextPath: Connection.OwnerProcess
+      description: The process which performed the connection
+      type: Unknown
+    - contextPath: Connection.CreationTime
+      description: Creation time of the connection
+      type: Unknown
+    - contextPath: Connection.EndTime
+      description: End time of the connection
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Machine name to be isolated
+      isArray: false
+      name: machine
+      required: true
+      secret: false
+    deprecated: false
+    description: Isolates a machine that has been infected from the rest of the network
+    execution: true
+    name: cybereason-isolate-machine
+    outputs:
+    - contextPath: Cybereason.Machine
+      description: Machine name
+      type: string
+    - contextPath: Cybereason.IsIsolated
+      description: Is the machine isolated
+      type: boolean
+    - contextPath: Endpoint.Hostname
+      description: Machine name
+      type: string
+  - arguments:
+    - default: true
+      description: Machine name to be un-isolated
+      isArray: false
+      name: machine
+      required: true
+      secret: false
+    deprecated: false
+    description: Stops isolation of a machine
+    execution: true
+    name: cybereason-unisolate-machine
+    outputs:
+    - contextPath: Cybereason.Machine
+      description: Machine name
+      type: string
+    - contextPath: Cybereason.IsIsolated
+      description: Is the machine isolated
+      type: boolean
+    - contextPath: Endpoint.Hostname
+      description: Machine name
+      type: string
+  - arguments:
+    - default: false
+      description: Filter to filter response by, given in Cybereason API syntax.
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
+      description: The total number of results to return for your Server. Ensure you
+        make the limit a reasonable number to maximize Server performance and not
+        to overload the system.
+      isArray: false
+      name: totalResultLimit
+      required: false
+      secret: false
+    - default: false
+      description: The number of items to return per Malop group.
+      isArray: false
+      name: perGroupLimit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: MALOP
+      description: 'The level of detail to provide in the response. Possible values
+        include:  SPECIFIC:  References value contain only the count in the ElementValues
+        class. The Suspicions map is calculated for each results, with the suspicion
+        name and the first time the suspicion appeared. The Evidence map is not calculated
+        for the results. CUSTOM:  Reference values contain the specific Elements,
+        up to the limit defined in the perFeatureLimit parameter. The Suspicions map
+        is not calculated for the results. The Evidence map is not calculated for
+        the results. DETAILS:  Reference values contain the specific Elements, up
+        to the limit defined in the perFeatureLimit parameter. The Suspicions map
+        is calculated for each result, containing the suspicion name and the first
+        time the suspicion appeared. The Evidence map is not calculated for the results.'
+      isArray: false
+      name: templateContext
+      predefined:
+      - MALOP
+      - SPECIFIC
+      - CUSTOM
+      - DETAILS
+      - OVERVIEW
+      required: false
+      secret: false
+    - default: false
+      description: Return all the malops within the last days
+      isArray: false
+      name: withinLastDays
+      required: false
+      secret: false
+    - default: false
+      description: Malop GUIDs to filter by (Comma separated values supported, e.g.
+        11.5681864988155542407,11.1773255057963879999)
+      isArray: false
+      name: malopGuid
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all Malops and details on the Malops.
+    execution: false
+    name: cybereason-query-malops
+    outputs:
+    - contextPath: Cybereason.Malops.GUID
+      description: The unique globally unique identifier (guid) for the Malop.
+      type: string
+    - contextPath: Cybereason.Malops.CreationTime
+      description: The time reported as when the malicious behavior began on the system.
+        This is not the time that the Malop was first detected by Cybereason.
+      type: string
+    - contextPath: Cybereason.Malops.DecisionFeature
+      description: The reason that Cybereason has raised the Malop.
+      type: string
+    - contextPath: Cybereason.Malops.Link
+      description: Link to the Malop on Cybereason.
+      type: string
+    - contextPath: Cybereason.Malops.Suspects
+      description: Malop suspect type and name
+      type: string
+    - contextPath: Cybereason.Malops.LastUpdatedTime
+      description: Last updated time of malop
+      type: string
+    - contextPath: Cybereason.Malops.AffectedMachine
+      description: List of machines affected by this Malop
+      type: string
+    - contextPath: Cybereason.Malops.InvolvedHash
+      description: List of file hashes involved in this Malop
+      type: string
+    - contextPath: Cybereason.Malops.Status
+      description: Malop managemant status
+      type: string
+  - arguments:
+    - default: false
+      description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved
+        with the command cybereason-query-malops command)
+      isArray: false
+      name: malopGuids
+      required: true
+      secret: false
+    - default: false
+      description: Machine names which were affected by malop. Comma separated values
+        supported (e.g., machine1,machine2)
+      isArray: false
+      name: machineName
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of malops
+    execution: false
+    name: cybereason-malop-processes
+    outputs:
+    - contextPath: Process.Name
+      description: The process name
+      type: string
+    - contextPath: Process.Malicious
+      description: Malicious status of the process
+      type: Unknown
+    - contextPath: Process.CreationTime
+      description: The process creation time
+      type: date
+    - contextPath: Process.EndTime
+      description: The process end time
+      type: date
+    - contextPath: Process.CommandLine
+      description: The command line of the process
+      type: string
+    - contextPath: Process.SignedAndVerified
+      description: Is the process signed and verified
+      type: Unknown
+    - contextPath: Process.ProductType
+      description: The product type
+      type: Unknown
+    - contextPath: Process.Children
+      description: Children of the process
+      type: Unknown
+    - contextPath: Process.Parent
+      description: The parent process
+      type: Unknown
+    - contextPath: Process.OwnerMachine
+      description: The machine's hostname
+      type: Unknown
+    - contextPath: Process.User
+      description: The user who ran the process
+      type: string
+    - contextPath: Process.ImageFile
+      description: Image file of the process
+      type: Unknown
+    - contextPath: Process.SHA1
+      description: SHA1 of the process file
+      type: string
+    - contextPath: Process.MD5
+      description: MD5 of the process file
+      type: string
+    - contextPath: Process.CompanyName
+      description: The company's name
+      type: string
+    - contextPath: Process.ProductName
+      description: The product's name
+      type: string
+  - arguments:
+    - default: false
+      description: Comment to add to the malop
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: Malop GUID to add comment to. (Malop GUID can be retrieved with
+        the command cybereason-query-malops command)
+      isArray: false
+      name: malopGuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Add new comment to malop
+    execution: false
+    name: cybereason-add-comment
+  - arguments:
+    - default: false
+      description: Malop GUID to update its status
+      isArray: false
+      name: malopGuid
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status to update
+      isArray: false
+      name: status
+      predefined:
+      - To Review
+      - Unread
+      - Remediated
+      - Not Relevant
+      - Open
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates malop status
+    execution: false
+    name: cybereason-update-malop-status
+    outputs:
+    - contextPath: Cybereason.Malops.GUID
+      description: Malop GUID
+      type: string
+    - contextPath: Cybereason.Malops.Status
+      description: 'Malop status: To Review,Unread,Remediated,Not Relevant'
+      type: string
+  - arguments:
+    - default: true
+      description: Malop process file MD5 to prevent
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    deprecated: false
+    description: Prevent malop process file
+    execution: false
+    name: cybereason-prevent-file
+    outputs:
+    - contextPath: Process.MD5
+      description: Process file MD5
+      type: string
+    - contextPath: Process.Prevent
+      description: True if process file is prevented, else false
+      type: boolean
+  - arguments:
+    - default: true
+      description: Malop process file MD5 to unprevent
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    deprecated: false
+    description: Unprevent malop process file
+    execution: false
+    name: cybereason-unprevent-file
+    outputs:
+    - contextPath: Process.MD5
+      description: Process file MD5
+      type: string
+    - contextPath: Process.Prevent
+      description: True if process file is prevented, else false
+      type: boolean
+  - arguments:
+    - default: true
+      description: File hash (SHA-1 and MD5 supported)
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Query files as part of investigation
+    execution: false
+    name: cybereason-query-file
+    outputs:
+    - contextPath: Cybereason.File.Path
+      description: File path
+      type: string
+    - contextPath: Cybereason.File.SHA1
+      description: File SHA-1 hash
+      type: string
+    - contextPath: Cybereason.File.Machine
+      description: Machine name on which file is located
+      type: string
+    - contextPath: Cybereason.File.SuspicionsCount
+      description: File suspicions count
+      type: number
+    - contextPath: Cybereason.File.Name
+      description: File name
+      type: string
+    - contextPath: Cybereason.File.CreationTime
+      description: File creation time
+      type: date
+    - contextPath: Cybereason.File.Suspicion
+      description: File suspicions object of suspicion as key and detected date as
+        value
+      type: string
+    - contextPath: Cybereason.File.OSVersion
+      description: Machine OS version on which file is located
+      type: string
+    - contextPath: Cybereason.File.ModifiedTime
+      description: File modified date
+      type: date
+    - contextPath: Cybereason.File.Malicious
+      description: Is file malicious
+      type: boolean
+    - contextPath: Cybereason.File.Company
+      description: Company name
+      type: string
+    - contextPath: Cybereason.File.MD5
+      description: File MD5 hash
+      type: string
+    - contextPath: Cybereason.File.IsConnected
+      description: Is machine connected to Cybereason
+      type: boolean
+    - contextPath: Cybereason.File.Signed
+      description: Is file signed
+      type: boolean
+    - contextPath: Cybereason.File.Evidence
+      description: File evidences
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Hostname on which file is located
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: Machine OS version on which file is located
+      type: string
+    - contextPath: File.Hostname
+      description: Hostname on which file is located
+      type: string
+    - contextPath: File.MD5
+      description: File MD5 hash
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA-1 hash
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.Path
+      description: File path
+      type: string
+  - arguments:
+    - default: true
+      description: Domain to query
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Query domains as part of investigation
+    execution: false
+    name: cybereason-query-domain
+    outputs:
+    - contextPath: Cybereason.Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Cybereason.Domain.Malicious
+      description: Is domain malicious
+      type: boolean
+    - contextPath: Cybereason.Domain.IsInternalDomain
+      description: Is domain internal
+      type: boolean
+    - contextPath: Cybereason.Domain.Reputation
+      description: Domain reputation
+      type: string
+    - contextPath: Cybereason.Domain.SuspicionsCount
+      description: Domain suspicions count
+      type: number
+    - contextPath: Cybereason.Domain.WasEverResolved
+      description: Was domain ever resolved
+      type: boolean
+    - contextPath: Cybereason.Domain.WasEverResolvedAsASecondLevelDomain
+      description: Was domain ever resolved as a second level domain
+      type: boolean
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+  - arguments:
+    - default: true
+      description: Username to query
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Query users as part of investigation
+    execution: false
+    name: cybereason-query-user
+    outputs:
+    - contextPath: Cybereason.User.Username
+      description: User name
+      type: string
+    - contextPath: Cybereason.User.Domain
+      description: User domain
+      type: string
+    - contextPath: Cybereason.User.LastMachineLoggedInTo
+      description: Last machine which user logged in to
+      type: string
+    - contextPath: Cybereason.User.LocalSystem
+      description: Is local system
+      type: boolean
+    - contextPath: Cybereason.User.Organization
+      description: User organization
+      type: string
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
+tests:
+- Cybereason Test

@@ -1,6 +1,6 @@
 commonfields:
-  id: ed24d63f-4134-49c4-82c0-96885a7a1cc3
-  version: 9
+  id: VerifyContextFields
+  version: -1
 name: VerifyContextFields
 script: |
   var fields = [args.field1, args.field2, args.field3, args.field4];

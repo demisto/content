@@ -1,104 +1,167 @@
+category: Messaging
 commonfields:
   id: Mail Sender (New)
   version: -1
-name: Mail Sender (New)
-display: Mail Sender (New)
-category: Messaging
-description: Send emails implemented in Python with embedded image support
 configuration:
 - display: Mail server hostname or IP address
   name: host
-  defaultvalue: ""
-  type: 0
   required: true
-- display: SMTP Port
+  type: 0
+- defaultvalue: '25'
+  display: SMTP Port
   name: port
-  defaultvalue: "25"
-  type: 0
   required: true
+  type: 0
 - display: Credentials
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: false
-- display: Sender address
+  type: 9
+- defaultvalue: noreply@demisto.com
+  display: Sender address
   name: from
-  defaultvalue: noreply@demisto.com
-  type: 0
   required: true
+  type: 0
 - display: Fully Qualified Domain Name (FQDN) - used in EHLO
   name: fqdn
-  defaultvalue: ""
+  required: false
   type: 0
-  required: false
-- display: Use TLS for connection
+- defaultvalue: 'false'
+  display: Use TLS for connection
   name: tls
-  defaultvalue: "false"
-  type: 8
   required: false
-- display: Do not validate server certificate (insecure)
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
+description: Send emails implemented in Python with embedded image support
+display: Mail Sender (New)
+name: Mail Sender (New)
 script:
-  script: ''
-  type: python
   commands:
-  - name: send-mail
-    arguments:
-    - name: to
-      default: true
+  - arguments:
+    - default: true
       description: Email addresses for the 'To' field
       isArray: true
-    - name: cc
+      name: to
+      required: false
+      secret: false
+    - default: false
       description: Email addresses for the 'Cc' field
       isArray: true
-    - name: bcc
+      name: cc
+      required: false
+      secret: false
+    - default: false
       description: Email addresses for the 'Bcc' field
       isArray: true
-    - name: subject
+      name: bcc
+      required: false
+      secret: false
+    - default: false
       description: Subject for the email to be sent
-    - name: body
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
       description: The contents (body) of the email to be sent in plain text
-    - name: htmlBody
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
       description: The contents (body) of the email to be sent in HTML format
-    - name: replyTo
+      isArray: false
+      name: htmlBody
+      required: false
+      secret: false
+    - default: false
       description: Address that should be used to reply to the message
-    - name: attachIDs
+      isArray: false
+      name: replyTo
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list of IDs of war room entries that contain
         the files that should be attached to the email
       isArray: true
-    - name: attachNames
+      name: attachIDs
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list to rename file-names of corresponding attachments
         IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename
         first and third file - attachNames=file_name1,,file_name3)
       isArray: true
-    - name: attachCIDs
+      name: attachNames
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list of CIDs to embed attachments inside the
         email itself
       isArray: true
-    - name: transientFile
+      name: attachCIDs
+      required: false
+      secret: false
+    - default: false
       description: Desired name for attached file. Multiple files are supported as
         comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
         2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
-    - name: transientFileContent
+      name: transientFile
+      required: false
+      secret: false
+    - default: false
       description: Content for attached file. Multiple files are supported as comma-separated
         list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
         2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
-    - name: transientFileCID
+      name: transientFileContent
+      required: false
+      secret: false
+    - default: false
       description: CID for attached file if we want it inline. Multiple files are
         supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
         transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
-    - name: templateParams
+      name: transientFileCID
+      required: false
+      secret: false
+    - default: false
       description: 'Replace {varname} variables with values from this argument. Expected
         values are in the form of a JSON document like {"varname": {"value": "some
         value", "key": "context key"}}. Each var name can either be provided with
         the value or a context key to retrieve the value from.'
+      isArray: false
+      name: templateParams
+      required: false
+      secret: false
+    - default: false
+      description: 'A CSV list of additional headers in the format: headerName=headerValue.
+        For example: "headerName1=headerValue1,headerName2=headerValue2".'
+      isArray: true
+      name: additionalHeader
+      required: false
+      secret: false
+    - default: false
+      description: Raw email message to send. If provided, all other arguments, but
+        to, cc and bcc, will be ignored.
+      isArray: false
+      name: raw_message
+      required: false
+      secret: false
+    deprecated: false
     description: Send an email
+    execution: false
+    name: send-mail
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
+  type: python
+  subtype: python2
 tests:
-  - Mail Sender (New) Test
+- Mail Sender (New) Test

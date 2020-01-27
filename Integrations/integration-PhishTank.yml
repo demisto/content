@@ -14,6 +14,11 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
 - display: Database refresh interval (hours)
   name: fetchIntervalHours
   defaultvalue: "1"
@@ -33,7 +38,7 @@ script:
     }
 
     var getList = function() {
-        var res = http(listSource,{Method: 'GET'},false,params.proxy);
+        var res = http(listSource, {Method: 'GET'}, params.insecure, params.proxy);
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
@@ -182,4 +187,4 @@ script:
     description: Show PhishTank database status
   runonce: false
 tests:
-  - No test
+  - PhishTank Testing

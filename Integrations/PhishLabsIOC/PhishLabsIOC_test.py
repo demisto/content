@@ -1,6 +1,152 @@
 from CommonServerPython import *
 
 
+def test_create_indicator_no_date():
+    from PhishLabsIOC import create_indicator_content
+
+    files_json = """
+            {
+                "attributes": [
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "xyz",
+                        "name": "md5",
+                        "value": "c8092abd8d581750c0530fa1fc8d8318"
+                    },
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "abc",
+                        "name": "filetype",
+                        "value": "application/zip"
+                    },
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "qwe",
+                        "name": "name",
+                        "value": "Baycc.zip"
+                    }
+                ],
+                "createdAt": "2019-05-14T13:03:45Z",
+                "falsePositive": false,
+                "id": "def",
+                "type": "Attachment",
+                "value": "c8092abd8d581750c0530fa1fc8d8318"
+            } """
+
+    result = {
+        'ID': 'def',
+        'Indicator': 'c8092abd8d581750c0530fa1fc8d8318',
+        'Type': 'Attachment',
+        'CreatedAt': '2019-05-14T13:03:45Z',
+        'UpdatedAt': '',
+        'FalsePositive': False,
+    }
+
+    indicator = json.loads(files_json)
+
+    actual = create_indicator_content(indicator)
+
+    assert actual == result
+
+
+def test_create_indicator_with_none_date():
+    from PhishLabsIOC import create_indicator_content
+
+    files_json = """
+            {
+                "attributes": [
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "xyz",
+                        "name": "md5",
+                        "value": "c8092abd8d581750c0530fa1fc8d8318"
+                    },
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "abc",
+                        "name": "filetype",
+                        "value": "application/zip"
+                    },
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "qwe",
+                        "name": "name",
+                        "value": "Baycc.zip"
+                    }
+                ],
+                "createdAt": "2019-05-14T13:03:45Z",
+                "updatedAt": "0001-01-01T00:00:00Z",
+                "falsePositive": false,
+                "id": "def",
+                "type": "Attachment",
+                "value": "c8092abd8d581750c0530fa1fc8d8318"
+            } """
+
+    result = {
+        'ID': 'def',
+        'Indicator': 'c8092abd8d581750c0530fa1fc8d8318',
+        'Type': 'Attachment',
+        'CreatedAt': '2019-05-14T13:03:45Z',
+        'UpdatedAt': '',
+        'FalsePositive': False,
+    }
+
+    indicator = json.loads(files_json)
+
+    actual = create_indicator_content(indicator)
+
+    assert actual == result
+
+
+def test_create_indicator_with_date():
+    from PhishLabsIOC import create_indicator_content
+
+    files_json = """
+            {
+                "attributes": [
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "xyz",
+                        "name": "md5",
+                        "value": "c8092abd8d581750c0530fa1fc8d8318"
+                    },
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "abc",
+                        "name": "filetype",
+                        "value": "application/zip"
+                    },
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "qwe",
+                        "name": "name",
+                        "value": "Baycc.zip"
+                    }
+                ],
+                "createdAt": "2019-05-14T13:03:45Z",
+                "updatedAt": "2019-05-14T13:03:45Z",
+                "falsePositive": false,
+                "id": "def",
+                "type": "Attachment",
+                "value": "c8092abd8d581750c0530fa1fc8d8318"
+            } """
+
+    result = {
+        'ID': 'def',
+        'Indicator': 'c8092abd8d581750c0530fa1fc8d8318',
+        'Type': 'Attachment',
+        'CreatedAt': '2019-05-14T13:03:45Z',
+        'UpdatedAt': '2019-05-14T13:03:45Z',
+        'FalsePositive': False,
+    }
+
+    indicator = json.loads(files_json)
+
+    actual = create_indicator_content(indicator)
+
+    assert actual == result
+
+
 def test_populate_context_files():
     from PhishLabsIOC import populate_context, get_file_properties, create_phishlabs_object
     files_json = """

@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5a19e81d-5266-4347-8e00-581c66b43451
+    taskid: af7b0f17-eafd-4d8b-8d9e-e3c9ef6a9b82
     type: start
     task:
-      id: 5a19e81d-5266-4347-8e00-581c66b43451
+      id: af7b0f17-eafd-4d8b-8d9e-e3c9ef6a9b82
       version: -1
       name: ""
       iscommand: false
@@ -20,8 +20,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": -40
+          "x": 592.5,
+          "y": 50
         }
       }
     note: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: d33efdd3-de84-4621-8e96-2f64da7b5895
+    taskid: 474da64a-2586-4a03-8a18-b1715f569c43
     type: regular
     task:
-      id: d33efdd3-de84-4621-8e96-2f64da7b5895
+      id: 474da64a-2586-4a03-8a18-b1715f569c43
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -44,6 +44,7 @@ tasks:
       '#none#':
       - "16"
       - "21"
+      - "26"
     scriptarguments:
       all:
         simple: "yes"
@@ -55,8 +56,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 115
+          "x": 592.5,
+          "y": 195
         }
       }
     note: false
@@ -64,10 +65,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: b6e7317a-a854-471a-895a-fdcd6d6987dc
+    taskid: b5600231-52ca-405e-8760-54daffabe855
     type: condition
     task:
-      id: b6e7317a-a854-471a-895a-fdcd6d6987dc
+      id: b5600231-52ca-405e-8760-54daffabe855
       version: -1
       name: Verify Results - create
       type: condition
@@ -96,7 +97,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Git-Integration
+              simple: hello-world
       - - operator: isEqualString
           left:
             value:
@@ -108,8 +109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 695
+          "x": 592.5,
+          "y": 1070
         }
       }
     note: false
@@ -117,10 +118,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 0154b2a9-0193-4ee9-8206-040dae0f4608
+    taskid: 3c65a319-44b8-40ba-8c65-11d2058b1934
     type: condition
     task:
-      id: 0154b2a9-0193-4ee9-8206-040dae0f4608
+      id: 3c65a319-44b8-40ba-8c65-11d2058b1934
       version: -1
       name: Verify Results - search
       type: condition
@@ -140,7 +141,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Git-Integration
+              simple: hello-world
       - - operator: isEqualString
           left:
             value:
@@ -161,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 970
+          "x": 377.5,
+          "y": 1420
         }
       }
     note: false
@@ -170,10 +171,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 1b2fc2e8-0e6a-4d98-8ca1-402c796373f4
+    taskid: f7427f05-d477-4520-805e-9aee51ddd85b
     type: condition
     task:
-      id: 1b2fc2e8-0e6a-4d98-8ca1-402c796373f4
+      id: f7427f05-d477-4520-805e-9aee51ddd85b
       version: -1
       name: Verify Results - list all
       type: condition
@@ -181,7 +182,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "20"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -193,7 +194,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Git-Integration
+              simple: hello-world
       - - operator: containsGeneral
           left:
             value:
@@ -206,8 +207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1380
+          "x": 592.5,
+          "y": 1770
         }
       }
     note: false
@@ -215,29 +216,22 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 88aae2b8-28ad-4eac-890e-8a8c2a0beac6
-    type: regular
+    taskid: e1320397-ba03-42eb-8fd3-f6d46acee1ac
+    type: title
     task:
-      id: 88aae2b8-28ad-4eac-890e-8a8c2a0beac6
+      id: e1320397-ba03-42eb-8fd3-f6d46acee1ac
       version: -1
-      name: closeInvestigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
       brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      id:
-        simple: ${incident.id}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1960
+          "x": 807.5,
+          "y": 3695
         }
       }
     note: false
@@ -245,17 +239,17 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 6032a275-7b29-4a60-8c19-13cb4d9ca5bb
+    taskid: adfdffbc-f47b-4658-813f-562b8c9ccf4b
     type: regular
     task:
-      id: 6032a275-7b29-4a60-8c19-13cb4d9ca5bb
+      id: adfdffbc-f47b-4658-813f-562b8c9ccf4b
       version: -1
       name: GitHub-create-issue
-      description: Creates an issue in GitHub
-      script: GitHub|||GitHub-create-issue
+      description: Creates an issue in GitHub.
+      script: '|||GitHub-create-issue'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "25"
@@ -270,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 325
+          "x": 592.5,
+          "y": 720
         }
       }
     note: false
@@ -279,30 +273,30 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 4227665d-9648-40fd-800f-ce82be3eca9d
+    taskid: e5471b9b-bbbc-4e56-86e8-028bda080192
     type: regular
     task:
-      id: 4227665d-9648-40fd-800f-ce82be3eca9d
+      id: e5471b9b-bbbc-4e56-86e8-028bda080192
       version: -1
       name: GitHub-search-issues
       description: Searches issues matching a given query
-      script: GitHub|||GitHub-search-issues
+      script: '|||GitHub-search-issues'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
       limit: {}
       query:
-        simple: '"user:roysagi label:newbug"'
+        simple: '"user:content-bot label:newbug"'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 830
+          "x": 377.5,
+          "y": 1245
         }
       }
     note: false
@@ -310,17 +304,17 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 14816c73-d9d0-4deb-81c2-c4f0d1fe79bf
+    taskid: 05dfc533-aaff-4765-88eb-0d883b5d5747
     type: regular
     task:
-      id: 14816c73-d9d0-4deb-81c2-c4f0d1fe79bf
+      id: 05dfc533-aaff-4765-88eb-0d883b5d5747
       version: -1
       name: GitHub-update-issue
       description: Updates the parameters of a given issue
-      script: GitHub|||GitHub-update-issue
+      script: '|||GitHub-update-issue'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -337,8 +331,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 120,
-          "y": 840
+          "x": 807.5,
+          "y": 1245
         }
       }
     note: false
@@ -346,17 +340,17 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 0b0cfb84-8349-4e07-88ba-fa8b96419f38
+    taskid: 232e6ce1-ab24-4f76-8cd9-d1f24a2be755
     type: regular
     task:
-      id: 0b0cfb84-8349-4e07-88ba-fa8b96419f38
+      id: 232e6ce1-ab24-4f76-8cd9-d1f24a2be755
       version: -1
       name: GitHub-list-all-issues
       description: Lists all issues that the user can see
-      script: GitHub|||GitHub-list-all-issues
+      script: '|||GitHub-list-all-issues'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -368,8 +362,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1200
+          "x": 592.5,
+          "y": 1595
         }
       }
     note: false
@@ -377,29 +371,39 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 0a4657d7-7511-4f80-8ff4-33fd4bd72b73
+    taskid: 6b82bf2f-5854-4c60-8d51-4183304564eb
     type: regular
     task:
-      id: 0a4657d7-7511-4f80-8ff4-33fd4bd72b73
+      id: 6b82bf2f-5854-4c60-8d51-4183304564eb
       version: -1
       name: GitHub-close-issue
       description: closes an existing issue
-      script: GitHub|||GitHub-close-issue
+      script: '|||GitHub-close-issue'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "24"
     scriptarguments:
       ID:
-        simple: ${GitHub.Issue.ID}
+        complex:
+          root: IssueID
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: IssueID
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1560
+          "x": 592.5,
+          "y": 2120
         }
       }
     note: false
@@ -407,18 +411,18 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 0075cbf3-d568-408f-8f03-33b22b3bb319
+    taskid: 23613cf6-e540-4563-8023-437a4b93a3f2
     type: regular
     task:
-      id: 0075cbf3-d568-408f-8f03-33b22b3bb319
+      id: 23613cf6-e540-4563-8023-437a4b93a3f2
       version: -1
       name: GitHub-get-download-count
       description: Returns the total amount of downloads over all the releases of
         the repository
-      script: GitHub|||GitHub-get-download-count
+      script: '|||GitHub-get-download-count'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "22"
@@ -426,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 540
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -435,10 +439,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 9508b655-4209-4916-8431-c2fb27abf8cd
+    taskid: f68c07b5-73f4-47cd-8aaf-24aeeb1a6a8d
     type: condition
     task:
-      id: 9508b655-4209-4916-8431-c2fb27abf8cd
+      id: f68c07b5-73f4-47cd-8aaf-24aeeb1a6a8d
       version: -1
       name: Verify Results - count
       type: condition
@@ -446,7 +450,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -458,7 +462,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "17519182"
+              simple: "19854717"
       - - operator: isEqualNumber
           left:
             value:
@@ -466,12 +470,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "5"
+              simple: "0"
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 950
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -479,10 +483,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 882c0052-ac95-4951-85a7-8a6b22d66b8c
+    taskid: 4f62f106-d481-4529-8b67-7bcda718e90a
     type: condition
     task:
-      id: 882c0052-ac95-4951-85a7-8a6b22d66b8c
+      id: 4f62f106-d481-4529-8b67-7bcda718e90a
       version: -1
       name: Verify Results - update
       type: condition
@@ -523,8 +527,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 970
+          "x": 807.5,
+          "y": 1420
         }
       }
     note: false
@@ -532,10 +536,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: c8b19aed-2242-4459-88a2-632196d9008b
+    taskid: a74de116-8a59-4130-837e-2c500fb7677d
     type: condition
     task:
-      id: c8b19aed-2242-4459-88a2-632196d9008b
+      id: a74de116-8a59-4130-837e-2c500fb7677d
       version: -1
       name: Verify Results - closed
       type: condition
@@ -543,7 +547,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -568,8 +572,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1740
+          "x": 592.5,
+          "y": 2295
         }
       }
     note: false
@@ -577,10 +581,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: cf5902a0-5dd1-4882-843c-4c1b1402ebff
+    taskid: 6fc8a82c-30b6-48ec-8e5c-d76592aeb08c
     type: regular
     task:
-      id: cf5902a0-5dd1-4882-843c-4c1b1402ebff
+      id: 6fc8a82c-30b6-48ec-8e5c-d76592aeb08c
       version: -1
       name: Store ID
       description: Sets a value into the context with the given context key
@@ -601,8 +605,913 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 500
+          "x": 592.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: d8861a00-a3a9-42fa-8571-34c962fb8ad5
+    type: regular
+    task:
+      id: d8861a00-a3a9-42fa-8571-34c962fb8ad5
+      version: -1
+      name: GitHub-get-branch
+      description: Get a branch
+      script: GitHub|||GitHub-get-branch
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      branch_name:
+        simple: master
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: c9af416b-8b6e-48ce-89f9-5f861f025b77
+    type: regular
+    task:
+      id: c9af416b-8b6e-48ce-89f9-5f861f025b77
+      version: -1
+      name: GitHub-create-branch
+      description: Create a new branch
+      script: GitHub|||GitHub-create-branch
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      branch_name:
+        simple: test-branch
+      commit_sha:
+        complex:
+          root: GitHub
+          accessor: Branch.CommitSHA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 2d40874d-d025-4b39-832b-24b027f8ca73
+    type: regular
+    task:
+      id: 2d40874d-d025-4b39-832b-24b027f8ca73
+      version: -1
+      name: GitHub-delete-branch
+      description: Delete a branch
+      script: GitHub|||GitHub-delete-branch
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      branch_name:
+        simple: test-branch
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: ee43bfe6-8e54-4b3b-8229-8ec26283cc95
+    type: regular
+    task:
+      id: ee43bfe6-8e54-4b3b-8229-8ec26283cc95
+      version: -1
+      name: GitHub-get-stale-prs
+      description: Get inactive pull requests
+      script: GitHub|||GitHub-get-stale-prs
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      label: {}
+      stale_time:
+        simple: 1 minutes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: d47a1a63-6418-4796-8bb3-db30e22a8e55
+    type: condition
+    task:
+      id: d47a1a63-6418-4796-8bb3-db30e22a8e55
+      version: -1
+      name: Verify Results - get stale prs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+      - "35"
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: GitHub
+                accessor: PR.Number
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: e902ab8c-9e9f-4199-8e03-a462a290d3e4
+    type: regular
+    task:
+      id: e902ab8c-9e9f-4199-8e03-a462a290d3e4
+      version: -1
+      name: GitHub-request-review
+      description: Request reviews from GitHub users for a given Pull Request
+      script: GitHub|||GitHub-request-review
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      pull_number:
+        simple: "1"
+      reviewers:
+        simple: content-bot
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: a2002935-a5d1-4ad9-882f-09b045fd73a6
+    type: regular
+    task:
+      id: a2002935-a5d1-4ad9-882f-09b045fd73a6
+      version: -1
+      name: GitHub-create-comment
+      description: Create a comment for a given issue
+      script: GitHub|||GitHub-create-comment
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      body:
+        simple: TestPlaybook-Comment
+      issue_number:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: f97c7dbb-f816-4c22-8959-717799b74b61
+    type: regular
+    task:
+      id: f97c7dbb-f816-4c22-8959-717799b74b61
+      version: -1
+      name: GitHub-add-label
+      description: Add labels to an issue
+      script: GitHub|||GitHub-add-label
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      issue_number:
+        simple: "1"
+      labels:
+        simple: TEST-LABEL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2097.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: e2d13130-1c12-47be-88a5-0fe163074b39
+    type: regular
+    task:
+      id: e2d13130-1c12-47be-88a5-0fe163074b39
+      version: -1
+      name: GitHub-list-issue-comments
+      description: List comments on an issue
+      script: GitHub|||GitHub-list-issue-comments
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      issue_number:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 3e90cb57-d0b2-449d-8510-f4edc3b85b3b
+    type: condition
+    task:
+      id: 3e90cb57-d0b2-449d-8510-f4edc3b85b3b
+      version: -1
+      name: Verify Results - list issue comments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub
+                filters:
+                - - operator: isEqualNumber
+                    left:
+                      value:
+                        simple: GitHub.Comment.IssueNumber
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+                accessor: Comment.Body
+            iscontext: true
+          right:
+            value:
+              simple: TestPlaybook-Comment
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: acb57d25-7264-43c9-8eea-0c3c60f4d4d2
+    type: regular
+    task:
+      id: acb57d25-7264-43c9-8eea-0c3c60f4d4d2
+      version: -1
+      name: GitHub-list-pr-files
+      description: List pull request files
+      script: GitHub|||GitHub-list-pr-files
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      pull_number:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: db1c9e63-00b5-4aa3-8799-b75cc7988ad6
+    type: regular
+    task:
+      id: db1c9e63-00b5-4aa3-8799-b75cc7988ad6
+      version: -1
+      name: GitHub-list-pr-reviews
+      description: List reviews on a pull request
+      script: GitHub|||GitHub-list-pr-reviews
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      pull_number:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: b29558db-362e-4461-899b-4684c0b86191
+    type: condition
+    task:
+      id: b29558db-362e-4461-899b-4684c0b86191
+      version: -1
+      name: Verify Results - list pr files
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub
+                accessor: PR.File.Name
+            iscontext: true
+          right:
+            value:
+              simple: TEST.md
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 3106d406-6f3f-42e9-8cfb-898678a050cf
+    type: condition
+    task:
+      id: 3106d406-6f3f-42e9-8cfb-898678a050cf
+      version: -1
+      name: Verify Results - list pr reviews
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: GitHub
+                accessor: PR.Review
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 35d453f6-30df-4879-86b7-a659ca803e97
+    type: regular
+    task:
+      id: 35d453f6-30df-4879-86b7-a659ca803e97
+      version: -1
+      name: GitHub-get-commit
+      description: Get a commit
+      script: GitHub|||GitHub-get-commit
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      commit_sha:
+        complex:
+          root: GitHub
+          accessor: Branch.CommitSHA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 728248ba-b7c0-49d7-85fe-d80bbea4e2b3
+    type: regular
+    task:
+      id: 728248ba-b7c0-49d7-85fe-d80bbea4e2b3
+      version: -1
+      name: GitHub-get-pull-request
+      description: Get a pull request
+      script: GitHub|||GitHub-get-pull-request
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      pull_number:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 30859d44-1cd3-4e92-81e3-e30710fa403b
+    type: condition
+    task:
+      id: 30859d44-1cd3-4e92-81e3-e30710fa403b
+      version: -1
+      name: Verify Results - get pull request
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GitHub.PR.Number
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+                accessor: PR.Commits
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 335bd740-5e8d-49df-8a2e-b4e4eda3e1bf
+    type: condition
+    task:
+      id: 335bd740-5e8d-49df-8a2e-b4e4eda3e1bf
+      version: -1
+      name: Verify Results - get commit
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub
+                accessor: Commit.Author.Name
+            iscontext: true
+          right:
+            value:
+              simple: content-bot
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 5532e0c1-f02e-4a88-8df4-d25cd77c6bcb
+    type: regular
+    task:
+      id: 5532e0c1-f02e-4a88-8df4-d25cd77c6bcb
+      version: -1
+      name: Set
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IssueID
+      value:
+        complex:
+          root: GitHub
+          accessor: Issue.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: 42238f9a-622d-4a1e-8d5d-5d6e4c381bbd
+    type: regular
+    task:
+      id: 42238f9a-622d-4a1e-8d5d-5d6e4c381bbd
+      version: -1
+      name: GitHub-is-pr-merged
+      description: 'Get if a pull request has been merged. If the pull request has
+        been merged the API returns ''Status: 204 No Content''. If the pull request
+        has not been merged the API returns ''Status: 404 Not Found'''
+      script: '|||GitHub-is-pr-merged'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      pull_number:
+        simple: "82"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: 2c21fbd5-fd5a-4951-8894-146d3aa61928
+    type: regular
+    task:
+      id: 2c21fbd5-fd5a-4951-8894-146d3aa61928
+      version: -1
+      name: GitHub-create-pull-request
+      description: Create a new pull request
+      script: '|||GitHub-create-pull-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      base:
+        simple: master
+      body:
+        simple: CREATED BODY
+      draft: {}
+      head:
+        simple: branch-for-pr
+      maintainer_can_modify: {}
+      title:
+        simple: CREATED PR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: 891d0bf7-f6d0-4853-887e-202f920c15b7
+    type: regular
+    task:
+      id: 891d0bf7-f6d0-4853-887e-202f920c15b7
+      version: -1
+      name: GitHub-update-pull-request
+      description: Update a pull request
+      script: '|||GitHub-update-pull-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      base: {}
+      body:
+        simple: UPDATED PR
+      maintainer_can_modify: {}
+      pull_number:
+        complex:
+          root: GitHub
+          accessor: PR.Number
+      state: {}
+      title:
+        simple: UDPATE PR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 00411238-5332-4a97-85d3-78faef569396
+    type: regular
+    task:
+      id: 00411238-5332-4a97-85d3-78faef569396
+      version: -1
+      name: GitHub-close-issue
+      description: Closes an existing issue.
+      script: '|||GitHub-close-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      ID:
+        complex:
+          root: GitHub
+          accessor: PR.Number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: b8e2199c-5424-45e4-8fdc-cee4d249a1b4
+    type: condition
+    task:
+      id: b8e2199c-5424-45e4-8fdc-cee4d249a1b4
+      version: -1
+      name: Verify Results - create pull request
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub
+                accessor: PR.Body
+            iscontext: true
+          right:
+            value:
+              simple: CREATED BODY
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 6aa45274-4844-4f93-846b-e19f05281960
+    type: condition
+    task:
+      id: 6aa45274-4844-4f93-846b-e19f05281960
+      version: -1
+      name: Verify Results - update pull request
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub
+                accessor: PR.Body
+            iscontext: true
+          right:
+            value:
+              simple: UPDATED PR
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 85f2146c-e4c7-49e2-8b70-a2e718e4a737
+    type: regular
+    task:
+      id: 85f2146c-e4c7-49e2-8b70-a2e718e4a737
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2470
         }
       }
     note: false
@@ -613,10 +1522,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2095,
-        "width": 1590,
-        "x": 120,
-        "y": -40
+        "height": 3710,
+        "width": 2427.5,
+        "x": 50,
+        "y": 50
       }
     }
   }

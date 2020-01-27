@@ -1,0 +1,302 @@
+[
+  {
+    "File": [
+      "4e0daff2b6a2db421e79fb64228943be",
+      "384:mzawcK1gOUqJMpMhE5yOaF0O9TwFExCZkUf6H+PknKV+rXkrsH/CxEdubVAjMPW4:AiMVWcK9AhrDNEf",
+      "115f9ecff8fcd3f266184c32eae03296e0131567ada6094dd022aa771c66cc8e",
+      "d76dcf2ae966dae2839c3145c55342d9cb528bd803deb71cdc39cbab3f556f0b",
+      "d7a10a4b3fd245dc44c1bb143d1a7f12816cdef7"
+    ],
+    "IP": [
+      "9.9.9.9",
+      "8.3.3.3"
+    ],
+    "Domain": [
+      "demisto.com",
+      "8.8.8.8"
+    ],
+    "Email": [
+      "user@example.com"
+    ],
+    "URL": [
+      "http://demisto.com"
+    ],
+    "Username": [
+      "krbtgt"
+    ],
+    "Registry Path Reputation": [
+      "HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey"
+    ],
+    "CVE CVSS Score": [
+      "CVE-2019-7312"
+    ]
+  },
+  {
+    "http://demisto.com": {
+      "created": "2019-05-26T16:18:32.000Z",
+      "id": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
+      "labels": [
+        "url"
+      ],
+      "modified": "2019-05-26T16:18:32.000Z",
+      "pattern": "[url:value = 'http://demisto.com']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.837119Z"
+    },
+    "4e0daff2b6a2db421e79fb64228943be": {
+      "created": "2019-05-26T16:12:18.000Z",
+      "id": "indicator--8be84046-032a-4556-be39-940a06440d81",
+      "labels": [
+        "file md5"
+      ],
+      "modified": "2019-05-26T16:12:18.000Z",
+      "pattern": "[file:hashes.md5 = '4e0daff2b6a2db421e79fb64228943be']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.83887Z"
+    },
+    "user@example.com": {
+      "created": "2019-05-26T16:11:08.000Z",
+      "id": "indicator--7ed80192-4b84-4954-8b41-6268290cd5c7",
+      "labels": [
+        "email"
+      ],
+      "modified": "2019-05-26T16:11:08.000Z",
+      "pattern": "[email-message:sender_ref.value = 'user@example.com']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.840274Z"
+    },
+    "demisto.com": {
+      "created": "2019-05-26T16:10:49.000Z",
+      "id": "indicator--62662049-2a64-4961-b493-4c932633a72f",
+      "labels": [
+        "domain"
+      ],
+      "modified": "2019-05-26T16:10:49.000Z",
+      "pattern": "[domain-name:value = 'demisto.com']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.841314Z"
+    },
+    "384:mzawcK1gOUqJMpMhE5yOaF0O9TwFExCZkUf6H+PknKV+rXkrsH/CxEdubVAjMPW4:AiMVWcK9AhrDNEf": {
+      "created": "2019-05-26T16:18:03.000Z",
+      "id": "indicator--c38d5378-ff87-4412-aa05-9d0c72f5bdcf",
+      "labels": [
+        "ssdeep"
+      ],
+      "modified": "2019-05-26T16:18:03.000Z",
+      "pattern": "[file:hashes.ssdeep = '384:mzawcK1gOUqJMpMhE5yOaF0O9TwFExCZkUf6H+PknKV+rXkrsH/CxEdubVAjMPW4:AiMVWcK9AhrDNEf']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.847309Z"
+    },
+    "9.9.9.9": {
+      "created": "2019-05-26T16:17:08.000Z",
+      "id": "indicator--cc6f097d-651d-462f-a4cf-a6065cfa2f26",
+      "labels": [
+        "ipv4"
+      ],
+      "modified": "2019-05-26T16:17:08.000Z",
+      "pattern": "[ipv4-addr:value = '9.9.9.9']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.850114Z"
+    },
+    "8.3.3.3": {
+      "created": "2019-05-26T16:16:19.000Z",
+      "id": "indicator--7fa7ad39-29c9-4cb1-9ee8-ce716d3e2ad7",
+      "labels": [
+        "ip"
+      ],
+      "modified": "2019-05-26T16:16:19.000Z",
+      "pattern": "[ipv4-addr:value = '8.3.3.3']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.851906Z"
+    },
+    "8.8.8.8": {
+      "created": "2019-05-26T16:15:44.000Z",
+      "id": "indicator--620f36bc-ab89-484d-8ff0-51dbd4cfe4b9",
+      "labels": [
+        "hostname"
+      ],
+      "modified": "2019-05-26T16:15:44.000Z",
+      "pattern": "[domain-name:value = '8.8.8.8']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.853086Z"
+    },
+    "115f9ecff8fcd3f266184c32eae03296e0131567ada6094dd022aa771c66cc8e": {
+      "created": "2019-05-26T16:15:14.000Z",
+      "id": "indicator--b484b083-a85e-49e0-84e4-d0ab13edeca5",
+      "labels": [
+        "file sha-256 v2"
+      ],
+      "modified": "2019-05-26T16:15:14.000Z",
+      "pattern": "[file:hashes.sha256 = '115f9ecff8fcd3f266184c32eae03296e0131567ada6094dd022aa771c66cc8e']",
+      "score": "None",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.854465Z"
+    },
+    "d76dcf2ae966dae2839c3145c55342d9cb528bd803deb71cdc39cbab3f556f0b": {
+      "created": "2019-05-26T16:13:33.000Z",
+      "id": "indicator--af539811-9383-4cdb-9a44-4a8985525302",
+      "labels": [
+        "file sha-256"
+      ],
+      "modified": "2019-05-26T16:13:33.000Z",
+      "pattern": "[file:hashes.sha256 = 'd76dcf2ae966dae2839c3145c55342d9cb528bd803deb71cdc39cbab3f556f0b']",
+      "score": "Not Specified",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.857271Z"
+    },
+    "d7a10a4b3fd245dc44c1bb143d1a7f12816cdef7": {
+      "created": "2019-05-26T16:13:00.000Z",
+      "id": "indicator--454c5435-fa71-4cf8-bcba-1336dbc20600",
+      "labels": [
+        "file sha-1"
+      ],
+      "modified": "2019-05-26T16:13:00.000Z",
+      "pattern": "[file:hashes.sha1 = 'd7a10a4b3fd245dc44c1bb143d1a7f12816cdef7']",
+      "score": "Medium",
+      "source": "",
+      "type": "indicator",
+      "valid_from": "2019-05-28T16:38:17.858716Z"
+    }
+  },
+  [
+    {
+      "indicator_type": "File",
+      "value": "115f9ecff8fcd3f266184c32eae03296e0131567ada6094dd022aa771c66cc8e",
+      "CustomFields": {
+        "indicatorId": "indicator--b484b083-a85e-49e0-84e4-d0ab13edeca5",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:15:14.000Z"
+    },
+    {
+      "indicator_type": "File",
+      "value": "384:mzawcK1gOUqJMpMhE5yOaF0O9TwFExCZkUf6H+PknKV+rXkrsH/CxEdubVAjMPW4:AiMVWcK9AhrDNEf",
+      "CustomFields": {
+        "indicatorId": "indicator--c38d5378-ff87-4412-aa05-9d0c72f5bdcf",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:18:03.000Z"
+    },
+    {
+      "indicator_type": "File",
+      "value": "d76dcf2ae966dae2839c3145c55342d9cb528bd803deb71cdc39cbab3f556f0b",
+      "CustomFields": {
+        "indicatorId": "indicator--af539811-9383-4cdb-9a44-4a8985525302",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:13:33.000Z"
+    },
+    {
+      "indicator_type": "File",
+      "value": "d7a10a4b3fd245dc44c1bb143d1a7f12816cdef7",
+      "CustomFields": {
+        "indicatorId": "indicator--454c5435-fa71-4cf8-bcba-1336dbc20600",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 2,
+      "timestamp": "2019-05-26T16:13:00.000Z"
+    },
+    {
+      "indicator_type": "File",
+      "value": "4e0daff2b6a2db421e79fb64228943be",
+      "CustomFields": {
+        "indicatorId": "indicator--8be84046-032a-4556-be39-940a06440d81",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:12:18.000Z"
+    },
+    {
+      "indicator_type": "IP",
+      "value": "9.9.9.9",
+      "CustomFields": {
+        "indicatorId": "indicator--cc6f097d-651d-462f-a4cf-a6065cfa2f26",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:17:08.000Z"
+    },
+    {
+      "indicator_type": "IP",
+      "value": "8.3.3.3",
+      "CustomFields": {
+        "indicatorId": "indicator--7fa7ad39-29c9-4cb1-9ee8-ce716d3e2ad7",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:16:19.000Z"
+    },
+    {
+      "indicator_type": "Domain",
+      "value": "8.8.8.8",
+      "CustomFields": {
+        "indicatorId": "indicator--620f36bc-ab89-484d-8ff0-51dbd4cfe4b9",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:15:44.000Z"
+    },
+    {
+      "indicator_type": "Domain",
+      "value": "demisto.com",
+      "CustomFields": {
+        "indicatorId": "indicator--62662049-2a64-4961-b493-4c932633a72f",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:10:49.000Z"
+    },
+    {
+      "indicator_type": "Email",
+      "value": "user@example.com",
+      "CustomFields": {
+        "indicatorId": "indicator--7ed80192-4b84-4954-8b41-6268290cd5c7",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:11:08.000Z"
+    },
+    {
+      "indicator_type": "URL",
+      "value": "http://demisto.com",
+      "CustomFields": {
+        "indicatorId": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
+        "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
+      },
+      "source": "indicator",
+      "score": 0,
+      "timestamp": "2019-05-26T16:18:32.000Z"
+    }
+  ]
+]

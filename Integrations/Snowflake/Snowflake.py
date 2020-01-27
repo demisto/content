@@ -263,7 +263,7 @@ def row_to_incident(column_descriptions, row):
         name = 'Snowflake Incident -- '
         name += convert_datetime_to_string(occurred) + '- ' + str(datetime.now().timestamp())
     incident['name'] = name
-    incident['occurred'] = occurred.strftime('%Y-%m-%dT%H:%M:%SZ%z')
+    incident['occurred'] = occurred.isoformat()
     # Incident occurrence time as timestamp - the datetime field specified in the integration parameters
     incident['timestamp'] = timestamp
     # The raw response for the row (reformatted to be json serializable) returned by the db query
@@ -332,7 +332,10 @@ def snowflake_query(args):
     params = get_connection_params(args)
     query = args.get('query')
     limit = args.get('limit', '100')
-    limit = int(limit)
+    try:
+        limit = int(limit)
+    except ValueError:
+        raise ValueError('The value for limit must be an integer.')
     if limit > MAX_ROWS:
         limit = MAX_ROWS
     with snowflake.connector.connect(**params) as connection:

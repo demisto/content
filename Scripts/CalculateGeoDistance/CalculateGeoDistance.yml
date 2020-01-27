@@ -1,0 +1,30 @@
+commonfields:
+  id: CalculateGeoDistance
+  version: -1
+name: CalculateGeoDistance
+type: python
+script: '-'
+tags:
+- Utilities
+comment: Compute the distance between two sets of coordinates, in miles.
+enabled: true
+args:
+- name: src_coords
+  required: true
+  description: Latitude and Longitude coordinates for the first location.  Required
+    format 1.23,4.56
+- name: dest_coords
+  required: true
+  description: Latitude and Longitude coordinates for the second location.  Required
+    format 1.23,4.56
+outputs:
+- contextPath: Geo.Distance
+  description: Distance between two sets of coordinates, in miles.
+- contextPath: Geo.Coordinates
+  description: List of coordinates used in the calculation.
+scripttarget: 0
+runonce: false
+dockerimage: demisto/geopy:1.0.0.3443
+runas: DBotWeakRole
+tests:
+  - Impossible Traveler - Test

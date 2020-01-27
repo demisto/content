@@ -1,0 +1,1179 @@
+commonfields:
+  id: Recorded Future
+  version: -1
+name: Recorded Future
+display: Recorded Future
+category: Data Enrichment & Threat Intelligence
+description: Unique threat intel technology that automatically serves up relevant
+  insights in real time.
+configuration:
+- display: Server URL (e.g., https://api.recordedfuture.com)
+  name: server
+  defaultvalue: https://api.recordedfuture.com
+  type: 0
+  required: true
+- display: API Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Suspicious Threshold. Minimum risk score to consider an indicator suspicious.
+  name: suspicious_threshold
+  defaultvalue: "5"
+  type: 0
+  required: false
+- display: File Threshold. Minimum risk score from Recorded Future to consider the
+    file malicious.
+  name: file_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: IP Threshold. Minimum risk score from RF to consider the IP malicious.
+  name: ip_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: Domain Threshold. Minimum risk score from Recorded Future to consider the
+    domain malicious.
+  name: domain_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: URL Threshold. Minimum risk score from Recorded Future to consider the
+    URL malicious.
+  name: url_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider
+    the vulnerability critical.
+  name: cve_threshold
+  defaultvalue: "65"
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts
+    will be fetched
+  name: rule_names
+  defaultvalue: Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers
+  type: 12
+  required: false
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+    1 year)
+  name: triggered
+  defaultvalue: 24 hours
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: '-'
+  type: python
+  subtype: python2
+  commands:
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain to get the reputation of
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.RecordedFuture.Criticality
+      description: Domain criticality label
+      type: string
+    - contextPath: Domain.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: Domain.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns threat intelligence information for a domain or DNS in Recorded
+      Future.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to get the reputation of
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason that the vendor made the
+        decision
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.RecordedFuture.Criticality
+      description: Risk criticality label
+      type: string
+    - contextPath: IP.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: IP.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns threat intelligence information for an IP address in Recorded
+      Future.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash to check the reputation of (MD5, SHA-1, SHA-256, SHA-512,
+        CRC-32, CTPH)
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA-256
+      type: string
+    - contextPath: File.SHA512
+      description: File SHA-512
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA-1
+      type: string
+    - contextPath: File.MD5
+      description: File MD-5
+      type: string
+    - contextPath: File.CRC32
+      description: File CRC-32
+      type: string
+    - contextPath: File.CTPH
+      description: File CTPH
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Criticality
+      description: Risk criticality label
+      type: string
+    - contextPath: File.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: File.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns threat intelligence information for a file in Recorded Future.
+  - name: recorded-future-get-related-entities
+    arguments:
+    - name: entityType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - domain
+      - ip
+      - file
+      - url
+      description: The type of entity to fetch context for. (Should be provided with
+        its value in entityValue argument)
+    - name: entityValue
+      required: true
+      description: 'The value of the entity to fetch context for. (Should be provided
+        with its type in entityType argument, Hash types supported: MD5, SHA-1, SHA-256,
+        SHA-512, CRC-32, CTPH)'
+    - name: resultEntityType
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Hash
+      - IP
+      - Domain
+      - Attacker
+      - Malware
+      - URL
+      description: CSV list of related entity types to return in the result (e.g.,
+        Hash,IP,Domain)
+      defaultValue: All
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA-256
+      type: string
+    - contextPath: File.SHA512
+      description: File SHA-512
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA-1
+      type: string
+    - contextPath: File.MD5
+      description: File MD-5
+      type: string
+    - contextPath: File.CRC32
+      description: File CRC-32
+      type: string
+    - contextPath: File.CTPH
+      description: File CTPH
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.IPAddress.Count
+      description: File related entity count (IP)
+      type: number
+    - contextPath: File.RecordedFuture.RelatedEntities.IPAddress.ID
+      description: File related entity ID (IP)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.IPAddress.Name
+      description: File related entity name (IP)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.Hash.Count
+      description: File related entity count (Hash)
+      type: number
+    - contextPath: File.RecordedFuture.RelatedEntities.Hash.ID
+      description: File related entity ID (Hash)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.Hash.Name
+      description: File related entity name (Hash)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.Domain.Count
+      description: File related entity count (Domain)
+      type: number
+    - contextPath: File.RecordedFuture.RelatedEntities.Domain.ID
+      description: File related entity ID (Domain)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.Domain.Name
+      description: File related entity name (Domain)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.Attacker.Count
+      description: File related entity count (Attacker)
+      type: number
+    - contextPath: File.RecordedFuture.RelatedEntities.Attacker.ID
+      description: File related entity ID (Attacker)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.Attacker.Name
+      description: File related entity name (Attacker)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.Malware.Count
+      description: File related entity count (Malware)
+      type: number
+    - contextPath: File.RecordedFuture.RelatedEntities.Malware.ID
+      description: File related entity ID (Malware)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.Malware.Name
+      description: File related entity name (Malware)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.URL.Count
+      description: File related entity count (URL)
+      type: number
+    - contextPath: File.RecordedFuture.RelatedEntities.URL.ID
+      description: File related entity ID (URL)
+      type: string
+    - contextPath: File.RecordedFuture.RelatedEntities.URL.Data
+      description: File related entity name (URL)
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.IPAddress.Count
+      description: IP related entity count (IP)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.IPAddress.ID
+      description: IP related entity ID (IP)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.IPAddress.Name
+      description: IP related entity name (IP)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Hash.Count
+      description: IP related entity count (Hash)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.Hash.ID
+      description: IP related entity ID (Hash)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Hash.Name
+      description: IP related entity name (Hash)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Domain.Count
+      description: IP related entity count (Domain)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.Domain.ID
+      description: IP related entity ID (Domain)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Domain.Name
+      description: IP related entity name (Domain)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Attacker.Count
+      description: IP related entity count (Attacker)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.Attacker.ID
+      description: IP related entity ID (Attacker)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Attacker.Name
+      description: IP related entity name (Attacker)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Malware.Count
+      description: IP related entity count (Malware)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.Malware.ID
+      description: IP related entity ID (Malware)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.Malware.Name
+      description: IP related entity name (Malware)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.URL.Count
+      description: IP related entity count (URL)
+      type: number
+    - contextPath: IP.RecordedFuture.RelatedEntities.URL.ID
+      description: IP related entity ID (URL)
+      type: string
+    - contextPath: IP.RecordedFuture.RelatedEntities.URL.Data
+      description: IP related entity name (URL)
+      type: string
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.IPAddress.Count
+      description: Domain related entity count (IP)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.IPAddress.ID
+      description: Domain related entity ID (IP)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.IPAddress.Name
+      description: Domain related entity name (IP)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Hash.Count
+      description: Domain related entity count (Hash)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Hash.ID
+      description: Domain related entity ID (Hash)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Hash.Name
+      description: Domain related entity name (Hash)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Domain.Count
+      description: Domain related entity count (Domain)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Domain.ID
+      description: Domain related entity ID (Domain)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Domain.Name
+      description: Domain related entity name (Domain)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Attacker.Count
+      description: Domain related entity count (Attacker)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Attacker.ID
+      description: Domain related entity ID (Attacker)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Attacker.Name
+      description: Domain related entity name (Attacker)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Malware.Count
+      description: Domain related entity count (Malware)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Malware.ID
+      description: Domain related entity ID (Malware)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.Malware.Name
+      description: Domain related entity name (Malware)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.URL.Count
+      description: Domain related entity count (URL)
+      type: number
+    - contextPath: Domain.RecordedFuture.RelatedEntities.URL.ID
+      description: Domain related entity ID (URL)
+      type: string
+    - contextPath: Domain.RecordedFuture.RelatedEntities.URL.Data
+      description: Domain related entity name (URL)
+      type: string
+    - contextPath: URL.Data
+      description: URL name
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.IPAddress.Count
+      description: URL related entity count (IP)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.IPAddress.ID
+      description: URL related entity ID (IP)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.IPAddress.Name
+      description: URL related entity name (IP)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Hash.Count
+      description: URL related entity count (Hash)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.Hash.ID
+      description: URL related entity ID (Hash)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Hash.Name
+      description: URL related entity name (Hash)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Domain.Count
+      description: URL related entity count (Domain)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.Domain.ID
+      description: URL related entity ID (Domain)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Domain.Name
+      description: URL related entity name (Domain)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Attacker.Count
+      description: URL related entity count (Attacker)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.Attacker.ID
+      description: URL related entity ID (Attacker)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Attacker.Name
+      description: URL related entity name (Attacker)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Malware.Count
+      description: URL related entity count (Malware)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.Malware.ID
+      description: URL related entity ID (Malware)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.Malware.Name
+      description: URL related entity name (Malware)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.URL.Count
+      description: URL related entity count (URL)
+      type: number
+    - contextPath: URL.RecordedFuture.RelatedEntities.URL.ID
+      description: URL related entity ID (URL)
+      type: string
+    - contextPath: URL.RecordedFuture.RelatedEntities.URL.Data
+      description: URL related entity name (URL)
+      type: string
+    description: Returns threat intelligence context for an indicator in Recorded
+      Future.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to get the reputation of
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: URL.Data
+      description: URL name
+      type: string
+    - contextPath: URL.RecordedFuture.Criticality
+      description: URL criticality label
+      type: string
+    - contextPath: URL.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: URL.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns threat intelligence information for a URL in Recorded Future.
+  - name: recorded-future-get-threats-hash
+    arguments:
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    - name: limit
+      description: Number of results to return
+      defaultValue: "1"
+    - name: risk_lower
+      description: Minimum threshold score to return results for
+      defaultValue: "65"
+    - name: risk_higher
+      description: Maximum threshold score to return results for
+      defaultValue: "99"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort results by
+      defaultValue: sevendayshits
+    - name: direction
+      description: Sort direction
+    outputs:
+    - contextPath: File.SHA256
+      description: File SHA-256
+      type: string
+    - contextPath: File.SHA512
+      description: File SHA-512
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA-1
+      type: string
+    - contextPath: File.MD5
+      description: File MD-5
+      type: string
+    - contextPath: File.CRC32
+      description: File CRC-32
+      type: string
+    - contextPath: File.CTPH
+      description: File CTPH
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.RecordedFuture.Criticality
+      description: Risk criticality label
+      type: string
+    - contextPath: File.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: File.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns hash threats from Recorded Future
+  - name: recorded-future-get-threats-ip
+    arguments:
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    - name: limit
+      description: Number of results to return
+      defaultValue: "1"
+    - name: risk_lower
+      description: Minimum threshold score to return results for
+      defaultValue: "65"
+    - name: risk_higher
+      description: Maximum threshold score to return results for
+      defaultValue: "99"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason that the vendor made the
+        decision
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.RecordedFuture.Criticality
+      description: Risk criticality label
+      type: string
+    - contextPath: IP.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: string
+    - contextPath: IP.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns IP threats from Recorded Future
+  - name: recorded-future-get-threats-url
+    arguments:
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    - name: limit
+      description: Number of results to return
+      defaultValue: "1"
+    - name: risk_lower
+      description: Minimum threshold score to return results for
+      defaultValue: "65"
+    - name: risk_higher
+      description: Maximum threshold score to return results for
+      defaultValue: "99"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: URL.Data
+      description: URL name
+      type: string
+    - contextPath: URL.RecordedFuture.Criticality
+      description: URL criticality label
+      type: string
+    - contextPath: URL.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: URL.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns URL threats from Recorded Future
+  - name: recorded-future-get-threats-domain
+    arguments:
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    - name: limit
+      description: Limit number of results returned
+      defaultValue: "1"
+    - name: risk_lower
+      description: Minimum threshold score to return results for
+      defaultValue: "65"
+    - name: risk_higher
+      description: Maximum threshold score to return results for
+      defaultValue: "99"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.RecordedFuture.Criticality
+      description: Domain criticality label
+      type: string
+    - contextPath: Domain.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: Domain.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns domain threats from Recorded Future
+  - name: recorded-future-get-threats-vulnerabilities
+    arguments:
+    - name: limit
+      description: Number of results to return
+      defaultValue: "1"
+    - name: risk_lower
+      description: Minimum threshold score to return results for
+      defaultValue: "65"
+    - name: risk_higher
+      description: Maximum threshold score to return results for
+      defaultValue: "99"
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
+      defaultValue: "false"
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - created
+      - criticality
+      - firstseen
+      - lastseen
+      - modified
+      - riskscore
+      - rules
+      - sevendayshits
+      - sixtydayshits
+      - totalhits
+      description: Category to sort by
+      defaultValue: sevendayshits
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction
+    outputs:
+    - contextPath: CVE.ID
+      description: Vulnerability CVE ID
+      type: string
+    - contextPath: CVE.RecordedFuture.Criticality
+      description: CVE criticality label
+      type: string
+    - contextPath: CVE.RecordedFuture.FirstSeen
+      description: Risk first seen timestamp
+      type: date
+    - contextPath: CVE.RecordedFuture.LastSeen
+      description: Risk last seen timestamp
+      type: date
+    description: Returns vulnerability threats from Recorded Future.
+  - name: recorded-future-get-domain-risklist
+    arguments:
+    - name: list
+      description: Specify a domain list by a risk rule name, which can be retrieved
+        by the get-domain-riskrules command.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the file
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
+    description: Gets the domain risk list as a CSV file from Recorded Future.
+  - name: recorded-future-get-url-risklist
+    arguments:
+    - name: list
+      description: Specify a URL list by a risk rule name, which can be retrieved
+        from the get-url-riskrules command.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the file
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
+    description: Gets the URL risk list as a CSV file from Recorded Future.
+  - name: recorded-future-get-ip-risklist
+    arguments:
+    - name: list
+      description: Specify an IP list by a risk rule name, which can be retrieved
+        from the get-ip-riskrules command.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the file
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
+    description: Gets the IP risk list as a CSV file from Recorded Future.
+  - name: recorded-future-get-vulnerability-risklist
+    arguments:
+    - name: list
+      description: Specify a vulnerability list by a risk rule name, which can be
+        retrieved from the get-vulnerability-riskrules command.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: File entry ID
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
+    description: Gets the vulnerability (CVE) risk list from Recorded Future.
+  - name: recorded-future-get-hash-risklist
+    arguments:
+    - name: list
+      description: Specify a hash list by a riskrule name, which can be retrieved
+        from the get-hash-riskrules command.
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: File entry ID
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension
+      type: string
+    description: Gets the hash risk list from Recorded Future.
+  - name: recorded-future-get-domain-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.Domain.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Domain.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Domain.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.Domain.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Gets the risk rules for domain data.
+  - name: recorded-future-get-hash-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.Hash.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Hash.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Hash.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.Hash.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Gets the risk rules for hash data.
+  - name: recorded-future-get-ip-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.IP.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.IP.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.IP.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.IP.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Gets the risk rules for IP data.
+  - name: recorded-future-get-url-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.URL.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.URL.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.URL.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.URL.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Gets the risk rules for URL data.
+  - name: recorded-future-get-vulnerability-riskrules
+    arguments: []
+    outputs:
+    - contextPath: RecordedFuture.RiskRule.Vulnerability.Name
+      description: Risk rule name
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Vulnerability.Description
+      description: Risk rule description
+      type: string
+    - contextPath: RecordedFuture.RiskRule.Vulnerability.Count
+      description: Risk rule indicator count
+      type: number
+    - contextPath: RecordedFuture.RiskRule.Vulnerability.Criticality
+      description: Risk rule criticality
+      type: string
+    description: Gets the risk rules for vulnerability data.
+  - name: recorded-future-get-alert-rules
+    arguments:
+    - name: rule_name
+      description: Rule name to search, can be a partial name
+    - name: limit
+      description: Number of rules to return
+      defaultValue: "10"
+    outputs:
+    - contextPath: RecordedFuture.AlertRule.ID
+      description: Alert rule ID
+      type: string
+    - contextPath: RecordedFuture.AlertRule.Name
+      description: Alert rule name
+      type: string
+    description: Gets Recorded Future alert rules.
+  - name: recorded-future-get-alerts
+    arguments:
+    - name: rule_id
+      description: Alert rule ID
+    - name: limit
+      description: Number of alerts to return
+      defaultValue: "10"
+    - name: triggered_time
+      description: Alert triggered time, e.g., "1 hour" or "2 days"
+    - name: assignee
+      description: Alert assignee's email address
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - unassigned
+      - assigned
+      - actionable
+      - no-action
+      - tuning
+      description: Alert review status
+    - name: freetext
+      description: Free text search
+    - name: offset
+      description: Alerts from offset
+    - name: orderby
+      auto: PREDEFINED
+      predefined:
+      - triggered
+      description: Alerts sort order
+    - name: direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Alerts sort direction
+    outputs:
+    - contextPath: RecordedFuture.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: RecordedFuture.Alert.Name
+      description: Alert name
+      type: string
+    - contextPath: RecordedFuture.Alert.Type
+      description: Alert type
+      type: string
+    - contextPath: RecordedFuture.Alert.Triggered
+      description: Alert triggered time
+      type: date
+    - contextPath: RecordedFuture.Alert.Status
+      description: Alert status
+      type: string
+    - contextPath: RecordedFuture.Alert.Assignee
+      description: Alert assignee
+      type: string
+    - contextPath: RecordedFuture.Alert.Rule
+      description: Alert rule name
+      type: string
+    description: Gets alerts from Recorded Future.
+  isfetch: true
+  runonce: false
+tests:
+  - Recorded Future Test

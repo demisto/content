@@ -1,11 +1,15 @@
 {
 	"id": "1bb6fa72-f964-4011-8a48-f70338082b68",
-	"version": 3,
+	"version": -1,
 	"modified": "2018-07-25T15:49:02.222234104+03:00",
 	"defaultIncidentType": "",
 	"mapping": {
 		"Phishing": {
 			"internalMapping": {
+				"Email HTML": {
+					"complex": null,
+					"simple": "Html"
+				},
 				"Attachment Count": {
 					"simple": "",
 					"complex": {

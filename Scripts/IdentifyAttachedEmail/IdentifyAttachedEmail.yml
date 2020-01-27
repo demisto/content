@@ -1,0 +1,36 @@
+commonfields:
+  id: IdentifyAttachedEmail
+  version: -1
+name: IdentifyAttachedEmail
+script: ''
+type: python
+subtype: python2
+tags:
+- phishing
+- email
+- Condition
+comment: Identify whether the incident includes an email message attached as an eml
+  or msg file and return the answer to playbook. Also saves the identified entry ID
+  to context for use for later. Commonly used in automated
+  playbooks that handle phishing reports sent to a special phishing mailbox set up
+  by the security team.
+enabled: true
+args:
+- name: entryid
+  required: false
+  default: false
+  description: Specific entryid to check if it is an email attachment. If not specified will check all entries of the incident.
+  isArray: true
+outputs:
+- contextPath: yes
+  description: If incident contains an email attachment. Will also set reportedemailentryid with the entry id.
+- contextPath: no
+  description: If incident does not contain an email attachment
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+tests:
+- process_email_-_generic_-_test
+- Phishing v2 Test - Inline
+- Phishing v2 Test - Attachment

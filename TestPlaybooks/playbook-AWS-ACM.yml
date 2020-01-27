@@ -1,0 +1,113 @@
+id: ACM-Test
+version: -1
+name: ACM-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5d116c67-5ca8-4ec0-8026-590fb5260179
+    type: start
+    task:
+      id: 5d116c67-5ca8-4ec0-8026-590fb5260179
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: e7836897-a59e-4ec1-8a54-ea9528e23e7d
+    type: regular
+    task:
+      id: e7836897-a59e-4ec1-8a54-ea9528e23e7d
+      version: -1
+      name: aws-acm-list-certificates
+      description: Retrieves a list of certificate ARNs and domain names. You can
+        request that only certificates that match a specific status be listed. You
+        can also filter by specific attributes of the certificate.
+      script: AWS - ACM|||aws-acm-list-certificates
+      type: regular
+      iscommand: true
+      brand: AWS - ACM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      certificateStatuses: {}
+      extendedKeyUsage: {}
+      keyTypes: {}
+      keyUsage: {}
+      region:
+        simple: us-west-2
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d2cc05e9-740e-4dc9-82e0-b0805b77bbc2
+    type: regular
+    task:
+      id: d2cc05e9-740e-4dc9-82e0-b0805b77bbc2
+      version: -1
+      name: aws-acm-describe-certificate
+      description: Returns detailed metadata about the specified ACM certificate.
+      script: AWS - ACM|||aws-acm-describe-certificate
+      type: regular
+      iscommand: true
+      brand: AWS - ACM
+    scriptarguments:
+      certificateArn:
+        simple: ${AWS.ACM.Certificates.CertificateArn}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

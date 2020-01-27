@@ -1,38 +1,80 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 from cStringIO import StringIO
 import logging
 import warnings
 import traceback
 
-warnings.filterwarnings("ignore")
-log_stream = StringIO()
-logging.basicConfig(stream=log_stream, level=logging.DEBUG)
+import getpass
 
+
+# workaround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
+class FixGetPass(object):
+    def __init__(self):
+        self.getpass_getuser_org = getpass.getuser
+
+        def getuser_no_fail():
+            # getuser() fails on some systems. Provide a sane default.
+            user = 'ews'
+            try:
+                if self.getpass_getuser_org:
+                    user = self.getpass_getuser_org()
+            except KeyError:
+                pass
+            return user
+        getpass.getuser = getuser_no_fail
+
+    def __del__(self):
+        if self.getpass_getuser_org and getpass:
+            getpass.getuser = self.getpass_getuser_org
+
+
+_fix_getpass = FixGetPass()
+
+warnings.filterwarnings("ignore")
+
+# LOGGING
+log_stream = None
+log_handler = None
+
+
+def start_logging():
+    logging.raiseExceptions = False
+    global log_stream
+    global log_handler
+    if log_stream is None:
+        log_stream = StringIO()
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
+
+
+import exchangelib  # noqa: E402
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
-from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016  # noqa: E402
+from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
+    EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
-    BASIC, DIGEST, Version, DELEGATE, close_connections  # noqa: E402
+    BASIC, DIGEST, Version, DELEGATE  # noqa: E402
 
 IS_TEST_MODULE = False
 
 # load arguments
-USE_PROXY = demisto.params()['proxy']
-NON_SECURE = demisto.params()['insecure']
-AUTH_METHOD_STR = demisto.params()['authType'].lower()
-VERSION_STR = demisto.params()['defaultServerVersion']
-EWS_SERVER = demisto.params()['ewsServer']
-USERNAME = demisto.params()['credentials']['identifier']
-ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
-if not ACCOUNT_EMAIL:
-    if "@" in USERNAME:
-        ACCOUNT_EMAIL = USERNAME
-if ACCOUNT_EMAIL is None:
-    raise Exception("Provide a valid email address in the mailbox field")
-PASSWORD = demisto.params()['credentials']['password']
+USE_PROXY = demisto.params().get('proxy', False)
+NON_SECURE = demisto.params().get('insecure', False)
+AUTH_METHOD_STR = demisto.params().get('authType', 'Basic').lower()
+EWS_SERVER = demisto.params().get('ewsServer', 'https://outlook.office365.com/EWS/Exchange.asmx/')
+VERSION_STR = demisto.params().get('defaultServerVersion', '2013')
 FOLDER_NAME = demisto.params().get('folder', 'Inbox')
-ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
+ACCESS_TYPE = IMPERSONATION if demisto.params().get('impersonation', False) else DELEGATE
+
+# initialized in main()
+USERNAME = ""
+PASSWORD = ""
+ACCOUNT_EMAIL = ""
 
 VERSIONS = {
     '2007': EXCHANGE_2007,
@@ -41,6 +83,26 @@ VERSIONS = {
     '2013': EXCHANGE_2013,
     '2016': EXCHANGE_2016
 }
+
+
+# NOTE: Same method used in EWSv2
+# If you are modifying this probably also need to modify in the other file
+def exchangelib_cleanup():
+    key_protocols = exchangelib.protocol.CachingProtocol._protocol_cache.items()
+    try:
+        exchangelib.close_connections()
+    except Exception as ex:
+        demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
+    for key, protocol in key_protocols:
+        try:
+            if "thread_pool" in protocol.__dict__:
+                demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
+                protocol.thread_pool.terminate()
+                del protocol.__dict__["thread_pool"]
+            else:
+                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+        except Exception as ex:
+            demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
 
 def get_account(account_email):
@@ -103,7 +165,7 @@ def collect_manual_attachments(manualAttachObj):
 
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
-               attachIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
+               attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
     cc = cc.split(",") if cc else None
@@ -113,10 +175,11 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
 
     file_entries_for_attachments = []  # type: list
     attachments_names = []  # type: list
+
     if attachIDs:
-        file_entries_for_attachments = attachIDs.split(",")
+        file_entries_for_attachments = attachIDs if isinstance(attachIDs, list) else attachIDs.split(",")
         if attachNames:
-            attachments_names = attachNames.split(",")
+            attachments_names = attachNames if isinstance(attachNames, list) else attachNames.split(",")
         else:
             for att_id in file_entries_for_attachments:
                 att_name = demisto.getFilePath(att_id)['name']
@@ -127,6 +190,20 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
             raise Exception("attachIDs and attachNames lists should be the same length")
 
     attachments = collect_manual_attachments(manualAttachObj)
+
+    if attachCIDs:
+        file_entries_for_attachments_inline = attachCIDs if isinstance(attachCIDs, list) else attachCIDs.split(",")
+        for att_id_inline in file_entries_for_attachments_inline:
+            try:
+                file_info = demisto.getFilePath(att_id_inline)
+            except Exception as ex:
+                demisto.info("EWS error from getFilePath: {}".format(ex))
+                raise Exception("entry %s does not contain a file" % att_id_inline)
+            att_name_inline = file_info["name"]
+            with open(file_info["path"], 'rb') as f:
+                attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
+                                                  content_id=att_name_inline))
+
     for i in range(0, len(file_entries_for_attachments)):
         entry_id = file_entries_for_attachments[i]
         attachment_name = attachments_names[i]
@@ -142,7 +219,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject,
+        'subject': subject.encode('utf-8'),
         'attachments': attachments_names
     }
 
@@ -204,28 +281,29 @@ config = None  # type: ignore
 
 
 def main():
-    global config
-    config = prepare()
-    args = prepare_args(demisto.args())
+    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream, config
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
+    if not ACCOUNT_EMAIL:
+        if "@" in USERNAME:
+            ACCOUNT_EMAIL = USERNAME
+    if ACCOUNT_EMAIL is None:
+        raise Exception("Provide a valid email address in the mailbox field")
 
     try:
+        start_logging()
+        config = prepare()
+        args = prepare_args(demisto.args())
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'send-mail':
             demisto.results(send_email(**args))
-        try:
-            # we don't want to leave cached connection arround as EWS limits the number of connections
-            # in a very aggressive way. 12 seems to be the default limit
-            # see: https://blogs.msdn.microsoft.com/webdav_101/2018/06/02/you-are-doing-too-much-at-one-time-ewsmaxconcurrency-too-many-concurrent-connections-opened/ # noqa
-            close_connections()
-        except Exception as ex:
-            demisto.info("Failed close_connections (shouldn't happen). Ignoring exception: {}".format(ex))
-
     except Exception as e:
         import time
 
         time.sleep(2)
-        debug_log = log_stream.getvalue()
+        debug_log = "=== DEBUG LOG ===\n" + (log_stream.getvalue() if log_stream else "")
         error_message = ""
         if "Status code: 401" in debug_log:
             error_message = ("Got unauthorized from the server. "
@@ -243,11 +321,21 @@ def main():
         if stacktrace:
             debug_log += "\nFull stacktrace:\n" + stacktrace
 
-        demisto.error("EWS Mail Sender failed {}. Error: {}. Debug: {}".format(demisto.command(), error_message, debug_log))
+        demisto.error(
+            "EWS Mail Sender failed {}. Error: {}. Debug: {}".format(demisto.command(), error_message, debug_log))
         if IS_TEST_MODULE:
             demisto.results(error_message)
         else:
             return_error(error_message + '\n' + debug_log)
+    finally:
+        exchangelib_cleanup()
+        if log_stream:
+            try:
+                logging.getLogger().removeHandler(log_handler)  # type: ignore
+                log_stream.close()
+                log_stream = None
+            except Exception as ex:
+                demisto.error("EWS Mail Sender: unexpected exception when trying to remove log handler: {}".format(ex))
 
 
 # python2 uses __builtin__ python3 uses builtins

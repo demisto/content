@@ -1,0 +1,90 @@
+id: Beta-Athena-Test
+version: -1
+name: Beta-Athena-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c8fef65f-4455-4504-8743-1bbea18b650b
+    type: start
+    task:
+      id: c8fef65f-4455-4504-8743-1bbea18b650b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c5a4913a-9bfe-44f8-8ae7-242e5866d8ce
+    type: regular
+    task:
+      id: c5a4913a-9bfe-44f8-8ae7-242e5866d8ce
+      version: -1
+      name: aws-athena-start-query
+      description: Start Athena Query.
+      script: '|||aws-athena-start-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      ClientRequestToken: {}
+      Database: {}
+      EncryptionOption: {}
+      KmsKey: {}
+      OutputLocation:
+        simple: s3://aws-athena-query-results-120785635586-us-east-2.unknown
+      QueryString:
+        simple: |-
+          SELECT
+           request_timestamp,
+           elb_name,
+           backend_ip,
+           backend_response_code
+          FROM elb_logs
+          WHERE backend_response_code LIKE '4%' OR
+                backend_response_code LIKE '5%'
+          LIMIT 100;
+      WorkGroup: {}
+      region: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -92,7 +92,7 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
     try:
         return res.json()
     except Exception:
-        error_message = 'Failed parsing the response from PhishLabs IOC API: {}'.format(res.content)
+        error_message = 'Failed parsing the response from PhishLabs IOC API: {!r}'.format(res.content)
         if RAISE_EXCEPTION_ON_ERROR:
             raise Exception(error_message)
         else:
@@ -286,8 +286,7 @@ def create_phishlabs_object(indicator: dict) -> dict:
     return {
         'ID': indicator.get('id'),
         'CreatedAt': indicator.get('createdAt'),
-        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', '') != NONE_DATE else '',
-        # 'Type': indicator.get('type'),
+        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
         'Attribute': [{
             'Name': a.get('name'),
             'Type': a.get('type'),
@@ -309,7 +308,7 @@ def create_indicator_content(indicator: dict) -> dict:
         'Indicator': indicator.get('value'),
         'Type': indicator.get('type'),
         'CreatedAt': indicator.get('createdAt'),
-        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', '') != NONE_DATE else '',
+        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
         'FalsePositive': indicator.get('falsePositive')
     }
 

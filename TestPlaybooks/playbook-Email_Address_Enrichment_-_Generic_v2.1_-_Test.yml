@@ -34,10 +34,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: a0f20ebd-92f2-4809-858e-89088c79b274
+    taskid: 1fa00f4b-9c90-4068-865e-dd35742dbcef
     type: regular
     task:
-      id: a0f20ebd-92f2-4809-858e-89088c79b274
+      id: 1fa00f4b-9c90-4068-865e-dd35742dbcef
       version: -1
       name: Set domains to context
       description: Sets a value into the context with the given context key
@@ -47,7 +47,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "10"
     scriptarguments:
       append: {}
       key:
@@ -68,10 +68,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 4ee993d6-78cb-47df-8836-f4ef363283ca
+    taskid: 9f1e4074-58dc-4393-8d9a-d640da6ca203
     type: regular
     task:
-      id: 4ee993d6-78cb-47df-8836-f4ef363283ca
+      id: 9f1e4074-58dc-4393-8d9a-d640da6ca203
       version: -1
       name: Set email addresses to context
       description: Sets a value into the context with the given context key
@@ -81,14 +81,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "10"
     scriptarguments:
       append: {}
       key:
         simple: Account.Email.Address
       value:
         simple: '["geverwithnoname@domainthatdoesntexist.co.uk", "soso@demisto.com",
-          "koko@demisto.com", "user1@domain.com","donotdelete@demisto.int"]'
+          "koko@demisto.com", "user1@domain.com","donotdelete@demisto.ninja"]'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -232,12 +232,47 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 30e2bc06-4a15-46f7-8e1c-36fd115b859b
+  "9":
+    id: "9"
+    taskid: 2775a16e-1c15-4e62-853a-b5e87b62c797
+    type: condition
+    task:
+      id: 2775a16e-1c15-4e62-853a-b5e87b62c797
+      version: -1
+      name: Was internal email enriched using Active Directory?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: c053cdba-d7b4-4029-88e1-ecf3bef316a6
     type: playbook
     task:
-      id: 30e2bc06-4a15-46f7-8e1c-36fd115b859b
+      id: c053cdba-d7b4-4029-88e1-ecf3bef316a6
       version: -1
       name: Email Address Enrichment - Generic v2.1
       description: ""
@@ -282,41 +317,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 2775a16e-1c15-4e62-853a-b5e87b62c797
-    type: condition
-    task:
-      id: 2775a16e-1c15-4e62-853a-b5e87b62c797
-      version: -1
-      name: Was internal email enriched using Active Directory?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Account.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -337,7 +337,7 @@ view: |-
 inputs:
 - key: InternalDomains
   value:
-    simple: demisto.com, demistodev.com, demisto.int
+    simple: demisto.com, demistodev.com, demisto.ninja
   required: false
   description: A comma-separated list of internal domains
 outputs: []

@@ -1,0 +1,895 @@
+id: Slack Test Playbook
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: Slack Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4b382ce3-460f-40d8-8974-0c0ca4f7a621
+    type: start
+    task:
+      id: 4b382ce3-460f-40d8-8974-0c0ca4f7a621
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 06e92f68-4398-4f72-8dfe-83da422bb00f
+    type: regular
+    task:
+      id: 06e92f68-4398-4f72-8dfe-83da422bb00f
+      version: -1
+      name: Mirror investigation
+      description: Mirrors the investigation between Slack and the Demisto War Room.
+      script: SlackV2|||mirror-investigation
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      autoclose: {}
+      channelName:
+        simple: ${TimeNow}
+      channelTopic: {}
+      direction:
+        simple: FromDemisto
+      mirrorTo: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 5c694c03-a04d-4a30-84af-9cfbff2231c7
+    type: regular
+    task:
+      id: 5c694c03-a04d-4a30-84af-9cfbff2231c7
+      version: -1
+      name: Send a message
+      description: Sends a message to a user, group, or channel.
+      script: SlackV2|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      channel:
+        simple: incident-${incident.id}
+      entry: {}
+      ignoreAddURL: {}
+      message: {}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 84f4d921-3925-42ac-8ab3-3fcb0df8bc21
+    type: regular
+    task:
+      id: 84f4d921-3925-42ac-8ab3-3fcb0df8bc21
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: this is a test
+      entryId: {}
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: ce3e3d4d-1e35-45a8-8e39-7590361ce7d1
+    type: regular
+    task:
+      id: ce3e3d4d-1e35-45a8-8e39-7590361ce7d1
+      version: -1
+      name: Send a file
+      description: Sends a file in Slack to a user, channel, or group. If a user,
+        channel, or group is not specified, the file is sent to the mirrored investigation
+        channel (if it exists).
+      script: SlackV2|||slack-send-file
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      channel: {}
+      comment: {}
+      file:
+        simple: ${File.EntryID}
+      group: {}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: cccfa785-7b37-4275-8922-05fb3a367076
+    type: regular
+    task:
+      id: cccfa785-7b37-4275-8922-05fb3a367076
+      version: -1
+      name: Close the channel
+      description: Archives the mirrored channel for this incident.
+      script: SlackV2|||close-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: bb2d454e-588e-44aa-86d3-3544847291a5
+    type: regular
+    task:
+      id: bb2d454e-588e-44aa-86d3-3544847291a5
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: Message sent to Slack successfully
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 6d336ef5-2c58-4df5-8816-5c047a877d2b
+    type: regular
+    task:
+      id: 6d336ef5-2c58-4df5-8816-5c047a877d2b
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: File sent to Slack successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 314e9603-3a95-4d14-82ba-73a5f8f2d2c0
+    type: regular
+    task:
+      id: 314e9603-3a95-4d14-82ba-73a5f8f2d2c0
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 4424a1cf-b3ac-4454-8d33-853efc141146
+    type: regular
+    task:
+      id: 4424a1cf-b3ac-4454-8d33-853efc141146
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 10cb1964-e79c-445c-8d84-94bfa8cc2c0b
+    type: regular
+    task:
+      id: 10cb1964-e79c-445c-8d84-94bfa8cc2c0b
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 11280cd8-b42f-48b9-88e6-b29acab78ddf
+    type: regular
+    task:
+      id: 11280cd8-b42f-48b9-88e6-b29acab78ddf
+      version: -1
+      name: Create a channel
+      description: Create a channel in Slack.
+      script: SlackV2|||slack-create-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      name:
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+      topic:
+        simple: sade
+      type: {}
+      users:
+        simple: demisto_integration
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 9697a280-6e79-4498-8805-f2e02b69b15d
+    type: regular
+    task:
+      id: 9697a280-6e79-4498-8805-f2e02b69b15d
+      version: -1
+      name: Close the channel
+      description: Archives the mirrored channel for this incident.
+      script: SlackV2|||close-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNow2TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+          - operator: toLowerCase
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '-'
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ':'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: ceb72a77-2d63-4d8e-81c7-8249f84a6b45
+    type: regular
+    task:
+      id: ceb72a77-2d63-4d8e-81c7-8249f84a6b45
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: db58eca4-66d7-4452-838d-003119b08931
+    type: regular
+    task:
+      id: db58eca4-66d7-4452-838d-003119b08931
+      version: -1
+      name: Invite to the channel
+      description: Invite a user to a channel in Slack.
+      script: SlackV2|||slack-invite-to-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+          - operator: toLowerCase
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '-'
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ':'
+      users:
+        simple: ${Slack.User.Username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: f2a9d129-0e1d-488b-8bff-fe2d34c33ec5
+    type: regular
+    task:
+      id: f2a9d129-0e1d-488b-8bff-fe2d34c33ec5
+      version: -1
+      name: Kick from the channel
+      description: KIck a user from a channel in Slack.
+      script: SlackV2|||slack-kick-from-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNow2TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+          - operator: toLowerCase
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '-'
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ':'
+      users:
+        simple: dbot by Demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: f7b2adeb-d682-43d1-88cf-16fb7b7d0dd4
+    type: regular
+    task:
+      id: f7b2adeb-d682-43d1-88cf-16fb7b7d0dd4
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      contextKey:
+        simple: TimeNow2
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 9e7d366a-2510-423c-8ff0-e3eed03d0f24
+    type: regular
+    task:
+      id: 9e7d366a-2510-423c-8ff0-e3eed03d0f24
+      version: -1
+      name: Rename the channel
+      description: Rename a channel in Slack.
+      script: SlackV2|||slack-rename-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '-'
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ':'
+      name:
+        complex:
+          root: TimeNow2TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '-'
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ':'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 6bf562da-fe6f-44b4-8f7e-9dea6e0b3bd0
+    type: regular
+    task:
+      id: 6bf562da-fe6f-44b4-8f7e-9dea6e0b3bd0
+      version: -1
+      name: Get user
+      description: Get details for a given Slack user.
+      script: SlackV2|||slack-get-user-details
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      user:
+        simple: demisto_integration
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: f80401d1-faa1-49f8-88b4-183cbd03f1d5
+    type: regular
+    task:
+      id: f80401d1-faa1-49f8-88b4-183cbd03f1d5
+      version: -1
+      name: Invite to the channel
+      description: Invite a user to a channel in Slack.
+      script: SlackV2|||slack-invite-to-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNow2TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+          - operator: toLowerCase
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '-'
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ':'
+      users:
+        simple: dbot by Demisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 200dafc2-b399-4329-888e-372f1a2ce189
+    type: regular
+    task:
+      id: 200dafc2-b399-4329-888e-372f1a2ce189
+      version: -1
+      name: Send a message with blocks
+      description: Sends a message to a user, group, or channel.
+      script: SlackV2|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
+          \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\":
+          {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\":
+          \"testing\"\n\t\t\t}\n\t\t}\n\t]"
+      channel:
+        simple: incident-${incident.id}
+      entry: {}
+      ignoreAddURL: {}
+      message: {}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3565,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

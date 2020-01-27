@@ -1,0 +1,97 @@
+id: AWS-Lambda-Test (Read-Only)
+version: 1
+name: AWS-Lambda-Test (Read-Only)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: de4c6491-2b88-4edf-89bd-c093c2a4d512
+    type: start
+    task:
+      id: de4c6491-2b88-4edf-89bd-c093c2a4d512
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 233ed168-fe31-4c78-839c-10e9a1e14dc0
+    type: regular
+    task:
+      id: 233ed168-fe31-4c78-839c-10e9a1e14dc0
+      version: -1
+      name: aws-lambda-list-functions
+      description: Returns a list of your Lambda functions. For each function, the
+        response includes the function configuration information. You must use GetFunction
+        to retrieve the code for your function.
+      script: AWS - Lambda|||aws-lambda-list-functions
+      type: regular
+      iscommand: true
+      brand: AWS - Lambda
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 166f0026-3899-4333-8eff-87af678d477b
+    type: regular
+    task:
+      id: 166f0026-3899-4333-8eff-87af678d477b
+      version: -1
+      name: aws-lambda-get-account-settings
+      description: Retrieves details about your account's limits and usage in an AWS
+        Region.
+      script: AWS - Lambda|||aws-lambda-get-account-settings
+      type: regular
+      iscommand: true
+      brand: AWS - Lambda
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

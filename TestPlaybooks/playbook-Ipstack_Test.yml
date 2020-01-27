@@ -79,7 +79,7 @@ tasks:
       - "3"
     scriptarguments:
       ip:
-        simple: 5.57.16.220
+        simple: 8.8.8.8
     separatecontext: false
     view: |-
       {
@@ -116,7 +116,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Netherlands
+              simple: United States
       - - operator: isEqualString
           left:
             value:
@@ -124,7 +124,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 5.57.16.220
+              simple: 8.8.8.8
       - - operator: isEqualString
           left:
             value:
@@ -132,7 +132,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 5.57.16.220
+              simple: 8.8.8.8
     view: |-
       {
         "position": {

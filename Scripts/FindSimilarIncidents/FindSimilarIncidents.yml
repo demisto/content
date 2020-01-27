@@ -145,5 +145,5 @@ timeout: 300ns
 type: python
 runonce: false
 tests:
-- No test
+- dedup_-_generic_-_test
 toversion: 4.1.0

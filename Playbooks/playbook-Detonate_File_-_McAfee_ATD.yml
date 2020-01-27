@@ -50,15 +50,15 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 586df0a0-fceb-41e3-8e9d-124757b4a4bb
+    taskid: a846a181-2b08-4280-8508-58e628e10a73
     type: playbook
     task:
-      id: 586df0a0-fceb-41e3-8e9d-124757b4a4bb
+      id: a846a181-2b08-4280-8508-58e628e10a73
       version: -1
       name: GenericPolling
       description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
         The remote action should have the following structure:
 
         1. Initiate the operation.
@@ -72,9 +72,20 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: ATD.Task.taskId
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
       Interval:
         complex:
           root: inputs.Interval
@@ -104,10 +115,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: b0cb6625-0e6c-44ae-835c-684b21d0a6c1
+    taskid: e73794b6-a925-4e53-83f5-d1d764b62a48
     type: regular
     task:
-      id: b0cb6625-0e6c-44ae-835c-684b21d0a6c1
+      id: e73794b6-a925-4e53-83f5-d1d764b62a48
       version: -1
       name: McAfee ATD Get Report
       description: Retrieve the reports from McAfee ATD.
@@ -269,10 +280,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 26e0e6b7-9804-434a-85d6-bb1a8aaff27d
+    taskid: 7543cf0f-a33a-4bf3-8bac-7a5669cb4f44
     type: regular
     task:
-      id: 26e0e6b7-9804-434a-85d6-bb1a8aaff27d
+      id: 7543cf0f-a33a-4bf3-8bac-7a5669cb4f44
       version: -1
       name: atd-check-status
       description: Updates the status of the tasks in the context.
@@ -288,6 +299,15 @@ tasks:
       taskId:
         complex:
           root: ATD.Task.taskId
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
     separatecontext: false
     view: |-
       {
@@ -438,10 +458,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 7bd95c47-0c05-49e3-80ba-43d2f0e4e2b9
+    taskid: 5ae9c6b1-314f-44c8-8f95-8aa76fc6e658
     type: regular
     task:
-      id: 7bd95c47-0c05-49e3-80ba-43d2f0e4e2b9
+      id: 5ae9c6b1-314f-44c8-8f95-8aa76fc6e658
       version: -1
       name: Set Context
       description: '-'
@@ -459,6 +479,15 @@ tasks:
       value:
         complex:
           root: ATD
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
           accessor: Task
     separatecontext: false
     view: |-

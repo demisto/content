@@ -1,0 +1,12 @@
+[
+  {
+    "CustomFields": {
+      "indicatorId": "example:indicator-14975dea-86cd-4211-a5f8-9c2e4daab69a",
+      "stixPackageId": "example:Package-bc2955f8-f1bb-4f02-b2ed-339d7daf6d75"
+    },
+    "source": "example",
+    "timestamp": "2015-07-20T19:52:13.853585Z",
+    "indicator_type": "File",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

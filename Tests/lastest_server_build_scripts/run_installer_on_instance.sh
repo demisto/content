@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-INSTANCE_ID=$(cat instance_ids)
+INSTANCE_ID=$(cat ./env_results.json | jq .[0].InstanceID | sed "s/\"//g") 
 
-echo "Making sure instance started"
-aws ec2 wait instance-exists --instance-ids ${INSTANCE_ID}
-aws ec2 wait instance-running --instance-ids ${INSTANCE_ID}
-echo "Instance started. fetching IP"
-
-PUBLIC_IP=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} \
-    --query 'Reservations[0].Instances[0].PublicIpAddress' | tr -d '"')
+PUBLIC_IP=$(cat ./env_results.json | jq .[0].InstanceDNS | sed "s/\"//g")
 echo "Instance public IP is: $PUBLIC_IP"
 
 echo ${PUBLIC_IP} > public_ip
@@ -56,8 +50,8 @@ ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
 
-scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
-scp content_test.zip ${USER}@${PUBLIC_IP}:~/content
+scp artifacts/content_new.zip ${USER}@${PUBLIC_IP}:~/content
+scp artifacts/content_test.zip ${USER}@${PUBLIC_IP}:~/content
 scp -r ./Beta_Integrations/* ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
 # override exiting content with current

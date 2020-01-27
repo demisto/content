@@ -1,0 +1,769 @@
+category: Endpoint
+commonfields:
+  id: Tanium
+  version: -1
+configuration:
+- display: Host URL (e.g. 1.2.3.4)
+  name: host
+  required: true
+  type: 0
+- defaultvalue: '443'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Tanium endpoint security and systems management
+display: Tanium
+name: Tanium
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Name of package
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Tanium id of package (to be used instead of name)
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a package object based on name or ID.
+    execution: false
+    name: tn-get-package
+    outputs:
+    - contextPath: Tanium.Packages.display_name
+      description: Display name of package
+      type: string
+    - contextPath: Tanium.Packages.name
+      description: Name of created package
+      type: string
+    - contextPath: Tanium.Packages.command
+      description: Command to execute
+      type: string
+    - contextPath: Tanium.Packages.command_timeout
+      description: Timeout for command execution in seconds
+      type: number
+    - contextPath: Tanium.Packages.deleted_flag
+      description: Is the package deleted
+      type: boolean
+    - contextPath: Tanium.Packages.id
+      description: Tanium unique package id
+      type: string
+    - contextPath: Tanium.Packages.files
+      description: Packge files
+      type: Unknown
+    - contextPath: Tanium.Packages.parameters.Description
+      description: Description of the package parameter
+      type: string
+    - contextPath: Tanium.Packages.parameters.Key
+      description: Key of the package parameter as it appears in the command
+      type: string
+    - contextPath: Tanium.Packages.parameters.Name
+      description: Name of the package parameter
+      type: string
+    - contextPath: Tanium.Packages.parameters.Type
+      description: Type of package parameter
+      type: string
+    - contextPath: Tanium.Packages.parameters.Values
+      description: Possible values of the package parameter
+      type: string
+    - contextPath: Tanium.Packages.sensor_variable
+      description: The type of sensor that this package requires as a variable
+      type: string
+  - deprecated: false
+    description: Get all Tanium package objects
+    execution: false
+    name: tn-get-all-packages
+    outputs:
+    - contextPath: Tanium.Packages.verify_expire_seconds
+      description: Timeout for verify action expiry in seconds
+      type: number
+    - contextPath: Tanium.Packages.display_name
+      description: Display name of package
+      type: string
+    - contextPath: Tanium.Packages.name
+      description: Name of created package
+      type: string
+    - contextPath: Tanium.Packages.command
+      description: Command to execute
+      type: string
+    - contextPath: Tanium.Packages.creation_time
+      description: Pacakge creation time
+      type: date
+    - contextPath: Tanium.Packages.command_timeout
+      description: Timeout for command execution in seconds
+      type: number
+    - contextPath: Tanium.Packages.modification_time
+      description: Package modification time
+      type: date
+    - contextPath: Tanium.Packages.last_modified_by
+      description: User who last modified packge
+      type: string
+    - contextPath: Tanium.Packages.last_update
+      description: Time when package was last updated
+      type: date
+    - contextPath: Tanium.Packages.deleted_flag
+      description: Is the package deleted
+      type: boolean
+    - contextPath: Tanium.Packages.id
+      description: Tanium unique package id
+      type: string
+    - contextPath: Tanium.Packages.expire_seconds
+      description: Timeout for action expiry in seconds
+      type: number
+    - contextPath: Tanium.Packages.files
+      description: Packge files
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of object
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Tanium id of object (to be used instead of name)
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of object to get
+      isArray: false
+      name: object_type
+      predefined:
+      - user
+      - package
+      - saved_question
+      - sensor
+      - saved_action
+      - action
+      required: true
+      secret: false
+    deprecated: false
+    description: Send a generic Get Object request
+    execution: false
+    name: tn-get-object
+  - deprecated: false
+    description: Gets all saved questions
+    execution: false
+    name: tn-get-all-saved-questions
+    outputs:
+    - contextPath: Tanium.SavedQuestions.query_text
+      description: Question query text
+      type: string
+    - contextPath: Tanium.SavedQuestions.mod_time
+      description: Question modification time
+      type: date
+    - contextPath: Tanium.SavedQuestions.user.id
+      description: Unique id of user who saved question
+      type: string
+    - contextPath: Tanium.SavedQuestions.user.name
+      description: Name of user who saved question
+      type: string
+    - contextPath: Tanium.SavedQuestions.name
+      description: Name of saved question
+      type: string
+    - contextPath: Tanium.SavedQuestions.expire_seconds
+      description: Question expire time in seconds
+      type: number
+    - contextPath: Tanium.SavedQuestions.id
+      description: Saved question unique id
+      type: string
+    - contextPath: Tanium.SavedQuestions.issue_seconds
+      description: Issue time in seconds
+      type: number
+  - arguments:
+    - default: true
+      description: Name of package to deploy with this action
+      isArray: false
+      name: package
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of arguments needed to execute the package
+        command. Please run 'tn-get-package' for a detailed list of arguments
+      isArray: false
+      name: package_args
+      required: false
+      secret: false
+    - default: false
+      description: Semicolon separated list of strings. Each string must describe
+        a sensor and a filter which limits which computers the action will deploy
+        package to (e.g. Operating System, that contains:Windows; Computer Name, that
+        contains:WIN)
+      isArray: false
+      name: action_filters
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of options to apply to action_filters (e.g.  "max_data_age:3600,and").
+        Default is "or".
+      isArray: false
+      name: action_options
+      required: false
+      secret: false
+    - default: false
+      description: Semicolon separated list of sensor results that apply to the package.
+        A separate action will be issued for each given variable .
+      isArray: false
+      name: sensor_variables
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether to wait for result completion after deploying
+        action
+      isArray: false
+      name: get_results
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of computer group names to filter by
+      isArray: false
+      name: action_filters_groups
+      required: false
+      secret: false
+    - default: false
+      description: Name of action group
+      isArray: false
+      name: action_group
+      required: false
+      secret: false
+    deprecated: false
+    description: Deploy a package and get the results back
+    execution: false
+    name: tn-deploy-package
+    outputs:
+    - contextPath: Tanium.SavedActions.Id
+      description: Saved action id
+      type: string
+    - contextPath: Tanium.SavedActions.Name
+      description: Saved action name
+      type: string
+    - contextPath: Tanium.Actions.id
+      description: ID of deployed action
+      type: string
+    - contextPath: Tanium.Actions.name
+      description: Name of deployed action
+      type: string
+    - contextPath: Tanium.Actions.creation_time
+      description: Time when action was created
+      type: date
+    - contextPath: Tanium.Actions.status
+      description: Action status (Close, Pending, etc.)
+      type: string
+    - contextPath: Tanium.Actions.package_spec.command
+      description: The command that will run once action is approved
+      type: string
+    - contextPath: Tanium.Actions.package_spec.name
+      description: The name of the package associated with the action
+      type: string
+    - contextPath: Tanium.Actions.user.name
+      description: Name of user that created the action
+      type: string
+  - arguments:
+    - default: true
+      description: The question text
+      isArray: false
+      name: question
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The index of the parsed question to be asked (as returned by tn-parse-query)
+      isArray: false
+      name: index
+      required: false
+      secret: false
+    deprecated: false
+    description: Ask the server to parse the question text and choose the first parsed
+      result as the question to run
+    execution: false
+    name: tn-ask-question
+    outputs:
+    - contextPath: Tanium.QuestionResults
+      description: Results of requested question. May be a complex object
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Name of host
+      isArray: false
+      name: hostname
+      required: true
+      secret: false
+    deprecated: false
+    description: Ask a question about a specific endpoint
+    execution: false
+    name: tn-ask-system
+    outputs:
+    - contextPath: Tanium.QuestionResults
+      description: Results of requested computer name. May be a complex object
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of saved question
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Tanium unique id of saved question to be used instead of name
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a saved question by name or id
+    execution: false
+    name: tn-get-saved-question
+    outputs:
+    - contextPath: Tanium.SavedQuestions.query_text
+      description: Question query text
+      type: string
+    - contextPath: Tanium.SavedQuestions.mod_time
+      description: Question modification time
+      type: date
+    - contextPath: Tanium.SavedQuestions.user.id
+      description: Unique id of user who saved question
+      type: string
+    - contextPath: Tanium.SavedQuestions.user.name
+      description: Name of user who saved question
+      type: string
+    - contextPath: Tanium.SavedQuestions.name
+      description: Name of saved question
+      type: string
+    - contextPath: Tanium.SavedQuestions.expire_seconds
+      description: Question expire time in seconds
+      type: number
+    - contextPath: Tanium.SavedQuestions.id
+      description: Saved question unique id
+      type: string
+    - contextPath: Tanium.SavedQuestions.issue_seconds
+      description: Issue time in seconds
+      type: number
+  - arguments:
+    - default: false
+      description: Name of package to create
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Command to execute
+      isArray: false
+      name: command
+      required: true
+      secret: false
+    - default: false
+      description: Display name of package
+      isArray: false
+      name: display_name
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of URLs of files to add to package
+      isArray: false
+      name: file_urls
+      required: false
+      secret: false
+    - default: false
+      description: Timeout for command execution in seconds
+      isArray: false
+      name: command_timeout_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Timeout for action expiry in seconds
+      isArray: false
+      name: expire_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a package object
+    execution: false
+    name: tn-create-package
+    outputs:
+    - contextPath: Tanium.Packages.verify_expire_seconds
+      description: Timeout for verify action expiry in seconds
+      type: string
+    - contextPath: Tanium.Packages.display_name
+      description: Display name of package
+      type: string
+    - contextPath: Tanium.Packages.name
+      description: Name of created package
+      type: string
+    - contextPath: Tanium.Packages.command
+      description: Command to execute
+      type: string
+    - contextPath: Tanium.Packages.creation_time
+      description: Pacakge creation time
+      type: date
+    - contextPath: Tanium.Packages.command_timeout
+      description: Timeout for command execution in seconds
+      type: number
+    - contextPath: Tanium.Packages.modification_time
+      description: Package modification time
+      type: date
+    - contextPath: Tanium.Packages.last_update
+      description: Time when package was last updated
+      type: date
+    - contextPath: Tanium.Packages.deleted_flag
+      description: Is the package deleted
+      type: boolean
+    - contextPath: Tanium.Packages.id
+      description: Tanium unique package id
+      type: string
+    - contextPath: Tanium.Packages.expire_seconds
+      description: Timeout for action expiry in seconds
+      type: number
+  - arguments:
+    - default: false
+      description: Saved action ID to be approved
+      isArray: false
+      name: saved_action_id
+      required: false
+      secret: false
+    - default: true
+      description: Action ID to be approved
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: (deprecated) Id of saved action to approve
+      isArray: false
+      name: action_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Approve saved actions
+    execution: false
+    name: tn-approve-pending-action
+    outputs:
+    - contextPath: Tanium.ActionApproval.ApprovedFlag
+      description: Approval status
+      type: boolean
+    - contextPath: Tanium.ActionApproval.Id
+      description: Saved action id
+      type: string
+    - contextPath: Tanium.ActionApproval.Name
+      description: Saved action name
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: Type of object to get
+      isArray: false
+      name: object_type
+      predefined:
+      - user
+      - package
+      - saved_question
+      - sensor
+      - saved_action
+      - group
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets all objects of the specified type
+    execution: false
+    name: tn-get-all-objects
+  - deprecated: false
+    description: Gets all saved actions
+    execution: false
+    name: tn-get-all-saved-actions
+    outputs:
+    - contextPath: Tanium.SavedActions.distribute_seconds
+      description: Distribute seconds of action
+      type: number
+    - contextPath: Tanium.SavedActions.public_flag
+      description: Whether action is public or not
+      type: boolean
+    - contextPath: Tanium.SavedActions.action_group_id
+      description: Group id of action
+      type: string
+    - contextPath: Tanium.SavedActions.approver.id
+      description: Id of user who approved the action
+      type: string
+    - contextPath: Tanium.SavedActions.start_time
+      description: Action start time
+      type: date
+    - contextPath: Tanium.SavedActions.name
+      description: Action name
+      type: string
+    - contextPath: Tanium.SavedActions.user.id
+      description: Id of user who created the action
+      type: string
+    - contextPath: Tanium.SavedActions.creation_time
+      description: Time when action was created
+      type: date
+    - contextPath: Tanium.SavedActions.end_time
+      description: Time when action ended
+      type: date
+    - contextPath: Tanium.SavedActions.status
+      description: Action status
+      type: string
+    - contextPath: Tanium.SavedActions.last_start_time
+      description: Last time action started
+      type: date
+    - contextPath: Tanium.SavedActions.id
+      description: Id of action
+      type: string
+    - contextPath: Tanium.SavedActions.package_spec.id
+      description: The package associated with the action
+      type: string
+    - contextPath: Tanium.SavedActions.approved_flag
+      description: Whether action was approved or not
+      type: boolean
+  - deprecated: false
+    description: Gets all pending actions
+    execution: false
+    name: tn-get-all-pending-actions
+    outputs:
+    - contextPath: Tanium.PendingActions.distribute_seconds
+      description: Distribute seconds of action
+      type: number
+    - contextPath: Tanium.PendingActions.public_flag
+      description: Whether action is public or not
+      type: boolean
+    - contextPath: Tanium.PendingActions.action_group_id
+      description: Group id of action
+      type: string
+    - contextPath: Tanium.PendingActions.approver.id
+      description: Id of user who approved the action
+      type: string
+    - contextPath: Tanium.PendingActions.start_time
+      description: Action start time
+      type: date
+    - contextPath: Tanium.PendingActions.name
+      description: Action name
+      type: string
+    - contextPath: Tanium.PendingActions.user.id
+      description: Id of user who created the action
+      type: string
+    - contextPath: Tanium.PendingActions.creation_time
+      description: Time when action was created
+      type: date
+    - contextPath: Tanium.PendingActions.end_time
+      description: Time when action ended
+      type: date
+    - contextPath: Tanium.PendingActions.status
+      description: Action status
+      type: string
+    - contextPath: Tanium.PendingActions.last_start_time
+      description: Last time action started
+      type: date
+    - contextPath: Tanium.PendingActions.id
+      description: Id of action
+      type: string
+    - contextPath: Tanium.PendingActions.package_spec.id
+      description: The package associated with the action
+      type: string
+    - contextPath: Tanium.PendingActions.approved_flag
+      description: Whether action was approved or not
+      type: boolean
+  - deprecated: false
+    description: Gets all sensors
+    execution: false
+    name: tn-get-all-sensors
+  - arguments:
+    - default: false
+      description: The question text to be parsed
+      isArray: false
+      name: question
+      required: false
+      secret: false
+    deprecated: false
+    description: Ask the server to parse the question text and return all parsing
+      options
+    execution: false
+    name: tn-parse-query
+  - arguments:
+    - default: false
+      description: A semicolon separated list of sensors (columns) to include in a
+        question. For detailed information please use !tn-get-sensor
+      isArray: false
+      name: sensors
+      required: false
+      secret: false
+    - default: false
+      description: A semicolon separated list of filters that apply to the whole question
+      isArray: false
+      name: question_filters
+      required: false
+      secret: false
+    - default: false
+      description: A semicolon separated list of options that apply to the whole question.
+        Options are ignore_case, match_case, match_any_value, match_all_values, max_data_age,
+        value_type, and, or
+      isArray: false
+      name: question_options
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Print the help string for filters and exit
+      isArray: false
+      name: filters_help
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Print the help string for sensors and exit
+      isArray: false
+      name: sensors_help
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Print the help string for options and exit
+      isArray: false
+      name: options_help
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: Number of seconds to wait in between result fetching attempts
+      isArray: false
+      name: polling_secs
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '99'
+      description: Percentage of mr_tested out of estimated_total to consider the
+        question
+      isArray: false
+      name: complete_pct
+      required: false
+      secret: false
+    - default: false
+      description: Print an extended command usage description to the War Room. Default
+        is False.
+      isArray: false
+      name: help
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Ask a manual question using human strings and get the results back
+    execution: false
+    name: tn-ask-manual-question
+    outputs:
+    - contextPath: Tanium.QuestionResults
+      description: Results of requested question. May be a complex object
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Name of sensor
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get detailed information about a given sensor.
+    execution: false
+    name: tn-get-sensor
+    outputs:
+    - contextPath: Tanium.Sensors.max_age_seconds
+      description: Sensor max age in seconds
+      type: number
+    - contextPath: Tanium.Sensors.description
+      description: Description of the sensor
+      type: string
+    - contextPath: Tanium.Sensors.name
+      description: Name of the sensor
+      type: string
+    - contextPath: Tanium.Sensors.id
+      description: Id of the sensor
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Description
+      description: Description of the sensor parameter
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Key
+      description: Key of the sensor parameter as it appears in the command string
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Name
+      description: Name of the sensor parameter
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Type
+      description: Type of the sensor parameter
+      type: string
+    - contextPath: Tanium.Sensors.parameters.Values
+      description: Possible values of the sensor parameter
+      type: string
+  - arguments:
+    - default: false
+      description: ID of action of retrieve
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get detailed information about a given action.
+    execution: false
+    name: tn-get-action
+    outputs:
+    - contextPath: Tanium.Actions.name
+      description: Name of the actions
+      type: string
+    - contextPath: Tanium.Actions.id
+      description: ID of the action
+      type: number
+    - contextPath: Tanium.Actions.status
+      description: Status of the action - Closed, Pending, etc.
+      type: string
+    - contextPath: Tanium.Actions.start_time
+      description: Time when the action started running
+      type: date
+    - contextPath: Tanium.Actions.approver.name
+      description: Name of Tanium user who approved the action
+      type: string
+    - contextPath: Tanium.Actions.creation_time
+      description: Time when the action was created
+      type: date
+    - contextPath: Tanium.Actions.package_spec.command
+      description: The command that is issued by the action
+      type: string
+    - contextPath: Tanium.Actions.package_spec.name
+      description: Name of the package that was deployed
+      type: string
+  dockerimage: demisto/pytan
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
+tests:
+  - Tanium Test Playbook

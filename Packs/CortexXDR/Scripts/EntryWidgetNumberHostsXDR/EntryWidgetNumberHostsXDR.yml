@@ -1,0 +1,18 @@
+commonfields:
+  id: EntryWidgetNumberHostsXDR
+  version: -1
+name: EntryWidgetNumberHostsXDR
+script: ''
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.3.286
+runas: DBotWeakRole
+fromversion: 5.0.0
+comment: Entry widget that returns the number of hosts in a Cortex XDR incident.
+tests:
+- No test - no need to test widget

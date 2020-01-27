@@ -3,7 +3,7 @@ version: -1
 name: Block Indicators - Generic
 fromversion: 4.0.0
 description: |
-  This playbook blocks malicious Indicators using all integrations that you have enabled.
+  This playbook blocks malicious Indicators using all integrations that are enabled.
 
   Supported integrations for this playbook:
   * Active Directory
@@ -32,11 +32,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 60
+          "x": 910,
+          "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 1808d949-f921-4957-8796-7bbedd822ad9
@@ -53,11 +55,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 530
+          "x": 910,
+          "y": 515
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 8102ebf2-e72a-4139-8532-fc4e3e1f0ba2
@@ -94,6 +98,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: 0b19553d-6281-43ac-8bfc-583b1bfd6171
@@ -130,6 +136,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: ba10aaed-dffd-4eae-8dcd-16807997f52f
@@ -139,7 +147,7 @@ tasks:
       version: -1
       name: Block Account - Generic
       description: |-
-        This playbook blocks malicious usernames using all integrations that you have enabled.
+        This playbook blocks malicious usernames using all integrations that are enabled.
 
         Supported integrations for this playbook:
         * Active Directory
@@ -167,6 +175,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 903a8a58-46c8-4ab0-8b6e-d83e35f442fb
@@ -185,15 +195,18 @@ tasks:
       - "4"
       - "5"
       - "8"
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 690,
+          "x": 910,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 90693a3c-4767-46ac-8199-0bc4706264bf
@@ -219,15 +232,55 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 81f60e8f-e1a0-48c0-8a65-9b34796e267e
+    type: playbook
+    task:
+      id: 81f60e8f-e1a0-48c0-8a65-9b34796e267e
+      version: -1
+      name: Block IP - Generic v2
+      playbookName: Block IP - Generic v2
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+      IPBlacklistMiner:
+        complex:
+          root: inputs.IPBlacklistMiner
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 535,
-        "width": 1670,
+        "height": 530,
+        "width": 2100,
         "x": 50,
-        "y": 60
+        "y": 50
       }
     }
   }
@@ -333,19 +386,19 @@ outputs:
 - contextPath: CheckpointFWRule.DestinationNegate
   description: True if negate is set for destination.
 - contextPath: CheckpointFWRule.Action
-  description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+  description: Accept, Drop, Apply Layer, Ask, Info. The level of detail returned
     depends on the details-level field of the request. This table shows the level
     of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.Destination
-  description: Collection of Network objects identified by the name or UID. How much
-    details are returned depends on the details-level field of the request. This table
+  description: Collection of Network objects identified by the name or UID. The level of detail
+    depends on the details-level field of the request. This table
     shows the level of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.ActionSetting
   description: Action settings.
 - contextPath: CheckpointFWRule.CustomFields
   description: Custom fields.
 - contextPath: CheckpointFWRule.Data
-  description: How much details are returned depends on the details-level field of
+  description: The level of detail returned depends on the details-level field of
     the request. This table shows the level of detail shown when details-level is
     set to standard.
 - contextPath: CheckpointFWRule.DataDirection
@@ -355,7 +408,7 @@ outputs:
 - contextPath: CheckpointFWRule.Hits
   description: Hits count object.
 - contextPath: PanoramaRule.Direction
-  description: Direction of the Panorama rule, could be 'to','from', 'both'
+  description: Direction of the Panorama rule. Can be 'to','from', 'both'
   type: string
 - contextPath: PanoramaRule.IP
   description: The IP the Panorama rule blocks

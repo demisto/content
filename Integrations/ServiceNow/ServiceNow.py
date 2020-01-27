@@ -313,6 +313,7 @@ def get_ticket_human_readable(tickets, ticket_type):
 
 def get_ticket_fields(template, ticket_type):
     # Inverse the keys and values of those dictionaries to map the arguments to their corresponding values in ServiceNow
+    args = unicode_to_str_recur(demisto.args())
     inv_severity = {v: k for k, v in TICKET_SEVERITY.iteritems()}
     inv_priority = {v: k for k, v in TICKET_PRIORITY.iteritems()}
     states = TICKET_STATES.get(ticket_type)
@@ -320,7 +321,7 @@ def get_ticket_fields(template, ticket_type):
 
     body = {}
     for arg in SNOW_ARGS:
-        input_arg = demisto.args().get(arg)
+        input_arg = args.get(arg)
         if input_arg:
             if arg in ['impact', 'urgency', 'severity']:
                 body[arg] = inv_severity.get(input_arg, input_arg)
@@ -369,6 +370,27 @@ def split_fields(fields):
     return dic_fields
 
 
+# Converts unicode elements of obj (incl. dictionary and list) to string recursively
+def unicode_to_str_recur(obj):
+    if isinstance(obj, dict):
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
+    elif isinstance(obj, list):
+        obj = map(unicode_to_str_recur, obj)
+    elif isinstance(obj, unicode):
+        obj = obj.encode('utf-8')
+    return obj
+
+
+# Converts to an str
+def convert_to_str(obj):
+    if isinstance(obj, unicode):
+        return obj.encode('utf-8')
+    try:
+        return str(obj)
+    except ValueError:
+        return obj
+
+
 ''' FUNCTIONS '''
 
 
@@ -394,10 +416,11 @@ def get_template(name):
 
 
 def get_ticket_command():
-    ticket_type = get_table_name(demisto.args().get('ticket_type'))
-    ticket_id = demisto.args().get('id')
-    number = demisto.args().get('number')
-    get_attachments = demisto.args().get('get_attachments', 'false')
+    args = unicode_to_str_recur(demisto.args())
+    ticket_type = get_table_name(args.get('ticket_type'))
+    ticket_id = args.get('id')
+    number = args.get('number')
+    get_attachments = args.get('get_attachments', 'false')
 
     res = get(ticket_type, ticket_id, number)
     if not res or 'result' not in res:
@@ -441,9 +464,10 @@ def get_ticket_command():
 
 
 def get_record_command():
-    table_name = demisto.args()['table_name']
-    record_id = demisto.args()['id']
-    fields = demisto.args().get('fields')
+    args = unicode_to_str_recur(demisto.args())
+    table_name = args['table_name']
+    record_id = args['id']
+    fields = args.get('fields')
 
     res = get(table_name, record_id)
 
@@ -534,10 +558,11 @@ def get_ticket_attachment_entries(ticket_id):
 
 
 def update_ticket_command():
-    custom_fields = split_fields(demisto.args().get('custom_fields'))
-    template = demisto.args().get('template')
-    ticket_type = get_table_name(demisto.args().get('ticket_type'))
-    ticket_id = demisto.args()['id']
+    args = unicode_to_str_recur(demisto.args())
+    custom_fields = split_fields(args.get('custom_fields'))
+    template = args.get('template')
+    ticket_type = get_table_name(args.get('ticket_type'))
+    ticket_id = args['id']
 
     if template:
         template = get_template(template)
@@ -567,10 +592,11 @@ def update_ticket_command():
 
 
 def update_record_command():
-    table_name = demisto.args()['table_name']
-    record_id = demisto.args()['id']
-    fields = demisto.args().get('fields', {})
-    custom_fields = demisto.args().get('custom_fields')
+    args = unicode_to_str_recur(demisto.args())
+    table_name = args['table_name']
+    record_id = args['id']
+    fields = args.get('fields', {})
+    custom_fields = args.get('custom_fields')
 
     if fields:
         fields = split_fields(fields)
@@ -607,9 +633,10 @@ def update(table_name, record_id, fields, custom_fields):
 
 
 def create_ticket_command():
-    custom_fields = split_fields(demisto.args().get('custom_fields'))
-    template = demisto.args().get('template')
-    ticket_type = get_table_name(demisto.args().get('ticket_type'))
+    args = unicode_to_str_recur(demisto.args())
+    custom_fields = split_fields(args.get('custom_fields'))
+    template = args.get('template')
+    ticket_type = get_table_name(args.get('ticket_type'))
 
     if template:
         template = get_template(template)
@@ -645,9 +672,10 @@ def create_ticket_command():
 
 
 def create_record_command():
-    table_name = demisto.args()['table_name']
-    fields = demisto.args().get('fields')
-    custom_fields = demisto.args().get('custom_fields')
+    args = unicode_to_str_recur(demisto.args())
+    table_name = args['table_name']
+    fields = args.get('fields')
+    custom_fields = args.get('custom_fields')
 
     if fields:
         fields = split_fields(fields)
@@ -684,8 +712,9 @@ def create(table_name, fields, custom_fields):
 
 
 def delete_ticket_command():
-    ticket_id = demisto.args()['id']
-    ticket_type = get_table_name(demisto.args().get('ticket_type'))
+    args = unicode_to_str_recur(demisto.args())
+    ticket_id = args['id']
+    ticket_type = get_table_name(args.get('ticket_type'))
 
     res = delete(ticket_type, ticket_id)
 
@@ -701,8 +730,9 @@ def delete_ticket_command():
 
 
 def delete_record_command():
-    record_id = demisto.args()['id']
-    table_name = demisto.args().get('table_name')
+    args = unicode_to_str_recur(demisto.args())
+    record_id = args['id']
+    table_name = args.get('table_name')
 
     res = delete(table_name, record_id)
 
@@ -724,11 +754,12 @@ def delete(table_name, record_id):
 
 
 def add_link_command():
-    ticket_id = demisto.args()['id']
-    key = 'comments' if demisto.args().get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    text = demisto.args().get('text', demisto.args()['link'])
-    link = '[code]<a class="web" target="_blank" href="' + demisto.args()['link'] + '" >' + text + '</a>[/code]'
-    ticket_type = get_table_name(demisto.args().get('ticket_type'))
+    args = unicode_to_str_recur(demisto.args())
+    ticket_id = args['id']
+    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
+    text = args.get('text', args['link'])
+    link = '[code]<a class="web" target="_blank" href="' + args['link'] + '" >' + text + '</a>[/code]'
+    ticket_type = get_table_name(args.get('ticket_type'))
 
     res = add_link(ticket_id, ticket_type, key, link)
 
@@ -762,10 +793,11 @@ def add_link(ticket_id, ticket_type, key, link):
 
 
 def add_comment_command():
-    ticket_id = demisto.args()['id']
-    key = 'comments' if demisto.args().get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
-    text = demisto.args()['comment']
-    ticket_type = get_table_name(demisto.args().get('ticket_type'))
+    args = unicode_to_str_recur(demisto.args())
+    ticket_id = args['id']
+    key = 'comments' if args.get('post-as-comment', 'false').lower() == 'true' else 'work_notes'
+    text = args['comment']
+    ticket_type = get_table_name(args.get('ticket_type'))
 
     res = add_comment(ticket_id, ticket_type, key, text)
 
@@ -799,9 +831,10 @@ def add_comment(ticket_id, ticket_type, key, text):
 
 
 def get_ticket_notes_command():
-    ticket_id = demisto.args()['id']
-    limit = demisto.args().get('limit')
-    offset = demisto.args().get('offset')
+    args = unicode_to_str_recur(demisto.args())
+    ticket_id = args['id']
+    limit = args.get('limit')
+    offset = args.get('offset')
 
     comments_query = 'element_id=' + ticket_id + '^element=comments^ORelement=work_notes'
 
@@ -843,14 +876,15 @@ def get_ticket_notes_command():
 
 
 def query_tickets_command():
-    sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
-    sysparm_query = demisto.args().get('query')
-    sysparm_offset = demisto.args().get('offset', DEFAULTS['offset'])
+    args = unicode_to_str_recur(demisto.args())
+    sysparm_limit = args.get('limit', DEFAULTS['limit'])
+    sysparm_query = args.get('query')
+    sysparm_offset = args.get('offset', DEFAULTS['offset'])
 
     if not sysparm_query:
         # backward compatibility
-        sysparm_query = demisto.args().get('sysparm_query')
-    ticket_type = get_table_name(demisto.args().get('ticket_type'))
+        sysparm_query = args.get('sysparm_query')
+    ticket_type = get_table_name(args.get('ticket_type'))
 
     res = query(ticket_type, sysparm_limit, sysparm_offset, sysparm_query)
 
@@ -881,11 +915,12 @@ def query_tickets_command():
 
 
 def query_table_command():
-    table_name = demisto.args()['table_name']
-    sysparm_limit = demisto.args().get('limit', DEFAULTS['limit'])
-    sysparm_query = demisto.args().get('query')
-    sysparm_offset = demisto.args().get('offset', DEFAULTS['offset'])
-    fields = demisto.args().get('fields')
+    args = unicode_to_str_recur(demisto.args())
+    table_name = args['table_name']
+    sysparm_limit = args.get('limit', DEFAULTS['limit'])
+    sysparm_query = args.get('query')
+    sysparm_offset = args.get('offset', DEFAULTS['offset'])
+    fields = args.get('fields')
 
     res = query(table_name, sysparm_limit, sysparm_offset, sysparm_query)
 
@@ -942,11 +977,19 @@ def query(table_name, sysparm_limit, sysparm_offset, sysparm_query):
 
 
 def upload_file_command():
-    ticket_type = get_table_name(demisto.args().get('ticket_type'))
-    ticket_id = demisto.args()['id']
-    file_id = demisto.args()['file_id']
-    file_name = demisto.args().get('file_name',
-                                   demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
+    args = unicode_to_str_recur(demisto.args())
+    ticket_type = get_table_name(args.get('ticket_type'))
+    ticket_id = args['id']
+    file_id = args['file_id']
+    file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
+
+    # in case of info file
+    if not file_name:
+        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
+
+    if not file_name:
+        return_error('Could not find the file')
+
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
     res = upload_file(ticket_id, file_id, file_name, ticket_type)
@@ -1001,8 +1044,9 @@ def upload_file(ticket_id, file_id, file_name, ticket_type):
 
 # Deprecated
 def get_computer_command():
+    args = unicode_to_str_recur(demisto.args())
     table_name = 'cmdb_ci_computer'
-    computer_name = demisto.args()['computerName']
+    computer_name = args['computerName']
 
     res = query(table_name, None, 0, 'u_code=' + computer_name)
 
@@ -1045,13 +1089,14 @@ def get_computer_command():
 
 
 def query_computers_command():
+    args = unicode_to_str_recur(demisto.args())
     table_name = 'cmdb_ci_computer'
-    computer_id = demisto.args().get('computer_id')
-    computer_name = demisto.args().get('computer_name')
-    asset_tag = demisto.args().get('asset_tag')
-    computer_query = demisto.args().get('query', {})
-    offset = demisto.args().get('offset', DEFAULTS['offset'])
-    limit = demisto.args().get('limit', DEFAULTS['limit'])
+    computer_id = args.get('computer_id')
+    computer_name = args.get('computer_name')
+    asset_tag = args.get('asset_tag')
+    computer_query = args.get('query', {})
+    offset = args.get('offset', DEFAULTS['offset'])
+    limit = args.get('limit', DEFAULTS['limit'])
 
     if computer_id:
         res = get(table_name, computer_id)
@@ -1108,12 +1153,13 @@ def query_computers_command():
 
 
 def query_groups_command():
+    args = unicode_to_str_recur(demisto.args())
     table_name = 'sys_user_group'
-    group_id = demisto.args().get('group_id')
-    group_name = demisto.args().get('group_name')
-    group_query = demisto.args().get('query', {})
-    offset = demisto.args().get('offset', DEFAULTS['offset'])
-    limit = demisto.args().get('limit', DEFAULTS['limit'])
+    group_id = args.get('group_id')
+    group_name = args.get('group_name')
+    group_query = args.get('query', {})
+    offset = args.get('offset', DEFAULTS['offset'])
+    limit = args.get('limit', DEFAULTS['limit'])
 
     if group_id:
         res = get(table_name, group_id)
@@ -1160,12 +1206,13 @@ def query_groups_command():
 
 
 def query_users_command():
+    args = unicode_to_str_recur(demisto.args())
     table_name = 'sys_user'
-    user_id = demisto.args().get('user_id')
-    user_name = demisto.args().get('user_name')
-    user_query = demisto.args().get('query', {})
-    offset = demisto.args().get('offset', DEFAULTS['offset'])
-    limit = demisto.args().get('limit', DEFAULTS['limit'])
+    user_id = args.get('user_id')
+    user_name = args.get('user_name')
+    user_query = args.get('query', {})
+    offset = args.get('offset', DEFAULTS['offset'])
+    limit = args.get('limit', DEFAULTS['limit'])
 
     if user_id:
         res = get(table_name, user_id)
@@ -1176,6 +1223,7 @@ def query_users_command():
 
     if not res or 'result' not in res:
         return 'No users found'
+    res = unicode_to_str_recur(res)
 
     users = res['result']
     if not isinstance(users, list):
@@ -1194,7 +1242,7 @@ def query_users_command():
         'Created': user.get('sys_created_on'),
         'Updated': user.get('sys_updated_on'),
     } for user in users]
-
+    mapped_users = unicode_to_str_recur(mapped_users)
     entry = {
         'Type': entryTypes['note'],
         'Contents': res,
@@ -1212,8 +1260,9 @@ def query_users_command():
 
 # Deprecated
 def get_groups_command():
+    args = unicode_to_str_recur(demisto.args())
     table_name = 'sys_user_group'
-    group_name = demisto.args()['name']
+    group_name = args['name']
     res = query(table_name, None, 0, 'name=' + group_name)
 
     if not res or 'result' not in res:
@@ -1252,7 +1301,8 @@ def get_groups_command():
 
 
 def list_table_fields_command():
-    table_name = demisto.args()['table_name']
+    args = unicode_to_str_recur(demisto.args())
+    table_name = args['table_name']
 
     res = get_table_fields(table_name)
 
@@ -1287,9 +1337,10 @@ def get_table_fields(table_name):
 
 
 def get_table_name_command():
-    label = demisto.args()['label']
-    offset = demisto.args().get('offset', DEFAULTS['offset'])
-    limit = demisto.args().get('limit', DEFAULTS['limit'])
+    args = unicode_to_str_recur(demisto.args())
+    label = args['label']
+    offset = args.get('offset', DEFAULTS['offset'])
+    limit = args.get('limit', DEFAULTS['limit'])
 
     table_query = 'label=' + label
 
@@ -1414,6 +1465,9 @@ def fetch_incidents():
 
 
 def test_module():
+    # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
+    parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
+
     path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
     res = send_request(path, 'GET')
     if 'result' not in res:

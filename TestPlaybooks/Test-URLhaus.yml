@@ -1,0 +1,668 @@
+id: c48ce58e-79ec-460f-818e-8b41689453cd
+version: 20
+name: Test-URLhaus
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cdf676a5-2d39-449d-8a08-b243eb255d59
+    type: start
+    task:
+      id: cdf676a5-2d39-449d-8a08-b243eb255d59
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 4039d080-9aa8-4c0b-80f1-ccb9b9ca8ca4
+    type: regular
+    task:
+      id: 4039d080-9aa8-4c0b-80f1-ccb9b9ca8ca4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "7"
+      - "9"
+      - "11"
+      - "15"
+      - "19"
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 46e5a32c-7b52-4ef2-8428-120069876497
+    type: regular
+    task:
+      id: 46e5a32c-7b52-4ef2-8428-120069876497
+      version: -1
+      name: url - with data
+      description: Retrieve URL information from URLhaus
+      script: URLhaus|||url
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: http://sskymedia.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/ # disable-secrets-detection
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 76a502da-a3d0-482b-8714-e5c0583194b9
+    type: condition
+    task:
+      id: 76a502da-a3d0-482b-8714-e5c0583194b9
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://sskymedia.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/ # disable-secrets-detection
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0c627bb5-48d9-4fb5-8b1a-e7d005ae7fb7
+    type: title
+    task:
+      id: 0c627bb5-48d9-4fb5-8b1a-e7d005ae7fb7
+      version: -1
+      name: complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: cdb26154-c0fe-461c-8855-7a39747bf497
+    type: regular
+    task:
+      id: cdb26154-c0fe-461c-8855-7a39747bf497
+      version: -1
+      name: url - nonexisting
+      description: Retrieve URL information from URLhaus
+      script: URLhaus|||url
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: http://gfrewdfsersfsfersfgergre.com # disable-secrets-detection
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: f6a47339-25d1-4fb7-8228-d9407777a4bf
+    type: condition
+    task:
+      id: f6a47339-25d1-4fb7-8228-d9407777a4bf
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://gfrewdfsersfsfersfgergre.com # disable-secrets-detection
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 20e74a44-a3e7-40ac-83a7-646ee6cd44d9
+    type: regular
+    task:
+      id: 20e74a44-a3e7-40ac-83a7-646ee6cd44d9
+      version: -1
+      name: domain - with data
+      description: Retrieve domain information from URLhaus
+      script: URLhaus|||domain
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      domain:
+        simple: vektorex.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 527bdb18-e7e1-4657-8942-b6acee842ad8
+    type: condition
+    task:
+      id: 527bdb18-e7e1-4657-8942-b6acee842ad8
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: vektorex.com
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 9a693a70-b3d3-46ec-8d8a-f54002e7182e
+    type: regular
+    task:
+      id: 9a693a70-b3d3-46ec-8d8a-f54002e7182e
+      version: -1
+      name: domain - no data
+      description: Retrieve domain information from URLhaus
+      script: URLhaus|||domain
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 04f6b2dc-a9b5-4334-84e0-0a15b0724fee
+    type: condition
+    task:
+      id: 04f6b2dc-a9b5-4334-84e0-0a15b0724fee
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: f2fa7790-b361-4547-881d-d8ac97d2b5d3
+    type: regular
+    task:
+      id: f2fa7790-b361-4547-881d-d8ac97d2b5d3
+      version: -1
+      name: file - no data
+      description: Retrieve file information from URLhaus
+      script: URLhaus|||file
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01
+      hash:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01
+      hash_type:
+        simple: SHA256
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: e58d7c2b-9978-461d-8e9c-90786ad9af40
+    type: condition
+    task:
+      id: e58d7c2b-9978-461d-8e9c-90786ad9af40
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
+                accessor: MD5
+            iscontext: true
+          right:
+            value:
+              simple: 12c8aec5766ac3e6f26f2505e2f4a8f2
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 81efc6d1-8b26-4609-84f3-d1965ee635b7
+    type: regular
+    task:
+      id: 81efc6d1-8b26-4609-84f3-d1965ee635b7
+      version: -1
+      name: urlhaus-download-sample - with data
+      description: Download a malware sample from URLhaus
+      script: URLhaus|||urlhaus-download-sample
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      file:
+        simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b3c40ff4-a660-4dd3-8cf0-5df41f4ed78f
+    type: condition
+    task:
+      id: b3c40ff4-a660-4dd3-8cf0-5df41f4ed78f
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
+                accessor: MD5
+            iscontext: true
+          right:
+            value:
+              simple: 12c8aec5766ac3e6f26f2505e2f4a8f2
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: de322ffd-9a70-4009-87a9-55beaca96bc2
+    type: regular
+    task:
+      id: de322ffd-9a70-4009-87a9-55beaca96bc2
+      version: -1
+      name: urlhaus-download-sample - w/o data
+      description: Download a malware sample from URLhaus
+      script: URLhaus|||urlhaus-download-sample
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file:
+        simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337c
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: e4ce9205-b8a7-48b4-896c-ece17cf89354
+    type: regular
+    task:
+      id: e4ce9205-b8a7-48b4-896c-ece17cf89354
+      version: -1
+      name: file - with data
+      description: Retrieve file information from URLhaus
+      script: URLhaus|||file
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      file:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
+      hash:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
+      hash_type:
+        simple: SHA256
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 3390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

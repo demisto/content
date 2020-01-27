@@ -1,0 +1,36 @@
+{
+  "ContentsFormat": "json",
+  "HumanReadable": "### simple.csv\n|count|sourceIP|\n|---|---|\n| 0 | 1.1.1.1 |\n| 1 | 2.2.2.2 |\n| 2 | 3.3.3.3 |\n",
+  "EntryContext": {
+    "ParseCSV.ParsedCSV": [
+      {
+        "count": "0",
+        "sourceIP": "1.1.1.1"
+      },
+      {
+        "count": "1",
+        "sourceIP": "2.2.2.2"
+      },
+      {
+        "count": "2",
+        "sourceIP": "3.3.3.3"
+      }
+    ]
+  },
+  "ReadableContentsFormat": "markdown",
+  "Type": 1,
+  "Contents": [
+    {
+      "count": "0",
+      "sourceIP": "1.1.1.1"
+    },
+    {
+      "count": "1",
+      "sourceIP": "2.2.2.2"
+    },
+    {
+      "count": "2",
+      "sourceIP": "3.3.3.3"
+    }
+  ]
+}

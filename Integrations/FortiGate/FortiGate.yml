@@ -1,0 +1,477 @@
+commonfields:
+  id: FortiGate
+  version: -1
+name: FortiGate
+display: FortiGate
+category: Network Security
+description: Manage FortiGate Firewall
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Account username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: fortigate-get-addresses
+    arguments:
+    - name: address
+      description: Filter by address (ip or domain)
+      defaultValue: root
+    - name: name
+      description: Filter by address name
+    outputs:
+    - contextPath: Fortigate.Address.Name
+      description: Address name
+      type: string
+    - contextPath: Fortigate.Address.Subnet
+      description: Address subnet
+      type: string
+    - contextPath: Fortigate.Address.StartIP
+      description: Address object start IP address
+      type: string
+    - contextPath: Fortigate.Address.EndIP
+      description: Address object end IP address
+      type: string
+    description: Get all address objects from your firewall
+  - name: fortigate-get-service-groups
+    arguments:
+    - name: name
+      description: Filter by group name
+    outputs:
+    - contextPath: Fortigate.ServiceGroup.Name
+      description: Service Group name
+      type: string
+    - contextPath: Fortigate.ServiceGroup.Member.Name
+      description: Service Group member name
+      type: string
+    description: Get information about FortiGate service groups
+  - name: fortigate-update-service-group
+    arguments:
+    - name: groupName
+      required: true
+      description: Group name to update
+    - name: serviceName
+      required: true
+      description: Service name to update from the group (If providing data argument
+        value does not matter)
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      description: Action to take on the service
+    outputs:
+    - contextPath: Fortigate.ServiceGroup.Name
+      description: Service group name
+      type: string
+    - contextPath: Fortigate.ServiceGroup.Service.Name
+      description: Service name
+      type: string
+    description: Update a FortiGate service group
+  - name: fortigate-delete-service-group
+    arguments:
+    - name: groupName
+      required: true
+      description: Group name of the group you would like to delete
+    outputs:
+    - contextPath: Fortigate.ServiceGroup.Name
+      description: Service group name
+      type: string
+    - contextPath: Fortigate.ServiceGroup.Deleted
+      description: Was service group deleted
+      type: boolean
+    description: Delete a service group from FortiGate
+  - name: fortigate-get-firewall-service
+    arguments:
+    - name: serviceName
+      description: Service name
+    outputs:
+    - contextPath: Fortigate.Service.Name
+      description: Service name
+      type: string
+    - contextPath: Fortigate.Service.Ports.TCP
+      description: TCP Port range included for the service
+      type: string
+    - contextPath: Fortigate.Service.Ports.UDP
+      description: UDP Port range included for the service
+      type: string
+    description: Get information about a service from FortiGate Firewall
+  - name: fortigate-create-firewall-service
+    arguments:
+    - name: serviceName
+      required: true
+      description: Service name
+    - name: tcpRange
+      description: 'TCP Port range for the service. Example: 100-120 or simply a single
+        port.'
+    - name: udpRange
+      description: 'UDP Port range for the service. Example: 100-120, or simply a
+        single port.'
+    outputs:
+    - contextPath: Fortigate.Service.Name
+      description: Service name
+      type: string
+    - contextPath: Fortigate.Service.Ports.TCP
+      description: TCP Port range included for the service
+      type: string
+    - contextPath: Fortigate.Service.Ports.UDP
+      description: UDP Port range included for the service
+      type: string
+    description: Create a service in FortiGate firewall
+  - name: fortigate-get-policy
+    arguments:
+    - name: policyName
+      description: Policy name
+    - name: policyID
+      description: Policy ID
+    outputs:
+    - contextPath: Fortigate.Policy.Name
+      description: Policy name
+      type: string
+    - contextPath: Fortigate.Policy.ID
+      description: Policy ID
+      type: number
+    - contextPath: Fortigate.Policy.Description
+      description: Policy description
+      type: string
+    - contextPath: Fortigate.Policy.Status
+      description: The status of the policy (Enabled or Disabled)
+      type: string
+    - contextPath: Fortigate.Policy.Source
+      description: Source address
+      type: string
+    - contextPath: Fortigate.Policy.Destination
+      description: Destination address
+      type: string
+    - contextPath: Fortigate.Policy.Service
+      description: Service for the policy (for example HTTP)
+      type: string
+    - contextPath: Fortigate.Policy.Action
+      description: Policy action (Allow, Block)
+      type: string
+    - contextPath: Fortigate.Policy.Log
+      description: Does the policy log the traffic or not
+      type: string
+    - contextPath: Fortigate.Policy.Security
+      description: Policy attached security profile
+      type: string
+    description: Get information about a firewall policy on FortiGate
+  - name: fortigate-update-policy
+    arguments:
+    - name: policyID
+      required: true
+      description: Policy ID
+    - name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - description
+      - status
+      - source
+      - destination
+      - service
+      - action
+      - log
+      - nat
+      description: Field parameter to update
+    - name: value
+      required: true
+      description: Value of field parameter to update
+    - name: keep_original_data
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to keep the original data or not. Only relevant if the
+        updated field is "source" or "destination". If the supplied value is 'True',
+        the current data will not be replaced. Instead, the supplied addresses will
+        be added / removed from the existing data.
+    - name: add_or_remove
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      description: Whether to add or remove the supplied addresses from the existing
+        data. Only relevant in case the field to update is "source" or "destination",
+        and keep_original_data is specified to 'True'.
+    outputs:
+    - contextPath: Fortigate.Policy.Name
+      description: Policy name
+      type: string
+    - contextPath: Fortigate.Policy.ID
+      description: Policy ID
+      type: number
+    - contextPath: Fortigate.Policy.Description
+      description: Policy description
+      type: string
+    - contextPath: Fortigate.Policy.Status
+      description: The status of the policy (Enabled or Disabled)
+      type: string
+    - contextPath: Fortigate.Policy.Source
+      description: Source address
+      type: string
+    - contextPath: Fortigate.Policy.Destination
+      description: Destination address
+      type: string
+    - contextPath: Fortigate.Policy.Service
+      description: Service for the policy (for example HTTP)
+      type: string
+    - contextPath: Fortigate.Policy.Action
+      description: Policy action (Allow, Block)
+      type: string
+    - contextPath: Fortigate.Policy.Log
+      description: Does the policy log the traffic or not
+      type: boolean
+    description: Update a firewall policy on FortiGate
+    execution: true
+  - name: fortigate-create-policy
+    arguments:
+    - name: policyName
+      required: true
+      description: Policy name
+    - name: description
+      description: Description for the policy
+    - name: sourceIntf
+      required: true
+      description: 'Source interface  (examples : port1, port2 or port3)'
+    - name: dstIntf
+      required: true
+      description: 'Destination interface (examples : port1, port2 or port3)'
+    - name: source
+      required: true
+      description: 'Source IP address, range or domain (examples : all, update.microsoft.com)'
+    - name: destination
+      required: true
+      description: 'Destination IP address, range or domain (examples : all, update.microsoft.com)'
+    - name: service
+      required: true
+      description: Service for the policy (for example HTTP)
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - accept
+      - block
+      description: Action to take
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+      description: policy status
+      defaultValue: enable
+    - name: log
+      auto: PREDEFINED
+      predefined:
+      - all
+      - utm
+      - disable
+      description: Will the policy log the traffic or not
+      defaultValue: enable
+    - name: nat
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+      description: enable/disable NAT
+      defaultValue: enable
+    outputs:
+    - contextPath: Fortigate.Policy.Name
+      description: Policy name
+      type: string
+    - contextPath: Fortigate.Policy.Description
+      description: Policy description
+      type: string
+    - contextPath: Fortigate.Policy.Status
+      description: The status of the policy (Enabled or Disabled)
+      type: string
+    - contextPath: Fortigate.Policy.Source.Address
+      description: Source address
+      type: string
+    - contextPath: Fortigate.Policy.Destination.Address
+      description: Destination address
+      type: string
+    - contextPath: Fortigate.Policy.Service
+      description: Service for the policy (for example HTTP)
+      type: string
+    - contextPath: Fortigate.Policy.Action
+      description: Policy action (Allow, Block)
+      type: string
+    - contextPath: Fortigate.Policy.Log
+      description: Does the policy log the traffic or not
+      type: boolean
+    - contextPath: Fortigate.Policy.Source.Intf
+      description: Source interface
+      type: string
+    - contextPath: Fortigate.Policy.Destination.Intf
+      description: Destination interface
+      type: string
+    - contextPath: Fortigate.Policy.NAT
+      description: Policy NAT
+      type: string
+    description: Create a firewall policy (rule) on FortiGate
+    execution: true
+  - name: fortigate-move-policy
+    arguments:
+    - name: policyID
+      required: true
+      description: Policy ID
+    - name: position
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - before
+      - after
+      description: Position for the policy (before or after)
+    - name: neighbor
+      required: true
+      description: The ID of the policy being used as a positional anchor
+    outputs:
+    - contextPath: Fortigate.Policy.ID
+      description: Policy ID
+      type: number
+    - contextPath: Fortigate.Policy.Moved
+      description: Was policy moved successfully
+      type: boolean
+    description: Move a firewall policy rule to a different position
+  - name: fortigate-delete-policy
+    arguments:
+    - name: policyID
+      required: true
+      description: Policy ID
+    outputs:
+    - contextPath: Fortigate.Policy.ID
+      description: Policy ID
+      type: number
+    - contextPath: Fortigate.Policy.Deleted
+      description: Was policy deleted successfully
+      type: boolean
+    description: Delete a policy from FortiGate firewall
+    execution: true
+  - name: fortigate-get-address-groups
+    arguments:
+    - name: groupName
+      description: Filter by group name
+    outputs:
+    - contextPath: Fortigate.AddressGroup.Name
+      description: Address Group name
+      type: string
+    - contextPath: Fortigate.AddressGroup.Member.Name
+      description: Address Group member name
+      type: string
+    - contextPath: Fortigate.AddressGroup.UUID
+      description: Address Group UUID
+      type: string
+    description: Get information about address groups from FortiGate
+  - name: fortigate-update-address-group
+    arguments:
+    - name: groupName
+      required: true
+      description: Group name
+    - name: address
+      required: true
+      description: An address to add or remove from the group (If providing data argument,
+        value does not matter)
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      description: Action to take on the service
+    outputs:
+    - contextPath: Fortigate.AddressGroup.Name
+      description: Address group name
+      type: string
+    - contextPath: Fortigate.AddressGroup.Address.Name
+      description: Address name
+      type: string
+    - contextPath: Fortigate.AddressGroup.UUID
+      description: Address group UUID
+    description: Update an address group on FortiGate firewall
+  - name: fortigate-create-address-group
+    arguments:
+    - name: groupName
+      required: true
+      description: Group name
+    - name: address
+      required: true
+      description: Address member to add to the group
+    outputs:
+    - contextPath: Fortigate.AddressGroup.Name
+      description: Address group name
+      type: string
+    - contextPath: Fortigate.AddressGroup.Address
+      description: Address group member address
+      type: string
+    description: Create an address group in FortiGate firewall
+  - name: fortigate-delete-address-group
+    arguments:
+    - name: name
+      required: true
+      description: Address group name
+    outputs:
+    - contextPath: Fortigate.AddressGroup.Name
+      description: Address group name
+      type: string
+    - contextPath: Fortigate.AddressGroup.Deleted
+      description: Was address group deleted
+      type: boolean
+    description: Delete an address group from FortiGate firewall
+  - name: fortigate-ban-ip
+    arguments:
+    - name: ip_address
+      required: true
+      description: CSV list of IP addresses to ban. IPv4 and IPv6 addresses
+        are supported. For example, "1.1.1.1,6.7.8.9".
+      isArray: true
+    - name: expiry
+      description: Time until ban expires in seconds. 0 for indefinite ban.
+    description: Adds IP addresses to the banned list.
+  - name: fortigate-unban-ip
+    arguments:
+    - name: ip_address
+      required: true
+      description: CSV list of banned user IP addresses to clear. IPv4 and IPv6
+        addresses are supported. For example, "1.1.1.1,6.7.8.9".
+      isArray: true
+    description: Clears a list of specific banned IP addresses.
+  - name: fortigate-get-banned-ips
+    arguments: []
+    outputs:
+    - contextPath: Fortigate.BannedIP.IP
+      description: The IP address.
+      type: string
+    - contextPath: Fortigate.BannedIP.Created
+      description: Date/time the IP address was added to the banned list.
+      type: string
+    - contextPath: Fortigate.BannedIP.Expires
+      description: Date/time the IP address expires from the banned list.
+      type: string
+    - contextPath: Fortigate.BannedIP.Source
+      description: Source of the ban.
+      type: string
+    description: Returns a list of banned IP addresses.
+  runonce: false
+tests:
+- Fortigate Test

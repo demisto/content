@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 42e0edf4-e9d1-4bb5-8a5f-3d58d63e2356
+    taskid: 2f48483d-548b-4bbe-8a11-ee9ecb1adf47
     type: start
     task:
-      id: 42e0edf4-e9d1-4bb5-8a5f-3d58d63e2356
+      id: 2f48483d-548b-4bbe-8a11-ee9ecb1adf47
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "22"
     separatecontext: false
     view: |-
       {
@@ -26,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 866765ba-f9c0-4f85-8518-d01fc655ebfe
+    taskid: 4928fe37-57cb-4b6f-8839-191d034c35df
     type: regular
     task:
-      id: 866765ba-f9c0-4f85-8518-d01fc655ebfe
+      id: 4928fe37-57cb-4b6f-8839-191d034c35df
       version: -1
       name: Create good indicator
       description: Modify indicator reputation
@@ -64,19 +65,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: c57ef545-7f2b-47e2-8fc7-a70d4801f8a1
+    taskid: f89c42d6-da73-48be-8065-cba5317222bf
     type: condition
     task:
-      id: c57ef545-7f2b-47e2-8fc7-a70d4801f8a1
+      id: f89c42d6-da73-48be-8065-cba5317222bf
       version: -1
       name: IsMaliciuosFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
       type: condition
       iscommand: false
@@ -85,118 +89,11 @@ tasks:
       "no":
       - "7"
     scriptarguments:
+      includeManual: {}
       includeSuspicious: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 250,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: d009cfd6-90be-4a56-883b-c752702edf74
-    type: regular
-    task:
-      id: d009cfd6-90be-4a56-883b-c752702edf74
-      version: -1
-      name: Create Bad indicator
-      script: Builtin|||createNewIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      internal: {}
-      merge: {}
-      note: {}
-      relatedIncidents:
-        simple: ${incident.id}
-      reputation:
-        simple: Bad
-      shorttextfield: {}
-      source: {}
-      sourceTimeStamp: {}
-      tags: {}
-      tmp: {}
-      type:
-        simple: Email
-      value:
-        simple: dudu@demisto.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 408a28ff-a4d2-47b9-82d3-55601d39d702
-    type: condition
-    task:
-      id: 408a28ff-a4d2-47b9-82d3-55601d39d702
-      version: -1
-      name: IsMaliciuosFound
-      scriptName: IsMaliciousIndicatorFound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    scriptarguments:
-      includeSuspicious: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: e0d7c288-b8b6-4fcd-8d5d-3ff762aeb1ab
-    type: regular
-    task:
-      id: e0d7c288-b8b6-4fcd-8d5d-3ff762aeb1ab
-      version: -1
-      name: Create suspiciuos indicator
-      script: Builtin|||createNewIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      internal: {}
-      merge: {}
-      note: {}
-      relatedIncidents:
-        simple: ${incident.id}
-      reputation:
-        simple: Suspicious
-      shorttextfield: {}
-      source: {}
-      sourceTimeStamp: {}
-      tags: {}
-      tmp: {}
-      type:
-        simple: Email
-      value:
-        simple: yulu@demisto.com
+      maliciousQueryOverride: {}
+      queryIndicators:
+        simple: "no"
     separatecontext: false
     view: |-
       {
@@ -207,80 +104,135 @@ tasks:
       }
     note: false
     timertriggers: []
-  "8":
-    id: "8"
-    taskid: f84df226-83ad-4682-8a91-85c2e0e68f79
-    type: condition
-    task:
-      id: f84df226-83ad-4682-8a91-85c2e0e68f79
-      version: -1
-      name: IsMaliciuosFound-no-suspicious
-      scriptName: IsMaliciousIndicatorFound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "16"
-    scriptarguments:
-      includeSuspicious: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 910
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: 6779d5dc-45b7-4033-8c7c-d0d9f2679c3f
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: b7b3cdb7-7377-4d8c-8fbe-5878577bf9ed
     type: regular
     task:
-      id: 6779d5dc-45b7-4033-8c7c-d0d9f2679c3f
+      id: b7b3cdb7-7377-4d8c-8fbe-5878577bf9ed
       version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
+      name: Create Bad indicator
+      script: Builtin|||createNewIndicator
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      seconds:
-        simple: "1"
+      associatedfilenames: {}
+      comment: {}
+      customFields: {}
+      internal: {}
+      md5: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      value:
+        simple: dudu@demisto.com
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
-  "15":
-    id: "15"
-    taskid: eda1d742-5215-451e-848d-01a19c41d3d1
-    type: regular
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: aeb63c6f-3d84-44ef-834a-7d74a7edf0e7
+    type: condition
     task:
-      id: eda1d742-5215-451e-848d-01a19c41d3d1
+      id: aeb63c6f-3d84-44ef-834a-7d74a7edf0e7
       version: -1
-      name: sleep 1 sec
-      scriptName: Sleep
-      type: regular
+      name: IsMaliciuosFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 87f029fc-86f9-4d64-804b-a359e44f69d8
+    type: regular
+    task:
+      id: 87f029fc-86f9-4d64-804b-a359e44f69d8
+      version: -1
+      name: Create suspiciuos indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      seconds:
-        simple: "1"
+      associatedfilenames: {}
+      comment: {}
+      customFields: {}
+      internal: {}
+      md5: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Suspicious
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      value:
+        simple: yulu@demisto.com
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -291,27 +243,64 @@ tasks:
       }
     note: false
     timertriggers: []
-  "16":
-    id: "16"
-    taskid: ebb38caa-8b84-4722-8055-7ab188d49277
-    type: regular
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b2dab9ea-0165-4b0c-830b-15126ea778da
+    type: condition
     task:
-      id: ebb38caa-8b84-4722-8055-7ab188d49277
+      id: b2dab9ea-0165-4b0c-830b-15126ea778da
       version: -1
-      name: Set Domain.Malicious to True
-      scriptName: Set
-      type: regular
+      name: IsMaliciuosFound-no-suspicious
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "no":
       - "19"
     scriptarguments:
-      append: {}
-      key:
-        simple: Domain.Malicious
-      value:
-        simple: "True"
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators:
+        simple: "no"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: eee1f03a-24d3-42fc-8d0e-d97867a7d5a4
+    type: condition
+    task:
+      id: eee1f03a-24d3-42fc-8d0e-d97867a7d5a4
+      version: -1
+      name: IsMaliciuosFound-include-suspicious
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious:
+        simple: "yes"
+      maliciousQueryOverride: {}
+      queryIndicators: {}
     separatecontext: false
     view: |-
       {
@@ -322,42 +311,15 @@ tasks:
       }
     note: false
     timertriggers: []
-  "19":
-    id: "19"
-    taskid: 4965fd9b-8efe-496c-8379-64d9e10ded8a
-    type: condition
-    task:
-      id: 4965fd9b-8efe-496c-8379-64d9e10ded8a
-      version: -1
-      name: IsMaliciuosFound
-      scriptName: IsMaliciousIndicatorFound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "21"
-    scriptarguments:
-      includeSuspicious: {}
-      maliciousQueryOverride: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: 3ce90dd0-9cb5-49cd-8900-84f98c389648
+    taskid: 31b8dce1-86cf-4379-8431-d7b1f0f5fd36
     type: title
     task:
-      id: 3ce90dd0-9cb5-49cd-8900-84f98c389648
+      id: 31b8dce1-86cf-4379-8431-d7b1f0f5fd36
       version: -1
-      name: Done!!!
+      name: Done
       type: title
       iscommand: false
       brand: ""
@@ -366,17 +328,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 3170
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: edc52fd9-2dc5-478d-8514-5ea55bbbaabb
+    taskid: d1f32ee9-684f-41d8-88da-eddd23d85ab5
     type: regular
     task:
-      id: edc52fd9-2dc5-478d-8514-5ea55bbbaabb
+      id: d1f32ee9-684f-41d8-88da-eddd23d85ab5
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -398,18 +361,650 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: a804f18c-bd89-49b2-8d86-e842d0b71071
+    type: regular
+    task:
+      id: a804f18c-bd89-49b2-8d86-e842d0b71071
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 97599b43-104a-4651-8b1a-bd9ee8530236
+    type: regular
+    task:
+      id: 97599b43-104a-4651-8b1a-bd9ee8530236
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 9254dff8-2f5c-49ac-8041-d7511f84bbe2
+    type: regular
+    task:
+      id: 9254dff8-2f5c-49ac-8041-d7511f84bbe2
+      version: -1
+      name: FileReputation-multiple bad
+      description: A context script for hash entities
+      scriptName: FileReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      file:
+        simple: 85b794e080d83a91e904b97769e1e770
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: b7f3d050-26c1-44ca-8cb2-232e53918f00
+    type: condition
+    task:
+      id: b7f3d050-26c1-44ca-8cb2-232e53918f00
+      version: -1
+      name: IsMaliciuosFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 4ff93622-cddf-480c-84fe-437b8254b5f3
+    type: condition
+    task:
+      id: 4ff93622-cddf-480c-84fe-437b8254b5f3
+      version: -1
+      name: IsMaliciuosFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "20"
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: b4b37b3b-5711-4b18-81a8-d8ce082fcf00
+    type: regular
+    task:
+      id: b4b37b3b-5711-4b18-81a8-d8ce082fcf00
+      version: -1
+      name: Create suspiciuos indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      biosversion: {}
+      comment: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      internal: {}
+      ipaddress: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      modified: {}
+      name: {}
+      nameservers: {}
+      note: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Good
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: File
+      updateddate: {}
+      username: {}
+      value:
+        simple: 15af5bbf3c8d5e5db41fd7c3d722e8b247b40f2da747d5c334f7fd80b715a649
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 80ea702a-777c-49b7-8860-2b67d3395bd8
+    type: regular
+    task:
+      id: 80ea702a-777c-49b7-8860-2b67d3395bd8
+      version: -1
+      name: Create suspiciuos indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      biosversion: {}
+      comment: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      internal: {}
+      ipaddress: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      modified: {}
+      name: {}
+      nameservers: {}
+      note: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Good
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      updateddate: {}
+      username: {}
+      value:
+        simple: dudu@demisto.com
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 20cecbc3-6ccb-45c4-86ba-df4586abc76d
+    type: regular
+    task:
+      id: 20cecbc3-6ccb-45c4-86ba-df4586abc76d
+      version: -1
+      name: Create suspiciuos indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      biosversion: {}
+      comment: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      internal: {}
+      ipaddress: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      modified: {}
+      name: {}
+      nameservers: {}
+      note: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Good
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      updateddate: {}
+      username: {}
+      value:
+        simple: yulu@demisto.com
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 3b50e06f-ae60-4234-8bec-eef9228b888f
+    type: regular
+    task:
+      id: 3b50e06f-ae60-4234-8bec-eef9228b888f
+      version: -1
+      name: Create suspiciuos indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      biosversion: {}
+      comment: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      internal: {}
+      ipaddress: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      modified: {}
+      name: {}
+      nameservers: {}
+      note: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Good
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: File
+      updateddate: {}
+      username: {}
+      value:
+        simple: 85b794e080d83a91e904b97769e1e770
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 580,
+        "height": 3185,
+        "width": 380,
         "x": 50,
         "y": 50
       }

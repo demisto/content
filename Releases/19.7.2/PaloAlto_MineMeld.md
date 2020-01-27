@@ -1,0 +1,1 @@
+Formatted Minmeld to the package structure with separate files to script,yml,image and description.
