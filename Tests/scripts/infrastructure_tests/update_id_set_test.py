@@ -1,14 +1,11 @@
-import json
-import os
-import sys
-import tempfile
 import unittest
-from unittest.mock import patch
 import pytest
-
-import Tests.test_utils
 from Tests.scripts.update_id_set import has_duplicate, get_integration_data, get_script_data, get_playbook_data, \
     re_create_id_set, find_duplicates
+import os
+import json
+import sys
+import tempfile
 
 WIDGET_DATA = {
     "id": "temp-widget-dup-check",
@@ -162,39 +159,32 @@ def test_had_duplicates(id_set, id_to_check, result):
 INTEGRATION_DATA = {
     "Cortex XDR - IR": {
         "name": "Cortex XDR - IR",
-        "file_path": "TestData/CortexXDR/Integrations/PaloAltoNetworks_XDR.yml",
+        "file_path": "Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml",
         "fromversion": "4.1.0",
-        "commands": ['xdr-get-incidents',
-                     'xdr-get-incident-extra-data',
-                     'xdr-update-incident',
-                     'xdr-insert-parsed-alert',
-                     'xdr-insert-cef-alerts',
-                     'xdr-isolate-endpoint',
-                     'xdr-unisolate-endpoint',
-                     'xdr-get-endpoints',
-                     'xdr-get-distribution-versions',
-                     'xdr-create-distribution',
-                     'xdr-get-distribution-url',
-                     'xdr-get-create-distribution-status',
-                     'xdr-get-audit-management-logs',
-                     'xdr-get-audit-agent-reports']
+        "commands": [
+            "xdr-get-incidents",
+            "xdr-get-incident-extra-data",
+            "xdr-update-incident"
+        ],
+        'pack': 'CortexXDR'
     }
 }
 
 SCRIPT_DATA = {
     "EntryWidgetNumberHostsXDR": {
         "name": "EntryWidgetNumberHostsXDR",
-        "file_path": "TestData/CortexXDR/Scripts/EntryWidgetNumberHostsXDR.yml",
+        "file_path": "Packs/CortexXDR/Scripts/EntryWidgetNumberHostsXDR/EntryWidgetNumberHostsXDR.yml",
         "fromversion": "5.0.0",
         "tests": [
             "No test - no need to test widget"
-        ]
+        ],
+        'pack': 'CortexXDR'
     }
 }
 
 PLAYBOOK_DATA = {
     "name": "Cortex XDR Incident Handling",
-    "file_path": "TestData/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml",
+    "file_path": "Packs/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml",
     "fromversion": "4.5.0",
     "implementing_scripts": [
         "XDRSyncScript",
@@ -220,8 +210,7 @@ class TestIntegration(unittest.TestCase):
         """
         Test for getting all the integration data
         """
-        # mocker.patch.object('get_pack_name', return_value='CortexXDR')
-        file_path = 'TestData/CortexXDR/Integrations/PaloAltoNetworks_XDR.yml'
+        file_path = 'Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml'
         data = get_integration_data(file_path)
         self.assertDictEqual(data, INTEGRATION_DATA)
 
@@ -229,7 +218,7 @@ class TestIntegration(unittest.TestCase):
         """
         Test for getting the script data
         """
-        file_path = 'TestData/CortexXDR/Scripts/EntryWidgetNumberHostsXDR.yml'
+        file_path = 'Packs/CortexXDR/Scripts/EntryWidgetNumberHostsXDR/EntryWidgetNumberHostsXDR.yml'
         data = get_script_data(file_path)
         self.assertDictEqual(data, SCRIPT_DATA)
 
@@ -237,7 +226,7 @@ class TestIntegration(unittest.TestCase):
         """
         Test for getting the playbook data
         """
-        file_path = 'TestData/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml'
+        file_path = 'Packs/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml'
         data = get_playbook_data(file_path)['Cortex XDR Incident Handling']
         self.assertEqual(data['name'], PLAYBOOK_DATA['name'])
         self.assertEqual(data['file_path'], PLAYBOOK_DATA['file_path'])
