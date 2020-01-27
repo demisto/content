@@ -5,7 +5,7 @@
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
-  "id": "indicator_name",
+  "id": "indicator_namefield",
   "validatedError": "",
   "group": 2,
   "script": "",
