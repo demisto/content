@@ -161,11 +161,20 @@ INTEGRATION_DATA = {
         "name": "Cortex XDR - IR",
         "file_path": "Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml",
         "fromversion": "4.1.0",
-        "commands": [
-            "xdr-get-incidents",
-            "xdr-get-incident-extra-data",
-            "xdr-update-incident"
-        ],
+        "commands": ['xdr-get-incidents',
+                     'xdr-get-incident-extra-data',
+                     'xdr-update-incident',
+                     'xdr-insert-parsed-alert',
+                     'xdr-insert-cef-alerts',
+                     'xdr-isolate-endpoint',
+                     'xdr-unisolate-endpoint',
+                     'xdr-get-endpoints',
+                     'xdr-get-distribution-versions',
+                     'xdr-create-distribution',
+                     'xdr-get-distribution-url',
+                     'xdr-get-create-distribution-status',
+                     'xdr-get-audit-management-logs',
+                     'xdr-get-audit-agent-reports'],
         'pack': 'CortexXDR'
     }
 }
