@@ -31,8 +31,10 @@ if [ "$?" != "0" ]; then
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/conf.json $SECRET_CONF_PATH
     rm -rf ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH
     rm -rf ./test_configuration.zip
-    echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
-    exit 1
+    if [ "$UNDERSCORE_CIRCLE_BRANCH" != "master" ]; then
+        echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
+        exit 1
+    fi
 
 fi
 
