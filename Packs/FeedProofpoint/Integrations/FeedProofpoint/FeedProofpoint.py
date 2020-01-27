@@ -23,8 +23,8 @@ class Client(BaseClient):
     ALL_TYPE = "all"
     TYPES = (DOMAIN_TYPE, IP_TYPE, ALL_TYPE)
     indicator_types_to_endpoint = {
-        IP_TYPE: ["detailed-iprepdata.txt"],
-        DOMAIN_TYPE: ["detailed-domainrepdata.txt"],
+        IP_TYPE: "detailed-iprepdata.txt",
+        DOMAIN_TYPE: "detailed-domainrepdata.txt",
     }
 
     def _build_iterator(
@@ -33,55 +33,88 @@ class Client(BaseClient):
         endpoints = self.indicator_types_to_endpoint.get(
             indicator_type, self.indicator_types_to_endpoint.values()
         )
+        endpoints = endpoints if isinstance(endpoints, list) else [endpoints]
         for endpoint in endpoints:
             resp = self._http_request(
                 "GET", endpoint, resp_type="text", timeout=(30, 60)
             )
             resp = resp.splitlines()
             csv_repr = csv.reader(resp)
-            headers: list = next(csv_repr, None)
+            headers: list = next(csv_repr)
             headers = [header.replace(" ", "").replace("(|)", "") for header in headers]
             for line in csv_repr:
                 yield {headers[i]: line[i] for i in range(len(headers))}
 
     def _build_iterator_domain(self) -> Generator[dict, None, None]:
-        """Gives the user an
+        """Gets back a dict of domain attributes.
 
         Returns:
+            Generator of dicts.
 
         """
         return self._build_iterator(self.DOMAIN_TYPE)
 
     def _build_iterator_ip(self) -> Generator[dict, None, None]:
+        """Gets back a dict of ip attributes.
+
+        Returns:
+            Generator of dicts.
+
+        """
         return self._build_iterator("ip")
 
     def get_indicators_domain(self) -> List[dict]:
+        """ Gets indicator's dict of domains
+
+        Returns:
+            list of indicators
+        """
         return [
             {
                 "value": item["domain"],
                 "type": FeedIndicatorType.Domain,
-                "port": item["ports"],
                 "rawJSON": item,
             }
             for item in self._build_iterator_domain()
         ]
 
     def get_indicators_ip(self) -> List[dict]:
+        """ Gets indicator's dict of ips
+
+        Returns:
+            list of indicators
+        """
         return [
             {
                 "value": item["ip"],
                 "type": FeedIndicatorType.IP,
-                "port": item["ports"],
                 "rawJSON": item,
             }
             for item in self._build_iterator_ip()
         ]
 
     def get_indicators(self) -> List[dict]:
+        """ Gets indicator's dict of domains and ips
+
+        Returns:
+            list of indicators
+        """
         return self.get_indicators_domain() + self.get_indicators_ip()
 
 
-def url_concat(*args) -> str:
+def url_concat(*args: str) -> str:
+    """ Joining arguments into a url
+
+    Examples:
+        >>> url_concat("https://example.com", "apitoken/", "/path_to_thing/", "file.exe")
+        'https://example.com/apitoken/path_to_thing/file.exe'
+
+    Args:
+        *args: str representing url paths
+
+    Returns:
+        url
+    """
     if args:
         url = "/".join(element.strip("/") for element in args if element)
         return url + "/" if args[-1].endswith("/") else url
@@ -89,11 +122,29 @@ def url_concat(*args) -> str:
 
 
 def module_test_command(client: Client, indicator_type: str) -> str:
+    """ Simple command that checks if the api is working
+
+    Args:
+        client: Client object
+        indicator_type: one of ['ip', 'domain', 'all']
+
+    Returns:
+        'ok' if working, else raises an error
+    """
     fetch_indicators_command(client, indicator_type)
     return "ok"
 
 
 def fetch_indicators_command(client: Client, indicator_type: Optional[str]):
+    """ Retrieving indicators from the API
+
+    Args:
+        client: Client object
+        indicator_type: one of ['ip', 'domain', 'all']
+
+    Returns:
+
+    """
     if indicator_type == client.IP_TYPE:
         return client.get_indicators_ip()
     elif indicator_type == client.DOMAIN_TYPE:
@@ -102,7 +153,16 @@ def fetch_indicators_command(client: Client, indicator_type: Optional[str]):
         return client.get_indicators()
 
 
-def get_indicators_command(client, args) -> Tuple[str, dict, list]:
+def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict, list]:
+    """ Gets indicator to context
+
+    Args:
+        client: Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, context, raw_response
+    """
     indicator_type = args.get("indicator_type")
     if indicator_type not in client.TYPES:
         return_error(
@@ -112,14 +172,7 @@ def get_indicators_command(client, args) -> Tuple[str, dict, list]:
     limit = int(args.get("limit"))
     if limit < 1:
         limit = 1
-    if indicator_type == client.ALL_TYPE:
-        inside_limit = int(((limit + 1) / 2))
-        indicators_list = (
-            client.get_indicators_ip()[:inside_limit]
-            + client.get_indicators_domain()[:inside_limit]
-        )
-    else:
-        indicators_list = fetch_indicators_command(client, indicator_type)
+    indicators_list = fetch_indicators_command(client, indicator_type)[:limit]
     hr = tableToMarkdown(
         f"Indicators from {SOURCE_NAME}",
         indicators_list[:limit],
