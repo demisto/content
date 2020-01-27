@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed an issue where the listing emails were not comparing the mail ID.
+
+## [20.1.2] - 2020-01-22
 Added support to authenticate using a self-deployed Azure application.
 
 ## [19.12.1] - 2019-12-25

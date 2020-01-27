@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.1.2] - 2020-01-22
 Added 4 new commands.
   - ***attackiq-list-assessment-templates***: Lists all available assessment templates.
   - ***attackiq-list-assets***: Lists all assets.
