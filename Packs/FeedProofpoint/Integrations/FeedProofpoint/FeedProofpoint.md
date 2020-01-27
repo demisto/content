@@ -1,3 +1,3 @@
 Fetch indicators from the Proofpoint feed.
-* **Server URL** - URL where the feed is.
-* **Authorization Code** - Key from Proofpoint to access the API.
+* **Server URL** - URL of the feed.
+* **Authorization Code** - Key from Proofpoint used to access the API.
