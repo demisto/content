@@ -169,7 +169,7 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict, list]
             f"{SOURCE_NAME}: Got indicator_type {indicator_type} but expected "
             f"one of {client.TYPES}"
         )
-    limit = int(args.get("limit"))
+    limit = int(args.get("limit", 50))
     if limit < 1:
         limit = 1
     indicators_list = fetch_indicators_command(client, indicator_type)[:limit]
