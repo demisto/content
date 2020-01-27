@@ -41,7 +41,7 @@
                     "user_name": "Administrator",
                     "event_type": "Process Execution",
                     "actor_process_image_name": "wildfire-test-pe-file.exe",
-                    "actor_process_command_line": "\"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe\" ",
+                    "actor_process_command_line": "\"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe\"",
                     "actor_process_signature_status": "N/A",
                     "actor_process_signature_vendor": "N/A",
                     "causality_actor_process_image_name": null,
