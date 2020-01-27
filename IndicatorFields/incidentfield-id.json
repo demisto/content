@@ -1,7 +1,7 @@
 {
   "sortValues": null,
   "closeForm": false,
-  "cliName": "id",
+  "cliName": "indicatorid",
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
