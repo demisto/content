@@ -1,3 +1,3 @@
-Fetch indicators from a CSV feed. The integration allows a great amount of user configuration to support different types of CSV feeds.
+Fetch indicators from the Proofpoint feed.
 * **Server URL** - URL where the feed is.
 * **Authorization Code** - Key from Proofpoint to access the API.
