@@ -28,6 +28,4 @@ subtype: python2
 dockerimage: demisto/office-utils:1.0.0.91
 runas: DBotWeakRole
 runonce: false
-tests:
-- Extract Indicators From File - test
 fromversion: 4.1.0
