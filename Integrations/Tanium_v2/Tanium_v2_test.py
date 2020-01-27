@@ -1,7 +1,7 @@
 from Tanium_v2 import Client
 import json
 
-BASE_URL = 'https://test.com'
+BASE_URL = 'https://test.com/'
 
 parse_question_res = {
     'data': [
@@ -190,8 +190,8 @@ QUESTION_RESULTS = [{"ComputerName": "host-name", "IPv4Address": "127.0.0.1", "C
 def test_create_action_body_by_target_group_name(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
 
-    requests_mock.get(BASE_URL + '/session/login', json={'data': {'session': 'SESSION-ID'}})
-    requests_mock.get(BASE_URL + '/packages/by-name/package-name', json={'data': {'id': 12345, 'expire_seconds': 360}})
+    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'SESSION-ID'}})
+    requests_mock.get(BASE_URL + 'packages/by-name/package-name', json={'data': {'id': 12345, 'expire_seconds': 360}})
 
     body = client.build_create_action_body(False, 'action-name', '', package_name='package-name',
                                            action_group_id=1, target_group_name='target-group-name')
@@ -205,9 +205,9 @@ def test_create_action_body_by_target_group_name(requests_mock):
 def test_create_action_body_by_host(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
 
-    requests_mock.get(BASE_URL + '/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.get(BASE_URL + '/packages/20', json={'data': {'id': 12345, 'expire_seconds': 360}})
-    requests_mock.post(BASE_URL + '/parse_question', json=parse_question_res)
+    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + 'packages/20', json={'data': {'id': 12345, 'expire_seconds': 360}})
+    requests_mock.post(BASE_URL + 'parse_question', json=parse_question_res)
 
     body = client.build_create_action_body(True, 'action-name', '', package_id=20, action_group_id=1, hostname='host')
 
@@ -220,8 +220,8 @@ def test_create_action_body_by_host(requests_mock):
 def test_create_action_body_with_parameters(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
 
-    requests_mock.get(BASE_URL + '/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.get(BASE_URL + '/packages/by-name/package-name', json={'data': {'id': 12345, 'expire_seconds': 360}})
+    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + 'packages/by-name/package-name', json={'data': {'id': 12345, 'expire_seconds': 360}})
 
     body = client.build_create_action_body(False, 'action-name', '$1=true;$2=value;$3=otherValue',
                                            package_name='package-name', action_group_id=1,
