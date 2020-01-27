@@ -4,7 +4,7 @@
 		"Malware",
 		"Prisma Cloud",
 		"AWS IAM Policy Misconfiguration",
-                "AWS EC2 Instance Misconfiguration"
+		"AWS EC2 Instance Misconfiguration"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
