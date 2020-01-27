@@ -124,7 +124,7 @@ class TestHelperFunctions:
         import ExportIndicators as goi
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(goi, 'find_indicators_to_limit', return_value=iocs_json)
+            mocker.patch.object(goi, 'find_indicators_with_limit', return_value=iocs_json)
             goi_vals = goi.refresh_outbound_context(indicator_query='', out_format='text')
             for ioc in iocs_json:
                 ip = ioc.get('value')
@@ -136,7 +136,7 @@ class TestHelperFunctions:
         import ExportIndicators as goi
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(goi, 'find_indicators_to_limit', return_value=iocs_json)
+            mocker.patch.object(goi, 'find_indicators_with_limit', return_value=iocs_json)
             goi_vals = goi.refresh_outbound_context(indicator_query='', out_format='json')
             assert isinstance(goi_vals, str)
             goi_vals = json.loads(goi_vals)
@@ -148,7 +148,7 @@ class TestHelperFunctions:
         import ExportIndicators as goi
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(goi, 'find_indicators_to_limit', return_value=iocs_json)
+            mocker.patch.object(goi, 'find_indicators_with_limit', return_value=iocs_json)
             goi_vals = goi.refresh_outbound_context(indicator_query='', out_format='csv')
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -160,36 +160,36 @@ class TestHelperFunctions:
         import ExportIndicators as goi
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(goi, 'find_indicators_to_limit', return_value=iocs_json)
+            mocker.patch.object(goi, 'find_indicators_with_limit', return_value=iocs_json)
             goi_vals = goi.refresh_outbound_context(indicator_query='', out_format='json-seq')
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
                 assert iocs_out == goi_vals
 
-    @pytest.mark.find_indicators_to_limit
-    def test_find_indicators_to_limit_1(self, mocker):
+    @pytest.mark.find_indicators_with_limit
+    def test_find_indicators_with_limit_1(self, mocker):
         """Test find indicators limit"""
         import ExportIndicators as goi
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             limit = 30
-            mocker.patch.object(goi, 'find_indicators_to_limit_loop', return_value=(iocs_json, 1))
-            goi_vals = goi.find_indicators_to_limit(indicator_query='', limit=limit)
+            mocker.patch.object(goi, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
+            goi_vals = goi.find_indicators_with_limit(indicator_query='', limit=limit)
             assert len(goi_vals) == limit
 
-    @pytest.mark.find_indicators_to_limit_loop
-    def test_find_indicators_to_limit_loop_1(self, mocker):
+    @pytest.mark.find_indicators_with_limit_loop
+    def test_find_indicators_with_limit_loop_1(self, mocker):
         """Test find indicators stops when reached last page"""
         import ExportIndicators as goi
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
             limit = 50
             mocker.patch.object(demisto, 'findIndicators', return_value=iocs_dict)
-            goi_vals, nxt_pg = goi.find_indicators_to_limit_loop(indicator_query='', limit=limit)
+            goi_vals, nxt_pg = goi.find_indicators_with_limit_loop(indicator_query='', limit=limit)
             assert nxt_pg == 1  # assert entered into loop
 
-    @pytest.mark.find_indicators_to_limit_loop
-    def test_find_indicators_to_limit_loop_2(self, mocker):
+    @pytest.mark.find_indicators_with_limit_loop
+    def test_find_indicators_with_limit_loop_2(self, mocker):
         """Test find indicators stops when reached limit"""
         import ExportIndicators as goi
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
@@ -197,7 +197,7 @@ class TestHelperFunctions:
             limit = 30
             mocker.patch.object(demisto, 'findIndicators', return_value=iocs_dict)
             goi.PAGE_SIZE = IOC_RES_LEN
-            goi_vals, nxt_pg = goi.find_indicators_to_limit_loop(indicator_query='', limit=limit,
+            goi_vals, nxt_pg = goi.find_indicators_with_limit_loop(indicator_query='', limit=limit,
                                                                  last_found_len=IOC_RES_LEN)
             assert nxt_pg == 1  # assert entered into loop
 
