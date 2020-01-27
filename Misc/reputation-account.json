@@ -108,7 +108,7 @@
         ]
       }
     },
-    "indicatorid": {
+    "indicatorIdentification": {
       "simple": "",
       "complex": {
         "root": "Account",
