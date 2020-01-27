@@ -488,7 +488,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "Test_GOI",
+            "playbookID": "Test_export_indicators_service",
             "integrations": "GenericOutboundIndicators",
             "fromversion": "5.5.0"
         },
