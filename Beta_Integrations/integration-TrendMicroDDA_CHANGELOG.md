@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed a typo on the proxy parameter.
+Fixed a typo in the proxy parameter.
 
 ## [19.9.1] - 2019-09-18
 #### New Integration
