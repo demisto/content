@@ -30,3 +30,4 @@ def main():
 
 
 if __name__ in ('builtins', '__builtin__'):
+    main()
