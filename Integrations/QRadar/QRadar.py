@@ -1093,11 +1093,12 @@ def upload_indicators_command():
         else:
             raw_response = upload_indicators_list_request(reference_name, indicators_values_list)
             ref_set_data = unicode_to_str_recur(get_reference_by_name(reference_name))
+            ref = replace_keys(ref_set_data, REFERENCE_NAMES_MAP)
+            enrich_reference_set_result(ref)
             indicator_headers = ['value', 'indicator_type']
-            ref_set_headers = ['name', 'element_type', 'timeout_type', 'creation_time', 'number_of_elements']
-            return [tableToMarkdown("reference set {0} was updated".format(reference_name), ref_set_data,
-                                    headers=ref_set_headers) + tableToMarkdown("Indicators list",
-                                                                               indicators_data_list,
+            ref_set_headers = ['Name', 'ElementType', 'TimeoutType', 'CreationTime', 'NumberOfElements']
+            return [tableToMarkdown("reference set {0} was updated".format(reference_name), ref,
+                                    headers=ref_set_headers) + tableToMarkdown("Indicators list", indicators_data_list,
                                                                                headers=indicator_headers), raw_response]
     except Exception as e:
         if '1005' in str(e):
