@@ -21,11 +21,12 @@ args:
   description: A comma-separated list of hostnames to check.
   isArray: true
 - name: internalRegex
-  description: The regex pattern for the organization's hostname for example \w\w\w\d|\w\w\w\d\.
+  description: The regex pattern for the organization's hostname for example \w\w\w\d$|\w\w\w$.
     for hosts that look like pcx1 or pcx.
 - name: domainName
   required: true
-  description: The domain name for the organization. For example "bla.com".
+  description: 'The domain name for the organization. For a single domain use this format: "bla.com".
+    For multiple domains use this format: (bla.com|blabla.com), where the pipe and the brackets are the OR condition for regex.'
 outputs:
 - contextPath: Endpoint.Hostname
   description: The hostname.
