@@ -16,8 +16,13 @@
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Sixgill Alert ID": {
-					"complex": null,
-					"simple": "user_id"
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "id",
+						"transformers": []
+					},
+					"simple": ""
 				},
 				"Sixgill Content": {
 					"complex": null,
