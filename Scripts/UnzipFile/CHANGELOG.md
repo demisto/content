@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue that cause a unsuccessful unzip.
+Fixed an issue where the script was returning the file metadata instead of its contents.
 
 
 ## [19.12.1] - 2019-12-25
