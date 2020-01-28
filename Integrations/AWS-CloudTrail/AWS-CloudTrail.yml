@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: AWS - CloudTrail--DEV
+  id: AWS - CloudTrail
   version: -1
 configuration:
 - display: Default Region
@@ -20,8 +20,8 @@ configuration:
   required: false
   type: 0
 description: Amazon Web Services CloudTrail.
-display: AWS - CloudTrail--DEV
-name: AWS - CloudTrail--DEV
+display: AWS - CloudTrail
+name: AWS - CloudTrail
 script:
   commands:
   - arguments:
