@@ -13,23 +13,9 @@ stix_struct_to_indicator = {
     "URL": FeedIndicatorType.URL,
     "Username": FeedIndicatorType.Account
 }
-"""
-    "CVE CVSS Score": [],
-    "File": [],
-    "IP": [],
-    "Domain": [],
-    "Email": [
-      "user@example.com"
-    ],
-    "Registry Path Reputation": ["HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey"],
-    "URL": [
-      "http://demisto.com"
-    ]
-  }"""
 
 
-def build_indicators(data):
-    # type: (list) -> list
+def build_indicators(data: list) -> list:
     return [
         {
             "type": stix_struct_to_indicator.get(indicator.get("indicator_type")),
@@ -37,7 +23,6 @@ def build_indicators(data):
             "rawJSON": indicator
         }
         for indicator in data
-        if stix_struct_to_indicator.get(indicator.get("indicator_type"))
     ]
 
 
@@ -50,15 +35,15 @@ def main():
         return_error("Could not find file for entry id {}.".format(entry_id))
     with open(file_path) as file:
         file_txt = file.read()
-    demisto.results(file_txt)
-    results = demisto.executeCommand("STIXParser", {"iocXml": file_txt})
-    data = json.loads(results)
-    demisto.results(data)
+
+    contents = demisto.executeCommand("StixParser", {"iocXml": file_txt})[0].get("Contents")
+    data = json.loads(contents)
     indicators = build_indicators(data)
-    for b in batch(indicators, 2000):
-        demisto.createIndicators(b)
+
+    for part in batch(indicators, 2000):
+        demisto.createIndicators(part)
     return_outputs("Create Indicators From STIX: {} were created.".format(len(indicators)))
 
 
-if __name__ in ("builtin",):
+if __name__ in ("builtins",):
     main()
