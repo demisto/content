@@ -499,7 +499,7 @@ def create_policy():
             'Domain': sender.get('emailDomain'),
             'Type': sender.get('type')
         },
-        'Receiver': {
+        'Receiverwer': {
             'Group': receiver.get('groupId'),
             'Address': receiver.get('emailAddress'),
             'Domain': receiver.get('emailDomain'),
