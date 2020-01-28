@@ -23,10 +23,10 @@
 	"content": true,
 	"group": 0,
 	"hidden": false,
-	"associatedTypes": null,
-    "associatedTypes": [
-        "Phishing"
-    ],
+	"associatedTypes": [
+		"Phishing"
+	],
+	"systemAssociatedTypes": null,
 	"associatedToAll": true,
 	"unmapped": false,
 	"unsearchable": false,
