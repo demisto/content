@@ -29,21 +29,21 @@ def get_zip_path(args):
                 if args.get('lastZipFileInWarroom'):
                     file_entry_id = entry['ID']
 
-            if not file_entry_id:
-                if args.get('fileName'):
-                    demisto.results({
-                        'Type': entryTypes['error'],
-                        'ContentsFormat': formats['text'],
-                        'Contents': args.get('fileName', '') + ' not such file in war room'
-                    })
-                if args.get('lastZipFileInWarroom'):
-                    demisto.results({
-                        'Type': entryTypes['error'],
-                        'ContentsFormat': formats['text'],
-                        'Contents': 'Not found zip file in war room'
-                    })
-
-                sys.exit(0)
+        # after the for loop above checks if a entry was found
+        if not file_entry_id:
+            if args.get('fileName'):
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': args.get('fileName', '') + ' not such file in war room'
+                })
+            if args.get('lastZipFileInWarroom'):
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': 'Not found zip file in war room'
+                })
+            sys.exit(0)
     if 'entryID' in args:
         file_entry_id = args.get('entryID')  # type: ignore
 
