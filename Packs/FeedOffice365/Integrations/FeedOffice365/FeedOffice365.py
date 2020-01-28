@@ -132,67 +132,24 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-    """Retrieves indicators from the feed to the war-room.
+def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
+    """Retrieves indicators from the feed
 
     Args:
         client: Client object with request
-        args: demisto.args()
-
-    Returns:
-        Outputs.
-    """
-    indicator_type = str(args.get('indicator_type'))
-    iterator = client.build_iterator()
-    indicator_type_lower = indicator_type.lower()
-    indicators = []
-    raw_response = []
-
-    # filter indicator_type specific entries
-    iterator = [i for i in iterator if indicator_type_lower in i or indicator_type_lower == 'both']
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    iterator = iterator[:limit]
-
-    for item in iterator:
-        if indicator_type_lower == 'both':
-            values = item.get('ips') if 'ips' in iterator else item.get('urls')
-        else:
-            values = item.get(indicator_type_lower)
-        if values:
-            for value in values:
-                type_ = client.check_indicator_type(value)
-                indicators.append({
-                    "value": value,
-                    "type": type_,
-                    'rawJSON': {"value": value, "type": type_}
-                })
-                raw_data = {
-                    'value': value,
-                    'type': type_
-                }
-                for key, val in item.items():
-                    if key not in ['ips', 'urls']:
-                        raw_data.update({key: val})
-                raw_response.append(raw_data)
-    human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
-                                     headers=['value', 'type'], removeNull=True)
-
-    return human_readable, {}, {'raw_response': raw_response}
-
-
-def fetch_indicators_command(client: Client, *_) -> List[Dict]:
-    """Fetches indicators from the feed to the indicators tab.
-
-    Args:
-        client: Client object with request
+        indicator_type_lower: indicator type
+        limit: limit the results
 
     Returns:
         Indicators.
     """
-    indicator_type = client.indicator
-    indicator_type_lower = indicator_type.lower()
     iterator = client.build_iterator()
+    # filter indicator_type specific entries
+    iterator = [i for i in iterator if indicator_type_lower in i or indicator_type_lower == 'both']
     indicators = []
+    if limit > 0:
+        iterator = iterator[:limit]
+
     for item in iterator:
         if indicator_type_lower == 'both':
             values = item.get('ips') if 'ips' in iterator else item.get('urls')
@@ -213,6 +170,42 @@ def fetch_indicators_command(client: Client, *_) -> List[Dict]:
                     "type": type_,
                     "rawJSON": raw_data,
                 })
+
+    return indicators
+
+
+def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+    """Wrapper for retrieving indicators from the feed to the war-room.
+
+    Args:
+        client: Client object with request
+        args: demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    indicator_type = str(args.get('indicator_type'))
+    indicator_type_lower = indicator_type.lower()
+    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
+    indicators = fetch_indicators(client, indicator_type_lower, limit)
+    human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
+                                     headers=['value', 'type'], removeNull=True)
+
+    return human_readable, {}, {'raw_response': indicators}
+
+
+def fetch_indicators_command(client: Client) -> List[Dict]:
+    """Wrapper for fetching indicators from the feed to the Indicators tab.
+
+    Args:
+        client: Client object with request
+
+    Returns:
+        Indicators.
+    """
+    indicator_type = client.indicator
+    indicator_type_lower = indicator_type.lower()
+    indicators = fetch_indicators(client, indicator_type_lower)
     return indicators
 
 
