@@ -184,7 +184,7 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict, list]
 def main():
     params = demisto.params()
     args = demisto.args()
-    base_url = params.get("url", "https://rules.emergingthreats.net/")
+    base_url = "https://rules.emergingthreats.net/"
     client = Client(
         base_url=base_url,
         auth_code=params.get("auth_code"),
