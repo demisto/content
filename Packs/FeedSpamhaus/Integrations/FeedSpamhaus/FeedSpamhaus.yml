@@ -101,15 +101,6 @@ script:
     execution: false
     name: spamhaus-get-indicators
     outputs:
-    - contextPath: SpamhausFeed.Indicator.Value
-      description: The indicator value.
-      type: String
-    - contextPath: SpamhausFeed.Indicator.Type
-      description: The indicator type.
-      type: String
-    - contextPath: SpamhausFeed.Indicator.RawJSON
-      description: The indicator rawJSON value.
-      type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
   feed: true
   isfetch: false
