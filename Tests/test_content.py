@@ -113,7 +113,7 @@ class ParallelPrintsManager:
         return current_time - thread_last_update > 300
 
     def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None):
-        if print_color:
+        if message_color:
             print_job = PrintJob(message_to_print, print_function_to_execute, message_color)
         else:
             print_job = PrintJob(message_to_print, print_function_to_execute)
