@@ -840,7 +840,7 @@ def manage_tests(tests_settings):
                     print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                     print("Starts tests with server url - https://{}".format(ami_instance_ip))
 
-                    if number_of_instances == 1:
+                    if not is_nightly or number_of_instances == 1:
                         execute_testing(tests_settings, current_instance, mockable_tests, unmockable_tests,
                                         tests_data_keeper, prints_manager, thread_index=0, is_ami=True)
                     else:
