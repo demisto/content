@@ -22,6 +22,8 @@ STATUS_MAP = {
     '3': 'Closed'
 }
 
+CREATED_TIME_FIELD = "created"
+
 
 def parse_input(csv):
     if not csv:
@@ -133,8 +135,11 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
 
     demisto.log("Find similar incidents based on initial query: %s" % query)
 
-    res = demisto.executeCommand("getIncidents",
-                                 {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field})
+    get_incidents_argument = {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field}
+    if time_field == CREATED_TIME_FIELD:
+        get_incidents_argument['fromdate'] = min_date.isoformat()
+
+    res = demisto.executeCommand("getIncidents", get_incidents_argument)
     if res[0]['Type'] == entryTypes['error']:
         return_error(str(res[0]['Contents']))
 
@@ -291,7 +296,8 @@ def main():
             incident_similar_labels) == 0 and len(incident_similar_context) == 0:
         return_error("Does not have any field to compare in the current incident")
 
-    duplicate_incidents = get_incidents_by_keys(exact_match_incident_fields, TIME_FIELD, incident[TIME_FIELD], incident['id'],
+    duplicate_incidents = get_incidents_by_keys(exact_match_incident_fields, TIME_FIELD, incident[TIME_FIELD],
+                                                incident['id'],
                                                 HOURS_BACK, IGNORE_CLOSED, MAX_NUMBER_OF_INCIDENTS, EXTRA_QUERY,
                                                 INCIDENT_FIELDS_APPLIED_CONDITION)
 

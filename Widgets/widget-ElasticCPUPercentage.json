@@ -2,7 +2,7 @@
     "id": "es-cpu-current-usage",
     "version": -1,
     "fromVersion": "5.5.0",
-    "name": "Elastic CPU Current Usage %",
+    "name": "Elastic CPU Current Usage",
     "dataType": "system",
     "widgetType": "number",
     "query": "es-cpu.usedPercent",

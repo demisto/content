@@ -145,7 +145,7 @@ def http_request(method, url_suffix, params=None, data=None):
             return res.json()
         except JSONDecodeError:
             return_error('Response contained no valid body. See logs for more information.',
-                         error=f'attackiq response body:\n{res.content}')
+                         error=f'AttackIQ response body:\n{res.content!r}')
     except requests.exceptions.ConnectionError as e:
         LOG(str(e))
         return_error('Encountered issue reaching the endpoint, please check that you entered the URL correctly.')
