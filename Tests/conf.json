@@ -2091,7 +2091,8 @@
         {
           "integrations": "QRadar",
           "playbookID": "QRadar Indicator Hunting Test",
-          "timeout": 1200
+          "timeout": 1200,
+          "fromversion": "5.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",
