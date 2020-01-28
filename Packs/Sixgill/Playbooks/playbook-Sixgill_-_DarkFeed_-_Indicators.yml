@@ -17,47 +17,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '2'
+      - '4'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '2':
-    id: '2'
-    taskid: 973551ba-7998-48b3-8b58-76911281de1c
-    type: regular
-    task:
-      id: 973551ba-7998-48b3-8b58-76911281de1c
-      version: -1
-      name: DeleteContext
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '4'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
         }
       }
     note: false
@@ -86,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 210
         }
       }
     note: false
@@ -94,10 +60,10 @@ tasks:
     ignoreworker: false
   '6':
     id: '6'
-    taskid: 58b4987e-ba10-4a8e-8c7c-a0fb14a42bec
+    taskid: 3ee92726-b266-4dc5-8b8c-b4b9aee4b284
     type: regular
     task:
-      id: 58b4987e-ba10-4a8e-8c7c-a0fb14a42bec
+      id: 3ee92726-b266-4dc5-8b8c-b4b9aee4b284
       version: -1
       name: Parse STIX Bundle
       description: ''
@@ -108,17 +74,7 @@ tasks:
     scriptarguments:
       entry_id:
         complex:
-          root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
-                  simple: Sixgill.Bundle.FileName
-                iscontext: true
+          root: InfoFile
           accessor: EntryID
       iocXml: {}
       to_context: {}
@@ -127,7 +83,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 395
         }
       }
     note: false

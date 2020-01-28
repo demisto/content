@@ -128,10 +128,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 5d74b0a9-8370-406d-8c8e-dd169adc661c
+    taskid: 71388761-18f4-46ed-864f-fafd03b1fb00
     type: condition
     task:
-      id: 5d74b0a9-8370-406d-8c8e-dd169adc661c
+      id: 71388761-18f4-46ed-864f-fafd03b1fb00
       version: -1
       name: File present?
       type: condition
@@ -147,7 +147,7 @@ tasks:
       - - operator: endWith
           left:
             value:
-              simple: Sixgill.Bundle.FileName
+              simple: InfoFile.Name
             iscontext: true
           right:
             value:

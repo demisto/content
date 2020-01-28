@@ -196,19 +196,34 @@ Sixgill's Alert:
   </thead>
   <tbody>
     <tr>
-      <td>Sixgill.Bundle.BundleID</td>
+      <td>InfoFile.EntryID</td>
       <td>String</td>
-      <td>STIX bundle ID returned from Sixgill's API</td>
+      <td>The EntryID of the report file</td>
     </tr>
     <tr>
-      <td>Sixgill.Bundle.FileID</td>
+      <td>InfoFile.Extension</td>
       <td>String</td>
-      <td>FileID of dumped JSON file</td>
+      <td>The extension of the report file</td>
     </tr>
     <tr>
-      <td>Sixgill.Bundle.FileName</td>
+      <td>InfoFile.Name</td>
       <td>String</td>
-      <td>File name of dumped JSON file</td>
+      <td>The name of the report file</td>
+    </tr>
+    <tr>
+      <td>InfoFile.Info</td>
+      <td>String</td>
+      <td>The info of the report file</td>
+    </tr>
+    <tr>
+      <td>InfoFile.Size</td>
+      <td>Number</td>
+      <td>The size of the report file</td>
+    </tr>
+    <tr>
+      <td>InfoFile.Type</td>
+      <td>Number</td>
+      <td>The type of the report file</td>
     </tr>
   </tbody>
 </table>

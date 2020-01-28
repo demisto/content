@@ -52,17 +52,26 @@ script:
     execution: false
     name: sixgill-get-indicators
     outputs:
-    - contextPath: Sixgill.Bundle.BundleID
-      description: STIX bundle ID returned from Sixgill's API
-      type: String
-    - contextPath: Sixgill.Bundle.FileID
-      description: FileID of dumped JSON file
-      type: String
-    - contextPath: Sixgill.Bundle.FileName
-      description: File name of dumped JSON file
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file
+      type: Unknown
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the report file
       type: String
   dockerimage: demisto/sixgill:1.0.0.5676
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false

@@ -121,12 +121,10 @@ def sixgill_get_indicators_command():
 
     human_readable = f"# Fetched {num_of_indicators} DarkFeed indicators"
     bundle_id = bundle.get("id", "bundle")
-    entry = fileResult(f'{bundle_id}.json', json.dumps(bundle))
-    context_data = {"BundleID": bundle_id, "FileID": entry.get("FileID"), "FileName": entry.get("File")}
+    entry = fileResult(f'{bundle_id}.json', json.dumps(bundle), entryTypes['entryInfoFile'])
 
     entry["HumanReadable"] = human_readable
     entry["ContentsFormat"] = formats["markdown"]
-    entry["EntryContext"] = {'Sixgill.Bundle(val.BundleID == obj.BundleID)': context_data}
 
     demisto.results(entry)
 

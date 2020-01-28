@@ -1,0 +1,78 @@
+{
+	"brandName": "Sixgill",
+	"custom": true,
+	"defaultIncidentType": "",
+	"id": "eb70e27d-b3d6-4066-86dd-f70526d4ad85",
+	"incidentSamples": [],
+	"instanceId": "eacf100a-0d2c-4278-8c78-82012a2e470f",
+	"instanceName": "sixgill_incidents",
+	"isDefault": false,
+	"keyTypeMap": {
+		"emerging": "Sixgill Threat",
+		"imminent": "Sixgill Threat"
+	},
+	"mapping": {
+		"Sixgill Threat": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Sixgill Alert ID": {
+					"complex": null,
+					"simple": "user_id"
+				},
+				"Sixgill Content": {
+					"complex": null,
+					"simple": "content"
+				},
+				"Sixgill Threat Level": {
+					"complex": null,
+					"simple": "threat_level"
+				},
+				"Sixgill Threat Type": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "threats",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ", "
+										}
+									}
+								},
+								"operator": "join"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "# "
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": null
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "threat_level"
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}
