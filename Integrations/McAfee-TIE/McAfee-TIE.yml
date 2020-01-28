@@ -58,13 +58,13 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Indicator
-      description: ' The indicator that was tested.'
+      description: The indicator that was tested.
       type: String
     - contextPath: File.Malicious.Description
       description: A description explaining why the file was determined to be malicious.

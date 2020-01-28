@@ -49,7 +49,7 @@ class EventSender:
         self.client.connect()
 
     def __del__(self):
-        event_sender.client.disconnect()
+        self.client.disconnect()
 
     def push_ip(self, ip, trust_level, topic):
         if not is_ip_valid(ip):
