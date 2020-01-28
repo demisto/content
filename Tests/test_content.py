@@ -515,8 +515,8 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     return has_skipped_integration, integrations, is_nightly_integration
 
 
-def extract_filtered_tests(tests_settings):
-    if tests_settings.nightly:
+def extract_filtered_tests(is_nightly):
+    if is_nightly:
         # TODO: verify this response
         return [], False, False
     with open(FILTER_CONF, 'r') as filter_file:
@@ -617,8 +617,8 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
-             succeed_playbooks, test_message, test_options, slack, circle_ci,
+    run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
+             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci,
              build_number, server, build_name, prints_manager, is_ami, thread_index=thread_index)
 
 
@@ -632,7 +632,7 @@ def get_and_print_server_numeric_version(tests_settings):
             print('Did not get one image data for server version, got {}'.format(image_data))
             return '0.0.0'
         else:
-            server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
+            server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
             if server_numeric_version:
                 server_numeric_version = server_numeric_version[0]
             else:
@@ -688,7 +688,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(tests_settings)
+    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(tests_settings.nightly)
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
