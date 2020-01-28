@@ -2134,6 +2134,10 @@
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "PaloAltoNetworks_PrismaCloudCompute",
+            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         }
     ],
     "skipped_tests": {
@@ -2227,6 +2231,7 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",

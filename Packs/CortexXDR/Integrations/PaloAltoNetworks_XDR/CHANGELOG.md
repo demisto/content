@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Fixed issue where trailing whitespaces would effect outputs. 
   - Implemented the Cortex XDR API v2. 
   -  Added 11 Traps commands.
     - ***xdr-isolate-endpoint***
