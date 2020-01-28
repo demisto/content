@@ -76,6 +76,7 @@ def configure_integration_instance(integration, client, prints_manager):
     is_byoi = integration.get('byoi', True)
 
     integration_configuration = __get_integration_config(client, integration_name, prints_manager)
+    prints_manager.execute_thread_prints(0)
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                           integration_instance_name, is_byoi)
     return module_instance
@@ -589,6 +590,7 @@ def main():
         print(msg)
         # If there is a failure, __test_integration_instance will print it
         success = __test_integration_instance(client, instance, prints_manager)
+        prints_manager.execute_thread_prints(0)
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
 
@@ -614,12 +616,14 @@ def main():
         print(msg)
         # If there is a failure, __test_integration_instance will print it
         success = __test_integration_instance(client, instance, prints_manager)
+        prints_manager.execute_thread_prints(0)
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
 
     # reinitialize the client since its authorization has probably expired by now
     client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
     __disable_integrations_instances(client, all_module_instances, prints_manager)
+    prints_manager.execute_thread_prints(0)
 
     success = report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names)
     if not success:
