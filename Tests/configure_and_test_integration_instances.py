@@ -504,7 +504,7 @@ def main():
     skipped_integrations_conf = conf['skipped_integrations']
     all_module_instances = []
 
-    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
+    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=False)
     tests_for_iteration = tests
     if run_all_tests:
         # Use all tests for testing, leave 'tests_for_iteration' as is
@@ -612,7 +612,7 @@ def main():
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
 
-    # reinitiate the client since its authorization has probably expired by now
+    # reinitialize the client since its authorization has probably expired by now
     client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
     __disable_integrations_instances(client, all_module_instances)
 
