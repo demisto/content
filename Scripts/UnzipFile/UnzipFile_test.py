@@ -8,7 +8,8 @@ import pytest
 data_test_extract = [
     ('testZip.yml', None),
     ('ScanSummary.txt', None),
-    ('item.png', None)
+    ('item.png', None),
+    ('fix_unzip.png', 'demisto'),
 ]
 
 
