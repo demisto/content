@@ -243,3 +243,5 @@ script:
     description: Delete Demisto incidents
     execution: true
   runonce: false
+tests:
+  - No test
