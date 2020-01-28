@@ -8,21 +8,18 @@ configuration:
   name: feedFetchInterval
   required: true
   type: 19
-- defaultvalue: https://rules.emergingthreats.net/
-  display: URL
-  name: url
-  required: true
-  type: 0
 - display: Authorization Code
   hidden: false
   name: auth_code
-  required: false
+  required: true
   type: 4
 - display: Fetch indicators
   name: feed
   required: false
   type: 8
-- additionalinfo: The indicator type in the feed to fetch.
+- additionalinfo: The indicator type in the feed to fetch. Domain is reffering to
+    "https://rules.emergingthreats.net/auth_code/reputation/detailed-iprepdata.txt",
+    IP is reffering to "https://rules.emergingthreats.net/auth_code/reputation/detailed-domainrepdata.txt".
   defaultvalue: all
   display: Indicator Type
   name: indicator_type
@@ -89,7 +86,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return to the output. The default value is "50".
+      description: The maximum number of results to return to the output. The default
+        value is "50".
       isArray: false
       name: limit
       required: false
