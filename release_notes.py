@@ -43,6 +43,9 @@ RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR
 
 
 def add_dot(text):
+    if not text:
+        return ''
+
     text = text.rstrip().replace('```', '***').replace('`', '*')
 
     if '\n' in text:
@@ -150,7 +153,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                     raw_content = file_obj.read()
                     cnt = self.load_data(raw_content)
 
-                    from_version = cnt.get("fromversion")
+                    from_version = cnt.get("fromversion") or cnt.get("fromVersion")
                     if from_version is not None and server_version_compare(current_server_version, from_version) < 0:
                         print("Skipped because of version differences")
                         continue

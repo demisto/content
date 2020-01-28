@@ -25,7 +25,7 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[
     urls_list = []
     for region in regions_list:
         for service in services_list:
-            if service == 'Any':
+            if service == 'All':
                 url = f'https://endpoints.office.com/endpoints/{region}?ClientRequestId={unique_id}'
             else:
                 url = f'https://endpoints.office.com/endpoints/{region}?ServiceAreas={service}' \
