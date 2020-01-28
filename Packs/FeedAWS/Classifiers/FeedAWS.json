@@ -4,6 +4,7 @@
 	"defaultIncidentType": "",
 	"feed": true,
 	"id": "AWS Feed",
+	"fromVersion": "5.5.0",
 	"incidentSamples": [],
 	"indicatorSamples": [],
 	"isDefault": false,
@@ -29,7 +30,7 @@
 	"sortValues": null,
 	"transformer": {
 		"complex": null,
-		"simple": "Type"
+		"simple": "type"
 	},
 	"unclassifiedCases": {},
 	"version": -1
