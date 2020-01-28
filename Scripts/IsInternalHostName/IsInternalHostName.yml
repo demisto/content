@@ -4,6 +4,7 @@ commonfields:
 name: IsInternalHostName
 script: ''
 type: python
+fromversion: 4.5.0
 tags:
 - Utility
 comment: Checks if the supplied hostnames match either the organization's internal

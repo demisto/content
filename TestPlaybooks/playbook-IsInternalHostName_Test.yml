@@ -1,6 +1,7 @@
 id: IsInternalHostName Test
 version: -1
 name: IsInternalHostName Test
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
