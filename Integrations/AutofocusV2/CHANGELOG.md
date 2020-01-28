@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added ***autofocus-get-export-list-indicators*** command.
+Added the ***autofocus-get-export-list-indicators*** command.
 
 ## [20.1.0] - 2020-01-07
 Fixed an issue where errors for the reputation commands: ***ip***, ***domain***, ***file***, ***url*** were not handled.
