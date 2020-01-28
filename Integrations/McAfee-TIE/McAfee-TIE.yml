@@ -148,6 +148,7 @@ script:
       description: The time the system first referenced the file.
       type: Unknown
   dockerimage: demisto/dxl2:1.0.0.5698
+  dockerimage45: demisto/dxl
   isfetch: false
   runonce: false
   script: '-'
