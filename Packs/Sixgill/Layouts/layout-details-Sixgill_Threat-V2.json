@@ -3,15 +3,10 @@
 	"kind": "details",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
 		"id": "Sixgill Threat",
 		"kind": "details",
 		"modified": "2020-01-28T07:37:34.690587219Z",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "Sixgill Threat",
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -665,7 +660,6 @@
 			}
 		],
 		"typeId": "Sixgill Threat",
-		"vcShouldIgnore": false,
 		"version": 1
 	},
 	"typeId": "Sixgill Threat",
