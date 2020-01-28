@@ -1,23 +1,22 @@
 id: Spamhaus_Feed_Test
 version: -1
-contentitemfields:
-  propagationLabels: []
 name: Spamhaus_Feed_Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 629b23e0-7b34-4e9e-8709-e40d1033914a
+  '0':
+    id: '0'
+    taskid: e0aff3ab-2115-441d-8b1f-580a4c4dafb2
     type: start
     task:
-      id: 629b23e0-7b34-4e9e-8709-e40d1033914a
+      id: e0aff3ab-2115-441d-8b1f-580a4c4dafb2
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     separatecontext: false
     view: |-
       {
@@ -29,28 +28,29 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-  "1":
-    id: "1"
-    taskid: cb2f9784-b8a9-4736-8770-a26a88852c9d
+  '1':
+    id: '1'
+    taskid: 0c4670d9-2240-4b58-879a-f18f8bd5e730
     type: regular
     task:
-      id: cb2f9784-b8a9-4736-8770-a26a88852c9d
+      id: 0c4670d9-2240-4b58-879a-f18f8bd5e730
       version: -1
       name: Get Indicators
-      description: Get the feed indicators.
+      description: ''
       script: SpamhausFeed|||spamhaus-get-indicators
       type: regular
       iscommand: true
       brand: SpamhausFeed
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
+      extend-context:
+        simple: first_object=.[0]
       indicator_type:
         simple: IP
       limit:
-        simple: "10"
+        simple: '10'
     separatecontext: false
     view: |-
       {
@@ -62,56 +62,34 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-  "2":
-    id: "2"
-    taskid: 08488b5a-a7d0-454f-8e07-ad6a3364b560
+  '2':
+    id: '2'
+    taskid: 97cdfd3c-3076-4086-8f00-7d6e0b08104d
     type: condition
     task:
-      id: 08488b5a-a7d0-454f-8e07-ad6a3364b560
+      id: 97cdfd3c-3076-4086-8f00-7d6e0b08104d
       version: -1
       name: Assert Output
-      description: Asserts output.
+      description: ''
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "3"
+      'yes':
+      - '3'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: SpamhausFeed
-                accessor: Indicator.Value
+              simple: first_object.type
             iscontext: true
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: SpamhausFeed
-                accessor: Indicator.Type
-            iscontext: true
-          right:
-            value:
-              simple: ASN
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: SpamhausFeed
-                accessor: Indicator.Rawjson.type
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: SpamhausFeed
-                accessor: Indicator.Rawjson.value
+              simple: first_object.value
             iscontext: true
     view: |-
       {
@@ -123,19 +101,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-  "3":
-    id: "3"
-    taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
+  '3':
+    id: '3'
+    taskid: 46243dc9-5489-4a7e-8f7b-a8edcbfe5dbd
     type: title
     task:
-      id: 012a601e-ed7e-4091-80ee-d9071f0c9937
+      id: 46243dc9-5489-4a7e-8f7b-a8edcbfe5dbd
       version: -1
       name: Done
-      description: Done
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {
@@ -147,26 +124,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-  "4":
-    id: "4"
-    taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
+  '4':
+    id: '4'
+    taskid: e33eb837-7041-4581-887b-ff9c9f9234fd
     type: regular
     task:
-      id: 4e5d7a78-4f39-481d-8168-de2e970706e5
+      id: e33eb837-7041-4581-887b-ff9c9f9234fd
       version: -1
       name: Delete Context
-      description: Delete field from context.
+      description: ''
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
@@ -182,7 +158,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -198,3 +173,5 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: Spamhaus_Feed_Test
+description: ''
+fromversion: 5.5.0
