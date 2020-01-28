@@ -1,7 +1,9 @@
-### see also https://m2crypto.readthedocs.io/en/latest/howto.smime.html#howto-smime
-##  Configure rsa key and certificate
-- run command `openssl req -newkey rsa:1024 -nodes -x509 -days 365 -out CERTIFICATE -keyout PRIVATE`
 
-##### where CERTIFICATE is the out public certificate file name. and PRIVATE is the out private key file name.
-- copy the text from CERTIFICATE to Public Key field.
-- copy the text from PRIVATE to Private Key field.
+##  Configure an RSA Key and Certificate
+1. Run the following command: `openssl req -newkey rsa:1024 -nodes -x509 -days 365 -out CERTIFICATE -keyout PRIVATE`
+  - **CERTIFICATE** is the out public certificate file name. 
+  - **PRIVATE** is the out private key file name.
+2. Copy the text from CERTIFICATE to the **Public Key** field when configuring the integration instance.
+3. copy the text from PRIVATE to **Private Key** field when configuring the integration instance.
+
+See [here for more information](https://m2crypto.readthedocs.io/en/latest/howto.smime.html#howto-smime).
