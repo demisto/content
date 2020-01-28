@@ -1231,7 +1231,7 @@
             "playbookID": "endpoint_enrichment_-_generic_test"
         },
         {
-            "integrations": "IBM QRadar",
+            "integrations": "QRadar",
             "playbookID": "test_Qradar"
         },
         {
@@ -2089,10 +2089,9 @@
           "instance_names": "ewv2_regular"
         },
         {
-          "integrations": "IBM QRadar",
+          "integrations": "QRadar",
           "playbookID": "QRadar Indicator Hunting Test",
-          "timeout": 1200,
-          "fromversion": "5.0.0"
+          "timeout": 1200
         },
         {
             "playbookID": "SetAndHandleEmpty test",
