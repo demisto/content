@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import json
 from flask import Flask, Response
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
@@ -12,11 +11,6 @@ INTEGRATION_NAME: str = 'EDL'
 PAGE_SIZE: int = 200
 APP: Flask = Flask('demisto-edl')
 EDL_VALUES_KEY: str = 'dmst_edl_values'
-EDL_MIMETYPE_KEY: str = 'dmst_edl_mimetype'
-FORMAT_CSV: str = 'csv'
-FORMAT_TEXT: str = 'text'
-FORMAT_JSON_SEQ: str = 'json-seq'
-FORMAT_JSON: str = 'json'
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
 EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
@@ -55,15 +49,14 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_edl_context(indicator_query: str, out_format: str, limit: int = 0) -> str:
+def refresh_edl_context(indicator_query: str, limit: int = 0) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.findIndicators
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
     iocs = find_indicators_to_limit(indicator_query, limit)  # poll indicators into edl from demisto
-    out_dict = create_values_out_dict(iocs, out_format)
-    out_dict[EDL_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
+    out_dict = create_values_out_dict(iocs)
     save_context(now, out_dict)
     return out_dict[EDL_VALUES_KEY]
 
@@ -99,60 +92,34 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
     return iocs, next_page
 
 
-def create_values_out_dict(iocs: list, out_format: str) -> dict:
+def create_values_out_dict(iocs: list) -> dict:
     """
-    Create a dictionary for output values using the selected format (json, json-seq, text, csv)
+    Create a dictionary for output values
     """
-    if out_format == FORMAT_JSON:  # handle json separately
-        iocs_list = [ioc for ioc in iocs]
-        return {EDL_VALUES_KEY: json.dumps(iocs_list)}
-    else:
-        formatted_indicators = []
-        if out_format == FORMAT_CSV and len(iocs) > 0:  # add csv keys as first item
-            headers = list(iocs[0].keys())
-            formatted_indicators.append(list_to_str(headers))
-        for ioc in iocs:
-            value = ioc.get('value')
-            if value:
-                if out_format == FORMAT_TEXT:
-                    formatted_indicators.append(value)
-                elif out_format == FORMAT_JSON_SEQ:
-                    formatted_indicators.append(json.dumps(ioc))
-                elif out_format == FORMAT_CSV:
-                    # wrap csv values with " to escape them
-                    values = list(ioc.values())
-                    formatted_indicators.append(list_to_str(values, map_func=lambda val: f'"{val}"'))
+    formatted_indicators = []
+    for ioc in iocs:
+        value = ioc.get('value')
+        if value:
+            formatted_indicators.append(value)
     return {EDL_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
 
 
-def get_edl_mimetype() -> str:
-    """Returns the mimetype of the EDL"""
-    ctx = demisto.getIntegrationContext()
-    return ctx.get(EDL_MIMETYPE_KEY, 'text/plain')
-
-
-def get_edl_ioc_values(params) -> str:
+def get_edl_ioc_values(on_demand, limit, indicator_query='', last_run=None, cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the edl
     """
-    out_format = params.get('format')
-    on_demand = params.get('on_demand')
-    limit = try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
     # on_demand ignores cache
     if on_demand:
         values_str = get_ioc_values_str_from_context()
     else:
-        last_run = demisto.getLastRun().get('last_run')
-        indicator_query = params.get('indicators_query')
         if last_run:
-            cache_refresh_rate = params.get('cache_refresh_rate')
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             if last_run <= cache_time:
-                values_str = refresh_edl_context(indicator_query, out_format, limit=limit)
+                values_str = refresh_edl_context(indicator_query, limit=limit)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
-            values_str = refresh_edl_context(indicator_query, out_format, limit=limit)
+            values_str = refresh_edl_context(indicator_query, limit=limit)
     return values_str
 
 
@@ -183,9 +150,15 @@ def route_edl_values() -> Response:
     """
     Main handler for values saved in the integration context
     """
-    values = get_edl_ioc_values(demisto.params())
-    mimetype = get_edl_mimetype()
-    return Response(values, status=200, mimetype=mimetype)
+    params = demisto.params()
+    values = get_edl_ioc_values(
+        on_demand=params.get('on_demand'),
+        limit=try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG),
+        last_run=demisto.getLastRun().get('last_run'),
+        indicator_query=params.get('indicators_query'),
+        cache_refresh_rate=params.get('cache_refresh_rate')
+    )
+    return Response(values, status=200, mimetype='text/plain')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -273,8 +246,7 @@ def update_edl_command(args, params):
     limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
     query = args.get('query')
-    out_format = args.get('format')
-    indicators = refresh_edl_context(query, out_format, limit=limit)
+    indicators = refresh_edl_context(query, limit=limit)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'EDL was updated successfully'
     return hr, {}, indicators
