@@ -1,13 +1,6 @@
-import os
-
-import requests
-import yaml
-
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
-from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES, REPUTATION_COMMANDS
+from Tests.test_utils import print_error, get_yaml, print_warning, get_remote_file, server_version_compare, \
+    get_dockerimage45
 
 
 class IntegrationValidator(object):
@@ -27,22 +20,9 @@ class IntegrationValidator(object):
         self.file_path = file_path
         if check_git:
             self.current_integration = get_yaml(file_path)
-            # The replace in the end is for Windows support
-            if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
-                file_content = requests.get(git_hub_path, verify=False).content
-                self.old_integration = yaml.safe_load(file_content)
-            else:
-                try:
-                    file_path_from_old_branch = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace(
-                        "\\", "/")
-                    res = requests.get(file_path_from_old_branch, verify=False)
-                    res.raise_for_status()
-                    self.old_integration = yaml.safe_load(res.content)
-                except Exception as e:
-                    print_warning("{}\nCould not find the old integration please make sure that you did not break "
-                                  "backward compatibility".format(str(e)))
-                    self.old_integration = None
+
+            old_integration_file = old_file_path or file_path
+            self.old_integration = get_remote_file(old_integration_file, old_git_branch)
 
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""
@@ -66,6 +46,7 @@ class IntegrationValidator(object):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
+        self.is_isarray_arguments()
         self.is_proxy_configured_correctly()
         self.is_insecure_configured_correctly()
         self.is_valid_category()
@@ -88,7 +69,8 @@ class IntegrationValidator(object):
                 if configuration_param['display'] != param_display:
                     err_msgs.append('The display name of the {} parameter should be \'{}\''.format(param_name,
                                                                                                    param_display))
-                elif configuration_param.get('defaultvalue', '') != 'false' and configuration_param.get('defaultvalue', '') != '':
+                elif configuration_param.get('defaultvalue', '') != 'false' and configuration_param.get('defaultvalue',
+                                                                                                        '') != '':
                     err_msgs.append('The default value of the {} parameter should be \'\''.format(param_name))
 
                 elif configuration_param.get('required', False):
@@ -109,7 +91,7 @@ class IntegrationValidator(object):
         return self.is_valid_param('proxy', 'Use system proxy settings')
 
     def is_insecure_configured_correctly(self):
-        """Check that if an integration has a insecure parameter that it is configured properly."""
+        """Check that if an integration has an insecure parameter that it is configured properly."""
         insecure_field_name = ''
         configuration = self.current_integration.get('configuration', [])
         for configuration_param in configuration:
@@ -118,6 +100,8 @@ class IntegrationValidator(object):
 
         if insecure_field_name:
             return self.is_valid_param(insecure_field_name, 'Trust any certificate (not secure)')
+
+        return True
 
     def is_valid_category(self):
         """Check that the integration category is in the schema."""
@@ -141,15 +125,32 @@ class IntegrationValidator(object):
             command_name = command.get('name')
             for arg in command.get('arguments', []):
                 arg_name = arg.get('name')
-                if ((command_name == 'file' and arg_name == 'file')
-                        or (command_name == 'email' and arg_name == 'email')
-                        or (command_name == 'domain' and arg_name == 'domain')
-                        or (command_name == 'url' and arg_name == 'url')
-                        or (command_name == 'ip' and arg_name == 'ip')):
+                if command_name in {'file', 'email', 'domain', 'url', 'ip'} and arg_name == command_name:
                     if arg.get('default') is False:
                         self._is_valid = False
                         print_error("The argument '{}' of the command '{}' is not configured as default"
                                     .format(arg_name, command_name))
+
+        return self._is_valid
+
+    def is_isarray_arguments(self):
+        """Check if a reputation command's (domain/email/file/ip/url)
+            argument of the same name has the 'isArray' attribute set to True
+
+        Returns:
+            bool. Whether 'isArray' is True
+        """
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            if command_name in REPUTATION_COMMANDS:
+                for arg in command.get('arguments', []):
+                    arg_name = arg.get('name')
+                    if arg_name == command_name:
+                        if arg.get('isArray') is False:
+                            self._is_valid = False
+                            print_error("The argument '{}' of the command '{}' is not configured with 'isArray' set to True"
+                                        .format(arg_name, command_name))
         return self._is_valid
 
     def is_outputs_for_reputations_commands_valid(self):
@@ -173,21 +174,21 @@ class IntegrationValidator(object):
                     context_outputs_descriptions.add(output.get('description'))
 
                 # validate DBotScore outputs and descriptions
-                DBot_Score = {
+                dbot_score = {
                     'DBotScore.Indicator': 'The indicator that was tested.',
                     'DBotScore.Type': 'The indicator type.',
-                    'DBotScore.Vendor': 'Vendor used to calculate the score.',
+                    'DBotScore.Vendor': 'The vendor used to calculate the score.',
                     'DBotScore.Score': 'The actual score.'
                 }
                 missing_outputs = set()
                 missing_descriptions = set()
-                for DBot_Score_output in DBot_Score:
-                    if DBot_Score_output not in context_outputs_paths:
-                        missing_outputs.add(DBot_Score_output)
+                for dbot_score_output in dbot_score:
+                    if dbot_score_output not in context_outputs_paths:
+                        missing_outputs.add(dbot_score_output)
                         self._is_valid = False
                     else:  # DBot Score output path is in the outputs
-                        if DBot_Score.get(DBot_Score_output) not in context_outputs_descriptions:
-                            missing_descriptions.add(DBot_Score_output)
+                        if dbot_score.get(dbot_score_output) not in context_outputs_descriptions:
+                            missing_descriptions.add(dbot_score_output)
                             # self._is_valid = False - Do not fail build over wrong description
 
                 if missing_outputs:
@@ -209,8 +210,8 @@ class IntegrationValidator(object):
                 reputation_output = command_to_output.get(command_name)
                 if reputation_output and not reputation_output.intersection(context_outputs_paths):
                     self._is_valid = False
-                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs is missing"
-                                "Fix according to context standard {} "
+                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs are missing."
+                                " Fix according to context standard {} "
                                 .format(command_name, reputation_output, context_standard))
 
         return self._is_valid
@@ -259,15 +260,17 @@ class IntegrationValidator(object):
                 "Field 'id' should NOT contain the substring \"beta\" in a new beta integration. "
                 "please change the id in the file {}".format(self.file_path))
             return False
+
         return True
 
     def _name_has_no_beta_substring(self):
         """Checks that 'name' field dose not include the substring 'beta'"""
         name = self.current_integration.get('name', '')
         if 'beta' in name.lower():
-            "Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
-            "please change the id in the file {}".format(self.file_path)
+            print_error("Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
+                        "please change the id in the file {}".format(self.file_path))
             return False
+
         return True
 
     def _has_beta_param(self):
@@ -286,6 +289,7 @@ class IntegrationValidator(object):
                 "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found"
                 " in the file {}".format(self.file_path))
             return False
+
         return True
 
     def is_there_duplicate_args(self):
@@ -330,7 +334,8 @@ class IntegrationValidator(object):
 
         return not self._is_valid
 
-    def _get_command_to_args(self, integration_json):
+    @staticmethod
+    def _get_command_to_args(integration_json):
         """Get a dictionary command name to it's arguments.
 
         Args:
@@ -348,7 +353,8 @@ class IntegrationValidator(object):
 
         return command_to_args
 
-    def is_subset_dictionary(self, new_dict, old_dict):
+    @staticmethod
+    def is_subset_dictionary(new_dict, old_dict):
         """Check if the new dictionary is a sub set of the old dictionary.
 
         Args:
@@ -390,7 +396,8 @@ class IntegrationValidator(object):
 
         return False
 
-    def _is_sub_set(self, supposed_bigger_list, supposed_smaller_list):
+    @staticmethod
+    def _is_sub_set(supposed_bigger_list, supposed_smaller_list):
         """Check if supposed_smaller_list is a subset of the supposed_bigger_list"""
         for check_item in supposed_smaller_list:
             if check_item not in supposed_bigger_list:
@@ -415,7 +422,12 @@ class IntegrationValidator(object):
                 continue
 
             for output in command.get('outputs', []):
-                context_list.append(output['contextPath'])
+                command_name = command['name']
+                try:
+                    context_list.append(output['contextPath'])
+                except KeyError:
+                    print_error('Invalid context output for command {}. Output is {}'.format(command_name, output))
+                    self._is_valid = False
 
             command_to_context_list[command['name']] = sorted(context_list)
 
@@ -441,7 +453,8 @@ class IntegrationValidator(object):
 
         return False
 
-    def _get_field_to_required_dict(self, integration_json):
+    @staticmethod
+    def _get_field_to_required_dict(integration_json):
         """Get a dictionary field name to its required status.
 
         Args:
@@ -476,11 +489,17 @@ class IntegrationValidator(object):
         """Check if the Docker image was changed or not."""
         # Unnecessary to check docker image only on 5.0 and up
         if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
-            if self.old_integration.get('script', {}).get('dockerimage', "") != \
-                    self.current_integration.get('script', {}).get('dockerimage', ""):
+            old_docker = get_dockerimage45(self.old_integration.get('script', {}))
+            new_docker = get_dockerimage45(self.current_integration.get('script', {}))
+            if old_docker != new_docker and new_docker:
                 print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                            " this is not allowed.".format(self.file_path))
+                            " this is not allowed. Old: {}. New: {}".format(self.file_path, old_docker, new_docker))
                 self._is_valid = False
                 return True
+            elif old_docker != new_docker and not new_docker:
+                print_warning("Possible backwards compatibility break. You've removed "
+                              "the docker image for the file {0}, make sure this isn't a mistake.  "
+                              "Old image: {1}".format(self.file_path, old_docker))
+                return False
 
         return False

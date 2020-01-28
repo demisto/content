@@ -102,3 +102,27 @@ def test_invalid_file_examination():
         "Didn't find a problem in the file although it is not valid"
 
     os.remove("Integrations/integration-test.yml")
+
+
+def test_integration_file_with_valid_id():
+    validator = StructureValidator(file_path="./Tests/setup/integration-valid-id-test.yml")
+    assert validator.is_file_id_without_slashes(), \
+        "Found a slash in the file's ID even though it contains no slashes.."
+
+
+def test_integration_file_with_invalid_id():
+    validator = StructureValidator(file_path="./Tests/setup/integration-invalid-id-test.yml")
+    assert not validator.is_file_id_without_slashes(), \
+        "Didn't find a slash in the ID even though it contains a slash."
+
+
+def test_playbook_file_with_valid_id():
+    validator = StructureValidator(file_path="./Tests/setup/playbook-valid-id-test.yml")
+    assert validator.is_file_id_without_slashes(), \
+        "Didn't find a slash in the ID even though it contains a slash."
+
+
+def test_playbook_file_with_invalid_id():
+    validator = StructureValidator(file_path="./Tests/setup/playbook-invalid-id-test.yml")
+    assert not validator.is_file_id_without_slashes(), \
+        "Didn't find a slash in the ID even though it contains a slash."

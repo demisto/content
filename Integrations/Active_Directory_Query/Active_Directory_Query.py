@@ -1,13 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import *
+from typing import List, Dict, Optional
 from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry
 from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
 import traceback
 import os
-
+from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
+                             set_library_log_hide_sensitive_data, EXTENDED)
 
 # global connection
 conn: Optional[Connection] = None
@@ -37,7 +38,7 @@ DEFAULT_PERSON_ATTRIBUTES = [
     'displayName',
     'memberOf',
     'mail',
-    'samAccountName',
+    'sAMAccountName',
     'manager',
     'userAccountControl'
 ]
@@ -90,7 +91,7 @@ def account_entry(person_object, custome_attributes):
         'Type': 'AD',
         'ID': person_object.get('dn'),
         'Email': person_object.get('mail'),
-        'Username': person_object.get('samAccountName'),
+        'Username': person_object.get('sAMAccountName'),
         'DisplayName': person_object.get('displayName'),
         'Managr': person_object.get('manager'),
         'Manager': person_object.get('manager'),
@@ -413,7 +414,7 @@ def search_computers(default_base_dn, page_size):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
         query = "(&(objectClass=user)(objectCategory=computer)({}={}))".format(
-            args['custom-field-type'], args['ustom-field-data'])
+            args['custom-field-type'], args['custom-field-data'])
 
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")
@@ -513,7 +514,7 @@ def create_user():
     password = args.get("password")
     custome_attributes = args.get('custom-attributes')
     attributes = {
-        "samAccountName": username
+        "sAMAccountName": username
     }
 
     # set common user attributes
@@ -608,6 +609,41 @@ def create_contact():
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
         'Contents': "Created contact with DN: {}".format(contact_dn)
+    }
+    demisto.results(demisto_entry)
+
+
+def create_group():
+    assert conn is not None
+    args = demisto.args()
+
+    object_classes = ["top", "group"]
+    dn = args.get('dn')
+    group_name = args.get('name')
+    group_type_map = {"security": "2147483650", "distribution": "2"}
+    group_type = group_type_map[args.get("group-type")]
+    if args.get('members'):
+        members = args.get('members')
+        attributes = {
+            "samAccountName": group_name,
+            "groupType": group_type,
+            "member": members
+        }
+    else:
+        attributes = {
+            "samAccountName": group_name,
+            "groupType": group_type
+        }
+
+    # create group
+    success = conn.add(dn, object_classes, attributes)
+    if not success:
+        raise Exception("Failed to create group")
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': "Created group with DN: {}".format(dn)
     }
     demisto.results(demisto_entry)
 
@@ -803,7 +839,7 @@ def add_member_to_group(default_base_dn):
 
     success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [member_dn], [grp_dn])
     if not success:
-        raise Exception("Failed to add {} to group {]}".format(
+        raise Exception("Failed to add {} to group {}".format(
             args.get('username') or args.get('computer-name'),
             args.get('group_name')
         ))
@@ -841,10 +877,10 @@ def remove_member_from_group(default_base_dn):
 
     success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [member_dn], [grp_dn], True)
     if not success:
-        raise Exception("Failed to remove {member} from group {group_name}".format({
-            "member": args.get('username') or args.get('computer-name'),
-            "group_name": args.get('group_name')
-        }))
+        raise Exception("Failed to remove {} from group {}".format(
+            args.get('username') or args.get('computer-name'),
+            args.get('group_name')
+        ))
 
     demisto_entry = {
         'ContentsFormat': formats['text'],
@@ -892,6 +928,25 @@ def delete_user():
     demisto.results(demisto_entry)
 
 
+def delete_group():
+    assert conn is not None
+    args = demisto.args()
+
+    dn = args.get('dn')
+
+    # delete group
+    success = conn.delete(dn)
+    if not success:
+        raise Exception("Failed to delete group")
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': "Deleted group with DN: {}".format(dn)
+    }
+    demisto.results(demisto_entry)
+
+
 '''
     TEST CONFIGURATION
     authenticate user credentials while initializing connection wiith AD server
@@ -914,59 +969,61 @@ def main():
     if PORT:
         # port was configured, cast to int
         PORT = int(PORT)
-
+    last_log_detail_level = None
     try:
-        server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
-    except Exception as e:
-        return_error(str(e))
-        return
-    global conn
-    if NTLM_AUTH:
-        # intialize connection to LDAP server with NTLM authentication
-        # user example: domain\user
-        domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
-        conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
-    else:
-        # here username should be the user dn
-        conn = Connection(server, user=USERNAME, password=PASSWORD)
+        try:
+            set_library_log_hide_sensitive_data(True)
+            if is_debug_mode():
+                demisto.info('debug-mode: setting library log detail to EXTENDED')
+                last_log_detail_level = get_library_log_detail_level()
+                set_library_log_detail_level(EXTENDED)
+            server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
+        except Exception as e:
+            return_error(str(e))
+            return
+        global conn
+        if NTLM_AUTH:
+            # intialize connection to LDAP server with NTLM authentication
+            # user example: domain\user
+            domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
+            conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
+        else:
+            # here username should be the user dn
+            conn = Connection(server, user=USERNAME, password=PASSWORD)
 
-    # bind operation is the “authenticate” operation.
-    try:
-        # open socket and bind to server
-        if not conn.bind():
-            message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
-                json.dumps(conn.result))
-            demisto.info(message)
+        # bind operation is the “authenticate” operation.
+        try:
+            # open socket and bind to server
+            if not conn.bind():
+                message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
+                    json.dumps(conn.result))
+                return_error(message)
+                return
+        except Exception as e:
+            exc_msg = str(e)
+            demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
+                         + "\nTrace:\n{}".format(traceback.format_exc())))
+            message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
+            if 'ssl wrapping error' in exc_msg:
+                message = "Failed to access LDAP server. SSL error."
+                if not UNSECURE:
+                    message += ' Try using: "Trust any certificate" option.'
             return_error(message)
             return
-    except Exception as e:
-        exc_msg = str(e)
-        demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
-                     + "\nTrace:\n{}".format(traceback.format_exc())))
-        message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
-        if 'ssl wrapping error' in exc_msg:
-            message = "Failed to access LDAP server. SSL error."
-            if not UNSECURE:
-                message += ' Try using: "Trust any certificate" option.'
-        demisto.info(message)
-        return_error(message)
-        return
 
-    demisto.info('Established connection with AD LDAP server')
+        demisto.info('Established connection with AD LDAP server')
 
-    if not base_dn_verified(DEFAULT_BASE_DN):
-        message = "Failed to verify the base DN configured for the instance.\n" \
-            "Last connection result: {}\n" \
-            "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
-        demisto.info(message)
-        return_error(message)
-        return
+        if not base_dn_verified(DEFAULT_BASE_DN):
+            message = "Failed to verify the base DN configured for the instance.\n" \
+                "Last connection result: {}\n" \
+                "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
+            return_error(message)
+            return
 
-    demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
+        demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
 
-    ''' COMMAND EXECUTION '''
+        ''' COMMAND EXECUTION '''
 
-    try:
         if demisto.command() == 'test-module':
             if conn.user == '':
                 # Empty response means you have no authentication status on the server, so you are an anonymous user.
@@ -1024,15 +1081,25 @@ def main():
         if demisto.command() == 'ad-get-group-members':
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
+        if demisto.command() == 'ad-create-group':
+            create_group()
+
+        if demisto.command() == 'ad-delete-group':
+            delete_group()
+
     except Exception as e:
-        message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
-            str(e), json.dumps(conn.result), conn.last_error)
-        demisto.info(message)
+        message = str(e)
+        if conn:
+            message += "\nLast connection result: {}\nLast error from LDAP server: {}".format(
+                json.dumps(conn.result), conn.last_error)
         return_error(message)
         return
     finally:
         # disconnect and close the connection
-        conn.unbind()
+        if conn:
+            conn.unbind()
+        if last_log_detail_level:
+            set_library_log_detail_level(last_log_detail_level)
 
 
 # python2 uses __builtin__ python3 uses builtins

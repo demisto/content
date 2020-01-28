@@ -8,6 +8,7 @@ pylint = "*"
 pytest = "*"
 pytest-mock = "*"
 requests-mock = "*"
+pytest-xdist = "*"
 
 [packages]
 

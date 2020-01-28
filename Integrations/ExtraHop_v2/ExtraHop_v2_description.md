@@ -1,0 +1,1 @@
+Visit the [ExtraHop + Demisto Setup Guide](https://www.extrahop.com/customers/community/bundles/extrahop/demisto-integration/) for detailed integration instructions.

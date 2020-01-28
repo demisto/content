@@ -97,7 +97,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: Joe.Analysis.WebID
+          root: Joe.Analysis.ID
       Interval:
         complex:
           root: inputs.Interval
@@ -109,7 +109,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: Joe.Analysis(val.Status != 'finished').WebID
+        simple: Joe.Analysis(val.Status != 'finished').ID
     separatecontext: true
     loop:
       iscommand: false
@@ -145,7 +145,7 @@ tasks:
           root: inputs.ReportFileType
       webid:
         complex:
-          root: Joe.Analysis.WebID
+          root: Joe.Analysis.ID
     separatecontext: false
     view: |-
       {
@@ -348,17 +348,17 @@ outputs:
   description: For malicious files, the reason for the vendor to make the decision
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested (only in case of report type=json)
+  description: The indicator that was tested (only in case of report type=json).
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator (only in case of report type=json)
+  description: The indicator type (only in case of report type=json).
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score (only in case of report type=json)
+  description: The vendor used to calculate the score (only in case of report type=json).
   type: string
 - contextPath: IP.Address
   description: IP's relevant to the sample
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score (only in case of report type=json)
+  description: The actual score (only in case of report type=json).
   type: number

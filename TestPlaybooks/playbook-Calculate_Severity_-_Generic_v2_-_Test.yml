@@ -68,12 +68,12 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 45ef9040-6a41-4559-8bc0-36c7f29fbcf9
+    taskid: 1fa22e88-0d6c-4a2b-856d-77b4d35af04b
     type: regular
     task:
-      id: 45ef9040-6a41-4559-8bc0-36c7f29fbcf9
+      id: 1fa22e88-0d6c-4a2b-856d-77b4d35af04b
       version: -1
-      name: '[TEMP] - add username to account in context'
+      name: Add username to account in context
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
@@ -81,9 +81,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
-      append: {}
+      append:
+        simple: "true"
       key:
         simple: Account.Username
       value:
@@ -116,6 +117,9 @@ tasks:
       - "2"
       - "4"
       - "5"
+      - "17"
+      - "18"
+      - "19"
     separatecontext: false
     view: |-
       {
@@ -141,7 +145,7 @@ tasks:
       brand: Active Directory Query v2
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -179,7 +183,7 @@ tasks:
       brand: Active Directory Query v2
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -297,7 +301,7 @@ tasks:
       brand: Palo Alto Minemeld
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
       include_inactive: {}
       long: {}
@@ -334,7 +338,7 @@ tasks:
       brand: Palo Alto Minemeld
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
       include_inactive: {}
       long: {}
@@ -371,7 +375,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
       addLabels: {}
       affecteddata: {}
@@ -523,61 +527,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 8f621600-5301-48ac-88d7-10f21d206345
-    type: playbook
-    task:
-      id: 8f621600-5301-48ac-88d7-10f21d206345
-      version: -1
-      name: Calculate Severity - Generic v2
-      description: |-
-        Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
-
-        * Indicators DBotScore - Calculates the incident severity level according to the highest indicator DBotScore.
-        * Critical assets - Determines if a critical assest is associated with the invesigation.
-        * 3rd-party integrations - Calculates the incident severity level according to the methodology of a 3rd-party integration.
-
-        NOTE: the new severity level overwrites the previous severity level even if the previous severity level was more severe.
-      playbookName: Calculate Severity - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      Account:
-        complex:
-          root: Account
-          transformers:
-          - operator: uniq
-      CriticalEndpoints:
-        simple: moshe
-      CriticalGroups:
-        simple: Group5,Cert Publishers
-      CriticalUsers:
-        simple: admin,administrator
-      DBotScore:
-        complex:
-          root: DBotScore
-      Endpoint:
-        complex:
-          root: Endpoint
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "13":
     id: "13"
     taskid: e5fdc1d4-6916-4693-8b82-1b45008cb5a1
@@ -618,7 +567,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "16"
     scriptarguments:
       append: {}
       key:
@@ -637,12 +586,140 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 3e6a6dc4-49f3-48c6-8009-085fcafcf70a
+    type: playbook
+    task:
+      id: 3e6a6dc4-49f3-48c6-8009-085fcafcf70a
+      version: -1
+      name: Calculate Severity - Generic v2
+      playbookName: Calculate Severity - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 2d11cff3-fa19-4825-8476-4cfe59fce885
+    type: regular
+    task:
+      id: 2d11cff3-fa19-4825-8476-4cfe59fce885
+      version: -1
+      name: Add hostname to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Account.Groups
+      value:
+        simple: Administrators
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 616948c7-e396-41c4-8750-61b9594f5493
+    type: regular
+    task:
+      id: 616948c7-e396-41c4-8750-61b9594f5493
+      version: -1
+      name: Add hostname to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Account.Groups
+      value:
+        simple: Domain Admins
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 38a91c38-5b08-48bc-80d7-d3e9bbca01ad
+    type: regular
+    task:
+      id: 38a91c38-5b08-48bc-80d7-d3e9bbca01ad
+      version: -1
+      name: Add hostname to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: AdminPC
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 995,
+        "height": 1155,
         "width": 3440,
         "x": -1150,
         "y": 50

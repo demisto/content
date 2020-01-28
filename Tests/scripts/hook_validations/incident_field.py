@@ -53,7 +53,17 @@ class IncidentFieldValidator(object):
         name = self.current_incident_field.get('name', '')
         cli_name = self.current_incident_field.get('cliName', '')
         bad_words = {'incident', 'case', 'alert', 'event', 'play', 'ticket', 'issue'}
+        whitelisted_field_names = {
+            'XDR Alert Count',
+            'XDR High Severity Alert Count',
+            'XDR Medium Severity Alert Count',
+            'XDR Low Severity Alert Count',
+            'XDR Incident ID'
+        }
         for word in bad_words:
+            if name in whitelisted_field_names:
+                continue
+
             if word in name.lower() or word in cli_name.lower():
                 print_error("The word {} cannot be used as a name/cliName, "
                             "please update the file {}.".format(word, self.file_path))

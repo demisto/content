@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92650d23-ccc0-4751-869f-221b3f6ede61
+    taskid: b9cf94cb-0125-4d1c-896a-5774120b4d72
     type: start
     task:
-      id: 92650d23-ccc0-4751-869f-221b3f6ede61
+      id: b9cf94cb-0125-4d1c-896a-5774120b4d72
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 4be42011-eea1-4203-8021-b82246c8a698
+    taskid: b4d9d33a-2dd1-4cc7-805d-0560e282975f
     type: regular
     task:
-      id: 4be42011-eea1-4203-8021-b82246c8a698
+      id: b4d9d33a-2dd1-4cc7-805d-0560e282975f
       version: -1
       name: Create test user
       description: Creates a new user.
@@ -70,10 +70,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: bc7abcda-80b5-49c0-80e6-28eb6a27ba9e
+    taskid: 33be6c0e-d32a-4045-81be-ae6a13259295
     type: regular
     task:
-      id: bc7abcda-80b5-49c0-80e6-28eb6a27ba9e
+      id: 33be6c0e-d32a-4045-81be-ae6a13259295
       version: -1
       name: Get User
       description: Retrieve the properties and relationships of user object. [link](https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)
@@ -101,10 +101,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: f3f61e01-d5b7-4b9c-84b0-0a3b40364440
+    taskid: af33470b-16f3-4302-8237-44b461b3bd5d
     type: regular
     task:
-      id: f3f61e01-d5b7-4b9c-84b0-0a3b40364440
+      id: af33470b-16f3-4302-8237-44b461b3bd5d
       version: -1
       name: Update user phone number
       description: Update the properties of a user object.
@@ -133,10 +133,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 0e5d845f-1cd1-4614-8646-23477bab990d
+    taskid: eec766df-94af-48c2-8ed2-44ac9e1f3af2
     type: regular
     task:
-      id: 0e5d845f-1cd1-4614-8646-23477bab990d
+      id: eec766df-94af-48c2-8ed2-44ac9e1f3af2
       version: -1
       name: Get Delta (mobilePhone)
       description: Get newly created, updated, or deleted users without having to
@@ -164,10 +164,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 602a4dd5-0ada-4be4-800a-e31b991c757e
+    taskid: f187ca54-8b66-401d-8b9c-3c375a968bb2
     type: regular
     task:
-      id: 602a4dd5-0ada-4be4-800a-e31b991c757e
+      id: f187ca54-8b66-401d-8b9c-3c375a968bb2
       version: -1
       name: Block user
       description: Terminate users session from all Office 365 and prevents it from
@@ -195,10 +195,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: fde6ec66-bda3-4773-86c8-977abfebc00e
+    taskid: 68ad8932-b804-4a54-82ad-12a463c54f6a
     type: regular
     task:
-      id: fde6ec66-bda3-4773-86c8-977abfebc00e
+      id: 68ad8932-b804-4a54-82ad-12a463c54f6a
       version: -1
       name: Sleep for 30 seconds
       description: Sleep for X seconds
@@ -225,10 +225,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 9bd71149-2f35-480e-8f8e-0f7855a80b28
+    taskid: 11849cc4-bf2e-4d64-8ccc-71d5e8415db0
     type: regular
     task:
-      id: 9bd71149-2f35-480e-8f8e-0f7855a80b28
+      id: 11849cc4-bf2e-4d64-8ccc-71d5e8415db0
       version: -1
       name: Unblock User
       description: Unblock a user.
@@ -238,7 +238,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       user:
         simple: oren@demistodev.onmicrosoft.com
@@ -255,10 +255,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 7f75e82f-e39f-480d-8ee8-f07dca29e684
+    taskid: 3c7954f0-1b9b-4424-884c-176e78acef21
     type: regular
     task:
-      id: 7f75e82f-e39f-480d-8ee8-f07dca29e684
+      id: 3c7954f0-1b9b-4424-884c-176e78acef21
       version: -1
       name: Delete user
       description: Deletes an exsiting user.
@@ -285,10 +285,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 61bd9d72-9808-4314-8bd5-9c2018877967
+    taskid: 0cf97747-5629-4c28-83cd-4bbae16619d8
     type: title
     task:
-      id: 61bd9d72-9808-4314-8bd5-9c2018877967
+      id: 0cf97747-5629-4c28-83cd-4bbae16619d8
       version: -1
       name: Done!
       type: title
@@ -299,7 +299,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3080
         }
       }
     note: false
@@ -307,10 +307,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: dce27583-52ed-4350-8b11-b774d6b2df19
+    taskid: b26ab3f6-ca54-4323-8f72-a9fb31e0c6b9
     type: regular
     task:
-      id: dce27583-52ed-4350-8b11-b774d6b2df19
+      id: b26ab3f6-ca54-4323-8f72-a9fb31e0c6b9
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -341,10 +341,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: b63962b6-7499-40f2-8506-5fb7188169cc
+    taskid: 444f1199-fb23-4703-8e3d-372c47cf1633
     type: condition
     task:
-      id: b63962b6-7499-40f2-8506-5fb7188169cc
+      id: 444f1199-fb23-4703-8e3d-372c47cf1633
       version: -1
       name: If failed - try delete and creating again
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
@@ -375,10 +375,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 58b7c879-848c-46f3-856a-f1805d785f77
+    taskid: 838672fb-875a-4917-898b-08539ace3437
     type: regular
     task:
-      id: 58b7c879-848c-46f3-856a-f1805d785f77
+      id: 838672fb-875a-4917-898b-08539ace3437
       version: -1
       name: Delete the duplicated user
       description: Deletes an exsiting user.
@@ -405,10 +405,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: f80a140b-dfc6-4064-8dba-243d3808bb83
+    taskid: 879b569e-e87b-4ef0-8723-e5b1de217856
     type: regular
     task:
-      id: f80a140b-dfc6-4064-8dba-243d3808bb83
+      id: 879b569e-e87b-4ef0-8723-e5b1de217856
       version: -1
       name: Create test user again
       description: Creates a new user.
@@ -445,10 +445,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: c1094d50-6bd3-4fc6-8d2d-0f78ea281adc
+    taskid: f98be4b3-ed75-467d-8750-cb1093e0208c
     type: regular
     task:
-      id: c1094d50-6bd3-4fc6-8d2d-0f78ea281adc
+      id: f98be4b3-ed75-467d-8750-cb1093e0208c
       version: -1
       name: List Users
       description: Retrieve a list of user objects.
@@ -467,7 +467,108 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 27ec755d-3582-48af-8530-73b3103090b3
+    type: regular
+    task:
+      id: 27ec755d-3582-48af-8530-73b3103090b3
+      version: -1
+      name: Create test user with no "Other_properties"
+      description: Creates a new user.
+      script: '|||msgraph-user-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      account_enabled: {}
+      display_name:
+        simple: Test User
+      mail_nickname:
+        simple: Test
+      on_premises_immutable_id: {}
+      other_properties: {}
+      password:
+        simple: password123123!
+      user_principal_name:
+        simple: test@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 31208a5f-0aae-4621-834b-d14874807023
+    type: regular
+    task:
+      id: 31208a5f-0aae-4621-834b-d14874807023
+      version: -1
+      name: Get User
+      description: 'Retrieves the properties and relationships of user object. for
+        more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      properties: {}
+      user:
+        simple: test@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 20804f18-e623-4895-8358-486ce4798cbc
+    type: regular
+    task:
+      id: 20804f18-e623-4895-8358-486ce4798cbc
+      version: -1
+      name: Delete User
+      description: Deletes an exsiting user.
+      script: '|||msgraph-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      user:
+        simple: test@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2710
         }
       }
     note: false
@@ -480,7 +581,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2485,
+        "height": 3095,
         "width": 492.5,
         "x": 50,
         "y": 50

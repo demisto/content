@@ -27,11 +27,11 @@ configuration:
   required: true
   type: 15
 - defaultvalue: 'false'
-  display: Trust any certificate (insecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -41,16 +41,17 @@ name: Anomali ThreatStream v2
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: The IP to check.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If severity is greater than or equal to the threshold, then the IP address
-        will be considered malicious. This argument will override the default threshold defined as a parameter.
+      description: If severity is greater than or equal to the threshold, then the
+        IP address will be considered malicious. This argument will override the default
+        threshold defined as a parameter.
       isArray: false
       name: threshold
       predefined:
@@ -63,7 +64,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to include results with the status "Inactive". Default is "True".
+      description: Whether to include results with the status "Inactive". Default
+        is "True".
       isArray: false
       name: include_inactive
       predefined:
@@ -83,7 +85,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: IP.ASN
       description: Autonomous System (AS) number associated with the indicator.
@@ -115,11 +117,11 @@ script:
         time.'
       type: String
     - contextPath: ThreatStream.IP.Severity
-      description: 'The indicator severity ("very-high", "high", "medium", or "low".'
+      description: The indicator severity ("very-high", "high", "medium", or "low".
       type: String
     - contextPath: ThreatStream.IP.Confidence
-      description: Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of
-        confidence.
+      description: Level of certainty that an observable is of the reported indicator
+        type. Confidence score can range from 0-100, in increasing order of confidence.
       type: String
     - contextPath: ThreatStream.IP.Status
       description: Status assigned to the indicator.
@@ -138,16 +140,17 @@ script:
       description: Vendor that reported the indicator as malicious.
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: The domain name to check.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If severity is greater than or equal to the threshold, then the IP address
-        will be considered malicious. This argument will override the default threshold defined as a parameter.
+      description: If severity is greater than or equal to the threshold, then the
+        IP address will be considered malicious. This argument will override the default
+        threshold defined as a parameter.
       isArray: false
       name: threshold
       predefined:
@@ -160,7 +163,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to include results with status of "Inactive". Default is "True".
+      description: Whether to include results with status of "Inactive". Default is
+        "True".
       isArray: false
       name: include_inactive
       predefined:
@@ -218,11 +222,11 @@ script:
         for time, in UTC time.
       type: String
     - contextPath: ThreatStream.Domain.Severity
-      description: 'The indicator severity ("very-high", "high", "medium", "low").'
+      description: The indicator severity ("very-high", "high", "medium", "low").
       type: String
     - contextPath: ThreatStream.Domain.Confidence
-      description: Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of
-        confidence.
+      description: Level of certainty that an observable is of the reported indicator
+        type. Confidence score can range from 0-100, in increasing order of confidence.
       type: String
     - contextPath: ThreatStream.Domain.Status
       description: Status assigned to the indicator.
@@ -244,22 +248,23 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
   - arguments:
-    - default: false
+    - default: true
       description: The MD5 hash of file to check.
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If severity is greater than or equal to the threshold, then the MD5 hash
-        of file will be considered malicious. This argument will override the default threshold defined as a parameter.
+      description: If severity is greater than or equal to the threshold, then the
+        MD5 hash of file will be considered malicious. This argument will override
+        the default threshold defined as a parameter.
       isArray: false
       name: threshold
       predefined:
@@ -272,7 +277,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to include results with the status "Inactive". Default is "True".
+      description: Whether to include results with the status "Inactive". Default
+        is "True".
       isArray: false
       name: include_inactive
       predefined:
@@ -298,17 +304,17 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
     - contextPath: ThreatStream.File.Severity
-      description: 'The indicator severity ("very-high", "high", "medium", "low").'
+      description: The indicator severity ("very-high", "high", "medium", "low").
       type: String
     - contextPath: ThreatStream.File.Confidence
-      description: Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of
-        confidence.
+      description: Level of certainty that an observable is of the reported indicator
+        type. Confidence score can range from 0-100, in increasing order of confidence.
       type: String
     - contextPath: ThreatStream.File.Status
       description: Status assigned to the indicator.
@@ -336,7 +342,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If severity is greater or equal than the threshold, then the IP address will be considered malicious. This argument will override the default threshold defined as a parameter.
+      description: If severity is greater or equal than the threshold, then the IP
+        address will be considered malicious. This argument will override the default
+        threshold defined as a parameter.
       isArray: false
       name: threshold
       predefined:
@@ -349,7 +357,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to include results with the status "Inactive". Default is "True".
+      description: Whether to include results with the status "Inactive". Default
+        is "True".
       isArray: false
       name: include_inactive
       predefined:
@@ -369,17 +378,17 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
     - contextPath: ThreatStream.EmailReputation.Severity
-      description: 'The indicator severity ("very-high", "high", "medium", "low").'
+      description: The indicator severity ("very-high", "high", "medium", "low").
       type: String
     - contextPath: ThreatStream.EmailReputation.Confidence
-      description: Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of
-        confidence.
+      description: Level of certainty that an observable is of the reported indicator
+        type. Confidence score can range from 0-100, in increasing order of confidence.
       type: String
     - contextPath: ThreatStream.EmailReputation.Status
       description: Status assigned to the indicator.
@@ -402,7 +411,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ip
-      description: 'The type of passive DNS search ("ip", "domain").'
+      description: The type of passive DNS search ("ip", "domain").
       isArray: false
       name: type
       predefined:
@@ -462,8 +471,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: private
-      description: Denotes whether the indicator data is public or private to the organization.
-        Default is "private".
+      description: Denotes whether the indicator data is public or private to the
+        organization. Default is "private".
       isArray: false
       name: classification
       predefined:
@@ -474,7 +483,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: exploit
-      description: Type of threat associated with the imported observables. Default is "exploit".
+      description: Type of threat associated with the imported observables. Default
+        is "exploit".
       isArray: false
       name: threat_type
       predefined:
@@ -511,8 +521,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: low
-      description: Gauges the potential impact of the indicator type the observable
-        is thought to be associated with. Default is "low".
+      description: The potential impact of the indicator type with which the observable
+        is thought to be associated. Default is "low".
       isArray: false
       name: severity
       predefined:
@@ -524,7 +534,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The import type of the indicator. '
+      description: 'The import type of the indicator. Can be datatext, file-id, or url.'
       isArray: false
       name: import_type
       predefined:
@@ -535,16 +545,71 @@ script:
       secret: false
     - default: false
       description: 'The source of imported data. Can be one of the following: url,
-        datatext of file-id of uploaded file to the War Rroom. Supported formats in
-        case of file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
+        datatext of file-id of uploaded file to the War Rroom. Supported file types for file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
       isArray: false
       name: import_value
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include IP mapping. Whether to include url mapping. Can be yes or no. Default is no.
+      isArray: false
+      name: ip_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include domain mapping. Whether to include url mapping. Can be yes or no. Default is no.
+      isArray: false
+      name: domain_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include url mapping. Can be yes or no. Default is no.
+      isArray: false
+      name: url_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include email mapping. Whether to include url mapping. Can be yes or no. Default is no.
+      isArray: false
+      name: email_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include MD5 mapping. Whether to include url mapping. Can be yes or no. Default is no.
+      isArray: false
+      name: md5_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
     deprecated: false
-    description: 'Imports indicators (observables) into ThreatStream. Approval
-      of the imported data is required, usingh the ThreatStream UI. The data can be imported using
-      one of three methods: plain-text, file, or URL. Only one argument can be used.'
+    description: 'Imports indicators (observables) into ThreatStream. Approval of
+      the imported data is required, usingh the ThreatStream UI. The data can be imported
+      using one of three methods: plain-text, file, or URL. Only one argument can
+      be used.'
     execution: false
     name: threatstream-import-indicator-with-approval
     outputs:
@@ -607,8 +672,9 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the
-      Approve Intel user permission to import without approval using the API.
+    description: Imports indicators (observables) into ThreatStream. Approval is not
+      required for the imported data. You must have the Approve Intel user permission
+      to import without approval using the API.
     execution: false
     name: threatstream-import-indicator-without-approval
   - arguments:
@@ -651,8 +717,8 @@ script:
       description: The ID of the threat model.
       type: String
     - contextPath: ThreatStream.List.CreatedTime
-      description: |-
-        Date and time of threat model creation. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.
+      description: 'Date and time of threat model creation. The date format is: YYYYMMDDThhmmss,
+        where "T" denotes the start of the value for time, in UTC time.'
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -747,7 +813,8 @@ script:
       description: The courty of the indicator associated with the specified model
       type: String
     - contextPath: ThreatStream.Model.Indicators.Organization
-      description: The organization of the indicator associated with the specified model.
+      description: The organization of the indicator associated with the specified
+        model.
       type: String
     - contextPath: ThreatStream.Model.Indicators.ASN
       description: The ASN of the indicator associated with the specified model.
@@ -782,8 +849,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: WINDOWS7
-      description: Platform on which the submitted URL or file will be run. To obtain a list supported platforms run the threatstream-get-sandbox-platforms
-        command.
+      description: Platform on which the submitted URL or file will be run. To obtain
+        a list supported platforms run the threatstream-get-sandbox-platforms command.
       isArray: false
       name: report_platform
       predefined:
@@ -803,8 +870,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The submission value. Possible values are a valid URL or a file ID that was uploaded to
-        the War Room to detonate.
+      description: The submission value. Possible values are a valid URL or a file
+        ID that was uploaded to the War Room to detonate.
       isArray: false
       name: submission_value
       required: true
@@ -822,9 +889,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of additional details for the
-        indicator. This information is displayed in the Tag column of the ThreatStream
-        UI.
+      description: A CSV list of additional details for the indicator. This information
+        is displayed in the Tag column of the ThreatStream UI.
       isArray: false
       name: detail
       required: false
@@ -851,8 +917,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the current status of the report that was submitted to the sandbox.
-      The report ID is returned from threatstream-submit-to-sandbox command.
+    description: Returns the current status of the report that was submitted to the
+      sandbox. The report ID is returned from threatstream-submit-to-sandbox command.
     execution: false
     name: threatstream-get-analysis-status
     outputs:
@@ -1060,7 +1126,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Maximum number of results to return from ThreatStrem. Default is 20.
+      description: Maximum number of results to return from ThreatStrem. Default is
+        20.
       isArray: false
       name: limit
       required: false
@@ -1115,7 +1182,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: intelligence
-      description: The type of threat model entity on which to add the tag. Default is "intelligence" (indicator).
+      description: The type of threat model entity on which to add the tag. Default
+        is "intelligence" (indicator).
       isArray: false
       name: model
       predefined:
@@ -1198,8 +1266,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of indicators IDs associated with the threat model
-        on the ThreatStream platform.
+      description: A CSV list of indicators IDs associated with the threat model on
+        the ThreatStream platform.
       isArray: false
       name: intelligence
       required: false
@@ -1319,8 +1387,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of indicators IDs associated with the threat model
-        on the ThreatStream platform.
+      description: A CSV list of indicators IDs associated with the threat model on
+        the ThreatStream platform.
       isArray: false
       name: intelligence
       required: false
@@ -1387,7 +1455,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: default
-      description: 'The type of sandbox ("default" or "premium").'
+      description: The type of sandbox ("default" or "premium").
       isArray: false
       name: sandbox_type
       predefined:
@@ -1419,16 +1487,17 @@ script:
       description: The display name of the supported platform of standard sandbox.
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: The URL to check.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If severity is greater than or equal to the threshold, then the URL
-        will be considered malicious. This argument will override the default threshold defined as a parameter.
+      description: If severity is greater than or equal to the threshold, then the
+        URL will be considered malicious. This argument will override the default
+        threshold defined as a parameter.
       isArray: false
       name: threshold
       predefined:
@@ -1441,7 +1510,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to include results with the status "Inactive". Default is "True".
+      description: Whether to include results with the status "Inactive". Default
+        is "True".
       isArray: false
       name: include_inactive
       predefined:
@@ -1461,7 +1531,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -1478,8 +1548,8 @@ script:
         for time, in UTC time.
       type: String
     - contextPath: ThreatStream.URL.Confidence
-      description: Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of
-        confidence.
+      description: Level of certainty that an observable is of the reported indicator
+        type. Confidence score can range from 0-100, in increasing order of confidence.
       type: String
     - contextPath: ThreatStream.URL.Status
       description: The status of the indicator.
@@ -1501,12 +1571,15 @@ script:
       description: The source of the indicator.
       type: String
     - contextPath: ThreatStream.URL.Severity
-      description: 'The indicator severity ("very-high", "high", "medium", or "low").'
+      description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python3
   type: python
 tests:
 - ThreatStream-Test

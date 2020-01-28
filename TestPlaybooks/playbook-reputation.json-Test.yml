@@ -1,15 +1,17 @@
 id: reputations.json Test
 version: -1
+contentitemfields:
+  propagationLabels: []
 name: reputations.json Test
 description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cea11e86-5639-4e36-87a9-89ab0f564b46
+    taskid: 4cf2a709-0175-4637-8ee5-a05864f9ca94
     type: start
     task:
-      id: cea11e86-5639-4e36-87a9-89ab0f564b46
+      id: 4cf2a709-0175-4637-8ee5-a05864f9ca94
       version: -1
       name: ""
       iscommand: false
@@ -30,10 +32,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 51395787-17b9-4c30-8234-0873f74d2cc4
+    taskid: 36b0850a-f08d-4fb1-821c-cf5a70581c1a
     type: title
     task:
-      id: 51395787-17b9-4c30-8234-0873f74d2cc4
+      id: 36b0850a-f08d-4fb1-821c-cf5a70581c1a
       version: -1
       name: Done
       type: title
@@ -52,10 +54,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 527627f4-ead8-4bcc-8f45-352f15d723a3
+    taskid: c6653571-7206-4b77-8fae-d718ea3a0d34
     type: regular
     task:
-      id: 527627f4-ead8-4bcc-8f45-352f15d723a3
+      id: c6653571-7206-4b77-8fae-d718ea3a0d34
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -86,10 +88,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 5f9718ba-fa5d-404d-8c1b-b9b710732fd7
+    taskid: b46e2635-cd14-4848-8867-4322d2138f6b
     type: regular
     task:
-      id: 5f9718ba-fa5d-404d-8c1b-b9b710732fd7
+      id: b46e2635-cd14-4848-8867-4322d2138f6b
       version: -1
       name: Set valid emails
       description: Sets a value into the context with the given context key
@@ -120,10 +122,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 788864f3-b228-48e9-897d-6a76f093dbea
+    taskid: e82e0c66-f14b-46a1-8aee-e255ecee5808
     type: regular
     task:
-      id: 788864f3-b228-48e9-897d-6a76f093dbea
+      id: e82e0c66-f14b-46a1-8aee-e255ecee5808
       version: -1
       name: Print valid emails
       description: Prints text to war room (Markdown supported)
@@ -151,10 +153,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 53a6833a-8ee7-4b85-8e4f-de9ac46d768f
+    taskid: 6af91bd5-eede-4af6-8128-d822a940d063
     type: condition
     task:
-      id: 53a6833a-8ee7-4b85-8e4f-de9ac46d768f
+      id: 6af91bd5-eede-4af6-8128-d822a940d063
       version: -1
       name: check auto extract emails
       type: condition
@@ -219,10 +221,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 335adf7e-7b37-44bc-8ae6-9950961d773f
+    taskid: 50a4726d-037c-402c-8776-8b2f4f444091
     type: regular
     task:
-      id: 335adf7e-7b37-44bc-8ae6-9950961d773f
+      id: 50a4726d-037c-402c-8776-8b2f4f444091
       version: -1
       name: set invalid emails
       description: Sets a value into the context with the given context key
@@ -255,10 +257,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: eef41fd3-2874-44cc-83c7-81da112fc168
+    taskid: d59967a2-ca4a-4682-8e88-3256aee93896
     type: regular
     task:
-      id: eef41fd3-2874-44cc-83c7-81da112fc168
+      id: d59967a2-ca4a-4682-8e88-3256aee93896
       version: -1
       name: Print invalid emails
       description: Prints text to war room (Markdown supported)
@@ -286,10 +288,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 78cb7227-0eda-4bbb-8bcf-11c01a053253
+    taskid: 245f8235-9cf8-45ab-8409-bac59c456da7
     type: condition
     task:
-      id: 78cb7227-0eda-4bbb-8bcf-11c01a053253
+      id: 245f8235-9cf8-45ab-8409-bac59c456da7
       version: -1
       name: check non extraction of invalid emails
       type: condition
@@ -394,10 +396,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: a7ed4e5c-07fb-4858-85ff-09d1dfc82e80
+    taskid: 034ee7bf-9f28-48af-8122-321e0329a6b3
     type: title
     task:
-      id: a7ed4e5c-07fb-4858-85ff-09d1dfc82e80
+      id: 034ee7bf-9f28-48af-8122-321e0329a6b3
       version: -1
       name: Email
       type: title
@@ -419,10 +421,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 1dc6746e-a4c3-4abc-8094-af1b9e13299d
+    taskid: e1ebbe78-7ec4-4334-8fbc-ae26e5ac211a
     type: regular
     task:
-      id: 1dc6746e-a4c3-4abc-8094-af1b9e13299d
+      id: e1ebbe78-7ec4-4334-8fbc-ae26e5ac211a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -453,10 +455,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: d378747d-327e-4ad6-8fba-ee2b2c308a17
+    taskid: 5bf0cf1d-fe2e-4d7a-8fcb-bfe590da8be4
     type: title
     task:
-      id: d378747d-327e-4ad6-8fba-ee2b2c308a17
+      id: 5bf0cf1d-fe2e-4d7a-8fcb-bfe590da8be4
       version: -1
       name: Domain
       type: title
@@ -478,10 +480,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 96c6a8b0-7c39-4e2a-841d-a280a6d761c7
+    taskid: db02f976-91e9-497c-8bcc-88124f87ac8c
     type: regular
     task:
-      id: 96c6a8b0-7c39-4e2a-841d-a280a6d761c7
+      id: db02f976-91e9-497c-8bcc-88124f87ac8c
       version: -1
       name: Set vaild domains
       description: Sets a value into the context with the given context key
@@ -497,7 +499,8 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: '"www.demisto.com", "www.google.com"'
+        simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com",
+          "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/"'
     separatecontext: false
     view: |-
       {
@@ -511,10 +514,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 0cc99744-3b67-413c-8a92-51e2a3273ea1
+    taskid: aaae71ce-8fa4-4252-831d-8337eb3f53f5
     type: regular
     task:
-      id: 0cc99744-3b67-413c-8a92-51e2a3273ea1
+      id: aaae71ce-8fa4-4252-831d-8337eb3f53f5
       version: -1
       name: Print valid domains
       description: Prints text to war room (Markdown supported)
@@ -544,10 +547,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: f40ec79f-aa5a-4fda-89bf-e0a6e8ae140e
+    taskid: 1e0f7754-d825-4104-8dc6-256cfe472605
     type: condition
     task:
-      id: f40ec79f-aa5a-4fda-89bf-e0a6e8ae140e
+      id: 1e0f7754-d825-4104-8dc6-256cfe472605
       version: -1
       name: check auto extract domains
       type: condition
@@ -576,6 +579,62 @@ tasks:
           right:
             value:
               simple: google.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: wikipedia.org
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: golang.org
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.demisto.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.ru.wikipedia.org
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.golang.org
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: example.com
     view: |-
       {
         "position": {
@@ -588,10 +647,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 24740b29-748a-4292-8fdf-4f92be4bb31e
+    taskid: 1b4cb9be-5d80-4940-8e9e-4512eb3e33d7
     type: regular
     task:
-      id: 24740b29-748a-4292-8fdf-4f92be4bb31e
+      id: 1b4cb9be-5d80-4940-8e9e-4512eb3e33d7
       version: -1
       name: Set invalid domains
       description: Sets a value into the context with the given context key
@@ -621,10 +680,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: d16bf2e3-47d1-470c-8f6f-d8401965fdf1
+    taskid: 1e02e526-aa81-4e2a-8eb6-597d2b08a28d
     type: regular
     task:
-      id: d16bf2e3-47d1-470c-8f6f-d8401965fdf1
+      id: 1e02e526-aa81-4e2a-8eb6-597d2b08a28d
       version: -1
       name: Print invalid domains
       description: Prints text to war room (Markdown supported)
@@ -652,10 +711,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 8977af39-c8e3-4855-831c-bdcada32af44
+    taskid: 6a9d30b6-8909-49fa-85c4-b59af4a346b5
     type: condition
     task:
-      id: 8977af39-c8e3-4855-831c-bdcada32af44
+      id: 6a9d30b6-8909-49fa-85c4-b59af4a346b5
       version: -1
       name: check non extraction of invalid domains
       type: condition
@@ -696,10 +755,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 59105de9-62ec-4b1c-82c1-724239e041c0
+    taskid: 6b5f65d7-6249-461b-88b7-066e94184649
     type: regular
     task:
-      id: 59105de9-62ec-4b1c-82c1-724239e041c0
+      id: 6b5f65d7-6249-461b-88b7-066e94184649
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -730,10 +789,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 62ad8589-5056-49b4-81dd-c4c7c263711c
+    taskid: 836a553a-02f5-4f31-8220-7bc3621a0bed
     type: title
     task:
-      id: 62ad8589-5056-49b4-81dd-c4c7c263711c
+      id: 836a553a-02f5-4f31-8220-7bc3621a0bed
       version: -1
       name: URL
       type: title
@@ -755,10 +814,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 2967b846-e9ef-4aac-8354-ad81933fa199
+    taskid: 2a46ed49-e0bb-4f4c-8544-d802efbd0e03
     type: regular
     task:
-      id: 2967b846-e9ef-4aac-8354-ad81933fa199
+      id: 2a46ed49-e0bb-4f4c-8544-d802efbd0e03
       version: -1
       name: Set valid URLs
       description: Sets a value into the context with the given context key
@@ -774,9 +833,9 @@ tasks:
       key:
         simple: valid_urls
       value:
-        simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/",
-        "www.mock.com?e=P6wGLG", "www.bücher.de", "www.mock.com?gbdfs",
-        "https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0"'
+        simple: '"http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I",
+          "www.golang.org/pkg/regexp/syntax/", "www.mock.com?e=P6wGLG", "www.bücher.de",
+          "www.mock.com?gbdfs", "https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0"'
     separatecontext: false
     view: |-
       {
@@ -790,10 +849,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: c2df1a2e-4d7d-477f-8694-4926f664849e
+    taskid: 9dad035e-8784-49aa-80b2-7343e37bbb0b
     type: regular
     task:
-      id: c2df1a2e-4d7d-477f-8694-4926f664849e
+      id: 9dad035e-8784-49aa-80b2-7343e37bbb0b
       version: -1
       name: Print valid URLs
       description: Prints text to war room (Markdown supported)
@@ -821,10 +880,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 7bf758a6-b1e0-474d-858c-0fd2ad9aca6e
+    taskid: f278850c-e513-4849-811f-d17f64740dde
     type: condition
     task:
-      id: 7bf758a6-b1e0-474d-858c-0fd2ad9aca6e
+      id: f278850c-e513-4849-811f-d17f64740dde
       version: -1
       name: Check auto-extract
       type: condition
@@ -885,6 +944,14 @@ tasks:
           right:
             value:
               simple: https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0
+      - - operator: containsString
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://example.com
     view: |-
       {
         "position": {
@@ -897,10 +964,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: c39469b8-e58f-4446-8f95-66974d5326a2
+    taskid: b7f3ce9b-5019-4675-8bd9-61b7a836a414
     type: regular
     task:
-      id: c39469b8-e58f-4446-8f95-66974d5326a2
+      id: b7f3ce9b-5019-4675-8bd9-61b7a836a414
       version: -1
       name: Set invalid URLs
       description: Sets a value into the context with the given context key
@@ -932,10 +999,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: b2fbf9d3-f916-4574-8c9e-71b44069e701
+    taskid: 05630504-f4f3-4452-8830-2438b08ddded
     type: regular
     task:
-      id: b2fbf9d3-f916-4574-8c9e-71b44069e701
+      id: 05630504-f4f3-4452-8830-2438b08ddded
       version: -1
       name: Print invalid URLs
       description: Prints text to war room (Markdown supported)
@@ -963,10 +1030,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: ead0dd0b-ab38-4b70-804d-70d9de92cfc1
+    taskid: ce7e09ce-681a-4836-8ed4-5f09770645c3
     type: condition
     task:
-      id: ead0dd0b-ab38-4b70-804d-70d9de92cfc1
+      id: ce7e09ce-681a-4836-8ed4-5f09770645c3
       version: -1
       name: Check non extraction of invalid URLs
       type: condition
@@ -1055,10 +1122,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 8dfba27d-6ebf-40d8-8f2c-ed12f021b5bf
+    taskid: 68b9a782-b049-4144-8311-4026e0953b48
     type: title
     task:
-      id: 8dfba27d-6ebf-40d8-8f2c-ed12f021b5bf
+      id: 68b9a782-b049-4144-8311-4026e0953b48
       version: -1
       name: IP
       description: IP
@@ -1081,10 +1148,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: f6a0206e-fc36-4203-84aa-2dd7bade225e
+    taskid: fd16e9ae-58f9-4c89-8b16-37955178bff2
     type: regular
     task:
-      id: f6a0206e-fc36-4203-84aa-2dd7bade225e
+      id: fd16e9ae-58f9-4c89-8b16-37955178bff2
       version: -1
       name: Set valid IPs
       description: Sets a value into the context with the given context key
@@ -1100,8 +1167,7 @@ tasks:
       key:
         simple: valid_ips
       value:
-        simple: '"255.255.253.0", "19.117.63.253", "192.168.1.1",
-          "0[.]0[.]0[.]0"'
+        simple: '"255.255.253.0", "19.117.63.253", "192.168.1.1", "0[.]0[.]0[.]0"'
     separatecontext: false
     view: |-
       {
@@ -1115,10 +1181,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: 28c2e072-1549-4ce8-826d-0c173b365282
+    taskid: 75a632a2-b519-4e2b-8975-ffe0c2b59c9b
     type: regular
     task:
-      id: 28c2e072-1549-4ce8-826d-0c173b365282
+      id: 75a632a2-b519-4e2b-8975-ffe0c2b59c9b
       version: -1
       name: Print valid IPs
       description: Prints text to war room (Markdown supported)
@@ -1146,10 +1212,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: a547b59e-9054-464c-8e98-582c683b6517
+    taskid: cc8444ae-918e-4aff-8b36-d321fbe3b234
     type: condition
     task:
-      id: a547b59e-9054-464c-8e98-582c683b6517
+      id: cc8444ae-918e-4aff-8b36-d321fbe3b234
       version: -1
       name: Check auto-extract
       type: condition
@@ -1206,10 +1272,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 84ad0e36-093e-498b-8b3b-2b3679e7f36d
+    taskid: 9835f003-0611-4df7-8abd-ccb08c4834a7
     type: regular
     task:
-      id: 84ad0e36-093e-498b-8b3b-2b3679e7f36d
+      id: 9835f003-0611-4df7-8abd-ccb08c4834a7
       version: -1
       name: Set invalid IPs
       description: Sets a value into the context with the given context key
@@ -1240,10 +1306,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: ace594af-bdd6-4579-8ca7-3b8fdb6cf923
+    taskid: 6252bb29-5705-49d9-8e95-0addab1ff8c7
     type: regular
     task:
-      id: ace594af-bdd6-4579-8ca7-3b8fdb6cf923
+      id: 6252bb29-5705-49d9-8e95-0addab1ff8c7
       version: -1
       name: Print invalid IPs
       description: Prints text to war room (Markdown supported)
@@ -1271,10 +1337,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 6ed02811-bb4e-445b-896a-12d765914522
+    taskid: 374181ff-0ded-459f-881e-a36faa07d6da
     type: condition
     task:
-      id: 6ed02811-bb4e-445b-896a-12d765914522
+      id: 374181ff-0ded-459f-881e-a36faa07d6da
       version: -1
       name: Check non extraction of invalid IPs
       type: condition
@@ -1363,10 +1429,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: edea82dd-594b-4972-8ab1-081c57414422
+    taskid: 1bdf791e-3ab9-4436-8038-ebdc72da304c
     type: regular
     task:
-      id: edea82dd-594b-4972-8ab1-081c57414422
+      id: 1bdf791e-3ab9-4436-8038-ebdc72da304c
       version: -1
       name: DeleteContext
       description: Delete field from context

@@ -2,6 +2,7 @@ category: Network Security
 commonfields:
   id: ExtraHop
   version: -1
+deprecated: true
 configuration:
 - display: API Key for instance
   name: apikey
@@ -23,9 +24,9 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-description: ExtraHop performs real-time stream analysis of the packets that carry
-  data across a network.
-display: ExtraHop
+description: Deprecated - We recommend using ExtraHop Reveal(x) instead.
+  ExtraHop performs real-time stream analysis of the packets that carry data across a network.
+display: ExtraHop (Deprecated)
 name: ExtraHop
 script:
   commands:

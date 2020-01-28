@@ -219,7 +219,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: Intezer.Analysis(val.Status !== 'Done').Status
+        simple: Intezer.Analysis(val.Status !== 'Done').ID
     separatecontext: true
     loop:
       iscommand: false

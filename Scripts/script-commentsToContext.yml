@@ -1,6 +1,6 @@
 commonfields:
-  id: 120c861a-e0ae-417e-8dcf-c3ee1dc15a42
-  version: 38
+  id: commentsToContext
+  version: -1
 name: commentsToContext
 script: |-
   var entry = executeCommand("getEntry", {"id":args.entryId});
@@ -23,9 +23,9 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: "Takes the comments of a given entry ID and stores them in the incident context,
-  under a provided context key. \nFor accessing the last executed task's comments,
-  provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
+comment: "Takes the comments of a given entry ID and stores them in the incident context,\
+  \ under a provided context key. \nFor accessing the last executed task's comments,\
+  \ provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
 enabled: true
 args:
 - name: entryId
@@ -36,5 +36,5 @@ args:
   required: true
   description: Context key to store comments into
 - name: listSeperator
-  description: If value is list - provide list seperator 
+  description: If value is list - provide list seperator
 scripttarget: 0

@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 500,
           "y": -250
         }
       }
@@ -483,10 +483,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: bca42b7d-262b-46d2-8ac7-d7674e346173
+    taskid: 831a19ea-d385-4c53-8cc0-c6f871658a0d
     type: condition
     task:
-      id: bca42b7d-262b-46d2-8ac7-d7674e346173
+      id: 831a19ea-d385-4c53-8cc0-c6f871658a0d
       version: -1
       name: Identify the instance type
       description: Automatically detects the product (Panorama/Firewall).
@@ -494,22 +494,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      Firewall:
+      '#default#':
       - "5"
       Panorama:
       - "6"
     separatecontext: false
     conditions:
-    - label: Firewall
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: panorama.model
-            iscontext: true
-          right:
-            value:
-              simple: PA-VM
     - label: Panorama
       condition:
       - - operator: isEqualString
@@ -536,7 +526,7 @@ view: |-
       "10_3_yes": 0.82,
       "10_5_#default#": 0.1,
       "11_5_#default#": 0.1,
-      "13_5_Firewall": 0.1,
+      "13_5_#default#": 0.1,
       "13_6_Panorama": 0.73,
       "1_5_#default#": 0.17
     },

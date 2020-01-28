@@ -1,0 +1,393 @@
+id: Block Indicators - Generic v2
+version: -1
+name: Block Indicators - Generic v2
+fromversion: 4.5.0
+description: |+
+  This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+  - Block URL - Generic
+  - Block Account - Generic
+  - Block IP - Generic v2
+  - Block File - Generic v2
+
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    type: start
+    task:
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    type: title
+    task:
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0b19553d-6281-43ac-8bfc-583b1bfd6171
+    type: playbook
+    task:
+      id: 0b19553d-6281-43ac-8bfc-583b1bfd6171
+      version: -1
+      name: Block URL - Generic
+      playbookName: Block URL - Generic
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      URL:
+        complex:
+          root: inputs.URL
+      URLBlacklistMiner:
+        complex:
+          root: inputs.URLBlacklistMiner
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: ba10aaed-dffd-4eae-8dcd-16807997f52f
+    type: playbook
+    task:
+      id: ba10aaed-dffd-4eae-8dcd-16807997f52f
+      version: -1
+      name: Block Account - Generic
+      description: |-
+        This playbook blocks malicious usernames using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+      playbookName: Block Account - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 903a8a58-46c8-4ab0-8b6e-d83e35f442fb
+    type: title
+    task:
+      id: 903a8a58-46c8-4ab0-8b6e-d83e35f442fb
+      version: -1
+      name: Block indicators
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "9"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 81f60e8f-e1a0-48c0-8a65-9b34796e267e
+    type: playbook
+    task:
+      id: 81f60e8f-e1a0-48c0-8a65-9b34796e267e
+      version: -1
+      name: Block IP - Generic v2
+      playbookName: Block IP - Generic v2
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+      IPBlacklistMiner:
+        complex:
+          root: inputs.IPBlacklistMiner
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: b04799c6-781a-45e1-8205-3ae9ce2f725f
+    type: playbook
+    task:
+      id: b04799c6-781a-45e1-8205-3ae9ce2f725f
+      version: -1
+      name: Block File - Generic v2
+      playbookName: Block File - Generic v2
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 530,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IPBlacklistMiner
+  value: {}
+  required: false
+  description: The name of the IP blacklist Miner in  Minemeld.
+- key: URLBlacklistMiner
+  value: {}
+  required: false
+  description: The name of the URL blacklist Miner in  Minemeld.
+- key: IP
+  value:
+    complex:
+      root: DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: ip
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator
+      transformers:
+      - operator: uniq
+  required: false
+  description: Array of malicious IPs to block.
+- key: URL
+  value:
+    complex:
+      root: DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: url
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator
+      transformers:
+      - operator: uniq
+  required: false
+  description: Array of malicious URLs to block.
+- key: Username
+  value:
+    complex:
+      root: DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: username
+          ignorecase: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      accessor: Indicator
+  required: false
+  description: Array of malicious usernames to block.
+outputs:
+- contextPath: CheckpointFWRule.Domain
+  description: Rule domain.
+- contextPath: CheckpointFWRule.Enabled
+  description: Rule status.
+- contextPath: CheckpointFWRule.Name
+  description: Rule name.
+- contextPath: CheckpointFWRule.UID
+  description: Rule UID.
+- contextPath: CheckpointFWRule.Type
+  description: Rule Type.
+- contextPath: CheckpointFWRule.DestinationNegate
+  description: Rule destination negate status (True/False).
+- contextPath: CheckpointFWRule.Action
+  description: 'Rule action (Valid values are: Accept, Drop, Apply Layer, Ask, Info).'
+- contextPath: CheckpointFWRule.Destination
+  description: Rule Destination.
+- contextPath: CheckpointFWRule.ActionSetting
+  description: Rule action settings.
+- contextPath: CheckpointFWRule.CustomFields
+  description: Rule custom fields.
+- contextPath: CheckpointFWRule.Data
+  description: Rule data.
+- contextPath: CheckpointFWRule.DataDirection
+  description: Rule data direction.
+- contextPath: CheckpointFWRule.DataNegate
+  description: Rule data negate status (True/False).
+- contextPath: CheckpointFWRule.Hits
+  description: Rule hits count.
+- contextPath: PanoramaRule.Direction
+  description: Direction of the Panorama rule. Can be 'to','from', 'both'
+  type: string
+- contextPath: PanoramaRule.IP
+  description: The IP the Panorama rule blocks
+  type: string
+- contextPath: PanoramaRule.Name
+  description: Name of the Panorama rule
+  type: string
+- contextPath: CheckpointFWRule.Data.Name
+  description: Rule data object name.
+- contextPath: CheckpointFWRule.Data.Domain
+  description: Information about the domain the data object belongs to.
+- contextPath: CheckpointFWRule.Domain.Name
+  description: Rule domain name.
+- contextPath: CheckpointFWRule.Domain.UID
+  description: Rule domain UID.
+- contextPath: CheckpointFWRule.Domain.Type
+  description: Rule domain type.
+- contextPath: CheckpointFWRule.Hits.FirstDate
+  description: The date of the first hit for the rule.
+- contextPath: CheckpointFWRule.Hits.LastDate
+  description: The date of the last hit for the rule.
+- contextPath: CheckpointFWRule.Hits.Level
+  description: Level of rule hits.
+- contextPath: CheckpointFWRule.Hits.Percentage
+  description: Percentage of rule hits
+- contextPath: CheckpointFWRule.Hits.Value
+  description: Value of rule hits.
+tests:
+  - No Test

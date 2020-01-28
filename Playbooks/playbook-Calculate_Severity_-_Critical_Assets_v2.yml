@@ -83,8 +83,8 @@ tasks:
       id: c9a031f3-ec9f-49f4-8f4a-871c4219e358
       version: -1
       name: Is a critical user involved in the incident?
-      description: Checks if at least one of the usernames involved in the incident is listed in the "CriticalUsers"
-        list.
+      description: Checks if at least one of the usernames involved in the incident
+        is listed in the "CriticalUsers" list.
       type: condition
       iscommand: false
       brand: ""
@@ -126,10 +126,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: f398e0fd-ccdd-4dfa-8d34-4af1e5bd1b64
+    taskid: 3e771227-3718-4714-89ac-51e80b242f8b
     type: title
     task:
-      id: f398e0fd-ccdd-4dfa-8d34-4af1e5bd1b64
+      id: 3e771227-3718-4714-89ac-51e80b242f8b
       version: -1
       name: Done
       description: ""
@@ -141,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 612.5,
-          "y": 1881
+          "y": 2011
         }
       }
     note: false
@@ -155,8 +155,8 @@ tasks:
       id: 9a724e04-a52d-4b62-8de8-681ef944d8f3
       version: -1
       name: Is a critical endpoint involved in the incident?
-      description: Checks if at least one of the endpoints involved in the incident is listed in the "CriticalEndpoints"
-        list..
+      description: Checks if at least one of the endpoints involved in the incident
+        is listed in the "CriticalEndpoints" list.
       type: condition
       iscommand: false
       brand: ""
@@ -911,7 +911,7 @@ tasks:
       {
         "position": {
           "x": 612.5,
-          "y": 1335
+          "y": 1325
         }
       }
     note: false
@@ -932,7 +932,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "55"
     scriptarguments:
       append: {}
       key:
@@ -1037,10 +1037,10 @@ tasks:
     ignoreworker: false
   "51":
     id: "51"
-    taskid: 9f2e790d-a480-4d0e-8b59-72ff5f2a5bec
+    taskid: a680f6b3-2306-407d-8a2b-a8a7bf1a4df6
     type: regular
     task:
-      id: 9f2e790d-a480-4d0e-8b59-72ff5f2a5bec
+      id: a680f6b3-2306-407d-8a2b-a8a7bf1a4df6
       version: -1
       name: Set critical endpoints to output
       description: Sets the critical endpoints to the CriticalAssets.CriticalEndpoints
@@ -1053,7 +1053,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
+      append:
+        simple: "true"
       key:
         simple: CriticalAssets.CriticalEndpoints
       value:
@@ -1083,10 +1084,10 @@ tasks:
     ignoreworker: false
   "52":
     id: "52"
-    taskid: bf840dff-0180-43ac-884d-a0e2dca80dd7
+    taskid: 7c4d5151-dc5e-40c3-8697-440b4e3e9cae
     type: regular
     task:
-      id: bf840dff-0180-43ac-884d-a0e2dca80dd7
+      id: 7c4d5151-dc5e-40c3-8697-440b4e3e9cae
       version: -1
       name: Set critical endpoint groups to output
       description: Sets the critical endpoint groups to the CriticalAssets.CriticalEndpointGroups
@@ -1099,7 +1100,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
+      append:
+        simple: "true"
       key:
         simple: CriticalAssets.CriticalEndpointGroups
       value:
@@ -1129,10 +1131,10 @@ tasks:
     ignoreworker: false
   "53":
     id: "53"
-    taskid: 021602b0-168f-4d0a-8d7e-d51df7e0fc84
+    taskid: 82bd69bb-ecc0-4438-8aa3-79626adf62a9
     type: regular
     task:
-      id: 021602b0-168f-4d0a-8d7e-d51df7e0fc84
+      id: 82bd69bb-ecc0-4438-8aa3-79626adf62a9
       version: -1
       name: Set critical user groups to output
       description: Sets the critical user groups to the CriticalAssets.CriticalUserGroups
@@ -1145,7 +1147,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
+      append:
+        simple: "true"
       key:
         simple: CriticalAssets.UserGroups
       value:
@@ -1166,7 +1169,7 @@ tasks:
       {
         "position": {
           "x": 992.5,
-          "y": 1400
+          "y": 1420
         }
       }
     note: false
@@ -1174,10 +1177,10 @@ tasks:
     ignoreworker: false
   "54":
     id: "54"
-    taskid: 21373b52-ff28-4eef-8556-262b32195605
+    taskid: 40a52d56-8468-4161-8832-9f3a8edbdc20
     type: regular
     task:
-      id: 21373b52-ff28-4eef-8556-262b32195605
+      id: 40a52d56-8468-4161-8832-9f3a8edbdc20
       version: -1
       name: Set critical users to output
       description: Sets the critical users to the CriticalAssets.CriticalUsers context
@@ -1190,7 +1193,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
+      append:
+        simple: "true"
       key:
         simple: CriticalAssets.Users
       value:
@@ -1213,6 +1217,41 @@ tasks:
         "position": {
           "x": 1680,
           "y": 1122
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: 9337a013-1493-4943-8d8f-42fe0feb437e
+    type: regular
+    task:
+      id: 9337a013-1493-4943-8d8f-42fe0feb437e
+      version: -1
+      name: Set critical assets to incident field
+      description: Sets the critical assets to an incident field which can be displayed
+        in the incident layout.
+      scriptName: PopulateCriticalAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      critical_assets:
+        complex:
+          root: CriticalAssets
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1820
         }
       }
     note: false
@@ -1244,7 +1283,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2346,
+        "height": 2476,
         "width": 3395,
         "x": -875,
         "y": -400
@@ -1258,7 +1297,8 @@ inputs:
   required: false
   description: CSV of critical users.
 - key: CriticalEndpoints
-  value: {}
+  value:
+    simple: AdminPC
   required: false
   description: CSV of critical endpoints.
 - key: CriticalGroups
@@ -1284,8 +1324,7 @@ inputs:
   description: Endpoints to check against the CriticalEndpoints list.
 outputs:
 - contextPath: Severities.CriticalAssetsSeverity
-  description: The score returned by the Calculate Severity - Critical Assets v2
-    playbook.
+  description: The score returned by the Calculate Severity - Critical Assets v2 playbook.
   type: number
 - contextPath: CriticalAssets
   description: All critical assets involved in the incident.

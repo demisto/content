@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+# exit on errors
+set -e
+
+#
+# Bootstraps a development environment. 
+# 
+# This includes:
+# * install pre-commit hooks
+# * setup virtualenv 
+
+if [ "$1" == "-h" -o "$1" == "--help" ]; then
+    cat << EOF
+Setup development environment:
+* install pre-commit hooks (set NO_HOOKS=1 to skip)
+* setup venv virtualenv (set NO_VENV=1 to skip)
+EOF
+exit 0
+fi
+
+if [ ! "$PWD" == "$(git rev-parse --show-toplevel)" ]; then
+    cat >&2 <<__EOF__
+ERROR: this script must be run at the root of the source tree
+__EOF__
+    exit 1
+fi
+
+HOOKS_DIR="${PWD}/.hooks"
+GIT_HOOKS_DIR="${PWD}/.git/hooks"
+
+if [ -n "$NO_HOOKS" ]; then
+    echo "Skipping hooks setup as environment varialbe NO_HOOKS is set"
+else
+    if [ ! -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
+        echo "Installing 'pre-commit' hooks"
+        ln -s "${HOOKS_DIR}/pre-commit" "${GIT_HOOKS_DIR}/pre-commit"
+    else        
+        echo "Skipping install of pre-commit hook as it already exists."
+        echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-commit' and then run this script again."        
+    fi
+fi
+
+echo "======================="
+
+if [ -n "$NO_VENV" ]; then
+    echo "Skipping venv setup as environment varialbe NO_VENV is set"
+else
+    if [ ! -e "${PWD}/venv" ]; then
+        echo "Initializing virtual env..."
+        if ! command -v virtualenv >/dev/null 2>&1; then
+            echo "ERROR: virtualenv is missing. Please install using: pip install virtualenv" 1>&2
+            exit 1
+        fi
+        if ! command -v python2 >/dev/null 2>&1; then
+            echo "ERROR: python2 is missing. Please make sure you have Python 2 installed on your system" 1>&2
+            exit 1
+        fi
+        if ! command -v python3 >/dev/null 2>&1; then
+            echo "ERROR: python3 is missing. Please make sure you have Python 3 installed on your system" 1>&2
+            exit 1
+        fi
+        virtualenv -p python3 venv
+        virtualenv -p python2 venv
+        echo "# set PIPENV_IGNORE_VIRTUALENVS=1 so when setting up pipenv environments it doesn't use this one" >> venv/bin/activate
+        echo "export PIPENV_IGNORE_VIRTUALENVS=1" >> venv/bin/activate
+        echo "Done setting up python2/3 virtual env. Installing dependencies..."
+        venv/bin/pip2 install -r dev-requirements-py2.txt
+        venv/bin/pip3 install -r dev-requirements-py3.txt
+        echo "=========================="
+        echo "Done setting up virtualenv at directory 'venv'"
+        echo "Activate the venv by running: . ./venv/bin/activate"
+        echo "Deactivate by running: deactivate"        
+    else
+        echo "Skipping virtual env setup as directory ${PWD}/venv exists."
+        echo "If you want to re-install: 'rm -r ${PWD}/venv' and then run this script again." 
+    fi
+fi
+

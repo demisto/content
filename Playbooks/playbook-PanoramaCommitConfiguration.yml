@@ -2,7 +2,7 @@ id: PanoramaCommitConfiguration
 version: -1
 name: PanoramaCommitConfiguration
 fromversion: 4.0.0
-description: "Deprecated-Commit PAN-OS Panorama or Firewall Configuration.\nIf specified
+description: "DEPRECATED - Use PAN-OS Commit Configuration instead.\nIf specified
   as Panorama, will also push the Policies to the specified Device Group in the instance. (please use pan-os-commit-configuration instead)"
 starttaskid: "0"
 tasks:

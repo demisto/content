@@ -15,10 +15,32 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+- display: Select which attribute data fields of the event will be saved to context. Leave empty to select all attributes.
+  name: context_select
+  options:
+  - Category
+  - Comment
+  - Deleted
+  - DisableCorrelation
+  - Distribution
+  - EventID
+  - Galaxy
+  - ID
+  - ObjectID
+  - ObjectRelation
+  - ShadowAttribute
+  - SharingGroupID
+  - Timestamp
+  - ToIDs
+  - Type
+  - UUID
+  - Value
+  required: false
+  type: 16
 description: Malware information sharing platform and threat sharing.
 display: MISP V2
 name: MISP V2
@@ -50,10 +72,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Supply a tag name to include a tag in the results. To exclude a
-        tag, prepend the tage name it with a '!'. You can also chain several tag commands
-        together with the '&&' operator. Note that you must use semicolors ";"" in
-        the tag search. You cannot use colons ":".
+      description: 'The tag to include in the results. To exclude a tag, prefix the
+        tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":".  To use
+        a list of tags separate them by ",". To chain logical operators use ";". For
+        example, "AND:tag1,tag2;OR:tag3".'
       isArray: false
       name: tags
       required: false
@@ -297,7 +319,7 @@ script:
     - default: true
       description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You
         can pass CSV values to retrieve multiple responses.
-      isArray: false
+      isArray: true
       name: file
       required: false
       secret: false
@@ -328,15 +350,15 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
   - arguments:
     - default: true
       description: URL to check
-      isArray: false
+      isArray: true
       name: url
       required: false
       secret: false
@@ -355,13 +377,13 @@ script:
       description: A description of the malicious URL.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -369,7 +391,7 @@ script:
   - arguments:
     - default: true
       description: IP address to check
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
@@ -388,16 +410,16 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
   - arguments:
     - default: false
@@ -1923,9 +1945,11 @@ script:
       type: String
   dockerimage: demisto/pymisp:1.0.0.52
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - MISP V2 Test

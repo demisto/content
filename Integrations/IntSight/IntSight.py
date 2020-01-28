@@ -1,11 +1,5 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-import requests
-import json
-import base64
-import sys
-from datetime import datetime
+
 reload(sys)
 sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
 
@@ -23,16 +17,16 @@ if not demisto.getParam('proxy'):
 
 VALIDATE_CERT = not demisto.params().get('insecure', True)
 
-id_and_api_key = demisto.getParam('credentials')['identifier'] + ':' + demisto.getParam('credentials')['password']
-encoded_auth_key = base64.b64encode(id_and_api_key.encode("utf-8"))
-mssp_account_id = demisto.getParam('mssp_sub_account_id')
+ID_AND_API_KEY = demisto.getParam('credentials')['identifier'] + ':' + demisto.getParam('credentials')['password']
+ENCODED_AUTH_KEY = base64.b64encode(ID_AND_API_KEY.encode("utf-8"))
+MSSP_ACCOUNT_ID = demisto.getParam('mssp_sub_account_id')
 
-HEADERS = {'Authorization': 'Basic {}'.format(encoded_auth_key.decode()), 'Content-Type': 'application/json',
+HEADERS = {'Authorization': 'Basic {}'.format(ENCODED_AUTH_KEY.decode()), 'Content-Type': 'application/json',
            'Account-Id': demisto.getParam('credentials')['identifier']}
 
 # Change the Account-Id to the sub account id, so all actions will be on the sub account.
-if mssp_account_id:
-    HEADERS['Account-Id'] = mssp_account_id
+if MSSP_ACCOUNT_ID:
+    HEADERS['Account-Id'] = MSSP_ACCOUNT_ID
 
 IOC_TYPE_TO_DBOT_TYPE = {
     'IpAddresses': 'ip',
@@ -50,26 +44,34 @@ SEVERITY_LEVEL = {
 }
 
 
-def req(method, path, json_data=None, params=None, json_response=False):
+def http_request(method, path, json_data=None, params=None, json_response=False):
     """
     Send the request to IntSights and return the JSON response
     """
-    r = requests.request(method, URL + path, headers=HEADERS, json=json_data, params=params, verify=VALIDATE_CERT)
+    try:
+        response = requests.request(method, URL + path, headers=HEADERS, json=json_data,
+                                    params=params, verify=VALIDATE_CERT)
+    except requests.exceptions.SSLError:
+        raise Exception('Connection error in the API call to IntSights.\nCheck your not secure parameter.')
+    except requests.ConnectionError:
+        raise Exception('Connection error in the API call to IntSights.\nCheck your Server URL parameter.')
 
-    if r.status_code < 200 or r.status_code > 299:
-        if not (r.text == 'SeverityNotChanged' or r.text == 'TagExist' or r.text == 'IocBlocklistStatusNotChanged'):
-            return_error('Error in API call to IntSights service %s - [%d] %s' % (path, r.status_code, r.text))
+    if response.status_code < 200 or response.status_code > 299:
+        if not (response.text == 'SeverityNotChanged' or response.text == 'TagExist'
+                or response.text == 'IocBlocklistStatusNotChanged'):
+            return_error('Error in API call to IntSights service %s - [%d] %s' %
+                         (path, response.status_code, response.text))
 
-    if r.status_code == 204:
+    if response.status_code == 204:
         return []  # type: ignore
 
     if json_response:
         try:
-            return r.json()
+            return response.json()
         except ValueError:
-            return_error('Error in API call to IntSights service - check your configured URL address')
+            raise Exception('Error in API call to IntSights service - check your configured URL address')
 
-    return r.text
+    return response
 
 
 def convert_iso_string_to_python_date(date_in_iso_format):
@@ -131,11 +133,11 @@ def update_params_dict_according_to_delta_arg(params, time_delta_in_days_int):
     return params
 
 
-def handle_filters(foundDateFrom=None):
+def handle_filters(found_date_from=None):
     """
     Apply filters to alert list
     """
-    argsConversion = {
+    args_camel_case = {
         'alert-type': 'alertType',
         'source-type': 'sourceType',
         'network-type': 'networkType',
@@ -153,29 +155,28 @@ def handle_filters(foundDateFrom=None):
         'value': 'iocValue',
     }
     params = {}
-    for k in demisto.args():
-        if demisto.getArg(k):
-            params[argsConversion.get(k) or k] = demisto.getArg(k)
+    for key in demisto.args():
+        if demisto.getArg(key):
+            params[args_camel_case.get(key) or key] = demisto.getArg(key)
     if demisto.getArg('time-delta'):
         time_delta_in_days = demisto.getArg('time-delta')
         update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
-    elif foundDateFrom:
-        params['foundDateFrom'] = foundDateFrom
+    elif found_date_from:
+        params['foundDateFrom'] = found_date_from
     return params
 
 
 def get_alerts_helper(params):
     demisto.info("Executing get_alerts with params: {}".format(params))
+    response = http_request('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
 
-    resp = req('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
-
-    alerts_HR = []
-    alerts_ctx = []
-    for alert_id in resp:
-        alert_informationHR, alert_informationCtx = get_alert_by_id_helper(alert_id)
-        alerts_HR.append(alert_informationHR)
-        alerts_ctx.append(alert_informationCtx)
-    return alerts_HR, alerts_ctx
+    alerts_human_readable = []
+    alerts_context = []
+    for alert_id in response:
+        alert_human_readable, alert_context = get_alert_by_id_helper(alert_id)
+        alerts_human_readable.append(alert_human_readable)
+        alerts_context.append(alert_context)
+    return alerts_human_readable, alerts_context
 
 
 def extract_mail(replies):
@@ -187,20 +188,20 @@ def extract_mail(replies):
 
 
 def extract_remediation(remidiations):
-    remdies = []
+    remedies = []
     string_format = "{0} - Status: {1}"
-    for remdy in remidiations:
-        remdies.append(string_format.format(remdy.get('Value'), remdy.get('Status')))
+    for remedy in remidiations:
+        remedies.append(string_format.format(remedy.get('Value'), remedy.get('Status')))
 
-    return '\n'.join(remdies)
+    return '\n'.join(remedies)
 
 
 def hash_identifier(hash_val):
     if md5Regex.match(hash_val):
         return 'MD5'
-    elif sha1Regex.match(hash_val):
+    if sha1Regex.match(hash_val):
         return 'SHA1'
-    elif sha256Regex.match(hash_val):
+    if sha256Regex.match(hash_val):
         return 'SHA256'
     return 'Unknown'
 
@@ -217,45 +218,44 @@ def get_alerts():
     """
     Gets all alerts and returns as a list.
     """
-    alerts_HR, alerts_ctx = get_alerts_helper(handle_filters())
-
+    alerts_human_readable, alerts_context = get_alerts_helper(handle_filters())
+    headers = ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
+               'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags',
+               'Description', 'Title', 'TakedownStatus', 'SubType']
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alerts_ctx},
-        'Contents': alerts_ctx,
-        'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_HR,
-                                         ['ID', 'Severity', 'Type', 'FoundDate', 'SourceType', 'SourceURL',
-                                          'SourceEmail', 'SourceNetworkType', 'IsClosed', 'IsFlagged', 'Images', 'Tags',
-                                          'Description', 'Title', 'TakedownStatus', 'SubType'], removeNull=False),
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alerts_context},
+        'Contents': alerts_context,
+        'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_human_readable, headers=headers, removeNull=False),
         'ContentsFormat': formats['json']
     })
 
 
-def alert_to_readable(r, parse_tags):
+def alert_to_readable(alert, parse_tags):
     """
     Convert alert to readable format
     """
 
     readable = {
-        'ID': demisto.get(r, '_id'),
-        'Severity': demisto.get(r, 'Details.Severity'),
-        'Type': demisto.get(r, 'Details.Type'),
-        'FoundDate': demisto.get(r, 'FoundDate'),
-        'SourceType': demisto.get(r, 'Details.Source.Type'),
-        'SourceURL': demisto.get(r, 'Details.Source.URL'),
-        'SourceEmail': demisto.get(r, 'Details.Source.Email'),
-        'SourceNetworkType': demisto.get(r, 'Details.Source.NetworkType'),
-        'IsClosed': demisto.get(r, 'IsClosed'),
-        'IsFlagged': demisto.get(r, 'IsFlagged'),
-        'Assets': demisto.get(r, 'Assets'),
-        'Images': demisto.get(r, 'Details.Images'),
-        'Description': demisto.get(r, 'Details.Description'),
-        'Title': demisto.get(r, 'Details.Title'),
-        'TakedownStatus': demisto.get(r, 'TakedownStatus'),
-        'SubType': demisto.get(r, 'Details.SubType')
+        'ID': demisto.get(alert, '_id'),
+        'Severity': demisto.get(alert, 'Details.Severity'),
+        'Type': demisto.get(alert, 'Details.Type'),
+        'FoundDate': demisto.get(alert, 'FoundDate'),
+        'SourceType': demisto.get(alert, 'Details.Source.Type'),
+        'SourceURL': demisto.get(alert, 'Details.Source.URL'),
+        'SourceEmail': demisto.get(alert, 'Details.Source.Email'),
+        'SourceNetworkType': demisto.get(alert, 'Details.Source.NetworkType'),
+        'IsClosed': demisto.get(alert, 'IsClosed'),
+        'IsFlagged': demisto.get(alert, 'IsFlagged'),
+        'Assets': demisto.get(alert, 'Assets'),
+        'Images': demisto.get(alert, 'Details.Images'),
+        'Description': demisto.get(alert, 'Details.Description'),
+        'Title': demisto.get(alert, 'Details.Title'),
+        'TakedownStatus': demisto.get(alert, 'TakedownStatus'),
+        'SubType': demisto.get(alert, 'Details.SubType')
     }
 
-    tags = demisto.get(r, 'Details.Tags')
+    tags = demisto.get(alert, 'Details.Tags')
     if parse_tags:
         readable['Tags'] = extract_tags(tags)
     else:
@@ -270,8 +270,8 @@ def get_alert_by_id_helper(alert_id):
     """
     Helper for getting details by ID
     """
-    r = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
-    return alert_to_readable(r, True), alert_to_readable(r, False)
+    response = http_request('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
+    return alert_to_readable(response, True), alert_to_readable(response, False)
 
 
 def get_alert_by_id():
@@ -297,8 +297,8 @@ def get_alert_image():
     Retrieves the alert image by image_id
     """
     image_id = demisto.getArg('image-id')
-    r = req('GET', 'public/v1/data/alerts/alert-image/' + image_id)
-    demisto.results(fileResult(image_id + '-image.jpeg', r.content))
+    response = http_request('GET', 'public/v1/data/alerts/alert-image/' + image_id)
+    demisto.results(fileResult(image_id + '-image.jpeg', response.content))
 
 
 def ask_analyst():
@@ -307,16 +307,16 @@ def ask_analyst():
     """
     alert_id = demisto.getArg('alert-id')
     question = demisto.getArg('question')
-    req('POST', 'public/v1/data/alerts/ask-the-analyst/' + alert_id, json_data={'Question': question})
+    http_request('POST', 'public/v1/data/alerts/ask-the-analyst/' + alert_id, json_data={'Question': question})
     question_details = {'ID': alert_id, 'Question': question}
+    title = 'IntSights Ask the Analyst: ' \
+            'Your question has been successfully sent to an analyst about the requested alert'
     demisto.results(
         {
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': question_details},
             'Contents': question_details,
-            'HumanReadable': tableToMarkdown(
-                'IntSights Ask the Analyst: Your question has been successfully sent to an analyst about the requested alert',
-                [question_details], ['ID', 'Question']),
+            'HumanReadable': tableToMarkdown(title, [question_details], ['ID', 'Question']),
             'ContentsFormat': formats['json']
         }
     )
@@ -327,41 +327,43 @@ def get_alert_activity():
     Retrieves the alert activity by alert-id
     """
     alert_id = demisto.getArg('alert-id')
-    r = req('GET', 'public/v1/data/alerts/activity-log/' + alert_id, json_response=True)
+    response = http_request('GET', 'public/v1/data/alerts/activity-log/' + alert_id, json_response=True)
 
-    human_readables = []
+    human_readable_arr = []
     alert = {'ID': alert_id, 'Activities': []}
-    for k in r:
+
+    for activity in response:
         alert['Activities'].append({
-            'ID': demisto.get(k, '_id'),
-            'Type': demisto.get(k, 'Type'),
-            'Initiator': demisto.get(k, 'Initiator'),
-            'CreatedDate': demisto.get(k, 'CreatedDate'),
-            'UpdateDate': demisto.get(k, 'UpdateDate'),
-            'RemediationBlocklistUpdate': demisto.get(k, 'AdditionalInformation.RemediationBlocklistUpdate'),
-            'AskTheAnalyst': {'Replies': demisto.get(k, 'AdditionalInformation.AskTheAnalyst.Replies')},
-            'Mail': {'Replies': demisto.get(k, 'AdditionalInformation.Mail.Replies')},
-            'ReadBy': demisto.get(k, 'ReadBy')
+            'ID': demisto.get(activity, '_id'),
+            'Type': demisto.get(activity, 'Type'),
+            'Initiator': demisto.get(activity, 'Initiator'),
+            'CreatedDate': demisto.get(activity, 'CreatedDate'),
+            'UpdateDate': demisto.get(activity, 'UpdateDate'),
+            'RemediationBlocklistUpdate': demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate'),
+            'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
+            'Mail': {'Replies': demisto.get(activity, 'AdditionalInformation.Mail.Replies')},
+            'ReadBy': demisto.get(activity, 'ReadBy')
         })
-        human_readables.append({
-            'ID': demisto.get(k, '_id'),
-            'Type': demisto.get(k, 'Type'),
-            'Initiator': demisto.get(k, 'Initiator'),
-            'CreatedDate': demisto.get(k, 'CreatedDate'),
-            'UpdateDate': demisto.get(k, 'UpdateDate'),
+        human_readable_arr.append({
+            'ID': demisto.get(activity, '_id'),
+            'Type': demisto.get(activity, 'Type'),
+            'Initiator': demisto.get(activity, 'Initiator'),
+            'CreatedDate': demisto.get(activity, 'CreatedDate'),
+            'UpdateDate': demisto.get(activity, 'UpdateDate'),
             'RemediationBlocklistUpdate': extract_remediation(
-                demisto.get(k, 'AdditionalInformation.RemediationBlocklistUpdate')),
-            'AskTheAnalyst': {'Replies': demisto.get(k, 'AdditionalInformation.AskTheAnalyst.Replies')},
-            'Mail': extract_mail(demisto.get(k, 'AdditionalInformation.Mail.Replies')),
-            'ReadBy': demisto.get(k, 'ReadBy')
+                demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate')),
+            'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
+            'Mail': extract_mail(demisto.get(activity, 'AdditionalInformation.Mail.Replies')),
+            'ReadBy': demisto.get(activity, 'ReadBy')
         })
+
+    headers = ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate',
+               'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
-        'Contents': r,
-        'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readables,
-                                         ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate',
-                                          'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']),
+        'Contents': response,
+        'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readable_arr, headers=headers),
         'ContentsFormat': formats['json']
     })
 
@@ -372,8 +374,9 @@ def change_severity():
     """
     alert_id = demisto.getArg('alert-id')
     severity = demisto.getArg('severity')
-    req('PATCH', 'public/v1/data/alerts/change-severity/' + alert_id, json_data={'Severity': severity})
+    http_request('PATCH', 'public/v1/data/alerts/change-severity/' + alert_id, json_data={'Severity': severity})
     severity_details = {'ID': alert_id, 'Severity': severity}
+
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': severity_details},
@@ -386,8 +389,8 @@ def change_severity():
 
 
 def get_assignee_id(assignee_email):
-    r = req('GET', 'public/v1/account/users-details', json_response=True)
-    for user in r:
+    response = http_request('GET', 'public/v1/account/users-details', json_response=True)
+    for user in response:
         if assignee_email == user.get('Email', ''):
             return user.get('_id')
 
@@ -407,7 +410,7 @@ def assign_alert():
     url = 'public/v1/data/alerts/assign-alert/' + alert_id
     if is_mssp:
         url += '?IsMssp=' + is_mssp
-    req('PATCH', url, json_data={'AssigneeID': assignee_id})
+    http_request('PATCH', url, json_data={'AssigneeID': assignee_id})
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': assign_details},
@@ -424,7 +427,7 @@ def unassign_alert():
     Unassign an alert
     """
     alert_id = demisto.getArg('alert-id')
-    req('PATCH', 'public/v1/data/alerts/unassign-alert/' + alert_id)
+    http_request('PATCH', 'public/v1/data/alerts/unassign-alert/' + alert_id)
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id}},
@@ -441,7 +444,7 @@ def close_alert():
     alert_id = demisto.getArg('alert-id')
     reason = demisto.getArg('reason')
     free_text = demisto.getArg('free-text')
-    is_hidden = demisto.getArg('is-hidden')
+    is_hidden = demisto.getArg('is-hidden') == 'True'
     rate = demisto.getArg('rate')
     close_details = {'ID': alert_id, 'Close Reason': reason, 'Closed FreeText': free_text, 'Closed Rate': rate,
                      'IsHidden': is_hidden}
@@ -452,12 +455,12 @@ def close_alert():
 
     if free_text:
         json_data['FreeText'] = free_text
-    if free_text:
+    if is_hidden:
         json_data['IsHidden'] = is_hidden
-    if free_text:
+    if rate:
         json_data['Rate'] = rate
 
-    req('PATCH', url, json_data)
+    http_request('PATCH', url, json_data)
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': close_details},
@@ -476,25 +479,25 @@ def send_mail():
     alert_id = demisto.getArg('alert-id')
     emails = argToList(demisto.getArg('emails'))
     content = demisto.getArg('content')
-    req('POST', 'public/v1/data/alerts/send-mail/' + alert_id, {'Emails': emails, 'Content': content})
-    ec = {
+    http_request('POST', 'public/v1/data/alerts/send-mail/' + alert_id, {'Emails': emails, 'Content': content})
+    context = {
         'ID': alert_id,
         'EmailID': emails,
         'Question': content
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
         'HumanReadable': 'Email with content (' + content + ') sent to emails',
         'ContentsFormat': formats['json']
     })
 
 
 def get_tag_id(alert_id, tag_name):
-    res = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
+    response = http_request('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
 
-    details = res.get('Details', {})
+    details = response.get('Details', {})
     tags = details.get('Tags', [])
     for tag in tags:
         if tag.get('Name', '') == tag_name:
@@ -509,19 +512,19 @@ def add_tag():
     """
     alert_id = demisto.getArg('alert-id')
     tag_name = demisto.getArg('tag-name')
-    req('PATCH', 'public/v1/data/alerts/add-tag/' + alert_id, json_data={'TagName': tag_name})
+    http_request('PATCH', 'public/v1/data/alerts/add-tag/' + alert_id, json_data={'TagName': tag_name})
     tag_info = {
         'TagName': tag_name,
         'ID': get_tag_id(alert_id, tag_name)
     }
-    ec = {
+    context = {
         'ID': alert_id,
         'Tags': tag_info
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
         'HumanReadable': 'Tag (' + tag_name + ') added to alert id: ' + alert_id,
         'ContentsFormat': formats['json']
     })
@@ -533,15 +536,15 @@ def remove_tag():
     """
     alert_id = demisto.getArg('alert-id')
     tag_id = demisto.getArg('tag-id')
-    req('PATCH', 'public/v1/data/alerts/remove-tag/' + alert_id, json_data={'TagID': tag_id})
-    ec = {
+    http_request('PATCH', 'public/v1/data/alerts/remove-tag/' + alert_id, json_data={'TagID': tag_id})
+    context = {
         'ID': alert_id,
         'Tags': {'ID': tag_id}
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
         'HumanReadable': 'Tag id: ' + tag_id + ' removed from alert id: ' + alert_id,
         'ContentsFormat': formats['json']
     })
@@ -553,60 +556,60 @@ def add_comment():
     """
     alert_id = demisto.getArg('alert-id')
     comment = demisto.getArg('comment')
-    req('PATCH', 'public/v1/data/alerts/add-comment/' + alert_id, json_data={'Comment': comment})
-    ec = {
+    http_request('PATCH', 'public/v1/data/alerts/add-comment/' + alert_id, json_data={'Comment': comment})
+    context = {
         'ID': alert_id,
         'Comment': comment
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
         'HumanReadable': 'Succesfully added comment "' + comment + '" to alert id: ' + alert_id,
         'ContentsFormat': formats['json']
     })
 
 
-def IOC_to_readable(r):
+def ioc_to_readable(ioc_data):
     """
     Convert IOC to readable format
     """
     ioc_context = {
-        'ID': demisto.get(r, '_id'),
-        'SourceID': demisto.get(r, 'SourceID'),
-        'AccountID': demisto.get(r, 'AccountID'),
-        'Type': demisto.get(r, 'Type'),
-        'Value': demisto.get(r, 'Value'),
-        'FirstSeen': demisto.get(r, 'FirstSeen'),
-        'LastSeen': demisto.get(r, 'LastSeen'),
-        'Domain': demisto.get(r, 'Domain'),
-        'Status': demisto.get(r, 'Status'),
-        'Severity': demisto.get(r, 'Severity'),
-        'SourceName': demisto.get(r, 'Source.Name'),
-        'SourceConfidence': demisto.get(r, 'Source.Confidence'),
-        'Flags': {'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa')},
+        'ID': demisto.get(ioc_data, '_id'),
+        'SourceID': demisto.get(ioc_data, 'SourceID'),
+        'AccountID': demisto.get(ioc_data, 'AccountID'),
+        'Type': demisto.get(ioc_data, 'Type'),
+        'Value': demisto.get(ioc_data, 'Value'),
+        'FirstSeen': demisto.get(ioc_data, 'FirstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'LastSeen'),
+        'Domain': demisto.get(ioc_data, 'Domain'),
+        'Status': demisto.get(ioc_data, 'Status'),
+        'Severity': demisto.get(ioc_data, 'Severity'),
+        'SourceName': demisto.get(ioc_data, 'Source.Name'),
+        'SourceConfidence': demisto.get(ioc_data, 'Source.Confidence'),
+        'Flags': {'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa')},
         'Enrichment': {
-            'Status': demisto.get(r, 'Enrichment.Status'),
-            'Data': demisto.get(r, 'Enrichment.Data'),
-            'Date': demisto.get(r, 'Enrichment.Data')  # Backwards compatability issue
+            'Status': demisto.get(ioc_data, 'Enrichment.Status'),
+            'Data': demisto.get(ioc_data, 'Enrichment.Data'),
+            'Date': demisto.get(ioc_data, 'Enrichment.Data')  # Backwards compatibility issue
         }
     }
     ioc_readable = {
-        'ID': demisto.get(r, '_id'),
-        'SourceID': demisto.get(r, 'SourceID'),
-        'AccountID': demisto.get(r, 'AccountID'),
-        'Type': demisto.get(r, 'Type'),
-        'Value': demisto.get(r, 'Value'),
-        'FirstSeen': demisto.get(r, 'FirstSeen'),
-        'LastSeen': demisto.get(r, 'LastSeen'),
-        'Domain': demisto.get(r, 'Domain'),
-        'Status': demisto.get(r, 'Status'),
-        'Severity': demisto.get(r, 'Severity').get('Value'),
-        'SourceName': demisto.get(r, 'Source.Name'),
-        'SourceConfidence': demisto.get(r, 'Source.Confidence'),
-        'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
-        'Enrichment Status': demisto.get(r, 'Enrichment.Status'),
-        'Enrichment Data': demisto.get(r, 'Enrichment.Data')
+        'ID': demisto.get(ioc_data, '_id'),
+        'SourceID': demisto.get(ioc_data, 'SourceID'),
+        'AccountID': demisto.get(ioc_data, 'AccountID'),
+        'Type': demisto.get(ioc_data, 'Type'),
+        'Value': demisto.get(ioc_data, 'Value'),
+        'FirstSeen': demisto.get(ioc_data, 'FirstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'LastSeen'),
+        'Domain': demisto.get(ioc_data, 'Domain'),
+        'Status': demisto.get(ioc_data, 'Status'),
+        'Severity': demisto.get(ioc_data, 'Severity').get('Value'),
+        'SourceName': demisto.get(ioc_data, 'Source.Name'),
+        'SourceConfidence': demisto.get(ioc_data, 'Source.Confidence'),
+        'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa'),
+        'Enrichment Status': demisto.get(ioc_data, 'Enrichment.Status'),
+        'Enrichment Data': demisto.get(ioc_data, 'Enrichment.Data')
     }
     dbot_score = {
         'Indicator': ioc_context['Value'],
@@ -646,14 +649,14 @@ def IOC_to_readable(r):
     return ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info
 
 
-def search_for_IOC():
+def search_for_ioc():
     """
     Search for IOC by value
     """
-    r = req('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
 
-    if r:
-        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(r)
+    if response:
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(response)
 
         demisto.results(
             {
@@ -666,7 +669,7 @@ def search_for_IOC():
                     'URL': url_info,
                     'File': hash_info
                 },
-                'Contents': r,
+                'Contents': response,
                 'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable],
                                                  ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen',
                                                   'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName',
@@ -695,9 +698,9 @@ def translate_severity(sev):
     """
     Translate alert severity to demisto
     """
-    if sev == 'High' or sev == 'Medium':
+    if sev in ['Medium', 'High']:
         return 3
-    elif sev == 'Low':
+    if sev == 'Low':
         return 2
     return 0
 
@@ -707,11 +710,12 @@ def fetch_incidents():
     Fetch incidents for Demisto
     """
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    lastRunObject = demisto.getLastRun()
-    if not lastRunObject and lastRunObject.get('time'):
+    last_run = demisto.getLastRun()
+    demisto.info("IntSight fetch last run time is: {}".format(str(last_run)))
+    if not last_run or 'time' not in last_run:
         fetch_delta, _ = parse_date_range(demisto.params().get('fetch_delta', DEFAULT_TIME_RANGE), to_timestamp=True)
     else:
-        fetch_delta = lastRunObject.get('time')
+        fetch_delta = last_run.get('time')
 
     alert_type = demisto.getParam('type')
     min_severity_level = demisto.params().get('severity_level', 'All')
@@ -719,9 +723,9 @@ def fetch_incidents():
         raise Exception("Minimum Alert severity level to fetch incidents incidents from, allowed values are: ''All'',"
                         " ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)")
 
-    alerts_HR, alerts_ctx = get_alerts_helper(handle_filters(fetch_delta))
+    _, alerts_context = get_alerts_helper(handle_filters(fetch_delta))
     incidents = []
-    for alert in alerts_ctx:
+    for alert in alerts_context:
         if SEVERITY_LEVEL[min_severity_level] <= SEVERITY_LEVEL[alert.get('Severity', 'Low')]:
             if not alert_type or alert_type.lower() == alert.get('Type', '').lower():
                 incidents.append({
@@ -738,7 +742,7 @@ def get_iocs():
     """
     Gets all IOCs with the given filters
     """
-    r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
     domains = []
     ip_infos = []
     url_infos = []
@@ -746,8 +750,9 @@ def get_iocs():
     dbot_scores = []
     iocs_context = []
     iocs_readable = []
-    for k in r:
-        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(k)
+
+    for indicator in response:
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(indicator)
         iocs_context.append(ioc_context)
         iocs_readable.append(ioc_readable)
         dbot_scores.append(dbot_score)
@@ -755,6 +760,10 @@ def get_iocs():
         ip_infos.append(ip_info)
         url_infos.append(url_info)
         hash_infos.append(hash_info)
+
+    headers = ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen',
+               'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence',
+               'IsInAlexa', 'Enrichment Status', 'Enrichment Data']
     demisto.results(
         {
             'Type': entryTypes['note'],
@@ -763,14 +772,11 @@ def get_iocs():
                 'DBotScore': dbot_scores,
                 'Domain': domains,
                 'IP': ip_infos,
-                'URL': url_info,
-                'File': hash_info
+                'URL': url_infos,
+                'File': hash_infos
             },
-            'Contents': r,
-            'HumanReadable': tableToMarkdown('IOC Information', iocs_readable,
-                                             ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen',
-                                              'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence',
-                                              'IsInAlexa', 'Enrichment Status', 'Enrichment Data']),
+            'Contents': response,
+            'HumanReadable': tableToMarkdown('IOC Information', t=iocs_readable, headers=headers),
             'ContentsFormat': formats['json']
         }
     )
@@ -781,16 +787,17 @@ def takedown_request():
     Request alert takedown
     """
     alert_id = demisto.getArg('alert-id')
-    req('PATCH', 'public/v1/data/alerts/takedown-request/' + alert_id)
-    ec = {
+    http_request('PATCH', 'public/v1/data/alerts/takedown-request/' + alert_id)
+    context = {
         'ID': alert_id,
     }
+    human_readable = '### IntSights Alert Takedown\n' \
+                     'The Alert Takedown request has been sent successfully for {}'.format(str(alert_id))
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
-        'HumanReadable': '### IntSights Alert Takedown\n' + 'The Alert Takedown request has been sent successfully for ' + str(
-            alert_id),
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
+        'HumanReadable': human_readable,
         'ContentsFormat': formats['json']
     })
 
@@ -800,16 +807,16 @@ def get_alert_takedown_status():
     Get an alert's takedown status
     """
     alert_id = demisto.getArg('alert-id')
-    r = req('GET', 'public/v1/data/alerts/takedown-status/' + alert_id)
-    ec = {
+    response = http_request('GET', 'public/v1/data/alerts/takedown-status/' + alert_id)
+    context = {
         'ID': alert_id,
-        'TakedownStatus': r.text
+        'TakedownStatus': response.text
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
-        'HumanReadable': tableToMarkdown('IntSights Alert Takedown Status', [ec], ['ID', 'TakedownStatus']),
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
+        'HumanReadable': tableToMarkdown('IntSights Alert Takedown Status', [context], ['ID', 'TakedownStatus']),
         'ContentsFormat': formats['json']
     })
 
@@ -822,13 +829,13 @@ def update_ioc_blocklist_status():
     if len(types) != len(values) or len(types) != len(statuses):
         return_error('The lists must be of equal length. For each IOC, provide an entry in each list.')
     data = []
-    for i in range(len(types)):
+    for count, type_ in enumerate(types):
         data.append({
-            'Type': types[i],
-            'Value': values[i],
-            'BlocklistStatus': statuses[i]
+            'Type': type_,
+            'Value': values[count],
+            'BlocklistStatus': statuses[count]
         })
-    req('PATCH', 'public/v1/data/alerts/change-iocs-blocklist-status/' + alert_id, json_data={'Iocs': data})
+    http_request('PATCH', 'public/v1/data/alerts/change-iocs-blocklist-status/' + alert_id, json_data={'Iocs': data})
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': statuses}},
@@ -841,20 +848,20 @@ def update_ioc_blocklist_status():
 
 def get_ioc_blocklist_status():
     alert_id = demisto.getArg('alert-id')
-    r = req('GET', 'public/v1/data/alerts/blocklist-status/' + alert_id, json_response=True)
+    response = http_request('GET', 'public/v1/data/alerts/blocklist-status/' + alert_id, json_response=True)
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {
-            'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': [s.get('Status') for s in r]}},
-        'Contents': r,
-        'HumanReadable': tableToMarkdown('IntSights Blocklist Status for ' + alert_id, r, ['Status']),
+            'IntSights.Alerts(val.ID === obj.ID)': {'ID': alert_id, 'Status': [ioc.get('Status') for ioc in response]}},
+        'Contents': response,
+        'HumanReadable': tableToMarkdown('IntSights Blocklist Status for ' + alert_id, response, ['Status']),
         'ContentsFormat': formats['json']
     })
 
 
 def get_mssp_sub_accounts():
     account_id = demisto.getParam('credentials')['identifier']
-    accounts = req('GET', 'public/v1/mssp/customers', json_response=True)
+    accounts = http_request('GET', 'public/v1/mssp/customers', json_response=True)
     if not accounts:
         return_error("intsights-mssp-get-sub-accounts failed to return data.")
 
@@ -867,14 +874,14 @@ def get_mssp_sub_accounts():
         return_error('Current MSSP Account has no sub accounts.')
 
     account_ids = [i["ID"] for i in accounts]
-    if mssp_account_id not in account_ids:
+    if MSSP_ACCOUNT_ID not in account_ids:
         demisto.log("[DEBUG] - MSSP sub accounts:" + str(accounts))
-        return_error('Entered sub account id ({}) is not part of this mssp account'.format(mssp_account_id))
+        return_error('Entered sub account id ({}) is not part of this mssp account'.format(MSSP_ACCOUNT_ID))
 
     for i, account in enumerate(account_ids):
         # Call account
         HEADERS['Account-Id'] = account
-        account_ua = req('GET', 'public/v1/account/used-assets', json_response=True)
+        account_ua = http_request('GET', 'public/v1/account/used-assets', json_response=True)
 
         if not account_ua:
             continue
@@ -884,18 +891,18 @@ def get_mssp_sub_accounts():
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.MsspAccount(val.ID === obj.ID)': accounts},
-        'HumanReadable': tableToMarkdown('IntSights MSSP accounts used assets ' + account_id, [a for a in accounts],
+        'HumanReadable': tableToMarkdown('IntSights MSSP accounts used assets ' + account_id, accounts,
                                          ["ID", 'CompanyName', "Status", "AssetsLimit", "AssetsCount"]),
         'Contents': accounts,
         'ContentsFormat': formats['json']
     })
 
     # Restore the header
-    HEADERS['Account-Id'] = mssp_account_id
+    HEADERS['Account-Id'] = MSSP_ACCOUNT_ID
 
 
 def test_module():
-    req('GET', 'public/v1/api/version')
+    http_request('GET', 'public/v1/api/version')
     if demisto.params().get('isFetch'):
         min_severity_level = demisto.params().get('severity_level', 'All')
         if min_severity_level not in SEVERITY_LEVEL:
@@ -905,49 +912,52 @@ def test_module():
     demisto.results('ok')
 
 
-if demisto.command() == 'test-module':
-    test_module()
-elif demisto.command() == 'intsights-mssp-get-sub-accounts':
-    get_mssp_sub_accounts()
-elif demisto.command() == 'intsights-get-alerts':
-    get_alerts()
-elif demisto.command() == 'intsights-get-alert-image':
-    get_alert_image()
-elif demisto.command() == 'intsights-get-alert-activities':
-    get_alert_activity()
-elif demisto.command() == 'intsights-assign-alert':
-    assign_alert()
-elif demisto.command() == 'intsights-unassign-alert':
-    unassign_alert()
-elif demisto.command() == 'intsights-send-mail':
-    send_mail()
-elif demisto.command() == 'intsights-ask-the-analyst':
-    ask_analyst()
-elif demisto.command() == 'intsights-add-tag-to-alert':
-    add_tag()
-elif demisto.command() == 'intsights-remove-tag-from-alert':
-    remove_tag()
-elif demisto.command() == 'intsights-add-comment-to-alert':
-    add_comment()
-elif demisto.command() == 'intsights-update-alert-severity':
-    change_severity()
-elif demisto.command() == 'intsights-get-alert-by-id':
-    get_alert_by_id()
-elif demisto.command() == 'intsights-get-ioc-by-value':
-    search_for_IOC()
-elif demisto.command() == 'intsights-get-iocs':
-    get_iocs()
-elif demisto.command() == 'intsights-alert-takedown-request':
-    takedown_request()
-elif demisto.command() == 'fetch-incidents':
-    fetch_incidents()
-elif demisto.command() == 'intsights-get-alert-takedown-status':
-    get_alert_takedown_status()
-elif demisto.command() == 'intsights-get-ioc-blocklist-status':
-    get_ioc_blocklist_status()
-elif demisto.command() == 'intsights-update-ioc-blocklist-status':
-    update_ioc_blocklist_status()
-elif demisto.command() == 'intsights-close-alert':
-    close_alert()
-else:
-    return_error('Unrecognized command: ' + demisto.command())
+try:
+    if demisto.command() == 'test-module':
+        test_module()
+    elif demisto.command() == 'fetch-incidents':
+        fetch_incidents()
+    elif demisto.command() == 'intsights-mssp-get-sub-accounts':
+        get_mssp_sub_accounts()
+    elif demisto.command() == 'intsights-get-alerts':
+        get_alerts()
+    elif demisto.command() == 'intsights-get-alert-image':
+        get_alert_image()
+    elif demisto.command() == 'intsights-get-alert-activities':
+        get_alert_activity()
+    elif demisto.command() == 'intsights-assign-alert':
+        assign_alert()
+    elif demisto.command() == 'intsights-unassign-alert':
+        unassign_alert()
+    elif demisto.command() == 'intsights-send-mail':
+        send_mail()
+    elif demisto.command() == 'intsights-ask-the-analyst':
+        ask_analyst()
+    elif demisto.command() == 'intsights-add-tag-to-alert':
+        add_tag()
+    elif demisto.command() == 'intsights-remove-tag-from-alert':
+        remove_tag()
+    elif demisto.command() == 'intsights-add-comment-to-alert':
+        add_comment()
+    elif demisto.command() == 'intsights-update-alert-severity':
+        change_severity()
+    elif demisto.command() == 'intsights-get-alert-by-id':
+        get_alert_by_id()
+    elif demisto.command() == 'intsights-get-ioc-by-value':
+        search_for_ioc()
+    elif demisto.command() == 'intsights-get-iocs':
+        get_iocs()
+    elif demisto.command() == 'intsights-alert-takedown-request':
+        takedown_request()
+    elif demisto.command() == 'intsights-get-alert-takedown-status':
+        get_alert_takedown_status()
+    elif demisto.command() == 'intsights-get-ioc-blocklist-status':
+        get_ioc_blocklist_status()
+    elif demisto.command() == 'intsights-update-ioc-blocklist-status':
+        update_ioc_blocklist_status()
+    elif demisto.command() == 'intsights-close-alert':
+        close_alert()
+    else:
+        raise Exception('Unrecognized command: ' + demisto.command())
+except Exception as err:
+    return_error(str(err))

@@ -1,17 +1,17 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import requests
 import json
 import shutil
-from typing import Dict, Any
+from typing import List, Dict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
-
 SERVER_URL = demisto.params()['serverUrl'].rstrip('/')
 API_URL = SERVER_URL + '/api'
 CLIENT_ID = demisto.params()['client_id']
@@ -132,15 +132,31 @@ TYPE_ID_TO_FILE_TYPE = {
     24: 'Whitepaper'
 }
 
+INDICATOR_TYPES = {
+    'File Path': 'file',
+    'File': 'file',
+    'MD5': 'file',
+    'SHA-1': 'file',
+    'SHA-256': 'file',
+    'SHA-384': 'file',
+    'SHA-512': 'file',
+    'IP Address': 'ip',
+    'IPv6 Address': 'ip',
+    'URL': 'url',
+    'URL Path': 'url',
+    'FQDN': 'domain',
+    'Email Address': 'email',
+}
+
 TABLE_HEADERS = {
     'indicator': ['ID', 'Type', 'Value', 'Description', 'Status',
                   'TQScore', 'CreatedAt', 'UpdatedAt', 'URL'],
     'adversary': ['ID', 'Name', 'CreatedAt', 'UpdatedAt', 'URL'],
     'event': ['ID', 'Type', 'Title', 'Description', 'Occurred', 'CreatedAt', 'UpdatedAt', 'URL'],
-    'attachment': ['ID', 'Name', 'Title', 'FileType', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
+    'attachment': ['ID', 'Name', 'Title', 'Type', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
                    'MalwareLocked', 'ContentType', 'URL'],
     'attributes': ['ID', 'Name', 'Value'],
-    'sources': ['ID', 'Name']
+    'sources': ['ID', 'Name', 'TLP']
 }
 
 OBJ_DIRECTORY = {
@@ -162,7 +178,6 @@ CONTEXT_PATH = {
     'event': 'ThreatQ.Event(val.ID === obj.ID)',
     'attachment': 'ThreatQ.File(val.ID === obj.ID)'
 }
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -208,8 +223,15 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
         if not files:
             params = json.dumps(params)
 
-    response = requests.request(method, API_URL + url_suffix, data=params, headers=api_call_headers,
-                                verify=USE_SSL, files=files, allow_redirects=allow_redirects)
+    response = requests.request(
+        method,
+        API_URL + url_suffix,
+        data=params,
+        headers=api_call_headers,
+        verify=USE_SSL,
+        files=files,
+        allow_redirects=allow_redirects
+    )
 
     if response.status_code >= 400:
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
@@ -260,14 +282,14 @@ def make_create_object_request(obj_type, params):
     # For some reason, only while creating an indicator, the response data is a list of dicts with size 1.
     # Creating other objects simply returns one dict, as expected.
     data = res['data'][0] if obj_type == 'indicator' else res['data']
-    raw = data_to_demisto_format(data, obj_type)
+    data = data_to_demisto_format(data, obj_type)
 
-    entry_context = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)}
+    entry_context = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
 
     readable_title = '{0} was successfully created.'.format(obj_type.title())
-    readable = build_readable(readable_title, obj_type, raw)
+    readable = build_readable(readable_title, obj_type, data)
 
-    return_outputs(readable, entry_context, raw)
+    return_outputs(readable, entry_context, res)
 
 
 def make_edit_request_for_an_object(obj_id, obj_type, params):
@@ -280,13 +302,13 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
 
     res = tq_request('PUT', url_suffix, params)
 
-    raw = data_to_demisto_format(res['data'], obj_type)
-    entry_context = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)}
+    data = data_to_demisto_format(res['data'], obj_type)
+    entry_context = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
 
     readable_title = 'Successfully edited {0} with ID {1}'.format(obj_type, obj_id)
-    readable = build_readable(readable_title, obj_type, raw)
+    readable = build_readable(readable_title, obj_type, data)
 
-    return_outputs(readable, entry_context, raw)
+    return_outputs(readable, entry_context, res)
 
 
 def make_indicator_reputation_request(indicator_type, value, generic_context):
@@ -294,20 +316,28 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
     url_suffix = '/search?query={0}&limit=1'.format(value)
     res = tq_request('GET', url_suffix)
 
-    raw_context = {}  # type: Dict[str, Any]
-    if res['data'] and res['data'][0].get('value') == value:  # ThreatQ returns results whose prefixes match the query
-        # Search for detailed information about the indicator
-        url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0].get('id'))
-        res = tq_request('GET', url_suffix)
-        raw_context = indicator_data_to_demisto_format(res['data'])
+    indicators: List[Dict] = []
+    for obj in res.get('data', []):
+        if obj.get('object') == 'indicator':
+            # Search for detailed information about the indicator
+            url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(obj.get('id'))
+            res = tq_request('GET', url_suffix)
+            indicators.append(indicator_data_to_demisto_format(res['data']))
 
-    dbot_context = create_dbot_context(value, indicator_type, raw_context.get('TQScore', -1))
-    entry_context = set_indicator_entry_context(indicator_type, raw_context, dbot_context, generic_context)
+    indicators = indicators or [{'Value': value, 'TQScore': -1}]
+    entry_context = aggregate_search_results(
+        indicators=indicators,
+        default_indicator_type=indicator_type,
+        generic_context=generic_context
+    )
 
-    readable_title = 'Search results for {0} {1}'.format(indicator_type, value)
-    readable = build_readable(readable_title, 'indicator', raw_context)
+    readable = build_readable(
+        readable_title=f'Search results for {indicator_type} {value}',
+        obj_type='indicator',
+        data=indicators
+    )
 
-    return_outputs(readable, entry_context, raw_context)
+    return_outputs(readable, entry_context, res)
 
 
 def create_dbot_context(indicator, ind_type, ind_score):
@@ -342,7 +372,7 @@ def create_dbot_context(indicator, ind_type, ind_score):
     }
 
     ret = {
-        'Vendor': 'ThreatQ',
+        'Vendor': 'ThreatQ v2',
         'Indicator': indicator,
         'Type': ind_type
     }
@@ -399,7 +429,8 @@ def sources_to_demisto_format(lst):
         return None
     return [{
         'Name': elem.get('name'),
-        'ID': elem.get('pivot', {}).get('id')
+        'ID': elem.get('pivot', {}).get('id'),
+        'TLP': elem.get('tlp_id'),
     } for elem in lst]
 
 
@@ -486,7 +517,7 @@ def adversary_data_to_demisto_format(data):
         'UpdatedAt': data.get('updated_at'),
         'CreatedAt': data.get('created_at'),
         'Name': data.get('name'),
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{0}/adversaries/{1}/details'.format(SERVER_URL, data.get('id')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
     }
@@ -501,7 +532,7 @@ def event_data_to_demisto_format(data):
         'Title': data.get('title'),
         'Occurred': data.get('happened_at'),
         'Type': TYPE_ID_TO_EVENT_TYPE[data.get('type_id')],
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{0}/events/{1}/details'.format(SERVER_URL, data.get('id')),
         'Description': clean_html_from_string(data.get('description')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
@@ -517,11 +548,12 @@ def file_data_to_demisto_format(data):
         'Size': data.get('file_size'),
         'MD5': data.get('hash'),
         'Type': TYPE_ID_TO_FILE_TYPE[data.get('type_id')],
+        'URL': '{0}/files/{1}/details'.format(SERVER_URL, data.get('id')),
         'Name': data.get('name'),
         'Title': data.get('title'),
         'Description': data.get('description'),
         'ContentType': content_type_to_demisto_format(data.get('content_type_id')),
-        'MalwareLocked': malware_locked_to_demisto_format(data.get('content_type_id')),
+        'MalwareLocked': malware_locked_to_demisto_format(data.get('malware_locked')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
     }
@@ -542,23 +574,31 @@ def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
         return_error('Command failed - objects are not related.')
 
 
-def add_malicious_data(generic_context, tq_score):
-    generic_context['Malicious'] = {
-        'Vendor': 'ThreatQ',
-        'Description': 'Score from ThreatQ is {0}'.format(tq_score)
+def get_malicious_data(tq_score):
+    malicious_data = {
+        'Malicious': {
+            'Vendor': 'ThreatQ v2',
+            'Description': 'Score from ThreatQ is {0}'.format(tq_score)
+        }
     }
+    return malicious_data
 
 
-def set_indicator_entry_context(indicator_type, raw, dbot, generic):
-    if dbot.get('Score') == 3:
-        add_malicious_data(generic, raw.get('TQScore', -1))
+def set_indicator_entry_context(indicator_type, indicator, generic_context):
+    dbot_context = create_dbot_context(indicator.get('Value'), indicator_type, indicator.get('TQScore', -1))
 
-    ec = {
-        outputPaths[indicator_type]: generic,
-        'DBotScore': dbot
-    }
-    if raw:
-        ec[CONTEXT_PATH['indicator']] = raw
+    indicator_type = INDICATOR_TYPES.get(indicator_type) or indicator_type
+    generic_context_path = outputPaths.get(indicator_type, 'Indicator(val.ID && val.ID == obj.ID)')
+    integration_context_path = CONTEXT_PATH['indicator']
+
+    if dbot_context.get('Score') == 3:
+        malicious_data = get_malicious_data(indicator.get('TQScore', -1))
+        generic_context.update(malicious_data)
+
+    ec = {generic_context_path: generic_context, 'DBotScore': dbot_context}
+    if indicator:
+        ec[integration_context_path] = indicator
+
     return ec
 
 
@@ -581,21 +621,47 @@ def build_readable_for_search_by_name(indicator_context, event_context, adversar
 
 def build_readable(readable_title, obj_type, data, metadata=None):
     if isinstance(data, dict):  # One object data
-        readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
-                                   headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
+        readable = tableToMarkdown(
+            name=readable_title,
+            t=data,
+            headers=TABLE_HEADERS[obj_type],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata
+        )
         if 'Attribute' in data:
-            readable += tableToMarkdown('Attributes', data['Attribute'], headers=TABLE_HEADERS['attributes'],
-                                        removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
+            readable += tableToMarkdown(
+                name='Attributes',
+                t=data['Attribute'],
+                headers=TABLE_HEADERS['attributes'],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+                metadata=metadata
+            )
         if 'Source' in data:
-            readable += tableToMarkdown('Sources', data['Source'], headers=TABLE_HEADERS['sources'],
-                                        removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
+            readable += tableToMarkdown(
+                name='Sources',
+                t=data['Source'],
+                headers=TABLE_HEADERS['sources'],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+                metadata=metadata
+            )
         if 'URL' in data:
             url_in_markdown_format = '[{0}]({1})'.format(data['URL'], data['URL'])
             readable = readable.replace(data['URL'], url_in_markdown_format)
 
     else:  # 'data' is a list of objects
-        readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
-                                   headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
+        if len(data) == 1:
+            return build_readable(readable_title, obj_type, data[0], metadata=None)
+        readable = tableToMarkdown(
+            name=readable_title,
+            t=data,
+            headers=TABLE_HEADERS[obj_type],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata
+        )
         for elem in data:
             url_in_markdown_format = '[{0}]({1})'.format(elem['URL'], elem['URL'])
             readable = readable.replace(elem['URL'], url_in_markdown_format)
@@ -612,6 +678,109 @@ def test_module():
     threshold_is_integer = isinstance(threshold, int) or (isinstance(threshold, str) and threshold.isdigit())
     if token and threshold_is_integer and 0 <= int(threshold) <= 10:
         demisto.results('ok')
+
+
+def get_indicator_type_id(indicator_name: str) -> str:
+    indicator_types_res = tq_request(
+        method='GET',
+        url_suffix='/indicator/types',
+        retrieve_entire_response=True
+    )
+    try:
+        indicator_types = indicator_types_res.json().get('data')
+    except ValueError:
+        raise ValueError(f'Could not parse data from ThreatQ [Status code: {indicator_types_res.status_code}]'
+                         f'\n[Error Message: {indicator_types_res.text}]')
+
+    for indicator in indicator_types:
+        if indicator.get('name', '').lower() == indicator_name.lower():
+            return indicator.get('id')
+
+    raise ValueError(f'Could not find indicator')
+
+
+def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
+    entry_context = []
+    for i in indicators:
+        entry_context.append(set_indicator_entry_context(
+            indicator_type=i.get('Type') or default_indicator_type,
+            indicator=i,
+            generic_context=generic_context or {'Data': i.get('Value')}
+        ))
+
+    aggregated: Dict = {}
+    for entry in entry_context:
+        for key, value in entry.items():
+            if key in aggregated:
+                aggregated[key].append(value)
+            else:
+                aggregated[key] = [value]
+
+    return aggregated
+
+
+def get_search_body(query, indicator_type):
+    search_body = {
+        "indicators": [
+            [
+                {
+                    'field': 'indicator_type',
+                    'operator': 'is',
+                    'value': indicator_type if indicator_type.isdigit() else get_indicator_type_id(indicator_type)
+                },
+                {
+                    'field': 'indicator_value',
+                    'operator': 'like',
+                    'value': str(query)
+                }
+            ]
+        ]
+    }
+    return search_body
+
+
+def advance_search_command():
+    args = demisto.args()
+    limit = args.get('limit', 10)
+    query = args.get('query')
+    indicator_type = args.get('indicator_type')
+
+    search_body = get_search_body(query, indicator_type)
+    if limit and isinstance(limit, str) and not limit.isdigit():
+        return_error('limit argument must be an integer.')
+
+    res = tq_request(
+        method='POST',
+        url_suffix=f'/search/advanced?limit={limit}',
+        params=search_body,
+        retrieve_entire_response=True
+    )
+    try:
+        search_results = res.json().get('data')
+    except ValueError:
+        raise ValueError(f'Could not parse data from ThreatQ [Status code: {res.status_code}]'
+                         f'\n[Error Message: {res.text}]')
+
+    if not isinstance(search_results, list):
+        search_results = [search_results]
+
+    indicators: List[Dict] = []
+    for obj in search_results:
+        # Search for detailed information about the indicator
+        url_suffix = f"/indicators/{obj.get('id')}?with=attributes,sources,score,type"
+        search_results = res = tq_request('GET', url_suffix)
+        indicators.append(indicator_data_to_demisto_format(res.get('data')))
+
+    indicators = indicators or [{'Value': query, 'TQScore': -1}]
+    entry_context = aggregate_search_results(indicators=indicators, default_indicator_type=indicator_type)
+
+    readable = build_readable(
+        readable_title=f'Search results for "{query}":',
+        obj_type='indicator',
+        data=indicators
+    )
+
+    return_outputs(readable, entry_context, search_results)
 
 
 def search_by_name_command():
@@ -641,9 +810,9 @@ def search_by_name_command():
     # Remove items with empty values:
     entry_context = {k: v for k, v in entry_context.items() if v}
 
-    human_readable = build_readable_for_search_by_name(indicator_context, event_context, adversary_context, file_context)
+    readable = build_readable_for_search_by_name(indicator_context, event_context, adversary_context, file_context)
 
-    return_outputs(human_readable, entry_context)
+    return_outputs(readable, entry_context, res)
 
 
 def search_by_id_command():
@@ -659,19 +828,19 @@ def search_by_id_command():
         url_suffix += ',score,type'
 
     res = tq_request('GET', url_suffix)
-    raw = data_to_demisto_format(res['data'], obj_type)
+    data = data_to_demisto_format(res['data'], obj_type)
 
-    ec = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)}
+    ec = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
 
     if obj_type == 'indicator':
-        indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(raw['Type'])
+        indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(data['Type'])
         if indicator_type is not None:
-            ec['DBotScore'] = create_dbot_context(raw['Value'], indicator_type, raw['TQScore'])
+            ec['DBotScore'] = create_dbot_context(data['Value'], indicator_type, data.get('TQScore', -1))
 
     readable_title = 'Search results for {0} with ID {1}'.format(obj_type, obj_id)
-    readable = build_readable(readable_title, obj_type, raw)
+    readable = build_readable(readable_title, obj_type, data)
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def create_indicator_command():
@@ -813,16 +982,16 @@ def get_related_objs_command(related_type):
 
     info = [data_to_demisto_format(obj, related_type) for obj in res['data']]
     info = createContext(info, removeNull=True)
-    raw = {
+    data = {
         RELATED_KEY[related_type]: createContext(info, removeNull=True),
         'ID': int(obj_id)
     }
-    ec = {CONTEXT_PATH[obj_type]: raw} if info else {}
+    ec = {CONTEXT_PATH[obj_type]: data} if info else {}
 
     readable_title = 'Related {0} type objects of {1} with ID {2}'.format(related_type, obj_type, obj_id)
-    readable = build_readable(readable_title, related_type, raw[RELATED_KEY[related_type]])
+    readable = build_readable(readable_title, related_type, data[RELATED_KEY[related_type]])
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def link_objects_command():
@@ -886,18 +1055,18 @@ def update_score_command():
 
     res = tq_request('PUT', url_suffix, params)
 
-    raw = {
+    data = {
         'ID': int(indicator_id),
         'TQScore': get_tq_score_from_response(res['data'])
     }
 
-    ec = {CONTEXT_PATH['indicator']: raw}
+    ec = {CONTEXT_PATH['indicator']: data}
 
-    readable = 'Successfully updated score of indicator with ID {0} to {1}. '\
+    readable = 'Successfully updated score of indicator with ID {0} to {1}. ' \
                'Notice that final score is the maximum between ' \
-               'manual and generated scores.'.format(indicator_id, int(raw['TQScore']))
+               'manual and generated scores.'.format(indicator_id, int(data['TQScore']))
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def add_source_command():
@@ -1005,16 +1174,16 @@ def update_status_command():
 
     res = tq_request('PUT', url_suffix, params)
 
-    raw = {
+    data = {
         'ID': int(indicator_id),
         'Status': STATUS_ID_TO_STATUS[res['data'].get('status_id')],
     }
 
-    ec = {CONTEXT_PATH['indicator']: raw}
+    ec = {CONTEXT_PATH['indicator']: data}
 
     readable = 'Successfully updated status of indicator with ID {0} to {1}.'.format(indicator_id, status)
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def upload_file_command():
@@ -1049,14 +1218,14 @@ def upload_file_command():
     finally:
         shutil.rmtree(file_info['name'], ignore_errors=True)
 
-    raw = file_data_to_demisto_format(res['data'])
+    data = file_data_to_demisto_format(res['data'])
 
-    ec = {CONTEXT_PATH['attachment']: raw}
+    ec = {CONTEXT_PATH['attachment']: data}
 
     readable_title = 'Successfully uploaded file {0}.'.format(file_info['name'])
-    readable = build_readable(readable_title, 'attachment', raw)
+    readable = build_readable(readable_title, 'attachment', data)
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def download_file_command():
@@ -1090,76 +1259,81 @@ def get_all_objs_command(obj_type):
         url_suffix += ',score'
     res = tq_request('GET', url_suffix)
 
-    from_index = page
-    to_index = min(page + limit, len(res['data']))
+    from_index = min(page, len(res['data']))
+    to_index = min(from_index + limit, len(res['data']))
 
-    raw = [data_to_demisto_format(obj, obj_type) for obj in res['data'][from_index:to_index]]
-    ec = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)} if raw else {}
+    data = [data_to_demisto_format(obj, obj_type) for obj in res['data'][from_index:to_index]]
+    ec = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)} if data else {}
 
     readable_title = 'List of all objects of type {0} - {1}-{2}'.format(obj_type, from_index, to_index - 1)
     metadata = 'Total number of objects is {0}'.format(len(res['data']))
-    readable = build_readable(readable_title, obj_type, raw, metadata=metadata)
+    readable = build_readable(readable_title, obj_type, data, metadata=metadata)
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def get_ip_reputation():
     args = demisto.args()
-    ip = args.get('ip')
+    ips = argToList(args.get('ip'))
 
-    if not is_ip_valid(ip, accept_v6_ips=True):
-        return_error('{0} is not a valid IP address.'.format(ip))
+    for ip in ips:
+        if not is_ip_valid(ip, accept_v6_ips=True):
+            return_error('{0} is not a valid IP address.'.format(ip))
 
-    generic_context = {'Address': ip}
+        generic_context = {'Address': ip}
 
-    make_indicator_reputation_request(indicator_type='ip', value=ip, generic_context=generic_context)
+        make_indicator_reputation_request(indicator_type='ip', value=ip, generic_context=generic_context)
 
 
 def get_url_reputation():
     args = demisto.args()
-    url = args.get('url')
+    urls = argToList(args.get('url'))
 
-    if not REGEX_MAP['url'].match(url):
-        return_error('{0} is not a valid URL.'.format(url))
+    for url in urls:
+        if not REGEX_MAP['url'].match(url):
+            return_error('{0} is not a valid URL.'.format(url))
 
-    generic_context = {'Data': url}
+        generic_context = {'Data': url}
 
-    make_indicator_reputation_request(indicator_type='url', value=url, generic_context=generic_context)
+        make_indicator_reputation_request(indicator_type='url', value=url, generic_context=generic_context)
 
 
 def get_email_reputation():
     args = demisto.args()
-    email = args.get('email')
+    emails = argToList(args.get('email'))
 
-    if not REGEX_MAP['email'].match(email):
-        return_error('{0} is not a valid email address.'.format(email))
+    for email in emails:
+        if not REGEX_MAP['email'].match(email):
+            return_error('{0} is not a valid email address.'.format(email))
 
-    generic_context = {'Address': email}
+        generic_context = {'Address': email}
 
-    make_indicator_reputation_request(indicator_type='email', value=email, generic_context=generic_context)
+        make_indicator_reputation_request(indicator_type='email', value=email, generic_context=generic_context)
 
 
 def get_domain_reputation():
     args = demisto.args()
-    domain = args.get('domain')
+    domains = argToList(args.get('domain'))
 
-    if not REGEX_MAP['domain'].match(domain):
-        return_error('{0} is not a valid domain.'.format(domain))
+    for domain in domains:
+        if not REGEX_MAP['domain'].match(domain):
+            return_error('{0} is not a valid domain.'.format(domain))
 
-    generic_context = {'Name': domain}
+        generic_context = {'Name': domain}
 
-    make_indicator_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
+        make_indicator_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
 
 
 def get_file_reputation():
     args = demisto.args()
-    file = args.get('file')
+    files = argToList(args.get('file'))
 
-    for fmt in ['md5', 'sha1', 'sha256']:
-        if REGEX_MAP[fmt].match(file):
-            break
-    else:
-        return_error('{0} is not a valid file format.'.format(file))
+    for file in files:
+        for fmt in ['md5', 'sha1', 'sha256']:
+            if REGEX_MAP[fmt].match(file):
+                break
+        else:
+            return_error('{0} is not a valid file format.'.format(file))
 
     generic_context = createContext({
         'MD5': file if fmt == 'md5' else None,
@@ -1177,6 +1351,8 @@ try:
     handle_proxy()
     if command == 'test-module':
         test_module()
+    elif command == 'threatq-advanced-search':
+        advance_search_command()
     elif command == 'threatq-search-by-name':
         search_by_name_command()
     elif command == 'threatq-search-by-id':

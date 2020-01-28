@@ -1,0 +1,698 @@
+id: NIST - Handling an Incident Template
+version: -1
+name: NIST - Handling an Incident Template
+fromversion: 5.0.0
+description: |-
+  This playbook contains the phases to handling an incident as described in the 'Handling an Incident' section of NIST - Computer Security Incident Handling Guide.
+
+  Handling an incident - Computer Security Incident Handling Guide
+  https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r2.pdf
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e9bda0aa-0ae4-4474-8db5-7c7cac79a1bb
+    type: start
+    task:
+      id: e9bda0aa-0ae4-4474-8db5-7c7cac79a1bb
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 1cec196f-05f8-4658-8e1d-85a86f3ad3b1
+    type: title
+    task:
+      id: 1cec196f-05f8-4658-8e1d-85a86f3ad3b1
+      version: -1
+      name: 3.1 - Preparation
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 61506932-7e88-4cf1-82f0-5549604beb72
+    type: regular
+    task:
+      id: 61506932-7e88-4cf1-82f0-5549604beb72
+      version: -1
+      name: Preparing to Handle Incidents
+      description: |-
+        3.1.1 Preparing to Handle Incidents:
+        Tools and resources available that may be of value during incident
+        handling.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: dcce7e3b-6920-4b5e-8337-2357cb2cbdbb
+    type: regular
+    task:
+      id: dcce7e3b-6920-4b5e-8337-2357cb2cbdbb
+      version: -1
+      name: Preventing Incidents
+      description: |-
+        3.1.2 - Preventing Incidents:
+        Keeping the number of incidents reasonably low is very important to protect the business processes of the organization. If security controls are insufficient, higher volumes of incidents may occur, overwhelming the incident response team.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 598ad10f-73cb-4e1a-82b9-7cf1398e5abc
+    type: title
+    task:
+      id: 598ad10f-73cb-4e1a-82b9-7cf1398e5abc
+      version: -1
+      name: 3.2 - Detection and Analysis
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: f533a96c-9c67-4e51-80db-ca52feabd712
+    type: regular
+    task:
+      id: f533a96c-9c67-4e51-80db-ca52feabd712
+      version: -1
+      name: Attack Vectors
+      description: "3.2.1 - Attack Vectors:\nOrganizations should be generally prepared
+        to handle any incident but should focus on\nbeing prepared to handle incidents
+        that use common attack vectors. Different types of incidents merit different
+        response strategies. "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: a4ed411b-971b-4c50-8b85-44bc5840f612
+    type: regular
+    task:
+      id: a4ed411b-971b-4c50-8b85-44bc5840f612
+      version: -1
+      name: Signs of an Incident
+      description: |-
+        3.2.2 - Signs of an Incident:
+        For many organizations, the most challenging part of the incident response process is accurately detecting and assessing possible incidents—determining whether an incident has occurred and, if so, the type, extent, and magnitude of the problem.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 513969b9-8d0f-47a9-8fac-89934de2b8f6
+    type: regular
+    task:
+      id: 513969b9-8d0f-47a9-8fac-89934de2b8f6
+      version: -1
+      name: Sources of Precursors and Indicators
+      description: |-
+        3.2.3 - Sources of Precursors and Indicators:
+        Precursors and indicators are identified using many different sources, with the most common being computer security software alerts, logs, publicly available information, and people.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 4187122d-c371-47ed-8d06-a2be87ed6e39
+    type: regular
+    task:
+      id: 4187122d-c371-47ed-8d06-a2be87ed6e39
+      version: -1
+      name: Incident Analysis
+      description: |-
+        3.2.4 - Incident Analysis:
+        Finding the real security incidents that occurred out of all the indicators.
+        Determining whether a particular event is actually an incident is sometimes a matter of judgment. It may be necessary to collaborate with other technical and information security personnel to make a decision.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 2a4b7d40-ce08-474f-860b-e7001a528fd8
+    type: regular
+    task:
+      id: 2a4b7d40-ce08-474f-860b-e7001a528fd8
+      version: -1
+      name: Incident Documentation
+      description: |-
+        3.2.5 - Incident Documentation:
+        An incident response team that suspects that an incident has occurred should immediately start recording all facts regarding the incident.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 22c64d68-8e3d-4693-86aa-aada1721dfff
+    type: regular
+    task:
+      id: 22c64d68-8e3d-4693-86aa-aada1721dfff
+      version: -1
+      name: Incident Prioritization
+      description: |-
+        3.2.6 - Incident Prioritization:
+        Incidents should not be handled on a first-come, first-served basis as a result of resource
+        limitations. Instead, handling should be prioritized based on the relevant factors.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 4a6d159f-6746-4a01-870f-895186029e24
+    type: regular
+    task:
+      id: 4a6d159f-6746-4a01-870f-895186029e24
+      version: -1
+      name: Incident Notification
+      description: |-
+        3.2.7 - Incident Notification:
+        When an incident is analyzed and prioritized, the incident response team needs to notify the appropriate individuals so that all who need to be involved can play their roles.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: dc7aed94-ca3a-4d57-88b6-ea698cec6b6b
+    type: title
+    task:
+      id: dc7aed94-ca3a-4d57-88b6-ea698cec6b6b
+      version: -1
+      name: Detection
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 950119bf-6c7e-4599-8268-1c6fe357147e
+    type: title
+    task:
+      id: 950119bf-6c7e-4599-8268-1c6fe357147e
+      version: -1
+      name: Analysis
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: d079d1d3-47ab-4791-8236-a02afe9c890b
+    type: title
+    task:
+      id: d079d1d3-47ab-4791-8236-a02afe9c890b
+      version: -1
+      name: 3.3 - Containment, Eradication, and Recovery
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 2c997ae3-4bed-4b5e-88f0-7655d5b1bfc8
+    type: regular
+    task:
+      id: 2c997ae3-4bed-4b5e-88f0-7655d5b1bfc8
+      version: -1
+      name: Choosing a Containment Strategy
+      description: "3.3.1 - Choosing a Containment Strategy:\nContainment is important
+        before an incident overwhelms resources or increases damage. Most incidents
+        require containment, which is an important consideration early in the course
+        of handling each incident.\nContainment provides time for developing a tailored
+        remediation strategy. "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 61baf6ab-ec5b-44ff-8e5e-8cc413c508ac
+    type: regular
+    task:
+      id: 61baf6ab-ec5b-44ff-8e5e-8cc413c508ac
+      version: -1
+      name: Evidence Gathering and Handling
+      description: |-
+        3.3.2 - Evidence Gathering and Handling:
+        Although the primary reason for gathering evidence during an incident is to resolve the incident, it may also be needed for legal proceedings. In such cases, it is important to clearly document how all evidence, including compromised systems, has been preserved.
+
+        Evidence should be accounted for at all times; whenever evidence is transferred from person to person, chain of custody forms should detail the transfer and include each
+        party’s signature. A detailed log should be kept for all evidence.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 4b57522d-b6d1-4045-8e69-83838a511932
+    type: regular
+    task:
+      id: 4b57522d-b6d1-4045-8e69-83838a511932
+      version: -1
+      name: Identifying the Attacking Hosts
+      description: |-
+        3.3.3 - Identifying the Attacking Hosts:
+        During incident handling, system owners and others sometimes want to or need to identify the attacking host or hosts. Although this information can be important, incident handlers should generally stay focused on containment, eradication, and recovery. Identifying an attacking host can be a time-consuming and futile process that can prevent a team from achieving its primary goal—minimizing the business impact.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: dd8d5ef5-c94a-4782-8080-f75d9aa7e9c1
+    type: regular
+    task:
+      id: dd8d5ef5-c94a-4782-8080-f75d9aa7e9c1
+      version: -1
+      name: Eradication and Recovery
+      description: "3.3.4 - Eradication and Recovery:\nAfter an incident has been
+        contained, eradication may be necessary to eliminate components of the incident,
+        such as deleting malware and disabling breached user accounts, as well as
+        identifying and mitigating all vulnerabilities that were exploited. During
+        eradication, it is important to identify all affected hosts within the organization
+        so that they can be remediated.\n\nIn recovery, administrators restore systems
+        to normal operation, confirm that the systems are functioning normally, and
+        (if applicable) remediate vulnerabilities to prevent similar incidents. "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 1bf6bc6d-bb3b-4ebe-81ba-5bae483ea51e
+    type: title
+    task:
+      id: 1bf6bc6d-bb3b-4ebe-81ba-5bae483ea51e
+      version: -1
+      name: 3.4 - Post-Incident Activity
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: f5fb83ae-6a42-4beb-8507-c4d763977912
+    type: regular
+    task:
+      id: f5fb83ae-6a42-4beb-8507-c4d763977912
+      version: -1
+      name: Using Collected Incident Data
+      description: "3.4.2 - Using Collected Incident Data:\nOver time, the collected
+        incident data should be useful in several capacities. \nThe data, particularly
+        the total hours of involvement and the cost, may be used to justify additional
+        funding of the incident response team. \nA study of incident characteristics
+        may indicate systemic security weaknesses and threats, as well as changes
+        in incident trends. This data can be put back into the risk assessment process,
+        ultimately leading to the selection and implementation of additional controls.
+        \nAnother good use of the data is measuring the success of the incident response
+        team. "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: d7532143-86dd-4d7c-895a-d313c553744e
+    type: regular
+    task:
+      id: d7532143-86dd-4d7c-895a-d313c553744e
+      version: -1
+      name: Evidence Retention
+      description: |-
+        3.4.3 - Evidence Retention:
+        Organizations should establish policy for how long evidence from an incident should be retained.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 7bed98b9-8919-48bd-8fa0-ada91be6743a
+    type: title
+    task:
+      id: 7bed98b9-8919-48bd-8fa0-ada91be6743a
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 107d10e7-3d1e-4e1a-82e4-92782c99c9fc
+    type: playbook
+    task:
+      id: 107d10e7-3d1e-4e1a-82e4-92782c99c9fc
+      version: -1
+      name: NIST - Lessons Learned
+      playbookName: NIST - Lessons Learned
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3880,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No test

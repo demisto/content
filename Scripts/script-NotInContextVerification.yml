@@ -1,6 +1,6 @@
 commonfields:
-  id: 5e125fdd-72f1-455f-89fa-e6f9405174a4
-  version: 9
+  id: NotInContextVerification
+  version: -1
 name: NotInContextVerification
 script: |+
   var val = invContext.keyToWatch;
@@ -27,8 +27,8 @@ script: |+
 type: javascript
 tags:
 - Utility
-comment: |
-  Not in context verification is a script that executes the given command and verifies that the specified field is not in the context after execution. 
+comment: "Not in context verification is a script that executes the given command\
+  \ and verifies that the specified field is not in the context after execution. \n"
 enabled: true
 args:
 - name: cmdToRun

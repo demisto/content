@@ -190,7 +190,7 @@ def parse_date(dt):
         arr = dt.split("-")
         parsed_date = (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
     except ValueError as e:
-        return_error("Date could not be parsed. Please check the date again.\n{error}".format(error=type(e)))
+        return_error("Date could not be parsed. Please check the date again.\n{error}".format(error=e))
     return parsed_date
 
 
@@ -243,7 +243,7 @@ def describe_instances_command(args):
             try:
                 launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
             except ValueError as e:
-                return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=type(e)))
+                return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=e))
             data.append({
                 'InstanceId': instance['InstanceId'],
                 'ImageId': instance['ImageId'],
@@ -402,7 +402,7 @@ def describe_snapshots_command(args):
         try:
             start_time = datetime.strftime(snapshot['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=type(e)))
+            return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=e))
         data.append({
             'Description': snapshot['Description'],
             'Encrypted': snapshot['Encrypted'],
@@ -455,7 +455,7 @@ def describe_volumes_command(args):
         try:
             create_date = datetime.strftime(volume['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=type(e)))
+            return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
         data.append({
             'AvailabilityZone': volume['AvailabilityZone'],
             'Encrypted': volume['Encrypted'],
@@ -505,7 +505,7 @@ def describe_launch_templates_command(args):
         try:
             create_time = datetime.strftime(template['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=type(e)))
+            return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=e))
         data.append({
             'LaunchTemplateId': template['LaunchTemplateId'],
             'LaunchTemplateName': template['LaunchTemplateName'],
@@ -786,7 +786,7 @@ def create_snapshot_command(args):
     try:
         start_time = datetime.strftime(response['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=type(e)))
+        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=e))
 
     data = ({
         'Description': response['Description'],
@@ -899,7 +899,7 @@ def modify_volume_command(args):
     try:
         start_time = datetime.strftime(volumeModification['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=type(e)))
+        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=e))
 
     data = ({
         'VolumeId': volumeModification['VolumeId'],
@@ -1041,7 +1041,7 @@ def create_volume_command(args):
     try:
         create_time = datetime.strftime(response['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
+        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
 
     data = ({
         'AvailabilityZone': response['AvailabilityZone'],
@@ -1086,7 +1086,7 @@ def attach_volume_command(args):
     try:
         attach_time = datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
+        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
     data = ({
         'AttachTime': attach_time,
         'Device': response['Device'],
@@ -1123,7 +1123,7 @@ def detach_volume_command(args):
     try:
         attach_time = datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
+        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
     data = ({
         'AttachTime': attach_time,
         'Device': response['Device'],
@@ -1240,7 +1240,7 @@ def run_instances_command(args):
         try:
             launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
+            return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
         data.append({
             'InstanceId': instance['InstanceId'],
             'ImageId': instance['ImageId'],
@@ -1694,7 +1694,7 @@ def describe_reserved_instances_command(args):
             start_time = datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ')
             end_time = datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
+            return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
         data.append({
             'ReservedInstancesId': reservation['ReservedInstancesId'],
             'Start': start_time,
@@ -1790,7 +1790,7 @@ def get_password_data_command(args):
     try:
         time_stamp = datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
+        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
     data = {
         'InstanceId': response['InstanceId'],
         'PasswordData': response['PasswordData'],
@@ -2831,7 +2831,7 @@ try:
 
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=type(e)))
+        error=e))
     LOG(e.message)
 
 except Exception as e:

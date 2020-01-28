@@ -19,8 +19,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An attack simulation platform that provides validations for security controls, responses, and remediation exercises.
-display: AttackIQ FireDrill
+description: An attack simulation platform that provides validations for security
+  controls, responses, and remediation exercises.
+display: AttackIQ Platform
 name: AttackIQFireDrill
 script:
   commands:
@@ -112,8 +113,8 @@ script:
       description: The total number of assessments.
       type: Number
     - contextPath: AttackIQ.Assessment.RemainingPages
-      description: The number of remaining pages to return. For example, if the total number of pages is
-        6, and the last fetch was page 5, the value is 1.
+      description: The number of remaining pages to return. For example, if the total
+        number of pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
   - arguments:
     - default: false
@@ -186,16 +187,16 @@ script:
       description: The user that ran the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Created
-      description: The time that the assessment was created.
+      description: The date that the assessment was created.
       type: String
     - contextPath: AttackIQ.Assessment.Modified
-      description: The time that the assessment was last modified.
+      description: The date that the assessment was last modified.
       type: String
     - contextPath: AttackIQ.Assessment.Users
       description: The User IDs that can access the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Groups
-      description: The user groups who can access the assessment.
+      description: The user groups that can access the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.DefaultAssetCount
       description: The number of machines (assets) that are connected to the assessment.
@@ -224,12 +225,16 @@ script:
       name: assessment_id
       required: true
       secret: false
-    - default: false
-      description: Runs only on-demand tests in the assessment. True executes
-        tests in the assessment that are not scheduled to run. False executes all
-        tests in the assessment including scheduled tests. Default is false.
+    - auto: PREDEFINED
+      default: false
+      description: Runs only on-demand tests in the assessment. If true, executes tests
+        in the assessment that are not scheduled to run. If false, executes all tests
+        in the assessment including scheduled tests. Default is false.
       isArray: false
       name: on_demand_only
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
@@ -238,13 +243,14 @@ script:
     name: attackiq-run-all-tests-in-assessment
   - arguments:
     - default: true
-      description: The assessment to check status.
+      description: The assessment for which to check the status.
       isArray: false
       name: assessment_id
       required: true
       secret: false
     deprecated: false
-    description: Returns an assessment execution status when running an on-demand execution only.
+    description: Returns an assessment execution status when running an on-demand
+      execution only.
     execution: false
     name: attackiq-get-assessment-execution-status
     outputs:
@@ -256,7 +262,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The ID of the Test.
+      description: The ID of the test.
       isArray: false
       name: test_id
       required: true
@@ -282,7 +288,7 @@ script:
       description: The number of tests that returned errors.
       type: Number
     - contextPath: AttackIQTest.Total
-      description: The total number of tests that ran.
+      description: The total number of tests that were run.
       type: Number
     - contextPath: AttackIQTest.Id
       description: The ID of the assessment test.
@@ -331,7 +337,7 @@ script:
       description: The ID of the test asset.
       type: String
     - contextPath: AttackIQTest.Assets.Ipv4Address
-      description: The IP version 4 address of the test asset.
+      description: The IPv4 address of the test asset.
       type: String
     - contextPath: AttackIQTest.Assets.Hostname
       description: The host name of the test asset.
@@ -376,8 +382,8 @@ script:
       description: Whether the test uses the default schedule.
       type: Boolean
     - contextPath: AttackIQTest.RemainingPages
-      description:  The number of remaining pages to return. For example, if the total number of pages is
-        6, and the last fetch was page 5, the value is 1.
+      description: The number of remaining pages to return. For example, if the total
+        number of pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
     - contextPath: AttackIQTest.Count
       description: The total number of tests.
@@ -392,7 +398,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Shows the last result. True shows the last result.
+      description: Shows the last result. If true, shows the last result. Default is false.
       isArray: false
       name: show_last_result
       predefined:
@@ -415,12 +421,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filters results according to user choice. If set to Passed will return only Passed tests and vice versa.
+      description: Filters results according to user choice. If set to Passed, will
+        return only passed tests. If set to Failed, will return only failed tests.
       isArray: false
       name: outcome_filter
       predefined:
-        - Passed
-        - Failed
+      - Passed
+      - Failed
       required: false
       secret: false
     deprecated: false
@@ -477,16 +484,212 @@ script:
       description: The result outcome of the test.
       type: String
     - contextPath: AttackIQTestResult.RemainingPages
-      description: The number of remaining pages to return. For example, if the total number pages is
-        6, and the last fetch was page 5, the value is 1.
+      description: The number of remaining pages to return. For example, if the total
+        number pages is 6, and the last fetch was page 5, the value is 1.
       type: Number
     - contextPath: AttackIQTestResult.Count
       description: The total number of tests.
       type: Number
+  - deprecated: false
+    description: List all available assessment templates.
+    execution: false
+    name: attackiq-list-assessment-templates
+    outputs:
+    - contextPath: AttackIQ.Template.ID
+      description: 'The template ID. '
+      type: String
+    - contextPath: AttackIQ.Template.Name
+      description: The template name.
+      type: String
+    - contextPath: AttackIQ.Template.ProjectName
+      description: The name of the project the templete is in.
+      type: String
+    - contextPath: AttackIQ.Template.Description
+      description: The description of the template.
+      type: String
+    - contextPath: AttackIQ.Template.ProjectDescription
+      description: The description of the project the template is in.
+      type: String
+    - contextPath: AttackIQ.Template.Hidden
+      description: Whether the template is hidden.
+      type: Boolean
+  - deprecated: false
+    description: List all assets.
+    execution: false
+    name: attackiq-list-assets
+    outputs:
+    - contextPath: AttackIQ.Asset.ID
+      description: The asset ID.
+      type: String
+    - contextPath: AttackIQ.Asset.Description
+      description: The description of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.IPv4
+      description: The IPv4 address of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.IPv6
+      description: The IPv6 address of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.MacAddress
+      description: The MAC address of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.ProcessorArch
+      description: The processor arch of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.ProductName
+      description: The name of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.Hostname
+      description: The hostname of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.Domain
+      description: The domain of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.User
+      description: The user of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.Status
+      description: Status of the asset.
+      type: String
+    - contextPath: AttackIQ.Asset.Groups.ID
+      description: The ID of the asset's group.
+      type: String
+    - contextPath: AttackIQ.Asset.Groups.Name
+      description: The name of the asset's group.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the new assesment
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the template from which to create the assesment.
+      isArray: false
+      name: template_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new assesment.
+    execution: false
+    name: attackiq-create-assessment
+    outputs:
+    - contextPath: AttackIQ.Assessment.Id
+      description: The ID of the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.Name
+      description: The name of the assessment name.
+      type: String
+    - contextPath: AttackIQ.Assessment.Description
+      description: The description of the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.StartDate
+      description: The start date of the assessment.
+      type: Date
+    - contextPath: AttackIQ.Assessment.EndDate
+      description: The end date of the assessment.
+      type: Date
+    - contextPath: AttackIQ.Assessment.AssessmentState
+      description: The state of the assessment. Can be Active or Inactive.
+      type: String
+    - contextPath: AttackIQ.Assessment.DefaultSchedule
+      description: The default schedule timing (cron) of the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.AssessmentTemplateId
+      description: The template ID of the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.AssessmentTemplateName
+      description: The template name of the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.AssessmentTemplateDescription
+      description: The template description of the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.AssessmentTemplateDefaultSchedule
+      description: The assessment's template default schedule timing (cron).
+      type: Unknown
+    - contextPath: AttackIQ.Assessment.AssessmentTemplateCompany
+      description: The owner of the template.
+      type: String
+    - contextPath: AttackIQ.Assessment.AssessmentTemplateCreated
+      description: The date that the template was created.
+      type: Date
+    - contextPath: AttackIQ.Assessment.AssessmentTemplateModified
+      description: The date that the template was last modified.
+      type: Date
+    - contextPath: AttackIQ.Assessment.Creator
+      description: The user who created the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.Owner
+      description: The user who owns the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.User
+      description: The user who ran the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.Created
+      description: The date that the assessment was created.
+      type: String
+    - contextPath: AttackIQ.Assessment.Modified
+      description: The date that the assessment was last modified.
+      type: String
+    - contextPath: AttackIQ.Assessment.Users
+      description: The user IDs that can access the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.Groups
+      description: The user groups that can access the assessment.
+      type: String
+    - contextPath: AttackIQ.Assessment.DefaultAssetCount
+      description: The number of machines (assets) that are connected to the assessment.
+      type: Number
+    - contextPath: AttackIQ.Assessment.DefaultAssetGroupCount
+      description: The number of asset groups that are connected to the assessment.
+      type: Number
+    - contextPath: AttackIQ.Assessment.MasterJobCount
+      description: The number of tests that ran in the assessment.
+      type: Number
+    - contextPath: AttackIQ.Assessment.Count
+      description: The total number of assessments.
+      type: Number
+    - contextPath: AttackIQ.Assessment.RemainingPages
+      description: The number of remaining pages to return. For example, if the total
+        number of pages is 6, and the last fetch was page 5, the value is 1.
+      type: Number
+  - arguments:
+    - default: false
+      description: A comma-seperated list of asset IDs.
+      isArray: true
+      name: assets
+      required: false
+      secret: false
+    - default: false
+      description: A comma-seperated list of asset group IDs.
+      isArray: true
+      name: asset_groups
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the assessment to which the assets will be added.
+      isArray: false
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds assets or asset groups to an assesment.
+    execution: false
+    name: attackiq-add-assets-to-assessment
+  - arguments:
+    - default: false
+      description: The ID of the assessment to delete.
+      isArray: false
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an assessment.
+    execution: false
+    name: attackiq-delete-assessment
   dockerimage: demisto/python3:3.7.4.1502
   isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

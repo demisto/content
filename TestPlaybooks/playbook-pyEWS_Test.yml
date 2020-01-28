@@ -3,16 +3,14 @@ version: -1
 name: pyEWS_Test
 description: ""
 fromversion: "3.5.0"
-starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a7dba15e-3ae2-4215-8944-7e8f3d8004e1
+    taskid: 6b37c48b-7ff3-494e-86f0-7d7be3253e30
     type: start
     task:
-      id: a7dba15e-3ae2-4215-8944-7e8f3d8004e1
+      id: 6b37c48b-7ff3-494e-86f0-7d7be3253e30
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -23,20 +21,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 2200,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: a3ce0f7c-bcd0-497d-8b79-5a524b8416ca
+    taskid: 0f6a3325-6b2a-4b7b-8289-d973dfe6e4f3
     type: regular
     task:
-      id: a3ce0f7c-bcd0-497d-8b79-5a524b8416ca
+      id: 0f6a3325-6b2a-4b7b-8289-d973dfe6e4f3
       version: -1
-      description: ""
       name: Delete Context
       scriptName: DeleteContext
       type: regular
@@ -47,11 +45,12 @@ tasks:
       - "2"
       - "6"
       - "13"
-      - "4"
       - "15"
       - "17"
       - "21"
       - "23"
+      - "8"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -60,22 +59,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 2200,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: db2fb4dd-8220-4fd0-8787-585465815897
+    taskid: 6ec896c4-d06f-4b82-87dc-37ac44937e11
     type: regular
     task:
-      id: db2fb4dd-8220-4fd0-8787-585465815897
+      id: 6ec896c4-d06f-4b82-87dc-37ac44937e11
       version: -1
-      description: ""
       name: Get searchable mailboxes
-      script: "|||ews-get-searchable-mailboxes"
+      script: '|||ews-get-searchable-mailboxes'
       type: regular
       iscommand: true
       brand: ""
@@ -87,50 +86,59 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "3":
-    id: "3"
-    taskid: d3f59864-0b8f-4fc9-8d2e-36fc7c27aee0
-    type: regular
-    task:
-      id: d3f59864-0b8f-4fc9-8d2e-36fc7c27aee0
-      version: -1
-      description: ""
-      name: Verify Mailboxes context key
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: mailbox,mailboxId
-      path:
-        simple: EWS.Mailboxes
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 52608723-40cb-4791-8ec6-de93476ab9ab
+    type: condition
+    task:
+      id: 52608723-40cb-4791-8ec6-de93476ab9ab
+      version: -1
+      name: Verify Mailboxes context key
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Mailboxes.mailbox
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Mailboxes.mailboxId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 744f2aff-0e90-4227-84c1-13ae64a4f1e5
+    taskid: 165f60fe-458e-4005-81ec-a0cab94a4fed
     type: regular
     task:
-      id: 744f2aff-0e90-4227-84c1-13ae64a4f1e5
+      id: 165f60fe-458e-4005-81ec-a0cab94a4fed
       version: -1
-      description: ""
       name: Search mailboxes
-      script: "|||ews-search-mailboxes"
+      script: '|||ews-search-mailboxes'
       type: regular
       iscommand: true
       brand: ""
@@ -146,54 +154,79 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "5":
-    id: "5"
-    taskid: 52b55155-7b88-4329-8bce-aadc24aff5f0
-    type: regular
-    task:
-      id: 52b55155-7b88-4329-8bce-aadc24aff5f0
-      version: -1
-      description: ""
-      name: Verify Items context key
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-      - "10"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: mailbox,subject,sender,hasAttachments,datetimeSent,datetimeReceived
-      path:
-        simple: EWS.Items.[0]
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9f4fdd22-ae60-44be-8e21-129a7313c256
+    type: condition
+    task:
+      id: 9f4fdd22-ae60-44be-8e21-129a7313c256
+      version: -1
+      name: Verify Items context key
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.[0].mailbox
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.[0].subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.[0].sender
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.[0].hasAttachment
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.[0].datetimeSent
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.[0].datetimeReceived
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 25a6919e-5106-4024-8837-2f97d93b449a
+    taskid: 8c47c5d4-7628-4f6e-84be-955cc05ad6c0
     type: regular
     task:
-      id: 25a6919e-5106-4024-8837-2f97d93b449a
+      id: 8c47c5d4-7628-4f6e-84be-955cc05ad6c0
       version: -1
-      description: ""
       name: Get contacts
-      script: "|||ews-get-contacts"
+      script: '|||ews-get-contacts'
       type: regular
       iscommand: true
       brand: ""
@@ -209,51 +242,60 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: 6e186da2-3a1a-4e08-81a0-e06f7f34a401
-    type: regular
-    task:
-      id: 6e186da2-3a1a-4e08-81a0-e06f7f34a401
-      version: -1
-      description: ""
-      name: Verify Contacts context key
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: displayName,id
-      path:
-        simple: Account.Email.EwsContacts
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
+          "x": 3920,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 2fe52fca-0f7b-4bdb-8963-96b54b07dfc0
+    type: condition
+    task:
+      id: 2fe52fca-0f7b-4bdb-8963-96b54b07dfc0
+      version: -1
+      name: Verify Contacts context key
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Email.EwsContacts.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Email.EwsContacts.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 817fbc68-c466-4073-8708-c7e505c782a2
+    taskid: 005f0a2f-d759-4628-8e54-cd123f98aa3f
     type: regular
     task:
-      id: 817fbc68-c466-4073-8708-c7e505c782a2
+      id: 005f0a2f-d759-4628-8e54-cd123f98aa3f
       version: -1
-      description: ""
       name: Get item attachment
-      script: "|||ews-get-attachment"
+      script: '|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
@@ -269,51 +311,75 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: c8280912-7b45-4078-8f36-d4aef84d8b9f
+    type: condition
+    task:
+      id: c8280912-7b45-4078-8f36-d4aef84d8b9f
+      version: -1
+      name: Verify Items context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.ItemAttachments.datetimeCreated
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.ItemAttachments.headers
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.ItemAttachments.subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.ItemAttachments.body
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.ItemAttachments.hasAttachments
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
           "y": 720
         }
       }
     note: false
     timertriggers: []
-  "9":
-    id: "9"
-    taskid: ef5e845e-5b39-47c0-823f-9c618ceb9048
-    type: regular
-    task:
-      id: ef5e845e-5b39-47c0-823f-9c618ceb9048
-      version: -1
-      description: ""
-      name: Verify Items context
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: datetimeCreated,headers,subject,body,hasAttachments
-      path:
-        simple: EWS.Items.ItemAttachments
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: cd09ad8e-7075-473a-875c-dff12db7f8d3
+    taskid: ac12090c-bfdc-430b-8a4d-acbae7c5501f
     type: regular
     task:
-      id: cd09ad8e-7075-473a-875c-dff12db7f8d3
+      id: ac12090c-bfdc-430b-8a4d-acbae7c5501f
       version: -1
-      description: ""
       name: Get file attachment
-      script: "|||ews-get-attachment"
+      script: '|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
@@ -330,83 +396,93 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 4350,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: ffc5bea0-611d-4b05-8a5a-abe06fd2425e
+    type: condition
+    task:
+      id: ffc5bea0-611d-4b05-8a5a-abe06fd2425e
+      version: -1
+      name: Verify EWS file attachment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.FileAttachments.attachmentId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.FileAttachments.attachmentName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: ac2ab5fa-5630-42c5-8477-45d5de2336eb
+    type: condition
+    task:
+      id: ac2ab5fa-5630-42c5-8477-45d5de2336eb
+      version: -1
+      name: Verify file context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4350,
           "y": 720
         }
       }
     note: false
     timertriggers: []
-  "11":
-    id: "11"
-    taskid: be9301a9-cae2-491a-8825-7025950b219f
-    type: regular
-    task:
-      id: be9301a9-cae2-491a-8825-7025950b219f
-      version: -1
-      description: ""
-      name: Verify EWS file attachment
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: attachmentId,attachmentName
-      path:
-        simple: EWS.Items.FileAttachments
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: 84773ced-dadf-47ce-8427-f00e1050b4cf
-    type: regular
-    task:
-      id: 84773ced-dadf-47ce-8427-f00e1050b4cf
-      version: -1
-      description: ""
-      name: Verify file context
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Name
-      path:
-        simple: File
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 12579a4f-2924-4e93-805e-cb9dc54fb471
+    taskid: 41fecb83-b747-4b11-8ccf-0c12df94b787
     type: regular
     task:
-      id: 12579a4f-2924-4e93-805e-cb9dc54fb471
+      id: 41fecb83-b747-4b11-8ccf-0c12df94b787
       version: -1
-      description: ""
       name: Get out of office status
-      script: "|||ews-get-out-of-office"
+      script: '|||ews-get-out-of-office'
       type: regular
       iscommand: true
       brand: ""
@@ -421,50 +497,69 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: 437889e1-48eb-4a23-8cc7-5f6e6b863522
-    type: regular
-    task:
-      id: 437889e1-48eb-4a23-8cc7-5f6e6b863522
-      version: -1
-      description: ""
-      name: Verify out of office context key
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: state,start,end,mailbox
-      path:
-        simple: Account.Email.OutOfOffice
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: e90f03d4-31b1-430f-8aa7-a63f79115bab
+    type: condition
+    task:
+      id: e90f03d4-31b1-430f-8aa7-a63f79115bab
+      version: -1
+      name: Verify out of office context key
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Email.OutOfOffice.state
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Email.OutOfOffice.start
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Email.OutOfOffice.end
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Email.OutOfOffice.mailbox
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 78e81be8-812f-42e1-89f9-c8df92084434
+    taskid: a072f42f-2802-4454-80b1-c72ced6d6946
     type: regular
     task:
-      id: 78e81be8-812f-42e1-89f9-c8df92084434
+      id: a072f42f-2802-4454-80b1-c72ced6d6946
       version: -1
-      description: ""
       name: Find folders
-      script: "|||ews-find-folders"
+      script: '|||ews-find-folders'
       type: regular
       iscommand: true
       brand: ""
@@ -478,50 +573,54 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "16":
-    id: "16"
-    taskid: 27bad126-6323-44f2-8633-f472b7259ae6
-    type: regular
-    task:
-      id: 27bad126-6323-44f2-8633-f472b7259ae6
-      version: -1
-      description: ""
-      name: Verify folders context key
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: Folders
-      path:
-        simple: EWS
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1770,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 49eadc39-b33b-4816-8c41-90e5af70d5ad
+    type: condition
+    task:
+      id: 49eadc39-b33b-4816-8c41-90e5af70d5ad
+      version: -1
+      name: Verify folders context key
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Folders
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 28342353-39d3-4ac6-8534-24365bb13cdd
+    taskid: 7493c0d1-2f40-406e-8a74-4b94df3e8faf
     type: regular
     task:
-      id: 28342353-39d3-4ac6-8534-24365bb13cdd
+      id: 7493c0d1-2f40-406e-8a74-4b94df3e8faf
       version: -1
-      description: ""
       name: Get items
-      script: "|||ews-get-items"
+      script: '|||ews-get-items'
       type: regular
       iscommand: true
       brand: ""
@@ -536,20 +635,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 3275,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: 86bd116d-111b-470f-8cad-a3d473031949
+    taskid: 710be358-95a9-4792-877f-ce4c8774b1dc
     type: condition
     task:
-      id: 86bd116d-111b-470f-8cad-a3d473031949
+      id: 710be358-95a9-4792-877f-ce4c8774b1dc
       version: -1
-      description: ""
       name: Filter item id
       type: condition
       iscommand: false
@@ -563,7 +662,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: string.inList
+      - - operator: inList
           left:
             value:
               simple: EWS.Items.itemId
@@ -574,43 +673,47 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 3275,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 2be90127-1d13-458a-8645-edfcdedeeac6
+    taskid: 948d5742-dcfb-4caa-8ca7-2f309aea54c0
     type: regular
     task:
-      id: 2be90127-1d13-458a-8645-edfcdedeeac6
+      id: 948d5742-dcfb-4caa-8ca7-2f309aea54c0
       version: -1
-      description: ""
       name: Did not find item in content
-      script: Exception
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      message:
+        simple: Did not find item in content
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 3060,
           "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: d5f56aba-f8a4-4d5f-8f1d-03f5cfa34297
+    taskid: 402419bc-7652-4e65-8b09-6e28de0292ca
     type: title
     task:
-      id: d5f56aba-f8a4-4d5f-8f1d-03f5cfa34297
+      id: 402419bc-7652-4e65-8b09-6e28de0292ca
       version: -1
-      description: ""
       name: Found
       type: title
       iscommand: false
@@ -619,18 +722,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2415,
+          "x": 3490,
           "y": 735
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: 265e2323-6421-4f3d-8fab-9232baee4245
+    taskid: 3a73387a-e5db-407d-89fd-bd0921e12047
     type: regular
     task:
-      id: 265e2323-6421-4f3d-8fab-9232baee4245
+      id: 3a73387a-e5db-407d-89fd-bd0921e12047
       version: -1
       name: Get expanded group
       script: '|||ews-expand-group'
@@ -647,45 +751,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "22":
-    id: "22"
-    taskid: af8cd07c-81fd-46fa-8b99-f46456066c16
-    type: regular
-    task:
-      id: af8cd07c-81fd-46fa-8b99-f46456066c16
-      version: -1
-      name: Verify Expanded Group members
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: EWS.ExpandGroup.members
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2630,
+          "x": 2200,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 003896d7-b6bc-43ad-8e48-da288137d5af
+    type: condition
+    task:
+      id: 003896d7-b6bc-43ad-8e48-da288137d5af
+      version: -1
+      name: Verify Expanded Group members
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.ExpandGroup.members
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "23":
     id: "23"
-    taskid: a5d3e114-8b01-4c5c-8307-79af801815d5
+    taskid: 4ed33e80-a949-4613-8420-ea29cb290135
     type: regular
     task:
-      id: a5d3e114-8b01-4c5c-8307-79af801815d5
+      id: 4ed33e80-a949-4613-8420-ea29cb290135
       version: -1
       name: Get items from folder
       script: '|||ews-get-items-from-folder'
@@ -707,46 +818,75 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "24":
-    id: "24"
-    taskid: 860405dc-5ef6-49b1-88ee-5278285c1cd9
-    type: regular
-    task:
-      id: 860405dc-5ef6-49b1-88ee-5278285c1cd9
-      version: -1
-      name: Verify items from folder
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: EWS.Items.itemId
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3060,
+          "x": 2630,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 60872a31-f9e0-4912-805a-f647cfd615e5
+    type: condition
+    task:
+      id: 60872a31-f9e0-4912-805a-f647cfd615e5
+      version: -1
+      name: Verify items from folder
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EWS.Items.itemId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: aa8a039c-1ee7-426e-85a7-6737feea3f20
+    type: title
+    task:
+      id: aa8a039c-1ee7-426e-85a7-6737feea3f20
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 3390,
+        "height": 910,
+        "width": 4680,
         "x": 50,
         "y": 50
       }

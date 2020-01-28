@@ -1,0 +1,95 @@
+args:
+- default: false
+  description: Security Group ID (sg-xxxxxxxxx)
+  isArray: false
+  name: groupId
+  required: true
+  secret: false
+- default: false
+  description: JSON string of the ipPermissions. IpPermissions should have one or
+    more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer
+    to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html)
+    for example/reference.
+  isArray: true
+  name: ipPermissions
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Protocol to check. TCP/UDP/All(-1)
+  isArray: false
+  name: protocol
+  predefined:
+  - tcp
+  - udp
+  - '-1'
+  required: true
+  secret: false
+- default: false
+  description: Lower bound port range to be checked. If fromPort and toPort are not
+    specified, all ports will be included.
+  isArray: false
+  name: fromPort
+  required: false
+  secret: false
+- default: false
+  description: Upper bound port range to be checked. If fromPort and toPort are not
+    specified, all ports will be included.
+  isArray: false
+  name: toPort
+  required: false
+  secret: false
+- default: false
+  description: Security group region
+  isArray: false
+  name: region
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'no'
+  description: Include IPv6 in the result. By default, IPv6 is not included
+  isArray: false
+  name: includeIPv6
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+comment: Find Security Group rules which allows ::/0 (IPv4) or 0.0.0.0/0.
+commonfields:
+  id: AwsEC2GetPublicSGRules
+  version: -1
+enabled: true
+name: AwsEC2GetPublicSGRules
+outputs:
+- contextPath: AWS.EC2.SecurityGroup.PublicRules
+  description: List public Security Group rules
+  type: Unknown
+- contextPath: AWS.EC2.SecurityGroup.PublicRules.groupId
+  description: Security Group ID
+  type: String
+- contextPath: AWS.EC2.SecurityGroup.PublicRules.ipProtocol
+  description: IP Protocol (TCP/UDP/-1)
+  type: String
+- contextPath: AWS.EC2.SecurityGroup.PublicRules.fromPort
+  description: Security Group rule's lower bound port range
+  type: Number
+- contextPath: AWS.EC2.SecurityGroup.PublicRules.toPort
+  description: Security Group rule's upper bound port range
+  type: Number
+- contextPath: AWS.EC2.SecurityGroup.PublicRules.cidrIp
+  description: Security Group rule's CIDR range
+  type: String
+- contextPath: AWS.EC2.SecurityGroup.PublicRules.region
+  description: Region of the security group
+  type: String
+script: '-'
+system: false
+tags:
+- Amazon Web Services
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole
+runonce: false

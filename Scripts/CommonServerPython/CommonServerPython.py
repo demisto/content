@@ -3,15 +3,18 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
-import socket
-import time
+from __future__ import print_function
+
+import base64
 import json
-import sys
+import logging
 import os
 import re
-import base64
-from collections import OrderedDict
+import socket
+import sys
+import time
 import xml.etree.cElementTree as ET
+from collections import OrderedDict
 from datetime import datetime, timedelta
 
 import demistomock as demisto
@@ -22,6 +25,8 @@ try:
 except Exception:
     pass
 
+CONTENT_RELEASE_VERSION = '0.0.0'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
@@ -74,6 +79,7 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
+# The dictionary below does not represent DBot Scores correctly, and should not be used
 dbotscores = {
     'Critical': 4,
     'High': 3,
@@ -97,6 +103,52 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ctph': 'file',
     'ssdeep': 'file'
 }
+
+
+class FeedIndicatorType(object):
+    """Type of Indicator (Reputations), used in TIP integrations"""
+    Account = "Account"
+    CVE = "CVE"
+    Domain = "Domain"
+    Email = "Email"
+    File = "File"
+    FQDN = "Domain"
+    MD5 = "File MD5"
+    SHA1 = "File SHA-1"
+    SHA256 = "File SHA-256"
+    Host = "Host"
+    IP = "IP"
+    CIDR = "CIDR"
+    IPv6 = "IPv6"
+    IPv6CIDR = "IPv6CIDR"
+    Registry = "Registry Key"
+    SSDeep = "ssdeep"
+    URL = "URL"
+
+    @staticmethod
+    def is_valid_type(_type):
+        return _type in (
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
+        )
+
+
+
+
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -564,6 +616,44 @@ def scoreToReputation(score):
     return to_str.get(score, 'None')
 
 
+def b64_encode(text):
+    """
+    Base64 encode a string. Wrapper function around base64.b64encode which will accept a string
+    In py3 will encode the string to binary using utf-8 encoding and return a string result decoded using utf-8
+
+    :param text: string to encode
+    :type text: str
+    :return: encoded string
+    :rtype: str
+    """
+    if not text:
+        return ''
+    to_encode = text
+    if IS_PY3:
+        to_encode = text.encode('utf-8', 'ignore')
+    res = base64.b64encode(to_encode)
+    if IS_PY3:
+        res = res.decode('utf-8')  # type: ignore
+    return res
+
+
+def encode_string_results(text):
+    """
+    Encode string as utf-8, if any unicode character exists.
+
+    :param text: string to encode
+    :type text: str
+    :return: encoded string
+    :rtype: str
+    """
+    if not isinstance(text, STRING_OBJ_TYPES):
+        return text
+    try:
+        return str(text)
+    except UnicodeEncodeError as exception:
+        return text.encode("utf8", "replace")
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -582,16 +672,22 @@ class IntegrationLogger(object):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
+        self.buffering = True
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
-        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
-                and isinstance(demisto.getParam('credentials'), dict)
-                and demisto.getParam('credentials').get('password')):
-            pswrd = self.encode(demisto.getParam('credentials').get('password'))
-            to_encode = pswrd
-            if IS_PY3:
-                to_encode = pswrd.encode('utf-8', 'ignore')
-            self.add_repalce_strs(pswrd, base64.b64encode(to_encode))
+        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
+            # add common params
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
+            if demisto.params():
+                for (k, v) in demisto.params().items():
+                    k_lower = k.lower()
+                    for p in sensitive_params:
+                        if p in k_lower:
+                            if isinstance(v, STRING_OBJ_TYPES):
+                                self.add_replace_strs(v, b64_encode(v))
+                            if isinstance(v, dict) and v.get('password'):  # credentials object case
+                                pswrd = v.get('password')
+                                self.add_replace_strs(pswrd, b64_encode(pswrd))
 
     def encode(self, message):
         try:
@@ -611,15 +707,28 @@ class IntegrationLogger(object):
         return res
 
     def __call__(self, message):
-        self.messages.append(self.encode(message))
+        text = self.encode(message)
+        if self.buffering:
+            self.messages.append(text)
+        else:
+            demisto.info(text)
 
-    def add_repalce_strs(self, *args):
+    def add_replace_strs(self, *args):
         '''
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [self.encode(a) for a in args]
+        to_add = [self.encode(a) for a in args if a]
         self.replace_strs.extend(to_add)
+
+    def set_buffering(self, state):
+        """
+        set whether the logger buffers messages or writes staight to the demisto log
+
+        :param state: True/False
+        :type state: boolean
+        """
+        self.buffering = state
 
     def print_log(self, verbose=False):
         if self.write_buf:
@@ -642,8 +751,25 @@ class IntegrationLogger(object):
                 msg = msg[:-1]
         self.write_buf.append(msg)
         if has_newline:
-            self.messages.append("".join(self.write_buf))
+            text = "".join(self.write_buf)
+            if self.buffering:
+                self.messages.append(text)
+            else:
+                demisto.info(text)
             self.write_buf = []
+
+    def print_override(self, *args, **kwargs):
+        # print function that can be used to override print usage of internal modules
+        # will print to the log if the print target is stdout/stderr
+        try:
+            import __builtin__  # type: ignore
+        except ImportError:
+            # Python 3
+            import builtins as __builtin__  # type: ignore
+        file_ = kwargs.get('file')
+        if (not file_) or file_ == sys.stdout or file_ == sys.stderr:
+            kwargs['file'] = self
+        __builtin__.print(*args, **kwargs)
 
 
 """
@@ -777,6 +903,31 @@ def argToList(arg, separator=','):
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
     return arg
+
+
+def argToBoolean(value):
+    """
+        Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.
+        This command removes the guesswork and returns a value of type bool, regardless of the input value's type.
+        It will also return True for 'yes' and False for 'no'.
+
+        :param value: the value to evaluate
+        :type value: ``string|bool``
+
+        :return: a boolean representatation of 'value'
+        :rtype: ``bool``
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, STRING_OBJ_TYPES):
+        if value.lower() in ['true', 'yes']:
+            return True
+        elif value.lower() in ['false', 'no']:
+            return False
+        else:
+            raise ValueError('Argument does not contain a valid boolean-like value')
+    else:
+        raise ValueError('Argument is neither a string nor a boolean')
 
 
 def appendContext(key, data, dedup=False):
@@ -1405,7 +1556,7 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-def return_outputs(readable_output, outputs, raw_response=None):
+def return_outputs(readable_output, outputs=None, raw_response=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1430,11 +1581,13 @@ def return_outputs(readable_output, outputs, raw_response=None):
         "Contents": raw_response,
         "EntryContext": outputs
     }
-
-    if outputs and raw_response is None:
+    # Return 'readable_output' only if needed
+    if readable_output and not outputs and not raw_response:
+        return_entry["Contents"] = readable_output
+        return_entry["ContentsFormat"] = formats["text"]
+    elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
-
     demisto.results(return_entry)
 
 
@@ -1461,7 +1614,8 @@ def return_error(message, error='', outputs=None):
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution',
+                                                             'fetch-indicators'):
         raise Exception(message)
     else:
         demisto.results({
@@ -1584,6 +1738,9 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
+ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'
+ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'
+ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'
 emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
@@ -1868,6 +2025,85 @@ def get_demisto_version():
         raise AttributeError('demistoVersion attribute not found.')
 
 
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
+class DemistoHandler(logging.Handler):
+    """
+        Handler to route logging messages to demisto.debug
+    """
+
+    def __init__(self):
+        logging.Handler.__init__(self)
+
+    def emit(self, record):
+        msg = self.format(record)
+        try:
+            demisto.debug(msg)
+        except Exception:
+            pass
+
+
+class DebugLogger(object):
+    """
+        Wrapper to initiate logging at logging.DEBUG level.
+        Is used when `debug-mode=True`.
+    """
+
+    def __init__(self):
+        logging.raiseExceptions = False
+        self.handler = None  # just incase our http_client code throws an exception. so we don't error in the __del__
+        if IS_PY3:
+            # pylint: disable=import-error
+            import http.client as http_client
+            # pylint: enable=import-error
+            self.http_client = http_client
+            self.http_client.HTTPConnection.debuglevel = 1
+            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it alread
+            self.int_logger = IntegrationLogger()
+            self.int_logger.set_buffering(False)
+            setattr(http_client, 'print', self.int_logger.print_override)
+        else:
+            self.http_client = None
+        self.handler = DemistoHandler()
+        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        self.handler.setFormatter(demisto_formatter)
+        self.root_logger = logging.getLogger()
+        self.prev_log_level = self.root_logger.getEffectiveLevel()
+        self.root_logger.setLevel(logging.DEBUG)
+        self.root_logger.addHandler(self.handler)
+
+    def __del__(self):
+        if self.handler:
+            self.root_logger.setLevel(self.prev_log_level)
+            self.root_logger.removeHandler(self.handler)
+            self.handler.flush()
+            self.handler.close()
+        if self.http_client:
+            self.http_client.HTTPConnection.debuglevel = 0
+            if self.http_client_print:
+                setattr(self.http_client, 'print', self.http_client_print)
+            else:
+                delattr(self.http_client, 'print')
+
+
+_requests_logger = None
+try:
+    if is_debug_mode():
+        _requests_logger = DebugLogger()
+except Exception as ex:
+    # Should fail silently so that if there is a problem with the logger it will
+    # not affect the execution of commands and playbooks
+    demisto.info('Failed initializing DebugLogger: {}'.format(ex))
+
+
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
     """
         Parses the date_string function to the corresponding datetime object.
@@ -2086,16 +2322,16 @@ if 'requests' in sys.modules:
         :return: No data returned
         :rtype: ``None``
         """
+
         def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
             self._base_url = base_url
             self._verify = verify
             self._ok_codes = ok_codes
             self._headers = headers
             self._auth = auth
-            if proxy:
-                self._proxies = handle_proxy()
-            else:
-                self._proxies = None
+            self._session = requests.Session()
+            if not proxy:
+                self._session.trust_env = False
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
@@ -2134,15 +2370,16 @@ if 'requests' in sys.modules:
             :type files: ``dict``
             :param files: The file data to send in a 'POST' request.
 
-            :type timeout: ``float``
+            :type timeout: ``float`` or ``tuple``
             :param timeout:
                 The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
 
             :type resp_type: ``str``
             :param resp_type:
                 Determines which data format to return from the HTTP request. The default
-                is 'json'. Other options are 'text', 'content' or 'response'. Use 'response'
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
                  to return the full response object.
 
             :type ok_codes: ``tuple``
@@ -2155,11 +2392,11 @@ if 'requests' in sys.modules:
             """
             try:
                 # Replace params if supplied
-                address = full_url if full_url else self._base_url + url_suffix
+                address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 # Execute
-                res = requests.request(
+                res = self._session.request(
                     method,
                     address,
                     verify=self._verify,
@@ -2170,7 +2407,6 @@ if 'requests' in sys.modules:
                     headers=headers,
                     auth=auth,
                     timeout=timeout,
-                    proxies=self._proxies,
                     **kwargs
                 )
                 # Handle error responses gracefully
@@ -2180,7 +2416,7 @@ if 'requests' in sys.modules:
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
-                        err_msg += '\n{}'.format(error_entry)
+                        err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)
@@ -2193,6 +2429,8 @@ if 'requests' in sys.modules:
                         return res.text
                     if resp_type == 'content':
                         return res.content
+                    if resp_type == 'xml':
+                        ET.parse(res.text)
                     return res
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'
@@ -2242,3 +2480,23 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    :type iterable: ``list``
+    :param iterable: list or other iterable object.
+
+    :type batch_size: ``int``
+    :param batch_size: the size of batches to fetch
+
+    :rtype: ``list``
+    :return:: Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = not_batched[batch_size:]

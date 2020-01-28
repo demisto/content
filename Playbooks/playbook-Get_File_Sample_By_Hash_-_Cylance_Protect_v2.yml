@@ -1,0 +1,219 @@
+id: Get File Sample By Hash - Cylance Protect v2
+version: -1
+fromversion: 4.0.0
+name: Get File Sample By Hash - Cylance Protect v2
+description: This playbook returns a file sample to the war-room given the file's
+  SHA256 hash, using Cylance Protect v2 integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cfa6c853-3dae-449f-810e-8a0303dda6b0
+    type: start
+    task:
+      id: cfa6c853-3dae-449f-810e-8a0303dda6b0
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: a23dc210-7967-4632-81a5-ca345c80f56b
+    type: condition
+    task:
+      id: a23dc210-7967-4632-81a5-ca345c80f56b
+      version: -1
+      name: Is Cylance Protect v2 enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cylance Protect v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d346aafe-2acb-49f6-81ae-dc461600d941
+    type: title
+    task:
+      id: d346aafe-2acb-49f6-81ae-dc461600d941
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d3cb43ee-f52d-4112-8a87-4202337b4d29
+    type: condition
+    task:
+      id: d3cb43ee-f52d-4112-8a87-4202337b4d29
+      version: -1
+      name: Is there a file to download?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: dfadf1e2-5822-4eb8-8050-a244ba71ee6f
+    type: regular
+    task:
+      id: dfadf1e2-5822-4eb8-8050-a244ba71ee6f
+      version: -1
+      name: Cylance Protect - download threat
+      description: Downloads the threat (file) attached to a specific SHA256 hash.
+      script: Cylance Protect v2|||cylance-protect-download-threat
+      type: regular
+      iscommand: true
+      brand: Cylance Protect v2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      sha256:
+        complex:
+          root: inputs.SHA256
+      threshold: {}
+      unzip:
+        complex:
+          root: inputs.unzip
+          transformers:
+          - operator: toLowerCase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.28,
+      "3_2_#default#": 0.35,
+      "3_4_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 1030,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: ""
+- key: unzip
+  value: {}
+  required: false
+  description: |-
+    Specifies whether the downloaded file will be unzipped. The command default is 'no'.
+    Yes - unzip automatically
+    No - will not unzip
+outputs: []
+tests:
+  - No test

@@ -10,16 +10,34 @@ import glob
 import random
 import argparse
 
-from Tests.scripts.constants import *
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+
+from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning
+    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
-                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
-                         INTEGRATION_YML_REGEX]
+CHECKED_TYPES_REGEXES = [
+    # Integrations
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    BETA_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_YML_REGEX,
+    # Scripts
+    SCRIPT_REGEX,
+    SCRIPT_YML_REGEX,
+    PACKS_SCRIPT_REGEX,
+    PACKS_SCRIPT_YML_REGEX,
+    # Playbooks
+    PLAYBOOK_REGEX,
+    BETA_PLAYBOOK_REGEX,
+    PACKS_PLAYBOOK_YML_REGEX
+]
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
@@ -83,7 +101,7 @@ def get_modified_files(files_string):
                 modified_files_list.append(file_path)
 
             # tests
-            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            elif checked_type(file_path, YML_TEST_PLAYBOOKS_REGEXES):
                 modified_tests_list.append(file_path)
 
             # reputations.json
@@ -91,16 +109,15 @@ def get_modified_files(files_string):
                     re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+            elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
                 is_indicator_json = True
 
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
 
-            # docs and test files does not influence integration tests filtering
-            elif file_path.startswith(INTEGRATIONS_DIR) or file_path.startswith(SCRIPTS_DIR):
+            # docs and test files do not influence integration tests filtering
+            elif checked_type(file_path, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES):
                 if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
                     continue
 
@@ -144,19 +161,19 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     caught_missing_test = False
     catched_intergrations = set([])
 
-    test_ids = get_test_ids()
+    test_ids, skipped_tests = get_test_ids()
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
 
     integration_set = id_set['integrations']
     test_playbooks_set = id_set['TestPlaybooks']
-    integration_to_command = get_integration_commands(integration_ids, integration_set)
+    integration_to_command, _ = get_integration_commands(integration_ids, integration_set)
 
     for test_playbook in test_playbooks_set:
         detected_usage = False
-        test_playbook_id = test_playbook.keys()[0]
-        test_playbook_data = test_playbook.values()[0]
+        test_playbook_id = list(test_playbook.keys())[0]
+        test_playbook_data = list(test_playbook.values())[0]
         test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
@@ -181,7 +198,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                             tests_set.add(test_playbook_id)
                             catched_intergrations.add(integration_id)
 
-        if detected_usage and test_playbook_id not in test_ids:
+        if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
             caught_missing_test = True
             print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
                         "please update the conf.json file accordingly".format(test_playbook_name))
@@ -202,6 +219,14 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
 
 
 def get_test_ids(check_nightly_status=False):
+    """Get the test ids from conf.json
+
+    Keyword Arguments:
+        check_nightly_status {bool} -- if we are running nightly test (default: {False})
+
+    Returns:
+        tuple: (test_ids, skipped_tests)
+    """
     test_ids = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
@@ -212,18 +237,31 @@ def get_test_ids(check_nightly_status=False):
             playbook_id = t['playbookID']
             test_ids.append(playbook_id)
 
-    return test_ids
+    return test_ids, list(conf['skipped_tests'].keys())
 
 
 def get_integration_commands(integration_ids, integration_set):
     integration_to_command = {}
+    deprecated_message = ''
+    deprecated_commands_string = ''
     for integration in integration_set:
-        integration_id = integration.keys()[0]
-        integration_data = integration.values()[0]
+        integration_id = list(integration.keys())[0]
+        integration_data = list(integration.values())[0]
         if integration_id in integration_ids:
-            integration_to_command[integration_id] = integration_data.get('commands', [])
+            integration_commands = set(integration_data.get('commands', []))
+            integration_deprecated_commands = set(integration_data.get('deprecated_commands', []))
+            if integration_deprecated_commands:
+                deprecated_names = ', '.join(integration_deprecated_commands)
+                deprecated_commands_string += '{}: {}\n'.format(integration_id, deprecated_names)
 
-    return integration_to_command
+            relevant_commands = list(integration_commands - integration_deprecated_commands)
+            integration_to_command[integration_id] = relevant_commands
+
+    if deprecated_commands_string:
+        deprecated_message = 'The following integration commands are deprecated and are not taken ' \
+                             'into account in the test collection:\n{}'.format(deprecated_commands_string)
+
+    return integration_to_command, deprecated_message
 
 
 def find_tests_for_modified_files(modified_files):
@@ -256,8 +294,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
             if test in test_ids or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
-                if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                        re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                if checked_type(file_path, INTEGRATION_REGEXES):
                     _id = get_script_or_integration_id(file_path)
 
                 else:
@@ -276,22 +313,31 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
 
 
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files):
+    tests_set = set([])
+    updated_script_names = set([])
+    updated_playbook_names = set([])
+    catched_scripts, catched_playbooks = set([]), set([])
+
     script_to_version = {}
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
-                re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
+        if checked_type(file_path, YML_SCRIPT_REGEXES):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
-        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+
+            package_name = os.path.dirname(file_path)
+            if glob.glob(package_name + "/*_test.py"):
+                catched_scripts.add(name)
+                tests_set.add('Found a unittest for the script {}'.format(package_name))
+
+        elif checked_type(file_path, YML_PLAYBOOKS_NO_TESTS_REGEXES):
             name = get_name(file_path)
             playbook_names.add(name)
             playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+
+        elif checked_type(file_path, INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
             _id = get_script_or_integration_id(file_path)
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
@@ -303,17 +349,16 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
 
-    catched_scripts, catched_playbooks = set([]), set([])
-    updated_script_names = set([])
-    updated_playbook_names = set([])
-    tests_set = set([])
+    deprecated_msgs = exclude_deprecated_entities(script_set, script_names,
+                                                  playbook_set, playbook_names,
+                                                  integration_set, integration_ids)
 
     for script_id in script_names:
         enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
                              playbook_names, updated_script_names, updated_playbook_names, catched_scripts,
                              catched_playbooks, tests_set)
 
-    integration_to_command = get_integration_commands(integration_ids, integration_set)
+    integration_to_command, deprecated_commands_message = get_integration_commands(integration_ids, integration_set)
     for integration_id, integration_commands in integration_to_command.items():
         enrich_for_integration_id(integration_id, integration_to_version[integration_id], integration_commands,
                                   script_set, playbook_set, playbook_names, script_names, updated_script_names,
@@ -329,16 +374,79 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     for new_playbook in updated_playbook_names:
         playbook_names.add(new_playbook)
 
-    affected_ids_string = ""
+    affected_ids_strings = {
+        'scripts': '',
+        'playbooks': '',
+        'integrations': ''
+    }
     if script_names:
-        affected_ids_string += 'Scripts:\n' + '\n'.join(script_names) + '\n\n'
+        affected_ids_strings['scripts'] += 'Scripts:\n' + '\n'.join(script_names)
     if playbook_names:
-        affected_ids_string += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n\n'
+        affected_ids_strings['playbooks'] += 'Playbooks:\n' + '\n'.join(playbook_names)
     if integration_ids:
-        affected_ids_string += 'Integrations:\n' + '\n'.join(integration_ids) + '\n\n'
+        affected_ids_strings['integrations'] += 'Integrations:\n' + '\n'.join(integration_ids)
 
-    print('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string))
+    print('The following ids are affected due to the changes you made:')
+    for entity in ['scripts', 'playbooks', 'integrations']:
+        print(affected_ids_strings[entity])
+        print_color(deprecated_msgs[entity], LOG_COLORS.YELLOW)
+
+    if deprecated_commands_message:
+        print_color(deprecated_commands_message, LOG_COLORS.YELLOW)
+
     return tests_set, catched_scripts, catched_playbooks
+
+
+def exclude_deprecated_entities(script_set, script_names,
+                                playbook_set, playbook_names,
+                                integration_set, integration_ids):
+    """Removes deprecated entities from the affected entities sets.
+
+    :param script_set: The set of existing scripts within Content repo.
+    :param script_names: The names of the affected scripts in your change set.
+    :param playbook_set: The set of existing playbooks within Content repo.
+    :param playbook_names: The ids of the affected playbooks in your change set.
+    :param integration_set: The set of existing integrations within Content repo.
+    :param integration_ids: The ids of the affected integrations in your change set.
+
+    :return: deprecated_messages_dict - A dict of messages specifying of all the deprecated entities.
+    """
+    deprecated_messages_dict = {
+        'scripts': '',
+        'playbooks': '',
+        'integrations': ''
+    }
+
+    deprecated_entities_strings_dict = {
+        'scripts': '',
+        'playbooks': '',
+        'integrations': ''
+    }
+
+    # Iterates over three types of entities: scripts, playbooks and integrations and removes deprecated entities
+    for entity_set, entity_names, entity_type in [(script_set, script_names, 'scripts'),
+                                                  (playbook_set, playbook_names, 'playbooks'),
+                                                  (integration_set, integration_ids, 'integrations')]:
+        for entity in entity_set:
+            # integrations are defined by their ids while playbooks and scripts and scripts are defined by names
+            if entity_type == 'integrations':
+                entity_name = list(entity.keys())[0]
+            else:
+                entity_name = list(entity.values())[0].get('name', '')
+
+            if entity_name in entity_names:
+                entity_data = list(entity.values())[0]
+                if entity_data.get('deprecated', False):
+                    deprecated_entities_strings_dict[entity_type] += entity_name + '\n'
+                    entity_names.remove(entity_name)
+
+        if deprecated_entities_strings_dict[entity_type]:
+            deprecated_messages_dict[entity_type] = 'The following {} are deprecated ' \
+                                                    'and are not taken into account in the test collection:' \
+                                                    '\n{}'.format(entity_type,
+                                                                  deprecated_entities_strings_dict[entity_type])
+
+    return deprecated_messages_dict
 
 
 def enrich_for_integration_id(integration_id, given_version, integration_commands, script_set, playbook_set,
@@ -360,7 +468,9 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
     :param tests_set: The names of the caught tests.
     """
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
+        if playbook_data.get('deprecated', False):
+            continue
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -372,7 +482,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                     if not command_to_integration.get(integration_command) or \
                             command_to_integration.get(integration_command) == integration_id:
 
-                        tests = playbook_data.get('tests', [])
+                        tests = set(playbook_data.get('tests', []))
                         if tests:
                             catched_playbooks.add(playbook_name)
                             update_test_set(tests, tests_set)
@@ -383,13 +493,16 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                                                updated_playbook_names, catched_playbooks, tests_set)
 
     for script in script_set:
-        script_data = script.values()[0]
+        script_data = list(script.values())[0]
+        if script_data.get('deprecated', False):
+            continue
         script_name = script_data.get('name')
+        script_file_path = script_data.get('file_path')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
         command_to_integration = script_data.get('command_to_integration', {})
         for integration_command in integration_commands:
-            if integration_command in script_data.get('depends_on', []) and not script_data.get('deprecated'):
+            if integration_command in script_data.get('depends_on', []):
                 if integration_command in command_to_integration.keys() and \
                         command_to_integration[integration_command] == integration_id and \
                         script_toversion >= given_version[1]:
@@ -399,6 +512,11 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                         if tests:
                             catched_scripts.add(script_name)
                             update_test_set(tests, tests_set)
+
+                        package_name = os.path.dirname(script_file_path)
+                        if glob.glob(package_name + "/*_test.py"):
+                            catched_scripts.add(script_name)
+                            tests_set.add('Found a unittest for the script {}'.format(script_name))
 
                         updated_script_names.add(script_name)
                         new_versions = (script_fromversion, script_toversion)
@@ -410,7 +528,9 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
 def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, script_set, playbook_set,
                            updated_playbook_names, catched_playbooks, tests_set):
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
+        if playbook_data.get('deprecated', False):
+            continue
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -418,7 +538,7 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
                 playbook_toversion >= given_version[1]:
 
             if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
-                tests = playbook_data.get('tests', [])
+                tests = set(playbook_data.get('tests', []))
                 if tests:
                     catched_playbooks.add(playbook_name)
                     update_test_set(tests, tests_set)
@@ -432,17 +552,24 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
 def enrich_for_script_id(given_script_id, given_version, script_names, script_set, playbook_set, playbook_names,
                          updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks, tests_set):
     for script in script_set:
-        script_data = script.values()[0]
+        script_data = list(script.values())[0]
+        if script_data.get('deprecated', False):
+            continue
         script_name = script_data.get('name')
+        script_file_path = script_data.get('file_path')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
-        if given_script_id in script_data.get('script_executions', []) and not script_data.get('deprecated') and \
-                script_toversion >= given_version[1]:
+        if given_script_id in script_data.get('script_executions', []) and script_toversion >= given_version[1]:
             if script_name not in script_names and script_name not in updated_script_names:
-                tests = script_data.get('tests', [])
+                tests = set(script_data.get('tests', []))
                 if tests:
                     catched_scripts.add(script_name)
                     update_test_set(tests, tests_set)
+
+                package_name = os.path.dirname(script_file_path)
+                if glob.glob(package_name + "/*_test.py"):
+                    catched_scripts.add(script_name)
+                    tests_set.add('Found a unittest for the script {}'.format(script_name))
 
                 updated_script_names.add(script_name)
                 new_versions = (script_fromversion, script_toversion)
@@ -451,13 +578,15 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                                      tests_set)
 
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
+        if playbook_data.get('deprecated', False):
+            continue
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
         if given_script_id in playbook_data.get('implementing_scripts', []) and playbook_toversion >= given_version[1]:
             if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
-                tests = playbook_data.get('tests', [])
+                tests = set(playbook_data.get('tests', []))
                 if tests:
                     catched_playbooks.add(playbook_name)
                     update_test_set(tests, tests_set)
@@ -468,7 +597,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                                        updated_playbook_names, catched_playbooks, tests_set)
 
 
-def update_test_set(tests_set, tests):
+def update_test_set(tests, tests_set):
     for test in tests:
         tests_set.add(test)
 
@@ -522,7 +651,9 @@ def get_test_list(files_string, branch_name):
 
     # Adding a unique test for a json file.
     if is_reputations_json:
+        tests.add('FormattingPerformance - Test')
         tests.add('reputations.json Test')
+        tests.add('Indicators reputation-.json Test')
 
     if is_indicator_json:
         tests.add('Test IP Indicator Fields')
@@ -541,14 +672,14 @@ def get_test_list(files_string, branch_name):
 
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
         print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
-        test_ids = get_test_ids(check_nightly_status=True)
+        test_ids = get_test_ids(check_nightly_status=True)[0]
         rand = random.Random(files_string + branch_name)
         while len(tests) < 3:
             tests.add(rand.choice(test_ids))
 
     if not tests:
         if modified_files or modified_tests_list or all_tests:
-            print_error("There are no tests that check the changes you've done, please make sure you write one")
+            print_error("There is no test-playbook that checks the changes you've done, please make sure you write one.")
             global _FAILED
             _FAILED = True
         else:

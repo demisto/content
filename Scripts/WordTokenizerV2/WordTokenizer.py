@@ -1,10 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
+from HTMLParser import HTMLParser
 
 import spacy
-import re
-import json
-from HTMLParser import HTMLParser
+
+from CommonServerPython import *
 
 CLEAN_HTML = (demisto.args()['cleanHtml'] == 'yes')
 REMOVE_LINE_BREAKS = (demisto.args()['removeLineBreaks'] == 'yes')
@@ -31,7 +29,7 @@ HTML_PATTERNS = [
 
 # define global parsers
 html_parser = HTMLParser()
-nlp = spacy.load('en_core_web_sm')
+nlp = spacy.load('en_core_web_sm', disable=['tagger', 'parser', 'ner', 'textcat'])
 
 
 def clean_html(text):
@@ -47,8 +45,11 @@ def clean_html(text):
 def remove_line_breaks(text):
     if not REMOVE_LINE_BREAKS:
         return text
+    return text.replace("\r", " ").replace("\n", " ")
 
-    return re.sub(r"\s+", " ", text.replace("\r", " ").replace("\n", " ")).strip()
+
+def remove_multiple_whitespaces(text):
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def hash_word(word):
@@ -61,36 +62,62 @@ def tokenize_text(text):
     except Exception:
         unicode_text = text
     doc = nlp(unicode(unicode_text))
-    words = []
-    for token in doc:
-        if token.is_space:
+    original_text_indices_to_words = map_indices_to_words(unicode_text)
+    tokens_list = []
+    original_words_to_tokens = {}  # type: ignore
+    for word in doc:
+        if word.is_space:
             continue
-        elif REMOVE_STOP_WORDS and token.is_stop:
+        elif REMOVE_STOP_WORDS and word.is_stop:
             continue
-        elif REMOVE_PUNCT and token.is_punct:
+        elif REMOVE_PUNCT and word.is_punct:
             continue
-        elif REPLACE_EMAIL and '@' in token.text:
-            words.append("EMAIL_PATTERN")
-        elif REPLACE_URLS and token.like_url:
-            words.append("URL_PATTERN")
-        elif REPLACE_NUMBERS and (token.like_num or token.pos_ == 'NUM'):
-            words.append("NUMBER_PATTERN")
-        elif REMOVE_NON_ALPHA and not token.is_alpha:
+        elif REPLACE_EMAIL and '@' in word.text:
+            tokens_list.append("EMAIL_PATTERN")
+        elif REPLACE_URLS and word.like_url:
+            tokens_list.append("URL_PATTERN")
+        elif REPLACE_NUMBERS and (word.like_num or word.pos_ == 'NUM'):
+            tokens_list.append("NUMBER_PATTERN")
+        elif REMOVE_NON_ALPHA and not word.is_alpha:
             continue
-        elif FILTER_ENGLISH_WORDS and token.text not in nlp.vocab:
+        elif FILTER_ENGLISH_WORDS and word.text not in nlp.vocab:
             continue
         else:
-            if LEMMATIZER and token.lemma_ != '-PRON-':
-                words.append(token.lemma_)
+            if LEMMATIZER and word.lemma_ != '-PRON-':
+                token_to_add = word.lemma_
             else:
-                words.append(token.lower_)
-    hashed_words = []
+                token_to_add = word.lower_
+            tokens_list.append(token_to_add)
+            original_word = original_text_indices_to_words[word.idx]
+            if original_word not in original_words_to_tokens:
+                original_words_to_tokens[original_word] = []
+            original_words_to_tokens[original_word].append(token_to_add)
+    hashed_tokens_list = []
     if HASH_SEED:
-        for word in words:
+        for word in tokens_list:
             word_hashed = hash_word(word)
-            hashed_words.append(word_hashed)
+            hashed_tokens_list.append(word_hashed)
+        hashed_words_to_tokens = {word: [hash_word(t) for t in tokens_list] for word, tokens_list in
+                                  original_words_to_tokens.items()}
+    else:
+        hashed_words_to_tokens = {}
+    return ' '.join(tokens_list).encode('utf-8').strip(), ' '.join(hashed_tokens_list) if len(
+        hashed_tokens_list) > 0 else None, original_words_to_tokens, hashed_words_to_tokens
 
-    return ' '.join(words).encode(TEXT_ENCODE).strip(), ' '.join(hashed_words) if len(hashed_words) > 0 else None
+
+def map_indices_to_words(unicode_text):
+    original_text_indices_to_words = {}
+    word_start = 0
+    while word_start < len(unicode_text) and unicode_text[word_start].isspace():
+        word_start += 1
+    for word in unicode_text.split():
+        for char_idx, char in enumerate(word):
+            original_text_indices_to_words[word_start + char_idx] = word
+        # find beginning of next word
+        word_start += len(word)
+        while word_start < len(unicode_text) and unicode_text[word_start].isspace():
+            word_start += 1
+    return original_text_indices_to_words
 
 
 def word_tokenize(text):
@@ -108,14 +135,16 @@ def word_tokenize(text):
         original_text = t
         t = remove_line_breaks(t)
         t = clean_html(t)
-        tokenized_text, hash_tokenized_text = tokenize_text(t)
+        t = remove_multiple_whitespaces(t)
+        tokenized_text, hash_tokenized_text, original_words_to_tokens, words_to_hashed_tokens = tokenize_text(t)
         text_result = {
             'originalText': original_text,
             'tokenizedText': tokenized_text,
+            'originalWordsToTokens': original_words_to_tokens,
         }
         if hash_tokenized_text:
             text_result['hashedTokenizedText'] = hash_tokenized_text
-
+            text_result['wordsToHashedTokens'] = words_to_hashed_tokens
         result.append(text_result)
     if len(result) == 1:
         result = result[0]  # type: ignore
@@ -131,4 +160,5 @@ def word_tokenize(text):
     }
 
 
-demisto.results(word_tokenize(demisto.args()['value']))
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    demisto.results(word_tokenize(demisto.args()['value']))

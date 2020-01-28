@@ -1,7 +1,9 @@
 import json
 import logging
+import uuid
 
 integrationContext = {}
+is_debug = False  # type: bool
 
 exampleIncidents = [
     {
@@ -377,6 +379,8 @@ exampleDemistoUrls = {
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
 
+callingContext = {}
+
 
 def params():
     return {}
@@ -414,7 +418,7 @@ def context():
 
 
 def uniqueFile():
-    return "4fa3f70d-2d5d-4482-ab73-43dc24063a18"
+    return str(uuid.uuid4())
 
 
 def getLastRun():
@@ -551,3 +555,14 @@ def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
 def demistoVersion():
     return {}
 
+def integrationInstance():
+    return ""
+
+def createIndicators(indicators_batch):
+    return ""
+
+def findIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '', value = ''):
+    return {}
+
+def getIndexHash():
+    return ''

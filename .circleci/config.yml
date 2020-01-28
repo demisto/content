@@ -2,31 +2,55 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
     resource_class: medium+
+    parallelism: 2
     environment:
-      CONTENT_VERSION: "19.9.1"
-      SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "117f6b907c87a7a9d1a008285b6643cc1ddd4d18" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "20.1.2"
+      SERVER_VERSION: "5.0.1"
+      GIT_SHA1: "899b28ac9128640a98f81f9c30ba36cf8c45aba8" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
       - run:
           name: Prepare Environment
           when: always
           command: |
+              if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+                then
+                  echo "Skipping - instance tests tasks are running only in container number 0"
+                  exit 0
+              fi
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-              echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
               echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
-              pyenv versions
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
+              if [ ! -e "venv" ]; then
+                echo "installing venv"
+                NO_HOOKS=1 .hooks/bootstrap
+                source ./venv/bin/activate
+                pip install -r .circleci/build-requirements.txt
+                pip3 install -r .circleci/build-requirements.txt
+              else
+                echo "venv exists (from cache). activating"
+                source ./venv/bin/activate
+              fi
+              # store in bash env so we load our venv in each step
+              echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
               python --version
               python3 --version
-              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+      - save_cache:
+          paths:
+            - venv
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
@@ -35,60 +59,155 @@ jobs:
           name: Create ID Set
           when: always
           command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - running only in container number 0"
+                exit 0
+            fi
             python ./Tests/scripts/update_id_set.py -r
       - run:
-          name: Infrastucture testing
+          name: Infrastructure testing
           when: always
           command: |
-            pytest ./Tests/scripts/hook_validations/tests/ -v
-            pytest ./Tests/scripts/infrastructure_tests/ -v
-            pytest ./Tests/scripts/test_configure_tests.py -v
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
+
+            python -m pytest ./Tests/scripts/hook_validations/tests/ -v
+            # after moving to all to python3, run the tests by folder
+            # python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/constants_regex_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
+            python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
           when: always
           command: |
-              # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
-              ./Tests/scripts/pyflake.sh *.py
-              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
 
-              [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
-              python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
+            # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+            ./Tests/scripts/pyflake.sh *.py
+            find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
+
+            [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
+
+            if [ "${CHECK_BACKWARD}" = "true" ] ;
+              then
+                 demisto-sdk validate -g --post-commit
+
+              else
+                 demisto-sdk validate -g --post-commit --no-backward-comp
+            fi
+      - run:
+          name: Secrets
+          when: always
+          command: |
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
+
+            demisto-sdk secrets --post-commit --ignore-entropy
       - run:
           name: Configure Test Filter
           when: always
           command: |
-              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-              python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
+
+            [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+            python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Spell Checks
           command: |
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
             python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
       - run:
           name: Build Content Descriptor
           when: always
           command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - running only in container number 0"
+                exit 0
+            fi
             if [ -n "${GITHUB_TOKEN}" ] ;
               then
-                python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
 
               else
-                python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
             fi
       - run:
           name: Common Server Documentation
           when: always
-          command: ./Documentation/commonServerDocs.sh
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - running only in container number 0"
+                exit 0
+            fi
+            ./Documentation/commonServerDocs.sh
       - run:
           name: Create Content Artifacts
           when: always
-          command: python content_creator.py $CIRCLE_ARTIFACTS
+          command: |
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - running only in container number 0"
+                exit 0
+            fi
+            demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
+            # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
+            cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
+            unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
+            zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
+            rm -r test_content_dir
       - store_artifacts:
           path: artifacts
           destination: artifacts
       - run:
           name: Run Unit Testing and Lint
           when: always
-          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+          command: |
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+              then
+                echo "Skipping - unit tests are running only in container number 1"
+                exit 0
+            fi
+            if [ $NIGHTLY ] ;
+              then
+                demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt
+
+              else
+                demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt
+            fi
+      - run:
+          name: Verify Base Branch for Contribution
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+            fi
       - run:
           name: Download Artifacts
           when: always
@@ -96,6 +215,11 @@ jobs:
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
+            fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -113,6 +237,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/download_demisto_conf.sh
@@ -128,14 +257,19 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                if [ -n "${NIGHTLY}" ] ;
+                if [ -n "${NIGHTLY}" ] || [ -n "${INSTANCE_TESTS}" ] ;
                   then
-                    export IFRA_ENV_TYPE=Content-Master
+                    export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
 
                   else
-                    export IFRA_ENV_TYPE=Content-Env
+                    export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
 
@@ -150,8 +284,14 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
+
                 python ./Tests/scripts/run_content_installation.py
                 python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
@@ -167,6 +307,11 @@ jobs:
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
+            fi
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -184,6 +329,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto one before GA"
@@ -199,6 +349,11 @@ jobs:
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
+            fi
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -216,13 +371,25 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
+                export RETVAL=$?
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                exit $RETVAL
 
-              else
+            else
                 echo "Not AMI run, can't run on this version"
             fi
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
       - run:
           name: Slack Notifier
           shell: /bin/bash
@@ -231,7 +398,13 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            ./Tests/scripts/slack_notifier.sh
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build"
+                exit 0
+            fi
+            ./Tests/scripts/slack_notifier.sh $CIRCLE_NODE_INDEX ./env_results.json
+
           when: always
       - run:
           name: Validate Docker Images
@@ -241,11 +414,13 @@ jobs:
       - run:
           name: Instance Test
           command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+              then
+                ./Tests/scripts/instance_test.sh
+              else
+                echo "Skipping instance tests"
+                exit 0
             fi
-            ./Tests/scripts/instance_test.sh
           when: always
       - run:
           name: Destroy Instances
@@ -254,7 +429,17 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'Skipping - running only in container number 0.'
+                exit 0;
+              else
+                python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+
+                export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+                zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
+                rm -f $CIRCLE_ARTIFACTS/server*.log
+            fi
           when: always
       - store_artifacts:
           path: artifacts

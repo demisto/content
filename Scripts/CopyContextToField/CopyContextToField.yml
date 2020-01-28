@@ -1,0 +1,49 @@
+args:
+- default: false
+  description: The context key from which to get the value.
+  isArray: false
+  name: sourceContextKey
+  required: true
+  secret: false
+- default: false
+  description: The incident field to set with the value.
+  isArray: false
+  name: targetIncidentField
+  required: true
+  secret: false
+- default: false
+  description: 'The incidents query on which to apply the copy process. For example, to apply this to all incidents of type "Phishing", use the query: "type:Phishing".'
+  isArray: false
+  name: incidentsQuery
+  required: true
+  secret: false
+- default: false
+  defaultValue: '1000'
+  description: The maximum number of incidents to edit. Default is 1,000.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  defaultValue: ' '
+  description: Concatenates list values.
+  isArray: false
+  name: listSeparator
+  required: false
+  secret: false
+comment: Copy a context key to an incident field of multiple incidents,
+  based on an incident query.
+commonfields:
+  id: CopyContextToField
+  version: -1
+enabled: true
+name: CopyContextToField
+script: '-'
+system: false
+tags:
+- Utility
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false
+subtype: python2

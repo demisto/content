@@ -10,12 +10,13 @@
 # PYLINT_FILES: file names to pass to pylint
 # PYLINT_SKIP: if set will skip pylint
 # PYTEST_SKIP: if set will skip pytest
-# PYTEST_FAIL_NO_TESTS: if set will fail if no tests are defined 
+# PYTEST_FAIL_NO_TESTS: if set will fail if no tests are defined
+# CPU_NUM: number of CPUs to run tests on
 
 pylint_return=0
 if [ -z "${PYLINT_SKIP}" ]; then
     echo "======== Running pylint on files: ${PYLINT_FILES} ==========="
-    python -m pylint -E -f parseable --generated-members=requests.packages.urllib3,requests.codes.ok \
+    python -m pylint -E -e string -d duplicate-string-formatting-argument -f parseable --generated-members=requests.packages.urllib3,requests.codes.ok \
         ${PYLINT_FILES}
     pylint_return=$?
     echo "Pylint completed with status code: $pylint_return"
@@ -45,7 +46,7 @@ fi
 
 pytest_return=0
 if [ -z "${PYTEST_SKIP}" ]; then
-    python -m pytest -v
+    python -m pytest -v -n="${CPU_NUM}"
     pytest_return=$?
     echo "Pytest completed with status code: $pytest_return"
 fi

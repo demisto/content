@@ -14,14 +14,14 @@ schema;field_schema:
   mapping:
     id:
       type: str
-      required: yes
+      required: True
     version:
       type: number
     modified:
       type: str
     name:
       type: str
-      required: yes
+      required: True
     ownerOnly:
       type: bool
     placeholder:
@@ -32,10 +32,10 @@ schema;field_schema:
       type: str
     cliName:
       type: str
-      required: yes
+      required: True
     type:
       type: str
-      required: yes
+      required: True
     closeForm:
       type: bool
     editForm:

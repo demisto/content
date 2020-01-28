@@ -1,12 +1,8 @@
-category: Authentication
+category: Network Security
 commonfields:
   id: BluecatAddressManager
   version: -1
 configuration:
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - defaultvalue: https://192.168.0.1
   display: Server URL (e.g., https://192.168.0.1)
   name: url
@@ -16,12 +12,11 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -29,21 +24,20 @@ configuration:
   name: conf_name
   required: false
   type: 0
-description: Integration Template
-display: BluecatAddressManager
+description: Use the BlueCat Address Manager integration to enrich IP addresses and manage response policies.
+display: Bluecat Address Manager
 name: BluecatAddressManager
 script:
   commands:
   - arguments:
     - default: true
-      description: The IP to get data about
+      description: The IP address for which to return data.
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Enriches an IP with data about IP networks and blocks that it belongs
-      to, linked IPs and mac addresses, etc.
+    description: Enriches an IP address with data, including IP networks and blocks to which it belongs, linked IPs, MAC addresses, and more.
     execution: false
     name: bluecat-am-query-ip
     outputs:
@@ -72,7 +66,7 @@ script:
       description: Type of IP address.
       type: String
     - contextPath: IP.Address
-      description: Address of IP.
+      description: The IP address.
       type: String
     - contextPath: BlueCat.AddressManager.IP.Parents.Prefix
       description: Prefix of the IP address.
@@ -184,36 +178,38 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the IPv4 Block containing the specified IPv4 address.
+    description: Returns the IPv4 block that contains the specified IPv4 address.
     execution: false
     name: bluecat-am-get-range-by-ip
     outputs:
     - contextPath: BlueCat.AddressManager.Range.ID
-      description: The address manager ID of the Range.
+      description: The address manager ID of the range.
       type: String
     - contextPath: BlueCat.AddressManager.Range.Name
-      description: Name of the Range.
+      description: Name of the range.
       type: String
     - contextPath: BlueCat.AddressManager.Range.Type
-      description: Type of the Range.
+      description: Type of the range.
       type: String
     - contextPath: BlueCat.AddressManager.Range.Parents.ID
-      description: ID of the parent Range.
+      description: ID of the parent range.
       type: String
     - contextPath: BlueCat.AddressManager.Range.Parents.Type
-      description: Type of the parent Range.
+      description: Type of the parent range.
       type: String
     - contextPath: BlueCat.AddressManager.Range.Parents.Name
-      description: Name of the parent Range.
+      description: Name of the parent range.
       type: String
     - contextPath: BlueCat.AddressManager.Range.Parents.CIDR
       description: Classless Inter-Domain Routing.
       type: String
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Bluecat Address Manager test

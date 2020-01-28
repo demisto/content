@@ -26,12 +26,12 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Threshold
@@ -555,7 +555,7 @@ script:
         try {
             result = doReq('POST', '/analysis/get', {uuid: uuid});
         } catch (err) {
-            if (err == 'Analysis report is not ready yet') {
+            if (err == 'Analysis report is not ready yet.') {
                 return 'Report for Task UUID: ' + uuid + ' is not ready';
             } else {
                 throw err;
@@ -715,10 +715,10 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The Vendor that was used to calculate the score.
+      description: The vendor reporting the URL as malicious.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score
@@ -1017,3 +1017,5 @@ script:
       type: string
     description: Checks the status of a submission.
   runonce: false
+tests:
+  - detonate_file_-_generic_test

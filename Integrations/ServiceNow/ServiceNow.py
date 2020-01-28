@@ -1465,6 +1465,9 @@ def fetch_incidents():
 
 
 def test_module():
+    # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
+    parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
+
     path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
     res = send_request(path, 'GET')
     if 'result' not in res:

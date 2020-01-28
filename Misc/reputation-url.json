@@ -1,13 +1,13 @@
 {
   "id": "urlRep",
   "version": -1,
-  "fromVersion": "5.0.0",
+  "fromVersion": "5.5.0",
   "modified": "2019-07-18T08:14:49.85543843Z",
   "sortValues": null,
   "commitMessage": "",
   "shouldPublish": false,
   "shouldCommit": false,
-  "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]*[\\d+\\p{L}&@#\\/%=~_$();\\*–—―|])?",
+  "regex": "(?i)(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?",
   "details": "URL",
   "prevDetails": "URL",
   "reputationScriptName": "",
@@ -26,6 +26,7 @@
   "contextPath": "URL(val.Data \u0026\u0026 val.Data === obj.Data)",
   "contextValue": "Data",
   "excludedBrands": [],
+  "expiration": 43200,
   "defaultMapping": {
     "blocked": {
       "simple": "",

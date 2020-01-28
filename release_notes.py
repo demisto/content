@@ -12,7 +12,8 @@ import yaml
 from Tests.scripts.constants import INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
     WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
 from Tests.test_utils import print_error, print_warning, get_last_release_version, filter_packagify_changes, \
-    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
+    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file, \
+    is_file_path_in_pack
 from Tests.scripts.validate_files import FilesValidator
 
 CONTENT_LIB_PATH = "./"
@@ -33,6 +34,7 @@ LAYOUT_TYPE_TO_NAME = {
     "close": "Close",
     "quickView": "Quick View",
     "indicatorsDetails": "Indicator Details",
+    "mobile": "Mobile",
 }
 
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
@@ -41,6 +43,9 @@ RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR
 
 
 def add_dot(text):
+    if not text:
+        return ''
+
     text = text.rstrip().replace('```', '***').replace('`', '*')
 
     if '\n' in text:
@@ -69,7 +74,7 @@ def release_notes_item(header, body):
     return '- __{}__\n{}\n'.format(header, add_dot(body))
 
 
-class Content:
+class Content(object):  # pylint: disable=useless-object-inheritance
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
@@ -148,7 +153,7 @@ class Content:
                     raw_content = file_obj.read()
                     cnt = self.load_data(raw_content)
 
-                    from_version = cnt.get("fromversion")
+                    from_version = cnt.get("fromversion") or cnt.get("fromVersion")
                     if from_version is not None and server_version_compare(current_server_version, from_version) < 0:
                         print("Skipped because of version differences")
                         continue
@@ -331,12 +336,13 @@ class IncidentFieldContent(Content):
         if data.get('description'):
             return release_notes_item(data['name'], data['description'])
 
-        release_note = super(IncidentFieldContent, self).added_release_notes(file_path, data)
+        # using the 'modified' function instead of 'added' function to handle ignored RN
+        release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data['name'], release_note)
 
-        # error
+        # error or ignored release_note
         return release_note
 
     def modified_release_notes(self, file_path, data):
@@ -508,7 +514,11 @@ def create_file_release_notes(change_type, full_file_name):
     if isinstance(full_file_name, tuple):
         _, full_file_name = full_file_name
 
-    file_type = full_file_name.split("/")[0]
+    is_pack = is_file_path_in_pack(full_file_name)
+    if is_pack:
+        file_type = full_file_name.split("/")[2]
+    else:
+        file_type = full_file_name.split("/")[0]
     base_name = os.path.basename(full_file_name)
     file_suffix = os.path.splitext(base_name)[-1]
     file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)

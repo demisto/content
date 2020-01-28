@@ -313,7 +313,7 @@ script: |-
               if (vals.length === 1) {
                   vals[0] = vals[0]+'|';
               }
-              mdResults += vals.join('|') + '\n';
+              mdResults += vals.join(' | ') + '\n';
           });
       } else{
           mdResults += 'No data returned\n';
@@ -652,6 +652,7 @@ script: |-
 
   var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, playgroundError: 8, entryInfoFile: 9, map: 15, widget: 17};
   var formats = {html: 'html', table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
+  // The object below does not represent DBot Scores correctly, and should not be used
   var dbotscores = {critical : 4, high: 3, medium: 2, low: 1, informational: 0.5, unknown: 0};
 
   /**

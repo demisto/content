@@ -2,13 +2,13 @@ type: map
 mapping:
   id:
     type: str
-    required: yes
+    required: True
   name:
     type: str
-    required: yes
+    required: True
   description:
     type: str
-    required: yes
+    required: True
   fromVersion:
     type: str
   toVersion:
@@ -17,23 +17,23 @@ mapping:
     type: str
   tags:
     type: seq
-    required: yes
+    required: True
     sequence:
       - type: str
   createdBy:
     type: str
-    required: yes
+    required: True
   type:
     type: str
-    required: yes
+    required: True
     enum: ['pdf', 'csv', 'docx']
   orientation:
     type: str
-    required: yes
+    required: True
     enum: ['landscape', 'portrait', '']
   recipients:
     type: seq
-    required: yes
+    required: True
     sequence:
       - type: str
   system:
@@ -50,7 +50,7 @@ mapping:
         mapping:
           type:
             type: str
-            required: yes
+            required: True
             enum: ['string', 'date', 'duration', 'image']
           value:
             type: scalar
@@ -58,7 +58,7 @@ mapping:
             type: str
   sections:
     type: seq
-    required: yes
+    required: True
     sequence:
       - include: section_schema
 
@@ -68,7 +68,7 @@ schema;section_schema:
   mapping:
     type:
       type: str
-      required: yes
+      required: True
       enum: ['header', 'date', 'placeholder', 'divider', 'text', 'chart', 'table',
       'image', 'globalSection', 'markdown', 'automation', 'json']
     data:
@@ -80,7 +80,7 @@ schema;section_schema:
       mapping:
         type:
           type: str
-          required: yes
+          required: True
         groupBy:
           type: seq
           sequence:

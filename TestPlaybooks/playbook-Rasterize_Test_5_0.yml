@@ -1,0 +1,505 @@
+id: Rasterize Test
+version: -1
+name: Rasterize Test
+starttaskid: "0"
+fromversion: 5.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: a6642a08-aff5-490d-880c-f350e6362102
+    type: start
+    task:
+      id: a6642a08-aff5-490d-880c-f350e6362102
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c9eab1c9-7d5f-49e5-8aca-90708c94de3b
+    type: regular
+    task:
+      id: c9eab1c9-7d5f-49e5-8aca-90708c94de3b
+      version: -1
+      name: get vaild email
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: valid_email-rasterize
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/valid_email-rasterize.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 35b720d1-ffb7-4714-8574-d769230f11cc
+    type: playbook
+    task:
+      id: 35b720d1-ffb7-4714-8574-d769230f11cc
+      version: -1
+      name: Process Email - Generic for Rasterize
+      playbookName: Process Email - Generic for Rasterize
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 3f84b40d-32dc-4ba8-854b-705efdfdf099
+    type: regular
+    task:
+      id: 3f84b40d-32dc-4ba8-854b-705efdfdf099
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 157d411e-ab44-40e5-8b89-e4c8f5c3d95f
+    type: regular
+    task:
+      id: 157d411e-ab44-40e5-8b89-e4c8f5c3d95f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 2e0641ea-67c9-429d-8881-dcb3f048209d
+    type: regular
+    task:
+      id: 2e0641ea-67c9-429d-8881-dcb3f048209d
+      version: -1
+      name: get corrupt email
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: corrupt_email-rasterize
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/corrupt_email-rasterize.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: abad5959-972d-4fca-8475-c9a794cd9f85
+    type: playbook
+    task:
+      id: abad5959-972d-4fca-8475-c9a794cd9f85
+      version: -1
+      name: Process Email - Generic for Rasterize
+      playbookName: Process Email - Generic for Rasterize
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: bd77bc53-a2df-4ff0-8cfd-4c08d2530de0
+    type: regular
+    task:
+      id: bd77bc53-a2df-4ff0-8cfd-4c08d2530de0
+      version: -1
+      name: get valid Image
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: corrupt_email-rasterize
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/test_image.png
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: ce382f1d-984e-437f-8fc1-5af09346cab8
+    type: playbook
+    task:
+      id: ce382f1d-984e-437f-8fc1-5af09346cab8
+      version: -1
+      name: Process Email - Generic for Rasterize
+      playbookName: Process Email - Generic for Rasterize
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 6b2f615d-b4c9-4d9f-838f-6d6612efe9cd
+    type: regular
+    task:
+      id: 6b2f615d-b4c9-4d9f-838f-6d6612efe9cd
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: a42b434b-e10a-4f2c-8779-afd8e4720e72
+    type: title
+    task:
+      id: a42b434b-e10a-4f2c-8779-afd8e4720e72
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 4aa90de0-8d88-40b8-814b-50c7b9a9b7fd
+    type: regular
+    task:
+      id: 4aa90de0-8d88-40b8-814b-50c7b9a9b7fd
+      version: -1
+      name: Rasterize URL to PNG (Github)
+      description: Rasterize a URL into image or PDF
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      height: {}
+      type:
+        simple: png
+      url:
+        simple: https://github.com
+      wait_time:
+        simple: "5"
+      width: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 6fe3cccb-d494-4291-8767-dae37b0428f7
+    type: regular
+    task:
+      id: 6fe3cccb-d494-4291-8767-dae37b0428f7
+      version: -1
+      name: Test Image (ImageOCR)
+      description: Extracts text from an image.
+      script: '|||image-ocr-extract-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entryid:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/png
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+              right:
+                value:
+                  simple: url.png
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      langs: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 2307f6cb-2776-47a5-8592-c25f273cd210
+    type: condition
+    task:
+      id: 2307f6cb-2776-47a5-8592-c25f273cd210
+      version: -1
+      name: Check Text
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Text
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: github
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

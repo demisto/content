@@ -1,16 +1,24 @@
 # -*- coding: utf-8 -*-
+import demistomock as demisto
 import copy
 import json
+import re
 import os
 import sys
 import requests
 from pytest import raises, mark
-
-import demistomock as demisto
+import pytest
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, parse_date_range
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, encode_string_results
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    # Python 3
+    from io import StringIO  # noqa
 
 INFO = {'b': 1,
         'a': {
@@ -543,6 +551,35 @@ def test_logger_write(mocker):
     assert '<XX_REPLACED>' in args[0]
 
 
+def test_logger_init_key_name(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'key': {'password': 'my_password'},
+        'secret': 'my_secret'
+    })
+    mocker.patch.object(demisto, 'info')
+    ilog = IntegrationLogger()
+    ilog.write("This is a test with my_password and my_secret")
+    ilog.print_log()
+    # assert that the print doesn't contain my_password
+    # call_args is tuple (args list, kwargs). we only need the args
+    args = demisto.info.call_args[0]
+    assert 'This is a test' in args[0]
+    assert 'my_password' not in args[0]
+    assert 'my_secret' not in args[0]
+    assert '<XX_REPLACED>' in args[0]
+
+
+def test_logger_replace_strs(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'apikey': 'my_apikey',
+    })
+    ilog = IntegrationLogger()
+    ilog.add_replace_strs('special_str', '')  # also check that empty string is not added by mistake
+    ilog('my_apikey is special_str and b64: ' + b64_encode('my_apikey'))
+    assert ('' not in ilog.replace_strs)
+    assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
+
+
 def test_is_mac_address():
     from CommonServerPython import is_mac_address
 
@@ -587,11 +624,26 @@ def test_return_error_fetch_incidents(mocker):
     assert returned_error
 
 
+def test_return_error_fetch_indicators(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-indicators
+    mocker.patch.object(demisto, 'command', return_value="fetch-indicators")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
 def test_return_error_long_running_execution(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"
 
-    # Test fetch-incidents
+    # Test long-running-execution
     mocker.patch.object(demisto, 'command', return_value="long-running-execution")
     returned_error = False
     try:
@@ -784,6 +836,15 @@ class TestBaseClient:
         with raises(DemistoException, match="Error in API call"):
             self.client._http_request('get', 'event')
 
+    def test_http_request_not_ok_with_json_parsing(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException) as exception:
+            self.client._http_request('get', 'event')
+        message = str(exception.value)
+        response_json_error = json.loads(message.split('\n')[1])
+        assert response_json_error == self.text
+
     def test_http_request_timeout(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
@@ -869,6 +930,39 @@ def test_parse_date_string():
     ) == datetime(2019, 9, 17, 6, 16, 39, 404000)
 
 
+def test_override_print(mocker):
+    mocker.patch.object(demisto, 'info')
+    int_logger = IntegrationLogger()
+    int_logger.set_buffering(False)
+    int_logger.print_override("test", "this")
+    assert demisto.info.call_count == 1
+    assert demisto.info.call_args[0][0] == "test this"
+    demisto.info.reset_mock()
+    int_logger.print_override("test", "this", file=sys.stderr)
+    assert demisto.info.call_count == 1
+    assert demisto.info.call_args[0][0] == "test this"
+    buf = StringIO()
+    # test writing to custom file (not stdout/stderr)
+    int_logger.print_override("test", "this", file=buf)
+    assert buf.getvalue() == 'test this\n'
+
+
+def test_http_client_debug(mocker):
+    if not IS_PY3:
+        pytest.skip("test not supported in py2")
+        return
+    mocker.patch.object(demisto, 'info')
+    debug_log = DebugLogger()
+    from http.client import HTTPConnection
+    HTTPConnection.debuglevel = 1
+    con = HTTPConnection("google.com")
+    con.request('GET', '/')
+    r = con.getresponse()
+    r.read()
+    assert demisto.info.call_count > 5
+    assert debug_log is not None
+
+
 def test_parse_date_range():
     utc_now = datetime.utcnow()
     utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
@@ -881,3 +975,111 @@ def test_parse_date_range():
     # testing local datetime and range of 73 minutes
     assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
+
+
+def test_encode_string_results():
+    s = "test"
+    assert s == encode_string_results(s)
+    s2 = u"בדיקה"
+    if IS_PY3:
+        res = str(s2)
+    else:
+        res = s2.encode("utf8")
+    assert encode_string_results(s2) == res
+    not_string = [1, 2, 3]
+    assert not_string == encode_string_results(not_string)
+
+
+class TestReturnOutputs:
+    def test_return_outputs(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        raw_response = {'event': 1}
+        return_outputs(md, outputs, raw_response)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
+
+    def test_return_outputs_only_md(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        return_outputs(md)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert md == results['HumanReadable']
+        assert 'text' == results['ContentsFormat']
+
+    def test_return_outputs_raw_none(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        return_outputs(md, outputs, None)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert outputs == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
+
+
+def test_argToBoolean():
+    assert argToBoolean('true') is True
+    assert argToBoolean('yes') is True
+    assert argToBoolean('TrUe') is True
+    assert argToBoolean(True) is True
+
+    assert argToBoolean('false') is False
+    assert argToBoolean('no') is False
+    assert argToBoolean(False) is False
+
+
+batch_params = [
+    # full batch case
+    ([1, 2, 3], 1, [[1], [2], [3]]),
+    # empty case
+    ([], 1, []),
+    # out of index case
+    ([1, 2, 3], 5, [[1, 2, 3]]),
+    # out of index in end with batches
+    ([1, 2, 3, 4, 5], 2, [[1, 2], [3, 4], [5]]),
+    ([1] * 100, 2, [[1, 1]] * 50)
+]
+
+
+@pytest.mark.parametrize('iterable, sz, expected', batch_params)
+def test_batch(iterable, sz, expected):
+    for i, item in enumerate(batch(iterable, sz)):
+        assert expected[i] == item
+
+
+regexes_test = [
+    (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.a.1', False),
+    (ipv4Regex, '192.168..1.1', False),
+    (ipv4Regex, '192.256.1.1', False),
+    (ipv4Regex, '192.256.1.1.1', False),
+    (ipv4cidrRegex, '192.168.1.1/32', True),
+    (ipv4cidrRegex, '192.168.1.1.1/30', False),
+    (ipv4cidrRegex, '192.168.1.b/30', False),
+    (ipv4cidrRegex, '192.168.1.12/381', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::1', True),
+    (ipv6Regex, '2001:db8:a0b:12f0::1/11', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::1::1', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::98aa5', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/64', True),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/256', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1::1/25', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1aaasds::1/1', False)
+]
+
+
+@pytest.mark.parametrize('pattern, string, expected', regexes_test)
+def test_regexes(pattern, string, expected):
+    # (str, str, bool) -> None
+    # emulates re.fullmatch from py3.4
+    assert expected is bool(re.match("(?:" + pattern + r")\Z", string))

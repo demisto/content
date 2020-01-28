@@ -57,7 +57,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://www.phpclasses.org/browse/download/1/file/14672/name/message.eml
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
       username: {}
     reputationcalc: 1
     separatecontext: false

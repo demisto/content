@@ -45,7 +45,7 @@ configuration:
   options:
   - None
   - SSL
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: ""
   type: 8
@@ -59,7 +59,7 @@ script:
     arguments:
     - name: username
       required: true
-      description: The username (samAccountName) of the user to modify
+      description: The username (samAccountName) of the user to modify.
     - name: base-dn
       description: Root (e.g., DC=domain,DC=com)
     description: Expires the password of an Active Directory user.
@@ -67,30 +67,29 @@ script:
     arguments:
     - name: username
       required: true
-      description: The username (samAccountName) of the user to be modified
+      description: The username (samAccountName) of the user to modify.
     - name: password
       required: true
-      description: 'The initial password to set for the user. The user will be asked
+      description: 'The initial password to set for the user. The user is requested
         to change the password after login.'
     - name: user-dn
       required: true
-      description: The user's DN
+      description: The user's DN.
     - name: display-name
-      description: The user's display name
+      description: The display name of the user.
     - name: description
-      description: Short description of the user
+      description: A short description of the user.
     - name: email
       description: User email.
     - name: telephone-number
-      description: The user's telephone number
+      description: The telephone number of the user.
     - name: title
-      description: The user's job title
+      description: The job title of the user.
     - name: custom-attributes
       description: Sets basic or custom attributes of the user object. For example,
         custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company
         name\"}"
     description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
-      in order to use this command.
   - name: ad-search
     arguments:
     - name: filter
@@ -101,234 +100,231 @@ script:
        type "\\*". For more information about search filters, see
        syntax: https://docs.microsoft.com/en-us/windows/win32/adsi/search-filter-syntax'
     - name: base-dn
-      description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured for the instance
-        will be used.
+      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance
+        is used.
     - name: attributes
-      description: CSV list of the object attributes to return, e.g.,
-        "dn,memberOf". To get all objects atributes, specify 'ALL'.
+      description: CSV list of the object attributes to return. For example,
+        "dn,memberOf". To return all object attributes, specify 'ALL'.
     - name: size-limit
-      description: Maximum number of records to return
+      description: The maximum number of records to return.
       defaultValue: "50"
     - name: time-limit
-      description: Maximum time to pull records (in seconds)
+      description: The maximum time to pull records (in seconds).
     - name: context-output
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
       defaultValue: "yes"
-      description: If set to 'no' will not output the the results of the search to
-        the context.
+      description: Whether to output the search results to the context. Default is yes.
     outputs:
     - contextPath: 'ActiveDirectory.Search.dn'
       description: The distinguished names that match the query.
       type: string
     - contextPath: 'ActiveDirectory.Search'
-      description: Result of the search.
+      description: The result of the search.
       type: unknown
     description: Runs Active Directory queries.
   - name: ad-add-to-group
     arguments:
     - name: username
       description: "The username of the user to add to the group. If this argument is not specified,
-        the computer name argument must be specified.\t"
+        the computer name argument must be specified."
     - name: computer-name
       description: The name of the computer to add to the group. If this argument is not specified,
         the username argument must be specified.
     - name: group-cn
       required: true
-      description: The name of the group to add the user to
+      description: The name of the group for which to add the user.
     - name: base-dn
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
-        will be used.
+      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance
+        is used.
     description: Adds an Active Directory user or computer to a group.
   - name: ad-remove-from-group
     arguments:
     - name: username
       description: "The name of the user to remove from the group. If this argument is not specified,
-        the computer name argument must be specified.\t"
+        the computer name argument must be specified."
     - name: computer-name
       description: The name of the computer to remove from the group. If this argument is not specified,
         the username argument must be specified.
     - name: group-cn
       required: true
-      description: "The name of the group to remove the user from\t"
+      description: "The name of the group for which to remove the user."
     - name: base-dn
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
-        will be used.
+      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance
+        is used.
     description: Removes an Active Directory user or computer from a group.
   - name: ad-update-user
     arguments:
     - name: username
       required: true
-      description: "The username of the account to update (sAMAccountName)\t"
+      description: "The username of the account to update (sAMAccountName)."
     - name: attribute-name
       required: true
-      description: The name of the attribute to modify (e.g., sn, displayName, mail,
-        etc.)
+      description: The name of the attribute to modify. For example, sn, displayName, mail, and so on.
     - name: attribute-value
       required: true
-      description: "The value the attribute should be changed to\t"
+      description: "The value of the attribute for which to change."
     - name: base-dn
-      description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured for the instance
-        will be used.
+      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance
+        is used.
     description: Updates attributes of an existing Active Directory user.
   - name: ad-delete-user
     arguments:
     - name: user-dn
       required: true
-      description: The DN of the user to delete
+      description: The DN of the user to delete.
     description: Deletes an Active Directory user.
   - name: ad-create-contact
     arguments:
     - name: contact-dn
       required: true
-      description: "The contact's DN\t"
+      description: "The contact's DN."
     - name: display-name
-      description: "The contact's display name\t"
+      description: "The contact's display name."
     - name: description
-      description: Short description of the contact
+      description: The short description of the contact.
     - name: email
-      description: The contact's email address
+      description: The email address of the contact.
     - name: telephone-number
-      description: The contact's telephone number
+      description: The contact's telephone number.
     - name: custom-attributes
       description: Sets basic or custom attributes of the contact object. For example, 
         custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some
-        company\"}"
+        company\"}."
     - name: title
-      description: The contact's job title
+      description: The job title of the contact.
     description: Creates an Active Directory contact.
   - name: ad-update-contact
     arguments:
     - name: contact-dn
       required: true
-      description: "The contact's DN\t"
+      description: "The contact's DN."
     - name: attribute-name
       required: true
-      description: "The attribute name to update\t"
+      description: "The attribute name to update."
     - name: attribute-value
       required: true
-      description: "The attribute value to be updated\t"
+      description: "The attribute value to be updated."
     description: Updates attributes of an existing Active Directory contact.
   - name: ad-disable-account
     arguments:
     - name: username
       required: true
-      description: "The username of the account to disable (sAMAccountName)\t"
+      description: "The username of the account to disable (sAMAccountName)."
     - name: base-dn
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
-        will be used.
+        is used.
     description: Disables an Active Directory user account.
   - name: ad-enable-account
     arguments:
     - name: username
       required: true
-      description: "The username of the account to enable (sAMAccountName)\t"
+      description: "The username of the account to enable (sAMAccountName)."
     - name: base-dn
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
-        will be used.
+      description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance
+        is used.
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
     arguments:
     - name: username
       required: true
-      description: "The username of the account to unlock (sAMAccountName)\t"
+      description: "The username of the account to unlock (sAMAccountName)."
     - name: base-dn
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
-        will be used.
+      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance
+        is used.
     description: Unlocks a previously locked Active Directory user account.
   - name: ad-set-new-password
     arguments:
     - name: username
       required: true
-      description: "The username of the account to be disabled (sAMAccountName)\t"
+      description: "The username of the account to disable (sAMAccountName)."
     - name: password
       required: true
-      description: "The password to set for the user\t"
+      description: "The password to set for the user."
     - name: base-dn
-      description: Root (e.g. DC=domain,DC=com). Base DN configured for the instance
-        will be used as default.
+      description: Root. For example, DC=domain,DC=com. Base DN configured for the instance
+        is used as default.
     description: Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
   - name: ad-modify-computer-ou
     arguments:
     - name: computer-name
       required: true
-      description: "The computer name\t"
+      description: "The name of the computer to modify."
     - name: full-superior-dn
-      description: Superior DN, e.g., OU=computers,DC=domain,DC=com (The specified domain
-        must be the same as the current computer domain)
+      description: Superior DN. For example, OU=computers,DC=domain,DC=com (the specified domain
+        must be the same as the current computer domain).
     description: Modifies the computer organizational unit within a domain.
   - name: ad-get-user
     arguments:
     - name: dn
       default: true
-      description: Query by the user's Active Directory Distinguished Name
+      description: The Distinguished Name of the user in which to return information.
     - name: name
-      description: Query by the user's name
+      description: The name of the user to return information.
     - name: attributes
-      description: Include these AD attributes of the resulting objects in addition
-        to the default attributes
+      description: Adds AD attributes of the resulting objects to the default attributes.
     - name: custom-field-type
-      description: Query users by this custom field type
+      description: Queries users by custom field type.
     - name: custom-field-data
-      description: Query users by this custom field data (relevant only if the `custom-field-type` argument
-        is provided)
+      description: Queries users by custom field data (relevant only if the `custom-field-type` argument
+        is provided).
     - name: username
-      description: Query users by the samAccountName attribute
+      description: Queries users by the samAccountName attribute.
     - name: limit
-      description: Maximum number of objects to return (default is 20)
+      description: The maximum number of objects to return (default is 20).
     - name: email
-      description: Query by the user's email address
+      description: Queries by the user's email address.
     - name: user-account-control-out
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Include verbose translation for UserAccountControl flags
+      description: Whether to include verbose translation for UserAccountControl flags. Default is false.
       defaultValue: "false"
     outputs:
     - contextPath: 'ActiveDirectory.Users.dn'
-      description: The user's distinguished name
+      description: The distinguished name of the user.
       type: string
     - contextPath: 'ActiveDirectory.Users.displayName'
-      description: The user's display name
+      description: The display name of the user.
       type: string
     - contextPath: 'ActiveDirectory.Users.name'
-      description: The user's common name
+      description: The common name of the user.
       type: string
     - contextPath: 'ActiveDirectory.Users.sAMAccountName'
-      description: The user's sAMAccountName
+      description: The sAMAccountName of the user.
       type: string
     - contextPath: 'ActiveDirectory.Users.userAccountControl'
-      description: The user's account control flag
+      description: The account control flag of the user.
       type: number
     - contextPath: 'ActiveDirectory.Users.mail'
-      description: The user's email address
+      description: The email address of the user.
       type: string
     - contextPath: 'ActiveDirectory.Users.manager'
-      description: The user's manager
+      description: The manager of the user.
       type: string
     - contextPath: 'ActiveDirectory.Users.memberOf'
-      description: Groups the user is member of
+      description: Groups for which the user is a member.
       type: string
     - contextPath: 'Account.DisplayName'
-      description: The user's display name
+      description: The display name of the user.
       type: string
     - contextPath: 'Account.Groups'
-      description: Groups the user is member of
+      description: Groups for which the user is a member.
       type: string
     - contextPath: 'Account.Manager'
-      description: "The user's manager"
+      description: "The manager of the user."
       type: string
     - contextPath: 'Account.ID'
-      description: The user's distinguished name
+      description: The distinguished name of the user.
       type: string
     - contextPath: 'Account.Username'
-      description: The user's samAccountName
+      description: The samAccountName of the user.
       type: string
     - contextPath: 'Account.Email'
-      description: The user's email address
+      description: The email address of the user.
       type: string
     description: Retrieves detailed information about a user account. The user can
       be specified by name, email address, or as an Active Directory Distinguished Name (DN).
@@ -336,62 +332,88 @@ script:
   - name: ad-get-computer
     arguments:
     - name: dn
-      description: The computer's DN
+      description: The computer's DN.
     - name: name
-      description: Name of the computer to get information for
+      description: The name of the computer for which to return information.
     - name: attributes
-      description: Include these AD attributes of the resulting objects in addition
-        to the default attributes
+      description: Adds AD attributes of the resulting objects to the default attributes.
     - name: custom-field-data
-      description: Search computers by this custom field data (relevant only if the `customFieldType` argument
-        is provided)
+      description: Search computers by custom field data (relevant only if the `customFieldType` argument
+        is provided).
     - name: custom-field-type
-      description: Search computer by this custom field type
+      description: Search the computer by custom field type.
     outputs:
     - contextPath: 'ActiveDirectory.Computers.dn'
-      description: The computer distinguished name
+      description: The distinguished name of the computer.
     - contextPath: 'ActiveDirectory.Computers.memberOf'
-      description: Groups the computer is listed as a member
+      description: Groups for which the computer is listed.
     - contextPath: 'ActiveDirectory.Computers.name'
-      description: The computer name
+      description: The name of the computer.
     - contextPath: 'Endpoint.ID'
-      description: The computer DN
+      description: The DN of the computer.
     - contextPath: 'Endpoint.Hostname'
-      description: The computer name
+      description: The name of the computer.
     - contextPath: 'Endpoint.Groups'
-      description: Groups the computer is listed as a member of
+      description: Groups for which the computer is listed as a member.
     description: 'Retrieves detailed information about a computer account. The computer
       can be specified by name, email address, or as an Active Directory Distinguished Name
-      (DN). If no filters are provided, all computers are returned. '
+      (DN). If no filters are provided, all computers are returned.'
   - name: ad-get-group-members
     arguments:
     - name: group-dn
       required: true
-      description: "Group's Active Directory Distinguished Name"
+      description: "The Distinguished Name of the Group's Active Directory."
     - name: member-type
       required: true
       auto: PREDEFINED
       predefined:
       - person
       - computer
-      description: Which members type to query
+      description: 'The type of members to search. Can be: "Person", or "computer". Default is person.'
       defaultValue: person
     - name: attributes
       description: CSV list of attributes to include in the results, in addition to the
-        default attributes
+        default attributes.
     outputs:
     - contextPath: 'ActiveDirectory.Groups.dn'
-      description: The group DN
+      description: The DN of the group.
       type: string
     - contextPath: 'ActiveDirectory.Groups.members.dn'
-      description: The group member DN
+      description: The DN of the group member.
       type: string
     - contextPath: 'ActiveDirectory.Groups.members.category'
-      description: Person/computer
+      description: The category of the group members. 
       type: string
     description: Retrieves the list of users or computers that are members of the
-      specified group
-  runonce: false
+      specified group.
+  - name: ad-create-group
+    arguments:
+    - name: name
+      description: The Active Directory name of the group.
+      required: true
+    - name: group-type
+      description: 'The type of group. Can be: "security", or "distribution".'
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - security
+      - distribution
+    - name: dn
+      required: true
+      description: The Full Distinguished Name (DN) of the group. Use double quotes ("") rather than single quotes ('') when initializing this command.
+    - name: members
+      description: The Full DN Of users or groups that will be members of the newly created group.
+      isArray: true
+    description: Creates a new security or distribution Active Directory group.
+    execution: true
+  - name: ad-delete-group
+    arguments:
+    - name: dn
+      description: The Active Directory Distinguished Name (DN) of the group.
+      required: true
+    description: Deletes an existing Active Directory security or distribution group.
+    execution: true
   dockerimage: demisto/ldap:1.0.0.75
+  runonce: false
 tests:
   - Active Directory Test

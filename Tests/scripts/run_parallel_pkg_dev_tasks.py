@@ -20,7 +20,7 @@ def run_dev_task(pkg_dir: str, params: Optional[List[str]]) -> Tuple[subprocess.
     # color stderr in red and remove the warning about no config file from pylint
     cmd_line += r" 2> >(sed '/No config file found, using default configuration/d' | sed $'s,.*,\x1B[31m&\x1B[0m,'>&1)"
     res = subprocess.run(cmd_line, text=True, capture_output=True, shell=True, executable='/bin/bash')
-    return (res, pkg_dir)
+    return res, pkg_dir
 
 
 def should_run_pkg(pkg_dir: str) -> bool:
@@ -47,6 +47,15 @@ def handle_run_res(res: Tuple[subprocess.CompletedProcess, str], fail_pkgs: list
     print(res[0].stderr)
 
 
+def create_failed_unittests_file(failed_unittests):
+    """
+    Creates a file with failed unittests.
+    The file will be read in slack_notifier script - which will send the failed unittests to the content-team channel.
+    """
+    with open('./Tests/failed_unittests.txt', "w") as failed_unittests_file:
+        failed_unittests_file.write('\n'.join(failed_unittests))
+
+
 def main():
     if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
         print("Run pkg_dev_test_tasks.py in parallel. Accepts same parameters as pkg_dev_test_tasks.py.\n"
@@ -67,7 +76,7 @@ def main():
     params = sys.argv[1::]
     fail_pkgs = []
     good_pkgs = []
-    if(len(pkgs_to_run) > 1):  # setup pipenv before hand to avoid conflics
+    if len(pkgs_to_run) > 1:  # setup pipenv before hand to avoid conflics
         get_dev_requirements(2.7)
         get_dev_requirements(3.7)
     # run CommonServer non parallel to avoid conflicts
@@ -81,6 +90,7 @@ def main():
         for future in concurrent.futures.as_completed(futures_submit):
             res = future.result()
             handle_run_res(res, fail_pkgs, good_pkgs)
+    create_failed_unittests_file(fail_pkgs)
     if fail_pkgs:
         print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
         print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
