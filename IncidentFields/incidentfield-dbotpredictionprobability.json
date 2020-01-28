@@ -24,7 +24,9 @@
 	"group": 0,
 	"hidden": false,
 	"associatedTypes": null,
-	"systemAssociatedTypes": null,
+    "associatedTypes": [
+        "Phishing"
+    ],
 	"associatedToAll": true,
 	"unmapped": false,
 	"unsearchable": false,
