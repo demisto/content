@@ -66,7 +66,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
     explain_result['PositiveWords'] = positive_words
     explain_result['NegativeWords'] = negative_words
-    explain_result['OriginalText'] = tokenized_text_result['originalText']
+    explain_result['OriginalText'] = tokenized_text_result['originalText'].strip()
     explain_result['TextTokensHighlighted'] = tokenized_text_result['tokenizedText']
 
     res = demisto.executeCommand('HighlightWords', {'text': tokenized_text_result['originalText'],
@@ -102,11 +102,11 @@ def find_words_contain_tokens(positive_tokens, words_to_token_maps):
     return positive_words
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+def main():
     result = predict_phishing_words(demisto.args()['modelName'],
                                     demisto.args()['modelStoreType'],
                                     demisto.args().get('emailSubject', ''),
-                                    demisto.args().get('emailBody', ''),
+                                    demisto.args().get('emailBody', '') or demisto.args().get('emailBodyHTML', ''),
                                     int(demisto.args()['minTextLength']),
                                     float(demisto.args().get("labelProbabilityThreshold", 0)),
                                     float(demisto.args().get('wordThreshold', 0)),
@@ -114,4 +114,8 @@ if __name__ in ['__main__', '__builtin__', 'builtins']:
                                     demisto.args()['returnError'] == 'true'
                                     )
 
-    demisto.results(result)
+    return result
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    demisto.results(main())

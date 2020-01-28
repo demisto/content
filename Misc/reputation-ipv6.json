@@ -188,20 +188,6 @@
                 ]
             }
         },
-        "status": {
-            "simple": "",
-            "complex": {
-                "root": "IPv6",
-                "filters": [],
-                "accessor": "Status",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
         "threattypes": {
             "simple": "",
             "complex": {

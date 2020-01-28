@@ -191,20 +191,6 @@
                 ]
             }
         },
-        "status": {
-            "simple": "",
-            "complex": {
-                "root": "IP",
-                "filters": [],
-                "accessor": "Status",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
         "threattypes": {
             "simple": "",
             "complex": {

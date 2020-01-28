@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.1.1"
+      CONTENT_VERSION: "20.1.2"
       SERVER_VERSION: "5.0.1"
-      GIT_SHA1: "a3c93edfbd64fbc5a4d94e2a42acfbc6c32a12dd" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "899b28ac9128640a98f81f9c30ba36cf8c45aba8" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -84,7 +84,7 @@ jobs:
             python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
-
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
@@ -119,7 +119,7 @@ jobs:
                 exit 0
             fi
 
-            demisto-sdk secrets --post-commit
+            demisto-sdk secrets --post-commit --ignore-entropy
       - run:
           name: Configure Test Filter
           when: always
@@ -196,10 +196,10 @@ jobs:
             fi
             if [ $NIGHTLY ] ;
               then
-                demisto-sdk lint --run-all-tests --parallel
+                demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt
 
               else
-                demisto-sdk lint --git --parallel
+                demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt
             fi
       - run:
           name: Verify Base Branch for Contribution
@@ -399,12 +399,12 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] ;
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build"
                 exit 0
             fi
-            ./Tests/scripts/slack_notifier.sh ./env_results.json
+            ./Tests/scripts/slack_notifier.sh $CIRCLE_NODE_INDEX ./env_results.json
 
           when: always
       - run:
