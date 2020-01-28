@@ -300,14 +300,16 @@ def create_rule_command(client: Client, args):
     if is_ipv4(source):
         rule_body["sourceAddress"] = {"kind": "IPv4Address",
                                       "value": source}
-    if source == 'any':
+    elif source == 'any':
         rule_body["sourceAddress"] = {"kind": "AnyIPAddress",
                                       "value": "any4"}
-    if '/' in source:
+    elif '/' in source:
         rule_body["sourceAddress"] = {"kind": "IPv4Network",
                                       "value": source}
-    if not rule_body.get('sourceAddress'):
-        raise ValueError("Source is not a valid IPv4 address/network/any.")
+    else:
+        rule_body["sourceAddress"] = {"kind": "objectRef#NetworkObj",
+                                      "objectId": source}
+
 
     # Set up dest
     rule_body['destinationService'] = {"kind": "NetworkProtocol",
@@ -316,15 +318,16 @@ def create_rule_command(client: Client, args):
     if is_ipv4(dest):
         rule_body["destinationAddress"] = {"kind": "IPv4Address",
                                            "value": dest}
-    if dest == 'any':
+    elif dest == 'any':
         rule_body["destinationAddress"] = {"kind": "AnyIPAddress",
                                            "value": "any4"}
-    if '/' in dest:
+    elif '/' in dest:
         rule_body["destinationAddress"] = {"kind": "IPv4Network",
                                            "value": dest}
 
-    if not rule_body.get('destinationAddress'):
-        raise ValueError("Destination is not a valid IPv4 address/network/any.")
+    else:
+        rule_body["destinationAddress"] = {"kind": "objectRef#NetworkObj",
+                                           "objectId": dest}
 
     # everything else
     rule_body['permit'] = True if permit == 'True' else False
@@ -398,12 +401,15 @@ def edit_rule_command(client: Client, args):
         if is_ipv4(source):
             rule_body["sourceAddress"] = {"kind": "IPv4Address",
                                           "value": source}
-        if source == 'any':
+        elif source == 'any':
             rule_body["sourceAddress"] = {"kind": "AnyIPAddress",
                                           "value": "any4"}
-        if '/' in source:
+        elif '/' in source:
             rule_body["sourceAddress"] = {"kind": "IPv4Network",
                                           "value": source}
+        else:
+            rule_body["sourceAddress"] = {"kind": "objectRef#NetworkObj",
+                                          "objectId": source}
 
     # Set up dest
     if dest:
@@ -413,12 +419,15 @@ def edit_rule_command(client: Client, args):
         if is_ipv4(dest):
             rule_body["destinationAddress"] = {"kind": "IPv4Address",
                                                "value": dest}
-        if dest == 'any':
+        elif dest == 'any':
             rule_body["destinationAddress"] = {"kind": "AnyIPAddress",
                                                "value": "any4"}
-        if '/' in dest:
+        elif '/' in dest:
             rule_body["destinationAddress"] = {"kind": "IPv4Network",
                                                "value": dest}
+        else:
+            rule_body["destinationAddress"] = {"kind": "objectRef#NetworkObj",
+                                               "objectId": dest}
 
     # everything else
     if permit:
@@ -471,14 +480,15 @@ def test_command(client: Client):
 
 
 '''MAIN'''
-headers_for_ASAv = {'X-Auth-Token': '7CCB8E@4096@EEBE@15D54E66F2AE8544F14F82C74F7C836102599258'}
+
 
 def main():
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
-
+    isASAv = demisto.params().get('isASAv', False)
+    auth_token = ""
     # Remove trailing slash to prevent wrong URL path to service
     server_url = demisto.params()['server'][:-1] \
         if (demisto.params()['server'] and demisto.params()['server'].endswith('/')) else demisto.params()['server']
@@ -494,8 +504,13 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-        client = Client(server_url, auth=(username, password), verify=verify_certificate, proxy=proxy,
-                        headers=headers_for_ASAv)
+
+        client = Client(server_url, auth=(username, password), verify=verify_certificate, proxy=proxy, headers={})
+
+        if isASAv:
+            res = client._http_request('POST', '/api/tokenservices', resp_type='response')
+            auth_token = res.headers._store.get('x-auth-token')[1]
+            client._headers['X-Auth-Token'] = auth_token
 
         if demisto.command() == 'test-module':
             test_command(client)
@@ -509,6 +524,9 @@ def main():
         LOG.print_log()
         return_error(f"Failed to execute {demisto.command()} command. Error: {e}")
         raise
+    finally:
+        if isASAv and client:
+            client._http_request('DELETE', f'/api/tokenservices/{auth_token}', resp_type='response')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

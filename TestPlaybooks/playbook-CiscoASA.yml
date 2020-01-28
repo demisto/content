@@ -1,0 +1,335 @@
+id: Cisco ASA - Test Playbook
+version: 13
+name: Cisco ASA - Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 260d7667-09c2-41c0-8cbd-bdf64d41006c
+    type: start
+    task:
+      id: 260d7667-09c2-41c0-8cbd-bdf64d41006c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2ea3131c-6bb1-4539-84f8-89697089ef91
+    type: regular
+    task:
+      id: 2ea3131c-6bb1-4539-84f8-89697089ef91
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: cd66ddb3-c624-40b6-83bd-b1c319c01926
+    type: regular
+    task:
+      id: cd66ddb3-c624-40b6-83bd-b1c319c01926
+      version: -1
+      name: Create Rule
+      description: Create a rule.
+      script: '|||cisco-asa-create-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      active: {}
+      destination:
+        simple: 2.2.2.2
+      interface_name: {}
+      interface_type:
+        simple: Global
+      log_level: {}
+      permit:
+        simple: "False"
+      position: {}
+      remarks: {}
+      source:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4e4a8bb3-2ca4-4020-8a4c-0533b8587707
+    type: regular
+    task:
+      id: 4e4a8bb3-2ca4-4020-8a4c-0533b8587707
+      version: -1
+      name: Get Rule Data
+      description: Get a specific rule by its ID
+      script: '|||cisco-asa-get-rule-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      interface_name:
+        simple: ${CiscoASA.Rules.Interface}
+      interface_type:
+        simple: ${CiscoASA.Rules.InterfaceType}
+      rule_id:
+        simple: ${CiscoASA.Rules.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 2a9de836-9900-4e0f-85f3-bbeaecced546
+    type: condition
+    task:
+      id: 2a9de836-9900-4e0f-85f3-bbeaecced546
+      version: -1
+      name: Verify Rule
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.SourceIP
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.DestIP
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: b07a7f37-92b1-46d7-8c94-c1ffffcb85e7
+    type: regular
+    task:
+      id: b07a7f37-92b1-46d7-8c94-c1ffffcb85e7
+      version: -1
+      name: Edit Rule
+      description: Edit an existing rule.
+      script: '|||cisco-asa-edit-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      active: {}
+      destination:
+        simple: 3.3.3.3
+      interface_name:
+        simple: ${CiscoASA.Rules.Interface}
+      interface_type:
+        simple: ${CiscoASA.Rules.InterfaceType}
+      log_level: {}
+      permit: {}
+      position: {}
+      remarks: {}
+      rule_id:
+        simple: ${CiscoASA.Rules.ID}
+      source: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: e4861931-04b4-4b99-817e-ea0a326b917e
+    type: condition
+    task:
+      id: e4861931-04b4-4b99-817e-ea0a326b917e
+      version: -1
+      name: Verify Rule Edited
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.DestIP
+            iscontext: true
+          right:
+            value:
+              simple: 3.3.3.3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.SourceIP
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 15ce76a1-cda8-4a1c-8119-d23911f5e48e
+    type: regular
+    task:
+      id: 15ce76a1-cda8-4a1c-8119-d23911f5e48e
+      version: -1
+      name: Delete Rule
+      description: Delete a rule.
+      script: '|||cisco-asa-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      interface_name:
+        complex:
+          root: ${CiscoASA
+          accessor: Rules.Interface}
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "1"
+              to:
+                value:
+                  simple: "2"
+      interface_type:
+        simple: Global
+      rule_id:
+        complex:
+          root: ${CiscoASA
+          accessor: Rules.ID}
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "1"
+              to:
+                value:
+                  simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

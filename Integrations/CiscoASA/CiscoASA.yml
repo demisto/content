@@ -21,6 +21,10 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: is ASAv
+  name: isASAv
+  required: false
+  type: 8
 description: Manage Cisco ASA
 display: Cisco ASA
 name: Cisco ASA

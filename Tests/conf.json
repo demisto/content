@@ -17,6 +17,10 @@
             "playbookID": "AttackIQ - Test"
         },
         {
+            "integrations": "Cisco ASA",
+            "playbookID": "Cisco ASA - Test Playbook"
+        },
+        {
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
