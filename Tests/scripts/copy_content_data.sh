@@ -25,7 +25,7 @@ COPY_CONTENT_COMMAND="sudo rm -f /usr/local/demisto/res/playbook-Test Playbook T
   /usr/local/demisto/res/integration-Awake_Security.yml /usr/local/demisto/res/integration-WhatsMyBrowser.yml \
   && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res"
 
-if [[ "$CIRCLE_BRANCH" != "FixRunTestsFlow" ]] || [[ -n "$NIGHTLY" ]]; then
+if [[ "$CIRCLE_BRANCH" != "master" ]] || [[ -n "$NIGHTLY" ]]; then
   # when triggered on non master branch sideload like we used to do
   scp artifacts/content_new.zip ${USER}@${PUBLIC_IP}:~/content
   scp artifacts/content_test.zip ${USER}@${PUBLIC_IP}:~/content
