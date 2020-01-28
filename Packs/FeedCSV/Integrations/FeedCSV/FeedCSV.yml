@@ -141,7 +141,7 @@ script:
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
-    name: get-indicators
+    name: csv-get-indicators
     outputs:
     - contextPath: CSV.Indicator.Value
       description: The indicator value.

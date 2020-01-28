@@ -1,3 +1,6 @@
+from CommonServerPython import *
+
+
 def main():
     feed_url_to_config = {
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt': {
