@@ -20,20 +20,55 @@ class Client(BaseClient):
 
     DOMAIN_TYPE = "domain"
     IP_TYPE = "ip"
+    IP_URL = "detailed-iprepdata.txt"
+    DOMAIN_URL = "detailed-domainrepdata.txt"
     ALL_TYPE = "all"
     TYPES = (DOMAIN_TYPE, IP_TYPE, ALL_TYPE)
     indicator_types_to_endpoint = {
-        IP_TYPE: "detailed-iprepdata.txt",
-        DOMAIN_TYPE: "detailed-domainrepdata.txt",
+        IP_TYPE: [IP_URL],
+        DOMAIN_TYPE: [DOMAIN_URL],
+        ALL_TYPE: [DOMAIN_URL, IP_URL],
     }
+    _CATEGORY_NAME = [
+        "CnC",
+        "Bot",
+        "Spam",
+        "Drop",
+        "SpywareCnC",
+        "OnlineGaming",
+        "DriveBySrc",
+        "ChatServer",
+        "TorNode",
+        "Compromised",
+        "P2P",
+        "Proxy",
+        "IPCheck",
+        "Utility",
+        "DDoSTarget",
+        "Scanner",
+        "Brute_Forcer",
+        "FakeAV",
+        "DynDNS",
+        "Undesirable",
+        "AbusedTLD",
+        "SelfSignedSSL",
+        "Blackhole",
+        "RemoteAccessService",
+        "P2PCnC",
+        "Parking",
+        "VPN",
+        "EXE_Source",
+        "Mobile_CnC",
+        "Mobile_Spyware_CnC",
+        "Skype_SuperNode",
+        "Bitcoin_Related",
+        "DDoSAttacker"
+    ]
 
     def _build_iterator(
-        self, indicator_type: str = "all"
+            self, indicator_type: str = ALL_TYPE
     ) -> Generator[dict, None, None]:
-        endpoints = self.indicator_types_to_endpoint.get(
-            indicator_type, self.indicator_types_to_endpoint.values()
-        )
-        endpoints = endpoints if isinstance(endpoints, list) else [endpoints]
+        endpoints = self.indicator_types_to_endpoint[indicator_type]
         for endpoint in endpoints:
             resp = self._http_request(
                 "GET", endpoint, resp_type="text", timeout=(30, 60)
@@ -43,7 +78,13 @@ class Client(BaseClient):
             headers: list = next(csv_repr)
             headers = [header.replace(" ", "").replace("(|)", "") for header in headers]
             for line in csv_repr:
-                yield {headers[i]: line[i] for i in range(len(headers))}
+                item = {headers[i]: line[i] for i in range(len(headers))}
+                try:
+                    category = item["category"]
+                    item["category_name"] = self._CATEGORY_NAME[int(category) - 1]
+                except (KeyError, IndexError):
+                    item["category_name"] = "Unknown"
+                yield item
 
     def _build_iterator_domain(self) -> Generator[dict, None, None]:
         """Gets back a dict of domain attributes.
@@ -61,7 +102,7 @@ class Client(BaseClient):
             Generator of dicts.
 
         """
-        return self._build_iterator("ip")
+        return self._build_iterator(self.IP_TYPE)
 
     def get_indicators_domain(self) -> List[dict]:
         """ Gets indicator's dict of domains
