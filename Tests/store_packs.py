@@ -9,7 +9,7 @@ from google.cloud import storage
 from distutils.util import strtobool
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
-from Tests.test_utils import run_command, print_error, collect_pack_script_tags, collect_content_items_data
+from Tests.test_utils import run_command, print_error, collect_content_items_data
 
 STORAGE_BASE_PATH = "content/packs"
 
@@ -28,7 +28,8 @@ DIR_NAME_TO_CONTENT_TYPE = {
 class Pack:
     PACK_INITIAL_VERSION = "1.0.0"
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-    CHANGELOG = "changelog.json"
+    CHANGELOG_JSON = "changelog.json"
+    CHANGELOG_MD = "changelog.md"
     README = "README.md"
     METADATA = "metadata.json"
     INDEX_JSON = "index.json"
@@ -52,10 +53,10 @@ class Pack:
         return self._get_latest_version()
 
     def _get_latest_version(self):
-        if Pack.CHANGELOG not in os.listdir(self._pack_path):
+        if Pack.CHANGELOG_JSON not in os.listdir(self._pack_path):
             return self.PACK_INITIAL_VERSION
 
-        changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG)
+        changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
 
         with open(changelog_path, "r") as changelog:
             changelog_json = json.load(changelog)
@@ -69,17 +70,15 @@ class Pack:
     def _parse_pack_metadata(self, user_metadata):
         pack_metadata = {}
         pack_metadata['id'] = self._pack_name
-        pack_metadata['displayName'] = user_metadata.get('displayName', '')
+        pack_metadata['name'] = user_metadata.get('displayName', '')
         pack_metadata['description'] = user_metadata.get('description', '')
         pack_metadata['created'] = user_metadata.get('created', '')
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
         pack_metadata['support'] = user_metadata.get('support', '')
-        # pack_metadata['beta'] = bool(strtobool(user_metadata.get('beta')))
-        is_beta = user_metadata.get('beta')
+        is_beta = user_metadata.get('beta', False)
         pack_metadata['beta'] = bool(strtobool(is_beta)) if isinstance(is_beta, str) else is_beta
-        # pack_metadata['deprecated'] = bool(strtobool(user_metadata.get('deprecated')))
         pack_metadata['certification'] = user_metadata.get('certification', '')
-        is_deprecated = user_metadata.get('deprecated')
+        is_deprecated = user_metadata.get('deprecated', False)
         pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
@@ -97,7 +96,7 @@ class Pack:
             pack_metadata['supportDetails']['email'] = support_email
 
         # pack_metadata['general'] = user_metadata.get('general', [])
-        pack_metadata['tags'] = collect_pack_script_tags(self._pack_path)
+        pack_metadata['tags'] = user_metadata.get('tags', [])
         pack_metadata['categories'] = user_metadata.get('categories', [])
         content_items_data = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in
                               collect_content_items_data(self._pack_path).items() if k in DIR_NAME_TO_CONTENT_TYPE}
@@ -130,6 +129,7 @@ class Pack:
         existing_files = [f.name for f in self._storage_bucket.list_blobs(prefix=version_pack_path)]
 
         if len(existing_files) > 0:
+            # todo important, for now print warning and don't fail the build on it
             print_error(f"The following packs already exist at storage: {', '.join(existing_files)}")
             print_error(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             sys.exit(1)
@@ -156,8 +156,20 @@ class Pack:
             metadata_file.seek(0)
             json.dump(formatted_metadata, metadata_file, indent=4)
 
+    def parse_release_notes(self):
+        if Pack.CHANGELOG_MD not in os.listdir(self._pack_path):
+            print_error(f"The pack {self._pack_name} is missing {Pack.CHANGELOG_MD} file.")
+            sys.exit(1)
+
+        changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
+
+        with open(changelog_md_path, 'r') as release_notes_file:
+            release_notes = release_notes_file.read
+            # todo implement release notes logic and create changelog.json
+            pass
+
     def prepare_for_index_upload(self):
-        files_to_leave = [Pack.METADATA, Pack.CHANGELOG, Pack.README]
+        files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
 
         for file_or_folder in os.listdir(self._pack_path):
             files_or_folder_path = os.path.join(self._pack_path, file_or_folder)
@@ -175,8 +187,8 @@ class Pack:
             shutil.rmtree(self._pack_path)
 
 
-def get_modified_packs(is_circle=False, specific_packs=None):
-    if not is_circle:
+def get_modified_packs(specific_packs=None):
+    if specific_packs:
         return [p.strip() for p in specific_packs.split(',')]
 
     cmd = f"git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
@@ -197,13 +209,9 @@ def extract_modified_packs(modified_packs, packs_artifacts_path, extract_destina
                     print(f"Extracted {pack} to path: {extract_destination_path}")
 
 
-def init_storage_client(is_circle=False, service_account_key_file=None):
-    if is_circle and not service_account_key_file:
-        print_error("Missing path to service account json key file.")
-        sys.exit(1)
-
-    if is_circle:
-        return storage.Client.from_service_account_json(service_account_key_file)
+def init_storage_client(service_account=None):
+    if service_account:
+        return storage.Client.from_service_account_json(service_account)
     else:
         credentials, project = google.auth.default()
         return storage.Client(credentials=credentials, project=project)
@@ -243,21 +251,24 @@ def update_index_folder(index_folder_path, pack_name, pack_path):
 
 
 def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number):
-    index_zip_name = os.path.basename(index_folder_path)
-
-    if Pack.INDEX_JSON not in os.listdir(index_folder_path):
-        # todo create new index.json in case index doesn't exist
-        # todo remove exit statement when creation code implemented
-        sys.exit()
-
-    with open(os.path.join(index_folder_path, Pack.INDEX_JSON), "r+") as index_file:
-        index = json.load(index_file)
-        index['revision'] = build_number
-        index['modified'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
-        index_file.seek(0)
+    with open(os.path.join(index_folder_path, Pack.INDEX_JSON), "w+") as index_file:
+        index = {
+            'description': 'Master index for Demisto Content Packages',
+            'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
+            'revision': build_number,
+            'modified': datetime.utcnow().strftime(Pack.DATE_FORMAT),
+            'landingPage': {
+                'sections': [
+                    'Trending',
+                    'Recommended by Demisto',
+                    'New',
+                    'Getting Started'
+                ]
+            }
+        }
         json.dump(index, index_file, indent=4)
-        index_file.truncate()
 
+    index_zip_name = os.path.basename(index_folder_path)
     index_zip_path = shutil.make_archive(os.path.join(extract_destination_path, index_zip_name), format="zip",
                                          root_dir=index_folder_path)
 
@@ -268,32 +279,40 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
 
 def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
-    parser.add_argument('-a', '--artifactsPath', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-e', '--extractPath', help="Full path of folder to extract wanted packs", required=True)
-    parser.add_argument('-c', '--circleCi', help="Whether run script locally or in circleCi", default=False)
-    parser.add_argument('-p', '--packNames',
-                        help="Use only in local mode, comma separated list of target pack names to store.",
+    # disable-secrets-detection-start
+    parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-s', '--service_account',
+                        help=("Path to gcloud service account, is for circleCI usage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=False)
+    parser.add_argument('-p', '--pack_names',
+                        help="Comma separated list of target pack names. Is used only in local dev mode.",
                         required=False, default="")
-    parser.add_argument('-b', '--bucketName', help="Storage bucket name", required=True)
-    parser.add_argument('-n', '--ciBuildNumber',
+    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
+    parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
-
+    # disable-secrets-detection-end
     return parser.parse_args()
 
 
 def main():
     option = option_handler()
-    packs_artifacts_path = option.artifactsPath
-    extract_destination_path = option.extractPath
-    storage_bucket_name = option.bucketName
-    is_circle = option.circleCi
-    specific_packs = option.packNames
-    build_number = option.ciBuildNumber if option.ciBuildNumber else str(uuid.uuid4())
+    packs_artifacts_path = option.artifacts_path
+    extract_destination_path = option.extract_path
+    storage_bucket_name = option.bucket_name
+    service_account = option.service_account
+    specific_packs = option.pack_names
+    build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
 
-    storage_client = init_storage_client(is_circle)
+    storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.get_bucket(storage_bucket_name)
 
-    modified_packs = get_modified_packs(is_circle, specific_packs)
+    modified_packs = get_modified_packs(specific_packs)
     extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), storage_bucket)
                   for pack_name in modified_packs]
@@ -302,13 +321,14 @@ def main():
 
     for pack in packs_list:
         pack.format_metadata()
+        # todo finish implementation of release notes
+        # pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
         pack.upload_to_storage(zip_pack_path, pack.latest_version)
         pack.prepare_for_index_upload()
         update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
         pack.cleanup()
 
-    # todo need permissions to override index.zip in the bucket
     upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
 
 

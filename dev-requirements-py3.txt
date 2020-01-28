@@ -12,3 +12,5 @@ pypdf2==1.26.0
 requests-mock==1.7.0
 freezegun==0.3.12
 bandit==1.6.2
+google-api-core>=1.15.0
+google-cloud-storage>=1.24.1
