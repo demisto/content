@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+         {
+            "integrations": "SpamhausFeed",
+            "playbookID": "Spamhaus_Feed_Test",
+            "fromversion": "5.5.0"
+        },
         {
             "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
@@ -12,7 +17,8 @@
         },
         {
             "integrations": "CSVFeed",
-            "playbookID": "CSV_Feed_Test"
+            "playbookID": "CSV_Feed_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Digital Shadows",
@@ -1661,7 +1667,8 @@
         },
         {
             "integrations": "TAXIIFeed",
-            "playbookID": "TAXII_Feed_Test"
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Traps",
@@ -2121,6 +2128,10 @@
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "PaloAltoNetworks_PrismaCloudCompute",
+            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         }
     ],
     "skipped_tests": {
@@ -2155,6 +2166,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
@@ -2212,6 +2224,7 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
