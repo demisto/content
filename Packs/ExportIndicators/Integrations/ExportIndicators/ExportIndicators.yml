@@ -20,19 +20,19 @@ configuration:
   - csv
   required: false
   type: 15
-- additionalinfo: Maximum number of items in the Outbound list
+- additionalinfo: Maximum number of items in the export list
   defaultvalue: '2500'
   display: List Size
   hidden: false
   name: list_size
   required: true
   type: 0
-- additionalinfo: Enabling this will prevent automatic Outbound list refresh
-  display: Update outbound indicators list On Demand Only
+- additionalinfo: Enabling this will prevent automatic indicators export list refresh
+  display: Update On Demand Only
   name: on_demand
   required: false
   type: 8
-- additionalinfo: How often to refresh the outbound indicators list
+- additionalinfo: How often to refresh the export indicators list
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
@@ -43,7 +43,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- additionalinfo: Will run the outboind indicators service on this port from within Demisto
+- additionalinfo: Will run the export indicators service on this port from within Demisto
   defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
@@ -57,7 +57,7 @@ configuration:
   name: key
   required: false
   type: 14
-- additionalinfo: Ignores certificate and private key, and will run the outbound indicators service
+- additionalinfo: Ignores certificate and private key, and will run the export indicators service
     in HTTP
   display: HTTP Server
   hidden: false
@@ -98,19 +98,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Boolean
+      description: If set to true will print the indicators the that were saved to the export indicators service
       isArray: false
       name: print_indicators
       required: true
       defaultValue: false
       secret: false
       predefined:
-        - 'true'
         - 'false'
+        - 'true'
     deprecated: false
-    description: Updates values stored in the outbound indicators list (only avaialable On-Demand).
+    description: Updates values stored in the export indicators service (only avaialable On-Demand).
     execution: false
-    name: outbound-indicators-update
+    name: eis-update
   dockerimage: demisto/teams:1.0.0.1701
   feed: false
   isfetch: false

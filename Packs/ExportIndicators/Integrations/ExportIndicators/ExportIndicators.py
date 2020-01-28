@@ -61,7 +61,7 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
-    iocs = find_indicators_to_limit(indicator_query, limit)  # poll indicators into list from demisto
+    iocs = find_indicators_with_limit(indicator_query, limit)  # poll indicators into list from demisto
     out_dict = create_values_out_dict(iocs, out_format)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     save_context(now, out_dict)
@@ -78,12 +78,12 @@ def find_indicators_with_limit(indicator_query: str, limit: int) -> list:
     """
     Finds indicators using demisto.findIndicators
     """
-    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit)
+    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit)
     return iocs[:limit]
 
 
-def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
-                                  last_found_len: int = PAGE_SIZE):
+def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
+                                    last_found_len: int = PAGE_SIZE):
     """
     Finds indicators using while loop with demisto.findIndicators, and returns result and last page
     """
@@ -292,7 +292,7 @@ def main():
     demisto.debug('Command being called is {}'.format(command))
     commands = {
         'test-module': test_module,
-        'outbound-indicators-update': update_outbound_command
+        'eis-update': update_outbound_command
     }
 
     try:

@@ -38,9 +38,9 @@ tasks:
     task:
       id: c745ef83-8485-4838-8916-adf896fc6829
       version: -1
-      name: Update Generic Outbound Indicators List
-      description: Updates values stored in the outbound indicators list (only avaialable On-Demand).
-      script: '|||outbound-indicators-update'
+      name: Update Export Indicators Service List
+      description: Updates values stored in the export indicators list (only avaialable On-Demand).
+      script: '|||eis-update'
       type: regular
       iscommand: true
       brand: ""
