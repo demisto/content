@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue where MISP indicators data was not filtered correctly by default
+Fixed an issue where MISP indicators data was not filtered correctly by default.
 
 ## [19.12.0] - 2019-12-10
 Added support to filter an event by attribute data fields.
