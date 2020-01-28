@@ -133,10 +133,10 @@ def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> U
                 for f in fields:
                     attributes[f] = item.get(f)
                 indicator_value = item.get(indicator_field)
-                indicator = {'Value': indicator_value, 'Type': indicator_type}
+                indicator = {'value': indicator_value, 'type': indicator_type}
 
                 attributes.update(indicator)
-                indicator['Rawjson'] = attributes
+                indicator['rawJSON'] = attributes
 
                 indicators.append(indicator)
 
@@ -167,7 +167,8 @@ def feed_main(params, feed_name, prefix):
             # dummy command for testing
             limit = int(demisto.args().get('limit', 10))
             indicators = fetch_indicators_command(client, indicator_type)[:limit]
-            demisto.results(indicators)
+            hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
+            return_outputs(hr, {}, indicators)
 
     except Exception as err:
         err_msg = f'Error in {feed_name} integration [{err}]'

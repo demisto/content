@@ -20,7 +20,7 @@ def test_json_feed_no_config():
         )
 
         indicators = fetch_indicators_command(client=client, indicator_type='ip')
-        assert len(jmespath.search(expression="[].Rawjson.service", data=indicators)) == 1117
+        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
 def test_json_feed_with_config():
@@ -48,4 +48,4 @@ def test_json_feed_with_config():
         )
 
         indicators = fetch_indicators_command(client=client, indicator_type='ip')
-        assert len(jmespath.search(expression="[].Rawjson.service", data=indicators)) == 1117
+        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
