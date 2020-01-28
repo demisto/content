@@ -11,7 +11,10 @@ def main():
     context_entry = []
     for element in hostName:
         if element:
-            internalRegexMatch = re.match(internalregex, element)
+            if internalregex:
+                internalRegexMatch = re.match(internalregex, element)
+            else:
+                internalRegexMatch = None
             internalDomainMatch = re.match(".*\." + domainName + "$", element)
             context_entry.append({
                 'Hostname': element,
