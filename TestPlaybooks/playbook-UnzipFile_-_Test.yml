@@ -188,7 +188,7 @@ tasks:
       lastZipFileInWarroom:
         simple: "yes"
       password:
-        simple: '{ENCRYPTED}gdK1h2bP4pjLWkA82ZVBsGSkYQpVytcjNaHB5MEWRBM2RI8E3GC01XcS1StyHhJ+eWOokEdFQjfp9S0cuhzrhA=='
+        simple: 'demisto'
     separatecontext: false
     view: |-
       {
