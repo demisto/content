@@ -1,6 +1,5 @@
 ## [Unreleased]
-Can now use the script in playbooks.
-Added argument `entry_id` of STIX2 format.
+
 
 ## [20.1.0] - 2020-01-07
 Removed ***firstSeen*** as qualifier for STIX 2 object.
