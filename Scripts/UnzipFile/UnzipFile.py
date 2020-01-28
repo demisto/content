@@ -63,7 +63,7 @@ def get_zip_path(args):
 
 
 def extract(file_path, dir_path, password):
-    filenames = []
+    filenames = []  # type: ignore
     # remembering which files and dirs we currently have so we add them later as newly extracted files.
     excluded_files = [f for f in os.listdir('.') if isfile(f)]
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
@@ -74,8 +74,9 @@ def extract(file_path, dir_path, password):
     stdout, stderr = process.communicate()
     if stderr:
         return_error(str(stderr))
-    if 'Wrong password?' in str(stdout):
-        demisto.debug(str(stdout))
+    stdout = str(stdout)
+    if 'Wrong password?' in stdout:
+        demisto.debug(stdout)
         return_error("Data Error in encrypted file. Wrong password?")
     return excluded_dirs, excluded_files, filenames
 
