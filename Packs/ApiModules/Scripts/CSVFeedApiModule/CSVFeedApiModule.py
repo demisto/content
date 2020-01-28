@@ -161,7 +161,7 @@ def module_test_command(client: Client, args):
     return 'ok', {}, {}
 
 
-def fetch_indicators_command(client: Client, itype: str, **kwargs):
+def fetch_indicators_command(client: Client, default_indicator_type: str, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
 
@@ -176,12 +176,12 @@ def fetch_indicators_command(client: Client, itype: str, **kwargs):
                     raw_json['value'] = value
                     if client.feed_url_to_config:
                         indicator_type = client.feed_url_to_config.get(url, {}).get('indicator_type')
-                        raw_json['type'] = indicator_type
                     else:
-                        raw_json['type'] = itype
+                        indicator_type = default_indicator_type
+                    raw_json['type'] = indicator_type
                     indicators.append({
                         "value": value,
-                        "type": itype,
+                        "type": indicator_type,
                         "rawJSON": raw_json,
                     })
     return indicators

@@ -1,5 +1,5 @@
 def main():
-    feed_main('CSV')
+    feed_main('CSV', prefix='csv')
 
 
 from CSVFeedApiModule import *  # noqa: E402
