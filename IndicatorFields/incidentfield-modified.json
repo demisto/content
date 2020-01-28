@@ -11,8 +11,8 @@
   "script": "",
   "isReadOnly": false,
   "commitMessage": "",
-  "system": true,
-  "content": false,
+  "system": false,
+  "content": true,
   "unsearchable": false,
   "version": -1,
   "unmapped": false,
@@ -39,5 +39,6 @@
   "selectValues": null,
   "validationRegex": "",
   "sla": 0,
-  "fromVersion": "5.0.0"
+  "fromVersion": "5.0.0",
+  "toVersion": "5.4.9"
 }
