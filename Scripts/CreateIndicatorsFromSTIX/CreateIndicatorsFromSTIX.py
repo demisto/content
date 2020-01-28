@@ -13,31 +13,6 @@ stix_struct_to_indicator = {
 }
 
 
-def build_indicators(data: list) -> list:
-    """
-
-    Args:
-        data: list of StixParser output
-
-
-    Returns:
-        list of indicators
-
-    Examples:
-        >>> build_indicators([{"indicator_type": "Domain", "value": "example.com", "score": 5}])
-        [{'type': 'Domain', 'value': 'example.com', 'rawJSON': {'indicator_type': 'Domain', 'value': 'example.com', \
-'score': 5}}]
-    """
-    return [
-        {
-            "type": stix_struct_to_indicator.get(indicator.get("indicator_type")),
-            "value": indicator.get("value"),
-            "rawJSON": indicator
-        }
-        for indicator in data
-    ]
-
-
 def main():
     args = demisto.args()
     entry_id = args.get("entry_id", "")
@@ -49,7 +24,14 @@ def main():
 
     contents = demisto.executeCommand("StixParser", {"iocXml": file_txt})[0].get("Contents")
     data = json.loads(contents)
-    indicators = build_indicators(data)
+    indicators = [
+        {
+            "type": stix_struct_to_indicator.get(indicator.get("indicator_type")),
+            "value": indicator.get("value"),
+            "rawJSON": indicator
+        }
+        for indicator in data
+    ]
 
     errors = list()
     for indicator in indicators:
