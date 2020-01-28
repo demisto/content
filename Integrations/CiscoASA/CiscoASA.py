@@ -157,8 +157,22 @@ def raw_to_rules(raw_rules):
     """
     rules = []
     for rule in raw_rules:
+        source_services = rule.get('sourceService', {})
+
+        if type(source_services) == list:
+            source_services_list = [v['value'] for v in source_services]
+        else:
+            source_services_list = source_services.get('value')
+
+        dest_services = rule.get('destinationService', {})
+        if type(dest_services) == list:
+            dest_services_list = [v['value'] for v in dest_services]
+        else:
+            dest_services_list = dest_services.get('value')
         rules.append({"SourceIP": rule.get('sourceAddress', {}).get('value'),
+                      "SourceService": source_services_list,
                       "DestIP": rule.get('destinationAddress', {}).get('value'),
+                      "DestService": dest_services_list,
                       "IsActive": rule.get('active'),
                       "Interface": rule.get("interface"),
                       "InterfaceType": rule.get("interface_type"),
@@ -212,7 +226,7 @@ def list_rules_command(client: Client, args):
         rules = raw_to_rules(raw_rules)
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown("Rules:", rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface", "InterfaceType",
-                                               "IsActive", "Position"])
+                                               "IsActive", "Position", "SourceService", "destService"])
         return hr, outputs, raw_rules
 
     except Exception as e:
@@ -270,9 +284,9 @@ def rule_by_id_command(client: Client, args):
     rules = raw_to_rules([raw_rules])
 
     outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
-    hr = tableToMarkdown("Rule {}:".format(rule_id), rules, ["ID", "SourceIP", "DestIP",
-                                                             "Permit", "Interface", "InterfaceType", "IsActive",
-                                                             "Position"])
+    hr = tableToMarkdown("Rule {}:".format(rule_id), rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface",
+                                                             "InterfaceType", "IsActive", "Position", "SourceService",
+                                                             "destService"])
     return hr, outputs, raw_rules
 
 
@@ -283,6 +297,7 @@ def create_rule_command(client: Client, args):
     permit = args.get('permit')
     interface = args.get('interface_name')
     interface_type = args.get('interface_type')
+    service = args.get('service', 'ip')
 
     interface = "" if interface_type == "Global" else interface
     if interface_type != "Global" and not interface:
@@ -295,7 +310,8 @@ def create_rule_command(client: Client, args):
 
     rule_body = {}  # type: dict
     rule_body['sourceService'] = {"kind": "NetworkProtocol",
-                                  "value": "ip"}
+                                  "value": service}
+
     # Set up source
     if is_ipv4(source):
         rule_body["sourceAddress"] = {"kind": "IPv4Address",
@@ -310,10 +326,9 @@ def create_rule_command(client: Client, args):
         rule_body["sourceAddress"] = {"kind": "objectRef#NetworkObj",
                                       "objectId": source}
 
-
     # Set up dest
     rule_body['destinationService'] = {"kind": "NetworkProtocol",
-                                       "value": "ip"}
+                                       "value": service}
 
     if is_ipv4(dest):
         rule_body["destinationAddress"] = {"kind": "IPv4Address",
@@ -345,7 +360,7 @@ def create_rule_command(client: Client, args):
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown("Created new rule. ID: {}".format(raw_rule.get('objectId'),),
                              rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface", "InterfaceType", "IsActive",
-                                     "Position"])
+                                     "Position", "SourceService", "destService"])
         return hr, outputs, raw_rule
     except Exception as e:
         if 'DUPLICATE' in str(e):
@@ -391,12 +406,11 @@ def edit_rule_command(client: Client, args):
     source = args.get('source')
     dest = args.get('destination')
     permit = args.get('permit')
+    service = args.get("service")
 
     rule_body = {}  # type: dict
 
     if source:
-        rule_body['sourceService'] = {"kind": "NetworkProtocol",
-                                      "value": "ip"}
         # Set up source
         if is_ipv4(source):
             rule_body["sourceAddress"] = {"kind": "IPv4Address",
@@ -411,11 +425,11 @@ def edit_rule_command(client: Client, args):
             rule_body["sourceAddress"] = {"kind": "objectRef#NetworkObj",
                                           "objectId": source}
 
+    if service:
+        rule_body['sourceService'] = {"kind": "NetworkProtocol",
+                                      "value": service}
     # Set up dest
     if dest:
-        rule_body['destinationService'] = {"kind": "NetworkProtocol",
-                                           "value": "ip"}
-
         if is_ipv4(dest):
             rule_body["destinationAddress"] = {"kind": "IPv4Address",
                                                "value": dest}
@@ -428,6 +442,10 @@ def edit_rule_command(client: Client, args):
         else:
             rule_body["destinationAddress"] = {"kind": "objectRef#NetworkObj",
                                                "objectId": dest}
+
+    if service:
+        rule_body['destinationService'] = {"kind": "NetworkProtocol",
+                                           "value": service}
 
     # everything else
     if permit:
@@ -447,7 +465,7 @@ def edit_rule_command(client: Client, args):
             raw_rule = client.rule_action(rule_id, interface, interface_type, 'GET')
         except Exception:
             location = rule.headers._store.get('location')[1]
-            rule_id = location[location.rfind('/')+1:]
+            rule_id = location[location.rfind('/') + 1:]
             raw_rule = client.rule_action(rule_id, interface, interface_type, 'GET')
 
         rules = raw_to_rules([raw_rule])
@@ -455,7 +473,7 @@ def edit_rule_command(client: Client, args):
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown(f"Edited rule {raw_rule.get('objectId')}",
                              rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface", "InterfaceType", "IsActive",
-                                     "Position"])
+                                     "Position", "SourceService", "destService"])
         return hr, outputs, raw_rule
     except Exception as e:
         if 'DUPLICATE' in str(e):

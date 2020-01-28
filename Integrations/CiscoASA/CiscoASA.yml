@@ -80,6 +80,12 @@ script:
     - contextPath: CiscoASA.Rules.Permit
       description: Is the rule permiting the traffic from source to destination.
       type: Boolean
+    - contextPath: CiscoASA.Rules.DestService
+      description: The destination service.
+      type: String
+    - contextPath: CiscoASA.Rules.SourceService
+      description: The source service.
+      type: String
   - arguments:
     - default: false
       description: The name of the backup.
@@ -153,15 +159,23 @@ script:
     - contextPath: CiscoASA.Rules.Permit
       description: Is the rule permiting the traffic from source to destination.
       type: Boolean
+    - contextPath: CiscoASA.Rules.DestService
+      description: The destination service.
+      type: String
+    - contextPath: CiscoASA.Rules.SourceService
+      description: The source service.
+      type: String
   - arguments:
     - default: false
-      description: The source. Could be IPv4, address block or any
+      description: The source. Could be IPv4, address block, any or name of network
+        object.
       isArray: false
       name: source
       required: true
       secret: false
     - default: false
-      description: The destination. Could be IPv4, address block or any.
+      description: The destination. Could be IPv4, address block, any or name of network
+        object.
       isArray: false
       name: destination
       required: true
@@ -232,6 +246,12 @@ script:
       name: interface_name
       required: false
       secret: false
+    - default: false
+      description: The service of the rule.
+      isArray: false
+      name: service
+      required: false
+      secret: false
     deprecated: false
     description: Create a rule.
     execution: false
@@ -264,6 +284,12 @@ script:
     - contextPath: CiscoASA.Rules.Permit
       description: Is the rule permiting the traffic from source to destination.
       type: Boolean
+    - contextPath: CiscoASA.Rules.DestService
+      description: The destination service.
+      type: String
+    - contextPath: CiscoASA.Rules.SourceService
+      description: The source service.
+      type: String
   - arguments:
     - default: false
       description: The rule's ID.
@@ -355,15 +381,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: The destination. Could be IPv4, address block or any
+      description: The destination.Could be IPv4, address block, any or name of network
+        object.
       isArray: false
       name: destination
       required: false
       secret: false
     - default: false
-      description: The source. Could be IPv4, address block or any
+      description: The source. Could be IPv4, address block, any or name of network
+        object.
       isArray: false
       name: source
+      required: false
+      secret: false
+    - default: false
+      description: The service of the rule.
+      isArray: false
+      name: service
       required: false
       secret: false
     deprecated: false
@@ -398,8 +432,15 @@ script:
     - contextPath: CiscoASA.Rules.Permit
       description: Is the rule permiting the traffic from source to destination.
       type: Boolean
+    - contextPath: CiscoASA.Rules.DestService
+      description: The destination service.
+      type: String
+    - contextPath: CiscoASA.Rules.SourceService
+      description: The source service.
+      type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
   script: '-'
   type: python
+  subtype: python3
