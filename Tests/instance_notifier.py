@@ -4,7 +4,7 @@ import argparse
 import demisto_client
 from slackclient import SlackClient
 from test_integration import __create_integration_instance, __delete_integrations_instances
-from Tests.test_utils import str2bool, print_color, print_error, LOG_COLORS
+from Tests.test_utils import str2bool, print_color, print_error, LOG_COLORS, print_warning
 
 
 SERVER_URL = "https://{}"
@@ -52,6 +52,10 @@ def test_instances(secret_conf_path, server, username, password):
             instance_id, failure_message = __create_integration_instance(
                 c, integration_name, integration_instance_name, integration_params, is_byoi
             )
+            if failure_message == 'No configuration':
+                print_warning("Warning: The integration {} exists in content-test-conf conf.json but not "
+                              "in content repo".format(integration_instance_name))
+                continue
             if not instance_id:
                 print_error('Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
                 failed_integrations.append("{} {} - devops comments: {}".format(
