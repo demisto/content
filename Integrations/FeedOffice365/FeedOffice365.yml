@@ -123,7 +123,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.7.5.4328
+  dockerimage: demisto/python3:3.8.1.5734
   feed: true
   isfetch: false
   longRunning: false
