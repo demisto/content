@@ -26,7 +26,6 @@ jobs:
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
               echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
-              echo 'export NIGHTLY="true"' >> $BASH_ENV
               echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
