@@ -5,6 +5,7 @@ args:
   name: entry_id
   required: true
   secret: false
+comment: Populating indicators from information in given STIX1/2 file.
 commonfields:
   id: cb63e8ac-933c-47c5-879e-f80672f7351c
   version: -1
@@ -16,3 +17,5 @@ system: false
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.1.5734
+tests:
+  - CreateIndicatorFromSTIXTest

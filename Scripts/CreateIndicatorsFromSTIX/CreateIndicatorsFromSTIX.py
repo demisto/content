@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -16,6 +14,20 @@ stix_struct_to_indicator = {
 
 
 def build_indicators(data: list) -> list:
+    """
+
+    Args:
+        data: list of StixParser output
+
+
+    Returns:
+        list of indicators
+
+    Examples:
+        >>> build_indicators([{"indicator_type": "Domain", "value": "example.com", "score": 5}])
+        [{'type': 'Domain', 'value': 'example.com', 'rawJSON': {'indicator_type': 'Domain', 'value': 'example.com', \
+'score': 5}}]
+    """
     return [
         {
             "type": stix_struct_to_indicator.get(indicator.get("indicator_type")),
@@ -30,7 +42,6 @@ def main():
     args = demisto.args()
     entry_id = args.get("entry_id", "")
     file_path = demisto.getFilePath(entry_id).get('path')
-    demisto.results(file_path)
     if not file_path:
         return_error("Could not find file for entry id {}.".format(entry_id))
     with open(file_path) as file:
@@ -40,9 +51,14 @@ def main():
     data = json.loads(contents)
     indicators = build_indicators(data)
 
-    for part in batch(indicators, 2000):
-        demisto.createIndicators(part)
-    return_outputs("Create Indicators From STIX: {} were created.".format(len(indicators)))
+    errors = list()
+    for indicator in indicators:
+        res = demisto.executeCommand('createNewIndicator', indicator)
+        if is_error(res[0]):
+            errors.append("Error creating indicator - {}".format(res[0]['Contents']))
+    return_outputs("Create Indicators From STIX: {} indicators were created.".format(len(indicators) - len(errors)))
+    if errors:
+        return_error(str(errors))
 
 
 if __name__ in ("builtins",):
