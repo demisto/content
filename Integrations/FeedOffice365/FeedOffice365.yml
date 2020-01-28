@@ -1,9 +1,9 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedOffice365
+  id: Office365 Feed
   version: -1
 configuration:
-- defaultvalue: '240'
+- defaultvalue: '30'
   display: Fetch Interval
   name: feedFetchInterval
   required: true
@@ -49,7 +49,7 @@ configuration:
 - name: expiration
   required: false
   type: 17
-- defaultvalue: indicatorType
+- defaultvalue: suddenDeath
   hidden: true
   name: expirationPolicy
   required: false
@@ -65,8 +65,8 @@ configuration:
   required: false
   additionalinfo: When selected, the exclusion list will be ignored for this feed.
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  defaultvalue: feedInstanceReputationNotSet
-  display: Mark as reputation
+  defaultvalue: Good
+  display: Indicator reputation
   name: feedInstanceReputation
   options:
   - None
@@ -95,7 +95,7 @@ configuration:
   type: 8
 description: Use the Office365 feed integration to get indicators from the feed.
 display: Office365 Feed
-name: FeedOffice365
+name: Office365 Feed
 script:
   commands:
   - arguments:
