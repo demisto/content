@@ -73,3 +73,9 @@ def test_find_zombie_processes(mocker):
 
     assert len(zombies) == 9
     assert output == ps_output
+
+
+def test_rasterize_large_html(caplog):
+    path = os.path.realpath('test_data/large.html')
+    rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
+    caplog.clear()
