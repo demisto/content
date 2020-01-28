@@ -33,7 +33,8 @@ tags:
 - docx
 timeout: '0'
 type: python
-dockerimage: demisto/sane-doc-reports:1.0.0.5079
+subtype: python3
+dockerimage: demisto/sane-doc-reports:1.0.0.5675
 runas: DBotWeakRole
 runonce: false
 tests:
