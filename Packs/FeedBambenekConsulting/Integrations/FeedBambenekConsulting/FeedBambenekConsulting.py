@@ -4,28 +4,28 @@ from CommonServerPython import *
 def main():
     feed_url_to_config = {
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt': {
-            'fieldnames': ['indicator', 'bambenekconsulting_description',
-                           'bambenekconsulting_date',
-                           'bambenekconsulting_info'],
+            'fieldnames': ['indicator', 'description',
+                           'date_created',
+                           'info'],
             'indicator_type': FeedIndicatorType.IP
         },
 
         'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt': {
-            'fieldnames': ['indicator', 'bambenekconsulting_description',
-                           'bambenekconsulting_date',
-                           'bambenekconsulting_info'],
+            'fieldnames': ['indicator', 'description',
+                           'date_created',
+                           'info'],
             'indicator_type': FeedIndicatorType.Domain
         },
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt': {
-            'fieldnames': ['indicator', 'bambenekconsulting_description',
-                           'bambenekconsulting_date',
-                           'bambenekconsulting_info'],
+            'fieldnames': ['indicator', 'description',
+                           'date_created',
+                           'info'],
             'indicator_type': FeedIndicatorType.IP
         },
         'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt': {
-            'fieldnames': ['indicator', 'bambenekconsulting_description',
-                           'bambenekconsulting_date',
-                           'bambenekconsulting_info'],
+            'fieldnames': ['indicator', 'description',
+                           'date_created',
+                           'info'],
             'indicator_type': FeedIndicatorType.Domain
         }
     }

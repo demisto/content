@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 class Client(BaseClient):
     def __init__(self, url: str, feed_url_to_config: Optional[Dict[str, dict]] = None, fieldnames: str = '',
                  insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
-                 delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
+                 delimiter: str = ',', doublequote: bool = True, escapechar: str = '', api_key: bool = False,
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
                  **kwargs):
         """
@@ -46,11 +46,20 @@ class Client(BaseClient):
         """
         if not credentials:
             credentials = {}
-        username = credentials.get('identifier', None)
-        password = credentials.get('password', None)
-        auth = None
-        if username is not None and password is not None:
-            auth = (username, password)
+
+        auth: Optional[tuple] = None
+        self.headers = {}
+
+        if api_key:
+            header_name = credentials.get('identifier', None)
+            header_value = credentials.get('password', None)
+            self.headers[header_name] = header_value
+        else:
+            username = credentials.get('identifier', None)
+            password = credentials.get('password', None)
+            auth = None
+            if username is not None and password is not None:
+                auth = (username, password)
 
         super().__init__(base_url=url, proxy=proxy, verify=not insecure, auth=auth)
 
@@ -99,6 +108,12 @@ class Client(BaseClient):
             kwargs['stream'] = True
             kwargs['verify'] = self._verify
             kwargs['timeout'] = self.polling_timeout
+
+            if self.headers:
+                if 'headers' in kwargs:
+                    kwargs['headers'].update(self.headers)
+                else:
+                    kwargs['headers'] = self.headers
 
             try:
                 r = _session.send(prepreq, **kwargs)
@@ -172,6 +187,8 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                 value = item.get('indicator')
                 if not value and len(item) == 1:
                     value = next(iter(item.values()))
+                else:
+                    del raw_json['indicator']
                 if value:
                     raw_json['value'] = value
                     if client.feed_url_to_config:
@@ -180,9 +197,9 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                         indicator_type = default_indicator_type
                     raw_json['type'] = indicator_type
                     indicators.append({
-                        "value": value,
-                        "type": indicator_type,
-                        "rawJSON": raw_json,
+                        'value': value,
+                        'type': indicator_type,
+                        'rawJSON': raw_json,
                     })
     return indicators
 
@@ -192,7 +209,7 @@ def get_indicators_command(client, args):
     limit = int(args.get('limit'))
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = camelize(indicators_list[:limit])
-    hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
+    hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'rawJSON'])
     feed_name_context = args.get('feed_name', 'CSV').replace(' ', '')
     return hr, {f'{feed_name_context}.Indicator': entry_result}, indicators_list
 
