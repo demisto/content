@@ -19,7 +19,7 @@ configuration:
 - additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
   name: indicator_type
-  required: true
+  required: false
   type: 0
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
@@ -143,13 +143,13 @@ script:
     execution: false
     name: csv-get-indicators
     outputs:
-    - contextPath: CSV.Indicator.Value
+    - contextPath: CSV.Indicator.value
       description: The indicator value.
       type: String
-    - contextPath: CSV.Indicator.Type
+    - contextPath: CSV.Indicator.type
       description: The indicator type.
       type: String
-    - contextPath: CSV.Indicator.Rawjson
+    - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/python3:3.8.1.5734
