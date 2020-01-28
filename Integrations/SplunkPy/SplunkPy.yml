@@ -85,9 +85,8 @@ configuration:
   name: hec_token
   required: false
   type: 4
-- defaultvalue: '8088'
-  display: HEC Port
-  name: hec_port
+- display: 'HEC URL (e.g: https://localhost:8088).'
+  name: hec_url
   required: false
   type: 0
 description: Run queries on Splunk servers.
