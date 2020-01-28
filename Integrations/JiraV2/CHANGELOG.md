@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where trying to get the attachment of an issue using ***jira-get-issue*** raised an error.
 
 ## [20.1.2] - 2020-01-22
 Fixed the description of the *reporter* argument in the ***jira-create-issue*** command.
