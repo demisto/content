@@ -42,7 +42,8 @@ def get_data_owner(data_owner: Any) -> dict:
     if data_owner and isinstance(data_owner, dict):
         return {'Name': data_owner.get('name'), 'Email': data_owner.get('email')}
     if data_owner and not isinstance(data_owner, dict):
-        LOG("A data owner was found in the incident, but did not match the expected format.")
+        LOG(f"A data owner was found in the incident, but did not match the expected format.\n "
+            f"Found: {str(data_owner)}")
     return {}
 
 
