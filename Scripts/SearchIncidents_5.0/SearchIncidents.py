@@ -19,8 +19,11 @@ def check_if_found_incident(res: List):
 
 
 def is_valid_args(args: Dict):
+    array_args: List[str] = ['id', 'name', 'status', 'notstatus', 'reason', 'level', 'owner', 'type', 'query']
     error_msg: List[str] = []
     for _key, value in args.items():
+        if _key in array_args:
+            value = ','.join(value)
         i = 0
         while i < len(value):
             if value[i] == '\\':
