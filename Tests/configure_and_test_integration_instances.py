@@ -6,10 +6,10 @@ import sys
 import demisto_client
 from time import sleep
 
-from Tests.test_integration import __get_integration_config, __test_integration_instance
-from Tests.test_integration import __disable_integrations_instances
+from Tests.test_integration import __get_integration_config, __test_integration_instance, \
+    __disable_integrations_instances
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
-from Tests.test_content import load_conf_files, extract_filtered_tests
+from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager
 from Tests.test_utils import run_command, get_last_release_version, checked_type, get_yaml
 from Tests.scripts.validate_files import FilesValidator
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX
@@ -54,25 +54,29 @@ def determine_server_url(ami_env):
     return server_url
 
 
-def configure_integration_instance(integration, client):
-    '''Configure an instance for an integration
+def configure_integration_instance(integration, client, prints_manager):
+    """
+    Configure an instance for an integration
 
     Arguments:
         integration: (dict)
             Integration object whose params key-values are set
         client: (demisto_client)
             The client to connect to
+        prints_manager: (ParallelPrintsManager)
+            Print manager object
 
     Returns:
         (dict): Configured integration instance
-    '''
+    """
     integration_name = integration.get('name')
     print('Configuring instance for integration "{}"\n'.format(integration_name))
     integration_instance_name = integration.get('instance_name', '')
     integration_params = integration.get('params')
     is_byoi = integration.get('byoi', True)
 
-    integration_configuration = __get_integration_config(client, integration_name)
+    integration_configuration = __get_integration_config(client, integration_name, prints_manager)
+    prints_manager.execute_thread_prints(0)
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                           integration_instance_name, is_byoi)
     return module_instance
@@ -492,6 +496,8 @@ def main():
     conf_path = options.conf
     secret_conf_path = options.secret
 
+    prints_manager = ParallelPrintsManager(1)
+
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
 
@@ -504,7 +510,7 @@ def main():
     skipped_integrations_conf = conf['skipped_integrations']
     all_module_instances = []
 
-    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
+    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=False)
     tests_for_iteration = tests
     if run_all_tests:
         # Use all tests for testing, leave 'tests_for_iteration' as is
@@ -564,7 +570,7 @@ def main():
 
         module_instances = []
         for integration in integrations_to_configure:
-            module_instances.append(configure_integration_instance(integration, client))
+            module_instances.append(configure_integration_instance(integration, client, prints_manager))
         all_module_instances.extend(module_instances)
 
     preupdate_fails = set()
@@ -583,7 +589,8 @@ def main():
                                                                                       integration_of_instance)
         print(msg)
         # If there is a failure, __test_integration_instance will print it
-        success = __test_integration_instance(client, instance)
+        success = __test_integration_instance(client, instance, prints_manager)
+        prints_manager.execute_thread_prints(0)
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
 
@@ -592,7 +599,7 @@ def main():
     # configure instances for new integrations
     new_integration_module_instances = []
     for integration in brand_new_integrations:
-        new_integration_module_instances.append(configure_integration_instance(integration, client))
+        new_integration_module_instances.append(configure_integration_instance(integration, client, prints_manager))
     all_module_instances.extend(new_integration_module_instances)
 
     # After content upload has completed - test ("Test" button) integration instances
@@ -608,13 +615,15 @@ def main():
                                                                                        integration_of_instance)
         print(msg)
         # If there is a failure, __test_integration_instance will print it
-        success = __test_integration_instance(client, instance)
+        success = __test_integration_instance(client, instance, prints_manager)
+        prints_manager.execute_thread_prints(0)
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
 
-    # reinitiate the client since its authorization has probably expired by now
+    # reinitialize the client since its authorization has probably expired by now
     client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
-    __disable_integrations_instances(client, all_module_instances)
+    __disable_integrations_instances(client, all_module_instances, prints_manager)
+    prints_manager.execute_thread_prints(0)
 
     success = report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names)
     if not success:
