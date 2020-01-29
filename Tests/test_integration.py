@@ -280,7 +280,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
         prints_manager.add_print_job(err, print, thread_index)
 
     # poll the incidents queue for a max time of 40 seconds
-    timeout = time.time() + 40
+    timeout = time.time() + 60
     while incidents['total'] != 1:
         try:
             incidents = client.search_incidents(filter=search_filter)
