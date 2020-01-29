@@ -799,44 +799,45 @@ def fetch_incidents_command():
     demisto.setLastRun({'time': max_timestamp})
 
 
-try:
-    if demisto.command() == 'test-module':
-        test_module_command()
-    elif demisto.command() == 'countercraft-list-providers':
-        list_providers_command()
-    elif demisto.command() == 'countercraft-list-dsns':
-        list_dsns_command()
-    elif demisto.command() == 'countercraft-list-campaigns':
-        list_campaigns_command()
-    elif demisto.command() == 'countercraft-list-hosts':
-        list_hosts_command()
-    elif demisto.command() == 'countercraft-list-services':
-        list_services_command()
-    elif demisto.command() == 'countercraft-list-breadcrumbs':
-        list_breadcrumbs_command()
-    elif demisto.command() == 'countercraft-list-incidents':
-        list_incidents_command()
-    elif demisto.command() == 'countercraft-get-object':
-        get_object_command()
-    elif demisto.command() == 'countercraft-get-events':
-        get_events_command()
-    elif demisto.command() == 'countercraft-create-campaign':
-        create_campaign_command()
-    elif demisto.command() == 'countercraft-create-host-machine':
-        create_host_machine_command()
-    elif demisto.command() == 'countercraft-manage-campaign':
-        manage_campaign_command()
-    elif demisto.command() == 'countercraft-manage-host':
-        manage_host_command()
-    elif demisto.command() == 'countercraft-manage-service':
-        manage_service_command()
-    elif demisto.command() == 'countercraft-manage-breadcrumb':
-        manage_breadcrumb_command()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents_command()
-except Exception as e:
-    return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+def main():
+    try:
+        if demisto.command() == 'test-module':
+            test_module_command()
+        elif demisto.command() == 'countercraft-list-providers':
+            list_providers_command()
+        elif demisto.command() == 'countercraft-list-dsns':
+            list_dsns_command()
+        elif demisto.command() == 'countercraft-list-campaigns':
+            list_campaigns_command()
+        elif demisto.command() == 'countercraft-list-hosts':
+            list_hosts_command()
+        elif demisto.command() == 'countercraft-list-services':
+            list_services_command()
+        elif demisto.command() == 'countercraft-list-breadcrumbs':
+            list_breadcrumbs_command()
+        elif demisto.command() == 'countercraft-list-incidents':
+            list_incidents_command()
+        elif demisto.command() == 'countercraft-get-object':
+            get_object_command()
+        elif demisto.command() == 'countercraft-get-events':
+            get_events_command()
+        elif demisto.command() == 'countercraft-create-campaign':
+            create_campaign_command()
+        elif demisto.command() == 'countercraft-create-host-machine':
+            create_host_machine_command()
+        elif demisto.command() == 'countercraft-manage-campaign':
+            manage_campaign_command()
+        elif demisto.command() == 'countercraft-manage-host':
+            manage_host_command()
+        elif demisto.command() == 'countercraft-manage-service':
+            manage_service_command()
+        elif demisto.command() == 'countercraft-manage-breadcrumb':
+            manage_breadcrumb_command()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents_command()
+    except Exception as e:
+        return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
 
-# You can use demisto.args()[argName] to get a specific arg. args are strings.
-# You can use demisto.params()[paramName] to get a specific params.
-# Params are of the type given in the integration page creation.
+
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()
