@@ -3,7 +3,8 @@ import argparse
 
 import demisto_client
 from slackclient import SlackClient
-from test_integration import __create_integration_instance, __delete_integrations_instances
+from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
+from Tests.test_content import ParallelPrintsManager
 from Tests.test_utils import str2bool, print_color, print_error, LOG_COLORS, print_warning
 
 
@@ -37,6 +38,9 @@ def test_instances(secret_conf_path, server, username, password):
     instance_ids = []
     failed_integrations = []
     integrations_counter = 0
+
+    prints_manager = ParallelPrintsManager(1)
+
     for integration in integrations:
         c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
         integrations_counter += 1
@@ -50,7 +54,7 @@ def test_instances(secret_conf_path, server, username, password):
 
         if has_integration:
             instance_id, failure_message = __create_integration_instance(
-                c, integration_name, integration_instance_name, integration_params, is_byoi
+                c, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager
             )
             if failure_message == 'No configuration':
                 print_warning("Warning: The integration {} exists in content-test-conf conf.json but not "
@@ -63,7 +67,9 @@ def test_instances(secret_conf_path, server, username, password):
             else:
                 instance_ids.append(instance_id)
                 print('Create integration %s succeed' % (integration_name,))
-                __delete_integrations_instances(c, instance_ids)
+                __delete_integrations_instances(c, instance_ids, prints_manager)
+
+            prints_manager.execute_thread_prints(0)
 
     return failed_integrations, integrations_counter
 
