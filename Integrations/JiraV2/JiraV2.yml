@@ -181,13 +181,13 @@ script:
     - name: labels
       description: 'A CSV list of labels. '
     - name: priority
-      description: ' The priorty name, for example: "High" or "Medium". '
+      description: 'The priority name, for example: "High" or "Medium".'
     - name: dueDate
-      description: ' The due date for the issue (in the format: 2018-03-11). '
+      description: 'The due date for the issue (in the format: 2018-03-11).'
     - name: assignee
       description: The name of the assignee.
     - name: reporter
-      description: The name of the reporter.
+      description: The ID of the reporter.
     - name: parentIssueKey
       description: The parent issue key (if you create a sub-task).
     - name: parentIssueId
@@ -226,7 +226,7 @@ script:
       description: If a globalId is provided, and a remote issue link exists with that
         globalId, the remote issue link is updated.
     - name: relationship
-      description: ' The object relationship to issue, for example: "causes". '
+      description: 'The object relationship to issue, for example: "causes".'
     - name: url
       required: true
       description: The URL link.
@@ -306,7 +306,7 @@ script:
       description: The ID offset.
       type: string
     description: Returns the ID offset, for example, the first issue ID.
-  dockerimage: demisto/oauthlib:1.0.0.4235
+  dockerimage: demisto/oauthlib:1.0.0.4977
   isfetch: true
   runonce: false
 tests:
