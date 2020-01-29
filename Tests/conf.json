@@ -3,6 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CloudShark",
+            "playbookID": "CloudShark - Test Playbook",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
+            "integrations": "CloudShark",
+            "playbookID": "TestCloudshark"
+        },
+        {
+            "integrations": "CloudShark",
+            "playbookID": "Cloudshark-Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test"
         },
