@@ -1,4 +1,4 @@
-from rasterize import *
+from rasterize import rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS
 from tempfile import NamedTemporaryFile
 import subprocess
 import os
@@ -73,6 +73,16 @@ def test_find_zombie_processes(mocker):
 
     assert len(zombies) == 9
     assert output == ps_output
+
+
+def test_merge_options():
+    res = merge_options(DEFAULT_CHROME_OPTIONS, [])
+    assert res == DEFAULT_CHROME_OPTIONS
+    res = merge_options(DEFAULT_CHROME_OPTIONS, ['[--disable-dev-shm-usage]', '--disable-auto-reload', '--headless'])
+    assert '--disable-dev-shm-usage' not in res
+    assert '--no-sandbox' in res  # part of default options
+    assert '--disable-auto-reload' in res
+    assert len([x for x in res if x == '--headless']) == 1  # should have only one headless option
 
 
 def test_rasterize_large_html(caplog):
