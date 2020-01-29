@@ -58,12 +58,12 @@ configuration:
   name: expirationInterval
   required: false
   type: 1
-- display: Bypass exclusion list
+- additionalInfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
   name: bypassExclusionList
   defaultvalue: ""
   type: 8
   required: false
-  additionalInfo: When selected, the exclusion list will be ignored for this feed.
 - additionalInfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Good
   display: Indicator reputation
@@ -75,7 +75,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: 'IPs contains: IPv4, CIDR, IPv6, IPv6CIDR. URLs contains: URLs and Domains.'
+- additionalInfo: 'IPs contains: IPv4, CIDR, IPv6, IPv6CIDR. URLs contains: URLs and Domains.'
   defaultvalue: IPs
   display: JSON attribute to use as an indicator
   name: indicator

@@ -1,7 +1,6 @@
 import pytest
 import requests_mock
 
-FeedOffice365 = __import__("Feed Office365")
 from FeedOffice365 import Client, get_indicators_command, fetch_indicators_command
 from test_data.feed_data import RESPONSE_DATA
 
