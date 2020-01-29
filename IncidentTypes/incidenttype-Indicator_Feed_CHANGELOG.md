@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added new Indicator Feed incident type.
+Added the **Indicator Feed** incident type.
