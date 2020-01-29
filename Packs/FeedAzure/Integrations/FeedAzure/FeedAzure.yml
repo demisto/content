@@ -5,14 +5,13 @@ commonfields:
 configuration:
 - defaultvalue: A - Completely reliable
   name: feedReliability
-- hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
+  type: 15
 - defaultvalue: Good
   name: feedReputation
+  type: 18
 - defaultvalue: '5'
   name: feedFetchInterval
+  type: 19
 - defaultvalue: All
   display: Regions
   name: regions
