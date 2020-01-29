@@ -216,6 +216,14 @@ def test_module(client: Client) -> Tuple[str, Dict, Dict]:
         str. ok for success, relevant error string otherwise.
     """
     try:
+        if 'All' in client.regions_list and len(client.regions_list) >= 2:
+            err_msg = 'ConfigurationError: You may not select additional regions if you selected \'All\''
+            raise DemistoException(err_msg)
+
+        if 'All' in client.services_list and len(client.services_list) >= 2:
+            err_msg = 'ConfigurationError: You may not select additional services if you selected \'All\''
+            raise DemistoException(err_msg)
+
         download_link = client.get_azure_download_link()
         client.get_download_file_content_values(download_link)
 
