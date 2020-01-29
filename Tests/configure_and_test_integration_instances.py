@@ -5,10 +5,11 @@ import ast
 import sys
 import demisto_client
 from time import sleep
+from threading import Thread
 
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
-from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
+from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS, run_threads_list
 from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager
 from Tests.test_utils import run_command, get_last_release_version, checked_type, get_yaml
 from Tests.scripts.validate_files import FilesValidator
@@ -32,26 +33,30 @@ def options_handler():
     return options
 
 
-def determine_server_url(ami_env):
+def determine_servers_urls(ami_env):
     '''
     Use the "env_results.json" file and -env argument passed to the script to determine
-    the demisto server url to connect to
+    the demisto server url to connect to.
+    In case there are several machines (nightly - parallel) several urls will be returned.
 
     Arguments:
         ami_env: (str)
             The amazon machine image environment whose IP we should connect to.
 
     Returns:
-        (str): The server url to connect to
+        (lst): The server url list to connect to
     '''
     instance_dns = ''
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
-        env_to_instance_dns = {env.get('Role'): env.get('InstanceDNS') for env in env_results}
-        instance_dns = env_to_instance_dns.get(ami_env)
-    server_url = instance_dns if instance_dns.startswith('http') else ('https://{}'.format(instance_dns) if
+        env_to_instance_dns = [{env.get('Role'): env.get('InstanceDNS')} for env in env_results]
+        instances_dns = [env.get(ami_env) for env in env_to_instance_dns]
+    server_urls = []
+    for dns in instances_dns:
+        server_url = instance_dns if instance_dns.startswith('http') else ('https://{}'.format(instance_dns) if
                                                                        instance_dns else '')
-    return server_url
+        server_urls.append(server_url)
+    return server_urls
 
 
 def configure_integration_instance(integration, client, prints_manager):
@@ -492,7 +497,7 @@ def main():
     password = options.password
     ami_env = options.ami_env
     git_sha1 = options.git_sha1
-    server = determine_server_url(ami_env)
+    servers = determine_servers_urls(ami_env)
     conf_path = options.conf
     secret_conf_path = options.secret
 
@@ -504,7 +509,12 @@ def main():
     username = secret_conf.get('username') if not username else username
     password = secret_conf.get('userPassword') if not password else password
 
-    client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+    clients = []
+    for server_url in servers:
+        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
+        clients.append(client)
+
+    testing_client = clients[0]
 
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
@@ -570,7 +580,7 @@ def main():
 
         module_instances = []
         for integration in integrations_to_configure:
-            module_instances.append(configure_integration_instance(integration, client, prints_manager))
+            module_instances.append(configure_integration_instance(integration, testing_client, prints_manager))
         all_module_instances.extend(module_instances)
 
     preupdate_fails = set()
@@ -589,17 +599,23 @@ def main():
                                                                                       integration_of_instance)
         print(msg)
         # If there is a failure, __test_integration_instance will print it
-        success = __test_integration_instance(client, instance, prints_manager)
+        success = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
+    threads_list = []
+    # For each server url we install content
+    for client in clients:
+        t = Thread(target=update_content_on_demisto_instance,
+                   kwargs={'client': client, 'username': username, 'password': password, 'server': server_url})
+        threads_list.append(t)
 
-    update_content_on_demisto_instance(client, username, password, server)
+    run_threads_list(threads_list)
 
     # configure instances for new integrations
     new_integration_module_instances = []
     for integration in brand_new_integrations:
-        new_integration_module_instances.append(configure_integration_instance(integration, client, prints_manager))
+        new_integration_module_instances.append(configure_integration_instance(integration, testing_client, prints_manager))
     all_module_instances.extend(new_integration_module_instances)
 
     # After content upload has completed - test ("Test" button) integration instances
@@ -615,14 +631,15 @@ def main():
                                                                                        integration_of_instance)
         print(msg)
         # If there is a failure, __test_integration_instance will print it
-        success = __test_integration_instance(client, instance, prints_manager)
+        success = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
 
-    # reinitialize the client since its authorization has probably expired by now
-    client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
-    __disable_integrations_instances(client, all_module_instances, prints_manager)
+    # reinitialize all clients since their authorization has probably expired by now
+    for server_url in servers:
+        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
+        __disable_integrations_instances(client, all_module_instances, prints_manager)
     prints_manager.execute_thread_prints(0)
 
     success = report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names)
