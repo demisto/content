@@ -9,7 +9,7 @@ stix_struct_to_indicator = {
     "Email": FeedIndicatorType.Email,
     "Registry Path Reputation": FeedIndicatorType.Registry,
     "URL": FeedIndicatorType.URL,
-    "Username": FeedIndicatorType.Account
+    "Username": FeedIndicatorType.Account,
 }
 
 
@@ -23,41 +23,44 @@ def score_to_reputation(score):
        :return: The formatted score
        :rtype: ``str``
     """
-    to_str = {
-        3: 'Bad',
-        2: 'Suspicious',
-        1: 'Good',
-        0: 'None'
-    }
-    return to_str.get(score, 'None')
+    to_str = {3: "Bad", 2: "Suspicious", 1: "Good", 0: "None"}
+    return to_str.get(score, "None")
 
 
 def main():
     args = demisto.args()
     entry_id = args.get("entry_id", "")
-    file_path = demisto.getFilePath(entry_id).get('path')
+    file_path = demisto.getFilePath(entry_id).get("path")
     if not file_path:
         return_error("Could not find file for entry id {}.".format(entry_id))
     with open(file_path) as file:
         file_txt = file.read()
 
-    contents = demisto.executeCommand("StixParser", {"iocXml": file_txt})[0].get("Contents")
+    comm_output = demisto.executeCommand("StixParser", {"iocXml": file_txt})
+    contents = comm_output[0].get("Contents")
+    if is_error(comm_output[0]):
+        return_error(contents)
     data = json.loads(contents)
     indicators = [
         {
             "type": stix_struct_to_indicator.get(indicator.get("indicator_type")),
             "value": indicator.get("value"),
             "reputation": score_to_reputation(indicator.get("score")),
+            "source": indicator.get("CustomFields", {}).get("stixPackageId", "STIX Bundle"),
             "rawJSON": indicator,
         }
         for indicator in data
     ]
     errors = list()
     for indicator in indicators:
-        res = demisto.executeCommand('createNewIndicator', indicator)
+        res = demisto.executeCommand("createNewIndicator", indicator)
         if is_error(res[0]):
-            errors.append("Error creating indicator - {}".format(res[0]['Contents']))
-    return_outputs("Create Indicators From STIX: {} indicators were created.".format(len(indicators) - len(errors)))
+            errors.append("Error creating indicator - {}".format(res[0]["Contents"]))
+    return_outputs(
+        "Create Indicators From STIX: {} indicators were created.".format(
+            len(indicators) - len(errors)
+        )
+    )
     if errors:
         return_error(json.dumps(errors, indent=4))
 
