@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedOffice365
+  id: Office365 Feed
   version: -1
 configuration:
 - defaultvalue: Worldwide
@@ -124,8 +124,8 @@ detaileddescription: |-
   - o365-api.worldwide-exchange
   - o365-api.worldwide-sharepoint
   - o365-api.worldwide-skype
-display: Office365 Feed5
-name: FeedOffice365
+display: Office365 Feed
+name: Office365 Feed
 script:
   commands:
   - arguments:
