@@ -33,6 +33,17 @@ class SymantecAuth(AuthBase):
 ''' HELPER FUNCTIONS '''
 
 
+def get_data_owner(data_owner: Any) -> dict:
+    """
+    parses the data owner object
+    :param data_owner: the data owner object, can be of any type
+    :return: the parsed object
+    """
+    if data_owner and isinstance(data_owner, dict):
+        return {'Name': data_owner.get('name'), 'Email': data_owner.get('email')}
+    return {}
+
+
 def get_incident_binaries(client: Client, incident_id: str, include_original_message: bool = True,
                           include_all_components: bool = True) -> Tuple[str, dict, list, dict]:
     """
@@ -265,7 +276,6 @@ def get_incident_details(raw_incident_details: dict, args: dict) -> dict:
     message_source: dict = incident.get('messageSource', {})
     message_type: dict = incident.get('messageType', {})
     policy: dict = incident.get('policy', {})
-    data_owner: dict = incident.get('dataOwner', {})
     incident_details: dict = {
         'ID': raw_incident_details.get('incidentID'),
         'LongID': raw_incident_details.get('incidentLongId'),
@@ -293,10 +303,7 @@ def get_incident_details(raw_incident_details: dict, args: dict) -> dict:
         'RuleViolationCount': incident.get('ruleViolationCount'),
         'DetectionServer': incident.get('detectionServer'),
         'CustomAttribute': parse_custom_attribute(incident.get('customAttributeGroup', []), args),
-        'DataOwner': {
-            'Name': data_owner.get('name'),
-            'Email': data_owner.get('email')
-        },
+        'DataOwner': get_data_owner(incident.get('dataOwner', {})),
         'EventDate': incident.get('eventDate')
     }
     return {key: val for key, val in incident_details.items() if val}
@@ -432,9 +439,8 @@ def get_incident_details_command(client: Client, args: dict) -> Tuple[str, dict,
 
     if raw_incident and isinstance(raw_incident, list):
         serialized_incident = helpers.serialize_object(raw_incident[0])
-        raw_response = serialized_incident
-        raw_incident_details: dict = json.loads(json.dumps(serialized_incident, default=datetime_to_iso_format))
-        incident_details: dict = get_incident_details(raw_incident_details, args)
+        raw_response: dict = json.loads(json.dumps(serialized_incident, default=datetime_to_iso_format))
+        incident_details: dict = get_incident_details(raw_response, args)
         raw_headers = ['ID', 'CreationDate', 'DetectionDate', 'Severity', 'Status', 'MessageSourceType',
                        'MessageType', 'Policy Name']
         headers = ['ID', 'Creation Date', 'Detection Date', 'Severity', 'Status', 'DLP Module',
