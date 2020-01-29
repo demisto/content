@@ -5,7 +5,6 @@ import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import socket
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -17,6 +16,20 @@ INTEGRATION_COMMAND = "cisco-asa"
 
 
 class Client(BaseClient):
+    isASAv = False
+    auth_token = ""
+
+    def login(self, isASAv) -> None:
+        if isASAv:
+            self.isASAv = True
+            res = self._http_request('POST', '/api/tokenservices', resp_type='response')
+            auth_token = res.headers._store.get('x-auth-token')[1]
+            self._headers['X-Auth-Token'] = auth_token
+            self.auth_token = auth_token
+
+    def __del__(self):
+        if self.isASAv and self.auth_token:
+            self._http_request('DELETE', f'/api/tokenservices/{self.auth_token}', resp_type='response')
 
     def get_all_rules(self, specific_interface: Optional[str] = None, rule_type: str = 'All') -> list:
         """
@@ -129,7 +142,7 @@ class Client(BaseClient):
         if interface_type == 'Out':
             res = self._http_request("POST", '/api/access/out/{}/rules'.format(interface_name), json_data=rule_body,
                                      resp_type="response")
-        loc = res.headers.get("Location")
+        loc = res.headers.get("Location", "")
         rule = self._http_request('GET', loc[loc.find('/api'):])
         rule['interface'] = interface_name
         rule['interface_type'] = interface_type
@@ -146,6 +159,31 @@ class Client(BaseClient):
 
 
 '''HELPER COMMANDS'''
+@logger
+def set_up_ip_kind(dict_body: dict, field_to_add: str, data: str) -> None:
+    """
+
+    Args:
+        dict_body: The dict to add the data to.
+        field_to_add: the name of the field to add to json.
+        data: the string to check its kind and insert to dict.
+
+    Returns:
+        Takes the data, checks what kind of source/dest it is (IP, network, any or network object) and inserts to the
+        dict the field_to_add as key and the source/dest as value in the correct format.
+    """
+    if is_ip_valid(data):
+        dict_body[field_to_add] = {"kind": "IPv4Address",
+                                   "value": data}
+    elif data == 'any':
+        dict_body[field_to_add] = {"kind": "AnyIPAddress",
+                                   "value": "any4"}
+    elif '/' in data:
+        dict_body[field_to_add] = {"kind": "IPv4Network",
+                                   "value": data}
+    else:
+        dict_body[field_to_add] = {"kind": "objectRef#NetworkObj",
+                                   "objectId": data}
 
 
 @logger
@@ -159,13 +197,13 @@ def raw_to_rules(raw_rules):
     for rule in raw_rules:
         source_services = rule.get('sourceService', {})
 
-        if type(source_services) == list:
+        if isinstance(source_services, list):
             source_services_list = [v['value'] for v in source_services]
         else:
             source_services_list = source_services.get('value')
 
         dest_services = rule.get('destinationService', {})
-        if type(dest_services) == list:
+        if isinstance(dest_services, list):
             dest_services_list = [v['value'] for v in dest_services]
         else:
             dest_services_list = dest_services.get('value')
@@ -187,22 +225,6 @@ def raw_to_rules(raw_rules):
             rules[-1]['DestIP'] = rule.get('destinationAddress', {}).get('objectId')
 
     return rules
-
-
-def is_ipv4(ip):
-    try:
-        socket.inet_aton(ip)
-        return True
-    except socket.error:
-        return False
-
-
-def is_ipv6(ip):
-    try:
-        socket.inet_pton(socket.AF_INET6, ip)
-        return True
-    except socket.error:
-        return False
 
 
 '''COMMANDS'''
@@ -313,36 +335,13 @@ def create_rule_command(client: Client, args):
                                   "value": service}
 
     # Set up source
-    if is_ipv4(source):
-        rule_body["sourceAddress"] = {"kind": "IPv4Address",
-                                      "value": source}
-    elif source == 'any':
-        rule_body["sourceAddress"] = {"kind": "AnyIPAddress",
-                                      "value": "any4"}
-    elif '/' in source:
-        rule_body["sourceAddress"] = {"kind": "IPv4Network",
-                                      "value": source}
-    else:
-        rule_body["sourceAddress"] = {"kind": "objectRef#NetworkObj",
-                                      "objectId": source}
+    set_up_ip_kind(rule_body, "sourceAddress", source)
 
     # Set up dest
     rule_body['destinationService'] = {"kind": "NetworkProtocol",
                                        "value": service}
 
-    if is_ipv4(dest):
-        rule_body["destinationAddress"] = {"kind": "IPv4Address",
-                                           "value": dest}
-    elif dest == 'any':
-        rule_body["destinationAddress"] = {"kind": "AnyIPAddress",
-                                           "value": "any4"}
-    elif '/' in dest:
-        rule_body["destinationAddress"] = {"kind": "IPv4Network",
-                                           "value": dest}
-
-    else:
-        rule_body["destinationAddress"] = {"kind": "objectRef#NetworkObj",
-                                           "objectId": dest}
+    set_up_ip_kind(rule_body, "destinationAddress", dest)
 
     # everything else
     rule_body['permit'] = True if permit == 'True' else False
@@ -368,7 +367,7 @@ def create_rule_command(client: Client, args):
         if '[500]' in str(e):
             raise ValueError("Could not find interface: {}.".format(interface))
         else:
-            raise e
+            raise ValueError(f"Could not create rule. Error {str(e)}")
 
 
 @logger
@@ -384,6 +383,8 @@ def delete_rule_command(client: Client, args):
     except Exception as e:
         if 'Not Found' in str(e):
             raise ValueError(f"Rule {rule_id} does not exist in interface {interface} of type {interface_type}.")
+        else:
+            raise ValueError(f"Could not delete rule. Error {str(e)}")
 
     return f"Rule {rule_id} deleted successfully.", {}, ""
 
@@ -410,38 +411,16 @@ def edit_rule_command(client: Client, args):
 
     rule_body = {}  # type: dict
 
+    # Set up source
     if source:
-        # Set up source
-        if is_ipv4(source):
-            rule_body["sourceAddress"] = {"kind": "IPv4Address",
-                                          "value": source}
-        elif source == 'any':
-            rule_body["sourceAddress"] = {"kind": "AnyIPAddress",
-                                          "value": "any4"}
-        elif '/' in source:
-            rule_body["sourceAddress"] = {"kind": "IPv4Network",
-                                          "value": source}
-        else:
-            rule_body["sourceAddress"] = {"kind": "objectRef#NetworkObj",
-                                          "objectId": source}
+        set_up_ip_kind(rule_body, "sourceAddress", source)
 
     if service:
         rule_body['sourceService'] = {"kind": "NetworkProtocol",
                                       "value": service}
     # Set up dest
     if dest:
-        if is_ipv4(dest):
-            rule_body["destinationAddress"] = {"kind": "IPv4Address",
-                                               "value": dest}
-        elif dest == 'any':
-            rule_body["destinationAddress"] = {"kind": "AnyIPAddress",
-                                               "value": "any4"}
-        elif '/' in dest:
-            rule_body["destinationAddress"] = {"kind": "IPv4Network",
-                                               "value": dest}
-        else:
-            rule_body["destinationAddress"] = {"kind": "objectRef#NetworkObj",
-                                               "objectId": dest}
+        set_up_ip_kind(rule_body, "destinationAddress", dest)
 
     if service:
         rule_body['destinationService'] = {"kind": "NetworkProtocol",
@@ -464,7 +443,7 @@ def edit_rule_command(client: Client, args):
         try:
             raw_rule = client.rule_action(rule_id, interface, interface_type, 'GET')
         except Exception:
-            location = rule.headers._store.get('location')[1]
+            location = rule.headers._store.get('location')[1]  # type: ignore
             rule_id = location[location.rfind('/') + 1:]
             raw_rule = client.rule_action(rule_id, interface, interface_type, 'GET')
 
@@ -506,7 +485,6 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     isASAv = demisto.params().get('isASAv', False)
-    auth_token = ""
     # Remove trailing slash to prevent wrong URL path to service
     server_url = demisto.params()['server'][:-1] \
         if (demisto.params()['server'] and demisto.params()['server'].endswith('/')) else demisto.params()['server']
@@ -524,11 +502,7 @@ def main():
     try:
 
         client = Client(server_url, auth=(username, password), verify=verify_certificate, proxy=proxy, headers={})
-
-        if isASAv:
-            res = client._http_request('POST', '/api/tokenservices', resp_type='response')
-            auth_token = res.headers._store.get('x-auth-token')[1]
-            client._headers['X-Auth-Token'] = auth_token
+        client.login(isASAv)
 
         if demisto.command() == 'test-module':
             test_command(client)
@@ -539,12 +513,8 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        LOG.print_log()
         return_error(f"Failed to execute {demisto.command()} command. Error: {e}")
         raise
-    finally:
-        if isASAv and client:
-            client._http_request('DELETE', f'/api/tokenservices/{auth_token}', resp_type='response')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

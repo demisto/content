@@ -71,9 +71,9 @@ MOCK_RULES_GLOBAL = {
 
 RULES = [
     {'SourceIP': '8.8.8.8', 'DestIP': 'any', 'IsActive': True, 'Interface': None, 'InterfaceType': None,
-     'Remarks': [], 'Position': 1, 'ID': '1090940913', 'Permit': True},
+     'Remarks': [], 'Position': 1, 'ID': '1090940913', 'Permit': True, 'SourceService': 'ip', 'DestService': 'ip'},
     {'SourceIP': '1.1.1.1', 'DestIP': 'any', 'IsActive': True, 'Interface': None, 'InterfaceType': None,
-     'Remarks': [], 'Position': 1, 'ID': '123456789', 'Permit': True}]
+     'Remarks': [], 'Position': 1, 'ID': '123456789', 'Permit': True, 'SourceService': 'ip', 'DestService': 'ip'}]
 
 
 def test_get_all_rules(requests_mock):

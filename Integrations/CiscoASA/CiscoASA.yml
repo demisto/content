@@ -25,6 +25,7 @@ configuration:
   name: isASAv
   required: false
   type: 8
+  additionalinfo: If you are using a virtual ASA (ASAv) and not a physical one, check this box.
 description: Manage Cisco ASA
 display: Cisco ASA
 name: Cisco ASA
