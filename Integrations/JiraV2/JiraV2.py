@@ -394,9 +394,16 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
         expand_urls(j_res)
 
     attachments = demisto.get(j_res, 'fields.attachment')  # list of all attachments
-    if get_attachments == 'true' and attachments:
-        attachments_zip = jira_req(method='GET', resource_url=f'secure/attachmentzip/{issue_id}.zip').content
-        demisto.results(fileResult(filename=f'{j_res.get("id")}_attachments.zip', data=attachments_zip))
+    # handle issues were we allowed incorrect values of true
+    if get_attachments == "true" or get_attachments == "\"true\"":
+        get_attachments = True
+    if get_attachments and attachments:
+        attachment_urls = [attachment['content'] for attachment in attachments]
+        for attachment_url in attachment_urls:
+            attachment = f"secure{attachment_url.split('/secure')[-1]}"
+            filename = attachment.split("/")[-1]
+            attachments_zip = jira_req(method='GET', resource_url=attachment).content
+            demisto.results(fileResult(filename=filename, data=attachments_zip))
 
     md_and_context = generate_md_context_get_issue(j_res)
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
