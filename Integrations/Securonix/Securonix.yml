@@ -3,7 +3,7 @@ commonfields:
   id: Securonix
   version: -1
 configuration:
-- display: Host (To override the default hostname, https://{tenant}.net/Snypr)
+- display: Host (Overrides the default hostname, https://{tenant}.net/Snypr)
   name: host
   required: false
   type: 0
@@ -863,7 +863,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: The number of days after which the entity will be removed from the watchlist.
+      description: The number of days after which the entity will be removed from the watchlist. The default value is "30".
       isArray: false
       name: expiry_days
       required: false
