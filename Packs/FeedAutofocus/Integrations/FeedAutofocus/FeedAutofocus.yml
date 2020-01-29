@@ -30,12 +30,16 @@ configuration:
   type: 0
 - name: feedReliability
   defaultvalue: A - Completely reliable
+  type: 15
 - name: feedExpirationPolicy
   defaultvalue: suddenDeath
+  type: 0
 - name: feedReputation
   defaultvalue: Bad
+  type: 18
 - name: feedFetchInterval
   defaultvalue: "15"
+  type: 19
 description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 display: AutoFocus Feed
 name: AutoFocus Feed
