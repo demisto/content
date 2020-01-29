@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.12.0] - 2019-12-10
+-
+
 ## [19.10.2] - 2019-10-29
   - Improved implementation of the default value for the fetch time parameter.
   - Added 4 commands:

@@ -1,0 +1,283 @@
+id: Azure SecurityCenter - Test
+version: -1
+name: Azure SecurityCenter - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4820fa51-0449-4f40-8f22-4a4d24e411c5
+    type: start
+    task:
+      id: 4820fa51-0449-4f40-8f22-4a4d24e411c5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2b6e129d-733f-4fe6-8f28-740f83384557
+    type: regular
+    task:
+      id: 2b6e129d-733f-4fe6-8f28-740f83384557
+      version: -1
+      name: azure-sc-list-aps
+      description: Lists auto provisioning settings in the subscription.
+      script: Azure Security Center v2|||azure-sc-list-aps
+      type: regular
+      iscommand: true
+      brand: Azure Security Center v2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c4ce4bbd-a5f4-447f-84f0-a4ae49964f29
+    type: regular
+    task:
+      id: c4ce4bbd-a5f4-447f-84f0-a4ae49964f29
+      version: -1
+      name: azure-sc-get-aps
+      description: Returns details of a specific auto provisioning setting.
+      script: Azure Security Center v2|||azure-sc-get-aps
+      type: regular
+      iscommand: true
+      brand: Azure Security Center v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      setting_name:
+        simple: ${AzureSecurityCenter.AutoProvisioningSetting.Name}
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 81164ca0-4146-4e0e-825c-96152effc681
+    type: regular
+    task:
+      id: 81164ca0-4146-4e0e-825c-96152effc681
+      version: -1
+      name: azure-sc-list-alert
+      description: Lists alerts for the subscription according to the specified filters.
+      script: Azure Security Center v2|||azure-sc-list-alert
+      type: regular
+      iscommand: true
+      brand: Azure Security Center v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      asc_location: {}
+      expand: {}
+      filter: {}
+      resource_group_name: {}
+      select: {}
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 48b48c90-6efb-4819-8545-4fc4eb2258be
+    type: regular
+    task:
+      id: 48b48c90-6efb-4819-8545-4fc4eb2258be
+      version: -1
+      name: azure-sc-list-jit
+      description: Lists all policies for protecting resources using Just-in-Time
+        access control.
+      script: Azure Security Center v2|||azure-sc-list-jit
+      type: regular
+      iscommand: true
+      brand: Azure Security Center v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      asc_location: {}
+      resource_group_name: {}
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 25046cf2-982f-475f-8d6b-426336205025
+    type: regular
+    task:
+      id: 25046cf2-982f-475f-8d6b-426336205025
+      version: -1
+      name: azure-sc-list-location
+      description: The location of the responsible ASC of the specific subscription.
+        For each subscription there is only one responsible location.
+      script: Azure Security Center v2|||azure-sc-list-location
+      type: regular
+      iscommand: true
+      brand: Azure Security Center v2
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 239a14da-8a89-4cf9-8c92-1b0571899e83
+    type: regular
+    task:
+      id: 239a14da-8a89-4cf9-8c92-1b0571899e83
+      version: -1
+      name: azure-sc-list-storage
+      description: Lists all the storage accounts available under the subscription.
+      script: Azure Security Center v2|||azure-sc-list-storage
+      type: regular
+      iscommand: true
+      brand: Azure Security Center v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 99450c1f-529e-4e89-8261-a5b61c808203
+    type: regular
+    task:
+      id: 99450c1f-529e-4e89-8261-a5b61c808203
+      version: -1
+      name: azure-sc-update-aps
+      description: Updates a specific auto provisioning setting.
+      script: Azure Security Center v2|||azure-sc-update-aps
+      type: regular
+      iscommand: true
+      brand: Azure Security Center v2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      auto_provision:
+        simple: "Off"
+      setting_name:
+        simple: default
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 04d87e0c-8aba-4fa4-8dc6-35116fd12057
+    type: regular
+    task:
+      id: 04d87e0c-8aba-4fa4-8dc6-35116fd12057
+      version: -1
+      name: azure-list-subscriptions
+      description: List available subscriptions for this application.
+      script: Azure Security Center v2|||azure-list-subscriptions
+      type: regular
+      iscommand: true
+      brand: Azure Security Center v2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1535,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

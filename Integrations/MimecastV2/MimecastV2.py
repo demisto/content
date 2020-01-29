@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-import os
 import hmac
 import uuid
 import json
@@ -25,7 +24,7 @@ ACCESS_KEY = demisto.params()['accessKey']
 SECRET_KEY = demisto.params()['secretKey']
 APP_ID = demisto.params()['appId']
 APP_KEY = demisto.params()['appKey']
-USE_SSL = True if demisto.params().get('insecure') else False
+USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = True if demisto.params().get('proxy') else False
 # Flags to control which type of incidents are being fetched
 FETCH_URL = demisto.params().get('fetchURL')
@@ -35,13 +34,6 @@ FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
 EMAIL_ADDRESS = demisto.params().get('email')
 PASSWORD = demisto.params().get('password')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
-
-# remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -70,6 +62,17 @@ default_query_xml = "<?xml version=\"1.0\"?> \n\
 </xmlquery>"
 
 ''' HELPER FUNCTIONS '''
+
+
+def determine_ssl_usage():
+    global USE_SSL
+
+    old_insecure = demisto.params().get('insecure', None)
+    if old_insecure:
+        USE_SSL = True if old_insecure else False
+        return
+
+    USE_SSL = False if demisto.params().get('new_insecure') else True
 
 
 def epoch_seconds(d=None):
@@ -1479,6 +1482,612 @@ def download_attachment_request(attachment_id):
     return response.content
 
 
+def find_groups():
+    api_response = create_find_groups_request()
+
+    markdown_output = find_groups_api_response_to_markdown(api_response)
+    entry_context = find_groups_api_response_to_context(api_response)
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_find_groups_request():
+    api_endpoint = '/api/directory/find-groups'
+    query_string = demisto.args().get('query_string', '').encode('utf-8')
+    query_source = demisto.args().get('query_source', '').encode('utf-8')
+    limit = demisto.args().get('limit')
+
+    meta = dict()  # type: Dict[str, Dict[str, int]]
+    data = dict()  # type: Dict[str, Dict[str, str]]
+
+    if limit:
+        meta['pagination'] = {
+            'pageSize': int(limit)
+        }
+
+    if query_string:
+        data['query'] = query_string
+    if query_source:
+        data['source'] = query_source
+
+    payload = {
+        'meta': meta,
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def find_groups_api_response_to_markdown(api_response):
+    num_groups_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
+    query_string = demisto.args().get('query_string', '')
+    query_source = demisto.args().get('query_source', '')
+
+    if not num_groups_found:
+        md = '### Found 0 groups'
+
+        if query_string:
+            md += '\n#### query: ' + query_string
+
+        if query_source:
+            md += '\n#### source: ' + query_source
+
+        return md
+
+    md = 'Found ' + str(num_groups_found) + ' groups:'
+    md_metadata = ''
+
+    if query_string:
+        md_metadata += '#### query: ' + query_string
+
+    if query_source:
+        if md_metadata:
+            md_metadata += '\n'
+        md_metadata += '#### source: ' + query_source
+
+    groups_list = list()
+    for group in api_response.get('data', [])[0]['folders']:
+        group_entry = {
+            'Name': group['description'],
+            'Source': group['source'],
+            'Group ID': group['id'],
+            'Number of users': group['userCount'],
+            'Parent ID': group['parentId'],
+            'Number of child groups': group['folderCount']
+        }
+
+        groups_list.append(group_entry)
+
+    md = tableToMarkdown(md, groups_list,
+                         ['Name', 'Source', 'Group ID', 'Number of users', 'Parent ID', 'Number of child groups'],
+                         metadata=md_metadata)
+
+    return md
+
+
+def find_groups_api_response_to_context(api_response):
+    groups_list = list()
+    for group in api_response['data'][0]['folders']:
+        group_entry = {
+            'Name': group['description'],
+            'Source': group['source'],
+            'ID': group['id'],
+            'NumberOfUsers': group['userCount'],
+            'ParentID': group['parentId'],
+            'NumberOfChildGroups': group['folderCount']
+        }
+
+        groups_list.append(group_entry)
+
+    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_list}
+
+
+def get_group_members():
+    api_response = create_get_group_members_request()
+
+    markdown_output = group_members_api_response_to_markdown(api_response)
+    entry_context = group_members_api_response_to_context(api_response)
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_get_group_members_request(group_id=-1, limit=100):
+    api_endpoint = '/api/directory/get-group-members'
+    group_id = demisto.args().get('group_id', group_id).encode('utf-8')
+    limit = demisto.args().get('limit', limit)
+
+    meta = dict()  # type: Dict[str, Dict[str, int]]
+    data = dict()  # type: Dict[str, Dict[str, str]]
+
+    if limit:
+        meta['pagination'] = {
+            'pageSize': int(limit)
+        }
+
+    data['id'] = group_id
+
+    payload = {
+        'meta': meta,
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def group_members_api_response_to_markdown(api_response):
+    num_users_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
+    group_id = demisto.args().get('group_id', '')
+
+    if not num_users_found:
+        md = 'Found 0 users for group ID: ' + group_id + ''
+        return md
+
+    md = 'Found ' + str(num_users_found) + ' users for group ID: ' + group_id
+
+    users_list = list()
+    for user in api_response['data'][0]['groupMembers']:
+        user_entry = {
+            'Name': user['name'],
+            'Email address': user['emailAddress'],
+            'Domain': user['domain'],
+            'Type': user['type'],
+            'Internal user': user['internal']
+        }
+
+        users_list.append(user_entry)
+
+    md = tableToMarkdown(md, users_list,
+                         ['Name', 'Email address', 'Domain', 'Type', 'Internal user'])
+
+    return md
+
+
+def add_users_under_group_in_context_dict(users_list, group_id):
+    demisto_context = demisto.context()
+
+    if demisto_context and 'Mimecast' in demisto_context:
+        if 'Group' in demisto_context['Mimecast']:
+            groups_entry_in_context = demisto_context['Mimecast']['Group']
+            for group in groups_entry_in_context:
+                if group['ID'] == group_id:
+                    group['Users'] = users_list
+                    return groups_entry_in_context
+
+    return [
+        {
+            'ID': group_id,
+            'Users': users_list
+        }
+    ]
+
+
+def group_members_api_response_to_context(api_response, group_id=-1):
+    group_id = demisto.args().get('group_id', group_id)
+
+    users_list = list()
+    for user in api_response['data'][0]['groupMembers']:
+        user_entry = {
+            'Name': user['name'],
+            'EmailAddress': user['emailAddress'],
+            'Domain': user['domain'],
+            'Type': user['type'],
+            'InternalUser': user['internal'],
+            'IsRemoved': False
+        }
+
+        users_list.append(user_entry)
+
+    groups_after_update = add_users_under_group_in_context_dict(users_list, group_id)
+
+    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_after_update}
+
+
+def add_remove_member_to_group(action_type):
+    if action_type == 'add':
+        api_endpoint = '/api/directory/add-group-member'
+    else:
+        api_endpoint = '/api/directory/remove-group-member'
+
+    api_response = create_add_remove_group_member_request(api_endpoint)
+
+    markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
+    entry_context = add_remove_api_response_to_context(api_response, action_type)
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_add_remove_group_member_request(api_endpoint):
+    group_id = demisto.args().get('group_id', '').encode('utf-8')
+    email = demisto.args().get('email_address', '').encode('utf-8')
+    domain = demisto.args().get('domain_address', '').encode('utf-8')
+
+    data = {
+        'id': group_id,
+    }
+
+    if email:
+        data['emailAddress'] = email
+
+    if domain:
+        data['domain'] = domain
+
+    payload = {
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def add_remove_api_response_to_markdown(api_response, action_type):
+    address_modified = api_response['data'][0]['emailAddress']
+    group_id = api_response['data'][0]['folderId']
+
+    if action_type == 'add':
+        return address_modified + ' had been added to group ID ' + group_id
+    return address_modified + ' has been removed from group ID ' + group_id
+
+
+def change_user_status_removed_in_context(user_info, group_id):
+    demisto_context = demisto.context()
+
+    if demisto_context and 'Mimecast' in demisto_context:
+        if 'Group' in demisto_context['Mimecast']:
+            groups_entry_in_context = demisto_context['Mimecast']['Group']
+            for group in groups_entry_in_context:
+                if group['ID'] == group_id:
+                    for user in group['Users']:
+                        if user['EmailAddress'] == user_info['EmailAddress']:
+                            user['IsRemoved'] = True
+                    return groups_entry_in_context
+
+    return [
+        {
+            'ID': group_id,
+            'Users': [user_info]
+        }
+    ]
+
+
+def add_remove_api_response_to_context(api_response, action_type):
+    group_id = api_response['data'][0]['folderId']
+
+    if action_type == 'add':
+        # Run get group members again, to get all relevant data, the response from add user
+        # does not match the get group members.
+        api_response = create_get_group_members_request(group_id=group_id)
+        return group_members_api_response_to_context(api_response, group_id=group_id)
+    else:
+        address_removed = api_response['data'][0]['emailAddress']
+
+        removed_user = {
+            'EmailAddress': address_removed,
+            'IsRemoved': True
+        }
+
+        groups_after_update = change_user_status_removed_in_context(removed_user, group_id)
+
+        return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_after_update}
+
+
+def create_group():
+    api_response = create_group_request()
+
+    markdown_output = create_group_api_response_to_markdown(api_response)
+    entry_context = create_group_api_response_to_context(api_response)
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_group_request():
+    api_endpoint = '/api/directory/create-group'
+    group_name = demisto.args().get('group_name', '').encode('utf-8')
+    parent_id = demisto.args().get('parent_id', '-1').encode('utf-8')
+
+    data = {
+        'description': group_name,
+    }
+
+    if parent_id != '-1'.encode('utf-8'):
+        data['parentId'] = parent_id
+
+    payload = {
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def create_group_api_response_to_markdown(api_response):
+    group_name = api_response['data'][0]['description']
+    group_source = api_response['data'][0]['source']
+    group_id = api_response['data'][0]['id']
+
+    md = group_name + ' has been created'
+
+    group_info = {
+        'Group Source': group_source,
+        'Group ID': group_id
+    }
+
+    return tableToMarkdown(md, group_info, ['Group Source', 'Group ID'])
+
+
+def create_group_api_response_to_context(api_response):
+    group_created = {
+        'Name': api_response['data'][0]['description'],
+        'Source': api_response['data'][0]['source'],
+        'ID': api_response['data'][0]['id'],
+        'NumberOfUsers': 0,
+        'ParentID': api_response['data'][0]['parentId'],
+        'NumberOfChildGroups': 0
+    }
+
+    return {'Mimecast.Group(val.Name && val.Name == obj.Name)': group_created}
+
+
+def update_group():
+    api_response = create_update_group_request()
+
+    markdown_output = update_group_api_response_to_markdown(api_response)
+    entry_context = update_group_api_response_to_context(api_response)
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_update_group_request():
+    api_endpoint = '/api/directory/update-group'
+    group_name = demisto.args().get('group_name', '').encode('utf-8')
+    group_id = demisto.args().get('group_id', '').encode('utf-8')
+    parent_id = demisto.args().get('parent_id', '').encode('utf-8')
+
+    data = {
+        'id': group_id
+    }
+
+    if group_name:
+        data['description'] = group_name
+
+    if parent_id:
+        data['parentId'] = parent_id
+
+    payload = {
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def update_group_api_response_to_markdown(api_response):
+    group_name = api_response['data'][0]['description']
+
+    return group_name + ' has been updated'
+
+
+def update_group_api_response_to_context(api_response):
+    group_updated = {
+        'ID': api_response['data'][0]['id'],
+        'Name': api_response['data'][0]['description'],
+        'ParentID': api_response['data'][0]['parentId']
+    }
+
+    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': group_updated}
+
+
+def create_mimecast_incident():
+    api_response = create_mimecast_incident_request()
+
+    markdown_output = mimecast_incident_api_response_to_markdown(api_response, 'create')
+    entry_context = mimecast_incident_api_response_to_context(api_response)
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_mimecast_incident_request():
+    api_endpoint = '/api/ttp/remediation/create'
+    reason = demisto.args().get('reason', '').encode('utf-8')
+    start_date = demisto.args().get('start_date', '').encode('utf-8')
+    end_date = demisto.args().get('end_date', '').encode('utf-8')
+    search_by = demisto.args().get('search_by', 'hash').encode('utf-8')
+    hash_or_message_id = demisto.args().get('hash_message_id', '').encode('utf-8')
+
+    data = {
+        'reason': reason,
+        'hashOrMessageId': hash_or_message_id,
+        'searchBy': search_by
+    }
+
+    if start_date:
+        data['start'] = start_date
+
+    if end_date:
+        data['end'] = end_date
+
+    payload = {
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def get_mimecast_incident():
+    api_response = get_mimecast_incident_request()
+
+    markdown_output = mimecast_incident_api_response_to_markdown(api_response, 'get')
+    entry_context = mimecast_incident_api_response_to_context(api_response)
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def get_mimecast_incident_request():
+    api_endpoint = '/api/ttp/remediation/get-incident'
+    incident_id = demisto.args().get('incident_id', '').encode('utf-8')
+
+    data = {
+        'id': incident_id
+    }
+
+    payload = {
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def mimecast_incident_api_response_to_markdown(api_response, action_type):
+    incident_code = api_response['data'][0]['code']
+    incident_type = api_response['data'][0]['type']
+    incident_reason = api_response['data'][0]['reason']
+    incident_identified_messages_amount = api_response['data'][0]['Identified']
+    incident_successful_messages_amount = api_response['data'][0]['Successful']
+    incident_failed_messages_amount = api_response['data'][0]['Failed']
+    incident_restored_messages_amount = api_response['data'][0]['Restored']
+    incident_id = api_response['data'][0]['id']
+
+    if action_type == 'create':
+        md = 'Incident ' + incident_id + ' has been created\n'
+    else:
+        md = 'Incident ' + incident_id + ' has been found\n'
+
+    md_metadata = '####Code: ' + incident_code
+    md_metadata += '\n####Type: ' + incident_type
+    md_metadata += '\n####Reason: ' + incident_reason
+    md_metadata += '\n####The number of messages identified based on the search criteria: ' + incident_identified_messages_amount
+    md_metadata += '\n####The number successfully remediated messages: ' + incident_successful_messages_amount
+    md_metadata += '\n####The number of messages that failed to remediate: ' + incident_failed_messages_amount
+    md_metadata += '\n####The number of messages that were restored from the incident: ' + incident_restored_messages_amount
+
+    messages_table_list = list()
+    for message in api_response['data'][0]['searchCriteria']:
+        message_entry = {
+            'From': message['from'],
+            'To': message['to'],
+            'Start date': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
+            'End date': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ'),
+            'Message ID': message['messageId'],
+            'File hash': message['fileHash']
+        }
+
+        messages_table_list.append(message_entry)
+
+    md = tableToMarkdown(md, messages_table_list,
+                         ['From', 'To', 'Start', 'End date', 'Message ID', 'File hash'], metadata=md_metadata)
+
+    return md
+
+
+def mimecast_incident_api_response_to_context(api_response):
+    messages_table_list = list()
+    for message in api_response['data'][0]['searchCriteria']:
+        message_entry = {
+            'From': message['from'],
+            'To': message['to'],
+            'MessageID': message['messageId'],
+            'FileHash': message['fileHash'],
+            'StartDate': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
+            'EndDate': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ')
+        }
+    messages_table_list.append(message_entry)
+
+    incident_created = {
+        'ID': api_response['data'][0]['id'],
+        'Code': api_response['data'][0]['code'],
+        'Type': api_response['data'][0]['type'],
+        'Reason': api_response['data'][0]['reason'],
+        'IdentifiedMessages': api_response['data'][0]['identified'],
+        'SuccessfullyRemediatedMessages': api_response['data'][0]['successful'],
+        'FailedRemediatedMessages': api_response['data'][0]['failed'],
+        'MessagesRestored': api_response['data'][0]['restored'],
+        'LastModified': datetime.strptime(api_response['data'][0]['modified'], '%Y-%m-%dT%H:%M:%SZ'),
+        'SearchCriteria': messages_table_list
+    }
+
+    return {'Mimecast.Incident(val.ID && val.ID == obj.ID)': incident_created}
+
+
+def search_file_hash():
+    api_response = create_search_file_hash_request()
+
+    markdown_output = search_file_hash_api_response_to_markdown(api_response)
+    entry_context = search_file_hash_api_response_to_context(api_response)
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_search_file_hash_request():
+    api_endpoint = '/api/ttp/remediation/search-hash'
+    hashes_to_search = argToList(demisto.args().get('hashes_to_search').encode('utf-8'))
+
+    data = {
+        'hashes': hashes_to_search
+    }
+
+    payload = {
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def search_file_hash_api_response_to_markdown(api_response):
+    md = 'Hashes detected:\n'
+    detected_hashes_list = list()
+    for detected_hash in api_response['data'][0]['hashStatus']:
+        detected_hash_entry = {
+            'Hash': detected_hash['hash'],
+            'Found within the account': detected_hash['detected']
+        }
+
+        detected_hashes_list.append(detected_hash_entry)
+
+    md = tableToMarkdown(md, detected_hashes_list, ['Hash', 'Found within the account'])
+
+    md += '### Hashes that failed verification:\n'
+
+    failed_hash_list = [str(failed_hash) for failed_hash in api_response['data'][0]['failedHashes']]
+    md += str(failed_hash_list)[1:-1] + '\n'
+
+    return md
+
+
+def search_file_hash_api_response_to_context(api_response):
+    detected_hashes_list = list()
+    for detected_hash in api_response['data'][0]['hashStatus']:
+        detected_hash_entry = {
+            'HashValue': detected_hash['hash'],
+            'Detected': detected_hash['detected']
+        }
+
+        detected_hashes_list.append(detected_hash_entry)
+
+    if detected_hashes_list:
+        return {'Mimecast.Hash(val.HashValue && val.HashValue == obj.HashValue)': detected_hashes_list}
+    return None
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('command is %s' % (demisto.command(),))
@@ -1488,6 +2097,9 @@ if ACCESS_KEY:
     auto_refresh_token()
 
 try:
+    handle_proxy()
+    determine_ssl_usage()
+
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
@@ -1530,7 +2142,24 @@ try:
         demisto.results(get_message())
     elif demisto.command() == 'mimecast-download-attachments':
         demisto.results(download_attachment())
-
+    elif demisto.command() == 'mimecast-find-groups':
+        find_groups()
+    elif demisto.command() == 'mimecast-get-group-members':
+        get_group_members()
+    elif demisto.command() == 'mimecast-add-group-member':
+        add_remove_member_to_group('add')
+    elif demisto.command() == 'mimecast-remove-group-member':
+        add_remove_member_to_group('remove')
+    elif demisto.command() == 'mimecast-create-group':
+        create_group()
+    elif demisto.command() == 'mimecast-update-group':
+        update_group()
+    elif demisto.command() == 'mimecast-create-remediation-incident':
+        create_mimecast_incident()
+    elif demisto.command() == 'mimecast-get-remediation-incident':
+        get_mimecast_incident()
+    elif demisto.command() == 'mimecast-search-file-hash':
+        search_file_hash()
 
 except Exception as e:
     LOG(e.message)

@@ -17,6 +17,8 @@ import re
 import random
 import string
 import smtplib
+import traceback
+import sys
 
 SERVER = None
 UTF_8 = 'utf-8'
@@ -299,6 +301,28 @@ def create_msg():
     return msg.as_string(), to, cc, bcc
 
 
+def get_user_pass():
+    if demisto.getParam('credentials'):
+        return (str(demisto.getParam('credentials').get('identifier', '')),
+                str(demisto.getParam('credentials').get('password', '')))
+    return (None, None)
+
+
+def swap_stderr(new_stderr):
+    '''swap value of stderr if given, return old value.
+
+    smtplib uses sys.stderr directly in newer versions, so use that instead
+    '''
+    if hasattr(smtplib, 'stderr'):
+        module = smtplib
+    else:
+        module = sys  # type: ignore
+    old_stderr = getattr(module, 'stderr')
+    if new_stderr:
+        setattr(module, 'stderr', new_stderr)
+    return old_stderr
+
+
 def main():
     # Following methods raise exceptions so no need to check for return codes
     # But we do need to catch them
@@ -306,22 +330,24 @@ def main():
     FROM = demisto.getParam('from')
     FQDN = demisto.params().get('fqdn')
     FQDN = (FQDN and FQDN.strip()) or None
-    stderr_org = smtplib.stderr  # type: ignore
+    stderr_org = None
     try:
         if demisto.command() == 'test-module':
-            smtplib.stderr = LOG  # type: ignore
+            stderr_org = swap_stderr(LOG)
             smtplib.SMTP.debuglevel = 1
         SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
         SERVER.ehlo()
         # TODO - support for non-valid certs
         if demisto.getParam('tls'):
             SERVER.starttls()
-        if demisto.getParam('credentials') and demisto.getParam('credentials').get('identifier') and demisto.getParam('credentials').get('password'):  # noqa: E501
-            SERVER.login(demisto.getParam('credentials')['identifier'], demisto.getParam('credentials')['password'])
+        user, password = get_user_pass()
+        if user:
+            SERVER.login(user, password)
     except Exception as e:
         # also reset at the bottom finally
-        smtplib.stderr = stderr_org  # type: ignore
+        swap_stderr(stderr_org)  # type: ignore
         smtplib.SMTP.debuglevel = 0
+        demisto.error('Failed test: {}\nStack trace: {}'.format(e, traceback.format_exc()))
         return_error_mail_sender(e)
         return  # so mypy knows that we don't continue after this
     # -- COMMANDS --
@@ -355,7 +381,7 @@ def main():
     except Exception as e:
         return_error_mail_sender(e)
     finally:
-        smtplib.stderr = stderr_org  # type: ignore
+        swap_stderr(stderr_org)  # type: ignore
         smtplib.SMTP.debuglevel = 0
 
 

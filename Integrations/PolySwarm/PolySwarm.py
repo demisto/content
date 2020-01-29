@@ -475,7 +475,7 @@ class PolyswarmConnector():
             try:
                 assertions = json.loads(response)['result']['files'][0]['assertions']
             except Exception:
-                return demisto.results('Error in response. Details: {response}'.
+                return demisto.results('Error in response. Details: {}'.
                                        format(str(response)))
 
             # iterate for getting positives and total_scan number
@@ -515,7 +515,7 @@ class PolyswarmConnector():
             try:
                 assertions = json.loads(response)['result']['files'][0]['assertions']
             except Exception:
-                return_error('Error in response. Details: {response}'.
+                return_error('Error in response. Details: {}'.
                              format(str(response)))
 
             # iterate for getting positives and total_scan number

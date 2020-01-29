@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.11.1] - 2019-11-26
+Fixed an issue where Rasterize would attempt to run even if inactive.
+
 ## [19.10.2] - 2019-10-29
 #### New Playbook
 Provides a basic response to phishing incidents. Playbook features:

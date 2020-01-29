@@ -3,26 +3,37 @@ commonfields:
   version: -1
 name: jira-v2
 display: Atlassian Jira (v2)
-fromversion: 2.6.0
+fromversion: 5.0.0
 category: Case Management
-description: Use the Jira integration to manage issues and create Demisto incidents from the projects.
+description: Use the Jira integration to manage issues and create Demisto incidents from projects.
 configuration:
 - display: ' Jira URL, for example: https://demisto.atlassian.net/ '
   name: url
   defaultvalue: ""
   type: 0
   required: true
-- display: Username
+- display: |-
+    _____________ Basic Authentication ____________
+
+    Username
   name: username
   defaultvalue: ""
   type: 0
   required: false
-- display: Password
+- display: Password (Deprecated - Use API token)
   name: password
   defaultvalue: ""
   type: 4
   required: false
-- display: ConsumerKey
+- display: API token
+  name: APItoken
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: |-
+    __________________ OAuth 1.0 __________________
+
+    ConsumerKey
   name: consumerKey
   defaultvalue: OauthKey
   type: 0
@@ -71,11 +82,6 @@ configuration:
   name: fetchByCreated
   defaultvalue: ""
   type: 8
-  required: false
-- display: API token
-  name: APItoken
-  defaultvalue: ""
-  type: 4
   required: false
 script:
   script: ''
@@ -175,13 +181,13 @@ script:
     - name: labels
       description: 'A CSV list of labels. '
     - name: priority
-      description: ' The priorty name, for example: "High" or "Medium". '
+      description: 'The priority name, for example: "High" or "Medium".'
     - name: dueDate
-      description: ' The due date for the issue (in the format: 2018-03-11). '
+      description: 'The due date for the issue (in the format: 2018-03-11).'
     - name: assignee
       description: The name of the assignee.
     - name: reporter
-      description: The name of the reporter.
+      description: The ID of the reporter.
     - name: parentIssueKey
       description: The parent issue key (if you create a sub-task).
     - name: parentIssueId
@@ -199,6 +205,8 @@ script:
       description: The ID of the issue.
     - name: upload
       description: The entry ID to upload.
+    - name: attachmentName
+      description: The attachment name to be displayed in Jira (overrides original file name)
     description: Uploads a file attachment to an issue.
   - name: jira-issue-add-comment
     arguments:
@@ -208,17 +216,17 @@ script:
       description: The ID of the issue.
     - name: comment
       required: true
-      description: The actual comment body.
+      description: The comment body.
     - name: visibility
-      description: ' The roles that can view the comment, for example: "Administrators". '
+      description: 'The roles that can view the comment, for example: "Administrators". '
     description: Adds a new comment to an existing Jira issue.
   - name: jira-issue-add-link
     arguments:
     - name: globalId
-      description: If a globalId is provided and a remote issue link exists with that
+      description: If a globalId is provided, and a remote issue link exists with that
         globalId, the remote issue link is updated.
     - name: relationship
-      description: ' The object relationship to issue, for example: "causes". '
+      description: 'The object relationship to issue, for example: "causes".'
     - name: url
       required: true
       description: The URL link.
@@ -262,7 +270,7 @@ script:
     - contextPath: Ticket.Key
       description: The key of the ticket.
     - contextPath: Ticket.Assignee
-      description: The sser assigned to the ticket.
+      description: The user assigned to the ticket.
     - contextPath: Ticket.Creator
       description: The user who created the ticket.
     - contextPath: Ticket.Summary
@@ -274,7 +282,7 @@ script:
     arguments:
     - name: issueId
       required: true
-      description: The ID of the issue to get comments of.
+      description: The ID of the issue from which to get the comments.
     outputs:
     - contextPath: Ticket.Comment.Comment
       description: The text of the comment.
@@ -298,7 +306,7 @@ script:
       description: The ID offset.
       type: string
     description: Returns the ID offset, for example, the first issue ID.
-  dockerimage: demisto/python3:3.7.2.200
+  dockerimage: demisto/oauthlib:1.0.0.4977
   isfetch: true
   runonce: false
 tests:

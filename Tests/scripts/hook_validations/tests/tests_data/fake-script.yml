@@ -1,0 +1,166 @@
+commonfields:
+  id: StixCreator
+  version: -1
+name: StixCreator
+script: |-
+  ''' IMPORTS '''
+  import json
+
+  from stix2 import Indicator, Bundle, Vulnerability, ExternalReference
+
+  indicators = []
+
+  userArgs = demisto.args().get('indicators','Unknown')
+  doubleBackslash = demisto.args().get('doubleBackslash',True)
+  if isinstance(userArgs, dict) == True:
+      all_args = json.loads(json.dumps(userArgs))
+  else:
+      try:
+          all_args = json.loads(demisto.args().get('indicators','Unknown'))
+      except:
+          return_error('indicators argument is invalid json object')
+
+  counter = 0
+  for indicator_fields in all_args:
+      isIndicator = True
+      demisto_indicator_type = all_args[indicator_fields].get('indicator_type','Unknown')
+      if doubleBackslash:
+          value = all_args[indicator_fields].get('value','').replace('\\', r'\\')
+      else:
+          value = all_args[indicator_fields].get('value','')
+      source_system = all_args[indicator_fields].get('source','')
+      demisto_score = all_args[indicator_fields].get('score','')
+      first_seen = all_args[indicator_fields].get('firstSeen','1970-01-01T00:00:00+00:00')
+      last_seen = all_args[indicator_fields].get('lastSeen','1970-01-01T00:00:00+00:00')
+      stix_type_and_value = ""
+
+      if "File MD5".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[file:hashes.md5 = '" + value + "']"
+      elif "File SHA-1".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[file:hashes.sha1 = '" + value + "']"
+      elif "File SHA1".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[file:hashes.sha1 = '" + value + "']"
+      elif "File SHA256".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[file:hashes.sha256 = '" + value + "']"
+      elif "File SHA-256".lower() in  demisto_indicator_type.lower():
+          stix_type_and_value = "[file:hashes.sha256 = '" + value + "']"
+      elif "IP".lower() == demisto_indicator_type.lower():
+          stix_type_and_value = "[ipv4-addr:value = '" + value + "']"
+      elif "URL".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[url:value = '" + value + "']"
+      elif "Email".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[email-message:sender_ref.value = '" + value + "']"
+      elif "ssdeep".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[file:hashes.ssdeep = '" + value + "']"
+      elif "Username".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[user-account:account_login = '" + value + "']"
+      elif "Domain".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[domain-name:value = '" + value + "']"
+      elif "Hostname".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[domain-name:value = '" + value + "']"
+      elif "Registry Path Reputation".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = "[windows-registry-key:key = '{}']".format(value)
+      elif "CVE CVSS Score".lower() in demisto_indicator_type.lower():
+          stix_type_and_value = value
+          isIndicator = False
+      else:
+          stix_type_and_value = "[{}:value = '{}']".format(demisto_indicator_type.lower(),value)
+      label_as_type = demisto_indicator_type.lower()
+      if demisto_score.lower() == "bad":
+          demisto_score = "High"
+      elif demisto_score.lower() == "suspicious":
+          demisto_score = "Medium"
+      elif demisto_score.lower() == "good":
+          demisto_score = "None"
+      else:
+          demisto_score = "Not Specified"
+      if isIndicator:
+          try:
+              indicator = Indicator(labels=[label_as_type],
+                              pattern=stix_type_and_value,
+                              source=source_system,
+                              created=first_seen,
+                              modified=last_seen,
+                              score=demisto_score,
+                              allow_custom=True)
+          except Exception as ex:
+              demisto.info("Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type,value))
+              demisto.info("Export failure excpetion: {}".format(ex))
+              continue
+          indicators.append(indicator)
+      else:
+          try:
+              vulnerability = Vulnerability(name=stix_type_and_value,
+                                        description=label_as_type,
+                                        labels=[label_as_type],
+                                        external_references=[ExternalReference(source_name="cve",external_id=stix_type_and_value)])
+          except Exception as ex:
+              demisto.info("Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type,value))
+              demisto.info("Export failure excpetion: {}".format(ex))
+              continue
+          indicators.append(vulnerability)
+      counter+=1
+  if counter > 1:
+      bundle = Bundle(indicators)
+      context = {
+          'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))
+      }
+      return_outputs(readable_output="",
+                     outputs=context,
+                     raw_response=str(bundle))
+  elif counter == 1:
+      context = {
+          'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(indicators[0]))
+      }
+      return_outputs(readable_output="",
+                     outputs=context,
+                     raw_response=str(indicators[0]))
+  else:
+      context = {
+          'StixExportedIndicators': {}
+      }
+      return_outputs(readable_output="",
+                     outputs=context,
+                     raw_response={})
+type: python
+tags: []
+comment: Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.0 format.
+enabled: true
+args:
+- name: indicators
+  required: true
+  description: A JSON object of all indicators and their fields, indicator index mapped
+    to Demisto indicator fields.
+- name: doubleBackslash
+  default: true
+  description: Adds a second backslash to all existing backslashes in the value field.
+  defaultValue: "true"
+outputs:
+- contextPath: StixExportedIndicators.created
+  description: The date/time that the indicator was created.
+  type: date
+- contextPath: StixExportedIndicators.firstSeen
+  description: The date/time that the indicator was first seen.
+  type: date
+- contextPath: StixExportedIndicators.source
+  description: The source system for this indicator.
+  type: string
+- contextPath: StixExportedIndicators.type
+  description: The STIX type (always exported as "indicator").
+  type: string
+- contextPath: StixExportedIndicators.pattern
+  description: ' The type and value of indicators, for example: URL, IPv4, domain,email, and so on. '
+  type: string
+- contextPath: StixExportedIndicators.score
+  description: The STIX impact score ("High", "Medium", "None", or "Not Specified")
+  type: string
+- contextPath: StixExportedIndicators.modified
+  description: The date/time that the indicator was last seen.
+  type: date
+scripttarget: 0
+runonce: false
+dockerimage: demisto/stix2:1.0.0.204
+subtype: python3
+runas: DBotWeakRole
+tests:
+- StixCreator-Test

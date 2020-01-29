@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6e1a8ad7-c22e-4fa4-8601-869d356e270f
+    taskid: ceb08362-ff7c-40f4-8765-a0c0367da2f3
     type: start
     task:
-      id: 6e1a8ad7-c22e-4fa4-8601-869d356e270f
+      id: ceb08362-ff7c-40f4-8765-a0c0367da2f3
       version: -1
       name: ""
       iscommand: false
@@ -26,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 1a75f6d6-d128-40eb-869a-201610608402
+    taskid: a1f2cd2f-3629-4cd2-828f-3cc96540d70b
     type: regular
     task:
-      id: 1a75f6d6-d128-40eb-869a-201610608402
+      id: a1f2cd2f-3629-4cd2-828f-3cc96540d70b
       version: -1
       name: Set
       description: Sets a value into the context with the given context key
@@ -59,12 +60,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 01a17ffd-920d-4567-8b57-dc86ca8d8734
+    taskid: 1eceee9c-7f36-4e55-8487-0984db520b4f
     type: regular
     task:
-      id: 01a17ffd-920d-4567-8b57-dc86ca8d8734
+      id: 1eceee9c-7f36-4e55-8487-0984db520b4f
       version: -1
       name: ua-parse
       description: Parses a User Agent string
@@ -75,9 +77,12 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      - "5"
     scriptarguments:
       UserAgent:
         simple: ${UserAgent}
+      extend-context:
+        simple: Test.Parse=result.code
     separatecontext: false
     view: |-
       {
@@ -88,12 +93,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 5620fd51-371e-4063-8aa0-ae11971073a8
+    taskid: c9b72a5f-8b3d-4a4d-8fc1-10ec2fcaf6ae
     type: condition
     task:
-      id: 5620fd51-371e-4063-8aa0-ae11971073a8
+      id: c9b72a5f-8b3d-4a4d-8fc1-10ec2fcaf6ae
       version: -1
       name: Check Results
       type: condition
@@ -117,18 +123,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 160,
           "y": 550
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: c38f195f-dd88-49ab-828b-514806177110
+    taskid: 93bdad7e-c32d-4efb-86ac-178b9430c7e7
     type: regular
     task:
-      id: c38f195f-dd88-49ab-828b-514806177110
+      id: 93bdad7e-c32d-4efb-86ac-178b9430c7e7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -148,19 +155,47 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 710
+          "y": 750
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: d04072b2-b3a9-4e28-87bd-fd21a2c655e2
+    type: regular
+    task:
+      id: d04072b2-b3a9-4e28-87bd-fd21a2c655e2
+      version: -1
+      name: Verify Extend Context
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: ${Test.Parse}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 755,
-        "width": 380,
-        "x": 450,
+        "height": 795,
+        "width": 980,
+        "x": 160,
         "y": 50
       }
     }

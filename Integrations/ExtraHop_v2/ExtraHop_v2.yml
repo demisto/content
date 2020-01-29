@@ -1,0 +1,3035 @@
+commonfields:
+  id: ExtraHop v2
+  version: -1
+name: ExtraHop v2
+display: ExtraHop Reveal(x)
+category: Network Security
+description: Network detection and response. Complete visibility of network communications
+  at enterprise scale, real-time threat detections backed by machine learning, and
+  guided investigation workflows that simplify response.
+configuration:
+- display: URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: extrahop-get-alerts
+    arguments: []
+    outputs:
+    - contextPath: Extrahop.Alert.Operator
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName
+      description: The name of the monitored metric.
+      type: String
+    - contextPath: Extrahop.Alert.NotifySnmp
+      description: 'Indicates whether to send an SNMP trap when an alert is generated. '
+      type: Boolean
+    - contextPath: Extrahop.Alert.Operand
+      description: The value to compare against alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.IntervalLength
+      description: The length of the alert interval, expressed in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.Author
+      description: 'The name of the user that created the alert. '
+      type: String
+    - contextPath: Extrahop.Alert.Name
+      description: The unique, friendly name for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName2
+      description: The second monitored metric when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.RefireInterval
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.ModTime
+      description: 'The time of the most recent update, expressed in milliseconds
+        since the epoch. '
+      type: Number
+    - contextPath: Extrahop.Alert.Units
+      description: The interval in which to evaluate the alert condition.
+      type: String
+    - contextPath: Extrahop.Alert.ApplyAll
+      description: Indicates whether the alert is assigned to all available data sources.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Type
+      description: The type of alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldOp
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.Id
+      description: The unique identifier for the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.Disabled
+      description: Indicates whether the alert is disabled.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Description
+      description: An optional description for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.Severity
+      description: The severity level of the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.StatName
+      description: The statistic name for the alert.
+      type: String
+    description: Get all alert rules from Reveal(x).
+  - name: extrahop-query-records
+    arguments:
+    - name: query_from
+      required: true
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value specifies that
+        the search will begin with records created at a time in the past relative
+        to the current time. For example, specify -10m to begin the search with records
+        created 10 minutes before the time of the request. The default unit for a
+        negative value is milliseconds, but other units can be specified with one
+        of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      defaultValue: -30m
+    - name: query_until
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A 0 value specifies that the search
+        will end with records created at the time of the request. A negative value
+        specifies that the search will end with records created at a time in the past
+        relative to the current time. For example, specify -5m to end the search with
+        records created 5 minutes before the time of the request. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+    - name: limit
+      description: The maximum number of entries to return.
+      defaultValue: "20"
+    - name: offset
+      description: The number of records to skip in the query results.
+    - name: field1
+      auto: PREDEFINED
+      predefined:
+      - .any
+      - .ipaddr
+      - .port
+      - accessTime
+      - ackCode
+      - ackId
+      - adminQueue
+      - age
+      - alertCode
+      - alertLevel
+      - answer
+      - answers
+      - appName
+      - application
+      - args
+      - authDomain
+      - authMethod
+      - authResult
+      - authType
+      - authenticator
+      - bindDN
+      - bytes
+      - cName
+      - cNameType
+      - cNames
+      - cRealm
+      - callId
+      - certificateFingerprint
+      - certificateIsSelfSigned
+      - certificateIssuer
+      - certificateKeySize
+      - certificateNotAfter
+      - certificateNotBefore
+      - certificateSignatureAlgorithm
+      - certificateSubject
+      - certificateSubjectAlternativeNames
+      - channel
+      - cipherSuite
+      - client
+      - clientAddr
+      - clientBuild
+      - clientBytes
+      - clientCGPMsgCount
+      - clientCertificateRequested
+      - clientCipherAlgorithm
+      - clientCompressionAlgorithm
+      - clientImplementation
+      - clientL2Bytes
+      - clientLatency
+      - clientMacAlgorithm
+      - clientMachine
+      - clientMsgCount
+      - clientName
+      - clientPkts
+      - clientPort
+      - clientPrincipalName
+      - clientRTO
+      - clientReqDelay
+      - clientType
+      - clientVersion
+      - clientZeroWnd
+      - collection
+      - command
+      - contentType
+      - conversationId
+      - cookie
+      - correlationId
+      - cwd
+      - dataSize
+      - database
+      - deltaBytes
+      - deltaPkts
+      - desktopHeight
+      - desktopWidth
+      - destination
+      - dn
+      - domain
+      - drops
+      - dscpName
+      - dstQueueMgr
+      - dups
+      - duration
+      - egressInterface
+      - error
+      - errorDetail
+      - expiration
+      - first
+      - flowId
+      - format
+      - frameCutDuration
+      - frameSendDuration
+      - from
+      - functionId
+      - functionName
+      - fwdReqClientAddr
+      - fwdReqHost
+      - fwdReqIsEncrypted
+      - fwdReqServerName
+      - fwdReqServerPort
+      - gwAddr
+      - handshakeTime
+      - hasSDP
+      - hassh
+      - hasshServer
+      - heartbeatPayloadLength
+      - heartbeatType
+      - hitCount
+      - hopLimit
+      - host
+      - htype
+      - ingressInterface
+      - interface
+      - isAborted
+      - isAuthoritative
+      - isBinaryProtocol
+      - isCheckingDisabled
+      - isCleanShutdown
+      - isClientDiskRead
+      - isClientDiskWrite
+      - isCommandCreate
+      - isCommandDelete
+      - isCommandFileInfo
+      - isCommandLock
+      - isCommandRead
+      - isCommandRename
+      - isCommandWrite
+      - isCompressed
+      - isEncrypted
+      - isNoReply
+      - isPipelined
+      - isRecursionAvailable
+      - isRecursionDesired
+      - isRenegotiate
+      - isReqAborted
+      - isReqTimeout
+      - isReqTruncated
+      - isRspAborted
+      - isRspChunked
+      - isRspCompressed
+      - isRspImplicit
+      - isRspTruncated
+      - isSQLi
+      - isSharedSession
+      - isSubOperation
+      - isWeakCipherSuite
+      - isXSS
+      - ja3Hash
+      - ja3sHash
+      - jitter
+      - kexAlgorithm
+      - keyboardLayout
+      - l2Bytes
+      - l7proto
+      - label
+      - last
+      - launchParams
+      - loadTime
+      - loginTime
+      - method
+      - missCount
+      - mos
+      - msgClass
+      - msgCode
+      - msgFormat
+      - msgId
+      - msgLength
+      - msgSize
+      - msgText
+      - msgType
+      - network
+      - networkAddr
+      - networkLatency
+      - nextHop
+      - nextHopMTU
+      - notAfter
+      - offeredAddr
+      - offset
+      - opcode
+      - operation
+      - option
+      - origin
+      - outOfOrder
+      - path
+      - payloadType
+      - payloadTypeId
+      - persistent
+      - pkts
+      - pointer
+      - printerName
+      - priority
+      - procedure
+      - processingTime
+      - program
+      - proto
+      - protocol
+      - putAppName
+      - qname
+      - qtype
+      - query
+      - queue
+      - queueMgr
+      - rFactor
+      - realm
+      - receiver
+      - receiverAddr
+      - receiverAsn
+      - receiverBytes
+      - receiverIsBroker
+      - receiverL2Bytes
+      - receiverPkts
+      - receiverPort
+      - receiverPrefixLength
+      - receiverRTO
+      - receiverZeroWnd
+      - recipient
+      - recipientList
+      - redeliveryCount
+      - referer
+      - renameDirChanged
+      - replyTo
+      - reqBytes
+      - reqKey
+      - reqL2Bytes
+      - reqPdu
+      - reqPkts
+      - reqRTO
+      - reqSize
+      - reqTimeToLastByte
+      - reqTransferTime
+      - requestedColorDepth
+      - requestedProtocols
+      - resolvedQueue
+      - resolvedQueueMgr
+      - resource
+      - responseQueue
+      - roundTripTime
+      - rspBytes
+      - rspL2Bytes
+      - rspPdu
+      - rspPkts
+      - rspRTO
+      - rspSize
+      - rspTimeToFirstByte
+      - rspTimeToFirstHeader
+      - rspTimeToFirstPayload
+      - rspTimeToLastByte
+      - rspTransferTime
+      - rspVersion
+      - rto
+      - sNameType
+      - sNames
+      - saslMechanism
+      - searchFilter
+      - searchScope
+      - selectedProtocol
+      - sender
+      - senderAddr
+      - senderAsn
+      - senderBytes
+      - senderIsBroker
+      - senderL2Bytes
+      - senderPkts
+      - senderPort
+      - senderPrefixLength
+      - senderRTO
+      - senderZeroWnd
+      - seqNum
+      - server
+      - serverAddr
+      - serverBytes
+      - serverCGPMsgCount
+      - serverCipherAlgorithm
+      - serverCompressionAlgorithm
+      - serverImplementation
+      - serverL2Bytes
+      - serverMacAlgorithm
+      - serverMsgCount
+      - serverPkts
+      - serverPort
+      - serverPrincipalName
+      - serverRTO
+      - serverVersion
+      - serverZeroWnd
+      - share
+      - source
+      - sqli
+      - srcQueueMgr
+      - ssrc
+      - statement
+      - status
+      - statusCode
+      - statusText
+      - table
+      - target
+      - tcpFlags
+      - thinkTime
+      - tickChannel
+      - ticketHash
+      - till
+      - title
+      - to
+      - totalMsgLength
+      - transferBytes
+      - txId
+      - type
+      - unitId
+      - uri
+      - user
+      - userAgent
+      - vbucket
+      - version
+      - vlan
+      - vxlanVNI
+      - warning
+      - xss
+      description: The name of the field in the record to be filtered. The query compares
+        field1 to value1 and applies the compare method specified by the operator1
+        parameter. If the specified field name is ".any", the union of all field values
+        will be searched. If the specified field name is ".ipaddr" or ".port", the
+        client, server, sender, and receiver roles are included in the search.
+    - name: operator1
+      auto: PREDEFINED
+      predefined:
+      - '>'
+      - <
+      - <=
+      - '>='
+      - '='
+      - '!='
+      - startswith
+      - exists
+      - not_exists
+      description: The compare method applied when matching value1 against the field1
+        contents.
+      defaultValue: '='
+    - name: value1
+      description: The value that the query attempts to match. The query compares
+        this value to the contents of the field1 parameter and applies the compare
+        method specified by the operator1 parameter.
+    - name: field2
+      auto: PREDEFINED
+      predefined:
+      - .any
+      - .ipaddr
+      - .port
+      - accessTime
+      - ackCode
+      - ackId
+      - adminQueue
+      - age
+      - alertCode
+      - alertLevel
+      - answer
+      - answers
+      - appName
+      - application
+      - args
+      - authDomain
+      - authMethod
+      - authResult
+      - authType
+      - authenticator
+      - bindDN
+      - bytes
+      - cName
+      - cNameType
+      - cNames
+      - cRealm
+      - callId
+      - certificateFingerprint
+      - certificateIsSelfSigned
+      - certificateIssuer
+      - certificateKeySize
+      - certificateNotAfter
+      - certificateNotBefore
+      - certificateSignatureAlgorithm
+      - certificateSubject
+      - certificateSubjectAlternativeNames
+      - channel
+      - cipherSuite
+      - client
+      - clientAddr
+      - clientBuild
+      - clientBytes
+      - clientCGPMsgCount
+      - clientCertificateRequested
+      - clientCipherAlgorithm
+      - clientCompressionAlgorithm
+      - clientImplementation
+      - clientL2Bytes
+      - clientLatency
+      - clientMacAlgorithm
+      - clientMachine
+      - clientMsgCount
+      - clientName
+      - clientPkts
+      - clientPort
+      - clientPrincipalName
+      - clientRTO
+      - clientReqDelay
+      - clientType
+      - clientVersion
+      - clientZeroWnd
+      - collection
+      - command
+      - contentType
+      - conversationId
+      - cookie
+      - correlationId
+      - cwd
+      - dataSize
+      - database
+      - deltaBytes
+      - deltaPkts
+      - desktopHeight
+      - desktopWidth
+      - destination
+      - dn
+      - domain
+      - drops
+      - dscpName
+      - dstQueueMgr
+      - dups
+      - duration
+      - egressInterface
+      - error
+      - errorDetail
+      - expiration
+      - first
+      - flowId
+      - format
+      - frameCutDuration
+      - frameSendDuration
+      - from
+      - functionId
+      - functionName
+      - fwdReqClientAddr
+      - fwdReqHost
+      - fwdReqIsEncrypted
+      - fwdReqServerName
+      - fwdReqServerPort
+      - gwAddr
+      - handshakeTime
+      - hasSDP
+      - hassh
+      - hasshServer
+      - heartbeatPayloadLength
+      - heartbeatType
+      - hitCount
+      - hopLimit
+      - host
+      - htype
+      - ingressInterface
+      - interface
+      - isAborted
+      - isAuthoritative
+      - isBinaryProtocol
+      - isCheckingDisabled
+      - isCleanShutdown
+      - isClientDiskRead
+      - isClientDiskWrite
+      - isCommandCreate
+      - isCommandDelete
+      - isCommandFileInfo
+      - isCommandLock
+      - isCommandRead
+      - isCommandRename
+      - isCommandWrite
+      - isCompressed
+      - isEncrypted
+      - isNoReply
+      - isPipelined
+      - isRecursionAvailable
+      - isRecursionDesired
+      - isRenegotiate
+      - isReqAborted
+      - isReqTimeout
+      - isReqTruncated
+      - isRspAborted
+      - isRspChunked
+      - isRspCompressed
+      - isRspImplicit
+      - isRspTruncated
+      - isSQLi
+      - isSharedSession
+      - isSubOperation
+      - isWeakCipherSuite
+      - isXSS
+      - ja3Hash
+      - ja3sHash
+      - jitter
+      - kexAlgorithm
+      - keyboardLayout
+      - l2Bytes
+      - l7proto
+      - label
+      - last
+      - launchParams
+      - loadTime
+      - loginTime
+      - method
+      - missCount
+      - mos
+      - msgClass
+      - msgCode
+      - msgFormat
+      - msgId
+      - msgLength
+      - msgSize
+      - msgText
+      - msgType
+      - network
+      - networkAddr
+      - networkLatency
+      - nextHop
+      - nextHopMTU
+      - notAfter
+      - offeredAddr
+      - offset
+      - opcode
+      - operation
+      - option
+      - origin
+      - outOfOrder
+      - path
+      - payloadType
+      - payloadTypeId
+      - persistent
+      - pkts
+      - pointer
+      - printerName
+      - priority
+      - procedure
+      - processingTime
+      - program
+      - proto
+      - protocol
+      - putAppName
+      - qname
+      - qtype
+      - query
+      - queue
+      - queueMgr
+      - rFactor
+      - realm
+      - receiver
+      - receiverAddr
+      - receiverAsn
+      - receiverBytes
+      - receiverIsBroker
+      - receiverL2Bytes
+      - receiverPkts
+      - receiverPort
+      - receiverPrefixLength
+      - receiverRTO
+      - receiverZeroWnd
+      - recipient
+      - recipientList
+      - redeliveryCount
+      - referer
+      - renameDirChanged
+      - replyTo
+      - reqBytes
+      - reqKey
+      - reqL2Bytes
+      - reqPdu
+      - reqPkts
+      - reqRTO
+      - reqSize
+      - reqTimeToLastByte
+      - reqTransferTime
+      - requestedColorDepth
+      - requestedProtocols
+      - resolvedQueue
+      - resolvedQueueMgr
+      - resource
+      - responseQueue
+      - roundTripTime
+      - rspBytes
+      - rspL2Bytes
+      - rspPdu
+      - rspPkts
+      - rspRTO
+      - rspSize
+      - rspTimeToFirstByte
+      - rspTimeToFirstHeader
+      - rspTimeToFirstPayload
+      - rspTimeToLastByte
+      - rspTransferTime
+      - rspVersion
+      - rto
+      - sNameType
+      - sNames
+      - saslMechanism
+      - searchFilter
+      - searchScope
+      - selectedProtocol
+      - sender
+      - senderAddr
+      - senderAsn
+      - senderBytes
+      - senderIsBroker
+      - senderL2Bytes
+      - senderPkts
+      - senderPort
+      - senderPrefixLength
+      - senderRTO
+      - senderZeroWnd
+      - seqNum
+      - server
+      - serverAddr
+      - serverBytes
+      - serverCGPMsgCount
+      - serverCipherAlgorithm
+      - serverCompressionAlgorithm
+      - serverImplementation
+      - serverL2Bytes
+      - serverMacAlgorithm
+      - serverMsgCount
+      - serverPkts
+      - serverPort
+      - serverPrincipalName
+      - serverRTO
+      - serverVersion
+      - serverZeroWnd
+      - share
+      - source
+      - sqli
+      - srcQueueMgr
+      - ssrc
+      - statement
+      - status
+      - statusCode
+      - statusText
+      - table
+      - target
+      - tcpFlags
+      - thinkTime
+      - tickChannel
+      - ticketHash
+      - till
+      - title
+      - to
+      - totalMsgLength
+      - transferBytes
+      - txId
+      - type
+      - unitId
+      - uri
+      - user
+      - userAgent
+      - vbucket
+      - version
+      - vlan
+      - vxlanVNI
+      - warning
+      - xss
+      description: The name of the field in the record to be filtered. The query compares
+        field2 to value2 and applies the compare method specified by the operator2
+        parameter. If the specified field name is ".any", the union of all field values
+        will be searched. If the specified field name is ".ipaddr" or ".port", the
+        client, server, sender, and receiver roles are included in the search.
+    - name: operator2
+      auto: PREDEFINED
+      predefined:
+      - '>'
+      - <
+      - <=
+      - '>='
+      - '='
+      - '!='
+      - startswith
+      - exists
+      - not_exists
+      description: The compare method applied when matching value2 against the field2
+        contents.
+      defaultValue: '='
+    - name: value2
+      description: The value that the query attempts to match. The query compares
+        this value to the contents of the field2 parameter and applies the compare
+        method specified by the operator2 parameter.
+    - name: match_type
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+      - not
+      description: The match operator to use when chaining the search fields of 1
+        and 2 together. For example, to find HTTP records with status code 500 or
+        a processing time greater than 100ms (set match_type=or, field1=statusCode,
+        operator1==, value1=500, field2=processingTime, operator2=> value2=100, types=http).
+      defaultValue: and
+    - name: types
+      auto: PREDEFINED
+      predefined:
+      - aaa_request
+      - aaa_response
+      - activemq
+      - ajp
+      - cifs
+      - db
+      - dhcp_request
+      - dhcp_response
+      - dicom_request
+      - dicom_response
+      - dns_request
+      - dns_response
+      - fix_request
+      - fix_response
+      - flow
+      - ftp
+      - hl7
+      - http
+      - ibmmq_request
+      - ibmmq_response
+      - ica_close
+      - ica_open
+      - ica_tick
+      - icmp
+      - kerberos_request
+      - kerberos_response
+      - ldap_request
+      - ldap_response
+      - llmnr_request
+      - llmnr_response
+      - memcache_request
+      - memcache_response
+      - modbus
+      - mongodb_request
+      - mongodb_response
+      - msmq
+      - nfs
+      - pop3
+      - rdp_close
+      - rdp_open
+      - rdp_tick
+      - redis_request
+      - redis_response
+      - rfb_close
+      - rfb_open
+      - rfb_tick
+      - rpc_request
+      - rpc_response
+      - rtcp
+      - rtp
+      - sccp
+      - sip_request
+      - sip_response
+      - smpp
+      - smtp
+      - ssh_close
+      - ssh_open
+      - ssh_tick
+      - ssl_alert
+      - ssl_close
+      - ssl_heartbeat
+      - ssl_open
+      - telnet
+      description: A list of one or more record formats for the query to filter on,
+        comma separated. The query returns only records that match the specified formats.
+      isArray: true
+    outputs:
+    - contextPath: ExtraHop.Record.Type
+      description: The record format.
+      type: string
+    - contextPath: ExtraHop.Record.Source.timestamp
+      description: The timestamp of the item.
+      type: Number
+    - contextPath: ExtraHop.Record.Source.detection
+      description: The detection type that committed the record.
+      type: string
+    - contextPath: ExtraHop.Record.Source.ex.isSuspicious
+      description: Marked as suspicious by Threat Intelligence.
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.accessTime
+      description: Access Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.ackCode
+      description: Ack Code
+      type: String
+    - contextPath: ExtraHop.Record.Source.ackId
+      description: Ack ID
+      type: String
+    - contextPath: ExtraHop.Record.Source.adminQueue
+      description: Admin Queue
+      type: String
+    - contextPath: ExtraHop.Record.Source.age
+      description: Age
+      type: Number
+    - contextPath: ExtraHop.Record.Source.alertCode
+      description: Alert Code
+      type: Number
+    - contextPath: ExtraHop.Record.Source.alertLevel
+      description: Alert Level
+      type: String
+    - contextPath: ExtraHop.Record.Source.answer
+      description: Answer
+      type: Unknown
+    - contextPath: ExtraHop.Record.Source.answers
+      description: Answers
+      type: Unknown
+    - contextPath: ExtraHop.Record.Source.appName
+      description: Application Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.application
+      description: Application
+      type: Unknown
+    - contextPath: ExtraHop.Record.Source.args
+      description: Arguments
+      type: String
+    - contextPath: ExtraHop.Record.Source.authDomain
+      description: Authentication Domain
+      type: String
+    - contextPath: ExtraHop.Record.Source.authMethod
+      description: Authentication Method
+      type: String
+    - contextPath: ExtraHop.Record.Source.authResult
+      description: Auth Result
+      type: Number
+    - contextPath: ExtraHop.Record.Source.authType
+      description: Auth Type
+      type: Number
+    - contextPath: ExtraHop.Record.Source.authenticator
+      description: Authenticator
+      type: String
+    - contextPath: ExtraHop.Record.Source.bindDN
+      description: Bind Distinguished Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.bytes
+      description: Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.cName
+      description: Canonical Endpoint
+      type: String
+    - contextPath: ExtraHop.Record.Source.cNameType
+      description: Client Name Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.cNames
+      description: Client Name Components
+      type: String
+    - contextPath: ExtraHop.Record.Source.cRealm
+      description: Client Realm
+      type: String
+    - contextPath: ExtraHop.Record.Source.callId
+      description: Call ID
+      type: String
+    - contextPath: ExtraHop.Record.Source.certificateFingerprint
+      description: Certificate Fingerprint
+      type: String
+    - contextPath: ExtraHop.Record.Source.certificateIsSelfSigned
+      description: Certificate Self Signed
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.certificateIssuer
+      description: Certificate Issuer
+      type: String
+    - contextPath: ExtraHop.Record.Source.certificateKeySize
+      description: Certificate Key Size
+      type: Number
+    - contextPath: ExtraHop.Record.Source.certificateNotAfter
+      description: Certificate Not After
+      type: Number
+    - contextPath: ExtraHop.Record.Source.certificateNotBefore
+      description: Certificate Not Before
+      type: Number
+    - contextPath: ExtraHop.Record.Source.certificateSignatureAlgorithm
+      description: Certificate Signature Algorithm
+      type: String
+    - contextPath: ExtraHop.Record.Source.certificateSubject
+      description: Certificate Subject
+      type: String
+    - contextPath: ExtraHop.Record.Source.certificateSubjectAlternativeNames
+      description: Certificate Subject Alternative Names
+      type: String
+    - contextPath: ExtraHop.Record.Source.channel
+      description: Channel
+      type: String
+    - contextPath: ExtraHop.Record.Source.cipherSuite
+      description: Cipher Suite
+      type: String
+    - contextPath: ExtraHop.Record.Source.client.type
+      description: Client Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.client.value
+      description: Client Discovery ID
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientAddr.type
+      description: Client IP Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientAddr.value
+      description: Client IP Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientBuild
+      description: Client Build
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientBytes
+      description: Client Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientCGPMsgCount
+      description: Client CGP Messages
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientCertificateRequested
+      description: Client Certificate Requested
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.clientCipherAlgorithm
+      description: Client Cipher Algorithm
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientCompressionAlgorithm
+      description: Client Compression Algorithm
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientImplementation
+      description: Client Implementation
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientL2Bytes
+      description: Client L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientLatency
+      description: Client Latency
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientMacAlgorithm
+      description: Client MAC Algorithm
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientMachine
+      description: Client Machine
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientMsgCount
+      description: Client Messages
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientName
+      description: Client Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientPkts
+      description: Client Packets
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientPort
+      description: Client Port
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientPrincipalName
+      description: Client Principal Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientRTO
+      description: Client RTO
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientReqDelay
+      description: Client Request Delay
+      type: Number
+    - contextPath: ExtraHop.Record.Source.clientType
+      description: ICA Client Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientVersion
+      description: Client Version
+      type: String
+    - contextPath: ExtraHop.Record.Source.clientZeroWnd
+      description: Client Zero Windows
+      type: Number
+    - contextPath: ExtraHop.Record.Source.collection
+      description: Collection
+      type: String
+    - contextPath: ExtraHop.Record.Source.command
+      description: Command
+      type: String
+    - contextPath: ExtraHop.Record.Source.contentType
+      description: Content Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.conversationId
+      description: Conversation ID
+      type: Number
+    - contextPath: ExtraHop.Record.Source.cookie
+      description: Cookie
+      type: String
+    - contextPath: ExtraHop.Record.Source.correlationId
+      description: Correlation ID
+      type: String
+    - contextPath: ExtraHop.Record.Source.cwd
+      description: Current Working Directory
+      type: String
+    - contextPath: ExtraHop.Record.Source.dataSize
+      description: Data Size
+      type: Number
+    - contextPath: ExtraHop.Record.Source.database
+      description: Database
+      type: String
+    - contextPath: ExtraHop.Record.Source.deltaBytes
+      description: Delta Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.deltaPkts
+      description: Delta Packets
+      type: Number
+    - contextPath: ExtraHop.Record.Source.desktopHeight
+      description: Desktop Height
+      type: Number
+    - contextPath: ExtraHop.Record.Source.desktopWidth
+      description: Desktop Width
+      type: Number
+    - contextPath: ExtraHop.Record.Source.destination
+      description: Destination
+      type: String
+    - contextPath: ExtraHop.Record.Source.dn
+      description: Distinguished Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.domain
+      description: Domain
+      type: String
+    - contextPath: ExtraHop.Record.Source.drops
+      description: Drops
+      type: Number
+    - contextPath: ExtraHop.Record.Source.dscpName
+      description: DSCP
+      type: String
+    - contextPath: ExtraHop.Record.Source.dstQueueMgr
+      description: Destination Queue Manager
+      type: String
+    - contextPath: ExtraHop.Record.Source.dups
+      description: Dups
+      type: Number
+    - contextPath: ExtraHop.Record.Source.duration
+      description: Duration
+      type: Number
+    - contextPath: ExtraHop.Record.Source.egressInterface
+      description: Egress Interface
+      type: Unknown
+    - contextPath: ExtraHop.Record.Source.error
+      description: Error
+      type: String
+    - contextPath: ExtraHop.Record.Source.errorDetail
+      description: Error Detail
+      type: String
+    - contextPath: ExtraHop.Record.Source.expiration
+      description: Expiration
+      type: Number
+    - contextPath: ExtraHop.Record.Source.first
+      description: First
+      type: Number
+    - contextPath: ExtraHop.Record.Source.flowId
+      description: Flow
+      type: String
+    - contextPath: ExtraHop.Record.Source.format
+      description: Format
+      type: String
+    - contextPath: ExtraHop.Record.Source.frameCutDuration
+      description: Frame Cut Duration
+      type: Number
+    - contextPath: ExtraHop.Record.Source.frameSendDuration
+      description: Frame Send Duration
+      type: Number
+    - contextPath: ExtraHop.Record.Source.from
+      description: From
+      type: String
+    - contextPath: ExtraHop.Record.Source.functionId
+      description: Function ID
+      type: Number
+    - contextPath: ExtraHop.Record.Source.functionName
+      description: Function Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.fwdReqClientAddr.type
+      description: Forwarded Request Client IP Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.fwdReqClientAddr.value
+      description: Forwarded Request Client IP Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.fwdReqHost
+      description: Forwarded Request Host
+      type: String
+    - contextPath: ExtraHop.Record.Source.fwdReqIsEncrypted
+      description: Forwarded Request Is Encrypted
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.fwdReqServerName
+      description: Forwarded Request Server Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.fwdReqServerPort
+      description: Forwarded Request Server Port
+      type: Number
+    - contextPath: ExtraHop.Record.Source.gwAddr.type
+      description: Gateway IP Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.gwAddr.value
+      description: Gateway IP Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.handshakeTime
+      description: Handshake Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.hasSDP
+      description: Has SDP
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.hassh
+      description: HASSH
+      type: String
+    - contextPath: ExtraHop.Record.Source.hasshServer
+      description: HASSH Server
+      type: String
+    - contextPath: ExtraHop.Record.Source.heartbeatPayloadLength
+      description: Heartbeat Payload Length
+      type: Number
+    - contextPath: ExtraHop.Record.Source.heartbeatType
+      description: Heartbeat Type
+      type: Number
+    - contextPath: ExtraHop.Record.Source.hitCount
+      description: Hit Count
+      type: Number
+    - contextPath: ExtraHop.Record.Source.hopLimit
+      description: Hop Limit
+      type: Number
+    - contextPath: ExtraHop.Record.Source.host
+      description: Host
+      type: String
+    - contextPath: ExtraHop.Record.Source.htype
+      description: Hardware Address Type
+      type: Number
+    - contextPath: ExtraHop.Record.Source.ingressInterface
+      description: Ingress Interface
+      type: Unknown
+    - contextPath: ExtraHop.Record.Source.interface
+      description: Interface
+      type: String
+    - contextPath: ExtraHop.Record.Source.isAborted
+      description: Aborted
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isAuthoritative
+      description: Authoritative
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isBinaryProtocol
+      description: Binary Protocol
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCheckingDisabled
+      description: Checking Disabled
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCleanShutdown
+      description: Clean Shutdown
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isClientDiskRead
+      description: Client Disk Read
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isClientDiskWrite
+      description: Client Disk Write
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCommandCreate
+      description: Create Command
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCommandDelete
+      description: Delete Command
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCommandFileInfo
+      description: FileInfo Command
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCommandLock
+      description: Lock Command
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCommandRead
+      description: Read Command
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCommandRename
+      description: Rename Command
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCommandWrite
+      description: Write Command
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isCompressed
+      description: Compressed
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isEncrypted
+      description: Encrypted
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isNoReply
+      description: No Reply
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isPipelined
+      description: Pipelined
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isRecursionAvailable
+      description: Recursion Available
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isRecursionDesired
+      description: Recursion Desired
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isRenegotiate
+      description: Renegotiate
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isReqAborted
+      description: Request Aborted
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isReqTimeout
+      description: Request Timed Out
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isReqTruncated
+      description: Request Truncated
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isRspAborted
+      description: Response Aborted
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isRspChunked
+      description: Chunked
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isRspCompressed
+      description: Rsp Compressed
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isRspImplicit
+      description: Response Implicit
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isRspTruncated
+      description: Response Truncated
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isSQLi
+      description: Contains SQLi
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isSharedSession
+      description: Shared Session
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isSubOperation
+      description: Is a suboperation
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isWeakCipherSuite
+      description: Weak Cipher Suite
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.isXSS
+      description: Contains XSS
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.ja3Hash
+      description: JA3 Hash
+      type: String
+    - contextPath: ExtraHop.Record.Source.ja3sHash
+      description: JA3S Hash
+      type: String
+    - contextPath: ExtraHop.Record.Source.jitter
+      description: Jitter
+      type: Number
+    - contextPath: ExtraHop.Record.Source.kexAlgorithm
+      description: KEX Algorithm
+      type: String
+    - contextPath: ExtraHop.Record.Source.keyboardLayout
+      description: Keyboard Layout
+      type: String
+    - contextPath: ExtraHop.Record.Source.l2Bytes
+      description: L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.l7proto
+      description: L7 Protocol
+      type: String
+    - contextPath: ExtraHop.Record.Source.label
+      description: Label
+      type: String
+    - contextPath: ExtraHop.Record.Source.last
+      description: Last
+      type: Number
+    - contextPath: ExtraHop.Record.Source.launchParams
+      description: Parameters
+      type: String
+    - contextPath: ExtraHop.Record.Source.loadTime
+      description: Load Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.loginTime
+      description: Login Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.method
+      description: Method
+      type: String
+    - contextPath: ExtraHop.Record.Source.missCount
+      description: Miss Count
+      type: Number
+    - contextPath: ExtraHop.Record.Source.mos
+      description: MOS
+      type: Number
+    - contextPath: ExtraHop.Record.Source.msgClass
+      description: Message Class
+      type: String
+    - contextPath: ExtraHop.Record.Source.msgCode
+      description: Message Code
+      type: Number
+    - contextPath: ExtraHop.Record.Source.msgFormat
+      description: Message Format
+      type: String
+    - contextPath: ExtraHop.Record.Source.msgId
+      description: Message ID
+      type: Number
+    - contextPath: ExtraHop.Record.Source.msgLength
+      description: Message Length
+      type: Number
+    - contextPath: ExtraHop.Record.Source.msgSize
+      description: Message Size
+      type: Number
+    - contextPath: ExtraHop.Record.Source.msgText
+      description: Message Text
+      type: String
+    - contextPath: ExtraHop.Record.Source.msgType
+      description: Message Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.network
+      description: Flow Network
+      type: Unknown
+    - contextPath: ExtraHop.Record.Source.networkAddr.type
+      description: Flow Network IP Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.networkAddr.value
+      description: Flow Network IP Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.networkLatency
+      description: Network Latency
+      type: Number
+    - contextPath: ExtraHop.Record.Source.nextHop.type
+      description: Next Hop IP Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.nextHop.value
+      description: Next Hop IP Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.nextHopMTU
+      description: Next Hop MTU
+      type: Number
+    - contextPath: ExtraHop.Record.Source.notAfter
+      description: Certificate Not After
+      type: Number
+    - contextPath: ExtraHop.Record.Source.offeredAddr.type
+      description: Offered IP Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.offeredAddr.value
+      description: Offered IP Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.offset
+      description: Offset
+      type: Number
+    - contextPath: ExtraHop.Record.Source.opcode
+      description: Opcode
+      type: String
+    - contextPath: ExtraHop.Record.Source.operation
+      description: Operation
+      type: String
+    - contextPath: ExtraHop.Record.Source.option
+      description: Options
+      type: String
+    - contextPath: ExtraHop.Record.Source.origin
+      description: Origin
+      type: String
+    - contextPath: ExtraHop.Record.Source.outOfOrder
+      description: Out Of Order
+      type: Number
+    - contextPath: ExtraHop.Record.Source.path
+      description: Path
+      type: String
+    - contextPath: ExtraHop.Record.Source.payloadType
+      description: Payload Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.payloadTypeId
+      description: Payload Type ID
+      type: Number
+    - contextPath: ExtraHop.Record.Source.persistent
+      description: Persistent
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.pkts
+      description: Packets
+      type: Number
+    - contextPath: ExtraHop.Record.Source.pointer
+      description: Pointer
+      type: Number
+    - contextPath: ExtraHop.Record.Source.printerName
+      description: Printer Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.priority
+      description: Priority
+      type: Number
+    - contextPath: ExtraHop.Record.Source.procedure
+      description: Procedure
+      type: String
+    - contextPath: ExtraHop.Record.Source.processingTime
+      description: Processing Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.program
+      description: Program
+      type: String
+    - contextPath: ExtraHop.Record.Source.proto
+      description: IP Protocol
+      type: String
+    - contextPath: ExtraHop.Record.Source.protocol
+      description: Protocol
+      type: String
+    - contextPath: ExtraHop.Record.Source.putAppName
+      description: Put Application Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.qname
+      description: Query Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.qtype
+      description: Query Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.query
+      description: Query
+      type: String
+    - contextPath: ExtraHop.Record.Source.queue
+      description: Queue
+      type: String
+    - contextPath: ExtraHop.Record.Source.queueMgr
+      description: Queue Manager
+      type: String
+    - contextPath: ExtraHop.Record.Source.rFactor
+      description: R Factor
+      type: Number
+    - contextPath: ExtraHop.Record.Source.realm
+      description: Server Realm
+      type: String
+    - contextPath: ExtraHop.Record.Source.receiver.type
+      description: Receiver Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.receiver.value
+      description: Receiver Discovery ID
+      type: String
+    - contextPath: ExtraHop.Record.Source.receiverAddr.type
+      description: Receiver IP Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.receiverAddr.value
+      description: Receiver IP Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.receiverAsn
+      description: Receiver ASN
+      type: Number
+    - contextPath: ExtraHop.Record.Source.receiverBytes
+      description: Receiver Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.receiverIsBroker
+      description: To Broker
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.receiverL2Bytes
+      description: Receiver L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.receiverPkts
+      description: Receiver Packets
+      type: Number
+    - contextPath: ExtraHop.Record.Source.receiverPort
+      description: Receiver Port
+      type: Number
+    - contextPath: ExtraHop.Record.Source.receiverPrefixLength
+      description: Receiver Prefix Length
+      type: Number
+    - contextPath: ExtraHop.Record.Source.receiverRTO
+      description: Receiver RTO
+      type: Number
+    - contextPath: ExtraHop.Record.Source.receiverZeroWnd
+      description: Receiver Zero Windows
+      type: Number
+    - contextPath: ExtraHop.Record.Source.recipient
+      description: Recipient
+      type: String
+    - contextPath: ExtraHop.Record.Source.recipientList
+      description: Recipient List
+      type: String
+    - contextPath: ExtraHop.Record.Source.redeliveryCount
+      description: Redelivery Count
+      type: Number
+    - contextPath: ExtraHop.Record.Source.referer
+      description: Referer
+      type: String
+    - contextPath: ExtraHop.Record.Source.renameDirChanged
+      description: Rename Directory Changed
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.replyTo
+      description: Reply To
+      type: String
+    - contextPath: ExtraHop.Record.Source.reqBytes
+      description: Request Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.reqKey
+      description: Request Key
+      type: String
+    - contextPath: ExtraHop.Record.Source.reqL2Bytes
+      description: Request L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.reqPdu
+      description: Request PDU Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.reqPkts
+      description: Request Packets
+      type: Number
+    - contextPath: ExtraHop.Record.Source.reqRTO
+      description: Request RTO
+      type: Number
+    - contextPath: ExtraHop.Record.Source.reqSize
+      description: Request Size
+      type: Number
+    - contextPath: ExtraHop.Record.Source.reqTimeToLastByte
+      description: Req Time To Last Byte
+      type: Number
+    - contextPath: ExtraHop.Record.Source.reqTransferTime
+      description: Request Transfer Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.requestedColorDepth
+      description: Requested Color Depth
+      type: String
+    - contextPath: ExtraHop.Record.Source.requestedProtocols
+      description: Requested Protocols
+      type: String
+    - contextPath: ExtraHop.Record.Source.resolvedQueue
+      description: Resolved Queue
+      type: String
+    - contextPath: ExtraHop.Record.Source.resolvedQueueMgr
+      description: Resolved Queue Manager
+      type: String
+    - contextPath: ExtraHop.Record.Source.resource
+      description: Resource
+      type: String
+    - contextPath: ExtraHop.Record.Source.responseQueue
+      description: Response Queue
+      type: String
+    - contextPath: ExtraHop.Record.Source.roundTripTime
+      description: Round Trip Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspBytes
+      description: Response Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspL2Bytes
+      description: Response L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspPdu
+      description: Response PDU Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.rspPkts
+      description: Response Packets
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspRTO
+      description: Response RTO
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspSize
+      description: Response Size
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspTimeToFirstByte
+      description: Rsp Time To First Byte
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspTimeToFirstHeader
+      description: Rsp Time To First Header
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspTimeToFirstPayload
+      description: Rsp Time To First Payload
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspTimeToLastByte
+      description: Rsp Time To Last Byte
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspTransferTime
+      description: Response Transfer Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.rspVersion
+      description: Response Version
+      type: String
+    - contextPath: ExtraHop.Record.Source.rto
+      description: RTO
+      type: Number
+    - contextPath: ExtraHop.Record.Source.sNameType
+      description: Server Name Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.sNames
+      description: Server Name Components
+      type: String
+    - contextPath: ExtraHop.Record.Source.saslMechanism
+      description: SASL Mechanism
+      type: String
+    - contextPath: ExtraHop.Record.Source.searchFilter
+      description: Search Filter
+      type: String
+    - contextPath: ExtraHop.Record.Source.searchScope
+      description: Search Scope
+      type: String
+    - contextPath: ExtraHop.Record.Source.selectedProtocol
+      description: Selected Protocol
+      type: String
+    - contextPath: ExtraHop.Record.Source.sender.type
+      description: Sender Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.sender.value
+      description: Sender Discovery ID
+      type: String
+    - contextPath: ExtraHop.Record.Source.senderAddr.type
+      description: Sender IP Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.senderAddr.value
+      description: Sender IP Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.senderAsn
+      description: Sender ASN
+      type: Number
+    - contextPath: ExtraHop.Record.Source.senderBytes
+      description: Sender Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.senderIsBroker
+      description: From Broker
+      type: Boolean
+    - contextPath: ExtraHop.Record.Source.senderL2Bytes
+      description: Sender L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.senderPkts
+      description: Sender Packets
+      type: Number
+    - contextPath: ExtraHop.Record.Source.senderPort
+      description: Sender Port
+      type: Number
+    - contextPath: ExtraHop.Record.Source.senderPrefixLength
+      description: Sender Prefix Length
+      type: Number
+    - contextPath: ExtraHop.Record.Source.senderRTO
+      description: Sender RTO
+      type: Number
+    - contextPath: ExtraHop.Record.Source.senderZeroWnd
+      description: Sender Zero Windows
+      type: Number
+    - contextPath: ExtraHop.Record.Source.seqNum
+      description: Sequence Number
+      type: Number
+    - contextPath: ExtraHop.Record.Source.server.type
+      description: Server Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.server.value
+      description: Server Discovery ID
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverAddr.type
+      description: Server IPv4 Address Type
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverAddr.value
+      description: Server IPv4 Address Value
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverBytes
+      description: Server Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.serverCGPMsgCount
+      description: Server CGP Messages
+      type: Number
+    - contextPath: ExtraHop.Record.Source.serverCipherAlgorithm
+      description: Server Cipher Algorithm
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverCompressionAlgorithm
+      description: Server Compression Algorithm
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverImplementation
+      description: Server Implementation
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverL2Bytes
+      description: Server L2 Bytes
+      type: Number
+    - contextPath: ExtraHop.Record.Source.serverMacAlgorithm
+      description: Server MAC Algorithm
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverMsgCount
+      description: Server Messages
+      type: Number
+    - contextPath: ExtraHop.Record.Source.serverPkts
+      description: Server Packets
+      type: Number
+    - contextPath: ExtraHop.Record.Source.serverPort
+      description: Server Port
+      type: Number
+    - contextPath: ExtraHop.Record.Source.serverPrincipalName
+      description: Server Principal Name
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverRTO
+      description: Server RTO
+      type: Number
+    - contextPath: ExtraHop.Record.Source.serverVersion
+      description: Server Version
+      type: String
+    - contextPath: ExtraHop.Record.Source.serverZeroWnd
+      description: Server Zero Windows
+      type: Number
+    - contextPath: ExtraHop.Record.Source.share
+      description: Share
+      type: String
+    - contextPath: ExtraHop.Record.Source.source
+      description: Source
+      type: String
+    - contextPath: ExtraHop.Record.Source.sqli
+      description: Potential SQLi
+      type: String
+    - contextPath: ExtraHop.Record.Source.srcQueueMgr
+      description: Source Queue Manager
+      type: String
+    - contextPath: ExtraHop.Record.Source.ssrc
+      description: Sender SSRC
+      type: Number
+    - contextPath: ExtraHop.Record.Source.statement
+      description: Statement
+      type: String
+    - contextPath: ExtraHop.Record.Source.status
+      description: Status
+      type: String
+    - contextPath: ExtraHop.Record.Source.statusCode
+      description: Status Code
+      type: Number
+    - contextPath: ExtraHop.Record.Source.statusText
+      description: Status Text
+      type: String
+    - contextPath: ExtraHop.Record.Source.table
+      description: Table
+      type: String
+    - contextPath: ExtraHop.Record.Source.target
+      description: Target
+      type: String
+    - contextPath: ExtraHop.Record.Source.tcpFlags
+      description: TCP Flags
+      type: Number
+    - contextPath: ExtraHop.Record.Source.thinkTime
+      description: Think Time
+      type: Number
+    - contextPath: ExtraHop.Record.Source.tickChannel
+      description: Tick Channel
+      type: String
+    - contextPath: ExtraHop.Record.Source.ticketHash
+      description: Encrypted Ticket Hash
+      type: String
+    - contextPath: ExtraHop.Record.Source.till
+      description: Till
+      type: String
+    - contextPath: ExtraHop.Record.Source.title
+      description: Title
+      type: String
+    - contextPath: ExtraHop.Record.Source.to
+      description: To
+      type: String
+    - contextPath: ExtraHop.Record.Source.totalMsgLength
+      description: Total Msg Length
+      type: Number
+    - contextPath: ExtraHop.Record.Source.transferBytes
+      description: Bytes Transferred
+      type: Number
+    - contextPath: ExtraHop.Record.Source.txId
+      description: Transaction ID
+      type: Number
+    - contextPath: ExtraHop.Record.Source.unitId
+      description: Unit ID
+      type: Number
+    - contextPath: ExtraHop.Record.Source.uri
+      description: URI
+      type: String
+    - contextPath: ExtraHop.Record.Source.user
+      description: User
+      type: String
+    - contextPath: ExtraHop.Record.Source.userAgent
+      description: User Agent
+      type: String
+    - contextPath: ExtraHop.Record.Source.vbucket
+      description: vBucket
+      type: Number
+    - contextPath: ExtraHop.Record.Source.version
+      description: Version
+      type: String
+    - contextPath: ExtraHop.Record.Source.vlan
+      description: VLAN
+      type: Number
+    - contextPath: ExtraHop.Record.Source.vxlanVNI
+      description: VxLAN VNI
+      type: Number
+    - contextPath: ExtraHop.Record.Source.warning
+      description: Warning
+      type: String
+    - contextPath: ExtraHop.Record.Source.xss
+      description: Potential XSS
+      type: String
+    description: Query records from Reveal(x).
+  - name: extrahop-device-search
+    arguments:
+    - name: name
+      description: The name of the device. This searches for matches on all ExtraHop
+        name fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
+    - name: ip
+      description: The IP address of the device.
+    - name: mac
+      description: The MAC address of the device.
+    - name: role
+      auto: PREDEFINED
+      predefined:
+      - db_server
+      - dhcp_server
+      - dns_server
+      - file_server
+      - firewall
+      - gateway
+      - http_server
+      - domain_controller
+      - web_proxy
+      - load_balancer
+      - pc
+      - medical_device
+      - mobile_device
+      - printer
+      - scanner
+      - custom
+      - voip_phone
+      - other
+      description: The role of the device.
+    - name: software
+      auto: PREDEFINED
+      predefined:
+      - android
+      - apple_ios
+      - arista_eos
+      - cisco_ios
+      - cisco_nx-os
+      - chrome_os
+      - linux
+      - mac_os
+      - windows
+      - windows_server
+      - windows_server_2008
+      - windows_server_2008_r2
+      - windows_server_2012
+      - windows_server_2012_r2
+      - windows_server_2016
+      - windows_vista
+      - windows_7
+      - windows_8
+      - windows_8.1
+      - windows_10
+      description: The OS of the device.
+    - name: tag
+      description: 'A tag present on the device. '
+    - name: vendor
+      auto: PREDEFINED
+      predefined:
+      - alcatel-lucent
+      - apple
+      - arista
+      - asus
+      - brother
+      - canon
+      - cisco
+      - cisco-linksys
+      - citrix
+      - dell
+      - dellemc
+      - d-link
+      - emc
+      - f5
+      - google
+      - hp
+      - htc
+      - huawei
+      - ibm
+      - juniper
+      - kyocera
+      - microsoft
+      - netapp
+      - netgear
+      - nokia
+      - nortel
+      - oracle
+      - paloalto
+      - samsung
+      - 3com
+      - toshiba
+      - virtualbox
+      - vmware
+      - zte
+      description: The vendor of the device, based on MAC address via OUI lookup.
+    - name: discover_time
+      description: 'The time that device was first seen by ExtraHop, expressed in
+        milliseconds since the epoch. A negative value is evaluated relative to the
+        current time. The default unit for a negative value is milliseconds, but other
+        units can be specified with the following unit suffixes: ms, s, m, h, d, w,
+        M, y. For example, to look one day back enter -1d or -24h. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+    - name: vlan
+      description: The VLAN ID of the Virtual LAN that the device is on.
+    - name: activity
+      auto: PREDEFINED
+      predefined:
+      - aaa_client
+      - aaa_server
+      - ajp_client
+      - ajp_server
+      - amf_client
+      - amf_server
+      - cifs_client
+      - cifs_server
+      - db_client
+      - db_server
+      - dhcp_client
+      - dhcp_server
+      - dicom_client
+      - dicom_server
+      - dns_client
+      - dns_server
+      - fix_client
+      - fix_server
+      - ftp_client
+      - ftp_server
+      - hl7_client
+      - hl7_server
+      - http_client
+      - http_server
+      - ibmmq_client
+      - ibmmq_server
+      - ica_client
+      - ica_server
+      - icmp
+      - iscsi_client
+      - iscsi_server
+      - kerberos_client
+      - kerberos_server
+      - ldap_client
+      - ldap_server
+      - llmnr_client
+      - llmnr_server
+      - memcache_client
+      - memcache_server
+      - modbus_client
+      - modbus_server
+      - mongo_client
+      - mongo_server
+      - msmq
+      - nbns_client
+      - nbns_server
+      - nfs_client
+      - nfs_server
+      - pcoip_client
+      - pcoip_server
+      - pop3_client
+      - pop3_server
+      - rdp_client
+      - rdp_server
+      - redis_client
+      - redis_server
+      - rfb_client
+      - rfb_server
+      - rpc_client
+      - rpc_server
+      - rtcp
+      - rtp
+      - scanner
+      - sip_client
+      - sip_server
+      - smpp_client
+      - smpp_server
+      - smtp_client
+      - smtp_server
+      - ssh_client
+      - ssh_server
+      - ssl_client
+      - ssl_server
+      - tcp
+      - telnet_client
+      - telnet_server
+      - udp
+      - websocket_client
+      - websocket_server
+      - wsman_client
+      - wsman_server
+      description: The activity of the device.
+    - name: operator
+      auto: PREDEFINED
+      predefined:
+      - '>'
+      - <
+      - <=
+      - '>='
+      - '='
+      - '!='
+      - startswith
+      - exists
+      - not_exists
+      - "~"
+      - '!~'
+      description: The compare method applied when matching the fields against their
+        values. For example, to find devices with names that begin with 'SEA1' (set
+        name=SEA1, operator=startswith)
+      defaultValue: '='
+    - name: match_type
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+      - not
+      description: The match operator to use when chaining the search fields together.
+        For example, to find all HTTP servers running Windows on the network (set
+        match_type=and, role=http_server, software=windows).
+      defaultValue: and
+    - name: active_from
+      description: 'The beginning timestamp for the request. Return only devices active
+        after this time. Time is expressed in milliseconds since the epoch. 0 indicates
+        the time of the request. A negative value is evaluated relative to the current
+        time. The default unit for a negative value is milliseconds, but other units
+        can be specified with one of the following unit suffixes: ms, s, m, h, d,
+        w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+    - name: active_until
+      description: 'The ending timestamp for the request. Return only devices active
+        before this time. Time is expressed in milliseconds since the epoch. 0 indicates
+        the time of the request. A negative value is evaluated relative to the current
+        time. The default unit for a negative value is milliseconds, but other units
+        can be specified with one of the following unit suffixes: ms, s, m, h, d,
+        w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+    - name: limit
+      description: The maximum number of devices to return.
+      defaultValue: "10"
+    - name: l3_only
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Only returns layer 3 devices by filtering out any layer 2 parent
+        devices.
+      defaultValue: "true"
+    outputs:
+    - contextPath: ExtraHop.Device.Macaddr
+      description: The MAC Address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: The class of the device.
+      type: String
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: The role automatically detected by the ExtraHop.
+      type: String
+    - contextPath: ExtraHop.Device.ParentId
+      description: The ID of the parent device.
+      type: Number
+    - contextPath: ExtraHop.Device.Vendor
+      description: The device vendor.
+      type: String
+    - contextPath: ExtraHop.Device.Analysis
+      description: The level of analysis preformed on the device.
+      type: string
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: The UUID given by the Discover appliance.
+      type: String
+    - contextPath: ExtraHop.Device.DefaultName
+      description: The default name of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DisplayName
+      description: The display name of device.
+      type: String
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Whether the device is on the advanced analysis whitelist.
+      type: Boolean
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.IsL3
+      description: Indicates whether the device is a Layer 3 device.
+      type: Boolean
+    - contextPath: ExtraHop.Device.Role
+      description: The role of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: The time that the device was discovered.
+      type: Number
+    - contextPath: ExtraHop.Device.Id
+      description: The ID of the device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: The IPv4 address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.Vlanid
+      description: The ID of VLan.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr6
+      description: The IPv6 address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.NodeId
+      description: The Node ID of the Discover appliance.
+      type: number
+    - contextPath: ExtraHop.Device.Description
+      description: A user customizable description of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DnsName
+      description: The DNS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.DhcpName
+      description: The DHCP name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.CdpName
+      description: The Cisco Discovery Protocol name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.NetbiosName
+      description: The NetBIOS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.Url
+      description: Link to the device details page in ExtraHop.
+      type: string
+    description: Search for devices in Reveal(x).
+  - name: extrahop-edit-watchlist
+    arguments:
+    - name: add
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        add, comma separated.
+      isArray: true
+    - name: remove
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        remove, comma separated.
+      isArray: true
+    description: Add or remove devices from the watchlist in Reveal(x).
+  - name: extrahop-get-watchlist
+    arguments: []
+    outputs:
+    - contextPath: Extrahop.Device.Macaddr
+      description: The MAC Address of the device.
+      type: String
+    - contextPath: Extrahop.Device.DeviceClass
+      description: 'The class of this device. '
+      type: String
+    - contextPath: Extrahop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: Extrahop.Device.AutoRole
+      description: 'The role automatically detected by the ExtraHop. '
+      type: String
+    - contextPath: Extrahop.Device.ParentId
+      description: The ID of the parent device.
+      type: Number
+    - contextPath: Extrahop.Device.Vendor
+      description: The device vendor.
+      type: String
+    - contextPath: Extrahop.Device.Analysis
+      description: The level of analysis preformed on the device.
+      type: string
+    - contextPath: Extrahop.Device.DiscoveryId
+      description: The UUID given by the Discover appliance.
+      type: String
+    - contextPath: Extrahop.Device.DefaultName
+      description: The default name for this device.
+      type: String
+    - contextPath: Extrahop.Device.DisplayName
+      description: The display name of device.
+      type: String
+    - contextPath: Extrahop.Device.OnWatchlist
+      description: Whether the device is on the advanced analysis whitelist.
+      type: Boolean
+    - contextPath: Extrahop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: Extrahop.Device.IsL3
+      description: Indicates whether the device is a Layer 3 device.
+      type: Boolean
+    - contextPath: Extrahop.Device.Role
+      description: 'The role of the device. '
+      type: String
+    - contextPath: Extrahop.Device.DiscoverTime
+      description: The time that the device was discovered.
+      type: Number
+    - contextPath: Extrahop.Device.Id
+      description: The ID of the device.
+      type: Number
+    - contextPath: Extrahop.Device.Ipaddr4
+      description: The IPv4 address for this device.
+      type: String
+    - contextPath: Extrahop.Device.Vlanid
+      description: The unique identifier for the VLAN this device is associated with.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr6
+      description: The IPv6 address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.NodeId
+      description: The Node ID of the Discover appliance.
+      type: number
+    - contextPath: ExtraHop.Device.Description
+      description: A user customizable description of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DnsName
+      description: The DNS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.DhcpName
+      description: The DHCP name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.CdpName
+      description: The Cisco Discovery Protocol name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.NetbiosName
+      description: The NetBIOS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.Url
+      description: Link to the device details page in ExtraHop.
+      type: string
+    description: Get all devices on the watchlist in Reveal(x).
+  - name: extrahop-create-alert
+    arguments:
+    - name: apply_all
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether the alert is assigned to all available data sources.
+    - name: disabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether the alert is disabled.
+    - name: name
+      required: true
+      description: The unique, friendly name for the alert.
+    - name: notify_snmp
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+    - name: refire_interval
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "300"
+      - "600"
+      - "900"
+      - "1800"
+      - "3600"
+      - "7200"
+      - "14400"
+      description: 'The time interval in which alert conditions are monitored, expressed
+        in seconds. '
+    - name: severity
+      required: true
+      description: 'The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3,
+        4, 5, 6, 7'
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - detection
+      - threshold
+      description: 'The type of alert. '
+    - name: object_type
+      auto: PREDEFINED
+      predefined:
+      - application
+      - device
+      description: 'The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts. '
+    - name: protocols
+      description: The list of monitored protocols. Only applicable to detection alerts.
+    - name: field_name
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+    - name: field_name2
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+    - name: stat_name
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+    - name: units
+      auto: PREDEFINED
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+      description: "The interval in which to evaluate the alert condition. Only applicable\
+        \ to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\"\
+        , \"1 min\", \"1 hr\""
+    - name: interval_length
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+      - "120"
+      - "300"
+      - "600"
+      - "900"
+      - "1200"
+      - "1800"
+      description: "The length of the alert interval, expressed in seconds. Only applicable\
+        \ to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200,\
+        \ 1800"
+      defaultValue: "30"
+    - name: operand
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+    - name: operator
+      auto: PREDEFINED
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+    - name: field_op
+      auto: PREDEFINED
+      predefined:
+      - /
+      - "null"
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+    - name: param
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+    - name: param2
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+    description: Create a new alert rule in Reveal(x).
+  - name: extrahop-edit-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: The unique identifier for the alert.
+    - name: apply_all
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether the alert is assigned to all available data sources.
+    - name: disabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether the alert is disabled.
+    - name: name
+      required: true
+      description: The unique, friendly name for the alert.
+    - name: notify_snmp
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+    - name: field_name
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+    - name: stat_name
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+    - name: units
+      auto: PREDEFINED
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
+    - name: interval_length
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+      - "120"
+      - "300"
+      - "600"
+      - "900"
+      - "1200"
+      - "1800"
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
+    - name: operand
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+    - name: refire_interval
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "300"
+      - "600"
+      - "900"
+      - "1800"
+      - "3600"
+      - "7200"
+      - "14400"
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - detection
+      - threshold
+      description: The type of alert.
+    - name: object_type
+      auto: PREDEFINED
+      predefined:
+      - application
+      - device
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
+    - name: protocols
+      description: The list of monitored protocols. Only applicable to detection alerts.
+    - name: operator
+      auto: PREDEFINED
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+    - name: field_name2
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+    - name: field_op
+      auto: PREDEFINED
+      predefined:
+      - /
+      - "null"
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+    - name: param
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+    - name: param2
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+    description: Modify an alert rule in Reveal(x).
+  - name: extrahop-track-ticket
+    arguments:
+    - name: incident_id
+      required: true
+      description: The ID of the Demisto Incident to ticket track.
+    - name: detection_id
+      required: true
+      description: The ID of the ExtraHop Detection to ticket track.
+    - name: incident_owner
+      description: Owner of the incident.
+    - name: incident_status
+      description: Status of the incident
+    - name: incident_close_reason
+      description: Reason the incident was closed
+    outputs:
+    - contextPath: ExtraHop.TicketId
+      description: Demisto Incident ID successfully tracked to ExtraHop Detection
+      type: string
+    description: Link a Reveal(x) detection to a Demisto Investigation.
+  - name: extrahop-get-peers
+    arguments:
+    - name: ip_or_id
+      required: true
+      description: The IP Address or ExtraHop API ID of the source device to get peer
+        devices.
+    - name: query_from
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value is evaluated relative
+        to the current time. The default unit for a negative value is milliseconds,
+        but other units can be specified with one of the following unit suffixes:
+        ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      defaultValue: -30m
+    - name: query_until
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. 0 indicates the time of the request.
+        A negative value is evaluated relative to the current time. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+    - name: peer_role
+      auto: PREDEFINED
+      predefined:
+      - any
+      - client
+      - server
+      description: The role of the peer device in relation to the origin device.
+      defaultValue: any
+    - name: protocol
+      auto: PREDEFINED
+      predefined:
+      - any
+      - AAA
+      - ActiveMQ
+      - AJP
+      - amf
+      - CIFS
+      - DB
+      - DHCP
+      - DICOM
+      - DNS
+      - FIX
+      - FTP
+      - HL7
+      - HTTP
+      - IBMMQ
+      - ICA
+      - IKE/ISAKMP
+      - IMAP
+      - IPFIX
+      - IPsec NAT-T
+      - IRC
+      - iSCSI
+      - Kerberos
+      - L2TP
+      - LDAP
+      - lync-compress
+      - memcache
+      - Modbus
+      - MongoDB
+      - MSMQ
+      - MSN
+      - MSRPC
+      - NetFlow
+      - NFS
+      - NTP
+      - OpenVPN
+      - PCoIP
+      - Perforce
+      - POP3
+      - RDP
+      - Redis
+      - RFB
+      - RTCP
+      - RTP
+      - sFlow
+      - SIP
+      - SMPP
+      - SMTP
+      - SNMP
+      - SSH
+      - SSL
+      - Syslog
+      - TCP
+      - telnet
+      - UDP
+      - WebSocket
+      description: A filter to only return peers that the source device has communicated
+        with over this protocol. If no value is set, the object includes any protocol.
+      defaultValue: any
+    outputs:
+    - contextPath: ExtraHop.Device.Macaddr
+      description: The MAC Address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: The class of the device.
+      type: string
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: The role automatically detected by the ExtraHop.
+      type: string
+    - contextPath: ExtraHop.Device.ParentId
+      description: The ID of the parent device.
+      type: number
+    - contextPath: ExtraHop.Device.Vendor
+      description: The device vendor.
+      type: string
+    - contextPath: ExtraHop.Device.Analysis
+      description: The level of analysis preformed on the device.
+      type: string
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: The UUID given by the Discover appliance.
+      type: string
+    - contextPath: ExtraHop.Device.DefaultName
+      description: The default name of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DisplayName
+      description: The display name of device.
+      type: string
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Whether the device is on the advanced analysis whitelist.
+      type: boolean
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: number
+    - contextPath: ExtraHop.Device.IsL3
+      description: Indicates whether the device is a Layer 3 device.
+      type: boolean
+    - contextPath: ExtraHop.Device.Role
+      description: The role of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: The time that the device was discovered.
+      type: number
+    - contextPath: ExtraHop.Device.Id
+      description: The ID of the device.
+      type: number
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: The IPv4 address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.Vlanid
+      description: The ID of VLan.
+      type: number
+    - contextPath: ExtraHop.Device.Ipaddr6
+      description: The IPv6 address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.NodeId
+      description: The Node ID of the Discover appliance.
+      type: number
+    - contextPath: ExtraHop.Device.Description
+      description: A user customizable description of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DnsName
+      description: The DNS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.DhcpName
+      description: The DHCP name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.CdpName
+      description: The Cisco Discovery Protocol name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.NetbiosName
+      description: The NetBIOS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.Url
+      description: Link to the device details page in ExtraHop.
+      type: string
+    - contextPath: ExtraHop.Device.ClientProtocols
+      description: The list of protocols the peer device is communicating as a client.
+      type: string
+    - contextPath: ExtraHop.Device.ServerProtocols
+      description: The list of protocols the peer device is communicating as a server.
+      type: string
+    description: Get all peers for a device from Reveal(x).
+  - name: extrahop-get-protocols
+    arguments:
+    - name: ip_or_id
+      required: true
+      description: The IP Address or ExtraHop API ID of the device to get all active
+        network protocols.
+    - name: query_from
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value is evaluated relative
+        to the current time. The default unit for a negative value is milliseconds,
+        but other units can be specified with one of the following unit suffixes:
+        ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      defaultValue: -30m
+    - name: query_until
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. 0 indicates the time of the request.
+        A negative value is evaluated relative to the current time. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+    outputs:
+    - contextPath: ExtraHop.Device.Macaddr
+      description: The MAC Address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: The class of the device.
+      type: string
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: The role automatically detected by the ExtraHop.
+      type: string
+    - contextPath: ExtraHop.Device.ParentId
+      description: The ID of the parent device.
+      type: number
+    - contextPath: ExtraHop.Device.Vendor
+      description: The device vendor.
+      type: string
+    - contextPath: ExtraHop.Device.Analysis
+      description: The level of analysis preformed on the device.
+      type: string
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: The UUID given by the Discover appliance.
+      type: string
+    - contextPath: ExtraHop.Device.DefaultName
+      description: The default name of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DisplayName
+      description: The display name of device.
+      type: string
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Whether the device is on the advanced analysis whitelist.
+      type: boolean
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: number
+    - contextPath: ExtraHop.Device.IsL3
+      description: Indicates whether the device is a Layer 3 device.
+      type: boolean
+    - contextPath: ExtraHop.Device.Role
+      description: The role of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: The time that the device was discovered.
+      type: number
+    - contextPath: ExtraHop.Device.Id
+      description: The ID of the device.
+      type: number
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: The IPv4 address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.Vlanid
+      description: The ID of VLan.
+      type: number
+    - contextPath: ExtraHop.Device.Ipaddr6
+      description: The IPv6 address of the device.
+      type: string
+    - contextPath: ExtraHop.Device.NodeId
+      description: The Node ID of the Discover appliance.
+      type: number
+    - contextPath: ExtraHop.Device.Description
+      description: A user customizable description of the device.
+      type: string
+    - contextPath: ExtraHop.Device.DnsName
+      description: The DNS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.DhcpName
+      description: The DHCP name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.CdpName
+      description: The Cisco Discovery Protocol name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.NetbiosName
+      description: The NetBIOS name associated with the device.
+      type: string
+    - contextPath: ExtraHop.Device.Url
+      description: Link to the device details page in ExtraHop.
+      type: string
+    - contextPath: ExtraHop.Device.ClientProtocols
+      description: The list of protocols the peer device is communicating as a client.
+      type: string
+    - contextPath: ExtraHop.Device.ServerProtocols
+      description: The list of protocols the peer device is communicating as a server.
+      type: string
+    description: Get all active network protocols for a device from Reveal(x).
+  - name: extrahop-tag-devices
+    arguments:
+    - name: tag
+      description: The case-sensitive value of the tag.
+    - name: add
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        tag, comma separated.
+      isArray: true
+    - name: remove
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        remove the tag from, comma separated.
+      isArray: true
+    description: Add or remove a tag from devices in Reveal(x).
+  - name: extrahop-get-activity-map
+    arguments:
+    - name: ip_or_id
+      required: true
+      description: The IP Address or ExtraHop API ID of the source device to get an
+        activity map.
+    - name: time_interval
+      auto: PREDEFINED
+      predefined:
+      - 30 minutes
+      - 6 hours
+      - 1 day
+      - 1 week
+      description: The time interval of the live activity map, expressed as the "Last"
+        30 minutes. For example, specify a value of 30 minutes to get an activity
+        map showing the time range of the last 30 minutes. This field is ignored if
+        from_time and until_time are provided.
+      defaultValue: 30 minutes
+    - name: from_time
+      description: The beginning timestamp of a fixed time range the activity map
+        will display, expressed in seconds since the epoch.
+    - name: until_time
+      description: The ending timestamp of a fixed time range the activity map will
+        display, expressed in seconds since the epoch.
+    - name: peer_role
+      auto: PREDEFINED
+      predefined:
+      - any
+      - client
+      - server
+      description: The role of the peer devices in relation to the source device.
+        For example, specifying a peer_role of client will show All Clients communicating
+        with the source device. Additionally specifying a protocol of HTTP will result
+        in further filtering and only showing HTTP Clients communicating with the
+        source device.
+      defaultValue: any
+    - name: protocol
+      auto: PREDEFINED
+      predefined:
+      - any
+      - AAA
+      - ActiveMQ
+      - AJP
+      - amf
+      - CIFS
+      - DB
+      - DHCP
+      - DICOM
+      - DNS
+      - FIX
+      - FTP
+      - HL7
+      - HTTP
+      - IBMMQ
+      - ICA
+      - IKE/ISAKMP
+      - IMAP
+      - IPFIX
+      - IPsec NAT-T
+      - IRC
+      - iSCSI
+      - Kerberos
+      - L2TP
+      - LDAP
+      - lync-compress
+      - memcache
+      - Modbus
+      - MongoDB
+      - MSMQ
+      - MSN
+      - MSRPC
+      - NetFlow
+      - NFS
+      - NTP
+      - OpenVPN
+      - PCoIP
+      - Perforce
+      - POP3
+      - RDP
+      - Redis
+      - RFB
+      - RTCP
+      - RTP
+      - sFlow
+      - SIP
+      - SMPP
+      - SMTP
+      - SNMP
+      - SSH
+      - SSL
+      - Syslog
+      - TCP
+      - telnet
+      - UDP
+      - WebSocket
+      description: The protocol over which the source device is communicating. For
+        example, specifying a protocol of HTTP show only HTTP Clients and HTTP Servers
+        communicating with the source device. Additionally specifying a peer_role
+        of client will result in further filtering and only showing HTTP Clients communicating
+        with the source device.
+      defaultValue: any
+    outputs:
+    - contextPath: ExtraHop.ActivityMap
+      description: The link to a visual activity map in ExtraHop.
+      type: string
+    description: Get a link to a live activity map in Reveal(x).
+  - name: extrahop-search-packets
+    arguments:
+    - name: output
+      auto: PREDEFINED
+      predefined:
+      - pcap
+      - keylog_txt
+      - zip
+      description: The output format. A pcap file, A keylog.txt file that can be loaded
+        in wireshark to decode ssl packets, or a zip file containing both a packets.pcap
+        and keylog.txt.
+      defaultValue: pcap
+    - name: limit_bytes
+      description: The maximum number of bytes to return.
+      defaultValue: 10MB
+    - name: limit_search_duration
+      description: The maximum amount of time to run the packet search. The default
+        unit is milliseconds, but other units can be specified with a unit suffix.
+      defaultValue: 5m
+    - name: query_from
+      required: true
+      description: 'The beginning timestamp of the time range the search will include,
+        expressed in milliseconds since the epoch. A negative value specifies that
+        the search will begin with packets captured at a time in the past relative
+        to the current time. For example, specify -10m to begin the search with packets
+        captured 10 minutes before the time of the request. The default unit for a
+        negative value is milliseconds, but other units can be specified with one
+        of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+      defaultValue: -10m
+    - name: query_until
+      description: 'The ending timestamp of the time range the search will include,
+        expressed in milliseconds since the epoch. A 0 value specifies that the search
+        will end with packets captured at the time of the search. A negative value
+        specifies that the search will end with packets captured at a time in the
+        past relative to the current time. For example, specify -5m to end the search
+        with packets captured 5 minutes before the time of the request. The default
+        unit for a negative value is milliseconds, but other units can be specified
+        with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
+    - name: bpf
+      description: The Berkeley Packet Filter (BPF) syntax for the packet search.
+    - name: ip1
+      description: Returns packets sent to or received by the specified IP address.
+    - name: port1
+      description: Returns packets sent from or received on the specified port.
+    - name: ip2
+      description: Returns packets sent to or received by the specified IP address.
+    - name: port2
+      description: Returns packets sent from or received on the specified port.
+    description: Search for specific packets in Reveal(x).
+  dockerimage: demisto/python3:3.7.2.200
+  runonce: false
+tests:
+- ExtraHop_v2-Test

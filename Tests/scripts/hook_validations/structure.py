@@ -45,8 +45,10 @@ class StructureValidator(object):
         REPORT_REGEX,
         SCRIPT_PY_REGEX,
         SCRIPT_JS_REGEX,
+        SCRIPT_PS_REGEX,
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
+        INTEGRATION_PS_REGEX,
         REPUTATION_REGEX,
         BETA_INTEGRATION_YML_REGEX,
         BETA_INTEGRATION_REGEX,
@@ -66,6 +68,7 @@ class StructureValidator(object):
         CLASSIFIER_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
         INCIDENT_FIELD_REGEX: "incidentfield",
+        INDICATOR_FIELDS_REGEX: "incidentfield",
     }
 
     SCHEMAS_PATH = "Tests/schemas/"

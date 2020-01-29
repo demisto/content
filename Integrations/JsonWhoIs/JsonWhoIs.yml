@@ -1,0 +1,89 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: JsonWhoIs
+  version: -1
+configuration:
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Provides data enrichment for domains and IP addresses.
+display: JsonWhoIs
+name: JsonWhoIs
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: URL, IP, or domain to enrich.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for domains, URLs, and IP addresses.
+    execution: false
+    name: whois
+    outputs:
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The status of the domain.
+      type: Boolean
+    - contextPath: Domain.WHOIS.NameServers
+      description: Name servers.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: Creation of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: Date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: Expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: Registrant name
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: Registrant email address.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: Registrant phone number.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: Registrar name.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Url
+      description: Registrar email address.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Organization
+      description: Registrar organization name.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Id
+      description: Registrar ID.
+      type: Number
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: Admin name.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: Admin email address.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: Admin phone number.
+      type: String
+  dockerimage: demisto/python3:3.7.3.286
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- JsonWhoIs-Test

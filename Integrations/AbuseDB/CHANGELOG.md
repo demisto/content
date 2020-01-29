@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added support to check for IP batch addresses.
 
 ## [19.10.1] - 2019-10-15
 -

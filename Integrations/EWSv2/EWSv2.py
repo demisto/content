@@ -13,7 +13,9 @@ import warnings
 import subprocess
 import email
 from requests.exceptions import ConnectionError
+from collections import deque
 
+from multiprocessing import Process
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
@@ -85,7 +87,7 @@ LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
 
 ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
-                         'toRecipients', ]
+                         'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
 USE_PROXY = demisto.params().get('proxy', False)
@@ -103,6 +105,8 @@ BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
+MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
+LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
 [CmdletBinding()]
@@ -326,6 +330,26 @@ if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
     raise Exception(PUBLIC_FOLDERS_ERROR)
 
 
+# NOTE: Same method used in EWSMailSender
+# If you are modifying this probably also need to modify in the other file
+def exchangelib_cleanup():
+    key_protocols = exchangelib.protocol.CachingProtocol._protocol_cache.items()
+    try:
+        exchangelib.close_connections()
+    except Exception as ex:
+        demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
+    for key, protocol in key_protocols:
+        try:
+            if "thread_pool" in protocol.__dict__:
+                demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
+                protocol.thread_pool.terminate()
+                del protocol.__dict__["thread_pool"]
+            else:
+                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+        except Exception as ex:
+            demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
+
+
 # Prep Functions
 def get_auth_method(auth_method):
     auth_method = auth_method.lower()
@@ -506,6 +530,7 @@ log_handler = None
 def start_logging():
     global log_stream
     global log_handler
+    logging.raiseExceptions = False
     if log_stream is None:
         log_stream = StringIO()
         log_handler = logging.StreamHandler(stream=log_stream)
@@ -873,10 +898,14 @@ def get_last_run():
         last_run = {
             LAST_RUN_TIME: None,
             LAST_RUN_FOLDER: FOLDER_NAME,
-            LAST_RUN_IDS: None
+            LAST_RUN_IDS: []
         }
     if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] is not None:
         last_run[LAST_RUN_TIME] = EWSDateTime.from_string(last_run[LAST_RUN_TIME])
+
+    # In case we have existing last_run data
+    if last_run.get(LAST_RUN_IDS) is None:
+        last_run[LAST_RUN_IDS] = []
 
     return last_run
 
@@ -890,6 +919,8 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
             qs = qs.filter(datetime_received__gte=last_10_min)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
+    qs = qs.filter().order_by('datetime_received')
+
     result = qs.all()
     result = [x for x in result if isinstance(x, Message)]
     if exclude_ids and len(exclude_ids) > 0:
@@ -1150,25 +1181,32 @@ def parse_incident_from_item(item, is_fetch):
 
 
 def fetch_emails_as_incidents(account_email, folder_name):
-    start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
     last_run = get_last_run()
 
     try:
         account = get_account(account_email)
         last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = []
+        ids = deque(last_run.get(LAST_RUN_IDS, []), maxlen=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
+        incident = {}  # type: Dict[Any, Any]
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
 
+                if len(incidents) >= MAX_FETCH:
+                    break
+
+        last_run_time = incident.get('occurred', last_run.get(LAST_RUN_TIME))
+        if isinstance(last_run_time, EWSDateTime):
+            last_run_time = last_run_time.ewsformat()
+
         new_last_run = {
-            LAST_RUN_TIME: start_time.ewsformat(),
+            LAST_RUN_TIME: last_run_time,
             LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: ids,
+            LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0
         }
 
@@ -1923,7 +1961,7 @@ def encode_and_submit_results(obj):
     demisto.results(str_to_unicode(obj))
 
 
-def main():
+def sub_main():
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
     global config, credentials
     EWS_SERVER = demisto.params()['ewsServer']
@@ -2068,6 +2106,7 @@ def main():
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
     finally:
+        exchangelib_cleanup()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
@@ -2076,6 +2115,29 @@ def main():
                 demisto.error("EWS: unexpected exception when trying to remove log handler: {}".format(ex))
 
 
+def process_main():
+    """setup stdin to fd=0 so we can read from the server"""
+    sys.stdin = os.fdopen(0, "r")
+    sub_main()
+
+
+def main():
+    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+    # collector. `separate_process` flag will run the integration on a separate process that will prevent
+    # memory leakage.
+    separate_process = demisto.params().get("separate_process", False)
+    demisto.debug("Running as separate_process: {}".format(separate_process))
+    if separate_process:
+        try:
+            p = Process(target=process_main)
+            p.start()
+            p.join()
+        except Exception as ex:
+            demisto.error("Failed starting Process: {}".format(ex))
+    else:
+        sub_main()
+
+
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins"):
     main()

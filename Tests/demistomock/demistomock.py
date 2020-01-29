@@ -379,6 +379,8 @@ exampleDemistoUrls = {
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
 
+callingContext = {}
+
 
 def params():
     return {}
@@ -553,3 +555,14 @@ def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
 def demistoVersion():
     return {}
 
+def integrationInstance():
+    return ""
+
+def createIndicators(indicators_batch):
+    return ""
+
+def findIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '', value = ''):
+    return {}
+
+def getIndexHash():
+    return ''

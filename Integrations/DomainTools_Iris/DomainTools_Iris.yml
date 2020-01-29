@@ -365,7 +365,6 @@ script:
     execution: false
     name: domaintoolsiris-analytics
     outputs:
-    outputs:
     - contextPath: Domain.Name
       description: The name of the domain.
       type: String

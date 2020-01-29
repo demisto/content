@@ -215,7 +215,7 @@ tasks:
       comment:
         simple: Malicious website for test
       indicator:
-        simple: http://tpb.crushus.com/www.paperstreetcash.com
+        simple: http://www.desktop-style.de
       miner:
         simple: Malicious
     reputationcalc: 1

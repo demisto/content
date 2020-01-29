@@ -128,6 +128,6 @@ subtype: python3
 runas: DBotWeakRole
 runonce: false
 tests:
-- Extract Indicators From File - test
+- Extract Indicators From File - Generic v2 - Test
 - ReadPDFFileV2-Test
 fromversion: 4.1.0

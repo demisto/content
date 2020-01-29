@@ -777,7 +777,7 @@ def update_aps(setting_name, auto_provision):
     cmd_url = "/providers/Microsoft.Security/autoProvisioningSettings/{}?api-version={}".format(
         setting_name, APS_API_VERSION
     )
-    data = {"properties": {"auto_provision": auto_provision}}
+    data = {"properties": {"autoProvision": auto_provision}}
     response = http_request("PUT", cmd_url, body=data)
     return response
 

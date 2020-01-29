@@ -1,14 +1,16 @@
 id: Intezer Testing v2
 version: -1
+contentitemfields:
+  propagationLabels: []
 name: Intezer Testing v2
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2487f96c-2e95-443c-8183-94c9d09335a1
+    taskid: 360de55c-1b3f-43f5-8c66-8fa062b8dfe4
     type: start
     task:
-      id: 2487f96c-2e95-443c-8183-94c9d09335a1
+      id: 360de55c-1b3f-43f5-8c66-8fa062b8dfe4
       version: -1
       name: ""
       iscommand: false
@@ -20,57 +22,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 634640fd-1ce1-423a-86d4-32a5720855a4
-    type: regular
-    task:
-      id: 634640fd-1ce1-423a-86d4-32a5720855a4
-      version: -1
-      name: Verify existing on Intezer
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      expectedValue:
-        simple: "true"
-      fields: {}
-      path:
-        simple: File.ExistsInIntezer
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
   "4":
     id: "4"
-    taskid: 84a70d74-1e62-4a94-8c28-a4bdb3239f78
+    taskid: f33d8d13-cddc-4e3c-8bc2-23a126b4edf7
     type: title
     task:
-      id: 84a70d74-1e62-4a94-8c28-a4bdb3239f78
+      id: f33d8d13-cddc-4e3c-8bc2-23a126b4edf7
       version: -1
       name: Success
       type: title
@@ -80,83 +45,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4130
+          "x": 265,
+          "y": 3110
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 29d974db-1cc9-4bf5-8787-ab39fb4d2419
-    type: regular
-    task:
-      id: 29d974db-1cc9-4bf5-8787-ab39fb4d2419
-      version: -1
-      name: Verify Hash on DBot score
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      expectedValue:
-        simple: ${inputs.SHA256}
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 6ea918e0-0f7c-4626-88cf-47868f17e253
-    type: regular
-    task:
-      id: 6ea918e0-0f7c-4626-88cf-47868f17e253
-      version: -1
-      name: Verify Vendor
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      expectedValue:
-        simple: Intezer
-      fields: {}
-      path:
-        simple: DBotScore.Vendor
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
   "7":
     id: "7"
-    taskid: 9448f5f0-7a3e-4c62-8e61-7ccbcb1a9c58
+    taskid: 078b4a03-497e-423c-8314-d11a78cb4e9b
     type: regular
     task:
-      id: 9448f5f0-7a3e-4c62-8e61-7ccbcb1a9c58
+      id: 078b4a03-497e-423c-8314-d11a78cb4e9b
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -174,51 +76,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 340
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 355954a6-91d8-4982-8adc-63dde958380a
-    type: regular
-    task:
-      id: 355954a6-91d8-4982-8adc-63dde958380a
-      version: -1
-      name: Verify Hash on File
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      expectedValue:
-        simple: ${inputs.SHA256}
-      fields: {}
-      path:
-        simple: File.SHA256
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 865
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
   "9":
     id: "9"
-    taskid: b0c89952-90fb-44f0-81cc-5361574df0fc
+    taskid: baf1b65e-47e2-4037-8be7-0e6b1398df28
     type: title
     task:
-      id: b0c89952-90fb-44f0-81cc-5361574df0fc
+      id: baf1b65e-47e2-4037-8be7-0e6b1398df28
       version: -1
       name: File upload
       type: title
@@ -231,19 +102,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1390
+          "x": 265,
+          "y": 880
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "10":
     id: "10"
-    taskid: 9616cb80-e30c-455c-8f58-ddfd2f09c628
+    taskid: e1aeceb2-ac93-4eff-8bfc-178ad3614b4c
     type: title
     task:
-      id: 9616cb80-e30c-455c-8f58-ddfd2f09c628
+      id: e1aeceb2-ac93-4eff-8bfc-178ad3614b4c
       version: -1
       name: Analyze file by SHA256
       type: title
@@ -256,19 +128,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "11":
     id: "11"
-    taskid: 286b08a3-2d1c-4a7b-8bcb-2f7ccc931f89
+    taskid: e7ebec9c-acaf-4245-8b86-49114d59116c
     type: regular
     task:
-      id: 286b08a3-2d1c-4a7b-8bcb-2f7ccc931f89
+      id: e7ebec9c-acaf-4245-8b86-49114d59116c
       version: -1
       name: Upload Sample File
       scriptName: http
@@ -297,19 +170,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1710
+          "x": 265,
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "13":
     id: "13"
-    taskid: b9da384d-a284-4d64-8338-f7884398ba36
+    taskid: d184abc6-dc4e-4532-85c8-36a408aa3c58
     type: regular
     task:
-      id: b9da384d-a284-4d64-8338-f7884398ba36
+      id: d184abc6-dc4e-4532-85c8-36a408aa3c58
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -327,63 +201,28 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1535
+          "x": 265,
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 4a61c83d-5238-4a9b-87c5-a7cca9dab33d
-    type: condition
-    task:
-      id: 4a61c83d-5238-4a9b-87c5-a7cca9dab33d
-      version: -1
-      name: Verify Hash on File
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.SHA256
-            iscontext: true
-          right:
-            value:
-              simple: fcb42f8e4ccb55ee2920da64c7834575875012d89ff260ee318db5054e6e1019
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
   "15":
     id: "15"
-    taskid: 8ade153f-7ccd-4350-8068-59e2016729f3
+    taskid: 9b540730-f1d7-41d9-84f3-ce4d96a83f70
     type: condition
     task:
-      id: 8ade153f-7ccd-4350-8068-59e2016729f3
+      id: 9b540730-f1d7-41d9-84f3-ce4d96a83f70
       version: -1
-      name: Verify Hash on DBot score
+      name: 'Verify outputs for: Intezer - Analyze Uploaded file'
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -396,54 +235,39 @@ tasks:
           right:
             value:
               simple: fcb42f8e4ccb55ee2920da64c7834575875012d89ff260ee318db5054e6e1019
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Intezer
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: fcb42f8e4ccb55ee2920da64c7834575875012d89ff260ee318db5054e6e1019
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2235
+          "x": 265,
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: ad9e20e8-e784-4ea4-824c-7583393bf588
-    type: regular
-    task:
-      id: ad9e20e8-e784-4ea4-824c-7583393bf588
-      version: -1
-      name: Verify Vendor
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      expectedValue:
-        simple: Intezer
-      fields: {}
-      path:
-        simple: DBotScore.Vendor
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
   "18":
     id: "18"
-    taskid: 0bd7de63-c552-4a5a-85b4-fcdd30cafb13
+    taskid: ca3214bd-7360-4ba3-8b4e-d55618610f7c
     type: regular
     task:
-      id: 0bd7de63-c552-4a5a-85b4-fcdd30cafb13
+      id: ca3214bd-7360-4ba3-8b4e-d55618610f7c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -465,19 +289,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2585
+          "x": 265,
+          "y": 1740
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "21":
     id: "21"
-    taskid: cdb82b54-8aff-452e-8dd0-6dd8056775f2
+    taskid: 61153f5f-326c-42fb-80f7-e513c54e8987
     type: condition
     task:
-      id: cdb82b54-8aff-452e-8dd0-6dd8056775f2
+      id: 61153f5f-326c-42fb-80f7-e513c54e8987
       version: -1
       name: test file with sha1 input
       type: condition
@@ -501,22 +326,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3080
+          "x": 265,
+          "y": 2235
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "22":
     id: "22"
-    taskid: 5a0ca5d7-0dda-4027-8593-540097281832
+    taskid: 21ef67de-6d2f-47f3-88a1-7464efddec1c
     type: regular
     task:
-      id: 5a0ca5d7-0dda-4027-8593-540097281832
+      id: 21ef67de-6d2f-47f3-88a1-7464efddec1c
       version: -1
       name: file_command_enrichment_test_script_helper
-      scriptName: file_command_enrichment_test_script_helper
+      script: file_command_enrichment_test_script_helper
       type: regular
       iscommand: false
       brand: ""
@@ -529,19 +355,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3430
+          "x": 265,
+          "y": 2585
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "23":
     id: "23"
-    taskid: b68b20d2-408c-4736-88da-fcec982e3bc2
+    taskid: cb7a8ab0-a6e5-47f4-8bf8-e9a40fc5387f
     type: title
     task:
-      id: b68b20d2-408c-4736-88da-fcec982e3bc2
+      id: cb7a8ab0-a6e5-47f4-8bf8-e9a40fc5387f
       version: -1
       name: non supported hash values
       type: title
@@ -554,19 +381,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2760
+          "x": 265,
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "24":
     id: "24"
-    taskid: f915948c-7157-44da-856b-e619d0355a2b
+    taskid: 174e28a8-3aef-4c81-8301-12c5b03386d6
     type: regular
     task:
-      id: f915948c-7157-44da-856b-e619d0355a2b
+      id: 174e28a8-3aef-4c81-8301-12c5b03386d6
       version: -1
       name: deleteContext
       description: Delete field from context
@@ -588,19 +416,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3255
+          "x": 265,
+          "y": 2410
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "25":
     id: "25"
-    taskid: dcde0c7b-27c0-437e-87ab-dd2991cc557f
+    taskid: 250fd4f4-a672-4886-8780-251faf91e0c9
     type: condition
     task:
-      id: dcde0c7b-27c0-437e-87ab-dd2991cc557f
+      id: 250fd4f4-a672-4886-8780-251faf91e0c9
       version: -1
       name: Test enrichment with sha256 exist
       type: condition
@@ -639,21 +468,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 3800
+          "x": 50,
+          "y": 2935
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "26":
     id: "26"
-    taskid: 284fd720-b92b-4620-8e41-4c30fc37d41c
+    taskid: 892ff465-c559-414d-83b9-ad078a4b31c1
     type: condition
     task:
-      id: 284fd720-b92b-4620-8e41-4c30fc37d41c
+      id: 892ff465-c559-414d-83b9-ad078a4b31c1
       version: -1
-      name: Test enrichment of md5 does not exist
+      name: Test enrichment of md5 exist
       type: condition
       iscommand: false
       brand: ""
@@ -664,7 +494,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotExists
+      - - operator: isExists
           left:
             value:
               complex:
@@ -678,6 +508,14 @@ tasks:
                     right:
                       value:
                         simple: 8cbf90aeab2c93b2819fcfd6262b2cdb
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387
                 - - operator: isEqualString
                     left:
                       value:
@@ -690,30 +528,31 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 3800
+          "x": 480,
+          "y": 2935
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "28":
     id: "28"
-    taskid: 6340a990-dd6f-4b0f-8f81-335595797069
+    taskid: 3c374330-d84f-4b1e-85c3-ec1415bce2a8
     type: playbook
     task:
-      id: 6340a990-dd6f-4b0f-8f81-335595797069
+      id: 3c374330-d84f-4b1e-85c3-ec1415bce2a8
       version: -1
       name: Intezer - Analyze by hash
-      description: Analyze the given hash on Intezer Analyze and enrich the file reputation.
-        Supports SHA256, SHA1 and MD5.
+      description: Analyze the given file hash on Intezer Analyze and enrich the file
+        reputation. Supports SHA256, SHA1, and MD5.
       playbookName: Intezer - Analyze by hash
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "33"
     scriptarguments:
       Interval:
         simple: "1"
@@ -726,22 +565,24 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 515
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "29":
     id: "29"
-    taskid: 580e46d1-90e5-4a6e-850f-3af8ce0c4cef
+    taskid: d2b0b4fd-5e76-4fa9-83fe-4fdd15716cff
     type: playbook
     task:
-      id: 580e46d1-90e5-4a6e-850f-3af8ce0c4cef
+      id: d2b0b4fd-5e76-4fa9-83fe-4fdd15716cff
       version: -1
       name: Intezer - Analyze Uploaded file
       playbookName: Intezer - Analyze Uploaded file
@@ -750,24 +591,25 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1885
+          "x": 265,
+          "y": 1390
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "30":
     id: "30"
-    taskid: e98f3da2-7db4-4067-85ed-d85b74356f87
+    taskid: e8256cbf-34e0-45ee-803f-64765d269e15
     type: playbook
     task:
-      id: e98f3da2-7db4-4067-85ed-d85b74356f87
+      id: e8256cbf-34e0-45ee-803f-64765d269e15
       version: -1
       name: Intezer - Analyze by hash
       playbookName: Intezer - Analyze by hash
@@ -789,22 +631,24 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2905
+          "x": 265,
+          "y": 2060
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "31":
     id: "31"
-    taskid: 1236be44-c19b-4566-8cdd-753cb8b02501
+    taskid: 4801e045-3db8-4af6-80be-ba8f0360abe0
     type: playbook
     task:
-      id: 1236be44-c19b-4566-8cdd-753cb8b02501
+      id: 4801e045-3db8-4af6-80be-ba8f0360abe0
       version: -1
       name: Intezer - Analyze by hash
       playbookName: Intezer - Analyze by hash
@@ -828,22 +672,24 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 3610
+          "x": 50,
+          "y": 2760
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "32":
     id: "32"
-    taskid: f66221bf-50b9-4843-8882-8380e71e9e03
+    taskid: 0ffdc9f2-f684-482e-8727-1bafc0741def
     type: playbook
     task:
-      id: f66221bf-50b9-4843-8882-8380e71e9e03
+      id: 0ffdc9f2-f684-482e-8727-1bafc0741def
       version: -1
       name: Intezer - Analyze by hash
       playbookName: Intezer - Analyze by hash
@@ -867,24 +713,122 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 3610
+          "x": 480,
+          "y": 2760
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+  "33":
+    id: "33"
+    taskid: 143bce85-1e71-41b3-8db6-1e54ba193b73
+    type: condition
+    task:
+      id: 143bce85-1e71-41b3-8db6-1e54ba193b73
+      version: -1
+      name: 'Verify outputs for: Intezer - Analyze by hash'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: File
+                accessor: ExistsInIntezer
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: ${inputs.SHA256}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: ${inputs.SHA256}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Intezer
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "34":
+    id: "34"
+    taskid: d7a73ac1-c3ba-4a4a-8dcb-a60b066fa2db
+    type: regular
+    task:
+      id: d7a73ac1-c3ba-4a4a-8dcb-a60b066fa2db
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Verification of outputs for Intezer - Anlayze By hash PB failed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4145,
-        "width": 820,
-        "x": -160,
+        "height": 3125,
+        "width": 1025,
+        "x": 50,
         "y": 50
       }
     }
@@ -895,4 +839,6 @@ inputs:
     simple: fcb42f8e4ccb55ee2920da64c7834575875012d89ff260ee318db5054e6e1019
   required: false
   description: ""
+  playbookInputQuery: null
 outputs: []
+sourceplaybookid: Intezer Testing v2

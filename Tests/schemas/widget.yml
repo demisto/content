@@ -2,30 +2,30 @@ type: map
 mapping:
   id:
     type: str
-    required: yes
+    required: True
   version:
     type: number
-    required: yes
+    required: True
   fromVersion:
     type: str
   toVersion:
     type: str
   name:
     type: str
-    required: yes
+    required: True
   description:
     type: str
-    required: yes
+    required: True
   dataType:
     type: str
   widgetType:
     type: str
-    required: yes
+    required: True
   query:
     type: str
   isPredefined:
     type: bool
-    required: yes
+    required: True
     enum: [true]
   dateRange:
     type: map

@@ -59,12 +59,12 @@ configuration:
     defaultvalue: "30"
     type: 0
     required: false
-  - display: Trust any certificate (unsecure)
+  - display: Trust any certificate (not secure)
     name: insecure
     defaultvalue: "false"
     type: 8
     required: false
-  - display: Use system proxy
+  - display: Use system proxy settings
     name: proxy
     required: false
     type: 8
@@ -102,52 +102,52 @@ script:
             - "false"
           description: Returns all fields of a report.
       outputs:
-        - contextPath: Report.ID
+        - contextPath: Cofense.Report.ID
           description: ID number of the report.
-        - contextPath: Report.EmailAttachments
+        - contextPath: Cofense.Report.EmailAttachments
           description: Email attachments.
-        - contextPath: Report.EmailAttachments.id
+        - contextPath: Cofense.Report.EmailAttachments.id
           description: Email attachment ID.
-        - contextPath: Report.Tags
+        - contextPath: Cofense.Report.Tags
           description: Report tags.
           type: string
-        - contextPath: Report.ClusterId
+        - contextPath: Cofense.Report.ClusterId
           description: Cluster ID number.
           type: number
-        - contextPath: Report.CategoryId
+        - contextPath: Cofense.Report.CategoryId
           description: Report category.
           type: number
-        - contextPath: Report.CreatedAt
+        - contextPath: Cofense.Report.CreatedAt
           description: Report creation date.
           type: date
-        - contextPath: Report.ReportedAt
+        - contextPath: Cofense.Report.ReportedAt
           description: Reporting time.
           type: string
-        - contextPath: Report.MatchPriority
+        - contextPath: Cofense.Report.MatchPriority
           description: The highest match priority based on rule hits for the report.
           type: number
-        - contextPath: Report.ReporterId
+        - contextPath: Cofense.Report.ReporterId
           description: Reporter ID.
           type: number
-        - contextPath: Report.Location
+        - contextPath: Cofense.Report.Location
           description: Location of the report.
           type: string
-        - contextPath: Report.Reporter
+        - contextPath: Cofense.Report.Reporter
           description: Reporter email address.
           type: string
-        - contextPath: Report.SuspectFromAddress
+        - contextPath: Cofense.Report.SuspectFromAddress
           description: Suspect from address.
           type: string
-        - contextPath: Report.ReportSubject
+        - contextPath: Cofense.Report.ReportSubject
           description: Report subject.
           type: string
-        - contextPath: Report.ReportBody
+        - contextPath: Cofense.Report.ReportBody
           description: Report body.
           type: string
-        - contextPath: Report.Md5
+        - contextPath: Cofense.Report.Md5
           description: MD5 hash of the file.
           type: number
-        - contextPath: Report.Sha256
+        - contextPath: Cofense.Report.Sha256
           description: SHA256 hash of the file.
       description: 'Runs a query for reports.'
     - name: cofense-get-attachment
@@ -156,25 +156,25 @@ script:
           required: true
           description: ID of the attachment.
       outputs:
-        - contextPath: Attachment.ID
+        - contextPath: Cofense.Attachment.ID
           description: The ID number of the report that contains the attachment.
           type: string
-        - contextPath: File.Size
+        - contextPath: Cofense.File.Size
           description: The date and time (in UTC) when the threat was found on the device.
           type: string
-        - contextPath: File.EntryID
+        - contextPath: Cofense.File.EntryID
           description: The file path where the threat was found on the device.
           type: string
-        - contextPath: File.Name
+        - contextPath: Cofense.File.Name
           description: The name of the threat.
           type: string
-        - contextPath: File.SHA1
+        - contextPath: Cofense.File.SHA1
           description: The SHA1 hash of the threat.
           type: string
-        - contextPath: File.SHA256
+        - contextPath: Cofense.File.SHA256
           description: The SHA256 hash of the threat.
           type: string
-        - contextPath: File.MD5
+        - contextPath: Cofense.File.MD5
           description: The MD5 hash of the threat.
           type: string
       description: 'Retrieves an attachment by the attachment ID number. '
@@ -184,9 +184,9 @@ script:
           required: true
           description: ID of the reporter.
       outputs:
-        - contextPath: Report.ID
+        - contextPath: Cofense.Report.ID
           description: ID of the reporter.
-        - contextPath: Report.Email
+        - contextPath: Cofense.Report.Email
           description: Reporter email address.
       description: Retrieves Email address of the reporter by ID
     - name: cofense-get-report-by-id
@@ -195,52 +195,52 @@ script:
           required: true
           description: ID of the report
       outputs:
-        - contextPath: Report.ID
+        - contextPath: Cofense.Report.ID
           description: ID number of the report
-        - contextPath: Report.EmailAttachments
+        - contextPath: Cofense.Report.EmailAttachments
           description: Email attachments.
-        - contextPath: Report.EmailAttachments.id
+        - contextPath: Cofense.Report.EmailAttachments.id
           description: Email attachment ID.
-        - contextPath: Report.Tags
+        - contextPath: Cofense.Report.Tags
           description: Report tags.
           type: string
-        - contextPath: Report.ClusterId
+        - contextPath: Cofense.Report.ClusterId
           description: Cluster ID number.
           type: number
-        - contextPath: Report.CategoryId
+        - contextPath: Cofense.Report.CategoryId
           description: Report category.
           type: number
-        - contextPath: Report.CreatedAt
+        - contextPath: Cofense.Report.CreatedAt
           description: Report creation date.
           type: date
-        - contextPath: Report.ReportedAt
+        - contextPath: Cofense.Report.ReportedAt
           description: Reporting time.
           type: string
-        - contextPath: Report.MatchPriority
+        - contextPath: Cofense.Report.MatchPriority
           description: The highest match priority based on rule hits for the report.
           type: number
-        - contextPath: Report.ReporterId
+        - contextPath: Cofense.Report.ReporterId
           description: Reporter ID.
           type: number
-        - contextPath: Report.Location
+        - contextPath: Cofense.Report.Location
           description: Location of the report.
           type: string
-        - contextPath: Report.Reporter
+        - contextPath: Cofense.Report.Reporter
           description: Reporter email address.
           type: string
-        - contextPath: Report.SuspectFromAddress
+        - contextPath: Cofense.Report.SuspectFromAddress
           description: Suspect from address.
           type: string
-        - contextPath: Report.ReportSubject
+        - contextPath: Cofense.Report.ReportSubject
           description: Report subject.
           type: string
-        - contextPath: Report.ReportBody
+        - contextPath: Cofense.Report.ReportBody
           description: Report body.
           type: string
-        - contextPath: Report.Md5
+        - contextPath: Cofense.Report.Md5
           description: MD5 hash of the file.
           type: number
-        - contextPath: Report.Sha256
+        - contextPath: Cofense.Report.Sha256
           description: SHA256 hash of the file.
       description: 'Retrieves a report by the report ID number. '
   dockerimage: demisto/python3:3.7.2.200

@@ -3,6 +3,11 @@ commonfields:
   version: -1
 name: SimpleRequestGetter
 script: |-
+  from urllib3 import disable_warnings
+
+  # disable insecure warnings
+  disable_warnings()
+  
   entries = demisto.executeCommand("getEntries", {})
   req_log_entries = []
   for entry in entries:

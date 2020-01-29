@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 from cStringIO import StringIO
 import logging
 import warnings
@@ -9,7 +10,7 @@ import traceback
 import getpass
 
 
-# work arround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
+# workaround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
 class FixGetPass(object):
     def __init__(self):
         self.getpass_getuser_org = getpass.getuser
@@ -52,11 +53,12 @@ def start_logging():
         logger.setLevel(logging.DEBUG)
 
 
+import exchangelib  # noqa: E402
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
     EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
-    BASIC, DIGEST, Version, DELEGATE, close_connections  # noqa: E402
+    BASIC, DIGEST, Version, DELEGATE  # noqa: E402
 
 IS_TEST_MODULE = False
 
@@ -81,6 +83,26 @@ VERSIONS = {
     '2013': EXCHANGE_2013,
     '2016': EXCHANGE_2016
 }
+
+
+# NOTE: Same method used in EWSv2
+# If you are modifying this probably also need to modify in the other file
+def exchangelib_cleanup():
+    key_protocols = exchangelib.protocol.CachingProtocol._protocol_cache.items()
+    try:
+        exchangelib.close_connections()
+    except Exception as ex:
+        demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
+    for key, protocol in key_protocols:
+        try:
+            if "thread_pool" in protocol.__dict__:
+                demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
+                protocol.thread_pool.terminate()
+                del protocol.__dict__["thread_pool"]
+            else:
+                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+        except Exception as ex:
+            demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
 
 def get_account(account_email):
@@ -197,7 +219,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject,
+        'subject': subject.encode('utf-8'),
         'attachments': attachments_names
     }
 
@@ -259,7 +281,7 @@ config = None  # type: ignore
 
 
 def main():
-    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream
+    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream, config
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
@@ -271,21 +293,12 @@ def main():
 
     try:
         start_logging()
-        global config
         config = prepare()
         args = prepare_args(demisto.args())
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'send-mail':
             demisto.results(send_email(**args))
-        try:
-            # we don't want to leave cached connection arround as EWS limits the number of connections
-            # in a very aggressive way. 12 seems to be the default limit
-            # see: https://blogs.msdn.microsoft.com/webdav_101/2018/06/02/you-are-doing-too-much-at-one-time-ewsmaxconcurrency-too-many-concurrent-connections-opened/ # noqa
-            close_connections()
-        except Exception as ex:
-            demisto.info("Failed close_connections (shouldn't happen). Ignoring exception: {}".format(ex))
-
     except Exception as e:
         import time
 
@@ -315,6 +328,7 @@ def main():
         else:
             return_error(error_message + '\n' + debug_log)
     finally:
+        exchangelib_cleanup()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore

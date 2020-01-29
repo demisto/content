@@ -159,12 +159,15 @@
     {
       "id": "domainRep",
       "version": -1,
-      "regex": "",
-      "reputationScriptName": "",
+      "regex": "(?i)(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?|\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+      "reputationCommand": "domain",
       "details": "Domain",
+      "contextValue": "Name",
+      "contextPath": "Domain(val.Name && val.Name === obj.Name)",
       "enhancementScriptNames": [
         "DomainReputation"
       ],
+      "formatScript": "ExtractFQDNFromUrlAndEmail",
       "toVersion": "4.5.0"
     },
     {

@@ -487,7 +487,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
             else:
                 return res
         except json.decoder.JSONDecodeError:
-            return_error(f'Failed to parse json object from response: {res.content}')
+            return_error(f'Failed to parse json object from response: {res.content!r}')
 
     except requests.exceptions.ConnectTimeout:
         err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \

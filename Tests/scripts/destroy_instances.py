@@ -37,7 +37,7 @@ def main():
         except subprocess.CalledProcessError as exc:
             print(exc.output)
 
-        if not os.path.isfile("./Tests/is_build_failed_{}.txt".format(env["Role"].replace(' ', ''))):
+        if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
                 print_error(rminstance)

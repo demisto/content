@@ -2,7 +2,8 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Crowdstrike",
-		"Traps"
+		"Traps",
+		"Malware"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

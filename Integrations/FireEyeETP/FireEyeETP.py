@@ -99,7 +99,7 @@ def return_error_entry(message):
 
     entry = {
         'Type': entryTypes['error'],
-        'Contents': message,
+        'Contents': str(message),
         'ContentsFormat': formats['text'],
     }
     demisto.results(entry)

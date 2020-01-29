@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import json
 import requests
-from base64 import b64encode
+from requests_oauthlib import OAuth1
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -15,41 +15,30 @@ BASE_URL = demisto.getParam('url').rstrip('/') + '/'
 API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
-IS_OAUTH = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
-IS_BASIC = USERNAME and (PASSWORD or API_TOKEN)
-
-# if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
-if not IS_OAUTH and not IS_BASIC:
-    return_error('Please provide Authorization information, Basic(userName & password / API-token) or OAuth1.0')
-B64_AUTH = (b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ascii'))).decode('ascii')
-BASIC_AUTH = 'Basic ' + B64_AUTH
-OAUTH = {
-    "ConsumerKey": demisto.getParam('consumerKey'),
-    "AccessToken": demisto.getParam('accessToken'),
-    "PrivateKey": demisto.getParam('privateKey')
-} if IS_OAUTH else ''
 
 HEADERS = {
     'Content-Type': 'application/json',
 }
-if not IS_OAUTH:
-    HEADERS['Authorization'] = BASIC_AUTH
 
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
-                       " longer supported, please use an API Token or OAuth"
+                       " longer supported, please use an API Token or OAuth 1.0"
 USE_SSL = not demisto.params().get('insecure', False)
 
 
 def jira_req(method, resource_url, body='', link=False):
     url = resource_url if link else (BASE_URL + resource_url)
-    result = requests.request(
-        method=method,
-        url=url,
-        data=body,
-        headers=HEADERS,
-        verify=USE_SSL,
-        params=OAUTH,
-    )
+    try:
+        result = requests.request(
+            method=method,
+            url=url,
+            data=body,
+            headers=HEADERS,
+            verify=USE_SSL,
+            auth=get_auth(),
+        )
+    except ValueError:
+        raise ValueError("Could not deserialize privateKey")
+
     if not result.ok:
         demisto.debug(result.text)
         try:
@@ -64,7 +53,7 @@ def jira_req(method, resource_url, body='', link=False):
             demisto.debug(str(ve))
             if result.status_code == 401:
                 return_error('Unauthorized request, please check authentication related parameters.'
-                             f'{BASIC_AUTH_ERROR_MSG if IS_BASIC else ""}')
+                             f'{BASIC_AUTH_ERROR_MSG}')
             elif result.status_code == 404:
                 return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
             else:
@@ -72,6 +61,38 @@ def jira_req(method, resource_url, body='', link=False):
                     f"Failed reaching the server. status code: {result.status_code}")
 
     return result
+
+
+def generate_oauth1():
+    oauth = OAuth1(
+        client_key=demisto.getParam('consumerKey'),
+        rsa_key=demisto.getParam('privateKey'),
+        signature_method='RSA-SHA1',
+        resource_owner_key=demisto.getParam('accessToken'),
+    )
+    return oauth
+
+
+def generate_basic_oauth():
+    return USERNAME, (API_TOKEN or PASSWORD)
+
+
+def get_auth():
+    is_basic = USERNAME and (PASSWORD or API_TOKEN)
+    is_oauth1 = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
+
+    if is_basic:
+        return generate_basic_oauth()
+
+    elif is_oauth1:
+        HEADERS.update({'X-Atlassian-Token': 'nocheck'})
+        return generate_oauth1()
+
+    return_error(
+        'Please provide the required Authorization information:'
+        '- Basic Authentication requires user name and password or API token'
+        '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
+    )
 
 
 def run_query(query, start_at='', max_results=None):
@@ -95,15 +116,18 @@ def run_query(query, start_at='', max_results=None):
         "startAt": start_at,
         "maxResults": max_results,
     }
-    if OAUTH:
-        query_params.update(OAUTH)  # type: ignore
 
-    result = requests.get(
-        url=url,
-        headers=HEADERS,
-        verify=USE_SSL,
-        params=query_params
-    )
+    try:
+        result = requests.get(
+            url=url,
+            headers=HEADERS,
+            verify=USE_SSL,
+            params=query_params,
+            auth=get_auth(),
+        )
+    except ValueError:
+        raise ValueError("Could not deserialize privateKey")
+
     try:
         rj = result.json()
         if rj.get('issues'):
@@ -194,6 +218,7 @@ def generate_md_context_get_issue(data):
         attachments = demisto.get(element, 'fields.attachment')
         if isinstance(attachments, list):
             md_obj['attachment'] = ','.join(attach.get('filename') for attach in attachments)
+            context_obj['attachment'] = ','.join(attach.get('filename') for attach in attachments)
 
         get_issue_obj['md'].append(md_obj)
         get_issue_obj['context'].append(context_obj)
@@ -369,9 +394,16 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
         expand_urls(j_res)
 
     attachments = demisto.get(j_res, 'fields.attachment')  # list of all attachments
-    if get_attachments == 'true' and attachments:
-        attachments_zip = jira_req(method='GET', resource_url=f'secure/attachmentzip/{issue_id}.zip').content
-        demisto.results(fileResult(filename=f'{j_res.get("id")}_attachments.zip', data=attachments_zip))
+    # handle issues were we allowed incorrect values of true
+    if get_attachments == "true" or get_attachments == "\"true\"":
+        get_attachments = True
+    if get_attachments and attachments:
+        attachment_urls = [attachment['content'] for attachment in attachments]
+        for attachment_url in attachment_urls:
+            attachment = f"secure{attachment_url.split('/secure')[-1]}"
+            filename = attachment.split("/")[-1]
+            attachments_zip = jira_req(method='GET', resource_url=attachment).content
+            demisto.results(fileResult(filename=filename, data=attachments_zip))
 
     md_and_context = generate_md_context_get_issue(j_res)
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
@@ -483,29 +515,30 @@ def add_comment_command(issue_id, comment, visibility=''):
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-def issue_upload_command(issue_id, upload):
-    j_res = upload_file(upload, issue_id)
+def issue_upload_command(issue_id, upload, attachment_name=None):
+    j_res = upload_file(upload, issue_id, attachment_name)
     md = generate_md_upload_issue(j_res, issue_id)
     human_readable = tableToMarkdown(demisto.command(), md, "")
     contents = j_res
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-def upload_file(entry_id, issue_id):
+def upload_file(entry_id, issue_id, attachment_name=None):
     headers = {
-        'X-Atlassian-Token': 'no-check',
+        'X-Atlassian-Token': 'no-check'
     }
+    file_name, file_bytes = get_file(entry_id)
     res = requests.post(
         url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
         headers=headers,
-        files={'file': get_file(entry_id)},
+        files={'file': (attachment_name or file_name, file_bytes)},
         auth=(USERNAME, API_TOKEN or PASSWORD),
         verify=USE_SSL
     )
 
     if not res.ok:
-        return_error(
-            f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}')
+        return_error(f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}'
+                     + "\nMake sure file name doesn't contain any special characters" if res.status_code == 500 else "")
 
     return res.json()
 
@@ -514,8 +547,8 @@ def get_file(entry_id):
     get_file_path_res = demisto.getFilePath(entry_id)
     file_path = get_file_path_res["path"]
     file_name = get_file_path_res["name"]
-    with open(file_path, 'rb') as fopen:
-        file_bytes = fopen.read()
+    with open(file_path, 'rb') as f:
+        file_bytes = f.read()
     return file_name, file_bytes
 
 
@@ -580,10 +613,13 @@ def test_module():
         demisto.results('ok')
 
 
-def fetch_incidents(query, id_offset=0, fetch_by_created=None, **_):
+def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     last_run = demisto.getLastRun()
     demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
-    id_offset = last_run.get("idOffset") if (last_run and last_run.get("idOffset")) else id_offset
+    if last_run and last_run.get("idOffset"):
+        id_offset = last_run.get("idOffset")
+    if not id_offset:
+        id_offset = 0
 
     incidents, max_results = [], 50
     if id_offset:

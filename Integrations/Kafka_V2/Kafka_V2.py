@@ -14,17 +14,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-BROKERS = demisto.params().get('brokers')
-
-# Should we use SSL
-USE_SSL = demisto.params().get('use_ssl', False)
-
-# Certificates
-CA_CERT = demisto.params().get('ca_cert', None)
-CLIENT_CERT = demisto.params().get('client_cert', None)
-CLIENT_CERT_KEY = demisto.params().get('client_cert_key', None)
-PASSWORD = demisto.params().get('additional_password', None)
-
 # Logging
 log_stream = None
 log_handler = None
@@ -136,7 +125,7 @@ def check_latest_offset(topic, partition_number=None):
     return latest_offset - 1
 
 
-def create_certificate():
+def create_certificate(ca_cert=None, client_cert=None, client_cert_key=None, password=None):
     """
     Creating certificate
     :return certificate:
@@ -145,25 +134,25 @@ def create_certificate():
     ca_path = None
     client_path = None
     client_key_path = None
-    if CA_CERT:
+    if ca_cert:
         ca_path = 'ca.cert'  # type: ignore
         with open(ca_path, 'wb') as file:
-            file.write(CA_CERT)
+            file.write(ca_cert)
             ca_path = os.path.abspath(ca_path)
-    if CLIENT_CERT:
+    if client_cert:
         client_path = 'client.cert'
         with open(client_path, 'wb') as file:
-            file.write(CLIENT_CERT)
+            file.write(client_cert)
             client_path = os.path.abspath(client_path)
-    if CLIENT_CERT_KEY:
+    if client_cert_key:
         client_key_path = 'client_key.key'
         with open(client_key_path, 'wb') as file:
-            file.write(CLIENT_CERT_KEY)
+            file.write(client_cert_key)
     return SslConfig(
         cafile=ca_path,
         certfile=client_path,
         keyfile=client_key_path,
-        password=PASSWORD
+        password=password
     )
 
 
@@ -396,11 +385,21 @@ def fetch_incidents(client):
 def main():
     LOG('Command being called is {0}'.format(demisto.command()))
     global log_stream
+    BROKERS = demisto.params().get('brokers')
+
+    # Should we use SSL
+    USE_SSL = demisto.params().get('use_ssl', False)
+
+    # Certificates
+    CA_CERT = demisto.params().get('ca_cert', None)
+    CLIENT_CERT = demisto.params().get('client_cert', None)
+    CLIENT_CERT_KEY = demisto.params().get('client_cert_key', None)
+    PASSWORD = demisto.params().get('additional_password', None)
     try:
 
         # Initialize KafkaClient
         if USE_SSL:
-            ssl_config = create_certificate()
+            ssl_config = create_certificate(CA_CERT, CLIENT_CERT, CLIENT_CERT_KEY, PASSWORD)
             client = KafkaClient(hosts=BROKERS, ssl_config=ssl_config)
         else:
             client = KafkaClient(hosts=BROKERS)

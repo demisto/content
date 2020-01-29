@@ -31,6 +31,9 @@ def get_docker_images(script_obj):
     alt_imgs = script_obj.get('alt_dockerimages')
     if alt_imgs:
         imgs.extend(alt_imgs)
+    if 'dockerimage45' in script_obj:
+        img45 = script_obj.get('dockerimage45') or DEF_DOCKER
+        imgs.append(img45)
     return imgs
 
 
@@ -59,8 +62,8 @@ def get_python_version(docker_image):
                                      universal_newlines=True, stderr=stderr_out).strip()
     print("Detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
     py_num = float(py_ver)
-    if py_num < 2.7 or (py_num > 3 and py_num < 3.4):  # pylint can only work on python 3.4 and up
-        raise ValueError("Python vesion for docker image: {} is not supported: {}. "
+    if py_num < 2.7 or (3 < py_num < 3.4):  # pylint can only work on python 3.4 and up
+        raise ValueError("Python version for docker image: {} is not supported: {}. "
                          "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
     return py_num
 
@@ -148,7 +151,7 @@ def docker_image_create(docker_base_image, requirements):
     lock_file = ".lock-" + target_image.replace("/", "-")
     try:
         if (time.time() - os.path.getctime(lock_file)) > (60 * 5):
-            print("{}: Deleting old lock file: {}".format(datetime.now(). lock_file))
+            print("{}: Deleting old lock file: {}".format(datetime.now(), lock_file))
             os.remove(lock_file)
     except Exception as ex:
         print_v("Failed check and delete for lock file: {}. Error: {}".format(lock_file, ex))
@@ -160,7 +163,8 @@ def docker_image_create(docker_base_image, requirements):
             print('{}: Using already existing docker image: {}'.format(datetime.now(), target_image))
             return target_image
         if wait_print:
-            print("{}: Existing image: {} not found will obtain lock file or wait for image".format(datetime.now(), target_image))
+            print("{}: Existing image: {} not found will obtain lock file or wait for image".format(datetime.now(),
+                                                                                                    target_image))
             wait_print = False
         print_v("Trying to obtain lock file: " + lock_file)
         try:
@@ -180,7 +184,8 @@ def docker_image_create(docker_base_image, requirements):
             print("Pull succeeded with output: {}".format(pull_res))
             return target_image
         except subprocess.CalledProcessError as cpe:
-            print_v("Failed docker pull (will create image) with status: {}. Output: {}".format(cpe.returncode, cpe.output))
+            print_v("Failed docker pull (will create image) with status: {}. Output: {}".format(cpe.returncode,
+                                                                                                cpe.output))
         print("{}: Creating docker image: {} (this may take a minute or two...)".format(datetime.now(), target_image))
         container_id = subprocess.check_output(
             ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
@@ -222,6 +227,7 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_
     if no_lint:
         run_params.extend(['-e', 'PYLINT_SKIP=1'])
     run_params.extend(['-e', 'CPU_NUM={}'.format(cpu_num)])
+    run_params.extend(['-e', 'CI={}'.format(os.getenv("CI", "false"))])
     run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
     try:
@@ -255,6 +261,16 @@ def run_mypy(project_dir, py_num):
     print("mypy completed")
 
 
+def run_bandit(project_dir, py_num):
+    lint_files = get_lint_files(project_dir)
+    print("========= Running bandit on: {} ===============".format(lint_files))
+    python_exe = 'python2' if py_num < 3 else 'python3'
+    print_v('Using: {} to run bandit'.format(python_exe))
+    sys.stdout.flush()
+    subprocess.check_call([python_exe, '-m', 'bandit', '-lll', '-iii', '-q', lint_files], cwd=project_dir)
+    print("bandit completed")
+
+
 def setup_dev_files(project_dir):
     # copy demistomock and common server
     shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
@@ -266,8 +282,8 @@ def setup_dev_files(project_dir):
 
 
 def main():
-    description = """Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run within the docker image
-of an integration/script.
+    description = """Run lintings (flake8, mypy, pylint), security checks (bandit) and pytest. pylint and pytest will
+run within the docker image of an integration/script.
 Meant to be used with integrations/scripts that use the folder (package) structure.
 Will lookup up what docker image to use and will setup the dev dependencies and file in the target folder. """
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -276,6 +292,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     parser.add_argument("--no-mypy", help="Do NOT run mypy static type checking", action='store_true')
     parser.add_argument("--no-flake8", help="Do NOT run flake8 linter", action='store_true')
     parser.add_argument("--no-test", help="Do NOT test (skip pytest)", action='store_true')
+    parser.add_argument("--no-bandit", help="Do NOT run bandit security checks", action='store_true')
     parser.add_argument("-r", "--root", help="Run pytest container with root user", action='store_true')
     parser.add_argument("-k", "--keep-container", help="Keep the test container", action='store_true')
     parser.add_argument("-v", "--verbose", help="Verbose output", action='store_true')
@@ -287,7 +304,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
 
     args = parser.parse_args()
 
-    if args.no_test and args.no_pylint and args.no_flake8 and args.no_mypy:
+    if args.no_test and args.no_pylint and args.no_flake8 and args.no_mypy and args.no_bandit:
         raise ValueError("Nothing to run as all --no-* options specified.")
 
     global LOG_VERBOSE
@@ -304,6 +321,9 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         script_obj = script_obj.get('script')
     script_type = script_obj.get('type')
     if script_type != 'python':
+        if script_type == 'powershell':
+            # TODO powershell linting
+            return 0
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
         return 1
     dockers = get_docker_images(script_obj)
@@ -317,6 +337,8 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
                     run_flake8(project_dir, py_num)
                 if not args.no_mypy:
                     run_mypy(project_dir, py_num)
+                if not args.no_bandit:
+                    run_bandit(project_dir, py_num)
                 if not args.no_test or not args.no_pylint:
                     requirements = get_dev_requirements(py_num)
                     docker_image_created = docker_image_create(docker, requirements)

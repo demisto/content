@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2760f496-71b6-4b53-898d-6e2aa97fae8e
+    taskid: 17a467a9-e967-4ae8-83ae-deb0ed7a1ed5
     type: start
     task:
-      id: 2760f496-71b6-4b53-898d-6e2aa97fae8e
+      id: 17a467a9-e967-4ae8-83ae-deb0ed7a1ed5
       version: -1
       name: ""
       iscommand: false
@@ -18,6 +18,7 @@ tasks:
       - "1"
       - "4"
       - "5"
+      - "6"
     separatecontext: false
     view: |-
       {
@@ -31,10 +32,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: b2f93b35-2ffc-4087-8da3-09232b0d76cc
+    taskid: c72b7079-0540-4e4f-8e31-53ad677da71b
     type: playbook
     task:
-      id: b2f93b35-2ffc-4087-8da3-09232b0d76cc
+      id: c72b7079-0540-4e4f-8e31-53ad677da71b
       version: -1
       name: Panorama Query Logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
@@ -78,10 +79,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: ff373f9d-6ed9-4aae-8d2e-d3641b0bd4ff
+    taskid: 282bf112-1fe9-42e3-8fb0-2a7d4d54bef2
     type: condition
     task:
-      id: ff373f9d-6ed9-4aae-8d2e-d3641b0bd4ff
+      id: 282bf112-1fe9-42e3-8fb0-2a7d4d54bef2
       version: -1
       name: Exist context
       type: condition
@@ -111,10 +112,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 965af35a-4198-44ce-8cde-e35fa3b2e8a8
+    taskid: 6d8e86bb-a8ef-48c2-8641-8a676ae68af2
     type: title
     task:
-      id: 965af35a-4198-44ce-8cde-e35fa3b2e8a8
+      id: 6d8e86bb-a8ef-48c2-8641-8a676ae68af2
       version: -1
       name: Done
       type: title
@@ -133,10 +134,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 30212c61-85cd-4cf8-8137-983238861210
+    taskid: e707ab50-0f9a-4436-862c-e80583c031ff
     type: playbook
     task:
-      id: 30212c61-85cd-4cf8-8137-983238861210
+      id: e707ab50-0f9a-4436-862c-e80583c031ff
       version: -1
       name: Panorama Query Logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
@@ -180,12 +181,14 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: acc20095-eddf-42fa-889b-2a45e15d4832
+    taskid: c4878f59-6826-42ae-8477-5d1b09a04de1
     type: playbook
     task:
-      id: acc20095-eddf-42fa-889b-2a45e15d4832
+      id: c4878f59-6826-42ae-8477-5d1b09a04de1
       version: -1
       name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
       iscommand: false
@@ -223,13 +226,59 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "6":
+    id: "6"
+    taskid: c3388883-c13b-4175-8ac5-e6118c3445e1
+    type: playbook
+    task:
+      id: c3388883-c13b-4175-8ac5-e6118c3445e1
+      version: -1
+      name: Panorama Query Logs
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      ip:
+        simple: '["1.1.1.1", "2.2.2.2", "192.168.1.11"]'
+      filedigest: {}
+      log_type:
+        simple: traffic
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 560,
-        "width": 1240,
+        "width": 1670,
         "x": 50,
         "y": 50
       }

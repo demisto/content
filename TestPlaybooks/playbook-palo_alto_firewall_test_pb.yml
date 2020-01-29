@@ -1,15 +1,21 @@
+elasticcommonfields: {}
 id: palo_alto_firewall_test_pb
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 name: palo_alto_firewall_test_pb
 description: Test playbook for palo alto firewall
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fe011434-48d8-4697-8be9-3b360a75b152
+    taskid: d48a4c25-b4da-42c5-8e51-6bc677797c9f
     type: start
     task:
-      id: fe011434-48d8-4697-8be9-3b360a75b152
+      elasticcommonfields: {}
+      id: d48a4c25-b4da-42c5-8e51-6bc677797c9f
       version: -1
       name: ""
       iscommand: false
@@ -21,19 +27,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1227.5,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "1":
     id: "1"
-    taskid: 51acd4eb-7622-45b8-802a-4c19c4cdc0b0
+    taskid: 8f823ada-910f-4b9a-8e17-9459054d1df0
     type: regular
     task:
-      id: 51acd4eb-7622-45b8-802a-4c19c4cdc0b0
+      elasticcommonfields: {}
+      id: 8f823ada-910f-4b9a-8e17-9459054d1df0
       version: -1
       name: panorama
       description: Run any panorama command supported in api.
@@ -71,19 +80,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1012.5,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "12":
     id: "12"
-    taskid: 14c5c713-b2c4-4aa7-8216-f5e62292bdef
+    taskid: c14a4ca2-79ae-4b24-83c7-e2bda1c98fd3
     type: regular
     task:
-      id: 14c5c713-b2c4-4aa7-8216-f5e62292bdef
+      elasticcommonfields: {}
+      id: c14a4ca2-79ae-4b24-83c7-e2bda1c98fd3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -106,19 +118,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1227.5,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "13":
     id: "13"
-    taskid: aab7f157-e55c-46b5-868a-170bb5aafc01
+    taskid: 10e36204-6c9a-41d2-8d24-29628ccfb313
     type: title
     task:
-      id: aab7f157-e55c-46b5-868a-170bb5aafc01
+      elasticcommonfields: {}
+      id: 10e36204-6c9a-41d2-8d24-29628ccfb313
       version: -1
       name: Addresses
       type: title
@@ -131,19 +146,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 1442.5,
+          "y": 705
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "14":
     id: "14"
-    taskid: aa76ba0a-9f3c-44b4-8ba3-44a70feec574
+    taskid: c56299e9-17b7-49d0-820c-e949a1448b8d
     type: title
     task:
-      id: aa76ba0a-9f3c-44b4-8ba3-44a70feec574
+      elasticcommonfields: {}
+      id: c56299e9-17b7-49d0-820c-e949a1448b8d
       version: -1
       name: Addresses and Address Groups
       type: title
@@ -157,19 +175,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1227.5,
           "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "15":
     id: "15"
-    taskid: 46e22233-e6de-4b4d-87fb-ad3716120e22
+    taskid: 378fbb54-e482-452e-8ee5-4cd87d451f35
     type: title
     task:
-      id: 46e22233-e6de-4b4d-87fb-ad3716120e22
+      elasticcommonfields: {}
+      id: 378fbb54-e482-452e-8ee5-4cd87d451f35
       version: -1
       name: Custom URL Category
       type: title
@@ -182,19 +203,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3065
+          "x": 695,
+          "y": 2920
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "16":
     id: "16"
-    taskid: 96430bcc-0030-4994-859b-c17e15b5c390
+    taskid: f0931525-8c7d-41ec-8d83-12ede6b5372b
     type: regular
     task:
-      id: 96430bcc-0030-4994-859b-c17e15b5c390
+      elasticcommonfields: {}
+      id: f0931525-8c7d-41ec-8d83-12ede6b5372b
       version: -1
       name: panorama-address-add
       script: '|||panorama-create-address'
@@ -203,7 +227,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "92"
     scriptarguments:
       description:
         simple: just a desc
@@ -217,27 +241,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1010
+          "x": 1442.5,
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "17":
     id: "17"
-    taskid: 23b728e3-bfaa-4648-868d-56a085326ef1
+    taskid: 2f14304d-a938-4954-8a34-110cb74e1720
     type: condition
     task:
-      id: 23b728e3-bfaa-4648-868d-56a085326ef1
+      elasticcommonfields: {}
+      id: 2f14304d-a938-4954-8a34-110cb74e1720
       version: -1
       name: Test panorama-create-address
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "106"
       "yes":
-      - "92"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -255,19 +284,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1185
+          "x": 1452.5,
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "18":
     id: "18"
-    taskid: dfca701d-ee24-4d32-8b89-1e8fd0e08aea
+    taskid: 3b027048-fdbc-480a-8764-76dddd89a61d
     type: regular
     task:
-      id: dfca701d-ee24-4d32-8b89-1e8fd0e08aea
+      elasticcommonfields: {}
+      id: 3b027048-fdbc-480a-8764-76dddd89a61d
       version: -1
       name: Panorama Addresses get
       script: '|||panorama-list-addresses'
@@ -281,19 +313,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 835
+          "x": 1442.5,
+          "y": 865
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "20":
     id: "20"
-    taskid: 3d761f99-0f7c-42d3-8d91-b0f3984327b9
+    taskid: f6fe7f1e-ba45-4075-868f-bbf4023a29d9
     type: regular
     task:
-      id: 3d761f99-0f7c-42d3-8d91-b0f3984327b9
+      elasticcommonfields: {}
+      id: f6fe7f1e-ba45-4075-868f-bbf4023a29d9
       version: -1
       name: panorama-delete-address
       script: '|||panorama-delete-address'
@@ -310,19 +345,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2235
+          "x": 1022.5,
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "21":
     id: "21"
-    taskid: be13f2f0-3634-44f2-8a86-213fbb843846
+    taskid: 812fd063-efa3-44de-81ba-cbcd1007df3c
     type: regular
     task:
-      id: be13f2f0-3634-44f2-8a86-213fbb843846
+      elasticcommonfields: {}
+      id: 812fd063-efa3-44de-81ba-cbcd1007df3c
       version: -1
       name: panorama-list-address-groups
       script: '|||panorama-list-address-groups'
@@ -341,19 +379,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 835
+          "x": 1012.5,
+          "y": 690
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "22":
     id: "22"
-    taskid: 9580c188-032f-41a3-8d38-8a94ee28c3f1
+    taskid: 72374c74-2bf9-4b4a-8831-bb914f2487e8
     type: regular
     task:
-      id: 9580c188-032f-41a3-8d38-8a94ee28c3f1
+      elasticcommonfields: {}
+      id: 72374c74-2bf9-4b4a-8831-bb914f2487e8
       version: -1
       name: panorama-create-address-group(dynamic)
       script: '|||panorama-create-address-group'
@@ -377,19 +418,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1185
+          "x": 1012.5,
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "24":
     id: "24"
-    taskid: 37a05454-c100-41c2-899c-bd0b57f3fda9
+    taskid: 53a1d36e-5d46-462c-8fee-75e67b8d9645
     type: regular
     task:
-      id: 37a05454-c100-41c2-899c-bd0b57f3fda9
+      elasticcommonfields: {}
+      id: 53a1d36e-5d46-462c-8fee-75e67b8d9645
       version: -1
       name: panorama-create-address-group(static)
       script: '|||panorama-create-address-group'
@@ -416,19 +460,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1185
+          "x": 582.5,
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "25":
     id: "25"
-    taskid: a97dbfcb-a7ee-4c5c-8571-cbdd4acc0814
+    taskid: 7c0cba6e-eb96-449c-87c5-88c00c347b92
     type: regular
     task:
-      id: a97dbfcb-a7ee-4c5c-8571-cbdd4acc0814
+      elasticcommonfields: {}
+      id: 7c0cba6e-eb96-449c-87c5-88c00c347b92
       version: -1
       name: panorama-get-address-group
       script: '|||panorama-get-address-group'
@@ -445,19 +492,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2060
+          "x": 50,
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "26":
     id: "26"
-    taskid: 1a560464-36c6-4356-82ef-1d88b9212fe8
+    taskid: 5f80f946-248e-474e-8c2e-556332e70677
     type: regular
     task:
-      id: 1a560464-36c6-4356-82ef-1d88b9212fe8
+      elasticcommonfields: {}
+      id: 5f80f946-248e-474e-8c2e-556332e70677
       version: -1
       name: panorama-address-group-delete
       script: '|||panorama-delete-address-group'
@@ -474,25 +524,30 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2235
+          "x": 50,
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "27":
     id: "27"
-    taskid: 211e6dc5-766d-4c24-8ae6-1b436bf99cbd
+    taskid: 45aff50e-65e0-415d-8d30-efc498b1c2c0
     type: condition
     task:
-      id: 211e6dc5-766d-4c24-8ae6-1b436bf99cbd
+      elasticcommonfields: {}
+      id: 45aff50e-65e0-415d-8d30-efc498b1c2c0
       version: -1
       name: Test panorama-address-group-create(static)
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "107"
       "yes":
       - "28"
     separatecontext: false
@@ -523,18 +578,21 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1535
+          "y": 1390
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "28":
     id: "28"
-    taskid: b83e3040-71e5-4bb0-80cb-2f74cbe54230
+    taskid: ad0261f4-2269-4d4e-8a60-30fd9c381ea3
     type: regular
     task:
-      id: b83e3040-71e5-4bb0-80cb-2f74cbe54230
+      elasticcommonfields: {}
+      id: ad0261f4-2269-4d4e-8a60-30fd9c381ea3
       version: -1
       name: panorama-edit-address-group
       script: '|||panorama-edit-address-group'
@@ -559,19 +617,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1710
+          "x": 480,
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "29":
     id: "29"
-    taskid: ce90d363-1979-4f39-8c62-3240bf0e0582
+    taskid: 05c401a5-d6a4-4b9f-88ea-5dd074a670ac
     type: condition
     task:
-      id: ce90d363-1979-4f39-8c62-3240bf0e0582
+      elasticcommonfields: {}
+      id: 05c401a5-d6a4-4b9f-88ea-5dd074a670ac
       version: -1
       name: Test panorama-address-group-edit
       type: condition
@@ -597,19 +658,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2060
+          "x": 480,
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "30":
     id: "30"
-    taskid: d0677a0f-5b0a-49e7-8236-3f24ef17f089
+    taskid: 2bf44289-4de3-49f7-89a5-b5bdfdba91fd
     type: regular
     task:
-      id: d0677a0f-5b0a-49e7-8236-3f24ef17f089
+      elasticcommonfields: {}
+      id: 2bf44289-4de3-49f7-89a5-b5bdfdba91fd
       version: -1
       name: panorama-delete-address-group
       script: '|||panorama-delete-address-group'
@@ -626,19 +690,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2235
+          "x": 480,
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "36":
     id: "36"
-    taskid: 8fdd9fd2-cd6d-4e90-8a57-35ac4d71047f
+    taskid: ac9f9b50-5319-4faf-8b53-8bdc481c7bd9
     type: regular
     task:
-      id: 8fdd9fd2-cd6d-4e90-8a57-35ac4d71047f
+      elasticcommonfields: {}
+      id: ac9f9b50-5319-4faf-8b53-8bdc481c7bd9
       version: -1
       name: panorama-get-custom-url-category
       script: '|||panorama-get-custom-url-category'
@@ -655,19 +722,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3225
+          "x": 695,
+          "y": 3080
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "38":
     id: "38"
-    taskid: bd297087-e790-4bfb-8991-bd203616fb11
+    taskid: d3954d7a-6658-43ba-865a-7a709fa5591f
     type: regular
     task:
-      id: bd297087-e790-4bfb-8991-bd203616fb11
+      elasticcommonfields: {}
+      id: d3954d7a-6658-43ba-865a-7a709fa5591f
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -688,19 +758,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3400
+          "x": 695,
+          "y": 3255
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "46":
     id: "46"
-    taskid: fbd86ba7-bfbc-4b92-8350-8d416839b2aa
+    taskid: 72df248e-638d-44d1-8743-c1e581f25998
     type: regular
     task:
-      id: fbd86ba7-bfbc-4b92-8350-8d416839b2aa
+      elasticcommonfields: {}
+      id: 72df248e-638d-44d1-8743-c1e581f25998
       version: -1
       name: Sleep 14 seconds
       description: Sleep for X seconds
@@ -718,19 +791,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1885
+          "x": 480,
+          "y": 1740
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "48":
     id: "48"
-    taskid: 80e485a7-f635-4e66-8d7e-ee788ae94d93
+    taskid: bc79003a-9a14-4cc5-889d-65a7ecde6629
     type: regular
     task:
-      id: 80e485a7-f635-4e66-8d7e-ee788ae94d93
+      elasticcommonfields: {}
+      id: bc79003a-9a14-4cc5-889d-65a7ecde6629
       version: -1
       name: panorama-get-url-category
       script: '|||panorama-get-url-category'
@@ -747,19 +823,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2875
+          "x": 1125,
+          "y": 4420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "49":
     id: "49"
-    taskid: 518312bd-98c2-4a3c-8edc-1b763a0386d0
+    taskid: 31171877-4674-4694-8235-b0540203d0a1
     type: condition
     task:
-      id: 518312bd-98c2-4a3c-8edc-1b763a0386d0
+      elasticcommonfields: {}
+      id: 31171877-4674-4694-8235-b0540203d0a1
       version: -1
       name: Test panorama-url-category-get
       type: condition
@@ -767,7 +846,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "74"
+      - "99"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -795,19 +874,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3050
+          "x": 1125,
+          "y": 4595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "50":
     id: "50"
-    taskid: 3d4be42c-d1e6-4219-81ee-cc6cc0a0bf3d
+    taskid: 134f1fb6-4956-49ea-89bc-f4d6d17ff9d4
     type: title
     task:
-      id: 3d4be42c-d1e6-4219-81ee-cc6cc0a0bf3d
+      elasticcommonfields: {}
+      id: 134f1fb6-4956-49ea-89bc-f4d6d17ff9d4
       version: -1
       name: Done
       type: title
@@ -817,44 +899,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 5235
+          "x": 695,
+          "y": 6080
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "52":
     id: "52"
-    taskid: 861ade34-46d3-440d-8350-c07d9f0a4c7a
+    taskid: 39c412ed-5f1a-4d55-82f9-a3c5b706918d
     type: title
     task:
-      id: 861ade34-46d3-440d-8350-c07d9f0a4c7a
+      elasticcommonfields: {}
+      id: 39c412ed-5f1a-4d55-82f9-a3c5b706918d
       version: -1
-      name: URL Filtering
+      name: URL Filter
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+      - "74"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2715
+          "x": 265,
+          "y": 2920
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "60":
     id: "60"
-    taskid: 06214ac9-edcf-4a27-8548-4da9fc6013a7
+    taskid: 883fb2e0-236b-4bd1-8fd6-e6c25146f3a0
     type: title
     task:
-      id: 06214ac9-edcf-4a27-8548-4da9fc6013a7
+      elasticcommonfields: {}
+      id: 883fb2e0-236b-4bd1-8fd6-e6c25146f3a0
       version: -1
       name: Security Rules Creation
       type: title
@@ -867,19 +955,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3720
+          "x": 265,
+          "y": 3575
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "61":
     id: "61"
-    taskid: 09822903-305d-454d-8144-02726e5f1b99
+    taskid: 5c3301b4-894f-4cd1-8ada-b422deb4fc4a
     type: title
     task:
-      id: 09822903-305d-454d-8144-02726e5f1b99
+      elasticcommonfields: {}
+      id: 5c3301b4-894f-4cd1-8ada-b422deb4fc4a
       version: -1
       name: Dynamic Address Groups
       type: title
@@ -892,19 +983,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1025
+          "x": 1012.5,
+          "y": 880
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "62":
     id: "62"
-    taskid: efbabbda-5828-475c-8419-18679983d3fa
+    taskid: 7a17b1da-21cf-4647-8840-9b02063a94ed
     type: title
     task:
-      id: efbabbda-5828-475c-8419-18679983d3fa
+      elasticcommonfields: {}
+      id: 7a17b1da-21cf-4647-8840-9b02063a94ed
       version: -1
       name: Static Address Groups
       type: title
@@ -917,19 +1011,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1025
+          "x": 582.5,
+          "y": 880
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "67":
     id: "67"
-    taskid: 69887a67-aea6-4ab2-8f59-4649ad5dfe8f
+    taskid: c5678180-dbcb-4d68-833d-88cee406999b
     type: regular
     task:
-      id: 69887a67-aea6-4ab2-8f59-4649ad5dfe8f
+      elasticcommonfields: {}
+      id: c5678180-dbcb-4d68-833d-88cee406999b
       version: -1
       name: panorama-create-rule
       description: Create policy rule in Palo Alto Firewall or Panorama
@@ -944,11 +1041,13 @@ tasks:
       action:
         simple: deny
       application:
-        simple: fortnite
+        simple: fortnite,backweb
       description:
         simple: labala
       destination: {}
+      device-group: {}
       disable: {}
+      log_forwarding: {}
       negate_destination: {}
       negate_source: {}
       pre_post: {}
@@ -956,24 +1055,28 @@ tasks:
       service: {}
       source: {}
       source_user: {}
+      tags: {}
       target: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3865
+          "x": 265,
+          "y": 3720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "68":
     id: "68"
-    taskid: a852528a-fd00-461d-8ae2-147e5a48bc89
+    taskid: 698c01d2-441c-43a2-8206-51128652b783
     type: regular
     task:
-      id: a852528a-fd00-461d-8ae2-147e5a48bc89
+      elasticcommonfields: {}
+      id: 698c01d2-441c-43a2-8206-51128652b783
       version: -1
       name: panorama-edit-rule
       description: Edit a policy rule in Palo Alto Firewall or Panorama
@@ -983,7 +1086,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "70"
+      - "104"
     scriptarguments:
       element_to_change:
         simple: application
@@ -998,19 +1101,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4390
+          "x": 265,
+          "y": 4245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "70":
     id: "70"
-    taskid: dcbd8555-2791-4f89-8cb4-c00d73fae08e
+    taskid: bc7c8335-6231-4a72-8606-c4c670a748d8
     type: regular
     task:
-      id: dcbd8555-2791-4f89-8cb4-c00d73fae08e
+      elasticcommonfields: {}
+      id: bc7c8335-6231-4a72-8606-c4c670a748d8
       version: -1
       name: panorama-rule-delete
       description: Delete a policy rule in Palo Alto Firewall or Panorama
@@ -1031,19 +1137,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4565
+          "x": 265,
+          "y": 4770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "74":
     id: "74"
-    taskid: 5131843d-8211-42ed-887d-ade95b8a25f2
+    taskid: 0f34f4d4-893d-4d84-8cd4-0e96d384f349
     type: regular
     task:
-      id: 5131843d-8211-42ed-887d-ade95b8a25f2
+      elasticcommonfields: {}
+      id: 0f34f4d4-893d-4d84-8cd4-0e96d384f349
       version: -1
       name: panorama-get-url-filter
       description: Get a URL Filtering rule  from Palo Alto Firewall or Panorama
@@ -1061,19 +1170,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3225
+          "x": 265,
+          "y": 3080
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "80":
     id: "80"
-    taskid: 7b6d0dff-b1b9-4b8a-8ae4-f4d60886f8f7
+    taskid: 4dfab66e-6eb3-4a75-8592-0254023d4d2f
     type: title
     task:
-      id: 7b6d0dff-b1b9-4b8a-8ae4-f4d60886f8f7
+      elasticcommonfields: {}
+      id: 4dfab66e-6eb3-4a75-8592-0254023d4d2f
       version: -1
       name: PCAPS
       type: title
@@ -1086,19 +1198,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4230
+          "x": 695,
+          "y": 4435
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "81":
     id: "81"
-    taskid: a51a72fe-354b-4f22-893b-7e98fb18ec90
+    taskid: b903646a-8a35-43f5-8069-6b9077c8459f
     type: regular
     task:
-      id: a51a72fe-354b-4f22-893b-7e98fb18ec90
+      elasticcommonfields: {}
+      id: b903646a-8a35-43f5-8069-6b9077c8459f
       version: -1
       name: panorama-get-pcap
       description: Get panorama pcaps
@@ -1124,19 +1239,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4565
+          "x": 695,
+          "y": 4770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "82":
     id: "82"
-    taskid: e7abfcc7-bc1e-4f0e-88a7-9a0f068220d2
+    taskid: 4fee4b6f-2c3f-4a57-8c1b-ea4018ce01f7
     type: regular
     task:
-      id: e7abfcc7-bc1e-4f0e-88a7-9a0f068220d2
+      elasticcommonfields: {}
+      id: 4fee4b6f-2c3f-4a57-8c1b-ea4018ce01f7
       version: -1
       name: panorama-list-pcaps
       description: Returns a list of pcap names
@@ -1156,19 +1274,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 4390
+          "x": 695,
+          "y": 4595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "83":
     id: "83"
-    taskid: 37c8d96b-3cc2-47fe-8b59-74111f098312
+    taskid: 5d823d12-4caf-471e-8583-b094f1eeec3a
     type: title
     task:
-      id: 37c8d96b-3cc2-47fe-8b59-74111f098312
+      elasticcommonfields: {}
+      id: 5d823d12-4caf-471e-8583-b094f1eeec3a
       version: -1
       name: EDL
       type: title
@@ -1181,19 +1302,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2555
+          "x": 1125,
+          "y": 2410
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "84":
     id: "84"
-    taskid: 23a71041-1a02-47e7-8dfe-bd971ab4c541
+    taskid: 2802b0b9-85bf-43d8-8184-1b3e584d3b03
     type: regular
     task:
-      id: 23a71041-1a02-47e7-8dfe-bd971ab4c541
+      elasticcommonfields: {}
+      id: 2802b0b9-85bf-43d8-8184-1b3e584d3b03
       version: -1
       name: panorama-list-edls
       description: Returns a list of external dynamic lists
@@ -1208,19 +1332,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2700
+          "x": 1125,
+          "y": 2555
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "85":
     id: "85"
-    taskid: aa2c990e-cf5c-4584-8e15-f6cfa29bf7cd
+    taskid: 59c9f8c5-a0e8-4ad7-87f7-242fc087f1e8
     type: regular
     task:
-      id: aa2c990e-cf5c-4584-8e15-f6cfa29bf7cd
+      elasticcommonfields: {}
+      id: 59c9f8c5-a0e8-4ad7-87f7-242fc087f1e8
       version: -1
       name: panorama-get-edl
       description: Get information for an external dynamic list
@@ -1238,19 +1365,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2875
+          "x": 1125,
+          "y": 2730
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "86":
     id: "86"
-    taskid: 03f69706-f01e-400a-8895-cf1d087578b6
+    taskid: 3704758e-1efb-4924-8a9e-2d0173f56979
     type: condition
     task:
-      id: 03f69706-f01e-400a-8895-cf1d087578b6
+      elasticcommonfields: {}
+      id: 3704758e-1efb-4924-8a9e-2d0173f56979
       version: -1
       name: Test panorama edl commands
       type: condition
@@ -1276,19 +1406,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3050
+          "x": 1125,
+          "y": 2905
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "87":
     id: "87"
-    taskid: 47b9daf1-2f49-4e4e-82ce-df60419d7a8f
+    taskid: 10b4c04d-365d-42f6-8858-acff2c2fc8a7
     type: regular
     task:
-      id: 47b9daf1-2f49-4e4e-82ce-df60419d7a8f
+      elasticcommonfields: {}
+      id: 10b4c04d-365d-42f6-8858-acff2c2fc8a7
       version: -1
       name: panorama-refresh-edl
       description: Refresh a given external dynamic list
@@ -1306,19 +1439,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3225
+          "x": 1125,
+          "y": 3080
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "88":
     id: "88"
-    taskid: 44953371-13a8-427b-8533-f616e0200b6e
+    taskid: 89f840e2-6154-4396-8643-1a5ee240d04e
     type: regular
     task:
-      id: 44953371-13a8-427b-8533-f616e0200b6e
+      elasticcommonfields: {}
+      id: 89f840e2-6154-4396-8643-1a5ee240d04e
       version: -1
       name: panorama-register-ip-tag
       description: Register IPs to a tag
@@ -1340,19 +1476,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1442.5,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "89":
     id: "89"
-    taskid: b16a0369-b9c7-4040-8d47-7f3c4a129892
+    taskid: 7c848ab3-0f1f-4ad0-8fee-cbee38076d44
     type: regular
     task:
-      id: b16a0369-b9c7-4040-8d47-7f3c4a129892
+      elasticcommonfields: {}
+      id: 7c848ab3-0f1f-4ad0-8fee-cbee38076d44
       version: -1
       name: panorama-unregister-ip-tag
       description: Unregister IPs to a tag
@@ -1372,19 +1511,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 5060
+          "x": 695,
+          "y": 5905
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "90":
     id: "90"
-    taskid: a0ebef4d-917e-46c3-80a8-dfab0626adf3
+    taskid: 5bdb32f5-27d5-47a0-8a31-82a23a993d49
     type: regular
     task:
-      id: a0ebef4d-917e-46c3-80a8-dfab0626adf3
+      elasticcommonfields: {}
+      id: 5bdb32f5-27d5-47a0-8a31-82a23a993d49
       version: -1
       name: panorama-list-rules
       description: Returns a list of predefined Security Rules
@@ -1401,19 +1543,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4215
+          "x": 265,
+          "y": 4070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "92":
     id: "92"
-    taskid: fd6bc6fc-8d11-45ee-83d0-9d07441c8dfa
+    taskid: 308dc75c-20d6-4712-829a-8b63d19be4f9
     type: playbook
     task:
-      id: fd6bc6fc-8d11-45ee-83d0-9d07441c8dfa
+      elasticcommonfields: {}
+      id: 308dc75c-20d6-4712-829a-8b63d19be4f9
       version: -1
       name: PAN-OS Commit Configuration
       playbookName: PAN-OS Commit Configuration
@@ -1424,24 +1569,27 @@ tasks:
       '#none#':
       - "25"
       - "27"
-      - "20"
+      - "17"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1360
+          "x": 1125,
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "93":
     id: "93"
-    taskid: 2d66054c-df48-4dd1-80bd-864a31191222
+    taskid: 94e1f6cb-3d61-4f79-8ba3-144c2c48411b
     type: title
     task:
-      id: 2d66054c-df48-4dd1-80bd-864a31191222
+      elasticcommonfields: {}
+      id: 94e1f6cb-3d61-4f79-8ba3-144c2c48411b
       version: -1
       name: Finished Addresses UC
       type: title
@@ -1456,19 +1604,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2410
+          "x": 695,
+          "y": 2265
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "94":
     id: "94"
-    taskid: 63a25ec9-87bb-48fa-8e20-174b5f3e327d
+    taskid: 69435cca-7d9c-4c1c-8fa6-0aa51f496bad
     type: title
     task:
-      id: 63a25ec9-87bb-48fa-8e20-174b5f3e327d
+      elasticcommonfields: {}
+      id: 69435cca-7d9c-4c1c-8fa6-0aa51f496bad
       version: -1
       name: FInished Objects UC
       type: title
@@ -1478,23 +1629,27 @@ tasks:
       '#none#':
       - "60"
       - "80"
+      - "98"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3575
+          "x": 695,
+          "y": 3430
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "95":
     id: "95"
-    taskid: cc3aaa5d-c922-41bc-886f-7acf63ce69ea
+    taskid: 9a3a9061-2173-448e-8b9d-bf0a31357d05
     type: playbook
     task:
-      id: cc3aaa5d-c922-41bc-886f-7acf63ce69ea
+      elasticcommonfields: {}
+      id: 9a3a9061-2173-448e-8b9d-bf0a31357d05
       version: -1
       name: PAN-OS Commit Configuration
       playbookName: PAN-OS Commit Configuration
@@ -1509,25 +1664,28 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4040
+          "x": 265,
+          "y": 3895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "96":
     id: "96"
-    taskid: 64425676-e0ef-4116-85ef-67b48f6abf0c
+    taskid: 6edd8337-40e4-4a7d-8ce8-c215ad8c7be3
     type: title
     task:
-      id: 64425676-e0ef-4116-85ef-67b48f6abf0c
+      elasticcommonfields: {}
+      id: 6edd8337-40e4-4a7d-8ce8-c215ad8c7be3
       version: -1
       name: Security Policy Match
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1538,30 +1696,33 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4740
+          "x": 695,
+          "y": 4945
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "97":
     id: "97"
-    taskid: 65d8cccd-52ee-4fd1-8527-ddba52e65ad4
+    taskid: 51966f8a-fcb5-4bf0-80b3-5e188a334fad
     type: regular
     task:
-      id: 65d8cccd-52ee-4fd1-8527-ddba52e65ad4
+      elasticcommonfields: {}
+      id: 51966f8a-fcb5-4bf0-80b3-5e188a334fad
       version: -1
       name: panorama-security-policy-match
-      description: Check whether a session is matching a security policy. this command
-        is only available on Firewall instances.
-      script: Panorama|||panorama-security-policy-match
+      description: Checks whether a session matches the specified security policy.
+        This command is only available on Firewall instances.
+      script: '|||panorama-security-policy-match'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
-      - "89"
+      - "100"
     scriptarguments:
       application:
         simple: fortnite
@@ -1580,13 +1741,352 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4885
+          "x": 695,
+          "y": 5090
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "98":
+    id: "98"
+    taskid: 9fde00e2-21b2-4957-84fa-fdb000434633
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 9fde00e2-21b2-4957-84fa-fdb000434633
+      version: -1
+      name: URL FIltering
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "99":
+    id: "99"
+    taskid: 805749bc-eeba-43b1-838a-3f2bcf65b947
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 805749bc-eeba-43b1-838a-3f2bcf65b947
+      version: -1
+      name: panorama-get-url-category-from-cloud
+      description: Gets a URL category from URL Filtering.
+      script: '|||panorama-get-url-category-from-cloud'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      url:
+        simple: 888.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "100":
+    id: "100"
+    taskid: e910cf9f-041d-414b-864c-43a6f859cf89
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: e910cf9f-041d-414b-864c-43a6f859cf89
+      version: -1
+      name: Static Routes (network)
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "101":
+    id: "101"
+    taskid: ba1cd5fc-cdd9-4b8a-826d-4eea1186ceb8
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: ba1cd5fc-cdd9-4b8a-826d-4eea1186ceb8
+      version: -1
+      name: panorama-list-static-routes
+      description: List the static routes of a virtual router.
+      script: '|||panorama-list-static-routes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      virtual_router:
+        simple: virtual_router_test_DONT_DELETE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "102":
+    id: "102"
+    taskid: e65b0246-c83d-48c0-810d-3ea2e4f17f34
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: e65b0246-c83d-48c0-810d-3ea2e4f17f34
+      version: -1
+      name: panorama-get-static-route
+      description: Get a specific static route of a virtual router.
+      script: '|||panorama-get-static-route'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "103"
+    scriptarguments:
+      static_route:
+        complex:
+          root: Panorama
+          filters:
+          - - operator: endWith
+              left:
+                value:
+                  simple: Panorama.StaticRoutes.Name
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+          accessor: StaticRoutes.Name
+      virtual_router:
+        complex:
+          root: Panorama
+          accessor: StaticRoutes.VirtualRouter
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "103":
+    id: "103"
+    taskid: c29e0f94-f17f-4627-8e90-0443f4524c9b
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: c29e0f94-f17f-4627-8e90-0443f4524c9b
+      version: -1
+      name: DAG
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "104":
+    id: "104"
+    taskid: 3aac8cb7-0fa0-440f-86e1-480f718ffc8c
+    type: playbook
+    task:
+      elasticcommonfields: {}
+      id: 3aac8cb7-0fa0-440f-86e1-480f718ffc8c
+      version: -1
+      name: PAN-OS Commit Configuration
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
+        as Panorama, it also pushes the Policies to the specified Device Group in
+        the instance.
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "105":
+    id: "105"
+    taskid: 98b09314-7613-4188-8324-c49319a361d7
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 98b09314-7613-4188-8324-c49319a361d7
+      version: -1
+      name: panorama-edit-rule
+      description: Edits a policy rule.
+      script: '|||panorama-edit-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      behaviour:
+        simple: add
+      element_to_change:
+        simple: tag
+      element_value:
+        simple: Bark_FW_test_tag01
+      pre_post: {}
+      rulename:
+        complex:
+          root: Panorama
+          accessor: SecurityRule.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "106":
+    id: "106"
+    taskid: "3"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "3"
+      version: -1
+      name: panorama-address-add failed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Creating an address object failed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1667.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "107":
+    id: "107"
+    taskid: "4"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "4"
+      version: -1
+      name: panorama-create-address-group failed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Creating an address group failed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1227.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1595,8 +2095,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5250,
-        "width": 1240,
+        "height": 6095,
+        "width": 1997.5,
         "x": 50,
         "y": 50
       }

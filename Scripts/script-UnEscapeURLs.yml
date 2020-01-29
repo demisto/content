@@ -60,15 +60,18 @@ script: |-
             var clean = input.substr(PROOFPOINT_PREFIXES[v - 1].length);
             var closeIndex = clean.indexOf('__');
             clean = clean.substr(0, closeIndex);
-            bad_url_reg = /((http)s?:)(\/|\/\/)([^\/\s]*)/g;
-            var clean_fixed = clean.replace(bad_url_reg, '$1//$4');
+            var url_reg = /((http)s?:)(\/{1,2})(.*)/g;
+            var clean_fixed = clean.replace(url_reg, '$1//$4');
             return clean_fixed;
         }
 
         // If from Proofpoint then no need to un-escape or normalize
         var re = /&.*$/;
-        var reg = /%\d{2}/g;
-        var clean = input.substr(PROOFPOINT_PREFIXES[v - 1].length).replace(/-/g, '%').replace(/_/g, '/').replace('%3A//', '://').replace(re, '').replace('%3F', '?').replace('%3D', '=').replace(reg, '@');
+        var at_sign_reg = /%40/g;
+        var ampersand_reg = /%26/g;
+        var hash_reg = /%23/g;
+        var equals_reg = /%3D/g;
+        var clean = input.substr(PROOFPOINT_PREFIXES[v - 1].length).replace(/-/g, '%').replace(/_/g, '/').replace('%3A//', '://').replace(re, '').replace('%3F', '?').replace('%3D', '=').replace(at_sign_reg, '@').replace(ampersand_reg, '&').replace(hash_reg, '#').replace(equals_reg, '=');
         try {
             clean = decodeURI(clean);
         } catch (e) {

@@ -1,4 +1,13 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
+Added handling for cases where an attachment has neither the *DisplayName* nor the *AttachFilename* properties.
+
+## [19.12.0] - 2019-12-10
+Fixed an issue with handling smime signed files with no attachments.
+
+## [19.11.0] - 2019-11-12
 -
 
 ## [19.10.0] - 2019-10-03
