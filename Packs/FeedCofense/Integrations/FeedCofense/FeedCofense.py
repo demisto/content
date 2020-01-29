@@ -278,7 +278,7 @@ def main():
     """
     params = demisto.params()
     # handle params
-    url = params.get("url", "https://www.threathq.com")
+    url = "https://www.threathq.com"
     credentials = params.get("credentials", {})
     auth = (credentials.get("identifier"), credentials.get("password"))
     verify = not params.get("insecure")
