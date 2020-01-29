@@ -13,6 +13,25 @@ stix_struct_to_indicator = {
 }
 
 
+def score_to_reputation(score):
+    """
+       Converts score (in number format) to human readable reputation format
+
+       :type score: ``int``
+       :param score: The score to be formatted (required)
+
+       :return: The formatted score
+       :rtype: ``str``
+    """
+    to_str = {
+        3: 'Bad',
+        2: 'Suspicious',
+        1: 'Good',
+        0: 'None'
+    }
+    return to_str.get(score, 'None')
+
+
 def main():
     args = demisto.args()
     entry_id = args.get("entry_id", "")
@@ -28,11 +47,11 @@ def main():
         {
             "type": stix_struct_to_indicator.get(indicator.get("indicator_type")),
             "value": indicator.get("value"),
-            "rawJSON": indicator
+            "reputation": scoreToReputation(indicator.get("score")),
+            "rawJSON": indicator,
         }
         for indicator in data
     ]
-
     errors = list()
     for indicator in indicators:
         res = demisto.executeCommand('createNewIndicator', indicator)
@@ -40,7 +59,7 @@ def main():
             errors.append("Error creating indicator - {}".format(res[0]['Contents']))
     return_outputs("Create Indicators From STIX: {} indicators were created.".format(len(indicators) - len(errors)))
     if errors:
-        return_error(str(errors))
+        return_error(json.dumps(errors))
 
 
 if __name__ in ("builtins",):
