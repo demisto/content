@@ -39,11 +39,11 @@ def _get_stix_little():
     )
 
 
-def _get_results_from_demisto(entry, func, mocker, return_data=False):
+def _get_results_from_demisto(entry, func, mocker):
     mock_demisto(mocker)
     try:
-        data = func() if entry is None else func(entry)
-        return data if return_data else demisto.results.call_args[0][0]
+        func(entry)
+        return demisto.results.call_args[0][0]
     except IndexError:
         pytest.fail(
             "Couldn't find results returned from Demisto", pytrace=True
@@ -79,8 +79,14 @@ class TestSTIX2ToDemisto:
     def test_stix2_to_demisto(self, mocker):
         from StixParser import stix2_to_demisto
         stix_input, expected_output = _get_stix()
-        d_results = _get_results_from_demisto(stix_input, stix2_to_demisto, mocker, return_data=True)
-        assert isinstance(d_results, list), "Couldn't parse output as JSON"
+        try:
+            d_results = _get_results_from_demisto(stix_input, stix2_to_demisto, mocker)
+            d_results = json.loads(d_results)
+            assert isinstance(d_results, list)
+        except ValueError:
+            pytest.fail(
+                "Couldn't parse output as JSON", pytrace=True
+            )
         expected_output = expected_output[2]
         results_length = len(expected_output)
         result_counter = 0
@@ -95,8 +101,8 @@ class TestSTIX2ToDemisto:
     def test_stix2_to_json_empty_case(self, mocker):
         from StixParser import stix2_to_demisto
         # Empty case
-        res = _get_results_from_demisto([], stix2_to_demisto, mocker, return_data=True)
-        assert not res, "Sent empty JSON but got a response"
+        res = _get_results_from_demisto([], stix2_to_demisto, mocker)
+        assert res, "Sent empty JSON but got a response"
 
 
 class TestHelperFunctions:
@@ -229,23 +235,7 @@ def test_dict_no_stix(mocker):
             pytest.fail("System error not thrown!")
 
 
-def test_missing_first_seen(mocker):
+def test_missing_firstSeen(mocker):
     from StixParser import main
     TestStix1.mock_demisto_with_file("./TestData/missing_firstSeen.json", mocker)
     main()
-
-
-files_list = [
-    "./TestData/missing_firstSeen.json",
-    "./TestData/stix2.json",
-    "./TestData/little_stix2.json"
-]
-
-
-@pytest.mark.parametrize("file_path", files_list)
-def test_entry_id(mocker, file_path):
-    from StixParser import main
-    mocker.patch.object(demisto, "args", return_value={"entry_id": file_path})
-    mocker.patch.object(demisto, "getFilePath", return_value={"path": file_path})
-    res = _get_results_from_demisto(None, main, mocker)
-    assert res

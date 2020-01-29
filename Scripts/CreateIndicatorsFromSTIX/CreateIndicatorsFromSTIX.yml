@@ -1,0 +1,24 @@
+args:
+- default: false
+  description: Entry ID of stix file.
+  isArray: false
+  name: entry_id
+  required: true
+  secret: false
+comment: Populating indicators from information in given STIX1/2 file.
+commonfields:
+  id: CreateIndicatorsFromSTIX
+  version: -1
+enabled: false
+name: CreateIndicatorsFromSTIX
+script: '-'
+subtype: python3
+system: false
+tags:
+- stix
+- ioc
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.1.5734
+tests:
+- CreateIndicatorFromSTIXTest

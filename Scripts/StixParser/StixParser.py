@@ -312,7 +312,7 @@ def stix2_to_demisto(stx_obj):
     Args:
         stx_obj: json object
     """
-    data = list()  # type: List[dict]
+    data = list()
     if isinstance(stx_obj, dict):
         indicators, indicators_dict = extract_indicators(stx_obj)
         entry = build_entry(indicators, indicators_dict, stx_obj.get("id"))
@@ -329,55 +329,11 @@ def stix2_to_demisto(stx_obj):
                     data.extend(entry)
                 else:
                     data.append(entry)
-    return data
+    dumped = json.dumps(data)
+    demisto.results(dumped)
 
 
-def build_dbot(entry):
-    # type: (dict) -> Optional[dict]
-    indicator = entry.get("value")
-    type_ = entry.get("indicator_type", "").lower()  # type: str
-    vendor = entry.get("CustomFields", {}).get("stixPackageId")
-    vendor = "STIX: {}".format(vendor)
-    score = entry.get("score")
-    dbot_data = {
-        'Indicator': indicator,
-        'Type': type_,
-        'Vendor': vendor,
-        'Score': score
-    }
-    return dbot_data
-
-
-def create_scores(data):
-    # type: (list) -> dict
-    dbot_path = outputPaths["dbotscore"]
-    # Create dict of dbot scores
-    dbot_scores_dict = {
-        output_path: list() for output_path in outputPaths.values()
-    }  # type: Dict[str, list]
-    # Remove DBotScore value
-    dbot_scores_dict.pop(dbot_path)
-    # Create scores from each indicator
-    dbot_scores = [build_dbot(entry) for entry in data]
-    # Filter out empty values
-    dbot_scores = [entry for entry in dbot_scores if entry]
-    dbot_scores_dict = {dbot_path: dbot_scores}
-    malicious_dbot_entries = [
-        build_malicious_dbot_entry(
-            entry.get("Indicator"),
-            entry.get("Type"),
-            entry.get("Vendor")
-        )
-        for entry in dbot_scores
-        if entry.get("Score", 0) == 3 and entry.get("Type", "") not in ('username',)
-    ]
-    for entry in malicious_dbot_entries:
-        for key, value in entry.items():
-            if key not in dbot_scores_dict:
-                dbot_scores_dict[key] = list()
-            dbot_scores_dict[key].append(value)
-
-    return dbot_scores_dict
+""" STIX 1 """
 
 
 def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
@@ -388,49 +344,17 @@ def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
         data[i]["timestamp"] = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
-def build_context_entries(data):
-    # type: (list) -> Tuple[str, dict]
-    human_readable = tableToMarkdown(
-        "Parsed STIX file output:",
-        data
-    )
-    dbot_scores_dict = create_scores(data)
-
-    entry_context = {
-        "STIX": data,
-    }
-    entry_context.update(dbot_scores_dict)
-    return human_readable, entry_context
-
-
 def main():
-    args = demisto.args()
-    txt = args.get("iocXml", "").encode("utf-8")
-    if not txt:
-        entry_id = args.get("entry_id")
-        # get file from entry_id
-        file_path = demisto.getFilePath(entry_id).get('path')
-        if not file_path:
-            return_error("StixParser: No entry_id provided.")
-        with open(file_path) as f:
-            txt = f.read()
+    txt = demisto.args().get("iocXml").encode("utf-8")
     stx = convert_to_json(txt)
-    data = list()  # type: List[dict]
     if stx:
-        data = stix2_to_demisto(stx)
-        to_context = demisto.args().get("to_context")
-        to_context_bool = argToBoolean(to_context) if to_context else False
-        if to_context_bool:
-            readable_output, context = build_context_entries(data)
-            return_outputs(readable_output, context, stx)
-        else:
-            dumped = json.dumps(data)
-            demisto.results(dumped)
-    else:  # STIX 1 flow
+        stix2_to_demisto(stx)
+    else:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(demisto.args()["iocXml"].encode("utf-8"))
             temp.flush()
             stix_package = STIXPackage.from_xml(temp.name)
+        data = list()  # type: list
         i = 0
 
         stix_id = stix_package.id_
