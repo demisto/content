@@ -439,7 +439,7 @@ def get_incident_details_command(client: Client, args: dict) -> Tuple[str, dict,
 
     if raw_incident and isinstance(raw_incident, list):
         serialized_incident = helpers.serialize_object(raw_incident[0])
-        raw_response: dict = json.loads(json.dumps(serialized_incident, default=datetime_to_iso_format))
+        raw_response = json.loads(json.dumps(serialized_incident, default=datetime_to_iso_format))
         incident_details: dict = get_incident_details(raw_response, args)
         raw_headers = ['ID', 'CreationDate', 'DetectionDate', 'Severity', 'Status', 'MessageSourceType',
                        'MessageType', 'Policy Name']
