@@ -1,6 +1,6 @@
 commonfields:
-  id: 227c759f-a9f1-48c2-80bc-77d35efe6b63
-  version: 50
+  id: YaraScan
+  version: -1
 name: YaraScan
 script: ''
 type: python
@@ -16,7 +16,6 @@ args:
   description: The file entry ID(s) that requires scanning (can be CSV)
   isArray: true
 outputs:
-- contextPath: Yara
 - contextPath: Yara.Filename
   description: The filename of the file that was scanned
   type: string
