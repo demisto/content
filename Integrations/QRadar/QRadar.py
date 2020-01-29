@@ -1066,7 +1066,7 @@ def upload_indicators_command():
         The function finds indicators according to user query and updates QRadar reference set
 
         Returns:
-            string, dict: Human readable and the raw response
+            (string, dict). Human readable and the raw response
     """
     try:
         args = demisto.args()
