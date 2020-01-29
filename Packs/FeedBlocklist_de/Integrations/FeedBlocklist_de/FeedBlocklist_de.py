@@ -4,7 +4,7 @@ from CommonServerPython import *
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
-    subfeeds = ['all', 'ssh', 'mail', 'apache', 'imap', 'ftp', 'sip', 'bots', 'strongips', 'ircbot', 'bruteforcelogin']
+    subfeeds = ['all', 'ssh', 'mail', 'apache', 'imap', 'ftp', 'sip', 'bots', 'strongips', 'bruteforcelogin']
 
     feed_types = dict()
 
