@@ -3355,4 +3355,4 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<img src="https://github.com/demisto/content/blob/mimecast_upgrade/Integrations/MimecastV2/mimecast-update-policy.png?raw=true" alt="image">
+<img src="https://github.com/demisto/content/blob/mimecast_upgrade/Integrations/MimecastV2/mimecast-update-policy.jpg?raw=true" alt="image">
