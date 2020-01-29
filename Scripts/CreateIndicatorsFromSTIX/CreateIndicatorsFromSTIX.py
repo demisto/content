@@ -47,7 +47,7 @@ def main():
         {
             "type": stix_struct_to_indicator.get(indicator.get("indicator_type")),
             "value": indicator.get("value"),
-            "reputation": scoreToReputation(indicator.get("score")),
+            "reputation": score_to_reputation(indicator.get("score")),
             "rawJSON": indicator,
         }
         for indicator in data
@@ -59,7 +59,7 @@ def main():
             errors.append("Error creating indicator - {}".format(res[0]['Contents']))
     return_outputs("Create Indicators From STIX: {} indicators were created.".format(len(indicators) - len(errors)))
     if errors:
-        return_error(json.dumps(errors))
+        return_error(json.dumps(errors, indent=4))
 
 
 if __name__ in ("builtins",):
