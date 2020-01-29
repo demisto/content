@@ -1,7 +1,7 @@
 from Tanium_v2 import Client
 import json
 
-BASE_URL = 'https://test.com'
+BASE_URL = 'https://test.com/'
 
 parse_question_res = {
     'data': [
