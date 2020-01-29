@@ -9,22 +9,6 @@ from datetime import datetime
 
 VENDOR_NAME = 'McAfee Threat Intelligence Exchange'
 
-broker_ca_bundle = './brokercerts.crt'
-with open(broker_ca_bundle, "w") as text_file:
-    text_file.write(demisto.params()['broker_ca_bundle'])
-
-
-cert_file = './cert_file.crt'
-with open(cert_file, "w") as text_file:
-    text_file.write(demisto.params()['cert_file'])
-
-
-private_key = './private_key.key'
-with open(private_key, "w") as text_file:
-    text_file.write(demisto.params()['private_key'])
-
-broker_urls = demisto.params()['broker_urls'].split(',')
-
 HASH_TYPE_KEYS = {
     'md5': HashType.MD5,
     'sha1': HashType.SHA1,
@@ -64,10 +48,10 @@ def validate_certificates_format():
     if '-----END CERTIFICATE-----' not in demisto.params()['cert_file']:
         return_error(
             "The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")
-    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['broker_ca_bundle']:
+    if not demisto.params()['broker_ca_bundle'].lstrip(" ").startswith('-----BEGIN CERTIFICATE-----'):
         return_error(
             "The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
-    if '-----END CERTIFICATE-----' not in demisto.params()['broker_ca_bundle']:
+    if not demisto.params()['broker_ca_bundle'].rstrip(" ").endswith('-----END CERTIFICATE-----'):
         return_error(
             "The broker certificate seem to be incorrect as they don't end with '-----END CERTIFICATE-----'")
 
@@ -305,28 +289,48 @@ def set_file_reputation(hash, trust_level, filename, comment):
             return create_error_entry(str(ex))
 
 
-try:
-    args = demisto.args()
-    if demisto.command() == 'test-module':
-        test()
-        demisto.results('ok')
-        sys.exit(0)
-    elif demisto.command() == 'file':
-        results = file(args.get('file'))
-        demisto.results(results)
-        sys.exit(0)
-    elif demisto.command() == 'tie-file-references':
-        results = file_references(args.get('file'))
-        demisto.results(results)
-        sys.exit(0)
-    elif demisto.command() == 'tie-set-file-reputation':
-        results = set_file_reputation(
-            args.get('file'),
-            args.get('trust_level'),
-            args.get('filename'),
-            args.get('comment')
-        )
-        demisto.results(results)
-        sys.exit(0)
-except Exception:
-    validate_certificates_format()
+def main():
+    try:
+        args = demisto.args()
+        if demisto.command() == 'test-module':
+            test()
+            demisto.results('ok')
+            sys.exit(0)
+        elif demisto.command() == 'file':
+            results = file(args.get('file'))
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'tie-file-references':
+            results = file_references(args.get('file'))
+            demisto.results(results)
+            sys.exit(0)
+        elif demisto.command() == 'tie-set-file-reputation':
+            results = set_file_reputation(
+                args.get('file'),
+                args.get('trust_level'),
+                args.get('filename'),
+                args.get('comment')
+            )
+            demisto.results(results)
+            sys.exit(0)
+    except Exception:
+        validate_certificates_format()
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    broker_ca_bundle = './brokercerts.crt'
+    with open(broker_ca_bundle, "w") as text_file:
+        text_file.write(demisto.params()['broker_ca_bundle'])
+
+    cert_file = './cert_file.crt'
+    with open(cert_file, "w") as text_file:
+        text_file.write(demisto.params()['cert_file'])
+
+    private_key = './private_key.key'
+    with open(private_key, "w") as text_file:
+        text_file.write(demisto.params()['private_key'])
+
+    broker_urls = demisto.params()['broker_urls'].split(',')
+
+    main()
+
