@@ -1218,7 +1218,7 @@ def create_distribution_command(client, args):
 
 def fetch_incidents(client, first_fetch_time, last_run: dict = None):
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('time')
+    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
