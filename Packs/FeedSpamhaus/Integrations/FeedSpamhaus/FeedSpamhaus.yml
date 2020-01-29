@@ -110,7 +110,7 @@ script:
     - contextPath: SpamhausFeed.Indicator.RawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/python3:3.7.5.4583
+  dockerimage: demisto/python3:3.8.1.5734
   feed: true
   isfetch: false
   longRunning: false
