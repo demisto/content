@@ -994,7 +994,7 @@ script:
       description: The URL address.
       type: String
     - contextPath: File.SHA256
-      description: SHA256 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: Domain.Name
       description: The domain name.
