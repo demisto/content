@@ -957,10 +957,11 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     response = client.create_incident_request(violation_name, resource_group, resource_name, entity_type, entity_name,
                                               action_name, workflow, comment, criticality)
     result = response.get('result')
-    message = response.get('messages')
-    if not result or not message:
+    if not result:
         raise Exception(f'Failed to create the incident.\nResponse from Securonix is: {str(response)}')
-    if isinstance(message, list) and len(message) > 0 and 'Invalid' in message[0]:
+
+    message = response.get('messages')
+    if message and isinstance(message, list) and 'Invalid' in message[0]:
         message = message[0]
         raise Exception(f'Failed to create the incident with message:\n{message}')
     if 'Invalid' in message:
