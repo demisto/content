@@ -1,6 +1,5 @@
 ## [Unreleased]
-  - Added support for the ***fetch-indicators*** function, which is used to share IoCs between tenants in multi-tenant deployments.
-  - Added the ***get-shared-indicators*** command, which tests the ***fetch-indicators*** function.
+
 
 ## [19.12.0] - 2019-12-10
 -

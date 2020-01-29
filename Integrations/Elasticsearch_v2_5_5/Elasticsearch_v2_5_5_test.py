@@ -444,7 +444,7 @@ FEED_IOC_KEYS = (
 
 
 def test_context_creation_es7():
-    from Elasticsearch_v2 import results_to_context, get_total_results
+    from Elasticsearch_v2_5_5 import results_to_context, get_total_results
 
     base_page = 0
     size = 2
@@ -461,7 +461,7 @@ def test_context_creation_es7():
 
 
 def test_context_creation_es6():
-    from Elasticsearch_v2 import results_to_context, get_total_results
+    from Elasticsearch_v2_5_5 import results_to_context, get_total_results
 
     base_page = 0
     size = 2
@@ -477,12 +477,12 @@ def test_context_creation_es6():
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
-@patch("Elasticsearch_v2.TIME_FIELD", 'Date')
-@patch("Elasticsearch_v2.FETCH_INDEX", "users")
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Simple-Date')
+@patch("Elasticsearch_v2_5_5.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
+@patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
+@patch("Elasticsearch_v2_5_5.FETCH_INDEX", "users")
 def test_incident_creation_e6():
-    from Elasticsearch_v2 import results_to_incidents_datetime
+    from Elasticsearch_v2_5_5 import results_to_incidents_datetime
     last_fetch = datetime.strptime('2019-08-29T14:44:00Z', '%Y-%m-%dT%H:%M:%SZ')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
@@ -490,12 +490,12 @@ def test_incident_creation_e6():
     assert str(incidents) == MOCK_ES6_INCIDETNS
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
-@patch("Elasticsearch_v2.TIME_FIELD", 'Date')
-@patch("Elasticsearch_v2.FETCH_INDEX", "customer")
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Simple-Date')
+@patch("Elasticsearch_v2_5_5.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
+@patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
+@patch("Elasticsearch_v2_5_5.FETCH_INDEX", "customer")
 def test_incident_creation_e7():
-    from Elasticsearch_v2 import results_to_incidents_datetime
+    from Elasticsearch_v2_5_5 import results_to_incidents_datetime
     last_fetch = datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
@@ -503,26 +503,40 @@ def test_incident_creation_e7():
     assert str(incidents) == MOCK_ES7_INCIDENTS
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Seconds')
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Timestamp-Seconds')
 def test_timestamp_to_date_converter_seconds():
-    from Elasticsearch_v2 import timestamp_to_date
+    from Elasticsearch_v2_5_5 import timestamp_to_date
     seconds_since_epoch = "1572164838"
     assert str(timestamp_to_date(seconds_since_epoch)) == "2019-10-27 08:27:18"
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Milliseconds')
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Timestamp-Milliseconds')
 def test_timestamp_to_date_converter_milliseconds():
-    from Elasticsearch_v2 import timestamp_to_date
+    from Elasticsearch_v2_5_5 import timestamp_to_date
     milliseconds_since_epoch = "1572164838123"
     assert str(timestamp_to_date(milliseconds_since_epoch)) == "2019-10-27 08:27:18.123000"
 
 
-@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Seconds')
-@patch("Elasticsearch_v2.TIME_FIELD", 'Date')
-@patch("Elasticsearch_v2.FETCH_INDEX", "customer")
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Timestamp-Seconds')
+@patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
+@patch("Elasticsearch_v2_5_5.FETCH_INDEX", "customer")
 def test_incident_creation_with_timestamp_e7():
-    from Elasticsearch_v2 import results_to_incidents_timestamp
+    from Elasticsearch_v2_5_5 import results_to_incidents_timestamp
     lastfetch = int(datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ').timestamp())
     incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
+
+
+def test_extract_indicators_from_insight_hit(mocker):
+    import Elasticsearch_v2_5_5 as es2
+    mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
+    ioc_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
+    assert len(ioc_lst) == 3
+    assert ioc_lst[0].get('value')
+    # moduleToFeedMap with isEnrichment: False should be added to ioc_lst
+    assert ioc_lst[0].get('moduleToFeedMap').get('Demisto.Demisto')
+    assert ioc_lst[0].get('moduleToFeedMap').get('VirusTotal.VirusTotal') is None
+    set(FEED_IOC_KEYS).issubset(ioc_lst[1])
+    set(FEED_IOC_KEYS).issubset(ioc_lst[2])
