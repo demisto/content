@@ -58,13 +58,15 @@ configuration:
   name: expirationInterval
   required: false
   type: 1
-- additionalInfo: When selected, the exclusion list will be ignored for this feed.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: bypassExclusionList
   defaultvalue: ""
   type: 8
   required: false
-- additionalInfo: Indicators from this integration instance will be marked with this reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Good
   display: Indicator reputation
   name: feedInstanceReputation
@@ -75,7 +77,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalInfo: 'IPs contains: IPv4, CIDR, IPv6, IPv6CIDR. URLs contains: URLs and Domains.'
+- additionalinfo: 'IPs contains: IPv4, CIDR, IPv6, IPv6CIDR. URLs contains: URLs and Domains.'
   defaultvalue: IPs
   display: JSON attribute to use as an indicator
   name: indicator
@@ -132,4 +134,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- Office365_Feed_Test
 fromversion: 5.5.0

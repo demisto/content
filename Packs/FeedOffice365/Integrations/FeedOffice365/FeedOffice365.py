@@ -203,8 +203,7 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicator_type = client.indicator
-    indicator_type_lower = indicator_type.lower()
+    indicator_type_lower = client.indicator.lower()
     indicators = fetch_indicators(client, indicator_type_lower)
     return indicators
 
