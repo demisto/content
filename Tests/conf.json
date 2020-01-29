@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
          {
-            "playbookID": "CreateIndicatorFromSTIXTest",
+            "playbookID": "CreateIndicatorFromSTIXTest"
          },
          {
             "integrations": "SpamhausFeed",
