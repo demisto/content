@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
          {
+            "playbookID": "CreateIndicatorFromSTIXTest",
+         },
+         {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
             "fromversion": "5.5.0"
@@ -2123,9 +2126,6 @@
         {
             "playbookID": "GetValuesOfMultipleFIelds Test",
             "fromversion": "4.5.0"
-        },
-        {
-            "playbookID": "CreateIndicatorFromSTIXTest",
         },
         {
             "integrations": "BPA",
