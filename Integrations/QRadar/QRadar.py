@@ -1100,6 +1100,8 @@ def upload_indicators_command():
             return [tableToMarkdown("reference set {0} was updated".format(reference_name), ref,
                                     headers=ref_set_headers) + tableToMarkdown("Indicators list", indicators_data_list,
                                                                                headers=indicator_headers), raw_response]
+
+# Gets an error if the user tried to add indicators that dont match to the reference set type
     except Exception as e:
         if '1005' in str(e):
             return "You tried to add indicators that dont match to reference set type"
