@@ -45,6 +45,7 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
 INSECURE = not demisto.params().get('insecure', False)
 TIME_METHOD = demisto.params().get('time_method', 'Simple-Date')
+MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 
 # if timestamp than set the format to iso.
 if 'Timestamp' in TIME_METHOD:
@@ -556,10 +557,15 @@ def extract_indicators_from_insight_hit(hit):
     ioc = results_to_indicator(hit)
     if ioc.get('value'):
         ioc_lst.append(ioc)
-        module_to_feedmap = ioc.pop('moduleToFeedMap', {})
-        for key, val in module_to_feedmap.items():
-            val['isEnrichment'] = True
-            ioc_lst.append(val)
+        module_to_feedmap = ioc.get(MODULE_TO_FEEDMAP_KEY)
+        updated_module_to_feedmap = {}
+        if module_to_feedmap:
+            for key, val in module_to_feedmap.items():
+                if val.get('isEnrichment'):
+                    ioc_lst.append(val)
+                else:
+                    updated_module_to_feedmap[key] = val
+            ioc[MODULE_TO_FEEDMAP_KEY] = updated_module_to_feedmap
     return ioc_lst
 
 

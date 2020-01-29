@@ -393,6 +393,27 @@ PARSED_INDICATOR_HIT = {
             "CustomFields": None,
             "modifiedTime": "0001-01-01T00:00:00Z",
             "isEnrichment": True
+        },
+        "Demisto.Demisto": {
+            "reliability": "A+ - 3rd party enrichment",
+            "rawJSON": None,
+            "fetchTime": "2020-01-26T16:16:09.855733+02:00",
+            "sourceBrand": "VirusTotal",
+            "sourceInstance": "VirusTotal",
+            "expirationPolicy": "indicatorType",
+            "expirationInterval": 0,
+            "expiration": "0001-01-01T00:00:00Z",
+            "ExpirationSource": None,
+            "bypassExclusionList": False,
+            "type": "domain",
+            "value": "google.com",
+            "score": 1,
+            "timestamp": "0001-01-01T00:00:00Z",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "CustomFields": None,
+            "modifiedTime": "0001-01-01T00:00:00Z",
+            "isEnrichment": False
         }
     },
     "expiration": "0001-01-01T00:00:00Z",
@@ -511,7 +532,11 @@ def test_extract_indicators_from_insight_hit(mocker):
     import Elasticsearch_v2 as es2
     mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
     ioc_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
     assert len(ioc_lst) == 3
     assert ioc_lst[0].get('value')
+    # moduleToFeedMap with isEnrichment: False should be added to ioc_lst
+    assert ioc_lst[0].get('moduleToFeedMap').get('Demisto.Demisto')
+    assert ioc_lst[0].get('moduleToFeedMap').get('VirusTotal.VirusTotal') is None
     set(FEED_IOC_KEYS).issubset(ioc_lst[1])
     set(FEED_IOC_KEYS).issubset(ioc_lst[2])
