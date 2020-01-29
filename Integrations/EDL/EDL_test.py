@@ -16,9 +16,11 @@ class TestHelperFunctions:
         from EDL import get_edl_ioc_values
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
-            params = {'format': 'text', 'on_demand': True, 'edl_size': 50}
             mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
-            ioc_list = get_edl_ioc_values(params)
+            ioc_list = get_edl_ioc_values(
+                on_demand=True,
+                limit=50
+            )
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
@@ -30,11 +32,14 @@ class TestHelperFunctions:
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
-            params = {'format': 'text', 'on_demand': False, 'edl_size': 50, 'cache_refresh_rate': '1 minute'}
             mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
             mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            ioc_list = edl.get_edl_ioc_values(params)
+            ioc_list = edl.get_edl_ioc_values(
+                on_demand=False,
+                limit=50,
+                cache_refresh_rate='1 minute'
+            )
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
@@ -46,11 +51,14 @@ class TestHelperFunctions:
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
-            params = {'format': 'text', 'on_demand': False, 'edl_size': 50, 'cache_refresh_rate': '1 minute'}
             mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
             mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            ioc_list = edl.get_edl_ioc_values(params)
+            ioc_list = edl.get_edl_ioc_values(
+                on_demand=False,
+                limit=50,
+                cache_refresh_rate='1 minute'
+            )
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
@@ -114,46 +122,10 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            edl_vals = edl.refresh_edl_context(indicator_query='', out_format='text')
+            edl_vals = edl.refresh_edl_context(indicator_query='')
             for ioc in iocs_json:
                 ip = ioc.get('value')
                 assert ip in edl_vals
-
-    @pytest.mark.refresh_edl_context
-    def test_refresh_edl_context_2(self, mocker):
-        """Test out_format=json"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            edl_vals = edl.refresh_edl_context(indicator_query='', out_format='json')
-            assert isinstance(edl_vals, str)
-            edl_vals = json.loads(edl_vals)
-            assert iocs_json == edl_vals
-
-    @pytest.mark.refresh_edl_context
-    def test_refresh_edl_context_3(self, mocker):
-        """Test out_format=csv"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            edl_vals = edl.refresh_edl_context(indicator_query='', out_format='csv')
-            with open('EDL_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
-                iocs_out = iocs_out_f.read()
-                assert iocs_out == edl_vals
-
-    @pytest.mark.refresh_edl_context
-    def test_refresh_edl_context_4(self, mocker):
-        """Test out_format=json-seq"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            edl_vals = edl.refresh_edl_context(indicator_query='', out_format='json-seq')
-            with open('EDL_test/TestHelperFunctions/iocs_out_json_seq.txt', 'r') as iocs_out_f:
-                iocs_out = iocs_out_f.read()
-                assert iocs_out == edl_vals
 
     @pytest.mark.find_indicators_to_limit
     def test_find_indicators_to_limit_1(self, mocker):
@@ -192,43 +164,11 @@ class TestHelperFunctions:
 
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_1(self):
-        """Test CSV out"""
-        from EDL import create_values_out_dict, FORMAT_CSV
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            csv_out = create_values_out_dict(iocs_json, FORMAT_CSV)
-            # assert len(csv_out) == IOC_RES_LEN + 1
-            with open('EDL_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
-                expected_csv_out = iocs_out_f.read()
-                for csv_line in csv_out.values():
-                    assert csv_line in expected_csv_out
-
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_2(self):
-        """Test JSON out"""
-        from EDL import create_values_out_dict, FORMAT_JSON, EDL_VALUES_KEY
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.load(iocs_json_f)
-            json_out = json.loads(create_values_out_dict(iocs_json, FORMAT_JSON).get(EDL_VALUES_KEY))
-            assert json_out == iocs_json
-
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_3(self):
-        """Test JSON_SEQ out"""
-        from EDL import create_values_out_dict, FORMAT_JSON_SEQ, EDL_VALUES_KEY
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            json_seq_out = create_values_out_dict(iocs_json, FORMAT_JSON_SEQ).get(EDL_VALUES_KEY)
-            for seq_line in json_seq_out.split('\n'):
-                assert json.loads(seq_line) in iocs_json
-
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_4(self):
         """Test TEXT out"""
-        from EDL import create_values_out_dict, FORMAT_TEXT, EDL_VALUES_KEY
+        from EDL import create_values_out_dict, EDL_VALUES_KEY
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            text_out = create_values_out_dict(iocs_json, FORMAT_TEXT).get(EDL_VALUES_KEY)
+            text_out = create_values_out_dict(iocs_json).get(EDL_VALUES_KEY)
             with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_txt_f:
                 iocs_txt_json = json.load(iocs_txt_f)
                 for line in text_out.split('\n'):
