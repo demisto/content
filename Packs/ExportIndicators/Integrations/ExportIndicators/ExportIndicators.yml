@@ -111,7 +111,7 @@ script:
     description: Updates values stored in the export indicators service (only avaialable On-Demand).
     execution: false
     name: eis-update
-  dockerimage: demisto/teams:1.0.0.1701
+  dockerimage: demisto/teams:1.0.0.4937
   feed: false
   isfetch: false
   longRunning: true
