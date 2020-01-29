@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Blocklist_deFeed
+  id: Blocklist_de Feed
   version: -1
 configuration:
 - defaultvalue: '360'
@@ -42,7 +42,7 @@ configuration:
   type: 16
 description: Use the Blocklist.de feed integration to fetch indicators from the feed.
 display: Blocklist_de Feed
-name: Blocklist_deFeed
+name: Blocklist_de Feed
 script:
   commands:
   - arguments:
