@@ -291,6 +291,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
+              exit 0
 
                 python ./Tests/scripts/run_content_installation.py
                 python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
@@ -315,6 +316,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
+              exit 0
                 ./Tests/scripts/run_tests.sh "Demisto GA"
 
               else
@@ -336,6 +338,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
+              exit 0
                 ./Tests/scripts/run_tests.sh "Demisto one before GA"
 
               else
@@ -357,6 +360,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
+              exit 0
                 ./Tests/scripts/run_tests.sh "Demisto two before GA"
 
               else
@@ -378,6 +382,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
+              exit 0
                 ./Tests/scripts/run_tests.sh "Server Master"
                 export RETVAL=$?
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
