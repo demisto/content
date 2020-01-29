@@ -63,8 +63,8 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list will be ignored for this feed.
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  additionalInfo: When selected, the exclusion list will be ignored for this feed.
+- additionalInfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Good
   display: Indicator reputation
   name: feedInstanceReputation
