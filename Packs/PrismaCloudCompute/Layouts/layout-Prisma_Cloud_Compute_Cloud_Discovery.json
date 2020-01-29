@@ -1,17 +1,12 @@
 {
-	"TypeName": "Prisma Cloud Compute Audit",
+	"TypeName": "Prisma Cloud Compute Cloud Discovery",
 	"kind": "details",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
-		"id": "Prisma Cloud Compute Audit",
+		"id": "Prisma Cloud Compute Cloud Discovery",
 		"kind": "details",
-		"modified": "2020-01-24T00:03:43.068795094+02:00",
+		"modified": "2020-01-19T16:04:54.548365158+02:00",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "Prisma Cloud Compute Audit",
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -160,192 +155,115 @@
 						"y": 0
 					},
 					{
-						"description": "",
 						"displayType": "CARD",
 						"h": 4,
 						"hideName": false,
-						"i": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+						"i": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
 						"items": [
 							{
 								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "prismacloudcomputecategory",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeprovider",
 								"height": 55,
-								"id": "7701a730-3534-11ea-82bb-d3789631c89f",
+								"id": "93ca02d0-3535-11ea-82bb-d3789631c89f",
 								"index": 0,
-								"listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "prismacloudcomputemessage",
+								"endCol": 2,
+								"fieldId": "prismacloudcomputeaccountid",
 								"height": 55,
-								"id": "dbd74070-3534-11ea-82bb-d3789631c89f",
+								"id": "f46843a0-3859-11ea-b3f4-7f5d26481e3a",
 								"index": 1,
-								"listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeimage",
-								"height": 55,
-								"id": "7d910910-3534-11ea-82bb-d3789631c89f",
-								"index": 2,
-								"listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputehost",
-								"height": 55,
-								"id": "adfafca0-3534-11ea-82bb-d3789631c89f",
-								"index": 3,
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "prismacloudcomputefqdn",
-								"height": 55,
-								"id": "b00090a0-3534-11ea-82bb-d3789631c89f",
-								"index": 4,
-								"listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "prismacloudcomputecontainer",
-								"height": 55,
-								"id": "b81e33a0-3534-11ea-82bb-d3789631c89f",
-								"index": 5,
-								"listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeuser",
-								"height": 55,
-								"id": "cdec5310-3534-11ea-82bb-d3789631c89f",
-								"index": 6,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeinteractive",
-								"height": 55,
-								"id": "d252e180-3534-11ea-82bb-d3789631c89f",
-								"index": 7,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputerule",
-								"height": 55,
-								"id": "e1fd5930-3534-11ea-82bb-d3789631c89f",
-								"index": 8,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputefunction",
-								"height": 55,
-								"id": "ee0025a0-3534-11ea-82bb-d3789631c89f",
-								"index": 9,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
+								"endCol": 4,
 								"fieldId": "prismacloudcomputeregion",
 								"height": 55,
-								"id": "1235b570-3535-11ea-82bb-d3789631c89f",
+								"id": "7d0cd820-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 1,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeproject",
+								"height": 55,
+								"id": "8a7ffd70-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 2,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeregistry",
+								"height": 55,
+								"id": "a0d50020-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 3,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeservicetype",
+								"height": 55,
+								"id": "a45e6550-3535-11ea-82bb-d3789631c89f",
+								"index": 4,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputecredentialid",
+								"height": 55,
+								"id": "8f8469e0-3535-11ea-82bb-d3789631c89f",
+								"index": 5,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeprotected",
+								"height": 55,
+								"id": "b166e1f0-3535-11ea-82bb-d3789631c89f",
+								"index": 6,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputetotal",
+								"height": 55,
+								"id": "079e6a70-3536-11ea-82bb-d3789631c89f",
+								"index": 7,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "prismacloudcomputecollections",
+								"height": 110,
+								"id": "ded1fd10-3859-11ea-b3f4-7f5d26481e3a",
+								"index": 8,
+								"listId": "caseinfoid-724ab960-3535-11ea-82bb-d3789631c89f",
+								"startCol": 0
+							},
+							{
+								"endCol": 4,
+								"fieldId": "prismacloudcomputeerror",
+								"height": 55,
+								"id": "ba552b10-3859-11ea-b3f4-7f5d26481e3a",
 								"index": 10,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeruntime",
-								"height": 55,
-								"id": "15172a80-3535-11ea-82bb-d3789631c89f",
-								"index": 11,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeappid",
-								"height": 55,
-								"id": "17a48c20-3535-11ea-82bb-d3789631c89f",
-								"index": 12,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeforensic",
-								"height": 55,
-								"id": "1a906170-3535-11ea-82bb-d3789631c89f",
-								"index": 13,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputekubernetesresource",
-								"height": 55,
-								"id": "1f486b40-3535-11ea-82bb-d3789631c89f",
-								"index": 14,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputecommand",
-								"height": 55,
-								"id": "2655d6c0-3535-11ea-82bb-d3789631c89f",
-								"index": 15,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeservice",
-								"height": 55,
-								"id": "2f908280-3535-11ea-82bb-d3789631c89f",
-								"index": 16,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputelogfile",
-								"height": 55,
-								"id": "3509e080-3535-11ea-82bb-d3789631c89f",
-								"index": 17,
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeactivitytype",
-								"height": 55,
-								"id": "22cf4810-3535-11ea-82bb-d3789631c89f",
-								"index": 18,
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "prismacloudcomputeline",
-								"height": 55,
-								"id": "38ebfcb0-3535-11ea-82bb-d3789631c89f",
-								"index": 19,
-								"listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "prismacloudcomputelabels",
-								"height": 55,
-								"id": "e8b74d80-3534-11ea-82bb-d3789631c89f",
-								"index": 20,
-								"listId": "caseinfoid-87506010-3532-11ea-82bb-d3789631c89f",
 								"startCol": 0
 							}
 						],
@@ -383,16 +301,50 @@
 				"type": "relatedIncidents"
 			},
 			{
+				"hidden": true,
 				"id": "canvas",
 				"name": "Canvas",
 				"type": "canvas"
+			},
+			{
+				"hidden": false,
+				"id": "mvmuqvevyt",
+				"name": "Discovered Entities",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 5,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "mvmuqvevyt-e4aff1e0-353b-11ea-82bb-d3789631c89f",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "prismacloudcomputemarkdown",
+								"height": 110,
+								"id": "ecf679a0-353b-11ea-82bb-d3789631c89f",
+								"index": 0,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "New Section",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
 			}
 		],
-		"typeId": "Prisma Cloud Compute Audit",
-		"vcShouldIgnore": false,
-		"version": 9
+		"typeId": "Prisma Cloud Compute Cloud Discovery",
+		"version": -1
 	},
-	"typeId": "Prisma Cloud Compute Audit",
+	"typeId": "Prisma Cloud Compute Cloud Discovery",
 	"version": -1,
 	"fromVersion": "5.0.0"
 }
