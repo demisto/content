@@ -1,6 +1,6 @@
 elasticcommonfields: {}
 id: CreateIndicatorFromSTIXTest
-version: 2
+version: -1
 contentitemexportablefields:
   contentitemfields:
     propagationLabels:

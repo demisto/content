@@ -20,6 +20,5 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.1.5734
-fromversion: 5.0.0
 tests:
 - CreateIndicatorFromSTIXTest

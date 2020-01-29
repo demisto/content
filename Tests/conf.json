@@ -2126,7 +2126,6 @@
         },
         {
             "playbookID": "CreateIndicatorFromSTIXTest",
-            "fromversion": "5.0.0"
         },
         {
             "integrations": "BPA",
