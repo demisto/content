@@ -123,7 +123,7 @@ tags:
 - ingestion
 timeout: '0'
 type: python
-dockerimage: demisto/readpdf:1.0.0.299
+dockerimage: demisto/readpdf:1.0.0.4709
 subtype: python3
 runas: DBotWeakRole
 runonce: false
