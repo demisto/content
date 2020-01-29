@@ -36,7 +36,6 @@ outputs:
   type: number
 - contextPath: Errors
   description: A list of errors that occurred during the scan
-- contextPath: Matches
 - contextPath: Matches.Meta
   description: Metadata about the rule (as defined in the rule itself)
 - contextPath: Matches.Namespace
