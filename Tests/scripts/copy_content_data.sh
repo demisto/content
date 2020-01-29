@@ -25,6 +25,14 @@ COPY_CONTENT_COMMAND="sudo rm -f /usr/local/demisto/res/playbook-Test Playbook T
   /usr/local/demisto/res/integration-Awake_Security.yml /usr/local/demisto/res/integration-WhatsMyBrowser.yml \
   && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res"
 
+if [[ -n "$NIGHTLY" ]]; then
+  # when triggered on non master branch sideload like we used to do
+  scp artifacts/content_new.zip ${USER}@${PUBLIC_IP}:~/content
+  scp artifacts/content_test.zip ${USER}@${PUBLIC_IP}:~/content
+  COPY_CONTENT_COMMAND="$COPY_CONTENT_COMMAND && sudo unzip -q -o ~/content/content_new.zip -d /usr/local/demisto/res \
+  && sudo unzip -q -o ~/content/content_test.zip -d /usr/local/demisto/res"
+fi
+
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
 echo "[`date`] ${PUBLIC_IP}: start server"
