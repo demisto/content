@@ -153,7 +153,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
 
     for item in iterator:
         if indicator_type_lower == 'both':
-            values = item.get('ips') if 'ips' in iterator else item.get('urls')
+            values = item.get('ips', []) + item.get('urls', [])
         else:
             values = item.get(indicator_type_lower)
         if values:

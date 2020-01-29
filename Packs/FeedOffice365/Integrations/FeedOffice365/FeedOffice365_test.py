@@ -19,8 +19,9 @@ def test_fetch_indicators_command():
 
 
 @pytest.mark.parametrize('command, args, response, length', [
-    (get_indicators_command, {'limit': 2, 'indicator_type': 'IPS'}, RESPONSE_DATA, 4),
-    (get_indicators_command, {'limit': 2, 'indicator_type': 'URLS'}, RESPONSE_DATA, 6)
+    (get_indicators_command, {'limit': 2, 'indicator_type': 'IPs'}, RESPONSE_DATA, 4),
+    (get_indicators_command, {'limit': 2, 'indicator_type': 'URLs'}, RESPONSE_DATA, 6),
+    (get_indicators_command, {'limit': 3, 'indicator_type': 'Both'}, RESPONSE_DATA, 10)
 ])  # noqa: E124
 def test_commands(command, args, response, length, mocker):
     url_dict = {
@@ -38,8 +39,8 @@ def test_commands(command, args, response, length, mocker):
         indicator_type = indicator_json.get('type')
         assert indicator_val
         if indicator_type == 'URL':
-            assert indicator_type == args.get('indicator_type')[:-1]
+            assert args.get('indicator_type') != 'IPs'
         elif indicator_type == 'Domain':
             pass
-        else:
-            assert indicator_type.startswith(args.get('indicator_type')[:-1])
+        else:  # ip
+            assert args.get('indicator_type') != 'URLs'
