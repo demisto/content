@@ -1,5 +1,5 @@
 category: Database
-toversion: 5.4.9
+fromversion: 5.5.0
 commonfields:
   id: Elasticsearch v2
   version: -1
@@ -29,7 +29,7 @@ configuration:
   name: fetch_query
   required: false
   type: 0
-- display: Index time field (for sorting sort and limiting data)
+- display: Index time field (for sorting and limiting data)
   name: fetch_time_field
   required: false
   type: 0
@@ -57,7 +57,11 @@ configuration:
   name: fetch_size
   required: false
   type: 0
-description: "Search and analyze Data in Real Time. \n Supports version 6 and up."
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+description: "Searches for and analyzes data in real time. \n Supports version 6 and up."
 display: Elasticsearch v2
 name: Elasticsearch v2
 script:
@@ -78,8 +82,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields of a document to fetch. Leaving the fields
-        empty fetches the entire document.
+      description: A comma-separated list of the fields of a document to fetch. Leaving
+        the fields empty fetches the entire document.
       isArray: true
       name: fields
       required: false
@@ -87,7 +91,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Calculates an explanation of a score for a query. Default is "false".
+      description: Whether to calculate an explanation of a score for a query. The default value is "false".
         For example, "value:1.6943597".
       isArray: false
       name: explain
@@ -98,16 +102,15 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to start a search. The default
-        is "0".
+      description: The page number from which to start a search. The default value is "0".
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
-        The default is "100".
+      description: The number of documents displayed per page. Can be an integer between
+        "1" and "10,000". The default value is "100".
       isArray: false
       name: size
       required: false
@@ -194,7 +197,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields of a document to fetch. If empty, fetches the entire document.
+      description: A comma-separated list of the fields of a document to fetch. If
+        empty, fetches the entire document.
       isArray: true
       name: fields
       required: false
@@ -202,7 +206,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Calculates an explanation of a score for a query. Default is "false".
+      description: Whether to calculate an explanation of a score for a query. The default value is "false".
         For example, "value:1.6943597".
       isArray: false
       name: explain
@@ -213,16 +217,15 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to start a search. The default
-        is "0".
+      description: The page number from which to start a search. The default value  is "0".
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
-        The default is "100".
+      description: The number of documents displayed per page. Can be an integer between
+        "1" and "10,000". The default value is "100".
       isArray: false
       name: size
       required: false
@@ -241,7 +244,7 @@ script:
       default: false
       defaultValue: asc
       description: The order by which to sort the results table. The results tables
-        can only be sorted if a sort-field is defined.
+        can only be sorted if a sort-field is defined. The default value is "asc".
       isArray: false
       name: sort-order
       predefined:
@@ -293,11 +296,28 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of indicators to fetch.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets indicators shared with this tenant (MT only).
+    execution: false
+    name: get-shared-indicators
+    outputs:
+    - contextPath: ElasticsearchFeed.SharedIndicators
+      description: Indicators shared from other tenants.
+      type: Unknown
   dockerimage: demisto/elasticsearch:1.0.0.1795
+  feed: true
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python

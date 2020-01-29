@@ -17,8 +17,13 @@ requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
 SERVER = demisto.params().get('url', '').rstrip('/')
-USERNAME = demisto.params().get('credentials', {}).get('identifier')
-PASSWORD = demisto.params().get('credentials', {}).get('password')
+CREDS = demisto.params().get('credentials')
+if CREDS:
+    USERNAME = CREDS.get('identifier')
+    PASSWORD = CREDS.get('password')
+else:
+    USERNAME = None
+    PASSWORD = None
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
     400: '400 Bad Request - Incorrect or invalid parameters',
@@ -30,7 +35,6 @@ HTTP_ERRORS = {
     500: '500 Internal Server Error - Internal error',
     503: '503 Service Unavailable'
 }
-
 
 '''VARIABLES FOR FETCH INCIDENTS'''
 TIME_FIELD = demisto.params().get('fetch_time_field', '')
@@ -509,10 +513,60 @@ def results_to_incidents_datetime(response, last_fetch):
     return incidents, last_fetch
 
 
-def fetch_incidents():
+def get_indicators_command():
+    search, _ = get_indicators_search_scan()
+    limit = int(demisto.args().get('limit', FETCH_SIZE))
+    indicators_list = []
+    i = 0
+    for hit in search.scan():
+        ioc = results_to_indicator(hit)
+        if ioc.get('value'):
+            indicators_list.append(ioc)
+        i += 1
+        if i >= limit:
+            break
+    hr = tableToMarkdown('Indicators', indicators_list, ['name'])
+    return_outputs(hr, {'ElasticsearchFeed.SharedIndicators': indicators_list}, indicators_list)
+
+
+def fetch_indicators_command():
+    search, now = get_indicators_search_scan()
+    ioc_lst = []
+    for hit in search.scan():
+        ioc = results_to_indicator(hit)
+        if ioc.get('value'):
+            ioc_lst.append(ioc)
+    if ioc_lst:
+        for b in batch(ioc_lst, batch_size=2000):
+            demisto.createIndicators(b)
+    demisto.setLastRun({'time': now})
+
+
+def get_indicators_search_scan():
+    now = datetime.now()
+    time_field = "calculatedTime"
+    last_fetch = demisto.getLastRun().get('time')
+    range_field = {time_field: {'gt': datetime.fromtimestamp(float(last_fetch)), 'lte': now}} if last_fetch else {
+        time_field: {'lte': now}}
+    es = elasticsearch_builder()
+    query = QueryString(query=time_field + ":*")
+    tenant_hash = demisto.getIndexHash()
+    # all shared indexes minus this tenant shared
+    indexes = f'*-shared*,-*{tenant_hash}*-shared*'
+    search = Search(using=es, index=indexes).filter({'range': range_field}).query(query)
+    return search, str(now.timestamp())
+
+
+def results_to_indicator(hit):
+    ioc_dict = hit.to_dict()
+    ioc_dict['value'] = ioc_dict.get('name')
+    ioc_dict['rawJSON'] = dict(ioc_dict)
+    return ioc_dict
+
+
+def get_last_fetch_time():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
-
     # handle first time fetch
     if last_fetch is None:
         last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format=TIME_FORMAT, utc=False, to_timestamp=False)
@@ -525,7 +579,11 @@ def fetch_incidents():
     # if method is simple date - convert the date string to datetime
     elif 'Simple-Date' == TIME_METHOD:
         last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
+    return last_fetch
 
+
+def fetch_incidents():
+    last_fetch = get_last_fetch_time()
     es = elasticsearch_builder()
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
@@ -557,6 +615,10 @@ def main():
             test_func()
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
+        elif demisto.command() == 'fetch-indicators':
+            fetch_indicators_command()
+        elif demisto.command() == 'get-shared-indicators':
+            get_indicators_command()
         elif demisto.command() in ['search', 'es-search']:
             search_command()
     except Exception as e:
