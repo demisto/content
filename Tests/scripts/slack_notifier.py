@@ -178,17 +178,15 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'unittest-slack-notifier':
+    if branch_name == 'master':
         print("Extracting build status")
         # container 1: unit tests
         if int(container):
-            print(container)
             print_color("Starting Slack notifications about nightly build - unit tests", LOG_COLORS.GREEN)
             content_team_attachments = get_attachments_for_unit_test(build_url)
 
         # container 0: test playbooks
         else:
-            print(container)
             print_color("Starting Slack notifications about nightly build - tests playbook", LOG_COLORS.GREEN)
             content_team_attachments, _ = get_attachments_for_test_playbooks(build_url, env_results_file_name)
 
@@ -196,7 +194,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            channel="WHCL130LE",
+            channel="dmst-content-team",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
@@ -205,10 +203,10 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
 
 def main():
     options = options_handler()
-    # if options.nightly:
-    slack_notifier(options.url, options.slack, options.env_results_file_name, options.node_index)
-    # else:
-    #     print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
+    if options.nightly:
+        slack_notifier(options.url, options.slack, options.env_results_file_name, options.node_index)
+    else:
+        print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
 
 if __name__ == '__main__':
