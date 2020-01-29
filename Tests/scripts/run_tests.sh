@@ -15,6 +15,7 @@ DEMISTO_API_KEY=$temp
 
 code_1=0
 if [[ ! $IS_NIGHTLY ]]; then
+  echo "starting configure_and_test_integration_instances"
   python ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" -s "$SECRET_CONF_PATH" -g "$GIT_SHA1" --ami_env "$1"
   code_1=$?
 fi

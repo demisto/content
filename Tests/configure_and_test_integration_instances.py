@@ -521,6 +521,8 @@ def main():
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
     new_integrations_names, modified_integrations_names = get_new_and_modified_integrations(git_sha1)
+    print("new_integrations_names: " + new_integrations_names)
+    print("modified_integrations_names: " + modified_integrations_names)
     if new_integrations_names:
         print_warning('New Integrations Since Last Release:\n{}\n'.format('\n'.join(new_integrations_names)))
     if modified_integrations_names:
