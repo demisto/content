@@ -26,7 +26,8 @@ args:
 - name: domainName
   required: true
   description: 'The domain name for the organization. For a single domain use this format: "bla.com".
-    For multiple domains use this format: (bla.com|blabla.com), where the pipe and the brackets are the OR condition for regex.'
+    For multiple domains use this format: (bla.com|blabla.com),
+    where the pipe and the brackets are the OR condition for regex.'
 outputs:
 - contextPath: Endpoint.Hostname
   description: The hostname.
