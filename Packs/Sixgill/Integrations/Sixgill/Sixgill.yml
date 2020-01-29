@@ -11,7 +11,8 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- display: Max number of incidents that can be fetched
+- defaultvalue: '20'
+  display: Max number of incidents that can be fetched
   name: maxIncidents
   required: false
   type: 0
@@ -32,9 +33,24 @@ configuration:
   type: 15
 - display: Filter by alert threat type
   name: threat_type
+  options:
+  - Brand Protection
+  - Data Leak
+  - Malware
+  - Phishing
+  - Fraud
+  - Vulnerability Exploit
+  - Insider Threat
+  - Defacement
+  - Compromised Accounts
+  - DDoS Attack
+  - Web Attack
+  - Trend Anomaly
   required: false
-  type: 0
-description: Fetching Sixgill's alerts as incidents
+  type: 15
+description: Fetching Sixgill's alerts as incidents, Sixgill provides alerts that
+  are based on organization assets, enabling you to take proactive steps to eliminate
+  and mitigate your threats.
 display: Sixgill
 name: Sixgill
 script:
