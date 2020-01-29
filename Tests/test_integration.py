@@ -279,8 +279,8 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, pri
     except ApiException as err:
         prints_manager.add_print_job(err, print, thread_index)
 
-    # poll the incidents queue for a max time of 40 seconds
-    timeout = time.time() + 40
+    # poll the incidents queue for a max time of 120 seconds
+    timeout = time.time() + 120
     while incidents['total'] != 1:
         try:
             incidents = client.search_incidents(filter=search_filter)
