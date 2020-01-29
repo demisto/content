@@ -3,11 +3,6 @@ commonfields:
   id: Cofense Feed
   version: -1
 configuration:
-- defaultvalue: https://www.threathq.com
-  display: URL
-  name: url
-  required: true
-  type: 0
 - display: Username
   name: credentials
   required: false
