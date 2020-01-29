@@ -46,15 +46,15 @@ def determine_servers_urls(ami_env):
     Returns:
         (lst): The server url list to connect to
     '''
-    instance_dns = ''
+
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
         env_to_instance_dns = [{env.get('Role'): env.get('InstanceDNS')} for env in env_results]
         instances_dns = [env.get(ami_env) for env in env_to_instance_dns]
     server_urls = []
     for dns in instances_dns:
-        server_url = instance_dns if instance_dns.startswith('http') else ('https://{}'.format(instance_dns) if
-                                                                           instance_dns else '')
+        server_url = dns if dns.startswith('http') else ('https://{}'.format(dns) if
+                                                                           dns else '')
         server_urls.append(server_url)
     return server_urls
 
