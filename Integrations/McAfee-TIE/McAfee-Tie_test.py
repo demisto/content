@@ -1,5 +1,6 @@
 import demistomock as demisto
 import importlib
+import pytest
 
 valid_private_key = """-----BEGIN PRIVATE KEY-----
 This is a vaild Private Key
@@ -28,41 +29,30 @@ def test_validate_certificate_format(mocker):
                     'cert_file': valid_certificate,
                     'broker_ca_bundle': valid_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
-    try:
+
+    with pytest.raises(SystemExit):
         mcafee_tie.validate_certificates_format()
-        assert 1 == 0
-    except SystemExit:
-        assert 1 == 1
 
     # Invalid cert file
     valid_params = {'private_key': valid_private_key,
                     'cert_file': invalid_certificate,
                     'broker_ca_bundle': valid_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
-    try:
+    with pytest.raises(SystemExit):
         mcafee_tie.validate_certificates_format()
-        assert 1 == 0
-    except SystemExit:
-        assert 1 == 1
 
     # Invalid broker_ca_bundle
     valid_params = {'private_key': valid_private_key,
                     'cert_file': valid_certificate,
                     'broker_ca_bundle': invalid_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
-    try:
+    with pytest.raises(SystemExit):
         mcafee_tie.validate_certificates_format()
-        assert 1 == 0
-    except SystemExit:
-        assert 1 == 1
 
     # Everything is valid + spaces
     valid_params = {'private_key': valid_private_key,
                     'cert_file': valid_certificate,
                     'broker_ca_bundle': spaces_in_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
-    try:
-        mcafee_tie.validate_certificates_format()
-        assert 1 == 1
-    except SystemExit:
-        assert 1 == 0
+    mcafee_tie.validate_certificates_format()
+    assert 1 == 1

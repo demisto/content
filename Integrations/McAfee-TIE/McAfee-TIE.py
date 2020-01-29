@@ -333,4 +333,3 @@ if __name__ in ['__main__', '__builtin__', 'builtins']:
     broker_urls = demisto.params()['broker_urls'].split(',')
 
     main()
-
