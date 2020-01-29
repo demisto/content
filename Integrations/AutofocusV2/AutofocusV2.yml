@@ -982,7 +982,7 @@ script:
     name: autofocus-get-export-list-indicators
     outputs:
     - contextPath: AutoFocus.ExportListIndicator.Type
-      description: 'The type of the indicator in the export list. '
+      description: 'The indicator type in the export list. '
       type: String
     - contextPath: AutoFocus.ExportListIndicator.Value
       description: The value of the indicator in the export list.
@@ -994,7 +994,7 @@ script:
       description: The URL address.
       type: String
     - contextPath: File.SHA256
-      description: SHA256 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: Domain.Name
       description: The domain name.
