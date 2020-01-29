@@ -14,7 +14,7 @@ def main():
     for element in hostName:
         if element:
             if internalregex:
-                 internalRegexMatch = re.match(internalregex, element)
+                internalRegexMatch = re.match(internalregex, element)
             else:
                 internalRegexMatch = None
             internalDomainMatch = re.match(".*\." + domainName + "$", element)
@@ -24,10 +24,9 @@ def main():
             })
 
             if context_entry[-1]['IsInternal']:
-               readable = element + ' is internal'
+                readable = element + ' is internal'
             else:
                 readable = element + ' is external'
-
 
             human_readable.append(readable)
 
