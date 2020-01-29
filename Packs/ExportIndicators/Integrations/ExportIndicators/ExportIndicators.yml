@@ -1,4 +1,4 @@
-category: Utilities
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: ExportIndicators
   version: -1
