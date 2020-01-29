@@ -18,6 +18,8 @@ def main():
     fileInfos = list()
     for item in entryIDs:
         res = demisto.executeCommand("getFilePath", {"id": item})
+        if is_error(res):
+            return_error(get_error(res))
         if type(res[0]['Contents']) == dict:
             fileInfo = {
                 "name": res[0]['Contents']['name'],
