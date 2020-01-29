@@ -117,6 +117,7 @@ tasks:
     task:
       id: 9f5cc60c-036f-470a-8a62-3669641b2e99
       version: -1
+      description: ''
       name: Is there an IP to search?
       type: condition
       iscommand: false
@@ -152,6 +153,7 @@ tasks:
     task:
       id: 3e8c605b-d3ce-40f2-88b9-e2514e3141c8
       version: -1
+      description: ''
       name: Is there a hash to search?
       type: condition
       iscommand: false
@@ -199,6 +201,7 @@ tasks:
     task:
       id: cd127e84-9a7d-480c-81ee-d409b04cd47e
       version: -1
+      description: ''
       name: Is there a Domain/Url to search?
       type: condition
       iscommand: false
@@ -234,6 +237,7 @@ tasks:
     task:
       id: 48521f4b-2565-477b-88d5-c7741d102522
       version: -1
+      description: ''
       name: Was there a custom domain/url field?
       type: condition
       iscommand: false
@@ -310,6 +314,7 @@ tasks:
     task:
       id: 1cd43a10-0846-4e69-83ee-239c50d46e22
       version: -1
+      description: ''
       name: Was there a custom MD5 field?
       type: condition
       iscommand: false
@@ -345,6 +350,7 @@ tasks:
     task:
       id: 162956bb-d6f5-4e4a-8d31-6b94fddf3e78
       version: -1
+      description: ''
       name: Is there an MD5 to search?
       type: condition
       iscommand: false
@@ -432,6 +438,7 @@ tasks:
     task:
       id: e4e37a3b-6cda-4737-8171-d41893536058
       version: -1
+      description: ''
       name: Is there a SHA1 hash to search
       type: condition
       iscommand: false
@@ -467,6 +474,7 @@ tasks:
     task:
       id: 6f0e21b1-b8a4-4371-8542-4d3b1019eedc
       version: -1
+      description: ''
       name: Was there a custom SHA1 field?
       type: condition
       iscommand: false
@@ -529,6 +537,7 @@ tasks:
     task:
       id: 1eeca1cf-e1b2-44fc-8df1-069f87bbc032
       version: -1
+      description: ''
       name: Is there a SHA256 hash to search
       type: condition
       iscommand: false
@@ -564,6 +573,7 @@ tasks:
     task:
       id: f1e73c90-c287-4e3c-821e-fd41253442f6
       version: -1
+      description: ''
       name: Was there a custom SHA256 field?
       type: condition
       iscommand: false
@@ -626,6 +636,7 @@ tasks:
     task:
       id: 758baf47-0e00-4de2-81fa-36e4cbbf3dce
       version: -1
+      description: ''
       name: Was there a custom IP field?
       type: condition
       iscommand: false
@@ -662,6 +673,7 @@ tasks:
     task:
       id: 5e232c9c-765b-46b9-8428-5c1ce973403b
       version: -1
+      description: ''
       name: Is Splunk enabled?
       type: condition
       iscommand: false
@@ -2123,6 +2135,7 @@ tasks:
       id: 02d690c6-7ff8-4c63-861a-bfebc899be5b
       version: -1
       name: Have results been detected?
+      description: ''
       type: condition
       iscommand: false
       brand: ''
@@ -2504,6 +2517,7 @@ tasks:
     task:
       id: 4fc0f11a-af51-4e39-834f-f925e463feb8
       version: -1
+      description: ''
       name: Are there detected IP addresses?
       type: condition
       iscommand: false
@@ -2857,6 +2871,7 @@ tasks:
     task:
       id: 5cc384fb-59ea-457c-8f34-8d9a711c9ca3
       version: -1
+      description: ''
       name: Are there investigation fields for IP's?
       type: condition
       iscommand: false
@@ -2892,6 +2907,7 @@ tasks:
     task:
       id: 2108b67d-ebf6-42da-85b1-421e28dc69bc
       version: -1
+      description: ''
       name: Are there investigation fields for host names?
       type: condition
       iscommand: false
@@ -2927,6 +2943,7 @@ tasks:
     task:
       id: f209019f-1fff-463f-8a51-58d27a79d4f5
       version: -1
+      description: ''
       name: Are there investigation fields for user names?
       type: condition
       iscommand: false
@@ -3278,6 +3295,7 @@ tasks:
     task:
       id: 30d5b0f7-bec9-48a1-8910-d891e18b7d5d
       version: -1
+      description: ''
       name: Are there detected host names?
       type: condition
       iscommand: false
@@ -3476,6 +3494,7 @@ tasks:
     task:
       id: d93a4511-0c53-48ed-876c-9512680048e8
       version: -1
+      description: ''
       name: Has the domain name been provided?
       type: condition
       iscommand: false
@@ -3691,10 +3710,10 @@ inputs:
 - key: InternalHostRegex
   value: {}
   required: false
-  description: This is provided for the script IsInternalHostName that checks if
+  description: ' This is provided for the script IsInternalHostName that checks if
     the detected host names are internal or external. if the hosts match the organizations
     naming convention. For example the host testpc1 will have the following regex
-    \w{6}\d{1}
+    \w{6}\d{1}'
 outputs:
 - contextPath: Splunk.DetectedUsers
   description: Users detected based on the username field in your search.
