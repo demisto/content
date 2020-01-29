@@ -29,67 +29,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
-    taskid: 6f31f267-b262-45c1-841f-9cf722326750
-    type: playbook
-    task:
-      id: 6f31f267-b262-45c1-841f-9cf722326750
-      version: -1
-      name: Splunk Indicator Hunting
-      description: ''
-      playbookName: Splunk Indicator Hunting
-      type: playbook
-      iscommand: false
-      brand: ''
-    scriptarguments:
-      IPAddress:
-        simple: 1.1.1.1
-      IndexName:
-        simple: '*'
-      InternalRange: {}
-      InvestigationInternalHostFields:
-        simple: dest_nt_host
-      InvestigationIPFields:
-        simple: dest_ip,src_ip,src,dst
-      InvestigationUserFields:
-        simple: user_identity
-      MD5:
-        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
-      SHA1:
-        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c,xxxxxx8920ba0ddebaf5ea234987592834759834275
-      SHA256:
-        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
-      SelectFields: {}
-      SplunkIPField:
-        simple: ip
-      SplunkMD5Field:
-        simple: Caller_MD5,file_hash
-      SplunkSHA1Field: {}
-      SplunkSHA256Field:
-        simple: file_hash
-      SplunkURLDomainField: {}
-      URLDomain:
-        simple: goo,wall
-      earliest_time:
-        simple: -1d
-      event_limit: {}
-      latest_time: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '2':
     id: '2'
     taskid: c4ed11c5-ff85-4e72-80db-2f85581a67f6
@@ -105,7 +44,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '1'
+      - '4'
     scriptarguments:
       all:
         simple: 'yes'
@@ -124,12 +63,78 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 363d6d62-a171-4715-8545-03dc7eadd939
+    type: playbook
+    task:
+      id: 363d6d62-a171-4715-8545-03dc7eadd939
+      version: -1
+      name: Splunk Indicator Hunting
+      description: ''
+      playbookName: Splunk Indicator Hunting
+      type: playbook
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      IPAddress:
+        simple: 1.1.1.1
+      IndexName:
+        simple: '*'
+      InternalDomainName:
+        simple: test.com
+      InternalHostRegex:
+        simple: ACME\-.*
+      InternalIPRange: {}
+      InvestigationHostFields:
+        simple: ComputerName
+      InvestigationIPFields:
+        simple: dest_ip,src_ip,src,dst
+      InvestigationUserFields:
+        simple: user_identity
+      MD5:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
+      SHA1:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c,xxxxxx8920ba0ddebaf5ea234987592834759834275
+      SHA256:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
+      SelectFields: {}
+      SplunkIPField:
+        simple: dest_ip,src_ip,src,dst
+      SplunkMD5Field:
+        simple: Caller_MD5,file_hash
+      SplunkSHA1Field:
+        simple: file_hash
+      SplunkSHA256Field: {}
+      SplunkURLDomainField: {}
+      URLDomain:
+        simple: goo,wall
+      earliest_time:
+        simple: -1d
+      event_limit:
+        simple: '100'
+      latest_time: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 405,
+        "height": 415,
         "width": 380,
         "x": 450,
         "y": 50
