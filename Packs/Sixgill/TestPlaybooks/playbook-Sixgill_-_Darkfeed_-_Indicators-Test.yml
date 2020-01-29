@@ -1,6 +1,7 @@
 id: Sixgill - Darkfeed - Indicators-Test
 version: -1
 name: Sixgill - Darkfeed - Indicators-Test
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':

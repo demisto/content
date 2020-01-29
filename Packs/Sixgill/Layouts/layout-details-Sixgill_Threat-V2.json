@@ -1,6 +1,7 @@
 {
 	"TypeName": "Sixgill Threat",
 	"kind": "details",
+	"fromVersion": "5.0.0",
 	"layout": {
 		"TypeName": "",
 		"id": "Sixgill Threat",

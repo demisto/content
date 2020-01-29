@@ -1,6 +1,6 @@
 {
 	"id": "incident_sixgillcontent",
-	"version": 1,
+	"version": -1,
 	"modified": "2020-01-28T07:24:15.278050606Z",
 	"sortValues": null,
 	"vcShouldIgnore": false,
@@ -41,5 +41,6 @@
 	"sla": 0,
 	"threshold": 72,
 	"breachScript": "",
+	"fromVersion": "5.0.0",
 	"validatedError": ""
 }

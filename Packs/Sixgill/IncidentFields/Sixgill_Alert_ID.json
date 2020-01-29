@@ -41,5 +41,6 @@
 	"sla": 0,
 	"threshold": 72,
 	"breachScript": "",
+	"fromVersion": "5.0.0",
 	"validatedError": ""
 }
