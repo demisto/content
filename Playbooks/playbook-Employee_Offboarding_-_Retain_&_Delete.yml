@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 3560
+          "x": 795,
+          "y": -50
         }
       }
     note: false
@@ -55,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 4850
+          "x": 795,
+          "y": 1240
         }
       }
     note: false
@@ -81,8 +81,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 3730
+          "x": 795,
+          "y": 120
         }
       }
     note: false
@@ -135,8 +135,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1075,
-          "y": 4150
+          "x": 1195,
+          "y": 540
         }
       }
     note: false
@@ -167,8 +167,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1075,
-          "y": 4310
+          "x": 1195,
+          "y": 700
         }
       }
     note: false
@@ -216,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1075,
-          "y": 4480
+          "x": 1195,
+          "y": 870
         }
       }
     note: false
@@ -275,8 +275,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 305,
-          "y": 4670
+          "x": 425,
+          "y": 1060
         }
       }
     note: false
@@ -333,8 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 305,
-          "y": 4150
+          "x": 425,
+          "y": 540
         }
       }
     note: false
@@ -396,8 +396,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 305,
-          "y": 4395
+          "x": 425,
+          "y": 785
         }
       }
     note: false
@@ -445,8 +445,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 5490
+          "x": 320,
+          "y": 1880
         }
       }
     note: false
@@ -482,8 +482,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 5490
+          "x": 1280,
+          "y": 1880
         }
       }
     note: false
@@ -527,8 +527,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 5440
+          "x": 795,
+          "y": 1830
         }
       }
     note: false
@@ -588,8 +588,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 5225
+          "x": 795,
+          "y": 1615
         }
       }
     note: false
@@ -658,8 +658,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 5810
+          "x": 795,
+          "y": 2200
         }
       }
     note: false
@@ -684,8 +684,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1075,
-          "y": 4020
+          "x": 1195,
+          "y": 410
         }
       }
     note: false
@@ -710,8 +710,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 305,
-          "y": 4020
+          "x": 425,
+          "y": 410
         }
       }
     note: false
@@ -736,8 +736,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 5030
+          "x": 320,
+          "y": 1420
         }
       }
     note: false
@@ -790,8 +790,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 5155
+          "x": 320,
+          "y": 1545
         }
       }
     note: false
@@ -816,8 +816,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 5030
+          "x": 1280,
+          "y": 1420
         }
       }
     note: false
@@ -881,8 +881,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 5155
+          "x": 1280,
+          "y": 1545
         }
       }
     note: false
@@ -907,8 +907,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 5095
+          "x": 795,
+          "y": 1485
         }
       }
     note: false
@@ -970,8 +970,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 5320
+          "x": 320,
+          "y": 1710
         }
       }
     note: false
@@ -1026,8 +1026,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -225,
-          "y": 5500
+          "x": -105,
+          "y": 1890
         }
       }
     note: false
@@ -1079,8 +1079,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1500,
-          "y": 4480
+          "x": 1620,
+          "y": 870
         }
       }
     note: false
@@ -1120,8 +1120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 5595
+          "x": 795,
+          "y": 1985
         }
       }
     note: false
@@ -1373,8 +1373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 3850
+          "x": 795,
+          "y": 240
         }
       }
     note: false
@@ -1388,17 +1388,17 @@ tasks:
       id: 279a6521-9cb6-4740-8662-19277964de3c
       version: -1
       name: Finalize Offboarding
-      description: ''
       type: title
       iscommand: false
       brand: Builtin
+      description: ''
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 6160
+          "x": 795,
+          "y": 2550
         }
       }
     note: false
@@ -1445,8 +1445,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 5990
+          "x": 1110,
+          "y": 2380
         }
       }
     note: false
@@ -1471,13 +1471,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1530,
-          "y": 5345
+          "x": 1650,
+          "y": 1735
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1498,8 +1499,8 @@ view: |-
       "dimensions": {
         "height": 2665,
         "width": 2135,
-        "x": -225,
-        "y": 3560
+        "x": -105,
+        "y": -50
       }
     }
   }
