@@ -1,0 +1,423 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FeedOffice3655
+  version: -1
+configuration:
+- defaultvalue: Worldwide
+  display: Regions
+  name: regions
+  options:
+  - China
+  - Germany
+  - USGovDoD
+  - USGovGCCHigh
+  - Worldwide
+  required: true
+  type: 16
+- defaultvalue: All
+  display: Services
+  name: services
+  options:
+  - Common
+  - Exchange
+  - Sharepoint
+  - Skype
+  - All
+  required: true
+  type: 16
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: '240'
+  display: Fetch Interval
+  name: feedFetchInterval
+  required: true
+  type: 19
+- additionalInfo: 'IPs contains: IPv4, CIDR, IPv6, IPv6CIDR. URLs contains: URLs and
+    Domains.'
+  defaultvalue: IPs
+  display: JSON attribute to use as an indicator
+  name: indicator
+  options:
+  - IPs
+  - URLs
+  - Both
+  required: true
+  type: 15
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
+  name: feedInstanceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: expiration
+  required: false
+  type: 17
+- defaultvalue: indicatorType
+  hidden: true
+  name: expirationPolicy
+  required: false
+  type: 0
+- hidden: true
+  name: expirationInterval
+  required: false
+  type: 1
+- additionalInfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
+  name: bypassExclusionList
+  required: false
+  type: 8
+- additionalInfo: Indicators from this integration instance will be marked with this
+    reputation.
+  defaultvalue: feedInstanceReputationNotSet
+  display: Mark as reputation
+  name: feedInstanceReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Office365 feed integration to get indicators from the feed.
+detaileddescription: |-
+  ## Office 365 IP Address and URL web service:
+  https://docs.microsoft.com/en-us/office365/enterprise/office-365-ip-web-service
+  #### Prototypes to choose from:
+  - o365-api.china-any
+  - o365-api.china-common
+  - o365-api.china-exchange
+  - o365-api.china-sharepoint
+  - o365-api.china-skype
+  - o365-api.germany-any
+  - o365-api.germany-common
+  - o365-api.germany-exchange
+  - o365-api.germany-sharepoint
+  - o365-api.germany-skype
+  - o365-api.usgovdod-any
+  - o365-api.usgovdod-common
+  - o365-api.usgovdod-exchange
+  - o365-api.usgovdod-sharepoint
+  - o365-api.usgovdod-skype
+  - o365-api.usgovgcchigh-any
+  - o365-api.usgovgcchigh-common
+  - o365-api.usgovgcchigh-exchange
+  - o365-api.usgovgcchigh-sharepoint
+  - o365-api.usgovgcchigh-skype
+  - o365-api.worldwide-any
+  - o365-api.worldwide-common
+  - o365-api.worldwide-exchange
+  - o365-api.worldwide-sharepoint
+  - o365-api.worldwide-skype
+display: Office365 Feed5
+name: FeedOffice3655
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of results to return. The default value is 10.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: IPs
+      description: The indicator type. Can be "IPs", "URLs", or "Both". The default
+        value is "IPs".
+      isArray: false
+      name: indicator_type
+      predefined:
+      - IPs
+      - URLs
+      - Both
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: office365-get-indicators
+  dockerimage: demisto/python3:3.7.5.4328
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: |-
+    from typing import Dict, List, Tuple, Any, Callable
+
+    import uuid
+    import urllib3
+
+
+
+    # disable insecure warnings
+    urllib3.disable_warnings()
+    INTEGRATION_NAME = 'Office365'
+
+
+    def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[Dict[str, Any]]:
+        """Builds a URL dictionary with the relevant data for each Sub feed
+
+        Args:
+            regions_list: list of regions
+            services_list: list of services
+            unique_id: unique uuid
+
+        Returns:
+            URLs sub feeds list
+        """
+        urls_list = []
+        for region in regions_list:
+            for service in services_list:
+                if service == 'All':
+                    url = f'https://endpoints.office.com/endpoints/{region}?ClientRequestId={unique_id}'
+                else:
+                    url = f'https://endpoints.office.com/endpoints/{region}?ServiceAreas={service}' \
+                          f'&ClientRequestId={unique_id}'
+                urls_list.append({
+                    'Region': region,
+                    'Service': service,
+                    'FeedURL': url
+                })
+        return urls_list
+
+
+    class Client(BaseClient):
+        """
+        Client to use in the Office365 Feed integration. Overrides BaseClient.
+        Office 365 IP address and URL web service announcement:
+        https://docs.microsoft.com/en-us/office365/enterprise/managing-office-365-endpoints?redirectSourcePath=%252fen-us%252farticle%252fmanaging-office-365-endpoints-99cab9d4-ef59-4207-9f2b-3728eb46bf9a#webservice
+        https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
+        """
+
+        def __init__(self, urls_list: list, indicator: str, insecure: bool = False, proxy: bool = False):
+            """
+            Implements class for Office365 feeds.
+            :param urls_list: List of url, regions and service of each sub feed.
+            :param indicator: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
+            :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
+            :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
+            """
+            super().__init__(base_url=urls_list, verify=insecure, proxy=proxy)
+            self.indicator = indicator
+
+        def build_iterator(self) -> List:
+            """Retrieves all entries from the feed.
+
+            Returns:
+                A list of objects, containing the indicators.
+            """
+            result = []
+            for feed_obj in self._base_url:
+                feed_url = feed_obj.get('FeedURL')
+                region = feed_obj.get('Region')
+                service = feed_obj.get('Service')
+                try:
+                    response = requests.get(
+                        url=feed_url,
+                        verify=self._verify
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                    indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
+                    for i in indicators:  # add relevant fields of sub feeds
+                        i.update({
+                            "Region": region,
+                            "Service": service,
+                            "FeedURL": feed_url
+                        })
+                    result.extend(indicators)
+                except requests.exceptions.SSLError as err:
+                    demisto.debug(str(err))
+                    raise Exception(f'Connection error in the API call to Office365.\n'
+                                    f'Check your not secure parameter.\n\n{err}')
+                except requests.ConnectionError as err:
+                    demisto.debug(str(err))
+                    raise Exception(f'Connection error in the API call to Office365.\n'
+                                    f'Check your Server URL parameter.\n\n{err}')
+                except requests.exceptions.HTTPError as err:
+                    demisto.debug(str(err))
+                    raise Exception(f'Error issuing the request call to Office365.\n\n{err}')
+                except ValueError as err:
+                    demisto.debug(str(err))
+                    raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
+            return result
+
+        def check_indicator_type(self, indicator):
+            """Checks the indicator type
+
+            Args:
+                indicator: indicator value
+
+            Returns:
+                The type of the indicator
+            """
+            if re.match(ipv4cidrRegex, indicator):
+                return FeedIndicatorType.CIDR
+            if re.match(ipv6cidrRegex, indicator):
+                return FeedIndicatorType.IPv6CIDR
+            if re.match(ipv4Regex, indicator):
+                return FeedIndicatorType.IP
+            if re.match(ipv6Regex, indicator):
+                return FeedIndicatorType.IPv6
+            if re.match(urlRegex, indicator):
+                return FeedIndicatorType.URL
+            return FeedIndicatorType.Domain
+
+
+    def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+        """Builds the iterator to check that the feed is accessible.
+        Args:
+            client: Client object.
+
+        Returns:
+            Outputs.
+        """
+        client.build_iterator()
+        return 'ok', {}, {}
+
+
+    def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+        """Retrieves indicators from the feed to the war-room.
+
+        Args:
+            client: Client object with request
+            args: demisto.args()
+
+        Returns:
+            Outputs.
+        """
+        indicator_type = str(args.get('indicator_type'))
+        iterator = client.build_iterator()
+        indicator_type_lower = indicator_type.lower()
+        indicators = []
+        raw_response = []
+
+        # filter indicator_type specific entries
+        iterator = [i for i in iterator if indicator_type_lower in i or indicator_type_lower == 'both']
+        limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
+        iterator = iterator[:limit]
+
+        for item in iterator:
+            if indicator_type_lower == 'both':
+                values = item.get('ips') if 'ips' in iterator else item.get('urls')
+            else:
+                values = item.get(indicator_type_lower)
+            if values:
+                for value in values:
+                    type_ = client.check_indicator_type(value)
+                    indicators.append({
+                        "value": value,
+                        "type": type_,
+                        'rawJSON': {"value": value, "type": type_}
+                    })
+                    raw_data = {
+                        'value': value,
+                        'type': type_
+                    }
+                    for key, val in item.items():
+                        if key not in ['ips', 'urls']:
+                            raw_data.update({key: val})
+                    raw_response.append(raw_data)
+        human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
+                                         headers=['value', 'type'], removeNull=True)
+
+        return human_readable, {}, {'raw_response': raw_response}
+
+
+    def fetch_indicators_command(client: Client, *_) -> List[Dict]:
+        """Fetches indicators from the feed to the indicators tab.
+
+        Args:
+            client: Client object with request
+
+        Returns:
+            Indicators.
+        """
+        indicator_type = client.indicator
+        indicator_type_lower = indicator_type.lower()
+        iterator = client.build_iterator()
+        indicators = []
+        for item in iterator:
+            if indicator_type_lower == 'both':
+                values = item.get('ips') if 'ips' in iterator else item.get('urls')
+            else:
+                values = item.get(indicator_type_lower)
+            if values:
+                for value in values:
+                    type_ = client.check_indicator_type(value)
+                    raw_data = {
+                        'value': value,
+                        'type': type_,
+                    }
+                    for key, val in item.items():
+                        if key not in ['ips', 'urls']:
+                            raw_data.update({key: val})
+                    indicators.append({
+                        "value": value,
+                        "type": type_,
+                        "rawJSON": raw_data,
+                    })
+        return indicators
+
+
+    def main():
+        """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+        """
+        unique_id = str(uuid.uuid4())
+        regions_list = argToList(demisto.params().get('regions'))
+        services_list = argToList(demisto.params().get('services'))
+        urls_list = build_urls_dict(regions_list, services_list, unique_id)
+        indicator = demisto.params().get('indicator')
+        insecure = demisto.params().get('insecure', False)
+        proxy = demisto.params().get('proxy')
+
+        command = demisto.command()
+        demisto.info(f'Command being called is {command}')
+
+        try:
+            client = Client(urls_list, indicator, insecure, proxy)
+            commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+                'test-module': test_module,
+                'office365-get-indicators': get_indicators_command
+            }
+            if command in commands:
+                return_outputs(*commands[command](client, demisto.args()))
+
+            elif command == 'fetch-indicators':
+                indicators = fetch_indicators_command(client)
+                for iter_ in batch(indicators, batch_size=2000):
+                    demisto.createIndicators(iter_)
+
+            else:
+                raise NotImplementedError(f'Command {command} is not implemented.')
+
+        except Exception as err:
+            err_msg = f'Error in {INTEGRATION_NAME} Integration. [{err}]'
+            return_error(err_msg)
+
+
+    if __name__ in ['__main__', 'builtin', 'builtins']:
+        main()
+  subtype: python3
+  type: python
+image: data:image/png;base64,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
+fromversion: 5.5.0
