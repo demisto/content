@@ -6,7 +6,7 @@ import re
 from typing import Dict, Any
 
 '''GLOBAL VARS'''
-BAD_CHARS = ['[', ']', '>', '<', "'"]
+BAD_CHARS = ['[', ']', '>', '<', "'", ' Layer', ' ']
 EMAIL_REGEX = r'\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
 IP_REGEX = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.)' \
            r'{3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b'
@@ -171,23 +171,25 @@ def main():
     # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
     # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
+    #file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
+
 
     # PC Script
-#    file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
-#     entry_id = ''
-#
-#     decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-#     conversation_number_to_display = 15
-#     is_flows = True
-#     is_dns = True
-#     is_http = True
-#     is_reg_extract = True
-#     is_llmnr = False
-#     is_syslog = False
-#     pcap_filter = 'dns'
-#     pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
-#     homemade_regex = ''  # 'Layer (.+):'
-#     pcap_filter_new_file_path = ''
+    # entry_id = ''
+    # file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
+    #
+    # decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
+    # conversation_number_to_display = 15
+    # is_flows = True
+    # is_dns = True
+    # is_http = True
+    # is_reg_extract = True
+    # is_llmnr = False
+    # is_syslog = False
+    # pcap_filter = ''
+    # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
+    # homemade_regex = ''  # 'Layer (.+):'
+    # pcap_filter_new_file_path = ''
 
     # Demisto Script
     entry_id = demisto.args().get('entry_id', '')
@@ -197,10 +199,10 @@ def main():
 
     file_path = file_path[0]["Contents"]["path"]
 
-    decrypt_key = ""
+    decrypt_key = demisto.args().get('wpa_password', '')
 
     decrypt_key_entry_id = demisto.args().get('decrypt_key_entry_id', '')
-    if decrypt_key_entry_id:
+    if decrypt_key_entry_id and not decrypt_key:
         decrypt_key_file_path = demisto.executeCommand('getFilePath', {'id': decrypt_key_entry_id})
         if is_error(decrypt_key_file_path):
             return_error(get_error(decrypt_key_file_path))
@@ -211,11 +213,11 @@ def main():
     is_flows = True
     is_dns = 'DNS' in context_outputs
     is_http = 'HTTP' in context_outputs
-    is_reg_extract = bool(demisto.args().get('extract_regex', 'False'))
+    is_reg_extract = demisto.args().get('extract_strings', 'False') == 'True'
     is_llmnr = 'LLMNR' in context_outputs
     is_syslog = 'SYSLOG' in context_outputs
     pcap_filter = demisto.args().get('pcap_filter', '')
-    homemade_regex = demisto.args().get('regex', '')  # 'Layer (.+):'
+    homemade_regex = demisto.args().get('custom_regex', '')  # 'Layer (.+):'
     pcap_filter_new_file_path = ''
     pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
 
@@ -241,6 +243,7 @@ def main():
     urls_extracted = set([])
     emails_extracted = set([])
     homemade_extracted = set([])
+    last_layer = set([])
     syslogs = []
 
     # Regex compilation
@@ -268,8 +271,13 @@ def main():
                                   decryption_key=decrypt_key, encryption_type='WPA-PWD')
         for packet in cap:
 
+            last_layer.add(packet.layers[-1].layer_name)
+
             layers = str(packet.layers)
             layers = strip(layers)
+            # remove duplicate layer names such as [ETH,DATA,DATA] -> # [ETH, DATA]
+            layers = list(dict.fromkeys(layers.split(',')))
+            layers = strip(str(layers))
             hierarchy[layers] = hierarchy.get(layers, 0) + 1
 
             # update times
@@ -424,7 +432,8 @@ def main():
             'UniqueSourceIP': len(unique_source_ip),
             'UniqueDestIP': len(unique_dest_ip),
             'StartTime': formatEpochDate(min_time),
-            'EndTime': formatEpochDate(max_time)
+            'EndTime': formatEpochDate(max_time),
+            'Protocols': list(last_layer)
         }
         if is_flows:
             general_context['Flow'] = flows_to_ec(flows)
@@ -448,6 +457,9 @@ def main():
 
     except pyshark.capture.capture.TSharkCrashException:
         raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
+
+    except Exception as error:
+        print(str(error))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

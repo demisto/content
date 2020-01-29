@@ -20,10 +20,9 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'False'
   description: Wether to  extract IP, URL and Email from PCAP file.
   isArray: false
-  name: extract_regex
+  name: extract_strings
   predefined:
   - 'True'
   - 'False'
@@ -38,7 +37,7 @@ args:
 - default: false
   description: Your own regex to extract from the PCAP.
   isArray: false
-  name: regex
+  name: custom_regex
   required: false
   secret: false
 - default: false
@@ -59,6 +58,13 @@ args:
   description: Number of conversatinos to display.
   isArray: false
   name: convs_to_display
+  required: false
+  secret: false
+- default: false
+  description: The WPA password. By providing the password you will be able to decrypt
+    encrypted traffic data.
+  isArray: false
+  name: wpa_password
   required: false
   secret: false
 commonfields:
@@ -181,6 +187,9 @@ outputs:
   type: String
 - contextPath: PcapResults.DNS.Type
   description: The type of the DNS request.
+  type: String
+- contextPath: PcapResults.Protocols
+  description: List of protocls found in the PCAP.
   type: String
 script: '-'
 system: false
