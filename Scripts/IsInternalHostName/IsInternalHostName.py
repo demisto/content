@@ -12,7 +12,7 @@ def main():
     for element in hostName:
         if element:
             if internalregex:
-                internalRegexMatch = re.match(internalregex, element)
+                 internalRegexMatch = re.match(internalregex, element)
             else:
                 internalRegexMatch = None
             internalDomainMatch = re.match(".*\." + domainName + "$", element)
