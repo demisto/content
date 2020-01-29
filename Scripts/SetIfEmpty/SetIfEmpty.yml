@@ -14,7 +14,7 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'true'
-  description: If set to true, empty strings, arrays and dictionaries are considered
+  description: If set to true, empty strings, arrays and dictionaries and the strings "None" and "Null" are considered
     empty entities and the default value is returned.
   isArray: false
   name: applyIfEmpty

@@ -3,23 +3,13 @@ commonfields:
   id: EDL
   version: -1
 configuration:
-- additionalinfo: The query to run to update its EDL. To view expected results, you can run the following command from the Demisto CLI
-    `!findIndicators query=<your query>`
+- additionalinfo: The query to run to update its EDL. To view expected results, you
+    can run the following command from the Demisto CLI `!findIndicators query=<your
+    query>`
   display: Indicator Query
   name: indicators_query
   required: false
   type: 0
-- defaultvalue: text
-  display: EDL Format
-  hidden: false
-  name: format
-  options:
-  - text
-  - json
-  - json-seq
-  - csv
-  required: false
-  type: 15
 - additionalinfo: Maximum number of items in the EDL
   defaultvalue: '2500'
   display: EDL Size
@@ -77,36 +67,24 @@ script:
       name: query
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: text
-      description: The EDL output format.
-      isArray: false
-      name: format
-      predefined:
-      - text
-      - json
-      - json-seq
-      - csv
-      required: false
-      secret: false
     - default: false
-      description: The maximum number of entries in the EDL. If no value is provided, will
-        use the value specified in the EDL Size parameter configured in the instance configuration.
+      description: The maximum number of entries in the EDL. If no value is provided,
+        will use the value specified in the EDL Size parameter configured in the instance
+        configuration.
       isArray: false
       name: edl_size
       required: false
       secret: false
     - default: false
+      defaultValue: 'false'
       description: Boolean
       isArray: false
       name: print_indicators
-      required: true
-      defaultValue: false
-      secret: false
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
     deprecated: false
     description: Updates values stored in the EDL (only avaialable On-Demand).
     execution: false
