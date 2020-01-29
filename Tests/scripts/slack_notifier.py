@@ -181,7 +181,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
     if branch_name == 'unittest-slack-notifier':
         print("Extracting build status")
         # container 1: unit tests
-        if container:
+        if int(container):
             print(container)
             print_color("Starting Slack notifications about nightly build - unit tests", LOG_COLORS.GREEN)
             content_team_attachments = get_attachments_for_unit_test(build_url)
