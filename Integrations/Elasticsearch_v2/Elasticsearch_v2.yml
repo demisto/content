@@ -56,55 +56,6 @@ configuration:
   name: fetch_size
   required: false
   type: 0
-- defaultvalue: F - Reliability cannot be judged
-  display: Source reliability
-  name: feedInstanceReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: false
-  type: 15
-- name: expiration
-  required: false
-  type: 17
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: bypassExclusionList
-  defaultvalue: ""
-  type: 8
-  required: false
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
-  display: Indicator reputation
-  name: feedInstanceReputation
-  defaultvalue: feedInstanceReputationNotSet
-  type: 18
-  required: false
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-- display: Feed Fetch Interval
-  name: feedFetchInterval
-  defaultvalue: "240"
-  type: 19
-  required: false
 - display: Fetch indicators
   name: feed
   required: false
