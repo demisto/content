@@ -22,8 +22,8 @@ def options_handler():
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                        '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before GA". '
-                        'The server url is determined by the AMI environment.')
+                                          '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before GA". '
+                                          'The server url is determined by the AMI environment.')
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
@@ -54,7 +54,7 @@ def determine_servers_urls(ami_env):
     server_urls = []
     for dns in instances_dns:
         server_url = instance_dns if instance_dns.startswith('http') else ('https://{}'.format(instance_dns) if
-                                                                       instance_dns else '')
+                                                                           instance_dns else '')
         server_urls.append(server_url)
     return server_urls
 
@@ -137,17 +137,20 @@ def get_new_and_modified_integrations(git_sha1):
     return new_integrations_names, modified_integrations_names
 
 
-def is_content_update_in_progress(client):
+def is_content_update_in_progress(client, prints_manager, thread_index):
     '''Make request to check if content is updating.
 
     Args:
         client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object
+        thread_index (int): The thread index
 
     Returns:
         (str): Returns the request response data which is 'true' if updating and 'false' if not.
     '''
     host = client.api_client.configuration.host
-    print('\nMaking "Get" request to server - "{}" to check if content is installing.'.format(host))
+    prints_manager.add_print_job(
+        '\nMaking "Get" request to server - "{}" to check if content is installing.'.format(host), print, thread_index)
 
     # make request to check if content is updating
     response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/updating',
@@ -157,7 +160,7 @@ def is_content_update_in_progress(client):
         result_object = ast.literal_eval(response_data)
         message = result_object.get('message', '')
         msg = "Failed to check if content is installing - with status code " + str(status_code) + '\n' + message
-        print_error(msg)
+        prints_manager.add_print_job(msg, print_error, thread_index)
         return 'request unsuccessful'
     else:
         return response_data
@@ -232,7 +235,7 @@ def set_integration_params(integrations, secret_params, instance_names):
                     optional_instance_names = [optional_integration.get('instance_name', 'None')
                                                for optional_integration in integration_params]
                     failed_match_instance_msg = 'There are {} instances of {}, please select one of them by using' \
-                        ' the instance_name argument in conf.json. The options are:\n{}'
+                                                ' the instance_name argument in conf.json. The options are:\n{}'
                     print_error(failed_match_instance_msg.format(len(integration_params),
                                                                  integration['name'],
                                                                  '\n'.join(optional_instance_names)))
@@ -394,7 +397,7 @@ def get_integrations_for_test(test, skipped_integrations_conf):
     return integrations
 
 
-def update_content_on_demisto_instance(client, username, password, server):
+def update_content_on_demisto_instance(client, username, password, server, prints_manager, thread_index):
     '''Try to update the content
 
     Args:
@@ -402,6 +405,8 @@ def update_content_on_demisto_instance(client, username, password, server):
         username (str): The username to pass to Tests/update_content_data.py
         password (str): The password to pass to Tests/update_content_data.py
         server (str): The server url to pass to Tests/update_content_data.py
+        prints_manager (ParallelPrintsManager): Print manager object
+        thread_index (int): The thread index
     '''
     content_zip_path = 'artifacts/all_content.zip'
     cmd_str = 'python Tests/update_content_data.py -u {} -p {} -s {} --content_zip {}'.format(username, password,
@@ -410,10 +415,10 @@ def update_content_on_demisto_instance(client, username, password, server):
 
     # Check if content update has finished installing
     sleep_interval = 20
-    updating_content = is_content_update_in_progress(client)
+    updating_content = is_content_update_in_progress(client, prints_manager, thread_index)
     while updating_content.lower() == 'true':
         sleep(sleep_interval)
-        updating_content = is_content_update_in_progress(client)
+        updating_content = is_content_update_in_progress(client, prints_manager, thread_index)
 
     if updating_content.lower() == 'request unsuccessful':
         # since the request to check if content update installation finished didn't work, can't use that mechanism
@@ -428,12 +433,12 @@ def update_content_on_demisto_instance(client, username, password, server):
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
         if release == cd_release and asset_id == cd_asset_id:
-            print_color('Content Update Successfully Installed!', color=LOG_COLORS.GREEN)
+            prints_manager.add_print_job('Content Update Successfully Installed!', print_color, LOG_COLORS)
         else:
             err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release)
             err_details += '"{}" but release "{}" and assetId "{}" were '.format(cd_asset_id, release, asset_id)
             err_details += 'retrieved from the instance post installation.'
-            print_error('Content Update was Unsuccessful:\n{}'.format(err_details))
+            prints_manager.add_print_job('Content Update was Unsuccessful:\n{}'.format(err_details), print_error)
             sys.exit(1)
 
 
@@ -604,10 +609,12 @@ def main():
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
     threads_list = []
+    threads_prints_manager = ParallelPrintsManager(len(clients))
     # For each server url we install content
-    for client in clients:
+    for thread_index, client in enumerate(clients):
         t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': client, 'username': username, 'password': password, 'server': server_url})
+                   kwargs={'client': client, 'username': username, 'password': password, 'server': server_url,
+                           'prints_manager': threads_prints_manager, 'thread_index': thread_index})
         threads_list.append(t)
 
     run_threads_list(threads_list)
@@ -615,7 +622,8 @@ def main():
     # configure instances for new integrations
     new_integration_module_instances = []
     for integration in brand_new_integrations:
-        new_integration_module_instances.append(configure_integration_instance(integration, testing_client, prints_manager))
+        new_integration_module_instances.append(
+            configure_integration_instance(integration, testing_client, prints_manager))
     all_module_instances.extend(new_integration_module_instances)
 
     # After content upload has completed - test ("Test" button) integration instances
