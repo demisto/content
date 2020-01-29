@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added the **Host** parameter, to allow overriding the default hostname.
+  - Added the *Host* parameter, which if supplied overrides the default hostname.
   - Added 4 commands.
     - ***securonix-create-incident***
     - ***securonix-create-watchlist***
