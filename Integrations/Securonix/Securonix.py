@@ -958,9 +958,12 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
                                               action_name, workflow, comment, criticality)
     result = response.get('result')
     message = response.get('messages')
-    if not result or not message or (isinstance(message, list) and 'Invalid' in message[0]):
-        if isinstance(message, list):
-            message = message[0]
+    if not result or not message:
+        raise Exception(f'Failed to create the incident.\nResponse from Securonix is: {str(response)}')
+    if isinstance(message, list) and len(message) > 0 and 'Invalid' in message[0]:
+        message = message[0]
+        raise Exception(f'Failed to create the incident with message:\n{message}')
+    if 'Invalid' in message:
         raise Exception(f'Failed to create the incident with message:\n{message}')
 
     incident_data = result.get('data')
@@ -1037,7 +1040,7 @@ def create_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     response = client.create_watchlist_request(watchlist_name)
 
     if 'successfully' not in response:
-        raise Exception(f'Failed to list watchlists.')
+        raise Exception(f'Failed to list watchlists.\nResponse from Securonix is:{str(response)}')
     human_readable = f'Watchlist {watchlist_name} was created successfully.'
     entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_name}
     return human_readable, entry_context, response
