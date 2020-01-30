@@ -435,7 +435,7 @@ script:
       description: The sender type
       type: String
     - contextPath: Mimecast.Policy.Receiver.Type
-      description: The Receiver type
+      description: The receiver type
       type: String
   - arguments:
     - default: false
@@ -1551,7 +1551,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of file hashes to check if they have been seen within an account.
+      description: List of file hashes to check if they were seen in an account.
       isArray: true
       name: hashes_to_search
       required: true
@@ -1647,7 +1647,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update policy
+    description: Updates the specified policy
     execution: false
     name: mimecast-update-policy
     outputs:
