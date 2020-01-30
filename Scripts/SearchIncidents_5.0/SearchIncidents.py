@@ -44,7 +44,7 @@ def search_incidents(args: Dict):
         res: List = demisto.executeCommand('getIncidents', args)
         check_if_found_incident(res)
         data: Dict = res[0]['Contents']['data']
-        context_entry: Dict = {'foundIncidents': data}
+        context_entry: Dict = {'foundincidents': data}
         headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
         md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
         return_outputs(md, context_entry, res)
