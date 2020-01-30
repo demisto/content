@@ -37,7 +37,6 @@ ES_V6_RESPONSE = {
     }
 }
 
-
 ES_V7_RESPONSE = {
     'took': 1,
     'timed_out': False,
@@ -244,7 +243,6 @@ MOCK_ES6_INCIDETNS = str([
     }
 ])
 
-
 ES_V7_RESPONSE_WITH_TIMESTAMP = {
     'took': 1,
     'timed_out': False,
@@ -282,7 +280,6 @@ ES_V7_RESPONSE_WITH_TIMESTAMP = {
     }
 }
 
-
 MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
     {
         'name': 'Elasticsearch: Index: customer, ID: 123',
@@ -318,6 +315,132 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
         'occurred': '2019-10-31T06:17:20Z'
     }
 ])
+
+PARSED_INDICATOR_HIT = {
+    "id": "1d5920f4b44b27a802bd77c4f0536f5a",
+    "version": 3,
+    "modified": "2020-01-26T14:16:44.641927Z",
+    "sortValues": None,
+    "account": "acc1",
+    "type": "Domain",
+    "value": "google.com",
+    "rawName": "google.com",
+    "createdTime": "2020-01-26T16:16:18.801688+02:00",
+    "investigationIDs": [
+        "57ec1eb4-454e-4561-8059-a9beb3f830c0"
+    ],
+    "investigationsCount": 1,
+    "sourceInstances": [
+        "VirusTotal"
+    ],
+    "sourceBrands": [
+        "VirusTotal"
+    ],
+    "isIoc": True,
+    "lastSeen": "2020-01-26T16:16:18.801508+02:00",
+    "firstSeen": "2020-01-26T16:16:18.801509+02:00",
+    "lastSeenEntryID": "4@57ec1eb4-454e-4561-8059-a9beb3f830c0",
+    "firstSeenEntryID": "4@57ec1eb4-454e-4561-8059-a9beb3f830c0",
+    "lastReputationRun": "2020-01-26T16:16:13.219824+02:00",
+    "isShared": True,
+    "calculatedTime": "2020-01-26T16:16:18.801508+02:00",
+    "score": 1,
+    "manualSetTime": "0001-01-01T00:00:00Z",
+    "context": [],
+    "comment": "",
+    "CustomFields": None,
+    "manuallyEditedFields": None,
+    "modifiedTime": "2020-01-26T16:16:09.855733+02:00",
+    "moduleToFeedMap": {
+        "VirusTotal.VirusTotal": {
+            "reliability": "A+ - 3rd party enrichment",
+            "rawJSON": None,
+            "fetchTime": "2020-01-26T16:16:09.855733+02:00",
+            "sourceBrand": "VirusTotal",
+            "sourceInstance": "VirusTotal",
+            "expirationPolicy": "indicatorType",
+            "expirationInterval": 0,
+            "expiration": "0001-01-01T00:00:00Z",
+            "ExpirationSource": None,
+            "bypassExclusionList": False,
+            "type": "domain",
+            "value": "google.com",
+            "score": 1,
+            "timestamp": "0001-01-01T00:00:00Z",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "CustomFields": None,
+            "modifiedTime": "0001-01-01T00:00:00Z",
+            "isEnrichment": True
+        },
+        "Whois.Whois": {
+            "reliability": "A+ - 3rd party enrichment",
+            "rawJSON": None,
+            "fetchTime": "2020-01-26T16:16:09.855733+02:00",
+            "sourceBrand": "VirusTotal",
+            "sourceInstance": "VirusTotal",
+            "expirationPolicy": "indicatorType",
+            "expirationInterval": 0,
+            "expiration": "0001-01-01T00:00:00Z",
+            "ExpirationSource": None,
+            "bypassExclusionList": False,
+            "type": "domain",
+            "value": "google.com",
+            "score": 1,
+            "timestamp": "0001-01-01T00:00:00Z",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "CustomFields": None,
+            "modifiedTime": "0001-01-01T00:00:00Z",
+            "isEnrichment": True
+        },
+        "Demisto.Demisto": {
+            "reliability": "A+ - 3rd party enrichment",
+            "rawJSON": None,
+            "fetchTime": "2020-01-26T16:16:09.855733+02:00",
+            "sourceBrand": "VirusTotal",
+            "sourceInstance": "VirusTotal",
+            "expirationPolicy": "indicatorType",
+            "expirationInterval": 0,
+            "expiration": "0001-01-01T00:00:00Z",
+            "ExpirationSource": None,
+            "bypassExclusionList": False,
+            "type": "domain",
+            "value": "google.com",
+            "score": 1,
+            "timestamp": "0001-01-01T00:00:00Z",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "CustomFields": None,
+            "modifiedTime": "0001-01-01T00:00:00Z",
+            "isEnrichment": False
+        }
+    },
+    "expiration": "0001-01-01T00:00:00Z",
+    "expirationStatus": "active",
+    "expirationSource": None
+}
+
+FEED_IOC_KEYS = (
+    'rawJSON',
+    'fetchTime',
+    'sourceBrand',
+    'sourceInstance',
+    'expirationPolicy',
+    'expirationInterval',
+    'expiration',
+    'ExpirationSource',
+    'bypassExclusionList',
+    'type',
+    'value',
+    'score',
+    'timestamp',
+    'lastSeen',
+    'firstSeen',
+    'CustomFields',
+    'modifiedTime',
+    'isEnrichment'
+)
 
 
 def test_context_creation_es7():
@@ -403,3 +526,17 @@ def test_incident_creation_with_timestamp_e7():
     incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
+
+
+def test_extract_indicators_from_insight_hit(mocker):
+    import Elasticsearch_v2_5_5 as es2
+    mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
+    ioc_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
+    assert len(ioc_lst) == 3
+    assert ioc_lst[0].get('value')
+    # moduleToFeedMap with isEnrichment: False should be added to ioc_lst
+    assert ioc_lst[0].get('moduleToFeedMap').get('Demisto.Demisto')
+    assert ioc_lst[0].get('moduleToFeedMap').get('VirusTotal.VirusTotal') is None
+    set(FEED_IOC_KEYS).issubset(ioc_lst[1])
+    set(FEED_IOC_KEYS).issubset(ioc_lst[2])
