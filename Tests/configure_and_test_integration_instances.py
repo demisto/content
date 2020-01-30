@@ -18,6 +18,7 @@ from Tests.scripts.validate_files import FilesValidator
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX
 from Tests.scripts.constants import PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX
 from Tests.test_content import server_version_compare
+from Tests.update_content_data import update_content
 
 
 def options_handler():
@@ -480,7 +481,7 @@ def get_integrations_for_test(test, skipped_integrations_conf):
     return integrations
 
 
-def update_content_on_demisto_instance(client, username, password, server, prints_manager, thread_index):
+def update_content_on_demisto_instance(client, server, prints_manager, thread_index):
     '''Try to update the content
 
     Args:
@@ -492,9 +493,7 @@ def update_content_on_demisto_instance(client, username, password, server, print
         thread_index (int): The thread index
     '''
     content_zip_path = 'artifacts/all_content.zip'
-    cmd_str = 'python Tests/update_content_data.py -u {} -p {} -s {} --content_zip {}'.format(username, password,
-                                                                                              server, content_zip_path)
-    run_command(cmd_str, is_silenced=False)
+    update_content(content_zip_path, server=server, client=client)
 
     # Check if content update has finished installing
     sleep_interval = 20
@@ -697,10 +696,10 @@ def main():
     threads_list = []
     threads_prints_manager = ParallelPrintsManager(len(clients))
     # For each server url we install content
-    for thread_index, client in enumerate(clients):
+    for thread_index, (client, server_url) in enumerate(zip(clients, servers)):
         t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': client, 'username': username, 'password': password, 'server': server_url,
-                           'prints_manager': threads_prints_manager, 'thread_index': thread_index})
+                   kwargs={'client': client, 'server': server_url, 'prints_manager': threads_prints_manager,
+                           'thread_index': thread_index})
         threads_list.append(t)
 
     run_threads_list(threads_list)
