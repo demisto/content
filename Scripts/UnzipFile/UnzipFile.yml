@@ -46,5 +46,5 @@ dockerimage: demisto/7zip
 runonce: false
 tests:
 - ZipFile-Test
-- UnzipFile - Test
+- UnzipFile-Test
 subtype: python2
