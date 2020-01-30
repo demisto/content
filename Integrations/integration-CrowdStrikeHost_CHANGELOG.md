@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added output to ***cs-resolve-detection*** command.
+Added output to the ***cs-resolve-detection*** command.
