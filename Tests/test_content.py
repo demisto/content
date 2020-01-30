@@ -275,8 +275,8 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                    prints_manager, thread_index=0, is_mock_run=False):
-    status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run,
-                                      thread_index=thread_index, prints_manager=prints_manager)
+    status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, test_options, is_mock_run,
+                                      thread_index=thread_index)
     # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
         prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
@@ -329,8 +329,8 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         prints_manager.add_print_job(start_mock_message, print, thread_index)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True,
-                                          thread_index=thread_index, prints_manager=prints_manager)
+        status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, test_options, is_mock_run=True,
+                                          thread_index=thread_index)
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
@@ -378,9 +378,9 @@ def run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrati
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index)
-        run_test_logic(tests_settings, client, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
-                       test_options, slack, circle_ci, build_number, server_url, build_name, prints_manager,
-                       thread_index=thread_index)
+        run_test_logic(tests_settings, client, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                       test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
+                       prints_manager, thread_index=thread_index)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index)
 
         return
@@ -708,7 +708,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     skipped_tests = set([])
     skipped_integration = set([])
 
-    disable_all_integrations(demisto_api_key, server, thread_index=thread_index, prints_manager=prints_manager)
+    disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
