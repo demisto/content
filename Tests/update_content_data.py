@@ -61,7 +61,7 @@ def main():
     username = options.user
     password = options.password
     content_zip_path = options.content_zip
-    update_content(server, username, password, content_zip_path)
+    update_content(content_zip_path, server, username, password)
 
 
 if __name__ == '__main__':
