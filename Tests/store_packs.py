@@ -9,7 +9,8 @@ from google.cloud import storage
 from distutils.util import strtobool
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
-from Tests.test_utils import run_command, print_error, collect_content_items_data
+from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS, \
+    collect_content_items_data
 
 STORAGE_BASE_PATH = "content/packs"
 
@@ -32,7 +33,7 @@ class Pack:
     CHANGELOG_MD = "changelog.md"
     README = "README.md"
     METADATA = "metadata.json"
-    INDEX_JSON = "index.json"
+    INDEX_NAME = "index"
     EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
 
     def __init__(self, pack_name, pack_path, storage_bucket):
@@ -122,6 +123,8 @@ class Pack:
                     relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                     pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
+        print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
+
         return zip_pack_path
 
     def upload_to_storage(self, zip_pack_path, latest_version):
@@ -129,10 +132,9 @@ class Pack:
         existing_files = [f.name for f in self._storage_bucket.list_blobs(prefix=version_pack_path)]
 
         if len(existing_files) > 0:
-            # todo important, for now print warning and don't fail the build on it
-            print_error(f"The following packs already exist at storage: {', '.join(existing_files)}")
-            print_error(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-            sys.exit(1)
+            print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
+            print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+            sys.exit(0)
 
         pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
         blob = self._storage_bucket.blob(pack_full_path)
@@ -141,7 +143,7 @@ class Pack:
             blob.upload_from_file(pack_zip)
             os.remove(zip_pack_path)
 
-        print(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
+        print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
     def format_metadata(self):
         if Pack.METADATA not in os.listdir(self._pack_path):
@@ -155,6 +157,8 @@ class Pack:
             formatted_metadata = self._parse_pack_metadata(user_metadata)
             metadata_file.seek(0)
             json.dump(formatted_metadata, metadata_file, indent=4)
+
+        print_color(f"Finished formatting {self._pack_name} packs's {metadata_path} file.", LOG_COLORS.GREEN)
 
     def parse_release_notes(self):
         if Pack.CHANGELOG_MD not in os.listdir(self._pack_path):
@@ -185,11 +189,14 @@ class Pack:
     def cleanup(self):
         if os.path.exists(self._pack_path):
             shutil.rmtree(self._pack_path)
+            print(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
 
 def get_modified_packs(specific_packs=None):
     if specific_packs:
-        return [p.strip() for p in specific_packs.split(',')]
+        modified_packs = [p.strip() for p in specific_packs.split(',')]
+        print(f"Number of selected packs is: {len(modified_packs)}")
+        return modified_packs
 
     cmd = f"git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
     modified_packs_path = run_command(cmd, use_shell=True).splitlines()
@@ -200,6 +207,7 @@ def get_modified_packs(specific_packs=None):
 
 
 def extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path):
+    print("Starting extracting modified pack:")
     with ZipFile(packs_artifacts_path) as packs_artifacts:
         for pack in packs_artifacts.namelist():
             for modified_pack in modified_packs:
@@ -207,6 +215,7 @@ def extract_modified_packs(modified_packs, packs_artifacts_path, extract_destina
                 if pack.startswith(f"{modified_pack}/"):
                     packs_artifacts.extract(pack, extract_destination_path)
                     print(f"Extracted {pack} to path: {extract_destination_path}")
+    print_color("Finished extracting modified packs", LOG_COLORS.GREEN)
 
 
 def init_storage_client(service_account=None):
@@ -217,26 +226,30 @@ def init_storage_client(service_account=None):
         return storage.Client(credentials=credentials, project=project)
 
 
-def download_and_extract_index(storage_bucket, extract_destination_path, index_file_name="index"):
-    index_storage_path = os.path.join(STORAGE_BASE_PATH, f"{index_file_name}.zip")
-    download_index_path = os.path.join(extract_destination_path, f"{index_file_name}.zip")
+def download_and_extract_index(storage_bucket, extract_destination_path):
+    index_storage_path = os.path.join(STORAGE_BASE_PATH, f"{Pack.INDEX_NAME}.zip")
+    download_index_path = os.path.join(extract_destination_path, f"{Pack.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
+    index_blob.cache_control = "no-cache"
+    index_blob.reload()
     index_blob.download_to_filename(download_index_path)
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
             index_zip.extractall(extract_destination_path)
 
-        if index_file_name not in os.listdir(extract_destination_path):
-            print_error(f"Extracted index folder name does not match: {index_file_name}")
+        if Pack.INDEX_NAME not in os.listdir(extract_destination_path):
+            print_error(f"Failed creating {Pack.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
 
         os.remove(download_index_path)
+        print_color(f"Finished downloading and extracting {Pack.INDEX_NAME} file to {extract_destination_path}",
+                    LOG_COLORS.GREEN)
 
-        return os.path.join(extract_destination_path, index_file_name), index_blob
+        return os.path.join(extract_destination_path, Pack.INDEX_NAME), index_blob
     else:
-        print_error(f"Failed to download {index_file_name} file from cloud storage.")
+        print_error(f"Failed to download {Pack.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
 
 
@@ -251,7 +264,7 @@ def update_index_folder(index_folder_path, pack_name, pack_path):
 
 
 def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number):
-    with open(os.path.join(index_folder_path, Pack.INDEX_JSON), "w+") as index_file:
+    with open(os.path.join(index_folder_path, f"{Pack.INDEX_NAME}.json"), "w+") as index_file:
         index = {
             'description': 'Master index for Demisto Content Packages',
             'baseUrl': 'https://marketplace.demisto.ninja/content/packs',  # disable-secrets-detection
@@ -269,10 +282,13 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
         json.dump(index, index_file, indent=4)
 
     index_zip_name = os.path.basename(index_folder_path)
-    index_zip_path = shutil.make_archive(os.path.join(extract_destination_path, index_zip_name), format="zip",
-                                         root_dir=index_folder_path)
+    index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
+                                         root_dir=extract_destination_path, base_dir=index_zip_name)
 
+    index_blob.cache_control = "no-cache"
+    index_blob.reload()
     index_blob.upload_from_filename(index_zip_path)
+
     os.remove(index_zip_path)
     shutil.rmtree(index_folder_path)
 
