@@ -196,9 +196,9 @@ jobs:
             SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n$SHOULD_LINT_ALL\n----------"
-              demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt --verbose
+              demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt
             else
-              demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt --verbose
+              demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt
             fi
       - run:
           name: Verify Base Branch for Contribution
