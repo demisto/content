@@ -193,7 +193,7 @@ jobs:
                 echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
-            SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+            
             if [ $NIGHTLY ] ; then
               echo -e  "----------\nLinting all because:\n$SHOULD_LINT_ALL\n----------"
               demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt
