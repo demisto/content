@@ -11,55 +11,11 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: '240'
-  display: Fetch Interval
-  name: feedFetchInterval
-  required: true
-  type: 19
 - additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
   name: indicator_type
   required: false
   type: 0
-- defaultvalue: F - Reliability cannot be judged
-  display: Reliability
-  name: feedInstanceReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- name: expiration
-  required: false
-  type: 17
-- additionalinfo: When selected, the exclusion list will be ignored for this feed.
-  display: Bypass exclusion list
-  name: bypassExclusionList
-  required: false
-  type: 8
-- defaultvalue: feedInstanceReputationNotSet
-  display: Mark as reputation
-  name: feedInstanceReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
 - display: Username
   name: credentials
   required: false
