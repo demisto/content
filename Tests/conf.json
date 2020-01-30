@@ -83,10 +83,6 @@
             "playbookID": "TestCloudshark"
         },
         {
-            "integrations": "CloudShark",
-            "playbookID": "Cloudshark-Test"
-        },
-        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test",
             "fromversion": "5.0.0"

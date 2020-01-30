@@ -158,4 +158,4 @@ script:
   runonce: false
   subtype: python3
 tests:
-- Cloudshark-Test
+- TestCloudshark
