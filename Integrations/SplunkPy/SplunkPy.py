@@ -579,6 +579,17 @@ def splunk_parse_raw_command():
 
 
 def test_module():
+    if demisto.params().get('isFetch'):
+        t = datetime.utcnow() - timedelta(days=3)
+        time = t.strftime(SPLUNK_TIME_FORMAT)
+        kwargs_oneshot = {'count': 1, 'earliest_time': time}
+        searchquery_oneshot = demisto.params()['fetchQuery']
+        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+        reader = results.ResultsReader(oneshotsearch_results)
+        for item in reader:
+            if item:
+                demisto.results('ok')
+
     if len(service.jobs) >= 0:  # type: ignore
         demisto.results('ok')
 
