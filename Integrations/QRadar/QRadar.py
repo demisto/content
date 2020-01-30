@@ -399,7 +399,7 @@ def create_note(offense_id, note_text, fields):
 
 
 # Returns the result of a reference request
-def get_reference_by_name(ref_name, _range='', _filter='', _fields=''):
+def get_ref_set(ref_name, _range='', _filter='', _fields=''):
     url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'filter': _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
@@ -916,7 +916,7 @@ def create_note_command():
 
 
 def get_reference_by_name_command():
-    raw_ref = get_reference_by_name(demisto.args().get('ref_name'))
+    raw_ref = get_ref_set(demisto.args().get('ref_name'))
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     convert_date_elements = True if demisto.args().get('date_value') == 'True' and ref[
         'ElementType'] == 'DATE' else False
@@ -1052,9 +1052,9 @@ def upload_indicators_list_request(reference_name, indicators_list):
 
         Args:
               reference_name (str): Reference set name
-              indicators_list (List): Indicators values list
+              indicators_list (list): Indicators values list
         Returns:
-            Dict. Reference set object
+            dict: Reference set object
     """
     url = '{0}/api/reference_data/sets/bulk_load/{1}'.format(SERVER, urllib.quote(reference_name, safe=''))
     params = {'name': reference_name}
@@ -1092,7 +1092,7 @@ def upload_indicators_command():
             return ["No indicators found, Reference set {0} didn't change".format(reference_name), {}]
         else:
             raw_response = upload_indicators_list_request(reference_name, indicators_values_list)
-            ref_set_data = unicode_to_str_recur(get_reference_by_name(reference_name))
+            ref_set_data = unicode_to_str_recur(get_ref_set(reference_name))
             ref = replace_keys(ref_set_data, REFERENCE_NAMES_MAP)
             enrich_reference_set_result(ref)
             indicator_headers = ['value', 'indicator_type']
@@ -1116,11 +1116,11 @@ def check_ref_set_exist(ref_set_name):
         ref_set_name (str): Reference set name
 
     Returns:
-        Dict. If found - Reference set object, else - Error
+        dict: If found - Reference set object, else - Error
     """
 
     try:
-        return get_reference_by_name(ref_set_name)
+        return get_ref_set(ref_set_name)
     # If reference set does not exist, return None
     except Exception as e:
         if '1002' in str(e):
@@ -1137,7 +1137,7 @@ def get_indicators_list(indicator_query, limit, page):
               limit (int): The amount of indicators the user want to add to reference set
               page (int): Page's number the user would like to start from
         Returns:
-             list of indicators values and a list with all indicators data
+             list, list: list of indicators values and a list with all indicators data
     """
     indicators_values_list = []
     indicators_data_list = []
