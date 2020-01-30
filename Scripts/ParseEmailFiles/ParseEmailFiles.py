@@ -3679,7 +3679,9 @@ def main():
                                                                  max_depth=max_depth)
                         output = create_email_output(email_data, attached_emails)
                     else:
-                        return_error("Could not extract email from file. Base64 decode did not include rfc 822 strings")
+                        return_error("Could not extract email from file. Base64 decode did not include rfc 822 strings."
+                                     "\nPossible reason for this error is a missing Content-Type header. Please try to "
+                                     "run this command using ignore_content_type=true argument.")
 
             except Exception as e:
                 return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"
