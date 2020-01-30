@@ -586,7 +586,7 @@ def main():
     secret_conf_path = options.secret
 
     prints_manager = ParallelPrintsManager(1)
-    server_numeric_version = get_server_numeric_version(ami_env,prints_manager)
+    server_numeric_version = get_server_numeric_version(ami_env, prints_manager)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
