@@ -1,5 +1,6 @@
 ## [Unreleased]
-The test button in the integration testing fetching capabilities when fetch is marked
+The Test button now tests the fetch incidents function when the *Fetch incidents* option is selected.
+Fixed an issue in the *Splunk notable events ES query* parameter where the time parameter was not passed to the table in Splunk.
 
 ## [20.1.2] - 2020-01-22
 Added the ***splunk-submit-event-hec*** command.
