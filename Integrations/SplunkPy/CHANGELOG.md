@@ -1,5 +1,5 @@
 ## [Unreleased]
-The test button in the integration testing fetching capabilities when fetch is marked
+The Test button now tests the fetch incidents function when the *Fetch incidents* option is selected.
 
 ## [20.1.2] - 2020-01-22
 Added the ***splunk-submit-event-hec*** command.
