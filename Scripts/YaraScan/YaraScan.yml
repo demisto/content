@@ -5,50 +5,50 @@ name: YaraScan
 script: ''
 type: python
 tags: []
-comment: Performs a Yara scan against a file
+comment: Performs a Yara scan on the specified files.
 enabled: true
 args:
 - name: yaraRule
   required: true
-  description: The yara rule to use
+  description: The Yara rule to use for the file scan.
 - name: entryIDs
   required: true
-  description: The file entry ID(s) that requires scanning (can be CSV)
+  description: A comma-separated list of file entry IDs to scan.
   isArray: true
 outputs:
 - contextPath: Yara.Filename
-  description: The filename of the file that was scanned
+  description: The filename of the file that was scanned.
   type: string
 - contextPath: Yara.HasError
-  description: Whether or not there was an error when performing the scan
+  description: Whether there was an error when performing the scan.
   type: boolean
 - contextPath: Yara.HasMatch
-  description: Whether or not the file matched any of the rules.
+  description: Whether the file matched any of the rules.
   type: boolean
 - contextPath: Yara.entryID
-  description: The entry ID of the file being scanned.
+  description: The entry ID of the scanned file.
   type: string
 - contextPath: Yara.fileID
-  description: The file ID of the file being scanned.
+  description: The file ID of the scanned file.
   type: string
 - contextPath: Yara.MatchCount
-  description: The count of ruls that matched the file.
+  description: The number of rules that matched the file.
   type: number
 - contextPath: Errors
-  description: A list of errors that occurred during the scan
+  description: A list of errors that occurred during the scan.
 - contextPath: Matches.Meta
-  description: Metadata about the rule (as defined in the rule itself)
+  description: Metadata about the rule (as defined in the rule itself).
 - contextPath: Matches.Namespace
-  description: The namespace defined in the rule
+  description: The namespace defined in the rule.
   type: string
 - contextPath: Matches.RuleName
-  description: The rule name that matched
+  description: The rule name that matched.
   type: string
 - contextPath: Matches.Strings
-  description: A list of strings that the rule matched
+  description: A list of strings that the rule matched.
   type: string
 - contextPath: Matches.Tags
-  description: A list of tags that are defined in the rule
+  description: A list of tags that are defined in the rule.
 scripttarget: 0
 subtype: python3
 runonce: false
