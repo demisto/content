@@ -72,26 +72,23 @@ def get_server_numeric_version(ami_env, prints_manager):
     images_file_name = './Tests/images_data.txt'
     if not os.path.isfile(images_file_name):
         return '99.99.98'  # latest
-    try:
-        with open(images_file_name, 'r') as image_data_file:
-            image_data = [line for line in image_data_file if line.startswith(ami_env)]
-            if len(image_data) != 1:
-                prints_manager.add_print_job('Did not get one image data for server version, got {}'.format(image_data),
-                                             print_warning, 0)
-                return '0.0.0'
+    with open(images_file_name, 'r') as image_data_file:
+        image_data = [line for line in image_data_file if line.startswith(ami_env)]
+        if len(image_data) != 1:
+            prints_manager.add_print_job('Did not get one image data for server version, got {}'.format(image_data),
+                                         print_warning, 0)
+            return '0.0.0'
+        else:
+            server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
+            if server_numeric_version:
+                server_numeric_version = server_numeric_version[0]
             else:
-                server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-                if server_numeric_version:
-                    server_numeric_version = server_numeric_version[0]
-                else:
-                    server_numeric_version = '99.99.98'  # latest
-                print('Server image info: {}'.format(image_data[0]))
-                print('Server version: {}'.format(server_numeric_version))
-                return server_numeric_version
-
-    except OSError:
-        prints_manager.add_print_job('Image data file was not found'.format(image_data), print_error, 0)
-        return '0.0.0'
+                server_numeric_version = '99.99.98'  # latest
+            prints_manager.add_print_job('Server image info: {}'.format(image_data[0]), print_color, 0,
+                                         LOG_COLORS.NATIVE)
+            prints_manager.add_print_job('Server version: {}'.format(server_numeric_version), print_color, 0,
+                                         LOG_COLORS.NATIVE)
+            return server_numeric_version
 
 
 def check_test_version_compatible_with_server(test, server_version, prints_manager):
@@ -587,6 +584,7 @@ def main():
 
     prints_manager = ParallelPrintsManager(1)
     server_numeric_version = get_server_numeric_version(ami_env, prints_manager)
+    prints_manager.execute_thread_prints(0)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
@@ -607,7 +605,8 @@ def main():
         pass
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
-    tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version, prints_manager)
+    tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version,
+                                                                 prints_manager)
 
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
