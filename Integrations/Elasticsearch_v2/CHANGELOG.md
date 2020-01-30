@@ -1,9 +1,5 @@
 ## [Unreleased]
 
-
-## [19.12.0] - 2019-12-10
--
-
 ## [19.11.0] - 2019-11-12
 Added support for timestamps.
     

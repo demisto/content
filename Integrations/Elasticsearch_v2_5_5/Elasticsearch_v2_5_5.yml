@@ -312,7 +312,7 @@ script:
     - contextPath: ElasticsearchFeed.SharedIndicators
       description: Indicators shared from other tenants.
       type: Unknown
-  dockerimage: demisto/elasticsearch:1.0.0.1795
+  dockerimage: demisto/elasticsearch:1.0.0.4677
   feed: true
   isfetch: true
   longRunning: false
