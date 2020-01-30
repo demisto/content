@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed an issue where special characters such as /n returned an error.
+Fixed an issue where special characters returned an error.
