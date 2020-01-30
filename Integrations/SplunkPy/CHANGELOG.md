@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue with Splunk fetch where time parameter was not passed into the table in query
+Fixed an issue in the *Splunk notable events ES query* parameter where the time parameter was not passed to the table in Splunk.
 
 ## [20.1.2] - 2020-01-22
 Added the ***splunk-submit-event-hec*** command.
