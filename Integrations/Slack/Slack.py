@@ -619,7 +619,6 @@ def check_for_answers():
         add_info_headers(headers, question.get('expiry'))
 
         body = {
-            'token': BOT_TOKEN,
             'entitlement': question.get('entitlement')
         }
         res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, proxies=PROXIES, verify=VERIFY_CERT)
@@ -696,6 +695,7 @@ def add_info_headers(headers, expiry):
         headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
         headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
         headers['X-Content-TeamName'] = team
+        headers['X-Content-LicenseID'] = demisto.getLicenseID()
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
         if hasattr(demisto, 'demistoVersion'):
             headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
