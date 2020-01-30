@@ -1,4 +1,6 @@
 import argparse
+import os
+import re
 import uuid
 import json
 import ast
@@ -15,6 +17,7 @@ from Tests.test_utils import run_command, get_last_release_version, checked_type
 from Tests.scripts.validate_files import FilesValidator
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX
 from Tests.scripts.constants import PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX
+from Tests.test_content import server_version_compare
 
 
 def options_handler():
@@ -57,6 +60,84 @@ def determine_servers_urls(ami_env):
                                                          dns else '')
         server_urls.append(server_url)
     return server_urls
+
+
+def get_server_numeric_version(ami_env):
+    '''
+    Gets the current server version
+    Arguments:
+        ami_env: (str)
+            AMI version name.
+            Print manager object.
+    Returns:
+        (str) Server numeric version
+    '''
+    images_file_name = './Tests/images_data.txt'
+    if not os.path.isfile(images_file_name):
+        return '99.99.98'  # latest
+    with open(images_file_name, 'r') as image_data_file:
+        image_data = [line for line in image_data_file if line.startswith(ami_env)]
+        if len(image_data) != 1:
+            print_warning('Did not get one image data for server version, got {}'.format)
+            return '0.0.0'
+        else:
+            server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
+            if server_numeric_version:
+                server_numeric_version = server_numeric_version[0]
+            else:
+                server_numeric_version = '99.99.98'  # latest
+            print('Server image info: {}'.format(image_data[0]))
+            print('Server version: {}'.format(server_numeric_version))
+            return server_numeric_version
+
+
+def check_test_version_compatible_with_server(test, server_version, prints_manager):
+    '''
+    Checks if a given test is compatible wis the given server version.
+    Arguments:
+        test: (dict)
+            Test playbook object from content conf.json. May contain the following fields: "playbookID",
+            "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion.
+        server_version: (int)
+            The server numerical version.
+        prints_manager: (ParallelPrintsManager)
+            Print manager object.
+    Returns:
+        (bool) True if test is compatible with server version or False otherwise.
+    '''
+    test_from_version = test.get('fromversion', '0.0.0')
+    test_to_version = test.get('toversion', '99.99.99')
+    if (server_version_compare(test_from_version, server_version) > 0
+            or server_version_compare(test_to_version, server_version) < 0):
+        warning_message = 'Test Playbook: {} was ignored in the content installation test due to version mismatch ' \
+                          '(test versions: {}-{}, server version: {})'.format(test.get('playbookID'),
+                                                                              test_from_version,
+                                                                              test_to_version,
+                                                                              server_version)
+        prints_manager.add_print_job(warning_message, print_warning, 0)
+        return False
+    return True
+
+
+def filter_tests_with_incompatible_version(tests, server_version, prints_manager):
+    '''
+    Filter all tests with incompatible version to the given server.
+    Arguments:
+        tests: (list)
+            List of test objects.
+        server_version: (int)
+            The server numerical version.
+    prints_manager: (ParallelPrintsManager)
+        Print manager object.
+
+    Returns:
+        (str): The server url to connect to
+    '''
+
+    filtered_tests = [test for test in tests if
+                      check_test_version_compatible_with_server(test, server_version, prints_manager)]
+    prints_manager.execute_thread_prints(0)
+    return filtered_tests
 
 
 def configure_integration_instance(integration, client, prints_manager):
@@ -509,6 +590,7 @@ def main():
     secret_conf_path = options.secret
 
     prints_manager = ParallelPrintsManager(1)
+    server_numeric_version = get_server_numeric_version(ami_env)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
@@ -534,6 +616,8 @@ def main():
         pass
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
+    tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version,
+                                                                 prints_manager)
 
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
