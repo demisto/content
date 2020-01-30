@@ -14,21 +14,29 @@ urllib3.disable_warnings()
 class Client(BaseClient):
     def __init__(self, url: str, feed_url_to_config: Optional[Dict[str, dict]] = None, fieldnames: str = '',
                  insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
-                 delimiter: str = ',', doublequote: bool = True, escapechar: str = '', api_key: bool = False,
+                 delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
                  **kwargs):
         """
         :param url: URL of the feed.
-        :param feed_url_to_config: for each URL, a list of field names in the file.
+        :param feed_url_to_config: for each URL, a configuration of the feed that contains
          If *null* the values in the first row of the file are used as names. Default: *null*
          Example:
-         url_to_fieldnames = {
-            'https://ipstack.com': ['indicator']
+         feed_url_to_config = {
+            'https://ipstack.com':
+            {
+                'fieldnames': ['value'],
+                'indicator_type': 'IP',
+                'mapping': {
+                    'date': 'Date'
+                }
+            }
          }
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
             used as names. Default: *null*
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-        :param credentials: username and password used for basic authentication
+        :param credentials: username and password used for basic authentication.
+        Can be also used as API key header and value by specifying _header in the username field.
         :param ignore_regex: python regular expression for lines that should be ignored. Default: *null*
         :param encoding: Encoding of the feed, latin-1 by default.
         :param delimiter: see `csv Python module
@@ -50,13 +58,13 @@ class Client(BaseClient):
         auth: Optional[tuple] = None
         self.headers = {}
 
-        if api_key:
-            header_name = credentials.get('identifier', None)
-            header_value = credentials.get('password', None)
+        username = credentials.get('identifier', '')
+        if username.startswith('_header:'):
+            header_name = username.split(':')[1]
+            header_value = credentials.get('password', '')
             self.headers[header_name] = header_value
         else:
-            username = credentials.get('identifier', None)
-            password = credentials.get('password', None)
+            password = credentials.get('password', '')
             auth = None
             if username is not None and password is not None:
                 auth = (username, password)
@@ -179,28 +187,28 @@ def module_test_command(client: Client, args):
 def fetch_indicators_command(client: Client, default_indicator_type: str, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
-
+    config = client.feed_url_to_config or {}
     for url_to_reader in iterator:
         for url, reader in url_to_reader.items():
+            mapping = config.get(url, {}).get('mapping', {})
             for item in reader:
                 raw_json = dict(item)
-                value = item.get('indicator')
-                if not value and len(item) == 1:
+                value = item.get('value')
+                if not value and len(item) > 1:
                     value = next(iter(item.values()))
-                else:
-                    del raw_json['indicator']
                 if value:
                     raw_json['value'] = value
-                    if client.feed_url_to_config:
-                        indicator_type = client.feed_url_to_config.get(url, {}).get('indicator_type')
-                    else:
+                    indicator_type = config.get(url, {}).get('indicator_type')
+                    if not indicator_type:
                         indicator_type = default_indicator_type
                     raw_json['type'] = indicator_type
-                    indicators.append({
-                        'value': value,
-                        'type': indicator_type,
-                        'rawJSON': raw_json,
-                    })
+
+                    indicator = {field: raw_json[key] for key, field in mapping.items()}
+                    indicator['value'] = value
+                    indicator['type'] = indicator_type
+                    indicator['rawJSON'] = raw_json
+
+                    indicators.append(indicator)
     return indicators
 
 
