@@ -18,34 +18,34 @@ jobs:
           name: Prepare Environment
           when: always
           command: |
-              if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-                then
-                  echo "Skipping - instance tests tasks are running only in container number 0"
-                  exit 0
-              fi
-              echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
-              echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
-              echo "=== sourcing $BASH_ENV ==="
-              source $BASH_ENV
-              sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-              chmod +x ./Tests/scripts/*
-              chmod +x ./Tests/lastest_server_build_scripts/*
-              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
-              if [ ! -e "venv" ]; then
-                echo "installing venv"
-                NO_HOOKS=1 .hooks/bootstrap
-                source ./venv/bin/activate
-                pip install -r .circleci/build-requirements.txt
-                pip3 install -r .circleci/build-requirements.txt
-              else
-                echo "venv exists (from cache). activating"
-                source ./venv/bin/activate
-              fi
-              # store in bash env so we load our venv in each step
-              echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
-              python --version
-              python3 --version
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - instance tests tasks are running only in container number 0"
+                exit 0
+            fi
+            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+            echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+            echo "=== sourcing $BASH_ENV ==="
+            source $BASH_ENV
+            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+            chmod +x ./Tests/scripts/*
+            chmod +x ./Tests/lastest_server_build_scripts/*
+            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
+            if [ ! -e "venv" ]; then
+              echo "installing venv"
+              NO_HOOKS=1 .hooks/bootstrap
+              source ./venv/bin/activate
+              pip install -r .circleci/build-requirements.txt
+              pip3 install -r .circleci/build-requirements.txt
+            else
+              echo "venv exists (from cache). activating"
+              source ./venv/bin/activate
+            fi
+            # store in bash env so we load our venv in each step
+            echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+            python --version
+            python3 --version
       - save_cache:
           paths:
             - venv
@@ -53,8 +53,8 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
-              - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+            - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
+            - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
           name: Create ID Set
           when: always
@@ -441,6 +441,18 @@ jobs:
                 rm -f $CIRCLE_ARTIFACTS/server*.log
             fi
           when: always
+      - run:
+          name: Upload Changed Packs To Storage
+          command: |
+            if [[ $CIRCLE_BRANCH != master ]]; then
+              echo "Skipping packs uploading on non master branch"
+              exit 0
+            fi
+
+            EXTRACT_FOLDER=$(mktemp -d)
+            PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
+            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_MARKETPLACE_KEY -b marketplace-dist-dev -n $CIRCLE_BUILD_NUM
+          when: on_success
       - store_artifacts:
           path: artifacts
           destination: artifacts
