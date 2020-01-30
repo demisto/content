@@ -607,18 +607,20 @@ def manage_campaign_command():
 
     res = http_request('PATCH', '/campaigns/' + campaign_id, data=data)
 
-    context = {
+    message = [{
         'ID': campaign_id,
         'Message': res['message']
-    }
+    }]
+
+    context = createContext(message, removeNull=True)
 
     return_results(
-        'Campaign Management', res, context,
+        'Campaign Management', res, message,
         {
             'CounterCraft.Campaign(val.ID && val.ID === obj.ID)': context
         },
         headers=[
-            'ID'
+            'ID',
             'Message'
         ]
     )
@@ -637,12 +639,15 @@ def create_host_machine_command():
     campaign_id = demisto.args().get('campaign_id')
 
     ip_address = demisto.args().get('ip_address')
+    port = demisto.args().get('port')
     username = demisto.args().get('username')
     password = demisto.args().get('password')
 
     host_data = {'ip_address': ip_address,
+                 'port': port,
                  'username': username,
-                 'password': password
+                 'password': password,
+                 'os_family_usr': 'linux'
                  }
 
     _uuid = str(uuid.uuid4())
@@ -657,7 +662,7 @@ def create_host_machine_command():
             'data': host_data
             }
 
-    res = http_request('POST', '/campaigns', data=data)
+    res = http_request('POST', '/hosts', data=data)
 
     host = {new_key: res[old_key] if old_key in res else None for old_key,
                              new_key in HOST_FIELDS.items()}
@@ -691,18 +696,20 @@ def manage_host_command():
 
     res = http_request('PATCH', '/hosts/' + host_id, data=data)
 
-    context = {
+    message = {
         'ID': host_id,
         'Message': res['message']
     }
 
+    context = createContext(message, removeNull=True)
+
     return_results(
-        'Host Management', res, context,
+        'Host Management', res, message,
         {
             'CounterCraft.Host(val.ID && val.ID === obj.ID)': context
         },
         headers=[
-            'ID'
+            'ID',
             'Message'
         ]
     )
@@ -720,18 +727,20 @@ def manage_service_command():
 
     res = http_request('PATCH', '/services/' + service_id, data=data)
 
-    context = {
+    message = {
         'ID': service_id,
         'Message': res['message']
     }
 
+    context = createContext(message, removeNull=True)
+
     return_results(
-        'Service Management', res, context,
+        'Service Management', res, message,
         {
             'CounterCraft.Service(val.ID && val.ID === obj.ID)': context
         },
         headers=[
-            'ID'
+            'ID',
             'Message'
         ]
     )
@@ -749,18 +758,20 @@ def manage_breadcrumb_command():
 
     res = http_request('PATCH', '/breadcrumbs/' + breadcrumb_id, data=data)
 
-    context = {
+    message = {
         'ID': breadcrumb_id,
         'Message': res['message']
     }
 
+    context = createContext(message, removeNull=True)
+
     return_results(
-        'Breadcrumb Management', res, context,
+        'Breadcrumb Management', res, message,
         {
             'CounterCraft.Breadcrumb(val.ID && val.ID === obj.ID)': context
         },
         headers=[
-            'ID'
+            'ID',
             'Message'
         ]
     )

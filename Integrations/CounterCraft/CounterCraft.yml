@@ -73,7 +73,7 @@ script:
     - contextPath: CounterCraft.Campaign.StatusCode
       description: Campaign Status
       type: string
-    description: 'List all deception campaigns '
+    description: 'List all deception campaigns'
   - name: countercraft-list-hosts
     arguments:
     - name: campaign_id
@@ -115,7 +115,7 @@ script:
     - contextPath: CounterCraft.Service.TypeCode
       description: Service Type
       type: string
-    description: 'List servces currently deployed on deception hosts '
+    description: 'List services currently deployed on deception hosts'
   - name: countercraft-list-breadcrumbs
     arguments:
     - name: campaign_id
@@ -289,9 +289,19 @@ script:
     - name: campaign_id
       required: true
       description: Campaign
+    - name: os_family
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - windows
+      - linux
+      description: Operating System
     - name: ip_address
       required: true
       description: IP Address
+    - name: port
+      required: true
+      description: Port
     - name: username
       required: true
       description: Username
@@ -332,6 +342,12 @@ script:
       description: Campaign ID
     - name: operation
       required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - pause
+      - resume
+      - terminate
       description: Operation
     outputs:
     - contextPath: CounterCraft.Campaign.Message
@@ -348,6 +364,12 @@ script:
       description: Host ID
     - name: operation
       required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - pause
+      - resume
+      - terminate
       description: Operation
     outputs:
     - contextPath: CounterCraft.Host.Message
@@ -364,6 +386,12 @@ script:
       description: Service ID
     - name: operation
       required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - pause
+      - resume
+      - terminate
       description: Operation
     outputs:
     - contextPath: CounterCraft.Service.Message
@@ -380,6 +408,12 @@ script:
       description: Breadcrumb ID
     - name: operation
       required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - pause
+      - resume
+      - terminate
       description: Operation
     outputs:
     - contextPath: CounterCraft.Breadcrumb.Message
