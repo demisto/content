@@ -27,8 +27,8 @@ configuration:
   name: list_size
   required: true
   type: 0
-- additionalinfo: Enabling this will prevent automatic indicators export list refresh
-  display: Update On Demand Only
+- additionalinfo: When selected this will prevent automatic refresh of the indicators export list
+  display: Update On-Demand Only
   name: on_demand
   required: false
   type: 8
@@ -43,7 +43,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- additionalinfo: Will run the export indicators service on this port from within Demisto
+- additionalinfo: Will run the export indicators service on this port from within Cortex SOAR
   defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
@@ -64,7 +64,7 @@ configuration:
   name: http_flag
   required: false
   type: 8
-description: This integration provides an endpoint with a list of indicators as a service for
+description: Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for
   the system indicators.
 display: Export Indicators Service
 name: ExportIndicators
@@ -80,7 +80,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: text
-      description: The output format.
+      description: The output format. Can be "text", "json", "json-seq", or "csv".
       isArray: false
       name: format
       predefined:
@@ -98,7 +98,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: If set to true will print the indicators the that were saved to the export indicators service
+      description: Whether to print the indicators. If set to true will print the indicators the that were saved to the export indicators service. The default value is "false".
       isArray: false
       name: print_indicators
       required: true
