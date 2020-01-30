@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an error when special characters did not present a meaningful error.
+Improved error messages for special character errors.
 
 
 ## [19.11.0] - 2019-11-12
