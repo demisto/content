@@ -39,7 +39,7 @@ tasks:
       version: -1
       name: Get Indicators
       description: Get the feed indicators.
-      script: CSVFeed|||get-indicators
+      script: CSVFeed|||csv-get-indicators
       type: regular
       iscommand: true
       brand: CSVFeed
