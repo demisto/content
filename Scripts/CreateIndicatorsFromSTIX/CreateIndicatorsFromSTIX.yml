@@ -1,11 +1,11 @@
 args:
 - default: false
-  description: Entry ID of stix file.
+  description: The entry ID of the STIX file.
   isArray: false
   name: entry_id
   required: true
   secret: false
-comment: Populating indicators from information in given STIX1/2 file.
+comment: Creates indicators from the submitted STIX file. Supports STIX 1.0 and STIX 2.0.
 commonfields:
   id: CreateIndicatorsFromSTIX
   version: -1
