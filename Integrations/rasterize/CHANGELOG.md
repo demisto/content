@@ -1,6 +1,6 @@
 ## [Unreleased]
-  - Support for specifying advanced Chrome options.
-  - Improved rendering support for large html files.
+  - Added support for specifying advanced Chrome options.
+  - Improved rendering of large HTML files.
 
 ## [20.1.0] - 2020-01-07
 -
