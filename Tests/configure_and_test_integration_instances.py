@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import os
 import re
@@ -231,10 +233,9 @@ def is_content_update_in_progress(client, prints_manager, thread_index):
         (str): Returns the request response data which is 'true' if updating and 'false' if not.
     '''
     host = client.api_client.configuration.host
-    print
     prints_manager.add_print_job(
-        '\nMaking "Get" request to server - "{}" to check if content is installing.'.format(host), print_color,
-        thread_index, LOG_COLORS.NATIVE)
+        '\nMaking "Get" request to server - "{}" to check if content is installing.'.format(host), print,
+        thread_index)
 
     # make request to check if content is updating
     response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/updating',
