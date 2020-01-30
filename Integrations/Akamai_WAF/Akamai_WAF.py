@@ -419,7 +419,7 @@ def activate_network_list_command(client: Client, network_list_ids: str, env: st
         except DemistoException as e:
             if "This list version is already active" in e.args[0]:
                 human_readable += f'**{INTEGRATION_NAME} - network list {network_list_id} already active on {env}**\n'
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             human_readable += f'{INTEGRATION_NAME} - Could not find any results for given query\n'
 
     return human_readable, {}, {}
@@ -519,7 +519,7 @@ def get_activation_status_command(client: Client, network_list_ids: Union[str, l
         except DemistoException as e:
             if "The Network List ID should be of the format" in e.args[0]:
                 human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** canot be found\n"
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             human_readable += f'{INTEGRATION_NAME} - Could not find any results for given query\n'
 
     if env == "PRODUCTION":
