@@ -12,10 +12,10 @@ Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Sub-Feeds__: Sub-Feeds of Bambenek Consulting to fetch indicators from:
-        * http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt - Master Feed of known, active and non-sinkholed C&Cs IP addresses.
-        * http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt - High Confidence Master Feed of known, active and non-sinkholed C&Cs IP addresses.
-        * http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt - Master Feed of known, active and non-sinkholed C&Cs domain names.
-        * http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt - High Confidence Master Feed of known, active and non-sinkholed C&Cs domain names.
+        * http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt - Master Feed of known, active, and non-sinkholed C&Cs IP addresses.
+        * http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt - Master Feed of known, active, and non-sinkholed C&Cs IP addresses (high-confidence only).
+        * http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt - Master Feed of known, active, and non-sinkholed C&Cs domain names.
+        * http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt - Master Feed of known, active, and non-sinkholed C&Cs domain names (high-confidence only).
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
     * __Reliability__: Reliability of the feed.  

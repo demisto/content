@@ -19,11 +19,11 @@ configuration:
 - defaultvalue: '360'
   display: Fetch Interval
   name: feedFetchInterval
-  required: true
+  required: false
   type: 19
 - defaultvalue: B - Usually reliable
   display: Reliability
-  name: feedInstanceReliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -31,22 +31,17 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
 - display: expiration
   name: expiration
   required: false
   type: 17
-- additionalinfo: When selected, the exclusion list will be ignored for this feed.
-  display: Bypass exclusion list
-  name: skipExclusionList
-  required: false
-  type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
   defaultvalue: Bad
   display: Indicator reputation
-  name: feedInstanceReputation
+  name: feedReputation
   options:
   - None
   - Good
@@ -54,17 +49,6 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: indicatorType
-  display: expirationPolicy
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- display: expirationInterval
-  hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
