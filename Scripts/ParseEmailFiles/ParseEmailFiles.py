@@ -3627,6 +3627,7 @@ def main():
         return_error('Minimum max_depth is 1, the script will parse just the top email')
 
     parse_only_headers = demisto.args().get('parse_only_headers', 'false').lower() == 'true'
+    ignore_content_type = demisto.args().get('ignore_content_type', 'false').lower() == 'true'
 
     try:
         result = demisto.executeCommand('getFilePath', {'id': entry_id})
@@ -3665,13 +3666,13 @@ def main():
                 with open(file_path, 'rb') as f:
                     file_contents = f.read()
 
-                if file_contents and 'Content-Type:'.lower() in file_contents.lower():
+                if file_contents and (ignore_content_type or 'Content-Type:'.lower() in file_contents.lower()):
                     email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
                                                              parse_only_headers=parse_only_headers, max_depth=max_depth)
                     output = create_email_output(email_data, attached_emails)
                 else:
                     # Try a base64 decode
-                    b64decode(file_contents)
+                    file_contents = b64decode(file_contents)
                     if file_contents and 'Content-Type:'.lower() in file_contents.lower():
                         email_data, attached_emails = handle_eml(file_path, b64=True, file_name=file_name,
                                                                  parse_only_headers=parse_only_headers,
