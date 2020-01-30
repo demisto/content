@@ -1,3 +1,2 @@
 ## [Unreleased]
-- Updating playbook
-  - In Detonate URL - Generic replace Detonate URL - Lastline to Detonate URL - Lastline v2
+Replaced Detonate URL - Lastline with Detonate URL - Lastline v2.
