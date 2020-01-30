@@ -75,12 +75,7 @@
         {
             "integrations": "CloudShark",
             "playbookID": "CloudShark - Test Playbook",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
-            "integrations": "CloudShark",
-            "playbookID": "TestCloudshark"
+            "timeout": 500
         },
         {
             "integrations": "nmap",
