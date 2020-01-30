@@ -158,7 +158,8 @@ class Pack:
             metadata_file.seek(0)
             json.dump(formatted_metadata, metadata_file, indent=4)
 
-        print_color(f"Finished formatting {self._pack_name} packs's {metadata_path} file.", LOG_COLORS.GREEN)
+        print_color(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.",
+                    LOG_COLORS.GREEN)
 
     def parse_release_notes(self):
         if Pack.CHANGELOG_MD not in os.listdir(self._pack_path):
@@ -288,7 +289,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_blob.cache_control = "no-cache"
     index_blob.reload()
     index_blob.upload_from_filename(index_zip_path)
-
+    print_color(f"Finished uploading {Pack.INDEX_NAME}.json to storage.", LOG_COLORS.GREEN)
     os.remove(index_zip_path)
     shutil.rmtree(index_folder_path)
 
