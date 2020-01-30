@@ -58,13 +58,12 @@ def determine_server_url(ami_env):
     return server_url
 
 
-def get_server_numeric_version(ami_env, prints_manager):
+def get_server_numeric_version(ami_env):
     '''
     Gets the current server version
     Arguments:
         ami_env: (str)
             AMI version name.
-        prints_manager: (ParallelPrintsManager)
             Print manager object.
     Returns:
         (str) Server numeric version
@@ -75,8 +74,7 @@ def get_server_numeric_version(ami_env, prints_manager):
     with open(images_file_name, 'r') as image_data_file:
         image_data = [line for line in image_data_file if line.startswith(ami_env)]
         if len(image_data) != 1:
-            prints_manager.add_print_job('Did not get one image data for server version, got {}'.format(image_data),
-                                         print_warning, 0)
+            print_warning('Did not get one image data for server version, got {}'.format)
             return '0.0.0'
         else:
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
@@ -84,10 +82,8 @@ def get_server_numeric_version(ami_env, prints_manager):
                 server_numeric_version = server_numeric_version[0]
             else:
                 server_numeric_version = '99.99.98'  # latest
-            prints_manager.add_print_job('Server image info: {}'.format(image_data[0]), print_color, 0,
-                                         LOG_COLORS.NATIVE)
-            prints_manager.add_print_job('Server version: {}'.format(server_numeric_version), print_color, 0,
-                                         LOG_COLORS.NATIVE)
+            print('Server image info: {}'.format(image_data[0]))
+            print('Server version: {}'.format(server_numeric_version))
             return server_numeric_version
 
 
@@ -583,8 +579,7 @@ def main():
     secret_conf_path = options.secret
 
     prints_manager = ParallelPrintsManager(1)
-    server_numeric_version = get_server_numeric_version(ami_env, prints_manager)
-    prints_manager.execute_thread_prints(0)
+    server_numeric_version = get_server_numeric_version(ami_env)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
