@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added ***ip_to_indicator_type*** command.
 
 
 ## [20.1.2] - 2020-01-22
