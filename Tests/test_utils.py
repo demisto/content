@@ -413,19 +413,3 @@ def collect_content_items_data(pack_path):
         data[directory] = dir_data
 
     return data
-
-# def collect_integration_display_names(pack_path):
-#     if 'Integrations' not in os.listdir(pack_path):
-#         return []
-#
-#     integration_display_names = set([])
-#     integration_dir = os.path.join(pack_path, 'Integrations')
-#     for integration_name in os.listdir(integration_dir):
-#         if integration_name.endswith('.yml'):
-#             integration_yml_path = os.path.join(integration_dir, integration_name)
-#             with open(integration_yml_path, 'r') as integration_file:
-#                 yaml_data = yaml.safe_load(integration_file)
-#                 display_name = yaml_data.get('display', '')
-#                 integration_display_names.add(display_name)
-#
-#     return integration_display_names
