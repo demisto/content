@@ -31,6 +31,36 @@ URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for
 EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when there is a refused connection." \
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
+DEFAULT_CHROME_OPTIONS = [
+    '--no-sandbox',
+    '--headless',
+    '--disable-gpu',
+    '--hide-scrollbars',
+    '--disable_infobars',
+    '--start-maximized',
+    '--start-fullscreen',
+    '--ignore-certificate-errors',
+    '--disable-dev-shm-usage',
+]
+
+USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
+USER_CHROME_OPTIONS = USER_CHROME_OPTIONS.split(',') if USER_CHROME_OPTIONS else list()
+
+
+def merge_options(default_options, user_options):
+    if not user_options:  # nothing to do
+        return default_options
+    options = []
+    remove_opts = []
+    for opt in user_options:
+        opt = opt.strip()
+        if opt.startswith('[') and opt.endswith(']'):
+            remove_opts.append(opt[1:-1])
+        else:
+            options.append(opt)
+    # add filtered defaults only if not in removed and we don't have it already
+    options.extend([x for x in default_options if (x not in remove_opts and x not in options)])
+    return options
 
 
 def check_response(driver):
@@ -48,14 +78,8 @@ def init_driver(offline_mode=False):
         with tempfile.TemporaryFile() as log:
             sys.stdout = log  # type: ignore
             chrome_options = webdriver.ChromeOptions()
-            chrome_options.add_argument('--no-sandbox')
-            chrome_options.add_argument('--headless')
-            chrome_options.add_argument('--disable-gpu')
-            chrome_options.add_argument('--hide-scrollbars')
-            chrome_options.add_argument('--disable_infobars')
-            chrome_options.add_argument('--start-maximized')
-            chrome_options.add_argument('--start-fullscreen')
-            chrome_options.add_argument('--ignore-certificate-errors')
+            for opt in merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS):
+                chrome_options.add_argument(opt)
 
             driver = webdriver.Chrome(options=chrome_options)
             if offline_mode:
