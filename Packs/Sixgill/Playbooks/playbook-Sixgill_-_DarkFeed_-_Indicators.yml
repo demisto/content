@@ -37,14 +37,14 @@ tasks:
       id: 9e63819a-6e2f-4067-8c1e-a0f7500a42e4
       version: -1
       name: sixgill-get-indicators
-      description: ''
+      description: Fetching Sixgill's DarkFeed Threat Intelligence indicators
       script: Sixgill|||sixgill-get-indicators
       type: regular
       iscommand: true
       brand: Sixgill
     nexttasks:
       '#none#':
-      - '6'
+      - '7'
     scriptarguments:
       fetch_indicators_limit: {}
     separatecontext: false
@@ -58,26 +58,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '6':
-    id: '6'
-    taskid: 3ee92726-b266-4dc5-8b8c-b4b9aee4b284
+  '7':
+    id: '7'
+    taskid: 065eae4d-318f-4048-8d00-b24c6951a56f
     type: regular
     task:
-      id: 3ee92726-b266-4dc5-8b8c-b4b9aee4b284
+      id: 065eae4d-318f-4048-8d00-b24c6951a56f
       version: -1
-      name: Parse STIX Bundle
-      description: ''
-      scriptName: StixParser
+      name: CreateIndicatorsFromSTIX
+      description: Creates indicators from the submitted STIX file. Supports STIX
+        1.0 and STIX 2.0.
+      scriptName: CreateIndicatorsFromSTIX
       type: regular
       iscommand: false
       brand: ''
     scriptarguments:
       entry_id:
-        complex:
-          root: InfoFile
-          accessor: EntryID
-      iocXml: {}
-      to_context: {}
+        simple: ${InfoFile.EntryID}
     separatecontext: false
     view: |-
       {
