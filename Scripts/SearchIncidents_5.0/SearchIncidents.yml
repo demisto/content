@@ -16,19 +16,19 @@ enabled: true
 args:
 - name: id
   default: true
-  description: Filter by incident IDs
+  description: A comma-separated list of incident IDs by which to filter the results.
   isArray: true
 - name: name
-  description: Filter by incident name
+  description: A comma-separated list of incident names by which to filter the results.
   isArray: true
 - name: status
-  description: Filter by the status (e.g. assigned)
+  description: ' A comma-separated list of incident statuses by which to filter the results. For example: assigned. '
   isArray: true
 - name: notstatus
-  description: Filter by excluding status (e.g. assigned)
+  description: ' A comma-separated list of incident statuses to exclude from the results.  For example: assigned. '
   isArray: true
 - name: reason
-  description: Filter by closing reason
+  description: A comma-separated list of incident close reasons by which to filter the results.
   isArray: true
 - name: fromdate
   description: Filter by from date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
@@ -65,24 +65,24 @@ args:
   description: Sort in format of field.asc,field.desc,...
 outputs:
 - contextPath: foundIncidents.id
-  description: IDs of the found incidents
+  description: A list of incident IDs returned from the query.
 - contextPath: foundIncidents.name
-  description: Names of the found incidents
+  description: A list of incident names returned from the query.
 - contextPath: foundIncidents.severity
-  description: Severities of the found incidents
+  description: A list of incident severities returned from the query.
 - contextPath: foundIncidents.status
-  description: Statuses of the found incidents
+  description: A list of incident statuses returned from the query.
 - contextPath: foundIncidents.owner
-  description: Owners of the found incidents
+  description: A list of incident owners returned from the query.
 - contextPath: foundIncidents.created
-  description: Create dates of the found incidents
+  description: A list of the incident create date returned from the query.
 - contextPath: foundIncidents.closed
-  description: Close dates of the found incidents
+  description: A list of incident close dates returned from the query.
 - contextPath: foundIncidents.labels
-  description: An array of labels per incident of the found incidents
+  description: An array of labels per incident returned from the query.
 - contextPath: foundIncidents.details
-  description: Details of the found incidents
+  description: Details of the incidents returned from the query.
 - contextPath: foundIncidents.dueDate
-  description: Due dates of the found incidents
+  description: A list of incident due dates returned from the query.
 - contextPath: foundIncidents.phase
-  description: Phases of the found incidents
+  description: A list of incident phases returned from the query.
