@@ -1569,21 +1569,20 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Policy ID
+      description: The ID of the policy to update.
       isArray: false
       name: policy_id
       required: true
       secret: false
     - default: false
-      description: Policy description
+      description: A new description for the policy.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Blocked Sender type. Most times you will have to change fromValue
-        according to fromType
+      description: The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain.
       isArray: false
       name: fromType
       predefined:
@@ -1600,8 +1599,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Blocked Receiver type. Most times you will have to change fromValue
-        according to fromType
+      description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain.
       isArray: false
       name: toType
       predefined:
@@ -1615,7 +1613,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The block option, must be one of: no_action, block_sender.'
+      description: 'The block action. Can be "no_action" or "block_sender".'
       isArray: false
       name: option
       predefined:
@@ -1624,20 +1622,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Blocked Sender value. FromValue depends on fromType
+      description: The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain.
       isArray: false
       name: fromValue
       required: false
       secret: false
     - default: false
-      description: Blocked Receiver value. ToValue depends on toType
+      description: The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain.
       isArray: false
       name: toValue
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Addresses based on
+      description: The part from where addresses are pulled. Can be "envelope_from", "header_from", or "both".
       isArray: false
       name: fromPart
       predefined:
@@ -1647,45 +1645,45 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates the specified policy
+    description: Updates the specified policy.
     execution: false
     name: mimecast-update-policy
     outputs:
     - contextPath: Mimecast.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: string
     - contextPath: Mimecast.Policy.Sender.Address
-      description: Block Sender by email address
+      description: Block Sender by email address value.
       type: string
     - contextPath: Mimecast.Policy.Sender.Domain
-      description: Block Sender by domain
+      description: Block sender by domain value.
       type: string
     - contextPath: Mimecast.Policy.Sender.Group
-      description: Block Sender by group
+      description: Block sender by group value.
       type: string
     - contextPath: Mimecast.Policy.Bidirectional
-      description: Blocked policy is Bidirectional or not
+      description: Whether the blocked policy is bidirectional.
       type: boolean
     - contextPath: Mimecast.Policy.Receiver.Address
-      description: Block emails to Receiver type address
+      description: Block emails to receiver type address.
       type: string
     - contextPath: Mimecast.Policy.Receiver.Domain
-      description: Block emails to Receiver type domain
+      description: Block emails to receiver type domain.
       type: string
     - contextPath: Mimecast.Policy.Receiver.Group
-      description: Block emails to Receiver type group
+      description: Block emails to receiver type group.
       type: string
     - contextPath: Mimecast.Policy.Fromdate
-      description: Policy validation start date
+      description: The policy validation start date.
       type: date
     - contextPath: Mimecast.Policy.Todate
-      description: Policy expiration date
+      description: The policy expiration date.
       type: date
     - contextPath: Mimecast.Policy.Sender.Type
-      description: The sender type
+      description: The sender type.
       type: String
     - contextPath: Mimecast.Policy.Receiver.Type
-      description: The Receiver type
+      description: The receiver type.
       type: String
   feed: false
   isfetch: true
