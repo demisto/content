@@ -126,7 +126,7 @@ def subscribe(client, conn, subscription_id, topic_name, queue_name):
 
 def fetch_incidents(client, conn, subscription_id, queue_name, topic_name):
     if not queue_name and not topic_name:
-        raise ValueError('Fetch fetch you must provide either Queue Name or Topic Name')
+        raise ValueError('To fetch incidents you must provide either Queue Name or Topic Name')
     elif queue_name and topic_name:
         raise ValueError('Can\'t provide both Queue Name and Topic name.')
 
@@ -180,7 +180,7 @@ def main():
                 topic_name = demisto.params().get('topic-name')
 
                 if not queue_name and not topic_name:
-                    raise ValueError('Fetch fetch you must provide either Queue Name or Topic Name')
+                    raise ValueError('To fetch incidents you must provide either Queue Name or Topic Name')
                 elif queue_name and topic_name:
                     raise ValueError('Can\'t provide both Queue Name and Topic name.')
 
