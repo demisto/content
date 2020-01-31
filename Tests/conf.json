@@ -2125,6 +2125,10 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "IsInternalHostName Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
@@ -2162,7 +2166,8 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "ssdeepreputationtest": "Issue #20953"
+        "ssdeepreputationtest": "Issue #20953",
+        "C2sec-Test": "Issue #21633"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
