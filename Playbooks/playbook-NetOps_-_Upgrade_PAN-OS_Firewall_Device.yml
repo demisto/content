@@ -1,0 +1,143 @@
+id: NetOps - Upgrade PAN-OS Firewall Device
+version: -1
+name: NetOps - Upgrade PAN-OS Firewall Device
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ad1b6cae-2f83-4d07-8dba-6fb036ac4ae9
+    type: start
+    task:
+      id: ad1b6cae-2f83-4d07-8dba-6fb036ac4ae9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: cec94b27-c3e0-4792-8f62-ec5c6704c884
+    type: regular
+    task:
+      id: cec94b27-c3e0-4792-8f62-ec5c6704c884
+      version: -1
+      name: Show Current Device Version
+      description: Show firewall device software version
+      script: Panorama|||panorama-show-device-version
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Current Firewall Version
+      output:
+        complex:
+          root: PANVersionResponse
+          accessor: result.sw-version
+    - incidentfield: Firewall Model
+      output:
+        complex:
+          root: PANVersionResponse
+          accessor: result.model
+  "36":
+    id: "36"
+    taskid: da298286-0c26-42e1-81ca-0ec9a67b952e
+    type: playbook
+    task:
+      id: da298286-0c26-42e1-81ca-0ec9a67b952e
+      version: -1
+      name: Net Simple_Firewall_Upgrade_API_Calls
+      playbookName: NetOps - Firewall Upgrade
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 5cb04387-365a-4c01-8fa9-0f0e31cbb2a8
+    type: regular
+    task:
+      id: 5cb04387-365a-4c01-8fa9-0f0e31cbb2a8
+      version: -1
+      name: Engineer Review
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 720,
+        "width": 380,
+        "x": -115,
+        "y": -45
+      }
+    }
+  }
+inputs:
+- key: TargetVersion
+  value: {}
+  required: true
+  description: Target PAN-OS version to upgrade
+- key: FirewallInstanceName
+  value: {}
+  required: true
+  description: Name of the PAN-OS Integration instance for the firewall to upgrade
+outputs: []
