@@ -1,13 +1,11 @@
 ## Overview
 ---
-
 This integration provides an endpoint with a list of indicators as a service for the system indicators.
-This integration was integrated and tested with version xx of ExportIndicators
-## ExportIndicators Playbook
----
 
 ## Use Cases
 ---
+1. Export list of malicious IPs to block via a firewall.
+2. Export list of indicators the a supporting service such as Splunk (via csv output).
 
 ## Configure ExportIndicators on Demisto
 ---
