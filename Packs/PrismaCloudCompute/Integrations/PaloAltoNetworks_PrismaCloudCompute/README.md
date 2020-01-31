@@ -1,46 +1,47 @@
 ![image](https://user-images.githubusercontent.com/49071222/72906531-0e452a00-3d3b-11ea-8703-8b97ddf30be0.png)
 
 
-## Overview
-
 This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Demisto
 
 ## Use Cases
 
-Manage Prisma Cloud Compute alerts in Demisto.
-You can create new playbooks, or extend the default ones, to analyze alerts, assign tasks based on your analysis, and open tickets on other platforms.
+- Manage Prisma Cloud Compute alerts in Demisto.
+- You can create new playbooks, or extend the default ones, to analyze alerts, assign tasks based on your analysis, and open tickets on other platforms.
 
-## Configure Prisma Cloud Compute
+## Configure Prisma Cloud Compute to Send Alerts to Demisto
 
-Configure Prisma Cloud Compute to send alerts to Demisto by creating an alert profile.
+To send alerts from Prisma Cloud Compute to Demisto, you need to create an alert profile.
 
-1. Login to your Prisma Cloud Compute console.
-1. Navigate to **Manage > Alerts**.
-1. Create a new alert profile by clicking **Add Profile**.
-1. On the left, select **Demisto** from the provider list.
-1. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Demisto.
-1. Click **Save** to save the alert profile
+1. Log in to your Prisma Cloud Compute console.
+2. Navigate to **Manage > Alerts**.
+3. Click **Add Profile** to create a new alert profile.
+4. On the left, select **Demisto** from the provider list.
+5. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Demisto.
+6. Click **Save** to save the alert profile.
 
 ## Configure Demisto
 
 1. Navigate to **Settings > Integrations > Servers & Services**.
-1. Search for **Prisma Cloud Compute**.
-1. Click **Add instance** to create and configure a new integration.
-* **Name**: Name for the integration.
-* **Fetches incidents**: Configures this integration instance to fetch alerts from Prisma Cloud Compute.
-* **Prisma Cloud Compute Console URL**: URL address of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute.
-* **Prisma Cloud Compute Project Name (if applies)**: If using projects in Prisma Cloud Compute, enter the project name here. Copy the project name from the alert profile created in Prisma Cloud Compute.
-* **Trust any certificate (not secure)**: Skips verification of the CA certificate (not recommended).
-* **Use system proxy settings**: Uses the system's proxy settings.
-* **Credentials**: Prisma Cloud Compute login credentials.
-* **Prisma Cloud Compute CA Certificate**: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
+2. Search for **Prisma Cloud Compute**.
+3. Click **Add instance** to create and configure a new integration.
+   
+   | Parameter Name | Description | Default |
+   | -------------- | ----------- | ------- |
+   | **Name** | A meaningful name for the integration instance. | Prisma Cloud Compute_<alertProfileName> |
+   | **Fetches incidents** | Configures this integration instance to fetch alerts from Prisma Cloud Compute. | N/A |
+   | **Prisma Cloud Compute Console URL** | URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute. | https:/<span>/proxyserver.com |
+   | **Prisma Cloud Compute Project Name (if applicable)** | Copy the project name from the alert profile created in Prisma Cloud Compute and enter paste in this field. | N/A |
+   | **Trust any certificate (not secure)** | Skips verification of the CA certificate (not recommended). | N/A |
+   | **Use system proxy settings** | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | <span>https://proxyserver.com |
+   | **Credentials** | Prisma Cloud Compute login credentials. | N/A |
+   | **Prisma Cloud Compute CA Certificate** | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
 
 
-## Using the integration and scripts
+## Using the Integration and Scripts
 
-The integration ships with four default playbooks, along with four scripts that are used by the playbooks. The scripts encode the raw JSON alerts into Demisto objects that can then be used in the playbooks. The scripts are:
+The integration ships with four default playbooks and four scripts that are used by the playbooks. The scripts encode the raw JSON alerts into Demisto objects that can then be used in the playbooks. The scripts are:
 
 * PrismaCloudComputeParseAuditAlert
 * PrismaCloudComputeParseComplianceAlert
@@ -50,7 +51,7 @@ The integration ships with four default playbooks, along with four scripts that 
 
 To better understand how playbooks and scripts interoperate, consider the _Prisma Cloud Compute - Vulnerability Alert_ playbook.
 
-* When the playbook is triggered, a task called **Parse Vulnerability Alert** runs.
+* When the playbook is triggered, the **Parse Vulnerability Alert** starts running.
 * The task runs the **PrismaCloudComputeParseVulnerabilityAlert** script, which takes the `prismacloudcomputerawalertjson` field of the incident (the raw JSON alert data) as input.
 
 ![image](https://user-images.githubusercontent.com/49071222/72902982-1601d000-3d35-11ea-8be2-a12ac8ea8862.png)
@@ -67,8 +68,8 @@ At this point, you can add tasks that extend the playbook to check and respond t
 
 ## Troubleshooting
 
-If any alerts are missing in Demisto, check the status of the integration:
+If any alerts are missing in Demisto, check the status of the integration.
 
 ![image](https://user-images.githubusercontent.com/49071222/72086124-18b0fe00-330f-11ea-894b-6b2f9f0528fd.png)
 
-If you're having further issues, contact [support@demisto.com](mailto:support@demisto.com) and attach the server logs.
+If you have any questions, contact [Demisto support](mailto:support@demisto.com) and attach the server logs.
