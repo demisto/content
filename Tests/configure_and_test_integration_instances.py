@@ -56,11 +56,7 @@ def determine_servers_urls(ami_env):
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
         env_to_instance_dns = [{env.get('Role'): env.get('InstanceDNS')} for env in env_results]
-        print('env_to_instance_dns:')
-        print(env_to_instance_dns)
-        instances_dns = [env.get(ami_env) for env in env_to_instance_dns]
-        print('instances_dns')
-        print(instances_dns)
+        instances_dns = [env.get(ami_env) for env in env_to_instance_dns if env.get('Role') == ami_env]
     server_urls = []
     for dns in instances_dns:
         server_url = dns if dns.startswith('http') else ('https://{}'.format(dns) if
