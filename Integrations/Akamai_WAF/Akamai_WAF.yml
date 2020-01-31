@@ -216,7 +216,7 @@ script:
     name: akamai-delete-network-list
   - arguments:
     - default: false
-      description: The ID of the network list to be activated -can be list (list1,list2)
+      description: ' A comma-seprated list of network list IDs to activate. For example: list (list1,list2). '
       isArray: true
       name: network_list_ids
       required: true
@@ -250,7 +250,7 @@ script:
     name: akamai-activate-network-list
   - arguments:
     - default: false
-      description: The ID of the network to add elements.
+      description: The ID of the network in which to add elements.
       isArray: false
       name: network_list_id
       required: true
@@ -290,8 +290,8 @@ script:
     name: akamai-remove-element-from-network-list
   - arguments:
     - default: false
-      description: The ID of the network list for which to get the activation status
-        (suport list - list1,list2).
+      description: ' A comma-separated list of network list IDs for which to get the activation status. For example: 
+        (support list - list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
@@ -315,10 +315,10 @@ script:
       description: The network list ID.
       type: String
     - contextPath: Akamai.NetworkLists.ActivationStatus.StagingStatus
-      description: The network list enviorment.
+      description: The network list environment.
       type: String
     - contextPath: Akamai.NetworkLists.ActivationStatus.ProductionStatus
-      description: The network list enviorment activation status
+      description: The network list environment activation status.
       type: String
   dockerimage: demisto/akamai:1.0.0.5063
   feed: false
