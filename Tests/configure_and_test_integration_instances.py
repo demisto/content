@@ -84,10 +84,11 @@ def get_server_numeric_version(ami_env):
         print("\n\n\nimage_data:")
         print(image_data)
         if len(image_data) != 1:
-            print_warning('Did not get one image data for server version, got {}'.format)
+            print_warning('Did not get one image data for server version, got {}'.format(image_data))
             return '0.0.0'
         else:
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
+            print(server_numeric_version)
             if server_numeric_version:
                 print('if')
                 server_numeric_version = server_numeric_version[0]
