@@ -4,8 +4,8 @@ contentitemfields:
   propagationLabels:
   - all
 name: Akamai WAF Network list activate generic polling
-description: The playbook activate network lists in Staging or Production on Akamai
-  WAF, the playbook finish its running when the network list is active on the requested
+description: Activates network lists in Staging or Production on Akamai
+  WAF. The playbook finishes running when the network list is active on the requested
   enviorment.
 starttaskid: '0'
 tasks:
@@ -42,7 +42,7 @@ tasks:
     task:
       id: fb437f2c-767d-46d7-8000-482a1b4a77c4
       version: -1
-      name: Activate network list in chosen enviorment
+      name: Activate network list in selected enviorment
       description: ''
       script: '|||akamai-activate-network-list'
       type: regular
@@ -79,7 +79,7 @@ tasks:
     task:
       id: e74b46f9-4d31-4520-84cf-8b05d070ab29
       version: -1
-      name: GenericPolling
+      name: Generic Polling
       description: ''
       playbookName: GenericPolling
       type: playbook
@@ -128,7 +128,7 @@ tasks:
     task:
       id: 0f81a60a-8b9b-4e5d-8e81-a87fa0a83372
       version: -1
-      name: Staging or Production enviorment
+      name: Environment Type - Staging or Production
       type: condition
       iscommand: false
       brand: ''
@@ -168,7 +168,7 @@ tasks:
     task:
       id: e406cad5-9503-498d-8595-4e64281daf62
       version: -1
-      name: GenericPolling
+      name: Generic Polling
       description: ''
       playbookName: GenericPolling
       type: playbook
@@ -256,19 +256,19 @@ inputs:
 - key: network_list_ids
   value: {}
   required: true
-  description: Network list ids to be activate - for example id_list1,id_list2
+  description: ' A comma-separated list of network list IDs to activate. For example: id_list1,id_list2. '
 - key: env
   value: {}
   required: true
-  description: Enviorment to activate network list (STAGING or PRODUCTION)
+  description: Enviorment type to activate the network list. Can be "STAGING" or "PRODUCTION".
 - key: comment
   value: {}
   required: false
-  description: Comment to be logged when activating
+  description: A comment to log when activating the network lists.
 - key: notify
   value: {}
   required: false
-  description: List of emails to be notified on activation
+  description: A comma-separated list of email addresses to notify when the network lists are activated.
 tests:
 - No test
 fromversion: 4.1.0
