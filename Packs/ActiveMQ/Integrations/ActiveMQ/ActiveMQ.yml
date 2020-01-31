@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: ActiveMQ2
+  id: ActiveMQ
   version: -1
 configuration:
 - display: Server IP (e.g. 192.168.0.1)
@@ -10,6 +10,16 @@ configuration:
 - defaultvalue: '61613'
   display: Port
   name: port
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: Demisto
+  display: Client ID
+  name: client-id
   required: false
   type: 0
 - display: |-
@@ -35,11 +45,6 @@ configuration:
   name: root_ca
   required: false
   type: 12
-- defaultvalue: Demisto
-  display: Client ID
-  name: client-id
-  required: false
-  type: 0
 - display: |-
     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
     ‎                                           Fetch Incidents
@@ -48,6 +53,14 @@ configuration:
   name: subscription-id
   required: false
   type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - display: Topic Name (for subscription)
   name: topic-name
   required: false
@@ -56,14 +69,9 @@ configuration:
   name: queue_name
   required: false
   type: 0
-- defaultvalue: ''
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 description: Integration with ActiveMQ queue
-display: ActiveMQ2
-name: ActiveMQ2
+display: ActiveMQ
+name: ActiveMQ
 script:
   commands:
   - arguments:
@@ -118,9 +126,9 @@ script:
     execution: false
     name: activemq-subscribe
   dockerimage: demisto/stomp:latest
-  isfetch: false
   longRunning: false
   longRunningPort: false
+  isfetch: true
   runonce: false
   script: '-'
   subtype: python2

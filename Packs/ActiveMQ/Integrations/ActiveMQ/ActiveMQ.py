@@ -175,6 +175,15 @@ def main():
     try:
         if demisto.command() == 'test-module':
             # Test connectivity
+            if demisto.params().get('isFetch'):
+                queue_name = demisto.params().get('queue_name')
+                topic_name = demisto.params().get('topic-name')
+
+                if not queue_name and not topic_name:
+                    raise ValueError('Fetch fetch you must provide either Queue Name or Topic Name')
+                elif queue_name and topic_name:
+                    raise ValueError('Can\'t provide both Queue Name and Topic name.')
+
             connect(conn)
             demisto.results('ok')
 
