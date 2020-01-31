@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: ActiveMQ
+  id: ActiveMQ2
   version: -1
 configuration:
 - display: Server IP (e.g. 192.168.0.1)
@@ -12,7 +12,18 @@ configuration:
   name: port
   required: false
   type: 0
-- display: Client certificate (.pem)
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                           Basic Authentication
+    Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                           Authenticate via Certificate
+    Client certificate (.pem)
   name: client_cert
   required: false
   type: 12
@@ -29,8 +40,11 @@ configuration:
   name: client-id
   required: false
   type: 0
-- defaultvalue: '1'
-  display: Subscription ID
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                           Fetch Incidents
+    Subscription ID
+  defaultvalue: '1'
   name: subscription-id
   required: false
   type: 0
@@ -48,8 +62,8 @@ configuration:
   required: false
   type: 8
 description: Integration with ActiveMQ queue
-display: ActiveMQ
-name: ActiveMQ
+display: ActiveMQ2
+name: ActiveMQ2
 script:
   commands:
   - arguments:

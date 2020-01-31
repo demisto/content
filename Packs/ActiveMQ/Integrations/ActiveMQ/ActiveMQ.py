@@ -43,19 +43,19 @@ class MsgListener(stomp.ConnectionListener):
 def create_connection(client_cert, client_key, root_ca):
     client_path = None
     client_key_path = None
-    if 'client_cert' in demisto.params():
+    if client_cert:
         client_path = 'client.cert'
         with open(client_path, 'wb') as file:
-            file.write(demisto.params()['client_cert'])
+            file.write(client_cert)
             client_path = os.path.abspath(client_path)
-    if 'client_key' in demisto.params():
+    if client_key:
         client_key_path = 'client_key.key'
         with open(client_key_path, 'wb') as file:
-            file.write(demisto.params()['client_key'])
-    if 'root_ca' in demisto.params():
+            file.write(client_key)
+    if root_ca:
         root_ca_path = 'root_ca.key'
         with open(root_ca_path, 'wb') as file:
-            file.write(demisto.params()['root_ca'])
+            file.write(root_ca)
 
     if client_cert or client_key or root_ca:
         conn = stomp.Connection(host_and_ports=[(HOSTNAME, PORT)], use_ssl=True,
@@ -162,9 +162,7 @@ def fetch_incidents(client, conn, subscription_id, queue_name, topic_name):
 
 
 def main():
-    client = 'Demisto'
-    if demisto.get(demisto.params(), 'client-id'):
-        client = demisto.params()['client-id']
+    client = demisto.params().get('client-id', 'Demisto')
 
     conn = create_connection(
         client_cert=CLIENT_CERT,
