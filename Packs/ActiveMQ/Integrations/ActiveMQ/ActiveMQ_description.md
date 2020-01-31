@@ -1,0 +1,2 @@
+This integration uses ActiveMQ STOMP protocol, that must be enabled (usually port 61613 by default) in order to work.
+Fetch incidents is based on using Durable Topic Subscribers, in order to fetch messages, and convert to Demisto incidents.
