@@ -56,11 +56,7 @@ def determine_servers_urls(ami_env):
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
         env_to_instance_dns = [{env.get('Role'): env.get('InstanceDNS')} for env in env_results]
-        print('env_to_instance_dns:')
-        print(env_to_instance_dns)
         instances_dns = [env.get(ami_env) for env in env_to_instance_dns if ami_env in env]
-        print('instances_dns')
-        print(instances_dns)
     server_urls = []
     for dns in instances_dns:
         server_url = dns if dns.startswith('http') else ('https://{}'.format(dns) if
@@ -89,12 +85,13 @@ def get_server_numeric_version(ami_env):
             print_warning('Did not get one image data for server version, got {}'.format)
             return '0.0.0'
         else:
+            print(image_data[0])
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
             if server_numeric_version:
-                print(server_numeric_version)
+                print('if')
                 server_numeric_version = server_numeric_version[0]
             else:
-                print(server_numeric_version)
+                print('else')
                 server_numeric_version = '99.99.98'  # latest
             print('Server image info: {}'.format(image_data[0]))
             print('Server version: {}'.format(server_numeric_version))
