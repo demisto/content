@@ -81,19 +81,14 @@ def get_server_numeric_version(ami_env):
         return '99.99.98'  # latest
     with open(images_file_name, 'r') as image_data_file:
         image_data = [line for line in image_data_file if line.startswith(ami_env)]
-        print("\n\n\nimage_data:")
-        print(image_data)
         if len(image_data) != 1:
             print_warning('Did not get one image data for server version, got {}'.format(image_data))
-            return '0.0.0'
+            return '99.99.98'
         else:
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-            print(server_numeric_version)
             if server_numeric_version:
-                print('if')
                 server_numeric_version = server_numeric_version[0]
             else:
-                print('else')
                 server_numeric_version = '99.99.98'  # latest
             print('Server image info: {}'.format(image_data[0]))
             print('Server version: {}'.format(server_numeric_version))
