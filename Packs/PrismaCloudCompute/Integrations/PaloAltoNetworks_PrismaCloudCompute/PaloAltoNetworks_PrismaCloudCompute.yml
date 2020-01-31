@@ -35,7 +35,7 @@ configuration:
   name: certificate
   required: false
   type: 12
-description: Prisma Cloud Compute is the leading cloud-native security platform, providing holistic protection across hosts, containers, and serverless deployments, in any cloud, and all through the software lifecycle.
+description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
