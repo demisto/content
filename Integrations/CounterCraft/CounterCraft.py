@@ -196,11 +196,12 @@ def http_request(request_method, path, data={}, params=""):
         return_error(str(ex))
 
 
-def return_results(title, content, context, headers):
+def return_results(title, content, human_readable, context, headers):
     '''
     Generic function that receives a result json, and turns it into an entryObject
     @param $title the table title
-    @param $contents the object contents
+    @param $content the object contents in JSON format
+    @param $human_readable human readable data for the table
     @param $context the entry context
     @param $headers table headers
     @return dict the entryObject
@@ -217,14 +218,14 @@ def return_results(title, content, context, headers):
         if isinstance(content, dict):
             headers = list(set(headers).intersection(set(content.keys())))
 
-    human_readable = tableToMarkdown(
+    readable_output = tableToMarkdown(
         title,
-        content,
+        human_readable,
         headers,
         lambda h: h.title().replace("_", " ").replace(".", ":")
     )
 
-    return_outputs(readable_output=human_readable, outputs=context, raw_response=content)
+    return_outputs(readable_output=readable_output, outputs=context, raw_response=content)
 
 
 ''' COMMANDS '''
@@ -250,7 +251,7 @@ def list_dsns_command():
     context = createContext(new_dsns, removeNull=True)
 
     return_results(
-        'Deception Support Node', res['data'],
+        'Deception Support Node', res['data'], new_dsns,
         {
             'CounterCraft.DSN(val.ID && val.ID === obj.ID)': context
         },
@@ -277,7 +278,7 @@ def list_providers_command():
     context = createContext(new_providers, removeNull=True)
 
     return_results(
-        'Providers', res['data'],
+        'Providers', res['data'], new_providers,
         {
             'CounterCraft.Provider(val.ID && val.ID === obj.ID)': context
         },
@@ -311,7 +312,7 @@ def list_campaigns_command():
     context = createContext(new_campaigns, removeNull=True)
 
     return_results(
-        'Campaigns', res['data'],
+        'Campaigns', res['data'], new_campaigns,
         {
             'CounterCraft.Campaign(val.ID && val.ID === obj.ID)': context
         },
@@ -344,7 +345,7 @@ def list_hosts_command():
     context = createContext(new_hosts, removeNull=True)
 
     return_results(
-        'Hosts', res['data'],
+        'Hosts', res['data'], new_hosts,
         {
             'CounterCraft.Host(val.ID && val.ID === obj.ID)': context
         },
@@ -378,7 +379,7 @@ def list_services_command():
     context = createContext(new_services, removeNull=True)
 
     return_results(
-        'Services', res['data'],
+        'Services', res['data'], new_services,
         {
             'CounterCraft.Service(val.ID && val.ID === obj.ID)': context
         },
@@ -412,7 +413,7 @@ def list_breadcrumbs_command():
     context = createContext(new_breadcrumbs, removeNull=True)
 
     return_results(
-        'Breadcrumbs', res['data'],
+        'Breadcrumbs', res['data'], new_breadcrumbs,
         {
             'CounterCraft.Breadcrumb(val.ID && val.ID === obj.ID)': context
         },
@@ -446,7 +447,7 @@ def list_incidents_command():
     context = createContext(new_incidents, removeNull=True)
 
     return_results(
-        'Incidents', res['data'],
+        'Incidents', res['data'], new_incidents,
         {
             'CounterCraft.Incident(val.ID && val.ID === obj.ID)': context
         },
@@ -485,7 +486,7 @@ def get_object_command():
     context = createContext(new_objects, removeNull=True)
 
     return_results(
-        'Objects', res['data'],
+        'Objects', res['data'], new_objects,
         {
             'CounterCraft.Object(val.ID && val.ID === obj.ID)': context
         },
@@ -528,7 +529,7 @@ def get_events_command():
     context = createContext(new_events, removeNull=True)
 
     return_results(
-        'Events', res['data'],
+        'Events', res['data'], new_events,
         {
             'CounterCraft.Event(val.ID && val.ID === obj.ID)': context
         },
@@ -575,11 +576,13 @@ def create_campaign_command():
 
     res = http_request('POST', '/campaigns', data=data)
 
-    context = createContext({new_key: res[old_key] if old_key in res else None
-                             for old_key, new_key in CAMPAIGN_FIELDS.items()}, removeNull=True)
+    campaign = {new_key: res[old_key] if old_key in res else None
+                             for old_key, new_key in CAMPAIGN_FIELDS.items()}
+
+    context = createContext(campaign, removeNull=True)
 
     return_results(
-        'Campaign', res,
+        'Campaign', res, campaign,
         {
             'CounterCraft.Campaign(val.ID && val.ID === obj.ID)': context
         },
@@ -604,18 +607,20 @@ def manage_campaign_command():
 
     res = http_request('PATCH', '/campaigns/' + campaign_id, data=data)
 
-    context = {
+    message = [{
         'ID': campaign_id,
         'Message': res['message']
-    }
+    }]
+
+    context = createContext(message, removeNull=True)
 
     return_results(
-        'Campaign Management', res,
+        'Campaign Management', res, message,
         {
             'CounterCraft.Campaign(val.ID && val.ID === obj.ID)': context
         },
         headers=[
-            'ID'
+            'ID',
             'Message'
         ]
     )
@@ -634,12 +639,15 @@ def create_host_machine_command():
     campaign_id = demisto.args().get('campaign_id')
 
     ip_address = demisto.args().get('ip_address')
+    port = demisto.args().get('port')
     username = demisto.args().get('username')
     password = demisto.args().get('password')
 
     host_data = {'ip_address': ip_address,
+                 'port': port,
                  'username': username,
-                 'password': password
+                 'password': password,
+                 'os_family_usr': 'linux'
                  }
 
     _uuid = str(uuid.uuid4())
@@ -654,13 +662,15 @@ def create_host_machine_command():
             'data': host_data
             }
 
-    res = http_request('POST', '/campaigns', data=data)
+    res = http_request('POST', '/hosts', data=data)
 
-    context = createContext({new_key: res[old_key] if old_key in res else None for old_key,
-                             new_key in HOST_FIELDS.items()}, removeNull=True)
+    host = {new_key: res[old_key] if old_key in res else None for old_key,
+                             new_key in HOST_FIELDS.items()}
+
+    context = createContext(host, removeNull=True)
 
     return_results(
-        'Hosts', res,
+        'Hosts', res, host,
         {
             'CounterCraft.Host(val.ID && val.ID === obj.ID)': context
         },
@@ -686,18 +696,20 @@ def manage_host_command():
 
     res = http_request('PATCH', '/hosts/' + host_id, data=data)
 
-    context = {
+    message = {
         'ID': host_id,
         'Message': res['message']
     }
 
+    context = createContext(message, removeNull=True)
+
     return_results(
-        'Host Management', res,
+        'Host Management', res, message,
         {
             'CounterCraft.Host(val.ID && val.ID === obj.ID)': context
         },
         headers=[
-            'ID'
+            'ID',
             'Message'
         ]
     )
@@ -715,18 +727,20 @@ def manage_service_command():
 
     res = http_request('PATCH', '/services/' + service_id, data=data)
 
-    context = {
+    message = {
         'ID': service_id,
         'Message': res['message']
     }
 
+    context = createContext(message, removeNull=True)
+
     return_results(
-        'Service Management', res,
+        'Service Management', res, message,
         {
             'CounterCraft.Service(val.ID && val.ID === obj.ID)': context
         },
         headers=[
-            'ID'
+            'ID',
             'Message'
         ]
     )
@@ -744,18 +758,20 @@ def manage_breadcrumb_command():
 
     res = http_request('PATCH', '/breadcrumbs/' + breadcrumb_id, data=data)
 
-    context = {
+    message = {
         'ID': breadcrumb_id,
         'Message': res['message']
     }
 
+    context = createContext(message, removeNull=True)
+
     return_results(
-        'Breadcrumb Management', res,
+        'Breadcrumb Management', res, message,
         {
             'CounterCraft.Breadcrumb(val.ID && val.ID === obj.ID)': context
         },
         headers=[
-            'ID'
+            'ID',
             'Message'
         ]
     )
