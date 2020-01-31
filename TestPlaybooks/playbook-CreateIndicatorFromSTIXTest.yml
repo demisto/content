@@ -37,11 +37,11 @@ tasks:
     quiet: false
   "1":
     id: "1"
-    taskid: "4"
+    taskid: "9"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "4"
+      id: "9"
       version: -1
       name: Get STIX1 file
       description: Sends http request. Returns the response as json.
@@ -142,7 +142,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
     scriptarguments:
       entry_id:
         complex:
@@ -161,8 +161,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quiet: false
-  "4":
-    id: "4"
+  "9":
+    id: "9"
     taskid: "2"
     type: title
     task:
