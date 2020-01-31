@@ -81,6 +81,7 @@ def get_server_numeric_version(ami_env):
         return '99.99.98'  # latest
     with open(images_file_name, 'r') as image_data_file:
         image_data = [line for line in image_data_file if line.startswith(ami_env)]
+        print("\n\n\nimage_data:")
         print(image_data)
         if len(image_data) != 1:
             print_warning('Did not get one image data for server version, got {}'.format)
