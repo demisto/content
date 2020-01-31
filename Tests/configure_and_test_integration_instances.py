@@ -58,7 +58,7 @@ def determine_servers_urls(ami_env):
         env_to_instance_dns = [{env.get('Role'): env.get('InstanceDNS')} for env in env_results]
         print('env_to_instance_dns:')
         print(env_to_instance_dns)
-        instances_dns = [env.get(ami_env) for env in env_to_instance_dns if env.get('Role') == ami_env]
+        instances_dns = [env.get(ami_env) for env in env_to_instance_dns if ami_env in env]
         print('instances_dns')
         print(instances_dns)
     server_urls = []
