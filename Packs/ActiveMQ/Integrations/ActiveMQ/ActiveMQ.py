@@ -17,10 +17,11 @@ if not demisto.params()['proxy']:
 
 HOSTNAME = demisto.params()['hostname']
 PORT = int(demisto.params()['port'])
-USERNAME = ''
-PASSWORD = ''
-CLIENT_CERT = demisto.params()['client_cert']
-CLIENT_KEY = demisto.params()['client_key']
+USERNAME = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD = demisto.params().get('credentials', {}).get('password')
+CLIENT_CERT = demisto.params().get('client_cert')
+CLIENT_KEY = demisto.params().get('client_key')
+ROOT_CA = demisto.params().get('root_ca')
 
 
 class MsgListener(stomp.ConnectionListener):
@@ -39,7 +40,7 @@ class MsgListener(stomp.ConnectionListener):
 ''' HELPER FUNCTIONS '''
 
 
-def create_connection():
+def create_connection(client_cert, client_key, root_ca):
     client_path = None
     client_key_path = None
     if 'client_cert' in demisto.params():
@@ -55,17 +56,32 @@ def create_connection():
         root_ca_path = 'root_ca.key'
         with open(root_ca_path, 'wb') as file:
             file.write(demisto.params()['root_ca'])
-    conn = stomp.Connection(host_and_ports=[(HOSTNAME, PORT)], use_ssl=True,
-                            ssl_key_file=client_key_path, ssl_cert_file=client_path)
+
+    if client_cert or client_key or root_ca:
+        conn = stomp.Connection(host_and_ports=[(HOSTNAME, PORT)], use_ssl=True,
+                                ssl_key_file=client_key_path, ssl_cert_file=client_path)
+    else:
+        conn = stomp.Connection([(HOSTNAME, PORT)])
+
     return conn
 
 
 def connect(conn, client_id=None):
     conn.start()
-    if client_id and len(client_id) > 0:
-        conn.connect(wait=True)  # , headers = {'client-id': client_id })
+    if USERNAME or PASSWORD:
+        if client_id and len(client_id) > 0:
+            conn.connect(USERNAME, PASSWORD, wait=True, headers={'client-id': client_id})
+        else:
+            conn.connect(USERNAME, PASSWORD, wait=True)
+
+    elif CLIENT_KEY or CLIENT_CERT or ROOT_CA:
+        if client_id and len(client_id) > 0:
+            conn.connect(wait=True)  # , headers = {'client-id': client_id })
+        else:
+            conn.connect(wait=True)
     else:
-        conn.connect(wait=True)
+        raise ValueError('You must provide username/password or certificates')
+
     return conn
 
 
@@ -89,13 +105,16 @@ def send_message(conn):
     demisto.results('Message sent to ActiveMQ destination: ' + dest + ' with transaction ID: ' + txid)
 
 
-def subscribe(client, conn):
+def subscribe(client, conn, subscription_id, topic_name, queue_name):
+    if not queue_name and not topic_name:
+        raise ValueError('To subscribe you must provide either queue-name or topic-name')
+    elif queue_name and topic_name:
+        raise ValueError('Can\'t provide both queue-name and topic-name.')
 
     listener = MsgListener()
     if client and len(client) > 0:
         conn.set_listener('Demisto', listener)
-    subscription_id = demisto.args()['subscription-id']
-    topic_name = demisto.args()['topic-name']
+
     # ack='client-individual', headers={'activemq.subscriptionName': client})
     conn.subscribe('/queue/' + topic_name, subscription_id, ack='auto')
     time.sleep(1)
@@ -105,15 +124,27 @@ def subscribe(client, conn):
         conn.ack(msg_id, subscription_id)
 
 
-def fetch_incidents(client, conn):
+def fetch_incidents(client, conn, subscription_id, queue_name, topic_name):
+    if not queue_name and not topic_name:
+        raise ValueError('Fetch fetch you must provide either Queue Name or Topic Name')
+    elif queue_name and topic_name:
+        raise ValueError('Can\'t provide both Queue Name and Topic name.')
+
     # conn = stomp.Connection(heartbeats=(4000, 4000))
-    subscription_id = demisto.params()['subscription-id']
     listener = MsgListener()
     if client and len(client) > 0:
         conn.set_listener('Demisto', listener)
-    topic_name = demisto.params()['topic-name']
-    # , headers = headersDemisto) #ack='client-individual', headers={'activemq.subscriptionName': client})
-    conn.subscribe('/queue/' + topic_name, subscription_id, ack='auto')
+
+    if queue_name:
+        conn.subscribe('/queue/' + queue_name, subscription_id, ack='auto')
+    else:
+        conn.subscribe(
+            '/topic/' + topic_name,
+            subscription_id,
+            ack='client-individual',
+            headers={'activemq.subscriptionName': client}
+        )
+
     incidents = []
     time.sleep(10)
     for i in range(len(listener.result_arr)):
@@ -121,9 +152,7 @@ def fetch_incidents(client, conn):
         msg_id = listener.msg_ids[i]
         incidents.append({
             'Name': 'ActiveMQ incident:' + msg_id,
-            '_rawJSON': msg,
             'rawJSON': msg,
-            'rawPhase': msg,
             'details': msg
         })
     demisto.incidents(incidents)
@@ -137,7 +166,11 @@ def main():
     if demisto.get(demisto.params(), 'client-id'):
         client = demisto.params()['client-id']
 
-    conn = create_connection()
+    conn = create_connection(
+        client_cert=CLIENT_CERT,
+        client_key=CLIENT_KEY,
+        root_ca=ROOT_CA
+    )
 
     LOG('command is %s' % (demisto.command(),))
 
@@ -152,15 +185,26 @@ def main():
             send_message(conn)
 
         elif demisto.command() == 'activemq-subscribe':
+            subscription_id = demisto.args().get('subscription-id')
+            topic_name = demisto.args().get('topic-name')
+            queue_name = demisto.args().get('queue-name')
+
             connect(conn, client)
-            subscribe(client, conn)
+            subscribe(client, conn, subscription_id, topic_name, queue_name)
 
         elif demisto.command() == 'fetch-incidents':
-            connect(conn, client)
-            fetch_incidents(client, conn)
+            subscription_id = demisto.params().get('subscription-id')
+            queue_name = demisto.params().get('queue_name')
+            topic_name = demisto.params().get('topic-name')
 
-    except Exception, e:
+            connect(conn, client)
+            fetch_incidents(client, conn, subscription_id, queue_name, topic_name)
+
+    except Exception as e:
         demisto.error(traceback.format_exc())
+        if demisto.command() == 'fetch-incidents':
+            raise
+
         return_error(str(e))
 
     finally:
