@@ -1,6 +1,5 @@
 ## [Unreleased]
-Added new argument *ignore_content_type* - Use it when the file has no Content-Type header. The script will treat the file as text
-    email with no attachments.
+Added the *ignore_content_type* argument, which is intended for use when the file has no Content-Type header. The script will treat the file as email text with no attachments.
 
 ## [19.12.1] - 2019-12-25
 Added handling for cases where an attachment has neither the *DisplayName* nor the *AttachFilename* properties.
