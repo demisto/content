@@ -18,7 +18,7 @@ args:
   secret: false
 - default: false
   defaultValue: '3'
-  description: How many levels deep we should parse the attached emails (e.g. email
+  description: The number of levels (deep) to parse the attached emails (e.g., email
     contains an emails contains an email). Default depth level is 3. Minimum level
     is 1, if set to 1 the script will parse only the first level email
   isArray: false
@@ -28,8 +28,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Use when the file has no Content-Type header. The script will treat the file as text
-    email with no attachments.
+  description: Whether to ignore the Content-Type header. Use when the file has no Content-Type header. The script will treat the file as text
+    email with no attachments. Can be "true" or "false". The default value is "false".
   isArray: false
   name: ignore_content_type
   predefined:
@@ -37,9 +37,9 @@ args:
   - 'true'
   required: false
   secret: false
-comment: Parse an email from an eml or msg file and populate all relevant context
+comment: Parses an email from an EML or MSG file and populates all relevant context
   data to investigate the email. Also extracts inner attachments and returns them
-  to the war room. The incident labels themselves are preserved and not modified -
+  to the War Room. The incident labels themselves are preserved and not modified -
   only the "Label/x" context items that originated from the labels, and the best practice
   is to rely on these for the remainder of the playbook.
 commonfields:
@@ -53,20 +53,20 @@ outputs:
     recipient's address.
   type: string
 - contextPath: Email.CC
-  description: Email 'cc' addresses
+  description: Email 'CC' addresses.
   type: string
 - contextPath: Email.From
   description: This displays who the message is from, however, this can be easily
     forged and can be the least reliable.
   type: string
 - contextPath: Email.Subject
-  description: Email subject
+  description: The email subject.
   type: string
 - contextPath: Email.HTML
-  description: Email 'html' body if exists
+  description: The email 'html' body (if exists).
   type: string
 - contextPath: Email.Text
-  description: Email 'text' body if exists
+  description: The email 'text' body (if exists).
   type: string
 - contextPath: Email.Depth
   description: The depth of the email. Depth=0 for the first level email. If email1
@@ -78,7 +78,7 @@ outputs:
     as a single string
   type: string
 - contextPath: Email.HeadersMap
-  description: The full email headers json
+  description: The full email headers (JSON).
   type: Unknown
 - contextPath: Email.HeadersMap.From
   description: This displays who the message is from, however, this can be easily
@@ -89,16 +89,16 @@ outputs:
     recipient's address.
   type: Unknown
 - contextPath: Email.HeadersMap.Subject
-  description: Email subject
+  description: The email subject.
   type: String
 - contextPath: Email.HeadersMap.Date
-  description: The date and time the email message was composed
+  description: The date and time the email message was composed.
   type: Unknown
 - contextPath: Email.HeadersMap.CC
-  description: Email 'cc' addresses
+  description: The email 'CC' addresses.
   type: Unknown
 - contextPath: Email.HeadersMap.Reply-To
-  description: The email address for return mail
+  description: The email address for return mail.
   type: String
 - contextPath: Email.HeadersMap.Received
   description: List of all the servers/computers through which the message traveled
@@ -108,10 +108,10 @@ outputs:
     created. These can easily be forged. (e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com)
   type: String
 - contextPath: Email.AttachmentNames
-  description: The list of attachment names in the email
+  description: The list of attachment names in the email.
   type: string
 - contextPath: Email.Format
-  description: The format of the email if available
+  description: The format of the email (if available).
   type: string
 script: '-'
 subtype: python2
