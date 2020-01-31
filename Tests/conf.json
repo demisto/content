@@ -2170,6 +2170,8 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "Elasticsearch_v2_test-v6": "Issue #21510"
+        "ssdeepreputationtest": "Issue #20953",
+        "C2sec-Test": "Issue #21633"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
