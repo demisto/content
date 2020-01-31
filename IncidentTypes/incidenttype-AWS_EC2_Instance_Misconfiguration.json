@@ -1,7 +1,7 @@
 {
-	"autorun": false,
+	"autorun": true,
 	"closureScript": "",
-	"color": "#8052F3",
+	"color": "#8c9eff",
 	"days": 0,
 	"daysR": 0,
 	"default": false,
@@ -11,6 +11,7 @@
 	"id": "AWS EC2 Instance Misconfiguration",
 	"locked": false,
 	"name": "AWS EC2 Instance Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
