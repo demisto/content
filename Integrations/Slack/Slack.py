@@ -697,7 +697,7 @@ def add_info_headers(headers, expiry):
         headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
         headers['X-Content-TeamName'] = team_name
         headers['X-Content-TeamID'] = team_id
-        headers['X-Content-LicenseID'] = demisto.getLicenseID()
+        headers['X-Content-LicenseID'] = demisto.getLicenseID()  # type: ignore[attr-defined]
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
         if hasattr(demisto, 'demistoVersion'):
             headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
