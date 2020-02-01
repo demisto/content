@@ -691,10 +691,12 @@ def add_info_headers(headers, expiry):
         brand_name = calling_context.get('IntegrationBrand', '')
         instance_name = calling_context.get('IntegrationInstance', '')
         auth = send_slack_request_sync(CLIENT, 'auth.test')
-        team = auth.get('team', '')
+        team_name = auth.get('team', '')
+        team_id = auth.get('team_id', '')
         headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
         headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
-        headers['X-Content-TeamName'] = team
+        headers['X-Content-TeamName'] = team_name
+        headers['X-Content-TeamID'] = team_id
         headers['X-Content-LicenseID'] = demisto.getLicenseID()
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
         if hasattr(demisto, 'demistoVersion'):
