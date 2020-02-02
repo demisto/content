@@ -35,8 +35,7 @@ configuration:
   name: certificate
   required: false
   type: 12
-description: Use the Prisma Cloud Compute integration to protect all your workloads across any environment — hosts,
-  containers, and serverless.
+description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:

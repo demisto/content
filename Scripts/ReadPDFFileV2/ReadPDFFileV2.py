@@ -65,11 +65,6 @@ def run_shell_command(command, *args):
         raise ShellException(f'Failed with the following error code: {completed_process.returncode}.'
                              f' Error: {completed_process.stderr}')
     elif completed_process.stderr:
-        # raise only if stderr contains non warning messages
-        lines = completed_process.stderr.splitlines()
-        for l in lines:
-            if 'warning:' not in l.lower():
-                raise ShellException(f'{completed_process.stderr}Error code: {completed_process.returncode}')
         demisto.debug(f'ReadPDFFilev2: exec of [{cmd}] completed with warnings: {completed_process.stderr}')
     return completed_process.stdout
 
