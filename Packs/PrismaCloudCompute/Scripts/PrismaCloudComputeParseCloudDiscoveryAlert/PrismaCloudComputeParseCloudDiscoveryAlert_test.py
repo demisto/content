@@ -69,7 +69,7 @@ def test_parse_cloud_discovery():
         if test['expectedException']:
             with pytest.raises(Exception) as ex:
                 parse_cloud_discovery(test['input'])
-            assert str(ex.value) == f"Input should be a raw JSON cloud discovery Alert, received: {test['input']}"
+            assert str(ex.value) == f"Input should be a raw JSON cloud discovery alert, received: {test['input']}"
         else:
             assert parse_cloud_discovery(test['input']) == (
                 test['expectedResult']['readable'], test['expectedResult']['output'], test['expectedResult']['raw'])

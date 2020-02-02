@@ -748,5 +748,5 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
-tests:
-  - Extract Indicators From File - test
+tests: 
+  - No test - deprecated playbook
