@@ -401,7 +401,7 @@ class Docker:
         elif integration_type == Docker.PYTHON_INTEGRATION_TYPE and docker_image:
             return [docker_image]
         else:
-            return [Docker.DEFAULT_PYTHON2_IMAGE, Docker.DEFAULT_PYTHON2_IMAGE]
+            return [Docker.DEFAULT_PYTHON2_IMAGE, Docker.DEFAULT_PYTHON3_IMAGE]
 
     @classmethod
     def docker_stats(cls, server_ip, docker_images):
