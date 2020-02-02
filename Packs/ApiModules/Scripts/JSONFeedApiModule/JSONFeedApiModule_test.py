@@ -15,11 +15,11 @@ def test_json_feed_no_config():
             credentials={'username': 'test', 'password': 'test'},
             extractor="prefixes[?service=='AMAZON']",
             indicator='ip_prefix',
-            fields=['ipv6_prefix', 'region', 'service'],
+            fields=['region', 'service'],
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='ip')
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR')
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
@@ -32,7 +32,7 @@ def test_json_feed_with_config():
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
             'extractor': "prefixes[?service=='AMAZON']",
             'indicator': 'ip_prefix',
-            'indicator_type': FeedIndicatorType.IP,
+            'indicator_type': FeedIndicatorType.CIDR,
             'fields': ['region', 'service']
         }
     }
@@ -47,5 +47,39 @@ def test_json_feed_with_config():
             insecure=True
         )
 
-        indicators = fetch_indicators_command(client=client, indicator_type='ip')
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR')
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
+
+
+def test_json_feed_with_config_mapping():
+    with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
+        ip_ranges = json.load(ip_ranges_json)
+
+    feed_name_to_config = {
+        'AMAZON': {
+            'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+            'extractor': "prefixes[?service=='AMAZON']",
+            'indicator': 'ip_prefix',
+            'indicator_type': FeedIndicatorType.CIDR,
+            'fields': ['region', 'service'],
+            'mapping': {
+                'region': 'Region'
+            }
+        }
+    }
+
+    with requests_mock.Mocker() as m:
+        m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges)
+
+        client = Client(
+            url='https://ip-ranges.amazonaws.com/ip-ranges.json',
+            credentials={'username': 'test', 'password': 'test'},
+            feed_name_to_config=feed_name_to_config,
+            insecure=True
+        )
+
+        indicators = fetch_indicators_command(client=client, indicator_type='CIDR')
+        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
+        indicator = indicators[0]
+        assert 'Region' in indicator
+        assert 'region' in indicator['rawJSON']
