@@ -2221,8 +2221,8 @@ tasks:
       id: 7a1c9314-ffe0-45d7-8679-a4287c1be666
       version: -1
       name: Set detected user names
-      description: Checks if the usernames were returned in the search results. If
-        the usernames were returned, they are set in Context. Otherwise, no value
+      description: Checks if the user names were returned in the search results. If
+        the user names were returned, they are set in Context. Otherwise, no value
         is set.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -2271,9 +2271,9 @@ tasks:
       id: 4e7f15e5-94b0-48ed-8d59-063556a3afdc
       version: -1
       name: Set detected host names
-      description: Checks if the detected internal hostnames were returned in the
-        search results. If the detected internal hostnames were returned, they are
-        set in Context. Otherwise, no value is set.
+      description: Checks if host names were returned in the search results.
+        If host names were returned, they are set in Context. Otherwise, no
+        value is set.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3520,7 +3520,8 @@ tasks:
       version: -1
       name: Set detected host names as internal
       description: Hostnames that were detected as internal according to the inputs are set to the
-          Splunk.DetectedInternalHosts key.
+          Splunk.DetectedInternalHosts key. In case the domain name was not provided in the inputs
+          all host names will be set as internal.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3694,10 +3695,10 @@ inputs:
 - key: InternalHostRegex
   value: {}
   required: false
-  description: ' This is provided for the script IsInternalHostName that checks if
+  description: This is provided for the script IsInternalHostName that checks if
     the detected host names are internal or external. if the hosts match the organizations
     naming convention. For example the host testpc1 will have the following regex
-    \w{6}\d{1}'
+    \w{6}\d{1}
 outputs:
 - contextPath: Splunk.DetectedUsers
   description: Users detected based on the username field in your search.
