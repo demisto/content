@@ -1,14 +1,20 @@
+elasticcommonfields: {}
 id: ParseEmailFiles-test
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 name: ParseEmailFiles-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: da85dd34-c60b-49f1-8464-0731764289b6
+    taskid: "6"
     type: start
     task:
-      id: da85dd34-c60b-49f1-8464-0731764289b6
+      elasticcommonfields: {}
+      id: "6"
       version: -1
       name: ""
       iscommand: false
@@ -21,18 +27,21 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -590
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: e01e58a1-1bc0-424a-88a8-95ea1f48248c
+    taskid: "1"
     type: regular
     task:
-      id: e01e58a1-1bc0-424a-88a8-95ea1f48248c
+      elasticcommonfields: {}
+      id: "1"
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -42,7 +51,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "19"
     scriptarguments:
       all:
         simple: "yes"
@@ -52,18 +61,21 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 230
+          "y": -450
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: e0cff5b4-cc6b-4f8c-8551-f8bd72689d48
+    taskid: "9"
     type: regular
     task:
-      id: e0cff5b4-cc6b-4f8c-8551-f8bd72689d48
+      elasticcommonfields: {}
+      id: "9"
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -101,12 +113,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 4c389915-ed10-4ff7-8935-41aec26dda02
+    taskid: "7"
     type: regular
     task:
-      id: 4c389915-ed10-4ff7-8935-41aec26dda02
+      elasticcommonfields: {}
+      id: "7"
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -159,12 +174,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 61922105-0031-4ac1-80c0-85bcb9e4fc09
+    taskid: "10"
     type: condition
     task:
-      id: 61922105-0031-4ac1-80c0-85bcb9e4fc09
+      elasticcommonfields: {}
+      id: "10"
       version: -1
       name: VerifyContext - To
       description: |-
@@ -201,12 +219,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 47eac82f-cd7d-46d7-86a0-d9dc4597242c
+    taskid: "2"
     type: condition
     task:
-      id: 47eac82f-cd7d-46d7-86a0-d9dc4597242c
+      elasticcommonfields: {}
+      id: "2"
       version: -1
       name: VerifyContext - Subject
       description: |-
@@ -243,12 +264,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 671be5b8-78b3-41b4-8f4f-320fc4636142
+    taskid: "3"
     type: condition
     task:
-      id: 671be5b8-78b3-41b4-8f4f-320fc4636142
+      elasticcommonfields: {}
+      id: "3"
       version: -1
       name: AreValuesEqual - verify pdf attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -289,12 +313,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: f8bc4774-85d5-4fc0-8591-3c5bb08291cb
+    taskid: "4"
     type: title
     task:
-      id: f8bc4774-85d5-4fc0-8591-3c5bb08291cb
+      elasticcommonfields: {}
+      id: "4"
       version: -1
       name: Validate Non-Unicode parsing
       type: title
@@ -315,12 +342,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 95e2575e-15d7-485c-861c-aae010fd66e9
+    taskid: "5"
     type: condition
     task:
-      id: 95e2575e-15d7-485c-861c-aae010fd66e9
+      elasticcommonfields: {}
+      id: "5"
       version: -1
       name: AreValuesEqual - verify docx attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -361,12 +391,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: f1233388-a26f-4aee-843a-af17a7294dc3
+    taskid: "11"
     type: condition
     task:
-      id: f1233388-a26f-4aee-843a-af17a7294dc3
+      elasticcommonfields: {}
+      id: "11"
       version: -1
       name: VerifyContext - From
       description: |-
@@ -403,12 +436,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: a98a8bc6-2669-4ecb-82b6-0f77be1402ae
+    taskid: "12"
     type: regular
     task:
-      id: a98a8bc6-2669-4ecb-82b6-0f77be1402ae
+      elasticcommonfields: {}
+      id: "12"
       version: -1
       name: Non Unicode Subject
       scriptName: http
@@ -445,12 +481,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: fb6eb6fa-8329-4df9-87b7-908cd44463aa
+    taskid: "13"
     type: regular
     task:
-      id: fb6eb6fa-8329-4df9-87b7-908cd44463aa
+      elasticcommonfields: {}
+      id: "13"
       version: -1
       name: Non Unicode Attachment Name
       scriptName: http
@@ -487,12 +526,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 5ff2ec18-4d88-4f91-87a0-dafa6e23a463
+    taskid: "8"
     type: regular
     task:
-      id: 5ff2ec18-4d88-4f91-87a0-dafa6e23a463
+      elasticcommonfields: {}
+      id: "8"
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -538,12 +580,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 12777162-fb27-40d0-89ed-bb4eb19494a9
+    taskid: "14"
     type: regular
     task:
-      id: 12777162-fb27-40d0-89ed-bb4eb19494a9
+      elasticcommonfields: {}
+      id: "14"
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -589,15 +634,213 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: "177"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "177"
+      version: -1
+      name: http (No Content Type)
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: ParseEmailFiles_test_email.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/no_content_type.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: "178"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "178"
+      version: -1
+      name: ParseEmailFiles Ignore Content Type
+      description: Parse an email from an eml or msg file and populate all relevant
+        context data to investigate the email. Also extracts inner attachments and
+        returns them to the war room. The incident labels themselves are preserved
+        and not modified - only the "Label/x" context items that originated from the
+        labels, and the best practice is to rely on these for the remainder of the
+        playbook. Requires pip and access to python repository to install "olefile"
+        package.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: ParseEmailFiles_test_email.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
+      ignore_content_type:
+        simple: "true"
+      max_depth: {}
+      parse_only_headers: {}
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: "176"
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: "176"
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: "179"
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: "179"
+      version: -1
+      name: Verify Headers
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Headers.value
+            iscontext: true
+          right:
+            value:
+              simple: '"woo@demisto.com" <woo@demisto.com>'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Headers.value
+            iscontext: true
+          right:
+            value:
+              simple: '"Demisto Dbot" <woo@demisto.com>'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Headers.value
+            iscontext: true
+          right:
+            value:
+              simple: from prod.outlook.com
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1515,
+        "height": 2155,
         "width": 2151,
         "x": -558,
-        "y": 50
+        "y": -590
       }
     }
   }
