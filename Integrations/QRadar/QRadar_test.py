@@ -71,7 +71,7 @@ def test_get_reference_by_name(mocker):
     #     - There's a reference set with non-url safe chars
     # When
     #     - I fetch reference by name
-    qradar.get_reference_by_name(NON_URL_SAFE_MSG)
+    qradar.get_ref_set(NON_URL_SAFE_MSG)
     # Then
     #     - The rest API endpoint will be called with URL safe chars
     qradar.send_request.assert_called_with('GET', 'www.qradar.com/api/reference_data/sets/{}'.format(
@@ -221,7 +221,7 @@ def test_upload_indicators_command_indicators_found(mocker):
     mocker.patch.object(demisto, 'args', return_value={'ref_name': 'test_ref_set', 'limit': '20', 'page': '0'})
     mocker.patch.object(qradar, 'check_ref_set_exist', return_value=REF_SET_DATA)
     mocker.patch.object(qradar, 'get_indicators_list', return_value=INDICATORS_LIST)
-    mocker.patch.object(qradar, 'get_reference_by_name', return_value=RAW_RESPONSE)
+    mocker.patch.object(qradar, 'get_ref_set', return_value=RAW_RESPONSE)
     mocker.patch.object(qradar, 'upload_indicators_list_request', return_value=RAW_RESPONSE)
     mocker.patch.object(qradar, 'enrich_reference_set_result', return_value=REF_SET_DATA)
     res = qradar.upload_indicators_command()
