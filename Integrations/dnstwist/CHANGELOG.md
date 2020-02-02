@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fixed an issue with creating outputs for the **dnstwist-domain-variations** command.
 
 ## [19.11.1] - 2019-11-26
 -
