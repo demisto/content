@@ -1748,6 +1748,10 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
+            "playbookID": "Wait Until Datetime - Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "PAN OS EDL Management - Test",
             "integrations": "palo_alto_networks_pan_os_edl_management"
         },
