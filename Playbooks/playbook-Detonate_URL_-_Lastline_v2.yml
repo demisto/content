@@ -71,13 +71,13 @@ tasks:
       version: -1
       name: GenericPolling
       description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        'Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continually running the command in Step #2 until the operation completes.
         The remote action should have the following structure:
 
         1. Initiate the operation.
         2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+        3. (optional) Get the results of the operation.'
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -158,7 +158,7 @@ tasks:
       id: 9cf17ba9-0559-471e-8012-1abbd588a590
       version: -1
       name: Is there a URL to detonate?
-      description: Checks that there is a URL in the playbook’s input.
+      description: Checks if there is a URL in the playbook’s input.
       type: condition
       iscommand: false
       brand: ""
@@ -412,25 +412,25 @@ outputs:
   description: The Entry ID of the sample
   type: string
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: The vendor that determined that a file is malicious.
   type: string
 - contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
+  description: The reason that the vendor determined that the file is malicious.
   type: string
 - contextPath: URL.Data
   description: List of malicious URLs identified by Lastline analysis
   type: string
 - contextPath: URL.Malicious.Vendor
-  description: For malicious URLs, the vendor that made the decision
+  description: The vendor that determined that a URL is malicious.
   type: string
 - contextPath: URL.Malicious.Description
-  description: For malicious URLs, the reason for the vendor to make the decision
+  description: The reason that the vendor determined that the URL is malicious.
   type: string
 - contextPath: URL.Malicious.Score
-  description: For malicious URLs, the score from the vendor
+  description: The score that the malicious URL received from the vendor.
   type: number
 - contextPath: File.Malicious.Score
-  description: For malicious files, the score from the vendor
+  description: The score that the malicious file received from the vendor.
   type: number
 - contextPath: Lastline.Submission.Status
   description: Status of the submission
@@ -439,7 +439,7 @@ outputs:
   description: List of DNS queries done by the analysis subject
   type: string
 - contextPath: Lastline.Submission.NetworkConnections
-  description: ist of network connections done by the analysis subject
+  description: List of network connections done by the analysis subject
   type: string
 - contextPath: Lastline.Submission.DownloadedFiles
   description: List of files that were downloaded using the Microsoft Windows file-download
@@ -455,22 +455,22 @@ outputs:
   description: The score according to the yara signatures. from 0 to 100.
   type: number
 - contextPath: Lastline.Submission.Process.arguments
-  description: Argument of the process
+  description: Argument of the process.
   type: string
 - contextPath: Lastline.Submission.YaraSignatures.internal
-  description: True if the signature is only for internal usage
+  description: True if the signature is only for internal use.
   type: boolean
 - contextPath: Lastline.Submission.Process.process_id
-  description: The process ID
+  description: The process ID.
   type: string
 - contextPath: Lastline.Submission.Process.executable.abs_path
-  description: Absolute path of the executable of the process
+  description: Absolute path of the executable of the process.
   type: string
 - contextPath: Lastline.Submission.Process.executable.filename
-  description: Filename of the executable
+  description: Filename of the executable.
   type: string
 - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
-  description: Yara signature of the executable of the process
+  description: Yara signature of the executable of the process.
   type: string
 - contextPath: URL
   description: URL object
