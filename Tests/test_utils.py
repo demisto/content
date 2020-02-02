@@ -405,7 +405,7 @@ class Docker:
 
     @classmethod
     def docker_stats(cls, server_ip, docker_images):
-        # example of cmd:
+        # example of cmd
         # docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopy-ews--|demistopy-ews2.0--"
         cmd = Docker._build_stats_cmd(server_ip, docker_images)
         process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
