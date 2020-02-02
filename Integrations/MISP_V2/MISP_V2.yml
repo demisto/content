@@ -21,7 +21,6 @@ configuration:
   type: 8
 - display: Select which attribute data fields of the event will be saved to context. Leave empty to select all attributes.
   name: context_select
-  defaultvalue: ID,Value
   options:
   - Category
   - Comment
