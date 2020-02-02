@@ -84,7 +84,6 @@ class Client(BaseClient):
                     item["category_name"] = self._CATEGORY_NAME[int(category) - 1]
                 except (KeyError, IndexError):
                     item["category_name"] = "Unknown"
-                item["port"] = item.get("ports")
                 # add type/value to item.
                 if "domain" in item:
                     item["type"] = FeedIndicatorType.Domain
@@ -100,6 +99,9 @@ class Client(BaseClient):
             "value": item["value"],
             "type": item["type"],
             "rawJSON": item,
+            "CustomFields": {
+                "port": item.get("ports").split() if isinstance(item.get("ports"), str) else item.get("ports")
+            }
         }
 
     def _build_iterator_domain(self) -> Generator[dict, None, None]:
