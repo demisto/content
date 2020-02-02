@@ -1,6 +1,7 @@
 {
 	"id": "incident_offboardingdate",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-22T11:54:51.223330583Z",
 	"sortValues": null,
 	"vcShouldIgnore": false,
