@@ -1149,7 +1149,7 @@ def get_indicators_list(indicator_query, limit, page):
               limit (int): The amount of indicators the user want to add to reference set
               page (int): Page's number the user would like to start from
         Returns:
-             list, list: list of indicators values and a list with all indicators data
+             list, list: List of indicators values and a list with all indicators data
     """
     indicators_values_list = []
     indicators_data_list = []
