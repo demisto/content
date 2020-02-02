@@ -33,7 +33,6 @@ proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
 DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
-
 """
 dict format :
     MISP key:DEMISTO key
@@ -242,13 +241,13 @@ def remove_unselected_context_keys(context_data):
 def arrange_context_according_to_user_selection(context_data):
     if not DATA_KEYS_TO_SAVE:
         return
+    for data in context_data:
+        # each event has it's own attributes
+        remove_unselected_context_keys(data)
 
-    # each event has it's own attributes
-    remove_unselected_context_keys(context_data[0])
-
-    # each related event has it's own attributes
-    for obj in context_data[0]['Object']:
-        remove_unselected_context_keys(obj)
+        # each related event has it's own attributes
+        for obj in data['Object']:
+            remove_unselected_context_keys(obj)
 
 
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
