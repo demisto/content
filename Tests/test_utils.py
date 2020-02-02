@@ -412,7 +412,7 @@ class Docker:
         stdout, stderr = process.communicate()
 
         if stderr:
-            print_warning("No images found for  ")
+            print_warning("Failed running docker stats command. Additional information: {}".format(stderr))
             return []
 
         return Docker._parse_stats_result(stdout)
