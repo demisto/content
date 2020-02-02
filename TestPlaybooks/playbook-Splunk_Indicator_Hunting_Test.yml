@@ -86,11 +86,11 @@ tasks:
       InternalHostRegex:
         simple: ACME\-.*
       InternalIPRange: {}
-      InvestigationHostFields:
+      HostFieldsToReturn:
         simple: ComputerName
-      InvestigationIPFields:
+      IPFieldsToReturn:
         simple: dest_ip,src_ip,src,dst
-      InvestigationUserFields:
+      UserFieldsToReturn:
         simple: user_identity
       MD5:
         simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
