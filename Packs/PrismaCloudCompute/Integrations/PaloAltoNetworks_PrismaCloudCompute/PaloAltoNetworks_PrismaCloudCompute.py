@@ -14,6 +14,13 @@ ALERT_TITLE = 'Prisma Cloud Compute Alert - '
 ALERT_TYPE_VULNERABILITY = 'vulnerability'
 ALERT_TYPE_COMPLIANCE = 'compliance'
 ALERT_TYPE_AUDIT = 'audit'
+# this is a list of known headers arranged in the order to be displayed in the markdown table
+HEADERS_BY_NAME = {
+    'vulnerabilities': ['severity', 'cve', 'status', 'packages', 'sourcePackage', 'packageVersion', 'link'],
+    'entities': ['name', 'containerGroup', 'resourceGroup', 'nodesCount', 'image', 'status', 'runningTasksCount',
+                 'activeServicesCount', 'version', 'createdAt', 'runtime', 'arn', 'lastModified', 'protected'],
+    'compliance': ['type', 'id', 'description']
+}
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -125,6 +132,35 @@ def camel_case_transformer(s):
     return str.title()
 
 
+def get_headers(name: str, data: list) -> list:
+    """
+    Returns a list of headers to the given list of objects
+    If the list name is known (listed in the HEADERS_BY_NAME) it returns the list and checks for any additional headers
+     in the given list
+    Else returns the given headers from the given list
+    Args:
+        name: name of the list (e.g. vulnerabilities)
+        data: list of dicts
+
+    Returns: list of headers
+    """
+
+    # check the list for any additional headers that might have been added
+    known_headers = HEADERS_BY_NAME.get(name)
+    if known_headers:
+        headers = known_headers[:]
+    else:
+        headers = []
+
+    if isinstance(data, list):
+        for d in data:
+            if isinstance(d, dict):
+                for key in d.keys():
+                    if key not in headers:
+                        headers.append(key)
+    return headers
+
+
 def test_module(client):
     """
     Test connection, authentication and user authorization
@@ -165,22 +201,17 @@ def fetch_incidents(client):
             # always save the raw JSON data under this argument (used in scripts)
             a['rawJSONAlert'] = json.dumps(a)
 
-            # parse any list into a markdown list, since tableToMarkdown takes the headers from the first object in
-            # list check headers manually some entries might have omit empty fields
+            # parse any list into a markdown table, since tableToMarkdown takes the headers from the first object in
+            # the list check headers manually since some entries might have omit empty fields
             tables = {}
-            fields: list = []
             for key, value in a.items():
-                if isinstance(value, list):
-                    for item in value:
-                        for field in item.keys():
-                            if field not in fields:
-                                fields.append(field)
-
-                    fields.sort()
+                # check only if we got a non empty list of dict
+                if isinstance(value, list) and value and isinstance(value[0], dict):
                     tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'),
                                                                     value,
-                                                                    headers=fields,
-                                                                    headerTransform=camel_case_transformer)
+                                                                    headers=get_headers(key, value),
+                                                                    headerTransform=camel_case_transformer,
+                                                                    removeNull=True)
 
             a.update(tables)
 
