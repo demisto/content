@@ -403,6 +403,7 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build"
                 exit 0
             fi
+            ./Tests/scripts/slack_notifier.sh $CIRCLE_NODE_INDEX ./env_results.json
 
           when: always
       - run:
