@@ -2,7 +2,7 @@ id: Wait Until Datetime
 version: -1
 fromversion: 4.5.0
 name: Wait Until Datetime
-description: Pauses execution until the datetime specified is reached.
+description: Pauses execution until the date and time that was specified in the plabyook input is reached.
 starttaskid: '0'
 tasks:
   '0':
@@ -37,8 +37,8 @@ tasks:
     task:
       id: d21be7af-0944-4dad-8329-76a247d3bcae
       version: -1
-      name: Was a future datetime specified?
-      description: Checks whether the DateTimeToWaitUntil input was specified.
+      name: Were a future date and time configured?
+      description: Checks whether the DateTimeToWaitUntil input was configured.
       type: condition
       iscommand: false
       brand: ''
@@ -100,8 +100,8 @@ tasks:
     task:
       id: dfa02b41-5472-4879-8259-fec9aeacbe53
       version: -1
-      name: When is the datetime specified?
-      description: Checks whether the datetime to wait until is now, in the future
+      name: For when is the datetime specified?
+      description: Determines if the datetime to wait until is now, in the future
         or in the past.
       type: condition
       iscommand: false
@@ -144,8 +144,8 @@ tasks:
       id: bb5fa066-c4a9-40ab-8281-7b552f83ff4a
       version: -1
       name: Calculate time to wait
-      description: Calculate the time that needs to be waited to reach the future
-        datetime, from the specified from-time, in minutes.
+      description: Calculates the amount of time, in minutes, to wait until the 
+        datetime is reached.
       scriptName: CalculateTimeDifference
       type: regular
       iscommand: false
@@ -197,8 +197,7 @@ tasks:
       id: 4cb07489-19f4-4756-8c0b-e9fac2d97124
       version: -1
       name: Wait the time needed
-      description: Waits for the time specified. The minutes are converted to seconds
-        that will be waited.
+      description: Pauses the execution for the necessary amount of time.
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -260,8 +259,7 @@ tasks:
       id: 2a4b6cf6-c4fc-44dd-818f-b2f7d53ac3a1
       version: -1
       name: Get current time
-      description: |
-        Retrieves the current date and time.
+      description: Retrieves the current date and time.
       scriptName: GetTime
       type: regular
       iscommand: false
@@ -296,7 +294,7 @@ tasks:
     task:
       id: 250a61da-b6ee-4489-89b7-8a4e76495f05
       version: -1
-      name: Set the from datetime to the current time
+      name: Set the from-time to the current time
       description: Saves the current time as the time to start waiting from.
       scriptName: Set
       type: regular
@@ -345,7 +343,7 @@ inputs:
 - key: DatetimeToWaitUntil
   value: {}
   required: true
-  description: 'The date and time to wait until, before finishing the playbook. Should
+  description: 'The date and time to wait until before finishing the playbook. Should
     be in ISO-8601 format. For example: 2019-11-13T15:33:10.314406457Z'
 outputs: []
 tests:
