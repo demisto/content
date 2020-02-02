@@ -188,14 +188,8 @@ def __create_integration_instance(client, integration_name, integration_instance
     if not test_succeed:
         __disable_integrations_instances(client, [module_instance], prints_manager, thread_index=thread_index)
         return None, failure_message, None
-    # todo remove
-    print("#########################################")
-    print(str(integration_config))
-    print("#########################################")
+
     docker_image = Docker.get_integration_image(integration_config)
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    print(str(docker_image))
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
     return module_instance, '', docker_image
 
