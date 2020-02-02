@@ -202,27 +202,31 @@ def dict_values_to_comma_separated_string(dic):
 
 
 # Sends request to the server using the given method, url, headers and params
-def send_request(method, url, headers=AUTH_HEADERS, params=None):
+def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
     try:
+        res = None
         try:
-            res = send_request_no_error_handling(headers, method, params, url)
+            res = send_request_no_error_handling(headers, method, params, url, data=data)
         except ConnectionError:
             # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
-            res = send_request_no_error_handling(headers, method, params, url)
-    except HTTPError:
-        err_json = res.json()
-        err_msg = ''
-        if 'message' in err_json:
-            err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
-        elif 'http_response' in err_json:
-            err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
-        if 'code' in err_json:
-            err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
-        raise Exception(err_msg)
+            res = send_request_no_error_handling(headers, method, params, url, data=data)
+    except HTTPError as e:
+        if res:
+            err_json = res.json()
+            err_msg = ''
+            if 'message' in err_json:
+                err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
+            elif 'http_response' in err_json:
+                err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
+            if 'code' in err_json:
+                err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+            raise Exception(err_msg)
+        else:
+            raise e
     return res.json()
 
 
-def send_request_no_error_handling(headers, method, params, url):
+def send_request_no_error_handling(headers, method, params, url, data):
     """
         Send request with no error handling, so the error handling can be done via wrapper function
     """
@@ -231,9 +235,9 @@ def send_request_no_error_handling(headers, method, params, url):
     LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
         .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
     if TOKEN:
-        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data)
     else:
-        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data,
                                auth=(USERNAME, PASSWORD))
     res.raise_for_status()
     return res
