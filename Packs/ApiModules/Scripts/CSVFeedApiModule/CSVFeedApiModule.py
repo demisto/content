@@ -217,7 +217,7 @@ def get_indicators_command(client, args):
     limit = int(args.get('limit'))
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = camelize(indicators_list[:limit])
-    hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'rawJSON'])
+    hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type'])
     feed_name_context = args.get('feed_name', 'CSV').replace(' ', '')
     return hr, {f'{feed_name_context}.Indicator': entry_result}, indicators_list
 
