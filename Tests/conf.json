@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
          {
+            "playbookID": "CreateIndicatorFromSTIXTest",
+             "fromversion": "5.0.0"
+         },
+         {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
             "fromversion": "5.5.0"
