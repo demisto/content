@@ -1,27 +1,22 @@
-elasticcommonfields: {}
 id: CreateIndicatorFromSTIXTest
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: CreateIndicatorFromSTIXTest
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: "3"
+  '0':
+    id: '0'
+    taskid: 2fa6a6ae-9533-492f-832f-68b7633e52f3
     type: start
     task:
-      elasticcommonfields: {}
-      id: "3"
+      id: 2fa6a6ae-9533-492f-832f-68b7633e52f3
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -34,24 +29,22 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "1":
-    id: "1"
-    taskid: "4"
+  '1':
+    id: '1'
+    taskid: 9fa0045c-09ba-4891-b33e-d63635360117
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "4"
+      id: 9fa0045c-09ba-4891-b33e-d63635360117
       version: -1
       name: Get STIX1 file
-      description: Sends http request. Returns the response as json.
+      description: ''
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       body: {}
       filename:
@@ -63,7 +56,7 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/Scripts/StixParser/TestData/stix1/file-stix-ioc.xml
@@ -80,24 +73,22 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "2":
-    id: "2"
-    taskid: "5"
+  '2':
+    id: '2'
+    taskid: 9568d14b-cccd-4667-95ae-be628b736d46
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "5"
+      id: 9568d14b-cccd-4667-95ae-be628b736d46
       version: -1
       name: Get STIX2 file
-      description: Sends http request. Returns the response as json.
+      description: ''
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       body: {}
       filename:
@@ -109,7 +100,7 @@ tasks:
       password: {}
       proxy: {}
       saveAsFile:
-        simple: "yes"
+        simple: 'yes'
       unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/Scripts/StixParser/TestData/stix2.json
@@ -126,23 +117,22 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "3":
-    id: "3"
-    taskid: "1"
+  '3':
+    id: '3'
+    taskid: c7ff874a-1ac3-4ed3-984c-88c94088da61
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "1"
+      id: c7ff874a-1ac3-4ed3-984c-88c94088da61
       version: -1
       name: Run CreateIndicatorFromSTIX
       script: cb63e8ac-933c-47c5-879e-f80672f7351c
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       entry_id:
         complex:
@@ -160,19 +150,18 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "4":
-    id: "4"
-    taskid: "2"
+  '4':
+    id: '4'
+    taskid: 49bf33ef-0d36-4d74-a307-bdeb9894d8dd
     type: title
     task:
-      elasticcommonfields: {}
-      id: "2"
+      id: 49bf33ef-0d36-4d74-a307-bdeb9894d8dd
       version: -1
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -185,28 +174,26 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "5":
-    id: "5"
-    taskid: "6"
+  '5':
+    id: '5'
+    taskid: f8ec30e4-6341-4edb-ac04-e84ac35b9d1f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: "6"
+      id: f8ec30e4-6341-4edb-ac04-e84ac35b9d1f
       version: -1
       name: Delete Context
-      description: Delete field from context
+      description: ''
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
+      - '1'
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
@@ -223,7 +210,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -238,3 +224,5 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
+fromversion: 5.0.0
