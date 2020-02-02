@@ -93,14 +93,17 @@ def send_message(conn):
     txid = conn.begin()
     dest = demisto.args()['destination']
     body = demisto.args()['body']
-    headers_demisto = json.loads(demisto.args()['headers'])
-    demisto.results(headers_demisto)
 
-    if headers_demisto is None:
-        demisto.results("Error 'headers' field is required to send correctly the message to activeMQ queue")
-        sys.exit(0)
+    if 'headers' in demisto.args():
+        try:
+            headers_demisto = json.loads(demisto.args()['headers'])
+            conn.send(dest, body, transaction=txid, headers=headers_demisto)
+        except Exception as e:
+            raise ValueError('Failed to parse "headers" argument to JSON. "headers"={}'
+                             .format(demisto.args()['headers']))
+    else:
+        conn.send(dest, body, transaction=txid)
 
-    conn.send(dest, body, transaction=txid, headers=headers_demisto)
     conn.commit(txid)
     demisto.results('Message sent to ActiveMQ destination: ' + dest + ' with transaction ID: ' + txid)
 
