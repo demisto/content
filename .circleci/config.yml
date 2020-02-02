@@ -193,12 +193,12 @@ jobs:
                 echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
-            if [ $NIGHTLY ] ;
-              then
-                demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt
-
-              else
-                demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt
+            
+            if [ $NIGHTLY ] ; then
+              echo -e  "----------\nLinting all because:\n$SHOULD_LINT_ALL\n----------"
+              demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt
+            else
+              demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt
             fi
       - run:
           name: Verify Base Branch for Contribution
