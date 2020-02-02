@@ -6,22 +6,22 @@ contentitemexportablefields:
     propagationLabels:
     - all
 name: CreateIndicatorFromSTIXTest
-starttaskid: "0"
+starttaskid: "starttaskidstix0"
 tasks:
-  "0":
-    id: "0"
-    taskid: "3"
+  "starttaskidstix0":
+    id: "starttaskidstix0"
+    taskid: "starttaskidstix0"
     type: start
     task:
       elasticcommonfields: {}
-      id: "3"
+      id: "starttaskidstix0"
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "deletecontextonstix"
     separatecontext: false
     view: |-
       {
@@ -35,13 +35,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quiet: false
-  "1":
-    id: "1"
-    taskid: "123124324"
+  "getstix1file0":
+    id: "getstix1file0"
+    taskid: "runstixfileonscript"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "123124324"
+      id: "runstixfileonscript"
       version: -1
       name: Get STIX1 file
       description: Sends http request. Returns the response as json.
@@ -51,7 +51,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "starttaskidstix0"
     scriptarguments:
       body: {}
       filename:
@@ -81,13 +81,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quiet: false
-  "2":
-    id: "2"
-    taskid: "5"
+  "getstix2file0":
+    id: "getstix2file0"
+    taskid: "deletecontextonstix"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "5"
+      id: "deletecontextonstix"
       version: -1
       name: Get STIX2 file
       description: Sends http request. Returns the response as json.
@@ -97,7 +97,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "starttaskidstix0"
     scriptarguments:
       body: {}
       filename:
@@ -127,13 +127,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quiet: false
-  "3":
-    id: "3"
-    taskid: "1"
+  "starttaskidstix0":
+    id: "starttaskidstix0"
+    taskid: "getstix1file0"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "1"
+      id: "getstix1file0"
       version: -1
       name: Run CreateIndicatorFromSTIX
       scriptName: CreateIndicatorsFromSTIX
@@ -142,7 +142,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "runstixfileonscript"
     scriptarguments:
       entry_id:
         complex:
@@ -161,13 +161,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quiet: false
-  "4":
-    id: "4"
-    taskid: "231231313132"
+  "runstixfileonscript":
+    id: "runstixfileonscript"
+    taskid: "getstix2file0"
     type: title
     task:
       elasticcommonfields: {}
-      id: "231231313132"
+      id: "getstix2file0"
       version: -1
       name: Done
       type: title
@@ -186,13 +186,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quiet: false
-  "5":
-    id: "5"
-    taskid: "6"
+  "deletecontextonstix":
+    id: "deletecontextonstix"
+    taskid: "deletecontextonstix"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "6"
+      id: "deletecontextonstix"
       version: -1
       name: Delete Context
       description: Delete field from context
