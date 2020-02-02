@@ -455,7 +455,7 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
             return False, -1
 
         module_instances.append(module_instance)
-        if docker_images:
+        if docker_image:
             docker_images.add(docker_image)
 
         prints_manager.add_print_job('Create integration {} succeed'.format(integration_name), print, thread_index)
