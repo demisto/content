@@ -28,9 +28,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Integration description: Microsoft Graph lets your app get an authorized
-  access to files in OneDrive, SharePoint and MS Teams across all organization. (requires
-  admin consent).'
+description: 'Use the Microsoft Graph Files integration to enable your app get authorized
+  access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires
+  admin consent.'
 display: Microsoft Graph Files
 name: Microsoft_Graph_Files
 script:
@@ -38,7 +38,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: MS Graph resource.
+      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
       isArray: true
       name: object_type
       predefined:
@@ -57,19 +57,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: Ms Graph item_id.
+      description: The ID of the item to delete.
       isArray: false
       name: item_id
       required: true
       secret: false
     deprecated: false
-    description: Delete a DriveItem by using its ID
+    description: Deletes an item from OneDrive.
     execution: false
     name: msgraph-delete-file
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: MS Graph resource.
+      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
       isArray: false
       name: object_type
       predefined:
@@ -80,31 +80,31 @@ script:
       required: true
       secret: false
     - default: false
-      description: MS Graph resource id.
+      description: The ID of the item to upload.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: An ID of the folder to upload the file to.
+      description: The ID of the folder in which to upload the file.
       isArray: false
       name: parent_id
       required: true
       secret: false
     - default: false
-      description: A file name for the uploaded file.
+      description: A name for the file to upload.
       isArray: false
       name: file_name
       required: true
       secret: false
     - default: false
-      description: Desmito entry ID of the file
+      description: The Demisto entry ID of the file.
       isArray: false
       name: entry_id
       required: true
       secret: false
     deprecated: false
-    description: Uploads a file from Demisto to MS Graph resource
+    description: Uploads a file from Demisto to the specified MS Graph resource.
     execution: false
     name: msgraph-upload-new-file
     outputs:
@@ -112,72 +112,72 @@ script:
       description: Unique identifier of the drive that contains the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.DriveType
-      description: Identifies the type of drive.
+      description: Identifies the drive type.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.ID
       description: Unique identifier of the item in the drive.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.Path
-      description: Path to navigate to the item
+      description: The path of the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.LastModifiedDateTime
-      description: Date and time that the item was last modified.
+      description: Timestamp of when the item was last modified.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.File.MimeType
-      description: File type
+      description: The file type.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.File.Hashes
-      description: Hash type
+      description: The file hash type.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedDateTime
-      description: Timestamp of item creation.
+      description: Timestamp of when the item was created.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.WebUrl
-      description: URL to the resource in the browser
+      description: URL to the resource in the browser.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.OdataContext
-      description: OData query
+      description: The OData query.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.CreatedDateTime
-      description: The date and time the item was created on a client.
+      description: Timestamp of when the item was created on a client.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.LastModifiedDateTime
-      description: The date and time the item was last modified on a client.
+      description: Timestamp of when the item was last modified on a client.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.DisplayName
-      description: The item display name
+      description: The item display name.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.Type
-      description: Application, user or device
+      description: The application, user, or device that last modified the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.DisplayName
-      description: Identity of the user, device,or application which created the item
+      description: The identity of the user, device,or application that created the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.ID
-      description: The ID of the creator
+      description: The ID of the creator.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.Type
-      description: Application, user or device
+      description: The application, user, or device that created the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.DownloadUrl
-      description: URL to download this file's content
+      description: URL to download this file's content.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.Size
-      description: File's size
+      description: The file size.
       type: Number
     - contextPath: MsGraphFiles.UploadedFiles.ID
-      description: File ID
+      description: The file ID.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.Name
-      description: The file's name
+      description: The file name.
       type: String
     - contextPath: MsGraph.UploadedFiles.File
-      description: Graph's file object
+      description: The MS Graph file object.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: MS Graph resource.
+      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
       isArray: false
       name: object_type
       predefined:
@@ -188,25 +188,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: MS Graph resource id.
+      description: The MS Graph resource ID.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: Ms Graph item_id.
+      description: The MS Graph item ID.
       isArray: false
       name: item_id
       required: true
       secret: false
     - default: false
-      description: Demisto file entry id.
+      description: The Demisto entry ID of the file.
       isArray: false
       name: entry_id
       required: true
       secret: false
     deprecated: false
-    description: Replace file context in MS Graph resource
+    description: Replaces the content of the file in the specified MS Graph resource.
     execution: false
     name: msgraph-replace-existing-file
     outputs:
@@ -214,72 +214,72 @@ script:
       description: Unique identifier of the drive that contains the item.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.DriveType
-      description: Identifies the type of drive.
+      description: The drive type.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.ID
       description: Unique identifier of the item in the drive.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.Path
-      description: Path to navigate to the item
+      description: The path of the item.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedDateTime
-      description: Date and time that the item was last modified.
+      description: Timestamp of when the item was last modified.
       type: Date
     - contextPath: MsGraphFiles.ReplacedFiles.File.MimeType
-      description: File type
+      description: The file type.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.File.Hashes
-      description: Hash type
+      description: The file hash type.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.CreatedDateTime
-      description: Timestamp of item creation
+      description: Timestamp of when the item was created.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.WebUrl
-      description: URL to the resource in the browser
+      description: URL to the resource in the browser.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.OdataContext
-      description: OData query
+      description: The OData query.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.FileSystemInfo.CreatedDateTime
-      description: The date and time the item was created on a client
+      description: Timestamp of when the item was created on a client.
       type: Date
     - contextPath: MsGraphFiles.ReplacedFiles.FileSystemInfo.LastModifiedDateTime
-      description: The date and time the item was last modified on a client
+      description: Timestamp of when the item was last modified on a client.
       type: Date
     - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedBy.DisplayName
-      description: The item display name
+      description: The item display name.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedBy.ID
-      description: Identity of the application which last modified the item
+      description: Identity of the application that last modified the item.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.CreatedBy.DisplayName
-      description: Identity of the user, device,or application which created the item
+      description: Identity of the user, device, or application that created the item.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.CreatedBy.ID
-      description: The ID of the creator
+      description: The ID of the creator.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.CreatedBy.Type
-      description: Application, user or device
+      description: Application, user, or device.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.DownloadUrl
-      description: URL to download the file's content
+      description: URL to download the file's content.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.Size
       description: File's size
       type: Number
     - contextPath: MsGraphFiles.ReplacedFiles.Id
-      description: File ID
+      description: The file ID.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.Name
-      description: The file's name
+      description: The file name.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.File
-      description: Graph's file object
+      description: The MS Graph file object.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: MS Graph resource.
+      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
       isArray: false
       name: object_type
       predefined:
@@ -290,94 +290,94 @@ script:
       required: true
       secret: false
     - default: false
-      description: MS Graph resource id.
+      description: The MS Graph resource ID.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: An ID of the Drive to upload the folder to.
+      description: The ID of the drive in which to upload the new folder.
       isArray: false
       name: parent_id
       required: true
       secret: false
     - default: false
-      description: the folder name for the created folder.
+      description: The name of the new folder.
       isArray: false
       name: folder_name
       required: true
       secret: false
     deprecated: false
-    description: Create a new folder in a Drive with a specified parent item or path.
+    description: Creates a new folder in a drive with the specified parent item or path.
     execution: false
     name: msgraph-create-new-folder
     outputs:
     - contextPath: MsGraph.Folder
-      description: Graph's folder object
+      description: The MS Graph folder object.
       type: Unknown
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.DriveId
       description: Unique identifier of the drive that contains the item.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.DriveType
-      description: Identifies the type of drive.
+      description: The drive type.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.ID
       description: Unique identifier of the item in the drive.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.Path
-      description: Path to navigate to the item
+      description: The path to the item
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.LastModifiedDateTime
-      description: Date and time that the item was last modified.
+      description: Timestamp of when the item was last modified.
       type: Date
     - contextPath: Msgraphfiles.CreatedFolder.Name
-      description: The folder's name
+      description: The folder name.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.CreatedDateTime
-      description: Timestamp of item creation.
+      description: Timestamp of when the item was created.
       type: Date
     - contextPath: Msgraphfiles.CreatedFolder.WebUrl
-      description: URL to the resource in the browser
+      description: URL to the resource in the browser.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.OdataContext
-      description: OData query
+      description: The OData query.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.FileSystemInfo.CreatedDateTime
-      description: The date and time the item was created on a client.
+      description: Timestamp of when the item was created on a client.
       type: Date
     - contextPath: Msgraphfiles.CreatedFolder.FileSystemInfo.LastModifiedDateTime
-      description: The date and time the item was last modified on a client
+      description: Timestamp of when the item was last modified on a client.
       type: Date
     - contextPath: Msgraphfiles.CreatedFolder.LastModifiedBy.DisplayName
-      description: The item display name
+      description: The item display name.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.LastModifiedBy.ID
-      description: The item display name
+      description: Identity of the application that last modified the item.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.CreatedBy.DisplayName
-      description: Identity of the user, device,or application which created the item
+      description: Identity of the user, device,or application that created the item.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.CreatedBy.ID
-      description: The ID of the creator
+      description: The ID of the creator.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ChildCount
-      description: The number of the folder's sub items
+      description: The number of sub-items in the folder.
       type: Number
     - contextPath: Msgraphfiles.CreatedFolder.ID
-      description: Folder ID
+      description: The folder ID.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.Size
-      description: Folder size
+      description: The folder size.
       type: Number
   - arguments:
     - default: false
-      description: Selected Site ID.
+      description: The ID of the site for which to return available drive resources.
       isArray: false
       name: site_id
       required: false
       secret: false
     - default: false
-      description: Sets the page size of results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -389,51 +389,50 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns the list of Drive resources available for a target Site
+    description: Returns the list of drive resources available for a target site.
     execution: false
     name: msgraph-list-drives-in-site
     outputs:
     - contextPath: MsGraphFiles.ListDrives.Value.LastModifiedDateTime
-      description: Date and time that the item was last modified
+      description: Timestamp of when the item was last modified.
       type: Date
     - contextPath: MsGraphFiles.ListDrives.Value.Description
-      description: A user visible description of the drive
+      description: A human-readable description of the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.CreatedDateTime
-      description: Timestamp of Drive creation
+      description: Timestamp of when the drive was created.
       type: Date
     - contextPath: MsGraphFiles.ListDrives.Value.WebUrl
-      description: URL to the resource in the browser
+      description: URL to the resource in the browser.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.CreatedBy
-      description: Identity of the user, application, or device  which created the
-        Drive.
+      description: Identity of the user, application, or device that created the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.DisplayName
-      description: DisplayName of the user, device or application which owns the Drive
+      description: The display name of the user, device, or application that owns the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.ID
-      description: ID of the user, device or application which owns the Drive
+      description: The ID of the user, device, or application that owns the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.Type
-      description: user, device or application
+      description: The owner type. Can be "user", "device", or "application".
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.DriveType
-      description: Identifies the type of drive
+      description: The drive type.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.ID
-      description: Drive ID
+      description: The drive ID.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Name
-      description: The drive's name
+      description: The name of the drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.OdataContext
-      description: OData query
+      description: The OData query.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: MS Graph resource.
+      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
       isArray: false
       name: object_type
       predefined:
@@ -444,19 +443,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: MS Graph resource id.
+      description: The MS Graph resource ID.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: Ms Graph item_id.
+      description: The Ms Graph item ID.
       isArray: false
       name: item_id
       required: false
       secret: false
     - default: false
-      description: Sets the page size of results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -468,7 +467,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: This command list all the drive's files and folders
+    description: Returns a list of files and folders in the specified drive.
     execution: false
     name: msgraph-list-drive-content
     outputs:
@@ -479,102 +478,102 @@ script:
       description: Unique identifier of the drive that contains the item.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveType
-      description: Identifies the type of drive.
+      description: The drive type.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.ID
       description: Unique identifier of the item in the drive.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.Path
-      description: Path to navigate to the item
+      description: The path to the item.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedDateTime
-      description: Date and time that the item was last modified.
+      description: Timestamp of when the item was last modified.
       type: Date
     - contextPath: MsGraphFiles.ListChildren.Children.Value.Name
-      description: The file's name
+      description: The file name.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedDateTime
-      description: Timestamp of item creation.
+      description: Timestamp of when the item was created.
       type: Date
     - contextPath: MsGraphFiles.ListChildren.Children.Value.WebUrl
-      description: URL to the resource in the browser
+      description: URL to the resource in the browser.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.CreatedDateTime
-      description: The date and time the item was created on a client.
+      description: Timestamp of when the item was created on a client.
       type: Date
     - contextPath: MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.LastModifiedDateTime
-      description: The date and time the item was last modified on a client.
+      description: Timestamp of when the item was last modified on a client.
       type: Date
     - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.DisplayName
-      description: The item display name
+      description: The item display name.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.ID
-      description: Identity of the application, user or device which last modified
-        the item
+      description: Identity of the application, user, or device that last modified
+        the item.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.DisplayName
-      description: Identity of the user, device,or application which created the item
+      description: Identity of the user, device, or application that created the item.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.ID
-      description: The ID of the creator
+      description: The ID of the creator.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.Type
-      description: application, user or device
+      description: The created by type. Can be "application", "user", or "device".
       type: String
     - contextPath: MsGraphFiles.ListChildren.ID
-      description: File or folder ID
+      description: The file ID or folder ID.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Size
-      description: File or folder size
+      description: The file size or folder size.
       type: Number
     - contextPath: MsGraphFiles.ListChildren.Children.OdataContext
-      description: OData query
+      description: The OData query.
       type: String
   - deprecated: false
-    description: Returns a list of the tenant Sites
+    description: Returns a list of the tenant sites.
     execution: false
     name: msgraph-list-share-point-sites
     outputs:
     - contextPath: MsGraph.Sites
-      description: Graph's site object
+      description: The MS Graph site object.
       type: Unknown
     - contextPath: MsGraphFiles.OdataContext
-      description: OData query
+      description: The OData query.
       type: String
     - contextPath: MsGraphFiles.OdataNextLink
       description: The URL for the next results page.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.LastModifiedDateTime
-      description: Date and time that the item was last modified.
+      description: Timestamp of when the item was last modified.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.DisplayName
-      description: The item display name
+      description: The item display name.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.Description
-      description: The item description
+      description: The item description.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.CreatedDateTime
-      description: imestamp of site creation
+      description: Timestamp of when the site was created.
       type: Date
     - contextPath: MsGraphFiles.ListSites.Value.WebUrl
-      description: URL to the resource in the browser
+      description: URL to the resource in the browser.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.OdataContext
-      description: OData query
+      description: The OData query.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.SiteCollection.Hostname
-      description: The hostname for the site collection
+      description: The hostname for the site collection.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.ID
-      description: Site id
+      description: The site ID.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.Name
-      description: Site name
+      description: The site name.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: MS Graph resource.
+      description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
       isArray: false
       name: object_type
       predefined:
@@ -585,51 +584,51 @@ script:
       required: true
       secret: false
     - default: false
-      description: MS Graph resource id.
+      description: The MS Graph resource ID.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: Ms Graph item_id.
+      description: The MS Graph item ID.
       isArray: false
       name: item_id
       required: true
       secret: false
     deprecated: false
-    description: Download the contents of the file of a DriveItem.
+    description: Downloads the file contents of the drive item.
     execution: false
     name: msgraph-download-file
     outputs:
     - contextPath: File.Size
-      description: File's size
+      description: The file size.
       type: String
     - contextPath: File.SHA1
-      description: File's SHA1
+      description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: File's SHA256
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
-      description: File's SHA512
+      description: The SHA512 hash of the file.
       type: String
     - contextPath: File.Name
-      description: File name
+      description: The file name.
       type: String
     - contextPath: File.SSDeep
-      description: File's SSDeep
+      description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
-      description: Demisto file ID
+      description: The Demisto file ID.
       type: Unknown
     - contextPath: File.Info
-      description: File information
+      description: Information about the file.
       type: String
     - contextPath: File.Type
-      description: File type
+      description: The file type.
       type: String
     - contextPath: File.MD5
-      description: File's MD5
+      description: The MD5 hash of the file.
       type: String
   dockerimage: demisto/python_pancloud:1.0.0.286
   feed: false
