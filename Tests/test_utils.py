@@ -7,7 +7,7 @@ from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 import yaml
 import requests
-
+from re import sub
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX, PACKS_DIR_REGEX, PACKS_DIR
 
@@ -342,3 +342,95 @@ def get_pack_name(file_path):
 
 def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
+
+
+class Docker:
+    PYTHON_INTEGRATION_TYPE = 'python'
+    JAVASCRIPT_INTEGRATION_TYPE = 'javascript'
+    DEFAULT_PYTHON2_IMAGE = 'demisto/python'
+    DEFAULT_PYTHON3_IMAGE = 'demisto/python3'
+    COMMAND_FORMAT = '{{json .}}'
+    MEMORY_USAGE = 'MemUsage'
+    PIDS_USAGE = 'PIDs'
+    CONTAINER_NAME = 'Name'
+
+    @classmethod
+    def _build_stats_cmd(cls, server_ip, docker_images):
+        # todo add ssh prefix with the user and ip
+        docker_command = 'sudo docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
+        docker_images_regex = ['{}--'.format(sub('[:/]', '', docker_image)) for docker_image in docker_images]
+        pipe = ' | '
+        grep_command = 'grep -Ei "{}"'.format('|'.join(docker_images_regex))
+        cmd = docker_command + pipe + grep_command
+
+        return cmd
+
+    @classmethod
+    def _parse_stats_result(cls, stats_lines):
+        stats_result = []
+        try:
+            containers_stats = [json.loads(c) for c in stats_lines.splitlines()]
+
+            for container_stat in containers_stats:
+                memory_usage_stats = container_stat.get(cls.MEMORY_USAGE, '').split('/')[0].lower()
+
+                if 'kib' in memory_usage_stats:
+                    mib_usage = float(memory_usage_stats.replace('kib', '').strip()) / 1024
+                elif 'gib' in memory_usage_stats:
+                    mib_usage = float(memory_usage_stats.replace('kib', '').strip()) * 1024
+                else:
+                    mib_usage = float(memory_usage_stats.replace('mib', '').strip())
+
+                pids_number = int(container_stat.get(cls.PIDS_USAGE))
+                container_name = container_stat.get(cls.CONTAINER_NAME)
+                stats_result.append({'memory_usage': mib_usage, 'pids': pids_number, 'container_name': container_name})
+        finally:
+            return stats_result
+
+    @classmethod
+    def get_integration_docker_image(cls, integration_config):
+        integration_script = integration_config.get('configuration', {}).get('integrationScript', {})
+        integration_type = integration_script.get('type')
+        docker_image = integration_script.get('dockerImage')
+
+        if integration_type == Docker.JAVASCRIPT_INTEGRATION_TYPE:
+            return None
+        elif integration_type == Docker.PYTHON_INTEGRATION_TYPE and docker_image:
+            return [docker_image]
+        else:
+            return [Docker.DEFAULT_PYTHON2_IMAGE, Docker.DEFAULT_PYTHON2_IMAGE]
+
+    @classmethod
+    def docker_stats(cls, server_ip, docker_images):
+        # example of cmd
+        # sudo docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopy-ews--|demistopy-ews2.0--"
+        cmd = Docker._build_stats_cmd(server_ip, docker_images)
+        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
+        stdout, stderr = process.communicate()
+
+        if stderr:
+            # todo print the error
+            return []
+
+        return Docker._parse_stats_result(stdout)
+
+    @classmethod
+    def check_resource_usage(cls, server_ip, docker_images, memory_threshold, pids_threshold):
+        containers_stats = cls.docker_stats(server_ip, docker_images)
+        error_message = ''
+
+        for container_stat in containers_stats:
+            container_name = container_stat['container_name']
+            container_memory_usage = container_stat['memory_usage']
+            container_pids_usage = container_stat['pids']
+
+            if container_memory_usage > memory_threshold:
+                error_message += ('Docker container {} exceeded the memory threshold, '
+                                  'configured: {} MiB and actual memory usage is {} MiB.\n'
+                                  .format(container_name, memory_threshold, container_memory_usage))
+            if container_pids_usage > pids_threshold:
+                error_message += ('Docker container {} exceeded the pids threshold, '
+                                  'configured: {} and actual pid number is {}.\n'.format(container_name,
+                                                                                         pids_threshold,
+                                                                                         container_pids_usage))
+        return error_message
