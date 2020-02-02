@@ -70,13 +70,13 @@ script:
         description: The file type.
         type: string
       - contextPath: File.Malicious.Vendor
-        description: For malicious files, the vendor that made the decision.
+        description: The vendor who determined that the file is malicious.
         type: string
       - contextPath: File.Malicious.Description
-        description: For malicious files, the reason that the vendor made the decision.
+        description: The reason that the vendor determined that the file is malicious.
         type: string
       - contextPath: File.Malicious.Score
-        description: For malicious files, the score from the vendor.
+        description: The score that the vendor gave the malicious file.
         type: number
       - contextPath: DBotScore.Indicator
         description: The indicator that was tested.
@@ -100,13 +100,13 @@ script:
         description: The timestamp in Lastline.
         type: string
       - contextPath: Lastline.Submission.YaraSignatures.name
-        description: Yara signatures name.
+        description: Yara signature's name.
         type: string
       - contextPath: Lastline.Submission.YaraSignatures.score
         description: The score according to the Yara signatures (0 to 100).
         type: number
       - contextPath: Lastline.Submission.YaraSignatures.internal
-        description: Whether the signature is for internal usage only.
+        description: Whether the signature is for internal use only.
         type: boolean
       - contextPath: Lastline.Submission.DNSqueries
         description: A list of DNS queries executed by the analysis subject.
@@ -166,13 +166,13 @@ script:
         description: A list of malicious URLs identified by the Lastline analysis.
         type: string
       - contextPath: URL.Malicious.Vendor
-        description: For malicious URLs, the vendor that made the decision.
+        description: The vendor who determined that a URL is malicious.
         type: string
       - contextPath: URL.Malicious.Description
-        description: For malicious URLs, the reason that the vendor made the decision.
+        description: The reason that the vendor made the decision.
         type: string
       - contextPath: URL.Malicious.Score
-        description: For malicious URLs, the score from the vendor.
+        description: The score that the malicious URL received from the vendor.
         type: number
       - contextPath: DBotScore.Indicator
         description: The indicator that was tested.
@@ -268,13 +268,13 @@ script:
         description: The file type.
         type: string
       - contextPath: File.Malicious.Vendor
-        description: For malicious files, the vendor that made the decision.
+        description: The vendor who determined that the file is malicious.
         type: string
       - contextPath: File.Malicious.Description
-        description: For malicious files, the reason that the vendor made the decision.
+        description: The reason that the vendor determined that the file is malicious.
         type: string
       - contextPath: File.Malicious.Score
-        description: For malicious files, the score from the vendor.
+        description: The score the malicious file received from the vendor.
         type: number
       - contextPath: DBotScore.Indicator
         description: The indicator that was tested.
@@ -304,7 +304,7 @@ script:
         description: The score according to the Yara signatures (0 to 100).
         type: number
       - contextPath: Lastline.Submission.YaraSignatures.internal
-        description: Whether the signature is for internal usage only.
+        description: Whether the signature is for internal use only.
         type: boolean
       - contextPath: Lastline.Submission.DNSqueries
         description: A list of DNS queries executed by the analysis subject.
@@ -363,13 +363,13 @@ script:
       description: A list of malicious URLs identified by the Lastline analysis.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision.
+      description: The vendor that determined a URL is malicious.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision.
+      description: The reason that the vendor determined that the URL is malicious.
       type: string
     - contextPath: URL.Malicious.Score
-      description: For malicious URLs, the score from the vendor.
+      description: The score that the malicious URL received from the vendor.
       type: number
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -384,13 +384,13 @@ script:
       description: The file type.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision.
+      description: The vendor that determined a file is malicious.
       type: string
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason that the vendor made the decision.
+      description: The reason that the vendor determined that the file is malicious.
       type: string
     - contextPath: File.Malicious.Score
-      description: For malicious files, the score from the vendor.
+      description: The score that the malicious file received from the vendor.
       type: number
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -420,7 +420,7 @@ script:
       description: The score according to the Yara signatures (0 to 100).
       type: number
     - contextPath: Lastline.Submission.YaraSignatures.internal
-      description: Whether the signature is for internal usage only.
+      description: Whether the signature is for internal use only.
       type: boolean
     - contextPath: Lastline.Submission.DNSqueries
       description: A list of DNS queries executed by the analysis subject.
@@ -490,13 +490,13 @@ script:
         description: A list of malicious URLs identified by the lastline analysis.
         type: string
       - contextPath: URL.Malicious.Vendor
-        description: For malicious URLs, the vendor that made the decision.
+        description: The vendor that determined that a URL is malicious.
         type: string
       - contextPath: URL.Malicious.Description
-        description: For malicious URLs, the reason that the vendor made the decision.
+        description: The reason that the vendor determined that the URL is malicious.
         type: string
       - contextPath: URL.Malicious.Score
-        description: For malicious URLs, the score from the vendor.
+        description: The score that the malicious URL received from the vendor.
         type: number
       - contextPath: File.MD5
         description: The MD5 hash of the file.
@@ -511,13 +511,13 @@ script:
         description: The file type.
         type: string
       - contextPath: File.Malicious.Vendor
-        description: For malicious files, the vendor that made the decision.
+        description: The vendor that determined that the file is malicious.
         type: string
       - contextPath: File.Malicious.Description
-        description: For malicious files, the reason that the vendor made the decision.
+        description: The reason that the vendor determined that the file is malicious.
         type: string
       - contextPath: File.Malicious.Score
-        description: For malicious files, the score from the vendor.
+        description: The score that the malicious file received from the vendor.
         type: number
       - contextPath: DBotScore.Indicator
         description: The indicator that was tested.
@@ -547,7 +547,7 @@ script:
         description: The score according to the Yara signatures (0 to 100).
         type: number
       - contextPath: Lastline.Submission.YaraSignatures.internal
-        description: Whether the signature is for internal usage only.
+        description: Whether the signature is for internal use only.
         type: boolean
       - contextPath: Lastline.Submission.DNSqueries
         description: List of DNS queries executed by the analysis subject.
