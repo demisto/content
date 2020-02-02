@@ -33,6 +33,9 @@ proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
 DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
+if not DATA_KEYS_TO_SAVE:
+    DATA_KEYS_TO_SAVE = ['Value', 'Type', 'Comment', 'EventID', 'UUID', 'Timestamp', 'Category']
+
 """
 dict format :
     MISP key:DEMISTO key
