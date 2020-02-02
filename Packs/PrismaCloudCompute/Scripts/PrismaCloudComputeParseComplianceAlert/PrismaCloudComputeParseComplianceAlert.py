@@ -5,15 +5,25 @@ import json
 
 def parse_compliance(raw_json):
     data = json.loads(raw_json)
-    if 'kind' not in data or data['kind'] != 'compliance':
-        raise ValueError(f'Input should be a raw JSON compliance Alert, received: {raw_json}')
+
+    if data.get('kind') != 'compliance':
+        raise ValueError(f'Input should be a raw JSON compliance alert, received: {raw_json}')
 
     outputs = {'PrismaCloudCompute.ComplianceAlert': data}
+
+    # remove unneeded fields from human readable results
+    headers: list = []
+    for field in data.keys():
+        if field not in ['_id', 'kind', 'compliance']:
+            headers.append(field)
+    headers.sort()
+
     readable_outputs = tableToMarkdown('Compliance Information',
                                        data,
-                                       headers=['time', 'type'])
+                                       headers=headers)
+
     # add another table for compliance issues
-    readable_outputs += tableToMarkdown('Compliance', data['compliance'])
+    readable_outputs += tableToMarkdown('Compliance', data.get('compliance'))
 
     return (
         readable_outputs,
