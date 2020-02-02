@@ -128,7 +128,7 @@ class Client(BaseClient):
             if "Insufficient credits" in response.text:
                 return_error("'Insufficient Credits' error was returned from Recorded Future. \n"
                              "Try increasing the integration's fetch interval in order to decrease the amount of API"
-                             " requests from Recorded Future. ")
+                             " requests made to Recorded Future. ")
             else:
                 return_error('{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
 
