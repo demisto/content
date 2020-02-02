@@ -73,6 +73,11 @@
             "instance_names": "ms_graph_mail_prod"
         },
         {
+            "integrations": "CloudShark",
+            "playbookID": "CloudShark - Test Playbook",
+            "timeout": 500
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test",
             "fromversion": "5.0.0"
@@ -1046,6 +1051,9 @@
         },
         {
             "playbookID": "ZipFile-Test"
+        },
+        {
+            "playbookID": "UnzipFile-Test"
         },
         {
             "playbookID": "ExtractDomainTest"
@@ -2128,6 +2136,10 @@
         },
         {
             "playbookID": "GetValuesOfMultipleFIelds Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "IsInternalHostName Test",
             "fromversion": "4.5.0"
         },
         {
