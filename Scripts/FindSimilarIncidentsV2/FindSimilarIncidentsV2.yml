@@ -1,40 +1,39 @@
 args:
 - default: false
-  description: Identical incident keys. Comma separated value
+  description: A comma-separated list of identical incident keys.
   isArray: false
   name: similarIncidentKeys
   required: false
   secret: false
-  deprecated: true
 - default: false
-  description: 'Similar label keys. Comma separated value. It''s also possible to
-    let X different words between labels, within the following way: label_name:X,
-    where X is the number of words. X can also be ''*'' for contains. For example:
-    the value "Email/subject:*" will consider  email subject similar, if one is substring
-    of the other.'
+  description: 'A comma-separated list of similar label keys. Comma separated value.
+    Also supports allowing X different words between labels, within the following
+    way: label_name:X, where X is the number of words. X can also be ''*'' for contains.
+    For example: the value "Email/subject:*" will consider  email subject similar,
+    if one is substring of the other.'
   isArray: false
   name: similarLabelsKeys
   required: false
   secret: false
 - default: false
-  description: Similar context keys. Comma separated value. It's also possible to
-    let X different words between values (see labels description).
+  description: A comma-separated list of similar context keys. Also supports allowing
+    X different words between values (see the labels description).
   isArray: false
   name: similarContextKeys
   required: false
   secret: false
 - default: false
-  description: Similar custom fields keys. Comma separated value. It's also possible
-    to let X different words between values (see labels description).
+  description: A comma-separated list of Similar custom fields keys. Also supports
+    allowing X different words between values (see the labels description).
   isArray: false
   name: similarCustomFields
   required: false
   secret: false
-  deprecated: true
 - auto: PREDEFINED
   default: false
   defaultValue: 'yes'
-  description: Ignore close incidents as duplicate candidates.
+  description: Whether to ignore closed incidents as duplicate candidates. Can be
+    "yes" (ignore) or "no" (don't ignore). The default value is "yes".
   isArray: false
   name: ignoreClosedIncidents
   predefined:
@@ -51,7 +50,7 @@ args:
   secret: false
 - default: false
   defaultValue: '72'
-  description: Query incidents in the last X hours (support float value)
+  description: Query incidents in the last X hours. Supports float value.
   isArray: false
   name: hoursBack
   required: false
@@ -76,8 +75,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: Similar incident fields keys. Comma separated value. It's also possible
-    to let X different words between values (see labels description).
+  description: A comma-separated list of similar incident fields keys. Also supports
+    allowing X different words between values (see the labels description).
   isArray: false
   name: similarIncidentFields
   required: false
@@ -91,8 +90,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: AND
-  description: Apply "OR" \ "AND" condition between incident fields. This will apply
-    only for fields with "exact match".
+  description: The condition to apply between incident fields. Can be "OR" or "AND".
+    This will apply only for fields with "exact match".
   isArray: false
   name: incidentFieldsAppliedCondition
   predefined:
@@ -103,9 +102,10 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'yes'
-  description: 'If the incident does not have specific key, skip it. WARNING: notice
-    that if there is no fields existing in the incident, random incidents might be
-    return as results due to empty condition.'
+  description: 'Whether to skip the incident if it does not have specific key. Can
+    be "yes" (skip) or "no" (don''t skip). The default value is "yes". WARNING: if
+    no fields exist in the incident, random incidents might be returned as results
+    due to the empty condition.'
   isArray: false
   name: skipMissingValues
   predefined:
@@ -114,9 +114,9 @@ args:
   required: false
   secret: false
 comment: |-
-  Find similar incidents by common incident keys, labels, custom fields or context keys.
-  It's highly recommended to use incident keys if possible (e.g. "type" for same incident type).
-  It's also recommended to avoid using context keys if possible (for example, if the value also appear in label key, use label) for better performance.
+  Finds similar incidents by common incident keys, labels, custom fields or context keys.
+  It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
+  For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
 commonfields:
   id: FindSimilarIncidents
   version: -1
@@ -127,7 +127,7 @@ outputs:
   description: Similar incident ID.
   type: string
 - contextPath: isSimilarIncidentFound
-  description: Is similar incident found? (true\false)
+  description: Whether a similar incident was found ("true" or "false").
   type: boolean
 - contextPath: similarIncident
   description: Similar incident.
@@ -136,6 +136,7 @@ outputs:
   description: Similar incident name.
   type: string
 script: '-'
+subtype: python2
 system: false
 tags:
 - dedup
