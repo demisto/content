@@ -2124,6 +2124,9 @@
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "FetchIndicatorsFromFile-test"
         }
     ],
     "skipped_tests": {

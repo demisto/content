@@ -39,7 +39,6 @@ args:
   - Registry Key
   - ssdeep
   - URL
-  - None
   - Account
   required: false
   secret: false
@@ -57,10 +56,33 @@ args:
   required: false
   secret: false
 - default: false
+  defaultValue: '1'
   description: The column number in spreadsheet which contains the indicators. The
-    first column number is 1.
+    first column number is 1. If non given will look at the first column.
   isArray: false
-  name: column_number
+  name: indicator_column_number
+  required: false
+  secret: false
+- default: false
+  description: The name of the Excel sheet to fetch indicators from. If non given,
+    will fetch from the first sheet of the workbook.
+  isArray: false
+  name: sheet_name
+  required: false
+  secret: false
+- default: false
+  description: The column number in spreadsheet which contains the indicator's types.
+    The first column number is 1.
+  isArray: false
+  name: indicator_type_column_number
+  required: false
+  secret: false
+- default: false
+  defaultValue: '1'
+  description: The starting row of the spreadsheet to fetch from. The first row is
+    1.
+  isArray: false
+  name: starting_row
   required: false
   secret: false
 comment: Fetch indicators from a file.
@@ -77,10 +99,10 @@ outputs:
   description: The type of the indicator.
   type: String
 script: '-'
+subtype: python3
 system: false
 tags:
 - indicators
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.7.4.2245
-subtype: python3
+dockerimage: devdemisto/xlrd-py3:1.0.0.5805
