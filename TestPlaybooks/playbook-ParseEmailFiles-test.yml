@@ -10,11 +10,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "6"
+    taskid: "09df6d36-e6fe-40a1-bf53-2bed8fb5e836"
     type: start
     task:
       elasticcommonfields: {}
-      id: "6"
+      id: "09df6d36-e6fe-40a1-bf53-2bed8fb5e836"
       version: -1
       name: ""
       iscommand: false
@@ -37,11 +37,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: "1"
+    taskid: "7381a945-8c3c-41b1-94a4-4485e21ca7cb"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "1"
+      id: "7381a945-8c3c-41b1-94a4-4485e21ca7cb"
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -71,11 +71,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: "9"
+    taskid: "5f589e03-1a0f-4ffe-adec-5876e4775538"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "9"
+      id: "5f589e03-1a0f-4ffe-adec-5876e4775538"
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -117,11 +117,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: "7"
+    taskid: "2ad26187-6981-4269-a49b-0199f03bcf27"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "7"
+      id: "2ad26187-6981-4269-a49b-0199f03bcf27"
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -178,11 +178,11 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: "10"
+    taskid: "22f26baf-4a07-4352-88d8-eae1809982b1"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "10"
+      id: "22f26baf-4a07-4352-88d8-eae1809982b1"
       version: -1
       name: VerifyContext - To
       description: |-
@@ -223,11 +223,11 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: "2"
+    taskid: "65a3c21b-82dd-4698-863b-c819a9b193e5"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "2"
+      id: "65a3c21b-82dd-4698-863b-c819a9b193e5"
       version: -1
       name: VerifyContext - Subject
       description: |-
@@ -268,11 +268,11 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: "3"
+    taskid: "d8273a10-7918-4414-812a-8fa34aec2dc2"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "3"
+      id: "d8273a10-7918-4414-812a-8fa34aec2dc2"
       version: -1
       name: AreValuesEqual - verify pdf attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -317,11 +317,11 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: "4"
+    taskid: "14eaef4a-e640-4f48-9fdc-eff9ef04e83b"
     type: title
     task:
       elasticcommonfields: {}
-      id: "4"
+      id: "14eaef4a-e640-4f48-9fdc-eff9ef04e83b"
       version: -1
       name: Validate Non-Unicode parsing
       type: title
@@ -346,11 +346,11 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: "5"
+    taskid: "51076fa9-c71e-4298-b024-387a844613f5"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "5"
+      id: "51076fa9-c71e-4298-b024-387a844613f5"
       version: -1
       name: AreValuesEqual - verify docx attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -395,11 +395,11 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: "11"
+    taskid: "eeb3b83a-f91e-46e1-b287-769f05052b8d"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "11"
+      id: "eeb3b83a-f91e-46e1-b287-769f05052b8d"
       version: -1
       name: VerifyContext - From
       description: |-
@@ -440,11 +440,11 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: "12"
+    taskid: "ce5c0ae8-3607-4bbd-b58d-6aab0a411457"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "12"
+      id: "ce5c0ae8-3607-4bbd-b58d-6aab0a411457"
       version: -1
       name: Non Unicode Subject
       scriptName: http
@@ -485,11 +485,11 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: "13"
+    taskid: "6d001256-2782-4613-bda2-8d71993f16b6"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "13"
+      id: "6d001256-2782-4613-bda2-8d71993f16b6"
       version: -1
       name: Non Unicode Attachment Name
       scriptName: http
@@ -530,11 +530,11 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: "8"
+    taskid: "d3f60ede-0ba2-4cb2-82a4-379c5c1f2fc3"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "8"
+      id: "d3f60ede-0ba2-4cb2-82a4-379c5c1f2fc3"
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -584,11 +584,11 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: "14"
+    taskid: "2405e94d-168b-407e-8bd2-7fa706812a70"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "14"
+      id: "2405e94d-168b-407e-8bd2-7fa706812a70"
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -638,11 +638,11 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: "177"
+    taskid: "fbdbe706-ef6c-4680-98a3-467885925628"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "177"
+      id: "fbdbe706-ef6c-4680-98a3-467885925628"
       version: -1
       name: http (No Content Type)
       description: Sends http request. Returns the response as json.
@@ -684,11 +684,11 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: "178"
+    taskid: "7e05848f-0995-4d02-8bc7-bb75f6405d1f"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "178"
+      id: "7e05848f-0995-4d02-8bc7-bb75f6405d1f"
       version: -1
       name: ParseEmailFiles With No Content Type
       description: Parse an email from an eml or msg file and populate all relevant
@@ -743,11 +743,11 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: "176"
+    taskid: "10f32685-6df8-4cdc-a3e7-a1989ce0aada"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "176"
+      id: "10f32685-6df8-4cdc-a3e7-a1989ce0aada"
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -777,11 +777,11 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: "179"
+    taskid: "e69e1657-20f4-4ee1-924c-e0ead483b145"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "179"
+      id: "e69e1657-20f4-4ee1-924c-e0ead483b145"
       version: -1
       name: Verify Headers
       type: condition
