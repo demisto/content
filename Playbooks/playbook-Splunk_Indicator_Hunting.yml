@@ -3445,9 +3445,8 @@ tasks:
       id: c8e6de4d-504c-40c6-8053-4aab8ce6f943
       version: -1
       name: Set detected host names as external
-      description: Checks if the IP addresses were returned in the search results.
-        If the IP addresses were returned, they are set in Context. Otherwise, no
-        value is set.
+      description: Hostnames that were detected as external according to the inputs are set to the
+        Splunk.Detected.ExternalHosts key
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3532,9 +3531,8 @@ tasks:
       id: 08b05df0-d433-4cab-819a-8a0a708f6cdb
       version: -1
       name: Set detected host names as internal
-      description: Checks if the IP addresses were returned in the search results.
-        If the IP addresses were returned, they are set in Context. Otherwise, no
-        value is set.
+      description: Hostnames that were detected as internal according to the inputs are set to the
+          Splunk.Detected InternalHosts key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
