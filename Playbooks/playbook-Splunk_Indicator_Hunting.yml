@@ -800,7 +800,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -813,7 +813,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -826,7 +826,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -931,7 +931,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -944,7 +944,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -963,7 +963,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1054,7 +1054,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1067,7 +1067,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1170,7 +1170,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1183,7 +1183,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1196,7 +1196,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1293,7 +1293,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1306,7 +1306,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1319,7 +1319,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1423,7 +1423,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1436,7 +1436,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1449,7 +1449,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1554,7 +1554,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1567,7 +1567,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1580,7 +1580,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1685,7 +1685,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1698,7 +1698,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1711,7 +1711,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1808,7 +1808,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1821,7 +1821,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -1834,7 +1834,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -2200,7 +2200,7 @@ tasks:
                 iscontext: true
               list:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
     separatecontext: false
     view: |-
@@ -2250,7 +2250,7 @@ tasks:
                 iscontext: true
               list:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
     separatecontext: false
     view: |-
@@ -2300,7 +2300,7 @@ tasks:
                 iscontext: true
               list:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
     separatecontext: false
     view: |-
@@ -2777,7 +2777,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationIPFields
+                  simple: inputs.IPFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -2790,7 +2790,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.UserFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -2803,7 +2803,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: inputs.InvestigationHostFields
+                  simple: inputs.HostFieldsToReturn
                 iscontext: true
           - operator: concat
             args:
@@ -2888,7 +2888,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.InvestigationIPFields
+              simple: inputs.IPFieldsToReturn
             iscontext: true
     view: |-
       {
@@ -2924,7 +2924,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.InvestigationHostFields
+              simple: inputs.HostFieldsToReturn
             iscontext: true
     view: |-
       {
@@ -2960,7 +2960,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.InvestigationUserFields
+              simple: inputs.UserFieldsToReturn
             iscontext: true
     view: |-
       {
@@ -3002,8 +3002,8 @@ tasks:
     task:
       id: 9d168d0e-9ca5-4da6-88d2-645d8e99bf1b
       version: -1
-      name: Manual list detected IP addresses
-      description: Provide a list of comma separated IP addresses in the input screen.
+      name: Manually list detected IP addresses
+      description: Provide a list of comma separated IP addresses in the input screen. This task is relevant if you have not entered any values in the IP investigation fields.
       type: regular
       iscommand: false
       brand: ''
@@ -3029,9 +3029,9 @@ tasks:
       id: 55a7a15a-0ed4-4961-8a2d-d40f4eee920f
       version: -1
       name: Set manual IP addresses
-      description: "Takes the comments of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \nFor accessing the last\
-        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+      description: "Takes the contents of the Manually list detected IP addresses task and stores them in the\
+        \ incident context, under a provided context key. \nTo access the list you entered in the Manually list detected IP addresses\
+        \ task, enter ${lastCompletedTaskEntries.[0]} as the\
         \ value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
@@ -3065,8 +3065,8 @@ tasks:
     task:
       id: 9d479d9b-8344-4503-8df2-2be1faa6be49
       version: -1
-      name: Manual list detected user names
-      description: Provide a list of comma separated user names in the input screen.
+      name: Manually list detected user names
+      description: Provide a list of comma separated user names in the input screen. This task is relevant if you have not entered any values in the user name investigation fields.
       type: regular
       iscommand: false
       brand: ''
@@ -3092,9 +3092,9 @@ tasks:
       id: 691b6764-e453-4369-81a5-57c55d90d09d
       version: -1
       name: Set manual user names
-      description: "Takes the comments of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \nFor accessing the last\
-        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+      description: "Takes the contents of a given entry ID and stores them in the\
+        \ incident context, under a provided context key. \To access the contents of the\
+        \ Manually list detected user names task, enter ${lastCompletedTaskEntries.[0]} as the\
         \ value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
@@ -3128,8 +3128,8 @@ tasks:
     task:
       id: cf2b7d98-132d-4903-84bb-3b16f48bdfc8
       version: -1
-      name: Manual list detected host names
-      description: Provide a list of comma separated host names in the input screen.
+      name: Manually list detected host names
+      description: Provide a list of comma separated host names in the input screen. This task is relevant if you have not entered any values in the host names investigation fields.
       type: regular
       iscommand: false
       brand: ''
@@ -3155,9 +3155,9 @@ tasks:
       id: 4052430e-6fcd-4073-832e-2ef9b2f9016d
       version: -1
       name: Set manual host names
-      description: "Takes the comments of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \nFor accessing the last\
-        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
+      description: "Takes the contents of the Manually list detected host names task and stores them in the\
+        \ incident context, under a provided context key. \nTo acces the contents of the \
+        \ Manually list detected host names task, enter ${lastCompletedTaskEntries.[0]} as the\
         \ value for the entryId input parameter."
       scriptName: commentsToContext
       type: regular
@@ -3581,7 +3581,7 @@ inputs:
 - key: SplunkMD5Field
   value: {}
   required: false
-  description: MD5 field to search in Splunk. If no field is specified, the search
+  description: The name of the fields, in Splunk, in which to find the MD5 hash. You can enter multiple field names using a comma-separated format. If no field is specified, the search
     uses quick filter.
 - key: SHA1
   value: {}
@@ -3590,7 +3590,7 @@ inputs:
 - key: SplunkSHA1Field
   value: {}
   required: false
-  description: SHA1 field to search in Splunk. If no field is specified, the search
+  description: The name of the fields, in Splunk, in which to find the SHA1 field. You can enter multiple field names using a comma-separated format. If no field is specified, the search
     uses quick filter.
 - key: SHA256
   value: {}
@@ -3599,7 +3599,7 @@ inputs:
 - key: SplunkSHA256Field
   value: {}
   required: false
-  description: SHA256 field to search in Splunk. If no field is specified, the search
+  description: The name of the fields, in Splunk, in which to find the SHA256. You can enter multiple field names using a comma-separated format. If no field is specified, the search
     uses quick filter.
 - key: IPAddress
   value: {}
@@ -3609,8 +3609,8 @@ inputs:
 - key: SplunkIPField
   value: {}
   required: false
-  description: IP field on which to search in Splunk. If no field is specified, the
-    search uses sourceip or destinationip (combined).
+  description:
+    The name of the fields, in Splunk, in which to find the IP addresses. You can enter multiple field names using a comma-separated format. For example, sourceip,destinationip.
 - key: URLDomain
   value: {}
   required: false
@@ -3619,7 +3619,7 @@ inputs:
 - key: SplunkURLDomainField
   value: {}
   required: false
-  description: URL/Domain field on which to search in Splunk. If no field is specified,
+  description: The name of the fields, in Splunk, in which to find the URL/Domain. If no field is specified,
     the search uses quick filter. Only one field can be used in this parameter.
 - key: earliest_time
   value:
@@ -3662,27 +3662,28 @@ inputs:
   required: true
   description: Limit the number of events returned by query. This argument is not
     mandatory for the command, but is mandatory for the playbook.
-- key: InvestigationIPFields
+- key: IPFieldsToReturn
   value: {}
   required: false
-  description: The values of these Splunk fields will be used for the playbook IP
-    outputs.
-- key: InvestigationUserFields
+  description: ' The value of the IP fields to return from Splunk when the specified indicator is found.
+                 These values are used as inputs in the Setting IP addresses section. For example, src,src_ip,dst,dst_ip.'
+                 '
+- key: UserFieldsToReturn
   value: {}
   required: false
-  description: The values of these Splunk fields will be used for the playbook user
-    outputs.
-- key: InvestigationHostFields
+  description: The value of the username fields to return from Splunk when the specified indicator is found.
+                 These values are used as inputs in the Setting user names section. For example, username,src_username,dst_username.'
+- key: HostFieldsToReturn
   value: {}
   required: false
-  description: The values of these Splunk fields will be used for the playbook host
-    name outputs.
+  description: The value of the hostname fields to return from Splunk when the specified indicator is found.
+                 These values are used as inputs in the Setting host names section. For example, hostname,src_hostname, dst_hostname.'
 - key: InternalIPRange
   value: {}
   required: false
   description: 'A list of internal IP ranges to check IP addresses against. The list
     should be provided in CIDR format, separated by commas. An example of a list of
-    ranges would be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges
+    ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges
     is not provided, the list provided in the IsIPInRanges script (the known IPv4
     private address ranges) is used by default.'
 - key: IndexName
@@ -3694,19 +3695,17 @@ inputs:
   value:
     simple: source,timestamp
   required: true
-  description: These fields can be used to further enrich the Splunk results. Use
-    comma delimited field names as they appear in Splunk. * is an acceptable value,
-    but not recommended as it creates a very large output. These fields are in addition
-    to the investigation fields so there is no need to repeat the fields in the investigation
-    fields listing. If no investigation fields are specified than the SelectFields
-    must contain some value.
+  description: Use this field to include additional enrichment data for the Splunk query. If you have defined one or more investigation fields,
+               the SelectField should not include those fields. If there are no other investigation fields defined,
+               the SelectField must contain some value.
+               Enter a comma-separated list of field names as they appear in Splunk. * is valid value, but not recommended since it creates large output.
 - key: InternalDomainName
   value: {}
   required: false
   description: The organizations internal domain name. This is provided for the script
     IsInternalHostName that checks if the detected host names are internal or external
-    if the hosts contain the internal domains suffix. For example demisto.com in case
-    there is more than one domain you can specify using the | option such as (demisto.com|test.com)
+    if the hosts contain the internal domains suffix. For example demisto.com. If
+    there is more than one domain, use the | character to separate values such as (demisto.com|test.com)
 - key: InternalHostRegex
   value: {}
   required: false
