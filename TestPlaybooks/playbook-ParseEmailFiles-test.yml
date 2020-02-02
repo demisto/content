@@ -690,7 +690,7 @@ tasks:
       elasticcommonfields: {}
       id: "178"
       version: -1
-      name: ParseEmailFiles Ignore Content Type
+      name: ParseEmailFiles With No Content Type
       description: Parse an email from an eml or msg file and populate all relevant
         context data to investigate the email. Also extracts inner attachments and
         returns them to the war room. The incident labels themselves are preserved
@@ -724,8 +724,6 @@ tasks:
               field:
                 value:
                   simple: EntryID
-      ignore_content_type:
-        simple: "true"
       max_depth: {}
       parse_only_headers: {}
     results:
