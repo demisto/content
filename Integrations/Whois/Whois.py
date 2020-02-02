@@ -8245,8 +8245,10 @@ def get_whois(domain, normalized=None):
 
 
 def whois_command():
-
-    domain = demisto.args().get('query')
+    if demisto.args().get('query'):
+        domain = demisto.args().get('query')
+    else:
+        domain = demisto.args().get('domain')
 
     whois_result = get_whois(domain)
 
@@ -8320,16 +8322,22 @@ def whois_command():
     standard_ec['Name'] = domain
     standard_ec['Whois'] = ec
 
-    context = ({
-        outputPaths['domain']: standard_ec
-    })
+    dbot_score = {
+        'Score': 0,
+        'Indicator': domain,
+        'Type': 'domain',
+        'Vendor': 'Whois'
+    }
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': str(whois_result),
         'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': context
+        'EntryContext': {
+            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': dbot_score
+        }
     })
 
 
@@ -8360,7 +8368,7 @@ def setup_proxy():
     if not proxy_url:
         return
     scheme, host = (def_scheme, proxy_url) if '://' not in proxy_url else proxy_url.split('://')
-    host, port = (host, None) if ':'  not in host else host.split(':')
+    host, port = (host, None) if ':' not in host else host.split(':')
     if port:
         port = int(port)
     proxy_type = scheme_to_proxy_type.get(scheme)
@@ -8368,18 +8376,26 @@ def setup_proxy():
         raise ValueError("Un supported proxy scheme: {}".format(scheme))
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
-    
+
+
+'''COMMAND SWITCHBOARD'''
+
+commands = {
+    'test-module': test_command,
+    'whois': whois_command,
+    'domain': whois_command
+}
+
 
 ''' EXECUTION CODE '''
+
+
 def main():
     LOG('command is {}'.format(str(demisto.command())))
     org_socket = socket.socket
     try:
-        setup_proxy()
-        if demisto.command() == 'test-module':
-            test_command()
-        elif demisto.command() == 'whois':
-            whois_command()
+        if demisto.command() in commands.keys():
+            commands[demisto.command()]()
     except Exception as e:
         LOG(e)
         return_error(str(e))
