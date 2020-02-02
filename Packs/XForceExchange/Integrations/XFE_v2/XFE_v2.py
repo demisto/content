@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 XFORCE_URL = 'https://exchange.xforce.ibmcloud.com'
 DEFAULT_THRESHOLD = 7
+DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
 
 class Client(BaseClient):
@@ -97,8 +98,8 @@ def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dic
     additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
 
     context = {outputPaths['cve']: outputs,
-               'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbot_score,
-               'XFE.CVE(obj.ID==val.ID)': additional_info}
+               DBOT_SCORE_KEY: dbot_score,
+               f'XFE.{outputPaths["cve"]}': additional_info}
 
     table_headers = ['title', 'description', 'risk_level', 'reported', 'exploitability']
     table = {'Version': report.get('cvss', {}).get('version'),
@@ -142,28 +143,35 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     """
 
     threshold = int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))
-    report = client.ip_report(args['ip'])
 
-    outputs = {'Address': report['ip'],
-               'Score': report.get('score'),
-               'Geo': {'Country': report.get('geo', {}).get('country', '')},
-               'Malicious': {'Vendor': 'XFE'}
-               }
-    additional_info = {string_to_context_key(field): report[field] for field in
-                       ['reason', 'reasonDescription', 'subnets']}
-    dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
-                  'Score': calculate_score(report['score'], threshold)}
+    markdown = ''
+    context: Dict[str, Any] = defaultdict(list)
+    reports = []
 
-    context = {outputPaths['ip']: outputs,
-               'XFE.IP(obj.Address==val.Address)': additional_info,
-               'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbot_score}
-    table = {'Score': report['score'],
-             'Reason': f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}',
-             'Subnets': ', '.join(subnet.get('subnet') for subnet in additional_info['Subnets'])}
-    markdown = tableToMarkdown(f'X-Force IP Reputation for: {report["ip"]}\n'
-                               f'{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True)
+    for ip in argToList(args.get('ip')):
+        report = client.ip_report(ip)
+        outputs = {'Address': report['ip'],
+                   'Score': report.get('score'),
+                   'Geo': {'Country': report.get('geo', {}).get('country', '')},
+                   'Malicious': {'Vendor': 'XFE'}
+                   }
+        additional_info = {string_to_context_key(field): report[field] for field in
+                           ['reason', 'reasonDescription', 'subnets']}
+        dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
+                      'Score': calculate_score(report['score'], threshold)}
 
-    return markdown, context, report
+        context[outputPaths['ip']].append(outputs)
+        context[f'XFE.{outputPaths["ip"]}'].append(additional_info)
+        context[DBOT_SCORE_KEY].append(dbot_score)
+
+        table = {'Score': report['score'],
+                 'Reason': f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}',
+                 'Subnets': ', '.join(subnet.get('subnet') for subnet in additional_info['Subnets'])}
+        markdown += tableToMarkdown(f'X-Force IP Reputation for: {report["ip"]}\n'
+                                    f'{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True)
+        reports.append(report)
+
+    return markdown, context, reports
 
 
 def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
@@ -179,23 +187,29 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
          dict: the raw data from X-Force client (used for debugging).
      """
 
-    url = args.get('url', '') or args.get('domain', '')
-    report = client.url_report(url)
+    urls = argToList(args.get('url', '')) or argToList(args.get('domain', ''))
     threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
+    context: Dict[str, Any] = defaultdict(list)
+    markdown = ''
+    reports = []
 
-    outputs = {'Data': report['url'], 'Malicious': {'Vendor': 'XFE'}}
-    dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
-                  'Score': calculate_score(report['score'], threshold)}
+    for url in urls:
+        report = client.url_report(url)
 
-    context = {outputPaths['url']: outputs,
-               'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': dbot_score}
+        outputs = {'Data': report['url'], 'Malicious': {'Vendor': 'XFE'}}
+        dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
+                      'Score': calculate_score(report['score'], threshold)}
 
-    table = {'Score': report['score'],
-             'Categories': '\n'.join(report['cats'].keys())}
-    markdown = tableToMarkdown(f'X-Force URL Reputation for: {report["url"]}\n'
-                               f'{XFORCE_URL}/ip/{report["url"]}', table, removeNull=True)
+        context[outputPaths['url']].append(outputs)
+        context[DBOT_SCORE_KEY] = dbot_score
 
-    return markdown, context, report
+        table = {'Score': report['score'],
+                 'Categories': '\n'.join(report['cats'].keys())}
+        markdown += tableToMarkdown(f'X-Force URL Reputation for: {report["url"]}\n'
+                                    f'{XFORCE_URL}/ip/{report["url"]}', table, removeNull=True)
+        reports.append(report)
+
+    return markdown, context, reports
 
 
 def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
@@ -255,9 +269,22 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, di
      """
 
     threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
-    report = client.cve_report(args['cve_id'])
+    markdown = ''
+    context: Dict[str, Any] = defaultdict(list)
+    reports = []
 
-    return get_cve_results(args['cve_id'], report[0], threshold)
+    for cve_id in argToList(args.get('cve_id')):
+        report = client.cve_report(cve_id)
+        cve_markdown, cve_context, _ = get_cve_results(args['cve_id'], report[0], threshold)
+
+        markdown += cve_markdown
+        context[outputPaths['cve']] = cve_context[outputPaths['cve']]
+        context[DBOT_SCORE_KEY] = cve_context[DBOT_SCORE_KEY]
+        context[f'XFE.{outputPaths["cve"]}'] = cve_context[f'XFE.{outputPaths["cve"]}']
+
+        reports.append(report)
+
+    return markdown, context, reports
 
 
 def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
@@ -274,26 +301,40 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]
          dict: the raw data from X-Force Exchange client (used for debugging).
     """
 
-    report = client.file_report(args.get('file', ''))
-    hash_type = report['type']
+    context: Dict[str, Any] = defaultdict(list)
+    markdown = ''
+    reports = []
 
-    scores = {'high': 3, 'medium': 2, 'low': 1}
-    context = build_dbot_entry(args.get('file'), indicator_type=report['type'],
-                               vendor='XFE', score=scores.get(report['risk'], 0))
-    file_key = f'XFE.{next(filter(lambda k: "File" in k, context.keys()), "File")}'  # type: ignore
+    for file_hash in argToList(args.get('file')):
+        report = client.file_report(file_hash)
+        hash_type = report['type']
 
-    hash_info = {**report['origins'], 'Family': report['family'], 'FamilyMembers': report['familyMembers']}
-    context[file_key] = hash_info
+        scores = {'high': 3, 'medium': 2, 'low': 1}
 
-    download_servers = ','.join(server['ip'] for server in hash_info.get('downloadServers', {}).get('rows', []))
-    cnc_servers = ','.join(server['domain'] for server in hash_info.get('CnCServers', {}).get('rows', []))
-    table = {'CnC Servers': cnc_servers, 'Download Servers': download_servers,
-             'Source': hash_info.get('external', {}).get('source'), 'Created Date': report['created'],
-             'Type': hash_info.get('external', {}).get('malwareType')}
-    markdown = tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
-                               f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
+        file_context = build_dbot_entry(args.get('file'), indicator_type=report['type'],
+                                        vendor='XFE', score=scores.get(report['risk'], 0))
 
-    return markdown, context, report
+        if outputPaths['file'] in file_context:
+            context[outputPaths['file']].append(file_context[outputPaths['file']])
+
+        if outputPaths['dbotscore'] in file_context:
+            context[DBOT_SCORE_KEY].append(file_context[outputPaths['dbotscore']])
+
+        file_key = f'XFE.{outputPaths["file"]}'
+
+        hash_info = {**report['origins'], 'Family': report['family'], 'FamilyMembers': report['familyMembers']}
+        context[file_key] = hash_info
+
+        download_servers = ','.join(server['ip'] for server in hash_info.get('downloadServers', {}).get('rows', []))
+        cnc_servers = ','.join(server['domain'] for server in hash_info.get('CnCServers', {}).get('rows', []))
+        table = {'CnC Servers': cnc_servers, 'Download Servers': download_servers,
+                 'Source': hash_info.get('external', {}).get('source'), 'Created Date': report['created'],
+                 'Type': hash_info.get('external', {}).get('malwareType')}
+        markdown += tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
+                                    f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
+        reports.append(report)
+
+    return markdown, context, reports
 
 
 def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:

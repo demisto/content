@@ -50,7 +50,7 @@ script:
   - arguments:
     - default: true
       description: IP to check
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -122,7 +122,7 @@ script:
       secret: false
     - default: true
       description: The URL to check
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -153,7 +153,7 @@ script:
     - auto: PREDEFINED
       default: true
       description: The file hash md5/sha1/sha256 to check
-      isArray: false
+      isArray: true
       name: file
       predefined:
       - comma seperated optional values
@@ -215,7 +215,7 @@ script:
   - arguments:
     - default: true
       description: The domain to check
-      isArray: false
+      isArray: true
       name: domain
       predefined:
       - ''
@@ -269,7 +269,7 @@ script:
     - auto: PREDEFINED
       default: true
       description: The cve to search for
-      isArray: false
+      isArray: true
       name: cve_id
       predefined:
       - comma seperated optional values
