@@ -422,11 +422,14 @@ class Docker:
         server_ip = server_url.lstrip("https://")
         containers_stats = cls.docker_stats(server_ip, docker_images)
         failed_memory_test = False
+        print("Number of collected docker stats: {}".format(len(containers_stats)))
+        print("Starting a loop over collected stats.")
 
         for container_stat in containers_stats:
             container_name = container_stat['container_name']
             container_memory_usage = container_stat['memory_usage']
             container_pids_usage = container_stat['pids']
+            print("Looping over container name: {}".format(container_name))
 
             if container_memory_usage > memory_threshold:
                 error_message = ('Docker container {} exceeded the memory threshold, '
@@ -441,5 +444,8 @@ class Docker:
                                                                                         container_pids_usage))
                 print_error(error_message)
                 failed_memory_test = True
+
+            if not failed_memory_test:
+                print("Docker image {} passed memory resource test.".format(container_name))
 
         return failed_memory_test

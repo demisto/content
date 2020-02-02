@@ -429,7 +429,7 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
     options = options if options is not None else {}
     # create integrations instances
     module_instances = []
-    docker_images = set()
+    test_docker_images = set()
 
     for integration in integrations:
         integration_name = integration.get('name', None)
@@ -456,7 +456,7 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
 
         module_instances.append(module_instance)
         if docker_image:
-            docker_images.add(docker_image)
+            test_docker_images.update(docker_image)
 
         prints_manager.add_print_job('Create integration {} succeed'.format(integration_name), print, thread_index)
 
@@ -515,10 +515,10 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
     __disable_integrations_instances(client, module_instances, prints_manager, thread_index=thread_index)
     failed_memory_test = False
 
-    if docker_images:
+    if test_docker_images:
         memory_threshold = options.get('docker_memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE)
         pids_threshold = options.get('docker_pids_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
-        failed_memory_test = Docker.check_resource_usage(server_url=server_url, docker_images=docker_images,
+        failed_memory_test = Docker.check_resource_usage(server_url=server_url, docker_images=test_docker_images,
                                                          memory_threshold=memory_threshold,
                                                          pids_threshold=pids_threshold)
     else:
