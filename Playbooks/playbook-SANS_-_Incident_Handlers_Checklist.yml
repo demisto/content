@@ -3,11 +3,11 @@ version: -1
 fromversion: 5.0.0
 name: SANS - Incident Handlers Checklist
 description: |-
-  This playbook displays and follows the "Incident Handlers Checklist" described in the SANS Institute ‘Incident Handler’s Handbook’ by Patrick Kral.
+  This playbook follows the "Incident Handler's Checklist" described in the SANS Institute ‘Incident Handler’s Handbook’ by Patrick Kral.
 
   https://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901
 
-  ***Disclaimer: This playbook does not ensure compliance to the SANS regulation.
+  ***Disclaimer: This playbook does not ensure compliance to SANS regulations.
 starttaskid: "0"
 tasks:
   "0":
