@@ -10,11 +10,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "testofvandiede"
+    taskid: "3"
     type: start
     task:
       elasticcommonfields: {}
-      id: "testofvandiede"
+      id: "3"
       version: -1
       name: ""
       iscommand: false
@@ -37,11 +37,11 @@ tasks:
     quiet: false
   "1":
     id: "1"
-    taskid: "lalalalalaal111"
+    taskid: "4"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "lalalalalaal111"
+      id: "4"
       version: -1
       name: Get STIX1 file
       description: Sends http request. Returns the response as json.
@@ -83,11 +83,11 @@ tasks:
     quiet: false
   "2":
     id: "2"
-    taskid: "yoidovandiklol"
+    taskid: "5"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "yoidovandiklol"
+      id: "5"
       version: -1
       name: Get STIX2 file
       description: Sends http request. Returns the response as json.
@@ -129,14 +129,14 @@ tasks:
     quiet: false
   "3":
     id: "3"
-    taskid: "deletecontextid00"
+    taskid: "1"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "deletecontextid00"
+      id: "1"
       version: -1
       name: Run CreateIndicatorFromSTIX
-      scriptName: CreateIndicatorsFromSTIX
+      script: cb63e8ac-933c-47c5-879e-f80672f7351c
       type: regular
       iscommand: false
       brand: ""
@@ -163,11 +163,11 @@ tasks:
     quiet: false
   "4":
     id: "4"
-    taskid: "deletecontextid00111"
+    taskid: "2"
     type: title
     task:
       elasticcommonfields: {}
-      id: "deletecontextid00111"
+      id: "2"
       version: -1
       name: Done
       type: title
@@ -188,11 +188,11 @@ tasks:
     quiet: false
   "5":
     id: "5"
-    taskid: "stixparseryo123"
+    taskid: "6"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "stixparseryo123"
+      id: "6"
       version: -1
       name: Delete Context
       description: Delete field from context
