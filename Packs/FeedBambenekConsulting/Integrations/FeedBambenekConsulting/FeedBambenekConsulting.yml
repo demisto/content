@@ -37,6 +37,11 @@ configuration:
   name: expiration
   required: false
   type: 17
+- additionalinfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
   defaultvalue: Bad
@@ -49,6 +54,17 @@ configuration:
   - Bad
   required: false
   type: 18
+- defaultvalue: indicatorType
+  display: expirationPolicy
+  hidden: true
+  name: feedExpirationPolicy
+  required: false
+  type: 0
+- display: expirationInterval
+  hidden: true
+  name: feedExpirationInterval
+  required: false
+  type: 1
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
