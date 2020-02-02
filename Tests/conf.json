@@ -4,7 +4,7 @@
     "tests": [
          {
             "playbookID": "CreateIndicatorFromSTIXTest",
-             "fromversion": "5.5.0"
+             "fromversion": "5.0.0"
          },
          {
             "integrations": "SpamhausFeed",
