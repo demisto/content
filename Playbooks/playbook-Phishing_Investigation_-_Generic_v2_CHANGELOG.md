@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.1.2] - 2020-01-22
+Added tasks that predict the phishing incident verdict when a phishing ML model exists. The verdict refers to the phishing category.
+
 ## [19.11.0] - 2019-11-12
 - Fixed an issue where the task that saves the email address of the reporter of the phishing email, was disconnected from the previous task.
 - Fixed an issue where the DT that was used to get the display name of the user who reported the email was invalid.
