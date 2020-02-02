@@ -3660,19 +3660,18 @@ inputs:
 - key: IPFieldsToReturn
   value: {}
   required: false
-  description: ' The value of the IP fields to return from Splunk when the specified indicator is found.
-                 These values are used as inputs in the Setting IP addresses section. For example, src,src_ip,dst,dst_ip.'
-                 '
+  description: The value of the IP fields to return from Splunk when the specified indicator is found.
+                These values are used as inputs in the Setting IP addresses section. For example, src,src_ip,dst,dst_ip.
 - key: UserFieldsToReturn
   value: {}
   required: false
   description: The value of the username fields to return from Splunk when the specified indicator is found.
-                 These values are used as inputs in the Setting user names section. For example, username,src_username,dst_username.'
+                 These values are used as inputs in the Setting user names section. For example, username,src_username,dst_username.
 - key: HostFieldsToReturn
   value: {}
   required: false
   description: The value of the hostname fields to return from Splunk when the specified indicator is found.
-                 These values are used as inputs in the Setting host names section. For example, hostname,src_hostname, dst_hostname.'
+                 These values are used as inputs in the Setting host names section. For example, hostname,src_hostname, dst_hostname.
 - key: InternalIPRange
   value: {}
   required: false
