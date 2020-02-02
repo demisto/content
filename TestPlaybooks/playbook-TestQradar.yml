@@ -721,17 +721,17 @@ tasks:
     quiet: false
   "27":
     id: "27"
-    taskid: e9f00629-a074-47a2-8552-5495b8078bf5
+    taskid: "63"
     type: regular
     task:
-      id: e9f00629-a074-47a2-8552-5495b8078bf5
+      id: "63"
       version: -1
       name: qradar-delete-reference-set
-      description: Deletes a reference set (if exists)
-      script: QRadar|||qradar-delete-reference-set
+      description: Deletes a reference set corresponding to the name provided.
+      script: '|||qradar-delete-reference-set'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "28"
@@ -754,17 +754,18 @@ tasks:
     quiet: false
   "28":
     id: "28"
-    taskid: 4e775835-d80d-46af-815d-dee25ec8456c
+    taskid: "59"
     type: regular
     task:
-      id: 4e775835-d80d-46af-815d-dee25ec8456c
+      id: "59"
       version: -1
       name: qradar-create-reference-set
-      description: Creates a new refernce set for the test
-      script: QRadar|||qradar-create-reference-set
+      description: Creates a new reference set. If the provided name is already in
+        use, this command will fail
+      script: '|||qradar-create-reference-set'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "29"
@@ -790,16 +791,17 @@ tasks:
     quiet: false
   "29":
     id: "29"
-    taskid: 0337d0d8-d001-4036-8f35-e07c9684cc0f
+    taskid: "57"
     type: regular
     task:
-      id: 0337d0d8-d001-4036-8f35-e07c9684cc0f
+      id: "57"
       version: -1
       name: qradar-create-reference-set-value
-      script: QRadar|||qradar-create-reference-set-value
+      description: Add or update a value in a reference set.
+      script: '|||qradar-create-reference-set-value'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "30"
@@ -827,17 +829,19 @@ tasks:
     quiet: false
   "30":
     id: "30"
-    taskid: 7214a128-af92-4546-89e7-3f0beef945da
+    taskid: "58"
     type: regular
     task:
-      id: 7214a128-af92-4546-89e7-3f0beef945da
+      id: "58"
       version: -1
       name: qradar-get-reference-by-name
-      description: Get the reference set and values
-      script: QRadar|||qradar-get-reference-by-name
+      description: Information about the reference set that had data added or updated.
+        This returns information set but not the contained data. This feature is supported
+        from version 8.1 and upward.
+      script: '|||qradar-get-reference-by-name'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "31"
@@ -901,16 +905,17 @@ tasks:
     quiet: false
   "32":
     id: "32"
-    taskid: eca1e320-459b-45d3-8d32-9516e722954a
+    taskid: "62"
     type: regular
     task:
-      id: eca1e320-459b-45d3-8d32-9516e722954a
+      id: "62"
       version: -1
       name: Delete test_value from reference set
-      script: QRadar|||qradar-delete-reference-set-value
+      description: Deletes a value in a reference set.
+      script: '|||qradar-delete-reference-set-value'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
@@ -936,16 +941,19 @@ tasks:
     quiet: false
   "33":
     id: "33"
-    taskid: 5516aaa5-0c7a-4530-8014-9a13a31591f6
+    taskid: "60"
     type: regular
     task:
-      id: 5516aaa5-0c7a-4530-8014-9a13a31591f6
+      id: "60"
       version: -1
       name: qradar-get-reference-by-name
-      script: QRadar|||qradar-get-reference-by-name
+      description: Information about the reference set that had data added or updated.
+        This returns information set but not the contained data. This feature is supported
+        from version 8.1 and upward.
+      script: '|||qradar-get-reference-by-name'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "34"
@@ -1008,17 +1016,17 @@ tasks:
     quiet: false
   "35":
     id: "35"
-    taskid: 7da7532b-8e3c-4ec7-8be3-d95499638990
+    taskid: "64"
     type: regular
     task:
-      id: 7da7532b-8e3c-4ec7-8be3-d95499638990
+      id: "64"
       version: -1
       name: qradar-delete-reference-set
-      description: Deletes the reference set
-      script: QRadar|||qradar-delete-reference-set
+      description: Deletes a reference set corresponding to the name provided.
+      script: '|||qradar-delete-reference-set'
       type: regular
       iscommand: true
-      brand: QRadar
+      brand: ""
     nexttasks:
       '#none#':
       - "42"
@@ -1055,7 +1063,7 @@ tasks:
       {
         "position": {
           "x": 2630,
-          "y": 2470
+          "y": 2295
         }
       }
     note: false
@@ -1191,10 +1199,10 @@ tasks:
     quiet: false
   "42":
     id: "42"
-    taskid: "55"
+    taskid: "61"
     type: regular
     task:
-      id: "55"
+      id: "61"
       version: -1
       name: qradar-upload-indicators
       description: Upload indicators from Demisto to Qradar
@@ -1215,9 +1223,41 @@ tasks:
       query:
         simple: reputation:Good
       ref_name:
-        simple: test_playbookk
+        simple: test_playbook
       time_to_live: {}
       timeout_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "43":
+    id: "43"
+    taskid: "56"
+    type: regular
+    task:
+      id: "56"
+      version: -1
+      name: qradar-delete-reference-set
+      description: Deletes a reference set corresponding to the name provided.
+      script: '|||qradar-delete-reference-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      ref_name:
+        simple: test_playbook
     separatecontext: false
     view: |-
       {
@@ -1231,44 +1271,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quiet: false
-  "43":
-    id: "43"
-    taskid: "3"
-    type: regular
-    task:
-      id: "3"
-      version: -1
-      name: qradar-delete-reference-set
-      description: Deletes the reference set
-      script: QRadar|||qradar-delete-reference-set
-      type: regular
-      iscommand: true
-      brand: QRadar
-    nexttasks:
-      '#none#':
-      - "36"
-    scriptarguments:
-      ref_name:
-        simple: test_playbookk
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2630,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
+        "height": 2310,
         "width": 2960,
         "x": 50,
         "y": 50
