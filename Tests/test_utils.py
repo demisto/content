@@ -359,12 +359,14 @@ class Docker:
 
     @classmethod
     def _build_stats_cmd(cls, server_ip, docker_images):
-        ssh_prefix = 'ssh -o StrictHostKeyChecking=no {}@{} '.format(Docker.REMOTE_MACHINE_USER, server_ip)
+        # ssh -o StrictHostKeyChecking=no ec2-user@ec2-34-211-231-64.us-west-2.compute.amazonaws.com sudo docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopython33.7.2.214--"
         docker_command = 'sudo docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
         docker_images_regex = ['{}--'.format(sub('[:/]', '', docker_image)) for docker_image in docker_images]
         pipe = ' | '
         grep_command = 'grep -Ei "{}"'.format('|'.join(docker_images_regex))
-        cmd = ssh_prefix + docker_command + pipe + grep_command
+        remote_command = docker_command + pipe + grep_command
+        ssh_prefix = 'ssh -o StrictHostKeyChecking=no {}@{}'.format(Docker.REMOTE_MACHINE_USER, server_ip)
+        cmd = "{} '{}'".format(ssh_prefix, remote_command)
 
         return cmd
 
@@ -408,9 +410,6 @@ class Docker:
         # example of cmd
         # docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopy-ews--|demistopy-ews2.0--"
         cmd = Docker._build_stats_cmd(server_ip, docker_images)
-        print("^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        print(cmd)
-        print("^^^^^^^^^^^^^^^^^^^^^^^^^^")
         process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
         stdout, stderr = process.communicate()
 
