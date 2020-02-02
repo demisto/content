@@ -1053,6 +1053,9 @@
             "playbookID": "ZipFile-Test"
         },
         {
+            "playbookID": "UnzipFile-Test"
+        },
+        {
             "playbookID": "ExtractDomainTest"
         },
         {
