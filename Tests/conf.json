@@ -1748,7 +1748,8 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "playbookID": "Wait Until Datetime - Test"
+            "playbookID": "Wait Until Datetime - Test",
+            "fromversion": "4.5.0"
         },
         {
             "playbookID": "PAN OS EDL Management - Test",
