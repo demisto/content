@@ -10,11 +10,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "15"
+    taskid: "c3d0808c-fef8-42bf-bc88-c4d681200d78"
     type: start
     task:
       elasticcommonfields: {}
-      id: "15"
+      id: "c3d0808c-fef8-42bf-bc88-c4d681200d78"
       version: -1
       name: ""
       iscommand: false
@@ -37,11 +37,11 @@ tasks:
     quiet: false
   "7":
     id: "7"
-    taskid: "24"
+    taskid: "0b2b1d55-17ea-48d5-99c4-546e4d25de57"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "24"
+      id: "0b2b1d55-17ea-48d5-99c4-546e4d25de57"
       version: -1
       name: Search devices
       description: Search for devices in your environment by platform, host name,
@@ -74,11 +74,11 @@ tasks:
     quiet: false
   "8":
     id: "8"
-    taskid: "16"
+    taskid: "b76a1dae-2ba1-40da-81d6-2ed628084bf2"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "16"
+      id: "b76a1dae-2ba1-40da-81d6-2ed628084bf2"
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -108,11 +108,11 @@ tasks:
     quiet: false
   "13":
     id: "13"
-    taskid: "20"
+    taskid: "24428a6a-46ee-4d67-8f56-9645df13d580"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "20"
+      id: "24428a6a-46ee-4d67-8f56-9645df13d580"
       version: -1
       name: Found any devices?
       type: condition
@@ -147,11 +147,11 @@ tasks:
     quiet: false
   "15":
     id: "15"
-    taskid: "21"
+    taskid: "2561f88c-efdb-466c-a231-1dc73572ac46"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "21"
+      id: "2561f88c-efdb-466c-a231-1dc73572ac46"
       version: -1
       name: Get device details
       description: Get details for one or more devices, according to device ID
@@ -180,11 +180,11 @@ tasks:
     quiet: false
   "16":
     id: "16"
-    taskid: "17"
+    taskid: "dc1e8c3c-8608-4ca5-a290-558845a302eb"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "17"
+      id: "dc1e8c3c-8608-4ca5-a290-558845a302eb"
       version: -1
       name: Verify Endpoint
       description: |-
@@ -220,11 +220,11 @@ tasks:
     quiet: false
   "17":
     id: "17"
-    taskid: "22"
+    taskid: "be1933ad-2852-48bb-8421-d702c4959231"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "22"
+      id: "be1933ad-2852-48bb-8421-d702c4959231"
       version: -1
       name: Search by MD5
       description: Returns a list of device IDs on which an indicator ran
@@ -255,11 +255,11 @@ tasks:
     quiet: false
   "18":
     id: "18"
-    taskid: "18"
+    taskid: "5d3db641-f79f-496f-9bed-b15eca350fc0"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "18"
+      id: "5d3db641-f79f-496f-9bed-b15eca350fc0"
       version: -1
       name: Get details
       description: Get details for one or more devices, according to device ID
@@ -288,11 +288,11 @@ tasks:
     quiet: false
   "19":
     id: "19"
-    taskid: "25"
+    taskid: "e523fb12-c3d0-42bf-ad11-426fe2eefeb2"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "25"
+      id: "e523fb12-c3d0-42bf-ad11-426fe2eefeb2"
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -325,11 +325,11 @@ tasks:
     quiet: false
   "21":
     id: "21"
-    taskid: "19"
+    taskid: "96ecfd8d-8345-4d78-a4c1-bd8439133bc0"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "19"
+      id: "96ecfd8d-8345-4d78-a4c1-bd8439133bc0"
       version: -1
       name: Search with number offset
       description: Search for devices in your environment by platform, host name,
@@ -362,11 +362,11 @@ tasks:
     quiet: false
   "22":
     id: "22"
-    taskid: "26"
+    taskid: "d76dc448-ddd3-4164-b16c-ef5bb63218d0"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "26"
+      id: "d76dc448-ddd3-4164-b16c-ef5bb63218d0"
       version: -1
       name: Get device details
       description: Get details for one or more devices, according to device ID
@@ -395,11 +395,11 @@ tasks:
     quiet: false
   "23":
     id: "23"
-    taskid: "27"
+    taskid: "90399b9b-4b87-48aa-9d0b-7d5a61ec3d48"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "27"
+      id: "90399b9b-4b87-48aa-9d0b-7d5a61ec3d48"
       version: -1
       name: Set number offset
       description: Sets a value into the context with the given context key
@@ -431,11 +431,11 @@ tasks:
     quiet: false
   "24":
     id: "24"
-    taskid: "23"
+    taskid: "0538af06-8fdd-4113-98e7-99e174e1aff2"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "23"
+      id: "0538af06-8fdd-4113-98e7-99e174e1aff2"
       version: -1
       name: Found any devices?
       type: condition
@@ -470,11 +470,11 @@ tasks:
     quiet: false
   "25":
     id: "25"
-    taskid: "163"
+    taskid: "4db38125-e1c3-4911-9dec-8559ad767753"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "163"
+      id: "4db38125-e1c3-4911-9dec-8559ad767753"
       version: -1
       name: Check detections were fetched
       description: Check detections were fetched
@@ -523,11 +523,11 @@ tasks:
     quiet: false
   "26":
     id: "26"
-    taskid: "164"
+    taskid: "c17e52a0-5e56-451a-a31f-9ce6f7a6b7fe"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "164"
+      id: "c17e52a0-5e56-451a-a31f-9ce6f7a6b7fe"
       version: -1
       name: Get Detection Details
       description: Fetch details of a Crowdstrike Detection using the detection ID
@@ -558,11 +558,11 @@ tasks:
     quiet: false
   "27":
     id: "27"
-    taskid: "165"
+    taskid: "efd3a3b5-7cd4-452a-a63b-bed069f26fd2"
     type: title
     task:
       elasticcommonfields: {}
-      id: "165"
+      id: "efd3a3b5-7cd4-452a-a63b-bed069f26fd2"
       version: -1
       name: No Detections to check
       type: title
@@ -583,11 +583,11 @@ tasks:
     quiet: false
   "28":
     id: "28"
-    taskid: "166"
+    taskid: "d782f73e-82c3-4aab-b57b-47672b8187c0"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "166"
+      id: "d782f73e-82c3-4aab-b57b-47672b8187c0"
       version: -1
       name: Assert detections details were fetched
       description: Assert detections details were fetched
@@ -622,11 +622,11 @@ tasks:
     quiet: false
   "29":
     id: "29"
-    taskid: "168"
+    taskid: "dd288834-40d0-4f0f-85c6-ff021b62ac52"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "168"
+      id: "dd288834-40d0-4f0f-85c6-ff021b62ac52"
       version: -1
       name: Change Detection to in_progress
       description: Sets the state of a detection in Falcon Host. You can obtain detection
@@ -660,11 +660,11 @@ tasks:
     quiet: false
   "30":
     id: "30"
-    taskid: "160"
+    taskid: "5be55b33-7679-46fd-9381-63291044ffec"
     type: title
     task:
       elasticcommonfields: {}
-      id: "160"
+      id: "5be55b33-7679-46fd-9381-63291044ffec"
       version: -1
       name: Done
       description: Done
@@ -686,11 +686,11 @@ tasks:
     quiet: false
   "31":
     id: "31"
-    taskid: "161"
+    taskid: "98ba8ad4-29cb-41d0-90b8-d327336e913b"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "161"
+      id: "98ba8ad4-29cb-41d0-90b8-d327336e913b"
       version: -1
       name: Search Detections Since 2017
       description: String search through all Crowdstrike Detection fields.  For example,
