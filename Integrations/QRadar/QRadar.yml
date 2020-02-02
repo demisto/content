@@ -1571,7 +1571,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Upload indicators from Demisto to Qradar
+    description: Upload indicators from Demisto to Qradar. This command requires Cortex
+      SOAR v5.5 or later.
     execution: false
     name: qradar-upload-indicators
   feed: false
