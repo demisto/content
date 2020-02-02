@@ -1,5 +1,9 @@
 from XFE_v2 import Client, ip_command, url_command, cve_get_command, \
     cve_search_command, file_command, whois_command
+from CommonServerPython import outputPaths
+
+
+DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
 MOCK_BASE_URL = 'https://www.this-is-a-fake-url.com'
 MOCK_API_KEY = 'FAKE-API-KEY'
@@ -354,7 +358,7 @@ def test_ip(requests_mock):
     }
     _, outputs, _ = ip_command(client, args)
 
-    assert outputs['IP(obj.Address==val.Address)']['Address'] == MOCK_IP
+    assert outputs[outputPaths['ip']][0]['Address'] == MOCK_IP
 
 
 def test_url(requests_mock):
@@ -366,7 +370,7 @@ def test_url(requests_mock):
     }
     _, outputs, _ = url_command(client, args)
 
-    assert outputs['URL(obj.Data==val.Data)']['Data'] == MOCK_URL
+    assert outputs[outputPaths['url']][0]['Data'] == MOCK_URL
 
 
 def test_get_cve(requests_mock):
@@ -378,10 +382,10 @@ def test_get_cve(requests_mock):
     }
     _, outputs, _ = cve_get_command(client, args)
 
-    assert outputs['CVE(obj.ID==val.ID)']['ID'] == MOCK_CVE
-    assert outputs['DBotScore']['Indicator'] == MOCK_CVE, 'The indicator is not matched'
-    assert outputs['DBotScore']['Type'] == 'cve', 'The indicator type should be cve'
-    assert 1 <= outputs['DBotScore']['Score'] <= 3, 'Invalid indicator score range'
+    assert outputs[outputPaths['cve']][0]['ID'] == MOCK_CVE
+    assert outputs[DBOT_SCORE_KEY][0]['Indicator'] == MOCK_CVE, 'The indicator is not matched'
+    assert outputs[DBOT_SCORE_KEY][0]['Type'] == 'cve', 'The indicator type should be cve'
+    assert 1 <= outputs[DBOT_SCORE_KEY][0]['Score'] <= 3, 'Invalid indicator score range'
 
 
 def test_cve_latest(requests_mock):
@@ -389,7 +393,7 @@ def test_cve_latest(requests_mock):
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
     _, outputs, _ = cve_search_command(client, {})
-    assert len(outputs['CVE(obj.ID==val.ID)']) == 1, 'CVE output length should be 1'
+    assert len(outputs[outputPaths['cve']]) == 1, 'CVE output length should be 1'
 
 
 def test_file(requests_mock):
@@ -400,10 +404,10 @@ def test_file(requests_mock):
 
     file_key = next(filter(lambda k: 'File' in k, outputs.keys()), 'File')
 
-    assert outputs[file_key].get('MD5', '') == MOCK_HASH, 'The indicator value is wrong'
-    assert outputs['DBotScore']['Indicator'] == MOCK_HASH, 'The indicator is not matched'
-    assert outputs['DBotScore']['Type'] == 'file', 'The indicator type should be file'
-    assert 1 <= outputs['DBotScore']['Score'] <= 3, 'Invalid indicator score range'
+    assert outputs[file_key][0].get('MD5', '') == MOCK_HASH, 'The indicator value is wrong'
+    assert outputs[DBOT_SCORE_KEY][0]['Indicator'] == MOCK_HASH, 'The indicator is not matched'
+    assert outputs[DBOT_SCORE_KEY][0]['Type'] == 'file', 'The indicator type should be file'
+    assert 1 <= outputs[DBOT_SCORE_KEY][0]['Score'] <= 3, 'Invalid indicator score range'
 
 
 def test_whois(requests_mock):
@@ -424,4 +428,4 @@ def test_cve_search(requests_mock):
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
     _, outputs, _ = cve_search_command(client, {'q': MOCK_CVE_QUERY})
 
-    assert outputs['XFE.CVESearch']['TotalRows'] == len(outputs['CVE(obj.ID==val.ID)']), 'Mismatch rows and outputs'
+    assert outputs['XFE.CVESearch']['TotalRows'] == len(outputs[outputPaths['cve']]), 'Mismatch rows and outputs'

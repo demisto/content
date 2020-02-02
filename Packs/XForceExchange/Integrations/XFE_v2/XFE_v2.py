@@ -129,7 +129,7 @@ def test_module(client: Client) -> str:
     return 'ok' if client.ip_report('8.8.8.8')['ip'] == '8.8.8.8' else 'Connection failed.'
 
 
-def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
     Executes IP enrichment against X-Force Exchange.
 
@@ -139,13 +139,13 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     Returns:
         str: human readable presentation of the IP report.
         dict: the results to return into Demisto's context.
-        dict: the raw data from X-Force client (used for debugging).
+        Any: the raw data from X-Force client (used for debugging).
     """
 
     threshold = int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))
 
     markdown = ''
-    context: Dict[str, Any] = defaultdict(list)
+    context: dict = defaultdict(list)
     reports = []
 
     for ip in argToList(args.get('ip')):
@@ -174,7 +174,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     return markdown, context, reports
 
 
-def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
      Executes URL enrichment against X-Force Exchange.
 
@@ -184,7 +184,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
      Returns:
          str: human readable presentation of the URL report.
          dict: the results to return into Demisto's context.
-         dict: the raw data from X-Force client (used for debugging).
+         Any: the raw data from X-Force client (used for debugging).
      """
 
     urls = argToList(args.get('url', '')) or argToList(args.get('domain', ''))
@@ -212,7 +212,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
     return markdown, context, reports
 
 
-def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
      Get details about vulnerabilities (latest / search) from X-Force Exchange.
 
@@ -221,8 +221,8 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
          args (Dict[str, str]): the arguments for the command.
      Returns:
          str: human readable presentation of the CVEs reports.
-         context: the results to return into Demisto's context.
-         report: the raw data from X-Force Exchange client (used for debugging).
+         dict: the results to return into Demisto's context.
+         Any: the raw data from X-Force Exchange client (used for debugging).
     """
 
     threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
@@ -254,7 +254,7 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
     return total_markdown, total_context, reports
 
 
-def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
      Executes CVE enrichment against X-Force Exchange.
 
@@ -265,7 +265,7 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, di
      Returns:
          str: human readable presentation of the CVE report.
          dict: the results to return into Demisto's context.
-         dict: the raw data from X-Force client (used for debugging).
+         Any: the raw data from X-Force client (used for debugging).
      """
 
     threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
@@ -278,16 +278,16 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, di
         cve_markdown, cve_context, _ = get_cve_results(args['cve_id'], report[0], threshold)
 
         markdown += cve_markdown
-        context[outputPaths['cve']] = cve_context[outputPaths['cve']]
-        context[DBOT_SCORE_KEY] = cve_context[DBOT_SCORE_KEY]
-        context[f'XFE.{outputPaths["cve"]}'] = cve_context[f'XFE.{outputPaths["cve"]}']
+        context[outputPaths['cve']].append(cve_context[outputPaths['cve']])
+        context[DBOT_SCORE_KEY].append(cve_context[DBOT_SCORE_KEY])
+        context[f'XFE.{outputPaths["cve"]}'].append(cve_context[f'XFE.{outputPaths["cve"]}'])
 
         reports.append(report)
 
     return markdown, context, reports
 
 
-def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
     Executes file hash enrichment against X-Force Exchange.
 
@@ -298,10 +298,10 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]
     Returns:
          str: human readable presentation of the file hash report.
          dict: the results to return into Demisto's context.
-         dict: the raw data from X-Force Exchange client (used for debugging).
+         Any: the raw data from X-Force Exchange client (used for debugging).
     """
 
-    context: Dict[str, Any] = defaultdict(list)
+    context: dict = defaultdict(list)
     markdown = ''
     reports = []
 
@@ -337,7 +337,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]
     return markdown, context, reports
 
 
-def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
     Gets information about the given host address.
 
@@ -348,7 +348,7 @@ def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict
     Returns:
          str: human readable presentation of the information about the host.
          dict: the results to return into Demisto's context.
-         dict: the raw data from X-Force Exchange client (used for debugging).
+         Any: the raw data from X-Force Exchange client (used for debugging).
     """
 
     result = client.whois(args['host'])
