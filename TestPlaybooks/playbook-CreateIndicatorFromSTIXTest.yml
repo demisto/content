@@ -125,7 +125,7 @@ tasks:
       id: c7ff874a-1ac3-4ed3-984c-88c94088da61
       version: -1
       name: Run CreateIndicatorFromSTIX
-      script: cb63e8ac-933c-47c5-879e-f80672f7351c
+      script: CreateIndicatorsFromSTIX
       type: regular
       iscommand: false
       brand: ''
