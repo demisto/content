@@ -353,15 +353,18 @@ class Docker:
     MEMORY_USAGE = 'MemUsage'
     PIDS_USAGE = 'PIDs'
     CONTAINER_NAME = 'Name'
+    DEFAULT_CONTAINER_MEMORY_USAGE = 50
+    DEFAULT_CONTAINER_PIDS_USAGE = 3
+    REMOTE_MACHINE_USER = 'ec2-user'
 
     @classmethod
     def _build_stats_cmd(cls, server_ip, docker_images):
-        # todo add ssh prefix with the user and ip
-        docker_command = 'sudo docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
+        ssh_prefix = "ssh -o StrictHostKeyChecking=no {}@{} ".format(Docker.REMOTE_MACHINE_USER, server_ip)
+        docker_command = 'docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
         docker_images_regex = ['{}--'.format(sub('[:/]', '', docker_image)) for docker_image in docker_images]
         pipe = ' | '
         grep_command = 'grep -Ei "{}"'.format('|'.join(docker_images_regex))
-        cmd = docker_command + pipe + grep_command
+        cmd = ssh_prefix + docker_command + pipe + grep_command
 
         return cmd
 
@@ -388,7 +391,7 @@ class Docker:
             return stats_result
 
     @classmethod
-    def get_integration_docker_image(cls, integration_config):
+    def get_integration_image(cls, integration_config):
         integration_script = integration_config.get('configuration', {}).get('integrationScript', {})
         integration_type = integration_script.get('type')
         docker_image = integration_script.get('dockerImage')
@@ -403,21 +406,22 @@ class Docker:
     @classmethod
     def docker_stats(cls, server_ip, docker_images):
         # example of cmd
-        # sudo docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopy-ews--|demistopy-ews2.0--"
+        # docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopy-ews--|demistopy-ews2.0--"
         cmd = Docker._build_stats_cmd(server_ip, docker_images)
         process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
         stdout, stderr = process.communicate()
 
         if stderr:
-            # todo print the error
+            print_warning("No images found for  ")
             return []
 
         return Docker._parse_stats_result(stdout)
 
     @classmethod
-    def check_resource_usage(cls, server_ip, docker_images, memory_threshold, pids_threshold):
+    def check_resource_usage(cls, server_url, docker_images, memory_threshold, pids_threshold):
+        server_ip = server_url.lstrip("https://")
         containers_stats = cls.docker_stats(server_ip, docker_images)
-        error_message = ''
+        failed_memory_test = False
 
         for container_stat in containers_stats:
             container_name = container_stat['container_name']
@@ -425,12 +429,17 @@ class Docker:
             container_pids_usage = container_stat['pids']
 
             if container_memory_usage > memory_threshold:
-                error_message += ('Docker container {} exceeded the memory threshold, '
-                                  'configured: {} MiB and actual memory usage is {} MiB.\n'
-                                  .format(container_name, memory_threshold, container_memory_usage))
+                error_message = ('Docker container {} exceeded the memory threshold, '
+                                 'configured: {} MiB and actual memory usage is {} MiB.\n'
+                                 .format(container_name, memory_threshold, container_memory_usage))
+                print_error(error_message)
+                failed_memory_test = True
             if container_pids_usage > pids_threshold:
-                error_message += ('Docker container {} exceeded the pids threshold, '
-                                  'configured: {} and actual pid number is {}.\n'.format(container_name,
-                                                                                         pids_threshold,
-                                                                                         container_pids_usage))
-        return error_message
+                error_message = ('Docker container {} exceeded the pids threshold, '
+                                 'configured: {} and actual pid number is {}.\n'.format(container_name,
+                                                                                        pids_threshold,
+                                                                                        container_pids_usage))
+                print_error(error_message)
+                failed_memory_test = True
+
+        return failed_memory_test
