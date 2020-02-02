@@ -2121,6 +2121,14 @@
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill-Test"
+        },
+        {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill - Darkfeed - Indicators-Test"
         }
     ],
     "skipped_tests": {
