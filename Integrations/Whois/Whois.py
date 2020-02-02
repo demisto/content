@@ -8241,17 +8241,7 @@ def get_whois(domain, normalized=None):
 # Drops the mic disable-secrets-detection-end
 
 
-'''COMMANDS'''
-
-
-def whois_command():
-    if demisto.args().get('query'):
-        domain = demisto.args().get('query')
-    else:
-        domain = demisto.args().get('domain')
-
-    whois_result = get_whois(domain)
-
+def create_outputs(whois_result, domain):
     md = {'Name': domain}
     ec = {'Name': domain}
     standard_ec = {}  # type:dict
@@ -8273,17 +8263,21 @@ def whois_command():
         if 'creation_date' in whois_result:
             ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
             standard_ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
-            standard_ec['WHOIS']['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
+            standard_ec['WHOIS']['CreationDate'] = whois_result.get('creation_date')[0].strftime(
+                '%d-%m-%Y')
             md['Creation Date'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
         if 'updated_date' in whois_result:
             ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
             standard_ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
-            standard_ec['WHOIS']['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
+            standard_ec['WHOIS']['UpdatedDate'] = whois_result.get('updated_date')[0].strftime(
+                '%d-%m-%Y')
             md['Updated Date'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
         if 'expiration_date' in whois_result:
             ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
-            standard_ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
-            standard_ec['WHOIS']['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime(
+            standard_ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime(
+                '%d-%m-%Y')
+            standard_ec['WHOIS']['ExpirationDate'] = whois_result.get('expiration_date')[
+                0].strftime(
                 '%d-%m-%Y')
             md['Expiration Date'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
     except ValueError as e:
@@ -8328,7 +8322,32 @@ def whois_command():
         'Type': 'domain',
         'Vendor': 'Whois'
     }
+    return md, standard_ec, dbot_score
 
+
+'''COMMANDS'''
+
+
+def domain_command():
+    domain = demisto.args().get('domain')
+    whois_result = get_whois(domain)
+    md, standard_ec, dbotscore = create_outputs(whois_result, domain)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': str(whois_result),
+        'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
+        'EntryContext': {
+            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': dbot_score
+        }
+    })
+
+
+def whois_command():
+    domain = demisto.args().get('query')
+    whois_result = get_whois(domain)
+    md, standard_ec, dbotscore = create_outputs(whois_result, domain)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
@@ -8383,7 +8402,7 @@ def setup_proxy():
 commands = {
     'test-module': test_command,
     'whois': whois_command,
-    'domain': whois_command
+    'domain': domain_command
 }
 
 
