@@ -360,7 +360,7 @@ class Docker:
     @classmethod
     def _build_stats_cmd(cls, server_ip, docker_images):
         ssh_prefix = "ssh -o StrictHostKeyChecking=no {}@{} ".format(Docker.REMOTE_MACHINE_USER, server_ip)
-        docker_command = 'docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
+        docker_command = 'sudo docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
         docker_images_regex = ['{}--'.format(sub('[:/]', '', docker_image)) for docker_image in docker_images]
         pipe = ' | '
         grep_command = 'grep -Ei "{}"'.format('|'.join(docker_images_regex))
