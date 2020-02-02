@@ -3092,10 +3092,7 @@ tasks:
       id: 691b6764-e453-4369-81a5-57c55d90d09d
       version: -1
       name: Set manual user names
-      description: "Takes the contents of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \To access the contents of the\
-        \ Manually list detected user names task, enter ${lastCompletedTaskEntries.[0]} as the\
-        \ value for the entryId input parameter."
+      description: Sets to context the user names provided by the previous task.
       scriptName: commentsToContext
       type: regular
       iscommand: false
