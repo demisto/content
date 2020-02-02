@@ -389,6 +389,8 @@ tasks:
       command: {}
       dst: {}
       element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
       from: {}
       job-id: {}
       key: {}

@@ -1,6 +1,7 @@
 {
 	"id": "incident_googlemailstatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-05T15:55:13.212532259Z",
 	"name": "Google Mail Status",
 	"ownerOnly": false,

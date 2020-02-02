@@ -165,20 +165,6 @@
                 ]
             }
         },
-        "status": {
-            "simple": "",
-            "complex": {
-                "root": "IPv6CIDR",
-                "filters": [],
-                "accessor": "Status",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
         "threattypes": {
             "simple": "",
             "complex": {
