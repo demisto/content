@@ -225,7 +225,7 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict, list]
     hr = tableToMarkdown(
         f"Indicators from {SOURCE_NAME}",
         indicators_list[:limit],
-        headers=["type", "value", "port"],
+        headers=["type", "value"],
     )
     return hr, {}, indicators_list
 

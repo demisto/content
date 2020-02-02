@@ -3,16 +3,35 @@ commonfields:
   id: ProofpointFeed
   version: -1
 configuration:
-- defaultvalue: '240'
-  display: Fetch Interval
-  name: feedFetchInterval
-  required: true
-  type: 19
 - display: Authorization Code
   hidden: false
   name: auth_code
   required: true
   type: 4
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedInstanceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Fetch indicators
   name: feed
   required: false
@@ -29,21 +48,24 @@ configuration:
   - domain
   required: true
   type: 15
-- defaultvalue: F - Reliability cannot be judged
-  display: Source Reliability
-  name: feedInstanceReliability
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
   options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- name: expiration
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
   type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '60'
+  display: Fetch Interval
+  name: feedFetchInterval
+  required: true
+  type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -51,25 +73,6 @@ configuration:
   name: bypassExclusionList
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
-  display: Indicator Reputation
-  name: feedInstanceReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -78,7 +81,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fetches indicators from a Proofpoint Feed.
+description: Detailed feed of domains and ips classified in different categories.
+  You need a valid authorization code from Proofpoint ET to access this feed
 display: Proofpoint Feed
 name: ProofpointFeed
 script:
