@@ -904,6 +904,15 @@ def manage_tests(tests_settings):
 def main():
     print("Time is: {}\n\n\n".format(datetime.now()))
     tests_settings = options_handler()
+
+    # should be removed after solving: https://github.com/demisto/etc/issues/21383
+    # -------------
+    if 'master' in tests_settings.serverVersion.lower():
+        sleep(100)
+        print('slept for 100 secs')
+        sleep(100)
+        print('slept for 100 secs')
+    # -------------
     manage_tests(tests_settings)
 
 
