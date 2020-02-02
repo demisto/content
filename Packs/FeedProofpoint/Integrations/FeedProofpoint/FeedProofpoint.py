@@ -94,6 +94,14 @@ class Client(BaseClient):
                     item["value"] = item.get("ip")
                 yield item
 
+    @staticmethod
+    def _process_item(item: dict) -> dict:
+        return {
+            "value": item["value"],
+            "type": item["type"],
+            "rawJSON": item,
+        }
+
     def _build_iterator_domain(self) -> Generator[dict, None, None]:
         """Gets back a dict of domain attributes.
 
@@ -119,11 +127,7 @@ class Client(BaseClient):
             list of indicators
         """
         return [
-            {
-                "value": item["domain"],
-                "type": FeedIndicatorType.Domain,
-                "rawJSON": item,
-            }
+            self._process_item(item)
             for item in self._build_iterator_domain()
         ]
 
@@ -134,11 +138,7 @@ class Client(BaseClient):
             list of indicators
         """
         return [
-            {
-                "value": item["ip"],
-                "type": FeedIndicatorType.IP,
-                "rawJSON": item,
-            }
+            self._process_item(item)
             for item in self._build_iterator_ip()
         ]
 
