@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added handling for eml files with no Content-Type header. The script will treat the file as email text with no attachments.
+Added handling for EML files with no Content-Type header. The script will treat the file as email text with no attachments.
 
 ## [19.12.1] - 2019-12-25
 Added handling for cases where an attachment has neither the *DisplayName* nor the *AttachFilename* properties.
