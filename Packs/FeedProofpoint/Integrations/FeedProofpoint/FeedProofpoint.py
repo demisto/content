@@ -100,7 +100,7 @@ class Client(BaseClient):
             "type": item["type"],
             "rawJSON": item,
             "CustomFields": {
-                "port": item.get("ports").split() if isinstance(item.get("ports"), str) else item.get("ports")
+                "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports")
             }
         }
 
