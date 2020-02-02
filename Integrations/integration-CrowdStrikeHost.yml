@@ -31,7 +31,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Allow self-signed SSL certificates
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
