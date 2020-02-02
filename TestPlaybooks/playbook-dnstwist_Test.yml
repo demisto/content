@@ -212,10 +212,10 @@ tasks:
     skipunavailable: false
   "6":
     id: "6"
-    taskid: 58b0e605-e389-4f7f-8808-720a8512a6d8
+    taskid: ad9da2dd-267c-471c-8423-0e8912a4633d
     type: regular
     task:
-      id: 58b0e605-e389-4f7f-8808-720a8512a6d8
+      id: ad9da2dd-267c-471c-8423-0e8912a4633d
       version: -1
       name: dnstwist domain on "wikipediao.org" that has no MX
       description: Checks for variations of a phishing domain name.
@@ -245,10 +245,10 @@ tasks:
     skipunavailable: false
   "7":
     id: "7"
-    taskid: 8407668a-f57c-4322-8d86-c4c80624c1e2
+    taskid: b6b036da-16f7-4756-8be2-a813810cb6fd
     type: condition
     task:
-      id: 8407668a-f57c-4322-8d86-c4c80624c1e2
+      id: b6b036da-16f7-4756-8be2-a813810cb6fd
       version: -1
       name: Check that all outputs exist, but no dns-mx
       type: condition
@@ -275,7 +275,7 @@ tasks:
                 root: dnstwist
                 accessor: Domain.Domains.IP
             iscontext: true
-      - - operator: isNotExists
+      - - operator: isExists
           left:
             value:
               complex:
@@ -289,11 +289,18 @@ tasks:
                 root: dnstwist
                 accessor: Domain.Domains.DNS-NS
             iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: DNS-MX
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 60,
-          "y": 1065
+          "y": 1075
         }
       }
     note: false
