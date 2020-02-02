@@ -2587,9 +2587,8 @@ tasks:
       id: ede48e1d-c9d5-4f4a-8371-7abd66130e62
       version: -1
       name: Set detected IP addresses as internal
-      description: Checks if the IP addresses were returned in the search results.
-        If the IP addresses were returned, they are set in Context. Otherwise, no
-        value is set.
+      description: IP addresses that were found to be internal, are
+          written to the Splunk.DetectedInternalIPs context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2637,9 +2636,8 @@ tasks:
       id: f95fab26-3f29-4fc9-80f2-852af16dc321
       version: -1
       name: Set detected IP addresses as external
-      description: Checks if the IP addresses were returned in the search results.
-        If the IP addresses were returned, they are set in Context. Otherwise, no
-        value is set.
+      description: IP addresses that were found to be external, are
+        written to the Splunk.DetectedExternalIPs context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3029,10 +3027,7 @@ tasks:
       id: 55a7a15a-0ed4-4961-8a2d-d40f4eee920f
       version: -1
       name: Set manual IP addresses
-      description: "Takes the contents of the Manually list detected IP addresses task and stores them in the\
-        \ incident context, under a provided context key. \nTo access the list you entered in the Manually list detected IP addresses\
-        \ task, enter ${lastCompletedTaskEntries.[0]} as the\
-        \ value for the entryId input parameter."
+      description: Sets to context the IP addresses provided by the previous task.
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -3152,10 +3147,7 @@ tasks:
       id: 4052430e-6fcd-4073-832e-2ef9b2f9016d
       version: -1
       name: Set manual host names
-      description: "Takes the contents of the Manually list detected host names task and stores them in the\
-        \ incident context, under a provided context key. \nTo acces the contents of the \
-        \ Manually list detected host names task, enter ${lastCompletedTaskEntries.[0]} as the\
-        \ value for the entryId input parameter."
+      description: Sets to context the host names provided by the previous task.
       scriptName: commentsToContext
       type: regular
       iscommand: false
@@ -3392,9 +3384,8 @@ tasks:
       id: 1459cc81-34e2-46a9-82fc-a3b59ff5723e
       version: -1
       name: Set detected host names as internal
-      description: Checks if the IP addresses were returned in the search results.
-        If the IP addresses were returned, they are set in Context. Otherwise, no
-        value is set.
+      description: Host names that were found to be internal, are written
+        to the Splunk.DetectedInternalHosts context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3406,7 +3397,7 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: Splunk.Detected InternalHosts
+        simple: Splunk.DetectedInternalHosts
       stringify: {}
       value:
         complex:
@@ -3442,8 +3433,8 @@ tasks:
       id: c8e6de4d-504c-40c6-8053-4aab8ce6f943
       version: -1
       name: Set detected host names as external
-      description: Hostnames that were detected as external according to the inputs are set to the
-        Splunk.Detected.ExternalHosts key
+      description: Host names that were found to be external, are
+        written to the Splunk.DetectedExternalHosts context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3529,7 +3520,7 @@ tasks:
       version: -1
       name: Set detected host names as internal
       description: Hostnames that were detected as internal according to the inputs are set to the
-          Splunk.Detected InternalHosts key.
+          Splunk.DetectedInternalHosts key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3541,7 +3532,7 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: Splunk.Detected InternalHosts
+        simple: Splunk.DetectedInternalHosts
       stringify: {}
       value:
         simple: Splunk.DetectedHosts
@@ -3717,7 +3708,7 @@ outputs:
 - contextPath: Splunk.DetectedExternalIPs
   description: External IP addresses detected by your search.
   type: string
-- contextPath: Splunk.Detected InternalHosts
+- contextPath: Splunk.DetectedInternalHosts
   description: Internal host names detected based on the fields in your search.
   type: string
 - contextPath: Splunk.DetectedExternalHosts
