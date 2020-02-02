@@ -20,14 +20,13 @@ from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
@@ -81,7 +80,7 @@ class TestsSettings:
         self.specific_tests_to_run = self.parse_tests_list_arg(options.testsList)
         self.is_local_run = (self.server is not None)
 
-    @ staticmethod
+    @staticmethod
     def parse_tests_list_arg(tests_list):
         tests_to_run = tests_list.split(",") if tests_list else []
         return tests_to_run
@@ -200,8 +199,8 @@ def print_test_summary(tests_data_keeper, is_ami=True):
     if empty_mocks_count > 0:
         empty_mock_successes_msg = '\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':'
         print(empty_mock_successes_msg)
-        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n'\
-                            '\t Investigate the playbook and the integrations.\n'\
+        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n' \
+                            '\t Investigate the playbook and the integrations.\n' \
                             '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
         print(proxy_explanation)
         for playbook_id in empty_files:
@@ -275,7 +274,8 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                    prints_manager, thread_index=0, is_mock_run=False):
-    status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, test_options, is_mock_run,
+    status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, server_url, test_options,
+                                      is_mock_run,
                                       thread_index=thread_index)
     # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
@@ -308,7 +308,8 @@ def run_and_record(tests_settings, c, proxy, failed_playbooks, integrations, pla
                    prints_manager, thread_index=0):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True, thread_index=thread_index, prints_manager=prints_manager)
-    succeed = run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+    succeed = run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+                             test_message,
                              test_options, slack, circle_ci, build_number, server_url, build_name,
                              prints_manager, thread_index=thread_index, is_mock_run=True)
     proxy.stop()
@@ -329,8 +330,8 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         prints_manager.add_print_job(start_mock_message, print, thread_index)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, test_options, is_mock_run=True,
-                                          thread_index=thread_index)
+        status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, server_url, test_options,
+                                          is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
@@ -835,7 +836,8 @@ def manage_tests(tests_settings):
                     current_instance = ami_instance_ip
                     tests_allocation_for_instance = test_allocation[current_thread_index]
 
-                    unmockable_tests = [test for test in all_unmockable_tests_list if test in tests_allocation_for_instance]
+                    unmockable_tests = [test for test in all_unmockable_tests_list if
+                                        test in tests_allocation_for_instance]
                     mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
                     print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                     print("Starts tests with server url - https://{}".format(ami_instance_ip))
