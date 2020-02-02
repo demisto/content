@@ -84,6 +84,14 @@ class Client(BaseClient):
                     item["category_name"] = self._CATEGORY_NAME[int(category) - 1]
                 except (KeyError, IndexError):
                     item["category_name"] = "Unknown"
+                item["port"] = item.get("ports")
+                # add type/value to item.
+                if "domain" in item:
+                    item["type"] = FeedIndicatorType.Domain
+                    item["value"] = item.get("domain")
+                elif "ip" in item:
+                    item["type"] = FeedIndicatorType.IP
+                    item["value"] = item.get("ip")
                 yield item
 
     def _build_iterator_domain(self) -> Generator[dict, None, None]:
