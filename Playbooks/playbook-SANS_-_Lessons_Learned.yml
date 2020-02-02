@@ -1,13 +1,13 @@
-id: SANS - Lessons Leraned
+id: SANS - Lessons Learned
 version: -1
 fromversion: 5.0.0
-name: SANS - Lessons Leraned
+name: SANS - Lessons Learned
 description: |-
-  This playbook assists in processing an incident after it occurs and facilitates the lessons learned stage, taken from SANS Institute ‘Incident Handler’s Handbook’ by Patrick Kral.
+  This playbook assists in post-processing an incident and facilitates the lessons learned stage, as presented by SANS Institute ‘Incident Handler’s Handbook’ by Patrick Kral.
 
   https://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901
 
-  ***Disclaimer: This playbook does not ensure compliance to the SANS regulation.
+  ***Disclaimer: This playbook does not ensure compliance to SANS regulations.
 starttaskid: "0"
 tasks:
   "0":
