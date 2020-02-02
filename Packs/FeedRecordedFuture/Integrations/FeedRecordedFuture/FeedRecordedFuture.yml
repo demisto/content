@@ -15,9 +15,6 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: expiration
-  required: false
-  type: 17
 - defaultvalue: suddenDeath
   hidden: true
   name: expirationPolicy
@@ -81,19 +78,17 @@ configuration:
   - fusion
   required: true
   type: 16
-- additionalinfo: |-
-    Limit the indicators list to a specific risk rule.
-    To see available risk rules run the rf-feed-get-risk-rules command.
-    This parameter will only be used for the 'connectApi' sub-feed.
+- additionalinfo: Limit the indicators list to a specific risk rule. To see available
+    risk rules run the rf-feed-get-risk-rules command. This parameter will only be
+    used for the 'connectApi' sub-feed.
   display: Risk Rule
   hidden: false
   name: risk_rule
   required: false
   type: 0
-- additionalinfo: |-
-    Load a custom risklist from a specified Recorded Future file path.
-    If no file path is specified, the default risklist file is used.
-    This parameter will only be used for the 'fusion' sub-feed.
+- additionalinfo: Load a custom risklist from a specified Recorded Future file path.
+    If no file path is specified, the default risklist file is used. This parameter
+    will only be used for the 'fusion' sub-feed.
   display: Fusion File Path
   hidden: false
   name: fusion_file_path
@@ -115,7 +110,7 @@ configuration:
   required: false
   type: 0
 description: Ingests indicators from Recorded Future feeds into Demisto.
-display: Recorded Future Feed
+display: Recorded Future RiskList Feed
 name: Recorded Future Feed
 script:
   commands:

@@ -12,7 +12,13 @@ from typing import Tuple, Optional
 requests.packages.urllib3.disable_warnings()
 INTEGRATION_NAME = 'Recorded Future'
 
-# CONSTANTS
+# taken from recorded future docs
+RF_CRITICALITY_LABELS = {
+    'Very_Malicious': 90,
+    'Malicious': 65,
+    'Suspicious': 25,
+    'Unusual': 5
+}
 
 
 class Client(BaseClient):
@@ -22,7 +28,8 @@ class Client(BaseClient):
     """
     SOURCE_NAME = 'recordedfuture.masterrisklist'
     BASE_URL = 'https://api.recordedfuture.com/v2/'
-    PARAMS = {'output_format': 'csv/splunk'}
+    PARAMS = {'output_format': 'csv/splunk',
+              'download': 1}  # for faster download
     headers = {'X-RF-User-Agent': 'Demisto',
                'content-type': 'application/json'}
 
@@ -48,8 +55,8 @@ class Client(BaseClient):
         except (ValueError, TypeError):
             return_error('Please provide an integer value for "Request Timeout"')
 
-        self.risk_rule = risk_rule
-        self.fusion_file_path = fusion_file_path
+        self.risk_rule = risk_rule if risk_rule != "" else None
+        self.fusion_file_path = fusion_file_path if fusion_file_path != "" else None
         self.api_token = self.headers['X-RFToken'] = api_token
         self.sub_feeds = sub_feeds
         self.indicator_type = indicator_type
@@ -147,6 +154,44 @@ class Client(BaseClient):
 
         return dbot_score
 
+    def run_parameters_validations(self):
+        """Checks validation of the risk_rule and fusion_file_path parameters
+        Returns:
+            None in success, Error otherwise
+        """
+        if self.risk_rule is not None:
+            if 'connectApi' not in self.sub_feeds:
+                return_error("You entered a risk rule but the 'connectApi' sub feed is not chosen. "
+                             "Add the 'connectApi' sub feed to the list or remove the risk rule.")
+
+            elif not is_valid_risk_rule(self, self.risk_rule):
+                return_error("The given risk rule does not exist, "
+                             "please make sure you entered it correctly. \n"
+                             "To see all available risk rules run the '!rf-get-risk-rules' command.")
+
+        if self.fusion_file_path is not None:
+            if 'fusion' not in self.sub_feeds:
+                return_error("You entered a fusion file path but the 'fusion' sub feed is not chosen. "
+                             "Add the 'fusion' sub feed to the list or remove the fusion file path.")
+
+
+def is_valid_risk_rule(client: Client, risk_rule):
+    """Checks if the risk rule is valid by requesting from RF a list of all available rules.
+    Returns:
+        bool. Whether the risk rule is valid or not
+    """
+    risk_rule_response = client._http_request(
+        method='GET',
+        url_suffix=client.indicator_type + '/riskrules',
+        params=client.PARAMS,
+        headers=client.headers
+    )
+    risk_rules_list = [risk_rule['name'] for risk_rule in risk_rule_response['data']['results']]
+    if risk_rule in risk_rules_list:
+        return True
+    else:
+        return False
+
 
 def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """Builds the iterator to check that the feed is accessible.
@@ -156,6 +201,8 @@ def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
+
+    client.run_parameters_validations()
 
     for sub_feed in client.sub_feeds:
         client.build_iterator(sub_feed, client.indicator_type)
@@ -204,6 +251,31 @@ def ip_to_indicator_type(ip):
         return None
 
 
+def calculate_recorded_future_criticality_label(risk_from_feed):
+    risk_from_feed = int(risk_from_feed)
+    if risk_from_feed >= RF_CRITICALITY_LABELS['Very_Malicious']:
+        return 'Very Malicious'
+    elif risk_from_feed >= RF_CRITICALITY_LABELS['Malicious']:
+        return 'Malicious'
+    elif risk_from_feed >= RF_CRITICALITY_LABELS['Suspicious']:
+        return 'Suspicious'
+    elif risk_from_feed >= RF_CRITICALITY_LABELS['Unusual']:
+        return 'Unusual'
+    else:
+        return 'No current evidence of risk'
+
+
+def format_risk_string(risk_string):
+    """Formats the risk string returned from the feed
+    Args:
+        risk_string(str): The risk string from the feed, in 'X/X' format
+    Returns:
+        str. The formatted string
+    """
+    splitted_risk_string = risk_string.split('/')
+    return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
+
+
 def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
     """Fetches indicators from the Recorded Future feeds.
     Args:
@@ -218,9 +290,12 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
         iterator = client.build_iterator(sub_feed, indicator_type)
         for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
             raw_json = dict(item)
+            raw_json['EvidenceDetails'] = json.loads(item.get('EvidenceDetails')).get('EvidenceDetails')
+            raw_json['RiskString'] = format_risk_string(item.get('RiskString'))
             raw_json['value'] = value = item.get('Name')
             raw_json['type'] = get_indicator_type(indicator_type, item)
             raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
+            raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(item['Risk'])
             indicators.append({
                 "value": value,
                 "type": raw_json['type'],
