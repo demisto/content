@@ -37,11 +37,11 @@ tasks:
     quiet: false
   "1":
     id: "1"
-    taskid: "uuid_id_of_pbook"
+    taskid: "123124324"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "uuid_id_of_pbook"
+      id: "123124324"
       version: -1
       name: Get STIX1 file
       description: Sends http request. Returns the response as json.
@@ -142,7 +142,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "uuid_id_of_pbook"
+      - "4"
     scriptarguments:
       entry_id:
         complex:
@@ -161,13 +161,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quiet: false
-  "uuid_id_of_pbook":
-    id: "uuid_id_of_pbook"
-    taskid: "2"
+  "4":
+    id: "4"
+    taskid: "231231313132"
     type: title
     task:
       elasticcommonfields: {}
-      id: "2"
+      id: "231231313132"
       version: -1
       name: Done
       type: title
