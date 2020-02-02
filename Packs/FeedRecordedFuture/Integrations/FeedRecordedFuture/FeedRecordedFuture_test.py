@@ -31,7 +31,7 @@ def test_get_indicator_type(indicator_type, csv_item, answer):
 
 build_iterator_answer_domain = [
     {
-        'EvidenceDetails': {"EvidenceDetails": []},
+        'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'domaintools.com',
         'Risk': '97',
         'RiskString': '4/37'
@@ -40,7 +40,7 @@ build_iterator_answer_domain = [
 
 build_iterator_answer_ip = [
     {
-        'EvidenceDetails': {"EvidenceDetails": []},
+        'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '192.168.1.1',
         'Risk': '50',
         'RiskString': '4/37'
@@ -49,7 +49,7 @@ build_iterator_answer_ip = [
 
 build_iterator_answer_hash = [
     {
-        'EvidenceDetails': {"EvidenceDetails": []},
+        'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '52483514f07eb14570142f6927b77deb7b4da99f',
         'Algorithm': 'SHA-1',
         'Risk': '0',
@@ -59,7 +59,7 @@ build_iterator_answer_hash = [
 
 build_iterator_answer_url = [
     {
-        'EvidenceDetails': {"EvidenceDetails": []},
+        'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'www.securityadvisor.io',
         'Risk': '97',
         'RiskString': '4/37'
