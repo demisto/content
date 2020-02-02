@@ -2063,6 +2063,12 @@
         },
         {
             "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_Fetch_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
         },
@@ -2187,6 +2193,8 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
+        "ssdeepreputationtest": "Issue #20953",
+        "Elasticsearch_v2_test-v6": "Issue #21510",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633"
     },
