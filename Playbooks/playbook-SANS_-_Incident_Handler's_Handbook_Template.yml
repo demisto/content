@@ -3,11 +3,11 @@ version: -1
 fromversion: 5.0.0
 name: SANS - Incident Handler's Handbook Template
 description: |-
-  This playbook contains the phases to handling an incident as described in the SANS Institute ‘Incident Handler's Handbook’ by Patrick Kral.
+  This playbook contains the phases for handling an incident as they are described in the SANS Institute ‘Incident Handler's Handbook’ by Patrick Kral.
 
   https://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901
 
-  ***Disclaimer: This playbook does not ensure compliance to the SANS regulation.
+  ***Disclaimer: This playbook does not ensure compliance to SANS regulations.
 starttaskid: "0"
 tasks:
   "0":
