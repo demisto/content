@@ -2162,11 +2162,13 @@
         },
         {
             "integrations": "Sixgill",
-            "playbookID": "Sixgill-Test"
+            "playbookID": "Sixgill-Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Sixgill",
-            "playbookID": "Sixgill - Darkfeed - Indicators-Test"
+            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
