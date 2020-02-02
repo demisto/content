@@ -78,7 +78,7 @@ class Client(BaseClient):
             headers: list = next(csv_repr)
             headers = [header.replace(" ", "").replace("(|)", "") for header in headers]
             for line in csv_repr:
-                item = {headers[i]: line[i] for i in range(len(headers))}
+                item: dict = {headers[i]: line[i] for i in range(len(headers))}
                 try:
                     category = item["category"]
                     item["category_name"] = self._CATEGORY_NAME[int(category) - 1]
