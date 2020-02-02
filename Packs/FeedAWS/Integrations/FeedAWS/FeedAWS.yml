@@ -14,6 +14,37 @@ configuration:
   - S3
   required: true
   type: 16
+- additionalinfo: The AWS Regions to fetch indicators by.
+  display: Regions
+  hidden: false
+  name: regions
+  options:
+  - ap-east-1
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-northeast-3
+  - ap-south-1
+  - ap-southeast-1
+  - ap-southeast-2
+  - ca-central-1
+  - cn-north-1
+  - cn-northwest-1
+  - eu-central-1
+  - eu-north-1
+  - eu-west-1
+  - eu-west-2
+  - eu-west-3
+  - me-south-1
+  - sa-east-1
+  - us-east-1
+  - us-east-2
+  - us-gov-east-1
+  - us-gov-west-1
+  - us-west-1
+  - us-west-2
+  - GLOBAL
+  required: false
+  type: 16
 - defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -22,7 +53,7 @@ configuration:
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
-  name: feedInstanceReliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -32,30 +63,23 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: expiration
-  required: false
-  type: 17
 - defaultvalue: indicatorType
   hidden: true
-  name: expirationPolicy
+  name: feedExpirationPolicy
   required: false
   type: 0
 - hidden: true
-  name: expirationInterval
+  name: feedExpirationInterval
   required: false
   type: 1
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
 - additionalinfo: When selected, the exclusion list will be ignored for this feed.
   display: Bypass exclusion list
-  name: bypassExclusionList
+  name: feedBypassExclusionList
   required: false
   type: 8
 - defaultvalue: Good
-  display: Mark As Reputation
-  name: feedInstanceReputation
+  display: Indicator Reputation
+  name: feedReputation
   options:
   - None
   - Good
