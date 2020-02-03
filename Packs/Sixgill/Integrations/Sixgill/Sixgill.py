@@ -46,11 +46,18 @@ def get_limit(str_limit, default_limit):
 
 
 def get_incident_init_params():
-    return {
-        'severity': demisto.params().get('severity', None),
-        'threat_level': demisto.params().get('threat_level', None),
-        'threat_type': demisto.params().get('threat_type', None)
-    }
+    params = {}
+
+    if demisto.params().get('severity'):
+        params['threat_level'] = demisto.params().get('severity')
+
+    if demisto.params().get('threat_level'):
+        params['threat_level'] = demisto.params().get('threat_level')
+
+    if demisto.params().get('threat_type'):
+        params['threat_type'] = demisto.params().get('threat_type')
+
+    return params
 
 
 def item_to_incident(item):
