@@ -1,4 +1,5 @@
 ## [Unreleased]
+- 
 
 ## [20.2.0] - 2020-02-03
 Fixed issue where not all of params are specified in fetch incidents
