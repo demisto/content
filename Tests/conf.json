@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
          {
+            "playbookID": "CreateIndicatorFromSTIXTest",
+             "fromversion": "5.0.0"
+         },
+         {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
             "fromversion": "5.5.0"
@@ -2063,6 +2067,12 @@
         },
         {
             "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_Fetch_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
         },
@@ -2151,6 +2161,16 @@
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         },
@@ -2190,6 +2210,8 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
+        "ssdeepreputationtest": "Issue #20953",
+        "Elasticsearch_v2_test-v6": "Issue #21510",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633"
     },
