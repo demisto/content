@@ -120,10 +120,9 @@ configuration:
   required: true
   type: 0
 - additionalinfo: |-
-    The minimum score from the feed in order to to determine whether
-    the indicator is malicious. Default is "65"
+    The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
   defaultvalue: '65'
-  display: Threshold
+  display: Malicious Threshold
   hidden: false
   name: threshold
   required: false
