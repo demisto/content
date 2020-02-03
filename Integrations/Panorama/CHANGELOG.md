@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.1.2] - 2020-01-22
 Fixed an issue where trying to download a filter-pcap with the necessary arguments did not return the correct results.
 
 ## [20.1.0] - 2020-01-07
