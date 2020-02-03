@@ -6,7 +6,7 @@ from slackclient import SlackClient
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
 from Tests.test_content import ParallelPrintsManager
 from Tests.test_utils import str2bool, print_color, print_error, LOG_COLORS, print_warning
-
+from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
 
 SERVER_URL = "https://{}"
 
@@ -22,6 +22,11 @@ def options_handler():
     options = parser.parse_args()
 
     return options
+
+
+def install_new_content(client, server):
+    prints_manager = ParallelPrintsManager(0)
+    update_content_on_demisto_instance(client, server, prints_manager, 0)
 
 
 def get_integrations(secret_conf_path):
@@ -43,6 +48,7 @@ def test_instances(secret_conf_path, server, username, password):
 
     for integration in integrations:
         c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+        install_new_content(c, server)
         integrations_counter += 1
         integration_name = integration.get('name')
         integration_instance_name = integration.get('instance_name', '')
@@ -61,7 +67,8 @@ def test_instances(secret_conf_path, server, username, password):
                               "in content repo".format(integration_instance_name))
                 continue
             if not instance_id:
-                print_error('Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
+                print_error(
+                    'Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
                 failed_integrations.append("{} {} - devops comments: {}".format(
                     integration_name, product_description, devops_comments))
             else:
