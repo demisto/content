@@ -290,7 +290,8 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
         iterator = client.build_iterator(sub_feed, indicator_type)
         for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
             raw_json = dict(item)
-            raw_json['EvidenceDetails'] = json.loads(item.get('EvidenceDetails')).get('EvidenceDetails')
+            evidence_details = json.loads(item.get('EvidenceDetails')).get('EvidenceDetails')
+            raw_json['EvidenceDetails'] = evidence_details
             raw_json['RiskString'] = format_risk_string(item.get('RiskString'))
             raw_json['value'] = value = item.get('Name')
             raw_json['type'] = get_indicator_type(indicator_type, item)
@@ -300,6 +301,7 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
                 "value": value,
                 "type": raw_json['type'],
                 "rawJSON": raw_json,
+                "CustomFields": {'recordedfutureevidencedetails': evidence_details},
                 "score": score
             })
 
