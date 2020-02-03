@@ -111,7 +111,7 @@ configuration:
   - westindia
   - westus
   - westus2
-  required: false
+  required: true
   type: 16
 - defaultvalue: All
   display: Services
@@ -145,7 +145,7 @@ configuration:
   - MicrosoftContainerRegistry
   - ServiceFabric
   - SqlManagement
-  required: false
+  required: required
   type: 16
 - display: Trust any certificate (not secure)
   name: insecure
