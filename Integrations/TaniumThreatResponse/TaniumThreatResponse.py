@@ -8,6 +8,7 @@ import ast
 import json
 import urllib3
 import urllib.parse
+from dateutil.parser import parse
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
@@ -67,284 +68,300 @@ class Client(BaseClient):
     def login(self):
         return self.update_session()
 
-    def alarm_to_incident(self, alarm):
-        intel_doc_id = alarm.get('intelDocId', '')
-        host = alarm.get('computerName', '')
-        details = alarm.get('details')
-
-        if details:
-            details = json.loads(alarm['details'])
-            alarm['details'] = details
-
-        intel_doc = ''
-        if intel_doc_id:
-            raw_response = self.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}')
-            intel_doc = raw_response.get('name')
-
-        return {
-            'name': f'{host} found {intel_doc}',
-            'occurred': alarm.get('alertedAt'),
-            'rawJSON': json.dumps(alarm)}
-
-    def get_intel_doc_item(self, intel_doc):
-        return {
-            'ID': intel_doc.get('id'),
-            'Name': intel_doc.get('name'),
-            'Description': intel_doc.get('description'),
-            'AlertCount': intel_doc.get('alertCount'),
-            'UnresolvedAlertCount': intel_doc.get('unresolvedAlertCount'),
-            'CreatedAt': intel_doc.get('createdAt'),
-            'UpdatedAt': intel_doc.get('updatedAt'),
-            'LabelIds': intel_doc.get('labelIds')}
-
-    def get_alert_item(self, alert):
-        return {
-            'ID': alert.get('id'),
-            'AlertedAt': alert.get('alertedAt'),
-            'ComputerIpAddress': alert.get('computerIpAddress'),
-            'ComputerName': alert.get('computerName'),
-            'CreatedAt': alert.get('createdAt'),
-            'GUID': alert.get('guid'),
-            'IntelDocId': alert.get('intelDocId'),
-            'Priority': alert.get('priority'),
-            'Severity': alert.get('severity'),
-            'State': alert.get('state').title(),
-            'Type': alert.get('type'),
-            'UpdatedAt': alert.get('updatedAt')}
-
-    def get_snapshot_items(self, raw_snapshots, limit):
-        snapshots = []
-        count = 0
-
-        for host in raw_snapshots.items():
-            for key in host[1].items():
-                snapshots.append({
-                    'DirectoryName': host[0],
-                    'FileName': key[0],
-                    'Started': key[1].get('started', ''),
-                    'State': key[1].get('state', ''),
-                    'Error': key[1].get('error', ''),
-                })
-                count += 1
-                if count == limit:
-                    return snapshots
-
-        return snapshots
-
-    def get_local_snapshot_items(self, raw_snapshots, limit):
-        snapshots = []
-        count = 0
-
-        for host in raw_snapshots.items():
-            for snapshot in host[1]:
-                snapshots.append({
-                    'DirectoryName': host[0],
-                    'FileName': snapshot
-                })
-                count += 1
-                if count == limit:
-                    return snapshots
-
-        return snapshots
-
-    def get_connection_item(self, connection):
-        info = connection.get('info')
-        return {
-            'Name': connection.get('name'),
-            'State': info.get('state'),
-            'CreateTime': info.get('createTime'),
-            'DST': info.get('dst'),
-            'Remote': info.get('remote'),
-            'OsName': connection.get('osName')}
-
-    def get_label_item(self, label):
-        return {
-            'ID': label.get('id'),
-            'Name': label.get('name'),
-            'Description': label.get('description'),
-            'IndicatorCount': label.get('indicatorCount'),
-            'SignalCount': label.get('signalCount'),
-            'CreatedAt': label.get('createdAt'),
-            'UpdatedAt': label.get('updatedAt')}
-
-    def get_file_download_item(self, file):
-        return {
-            'ID': file.get('id'),
-            'Host': file.get('host'),
-            'Path': file.get('path'),
-            'SPath': file.get('spath'),
-            'Hash': file.get('hash'),
-            'Size': file.get('size'),
-            'Created': file.get('created'),
-            'CreatedBy': file.get('created_by'),
-            'CreatedByProc': file.get('created_by_proc'),
-            'LastModified': file.get('last_modified'),
-            'LastModifiedBy': file.get('last_modified_by'),
-            'LastModifiedByProc': file.get('last_modified_by_proc'),
-            'Downloaded': file.get('downloaded'),
-            'Comments': file.get('comments'),
-            'Tags': file.get('tags')
-        }
-
-    def get_file_item(self, file):
-        file_item = {
-            'Created': timestamp_to_datestring(file.get('created'), '%Y-%m-%d %H:%M:%S'),
-            'Path': file.get('file-path'),
-            'IsDirectory': file.get('is-directory'),
-            'LastModified': timestamp_to_datestring(file.get('last-modified'), '%Y-%m-%d %H:%M:%S'),
-            'Permissions': file.get('permissions'),
-            'Size': file.get('size')
-        }
-        return {key: val for key, val in file_item.items() if val is not None}
-
-    def get_event_item(self, raw_event, event_type):
-        event = {
-            'ID': raw_event.get('id'),
-            'Domain': raw_event.get('domain'),
-            'File': raw_event.get('file'),
-            'Operation': raw_event.get('operation'),
-            'ProcessID': raw_event.get('process_id'),
-            'ProcessName': raw_event.get('process_name'),
-            'ProcessTableID': raw_event.get('process_table_id'),
-            'Timestamp': raw_event.get('timestamp'),
-            'Username': raw_event.get('username'),
-            'DestinationAddress': raw_event.get('destination_addr'),
-            'DestinationPort': raw_event.get('destination_port'),
-            'SourceAddress': raw_event.get('source_addr'),
-            'SourcePort': raw_event.get('source_port'),
-            'KeyPath': raw_event.get('key_path'),
-            'ValueName': raw_event.get('value_name'),
-            'EndTime': raw_event.get('end_time'),
-            'ExitCode': raw_event.get('exit_code'),
-            'ProcessCommandLine': raw_event.get('process_command_line'),
-            'ProcessHash': raw_event.get('process_hash'),
-            'SID': raw_event.get('sid'),
-            'Hashes': raw_event.get('Hashes'),
-            'ImageLoaded': raw_event.get('ImageLoaded'),
-            'Signature': raw_event.get('Signature'),
-            'Signed': raw_event.get('Signed'),
-            'EventId': raw_event.get('event_id'),
-            'EventOpcode': raw_event.get('event_opcode'),
-            'EventRecordID': raw_event.get('event_record_id'),
-            'EventTaskID': raw_event.get('event_task_id'),
-            'Query': raw_event.get('query'),
-            'Response': raw_event.get('response')
-        }
-
-        if event_type == 'combined':
-            event['Type'] = raw_event.get('type')
-        else:
-            event['Type'] = event_type.upper() if event_type in ['dns', 'sid'] else event_type.title()
-
-        # remove empty values from the event item
-        return {k: v for k, v in event.items() if v is not None}
-
-    def get_process_item(self, raw_process):
-        return {
-            'CreateTime': raw_process.get('create_time'),
-            'Domain': raw_process.get('domain'),
-            'ExitCode': raw_process.get('exit_code'),
-            'ProcessCommandLine': raw_process.get('process_command_line'),
-            'ProcessID': raw_process.get('process_id'),
-            'ProcessName': raw_process.get('process_name'),
-            'ProcessTableId': raw_process.get('process_table_id'),
-            'SID': raw_process.get('sid'),
-            'Username': raw_process.get('username')
-        }
-
-    def get_process_event_item(self, raw_event):
-        return {
-            'ID': raw_event.get('id'),
-            'Detail': raw_event.get('detail'),
-            'Operation': raw_event.get('operation'),
-            'Timestamp': raw_event.get('timestamp'),
-            'Type': raw_event.get('type')
-        }
-
-    def get_process_tree_item(self, raw_item, level):
-        tree_item = {
-            'ID': raw_item.get('id'),
-            'PTID': raw_item.get('ptid'),
-            'PID': raw_item.get('pid'),
-            'Name': raw_item.get('name'),
-            'Parent': raw_item.get('parent'),
-            'Children': raw_item.get('children')
-        }
-
-        human_readable = tree_item.copy()
-        del human_readable['Children']
-
-        children = tree_item.get('Children')
-        if children and level == 1:
-            human_readable['ChildrenCount'] = len(children)
-        if not children and level == 1:
-            human_readable['ChildrenCount'] = 0
-        elif children and level == 0:
-            human_readable_arr = []
-            output_arr = []
-            for item in children:
-                tree_output, human_readable_res = self.get_process_tree_item(item, level + 1)
-                human_readable_arr.append(human_readable_res)
-                output_arr.append(tree_output)
-
-            human_readable['Children'] = human_readable_arr
-            tree_item['Children'] = output_arr
-
-        return tree_item, human_readable
-
-    def get_evidence_item(self, raw_item):
-        evidence_item = {
-            'ID': raw_item.get('id'),
-            'CreatedAt': raw_item.get('created'),
-            'UpdatedAt': raw_item.get('lastModified'),
-            'User': raw_item.get('user'),
-            'Host': raw_item.get('host'),
-            'ConnectionID': raw_item.get('connId'),
-            'Type': raw_item.get('type'),
-            'ProcessTableId': raw_item.get('sID'),
-            'Timestamp': raw_item.get('sTimestamp'),
-            'Summary': raw_item.get('summary'),
-            'Comments': raw_item.get('comments'),
-            'Tags': raw_item.get('tags')
-        }
-        return {key: val for key, val in evidence_item.items() if val is not None}
-
-    def parse_events_by_category(self, events, category_name):
-        # todo: If possible, complete method (parse). Otherwise, remove this method and pass events list as is.
-        parsed_events = events
-        if category_name.lower() == 'file':
-            pass
-        elif category_name.lower() == 'dns':
-            pass
-        elif category_name.lower() == 'registry':
-            pass
-        elif category_name.lower() == 'network':
-            pass
-        elif category_name.lower() == 'image':
-            pass
-        else:  # category_name.lower() == 'process'
-            pass
-        return parsed_events
-
-    def get_process_timeline_item(self, raw_item, category_name, limit, offset):
-        timeline_item = []
-        for category in raw_item:
-            if category['name'].lower() == category_name.lower():
-                sorted_timeline_dates = sorted(category['details'].keys())
-                for i in range(offset, offset + limit):
-                    current_date = sorted_timeline_dates[i]
-                    events_in_current_date = category['details'][current_date]
-                    events_for_date_i = self.parse_events_by_category(events_in_current_date, category_name)
-                    timeline_item.append({
-                        'Date': sorted_timeline_dates[i],
-                        'Category': category_name,
-                        'Event': events_for_date_i
-                    })
-
-        return timeline_item
-
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+def get_process_timeline_item(raw_item, category_name, limit, offset):
+    timeline_item = []
+    for category in raw_item:
+        if category['name'].lower() == category_name.lower():
+            sorted_timeline_dates = sorted(category['details'].keys())
+            for i in range(offset, offset + limit):
+                current_date = sorted_timeline_dates[i]
+                events_in_current_date = category['details'][current_date]
+                events_for_date_i = parse_events_by_category(events_in_current_date, category_name)
+                timeline_item.append({
+                    'Date': sorted_timeline_dates[i],
+                    'Category': category_name,
+                    'Event': events_for_date_i
+                })
+
+    return timeline_item
+
+
+def parse_events_by_category(events, category_name):
+    # todo: If possible, complete method (parse). Otherwise, remove this method and pass events list as is.
+    parsed_events = events
+    if category_name.lower() == 'file':
+        pass
+    elif category_name.lower() == 'dns':
+        pass
+    elif category_name.lower() == 'registry':
+        pass
+    elif category_name.lower() == 'network':
+        pass
+    elif category_name.lower() == 'image':
+        pass
+    else:  # category_name.lower() == 'process'
+        pass
+    return parsed_events
+
+
+def get_evidence_item(raw_item):
+    evidence_item = {
+        'ID': raw_item.get('id'),
+        'CreatedAt': raw_item.get('created'),
+        'UpdatedAt': raw_item.get('lastModified'),
+        'User': raw_item.get('user'),
+        'Host': raw_item.get('host'),
+        'ConnectionID': raw_item.get('connId'),
+        'Type': raw_item.get('type'),
+        'ProcessTableId': raw_item.get('sID'),
+        'Timestamp': raw_item.get('sTimestamp'),
+        'Summary': raw_item.get('summary'),
+        'Comments': raw_item.get('comments'),
+        'Tags': raw_item.get('tags')
+    }
+    return {key: val for key, val in evidence_item.items() if val is not None}
+
+
+def get_process_tree_item(raw_item, level):
+    tree_item = {
+        'ID': raw_item.get('id'),
+        'PTID': raw_item.get('ptid'),
+        'PID': raw_item.get('pid'),
+        'Name': raw_item.get('name'),
+        'Parent': raw_item.get('parent'),
+        'Children': raw_item.get('children')
+    }
+
+    human_readable = tree_item.copy()
+    del human_readable['Children']
+
+    children = tree_item.get('Children')
+    if children and level == 1:
+        human_readable['ChildrenCount'] = len(children)
+    if not children and level == 1:
+        human_readable['ChildrenCount'] = 0
+    elif children and level == 0:
+        human_readable_arr = []
+        output_arr = []
+        for item in children:
+            tree_output, human_readable_res = get_process_tree_item(item, level + 1)
+            human_readable_arr.append(human_readable_res)
+            output_arr.append(tree_output)
+
+        human_readable['Children'] = human_readable_arr
+        tree_item['Children'] = output_arr
+
+    return tree_item, human_readable
+
+
+def get_process_event_item(raw_event):
+    return {
+        'ID': raw_event.get('id'),
+        'Detail': raw_event.get('detail'),
+        'Operation': raw_event.get('operation'),
+        'Timestamp': raw_event.get('timestamp'),
+        'Type': raw_event.get('type')
+    }
+
+
+def get_process_item(raw_process):
+    return {
+        'CreateTime': raw_process.get('create_time'),
+        'Domain': raw_process.get('domain'),
+        'ExitCode': raw_process.get('exit_code'),
+        'ProcessCommandLine': raw_process.get('process_command_line'),
+        'ProcessID': raw_process.get('process_id'),
+        'ProcessName': raw_process.get('process_name'),
+        'ProcessTableId': raw_process.get('process_table_id'),
+        'SID': raw_process.get('sid'),
+        'Username': raw_process.get('username')
+    }
+
+
+def get_event_item(raw_event, event_type):
+    event = {
+        'ID': raw_event.get('id'),
+        'Domain': raw_event.get('domain'),
+        'File': raw_event.get('file'),
+        'Operation': raw_event.get('operation'),
+        'ProcessID': raw_event.get('process_id'),
+        'ProcessName': raw_event.get('process_name'),
+        'ProcessTableID': raw_event.get('process_table_id'),
+        'Timestamp': raw_event.get('timestamp'),
+        'Username': raw_event.get('username'),
+        'DestinationAddress': raw_event.get('destination_addr'),
+        'DestinationPort': raw_event.get('destination_port'),
+        'SourceAddress': raw_event.get('source_addr'),
+        'SourcePort': raw_event.get('source_port'),
+        'KeyPath': raw_event.get('key_path'),
+        'ValueName': raw_event.get('value_name'),
+        'EndTime': raw_event.get('end_time'),
+        'ExitCode': raw_event.get('exit_code'),
+        'ProcessCommandLine': raw_event.get('process_command_line'),
+        'ProcessHash': raw_event.get('process_hash'),
+        'SID': raw_event.get('sid'),
+        'Hashes': raw_event.get('Hashes'),
+        'ImageLoaded': raw_event.get('ImageLoaded'),
+        'Signature': raw_event.get('Signature'),
+        'Signed': raw_event.get('Signed'),
+        'EventId': raw_event.get('event_id'),
+        'EventOpcode': raw_event.get('event_opcode'),
+        'EventRecordID': raw_event.get('event_record_id'),
+        'EventTaskID': raw_event.get('event_task_id'),
+        'Query': raw_event.get('query'),
+        'Response': raw_event.get('response')
+    }
+
+    if event_type == 'combined':
+        event['Type'] = raw_event.get('type')
+    else:
+        event['Type'] = event_type.upper() if event_type in ['dns', 'sid'] else event_type.title()
+
+    # remove empty values from the event item
+    return {k: v for k, v in event.items() if v is not None}
+
+
+def get_file_item(file):
+    file_item = {
+        'Created': timestamp_to_datestring(file.get('created'), '%Y-%m-%d %H:%M:%S'),
+        'Path': file.get('file-path'),
+        'IsDirectory': file.get('is-directory'),
+        'LastModified': timestamp_to_datestring(file.get('last-modified'), '%Y-%m-%d %H:%M:%S'),
+        'Permissions': file.get('permissions'),
+        'Size': file.get('size')
+    }
+    return {key: val for key, val in file_item.items() if val is not None}
+
+
+def get_file_download_item(file):
+    return {
+        'ID': file.get('id'),
+        'Host': file.get('host'),
+        'Path': file.get('path'),
+        'SPath': file.get('spath'),
+        'Hash': file.get('hash'),
+        'Size': file.get('size'),
+        'Created': file.get('created'),
+        'CreatedBy': file.get('created_by'),
+        'CreatedByProc': file.get('created_by_proc'),
+        'LastModified': file.get('last_modified'),
+        'LastModifiedBy': file.get('last_modified_by'),
+        'LastModifiedByProc': file.get('last_modified_by_proc'),
+        'Downloaded': file.get('downloaded'),
+        'Comments': file.get('comments'),
+        'Tags': file.get('tags')
+    }
+
+
+def get_label_item(label):
+    return {
+        'ID': label.get('id'),
+        'Name': label.get('name'),
+        'Description': label.get('description'),
+        'IndicatorCount': label.get('indicatorCount'),
+        'SignalCount': label.get('signalCount'),
+        'CreatedAt': label.get('createdAt'),
+        'UpdatedAt': label.get('updatedAt')}
+
+
+def get_connection_item(connection):
+    info = connection.get('info')
+    return {
+        'Name': connection.get('name'),
+        'State': info.get('state'),
+        'CreateTime': info.get('createTime'),
+        'DST': info.get('dst'),
+        'Remote': info.get('remote'),
+        'OsName': connection.get('osName')}
+
+
+def get_local_snapshot_items(raw_snapshots, limit):
+    snapshots = []
+    count = 0
+
+    for host in raw_snapshots.items():
+        for snapshot in host[1]:
+            snapshots.append({
+                'DirectoryName': host[0],
+                'FileName': snapshot
+            })
+            count += 1
+            if count == limit:
+                return snapshots
+
+    return snapshots
+
+
+def get_snapshot_items(raw_snapshots, limit):
+    snapshots = []
+    count = 0
+
+    for host in raw_snapshots.items():
+        for key in host[1].items():
+            snapshots.append({
+                'DirectoryName': host[0],
+                'FileName': key[0],
+                'Started': key[1].get('started', ''),
+                'State': key[1].get('state', ''),
+                'Error': key[1].get('error', ''),
+            })
+            count += 1
+            if count == limit:
+                return snapshots
+
+    return snapshots
+
+
+def get_intel_doc_item(intel_doc):
+    return {
+        'ID': intel_doc.get('id'),
+        'Name': intel_doc.get('name'),
+        'Description': intel_doc.get('description'),
+        'AlertCount': intel_doc.get('alertCount'),
+        'UnresolvedAlertCount': intel_doc.get('unresolvedAlertCount'),
+        'CreatedAt': intel_doc.get('createdAt'),
+        'UpdatedAt': intel_doc.get('updatedAt'),
+        'LabelIds': intel_doc.get('labelIds')}
+
+
+def get_alert_item(alert):
+    return {
+        'ID': alert.get('id'),
+        'AlertedAt': alert.get('alertedAt'),
+        'ComputerIpAddress': alert.get('computerIpAddress'),
+        'ComputerName': alert.get('computerName'),
+        'CreatedAt': alert.get('createdAt'),
+        'GUID': alert.get('guid'),
+        'IntelDocId': alert.get('intelDocId'),
+        'Priority': alert.get('priority'),
+        'Severity': alert.get('severity'),
+        'State': alert.get('state').title(),
+        'Type': alert.get('type'),
+        'UpdatedAt': alert.get('updatedAt')}
+
+
+def alarm_to_incident(client, alarm):
+    intel_doc_id = alarm.get('intelDocId', '')
+    host = alarm.get('computerName', '')
+    details = alarm.get('details')
+
+    if details:
+        details = json.loads(alarm['details'])
+        alarm['details'] = details
+
+    intel_doc = ''
+    if intel_doc_id:
+        raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}')
+        intel_doc = raw_response.get('name')
+
+    return {
+        'name': f'{host} found {intel_doc}',
+        'occurred': alarm.get('alertedAt'),
+        'rawJSON': json.dumps(alarm)}
 
 
 def test_module(client, data_args):
@@ -356,7 +373,7 @@ def test_module(client, data_args):
 def get_intel_doc(client, data_args):
     id_ = data_args.get('intel-doc-id')
     raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{id_}')
-    intel_doc = client.get_intel_doc_item(raw_response)
+    intel_doc = get_intel_doc_item(raw_response)
 
     context = createContext(intel_doc, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
@@ -372,7 +389,7 @@ def get_intel_docs(client, data_args):
 
     intel_docs = []
     for item in raw_response:
-        intel_doc = client.get_intel_doc_item(item)
+        intel_doc = get_intel_doc_item(item)
         intel_docs.append(intel_doc)
 
     context = createContext(intel_docs, removeNull=True)
@@ -413,7 +430,7 @@ def get_alerts(client, data_args):
 
     alerts = []
     for item in raw_response:
-        alert = client.get_alert_item(item)
+        alert = get_alert_item(item)
         alerts.append(alert)
 
     context = createContext(alerts, removeNull=True)
@@ -425,7 +442,7 @@ def get_alerts(client, data_args):
 def get_alert(client, data_args):
     alert_id = data_args.get('alert-id')
     raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/alerts/{alert_id}')
-    alert = client.get_alert_item(raw_response)
+    alert = get_alert_item(raw_response)
 
     context = createContext(alert, removeNull=True)
     outputs = {'Tanium.Alert(val.ID && val.ID === obj.ID)': context}
@@ -439,7 +456,7 @@ def alert_update_state(client, data_args):
 
     body = {"state": state.lower()}
     raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/alerts/{alert_id}', data=body)
-    alert = client.get_alert_item(raw_response)
+    alert = get_alert_item(raw_response)
 
     context = createContext(alert, removeNull=True)
     outputs = {'Tanium.Alert(val.ID && val.ID === obj.ID)': context}
@@ -450,7 +467,7 @@ def alert_update_state(client, data_args):
 def get_snapshots(client, data_args):
     limit = int(data_args.get('limit'))
     raw_response = client.do_request('GET', '/plugin/products/trace/snapshots/')
-    snapshots = client.get_snapshot_items(raw_response, limit)
+    snapshots = get_snapshot_items(raw_response, limit)
     context = createContext(snapshots, removeNull=True)
     outputs = {'Tanium.Snapshot(val.FileName && val.FileName === obj.FileName)': context}
     human_readable = tableToMarkdown('Snapshots', snapshots)
@@ -473,7 +490,7 @@ def delete_snapshot(client, data_args):
 def get_local_snapshots(client, data_args):
     limit = int(data_args.get('limit'))
     raw_response = client.do_request('GET', '/plugin/products/trace/locals/')
-    snapshots = client.get_local_snapshot_items(raw_response, limit)
+    snapshots = get_local_snapshot_items(raw_response, limit)
     context = createContext(snapshots, removeNull=True)
     outputs = {'Tanium.LocalSnapshot.DirectoryName(val.FileName && val.FileName === obj.FileName)': context}
     human_readable = tableToMarkdown('Local snapshots', snapshots)
@@ -493,7 +510,7 @@ def get_connections(client, data_args):
     connections = []
 
     for conn in raw_response[:limit]:
-        connections.append(client.get_connection_item(conn))
+        connections.append(get_connection_item(conn))
 
     context = createContext(connections, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
@@ -515,7 +532,7 @@ def get_connection(client, data_args):
     if not found:
         return 'Connection not found.', {}, {}
 
-    connection = client.get_connection_item(connection_raw_response)
+    connection = get_connection_item(connection_raw_response)
 
     context = createContext(connection, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
@@ -554,7 +571,7 @@ def get_labels(client, data_args):
 
     labels = []
     for item in raw_response:
-        label = client.get_label_item(item)
+        label = get_label_item(item)
         labels.append(label)
 
     context = createContext(labels, removeNull=True)
@@ -566,7 +583,7 @@ def get_labels(client, data_args):
 def get_label(client, data_args):
     label_id = data_args.get('label-id')
     raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/labels/{label_id}')
-    label = client.get_label_item(raw_response)
+    label = get_label_item(raw_response)
 
     context = createContext(label, removeNull=True)
     outputs = {'Tanium.Label(val.ID && val.ID === obj.ID)': context}
@@ -580,7 +597,7 @@ def get_file_downloads(client, data_args):
 
     files = []
     for item in raw_response:
-        file = client.get_file_download_item(item)
+        file = get_file_download_item(item)
         files.append(file)
 
     context = createContext(files, removeNull=True)
@@ -639,7 +656,7 @@ def get_events_by_connection(client, data_args):
 
     events = []
     for item in raw_response:
-        event = client.get_event_item(item, event_type)
+        event = get_event_item(item, event_type)
         events.append(event)
 
     context = createContext(events, removeNull=True)
@@ -658,7 +675,7 @@ def get_file_download_info(client, data_args):
     if not raw_response:
         raise ValueError('File download does not exist.')
 
-    file = client.get_file_download_item(raw_response[0])
+    file = get_file_download_item(raw_response[0])
     context = createContext(file, removeNull=True)
     outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
     human_readable = tableToMarkdown(f'File download metadata for file `{file["Path"]}`', file)
@@ -669,7 +686,7 @@ def get_process_info(client, data_args):
     conn_name = data_args.get('connection-name')
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processes/{ptid}')
-    process = client.get_process_item(raw_response)
+    process = get_process_item(raw_response)
 
     context = createContext(process, removeNull=True)
     outputs = {'Tanium.Process(val.ProcessID && val.ProcessID === obj.ProcessID)': context}
@@ -686,7 +703,7 @@ def get_events_by_process(client, data_args):
 
     events = []
     for item in raw_response:
-        event = client.get_process_event_item(item)
+        event = get_process_event_item(item)
         events.append(event)
 
     context = createContext(events, removeNull=True)
@@ -703,7 +720,7 @@ def get_process_children(client, data_args):
     children = []
     children_human_readable = []
     for item in raw_response:
-        child, readable_output = client.get_process_tree_item(item, 1)
+        child, readable_output = get_process_tree_item(item, 1)
         children.append(child)
         children_human_readable.append(readable_output)
 
@@ -717,7 +734,7 @@ def get_parent_process(client, data_args):
     conn_name = data_args.get('connection-name')
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/parentprocesses/{ptid}')
-    process = client.get_process_item(raw_response)
+    process = get_process_item(raw_response)
 
     context = createContext(process, removeNull=True)
     outputs = {'Tanium.ParentProcess(val.ProcessID && val.ProcessID === obj.ProcessID)': context}
@@ -733,7 +750,7 @@ def get_parent_process_tree(client, data_args):
     if not raw_response:
         raise ValueError('Failed to parse tanium-tr-get-parent-process-tree response.')
 
-    tree, readable_output = client.get_process_tree_item(raw_response[0], 0)
+    tree, readable_output = get_process_tree_item(raw_response[0], 0)
 
     children_item = readable_output.get('Children')
 
@@ -759,7 +776,7 @@ def get_process_tree(client, data_args):
     if not raw_response:
         raise ValueError('Failed to parse tanium-tr-get-process-tree response.')
 
-    tree, readable_output = client.get_process_tree_item(raw_response[0], 0)
+    tree, readable_output = get_process_tree_item(raw_response[0], 0)
 
     children_item = readable_output.get('Children')
 
@@ -791,7 +808,7 @@ def list_evidence(client, data_args):
     evidences = []
     for item in raw_response:
         pass
-        evidence = client.get_evidence_item(item)
+        evidence = get_evidence_item(item)
         evidences.append(evidence)
 
     context = createContext(evidences, removeNull=True)
@@ -803,7 +820,7 @@ def list_evidence(client, data_args):
 def get_evidence(client, data_args):
     evidence_id = data_args.get('evidence-id')
     raw_response = client.do_request('GET', f'/plugin/products/trace/evidence/{evidence_id}')
-    evidence = client.get_evidence_item(raw_response)
+    evidence = get_evidence_item(raw_response)
 
     context = createContext(evidence, removeNull=True)
     outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
@@ -913,7 +930,7 @@ def list_files_in_dir(client, data_args):
 
     files = []
     for file in raw_response[offset:offset + limit]:
-        files.append(client.get_file_item(file))
+        files.append(get_file_item(file))
 
     context = createContext(files, removeNull=True)
     outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
@@ -926,11 +943,11 @@ def get_file_info(client, data_args):
     path = data_args.get('path')
 
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/fileinfo/{path}')
-    fileinfo = client.get_file_item(raw_response)
+    file_info = get_file_item(raw_response)
 
-    context = createContext(fileinfo, removeNull=True)
+    context = createContext(file_info, removeNull=True)
     outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown(f'Information for file `{path}`', fileinfo)
+    human_readable = tableToMarkdown(f'Information for file `{path}`', file_info)
     return human_readable, outputs, raw_response
 
 
@@ -949,7 +966,7 @@ def get_process_timeline(client, data_args):
     offset = int(data_args.get('offset'))
 
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/eprocesstimelines/{ptid}')
-    timeline = client.get_process_timeline_item(raw_response, category, limit, offset)
+    timeline = get_process_timeline_item(raw_response, category, limit, offset)
 
     context = createContext(timeline, removeNull=True)
     outputs = {'Tanium.ProcessTimeline(val.ProcessTableID && val.ProcessTableID === obj.ProcessTableID)': context}
@@ -973,15 +990,15 @@ def fetch_incidents(client):
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format=DATE_FORMAT)
 
-    last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+    last_fetch = parse(last_fetch)
     current_fetch = last_fetch
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/alerts')
 
     # convert the data/events to demisto incidents
     incidents = []
     for alarm in raw_response:
-        incident = client.alarm_to_incident(alarm)
-        temp_date = datetime.strptime(incident.get('occurred'), DATE_FORMAT)
+        incident = alarm_to_incident(client, alarm)
+        temp_date = parse(incident.get('occurred'))
 
         # update last run
         if temp_date > last_fetch:

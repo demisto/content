@@ -1,7 +1,3 @@
-from TaniumThreatResponse import Client
-
-BASE_URL = 'https://test.com'
-
 PROCESS_TREE_RAW = [
     {
         "id": 3,
@@ -158,18 +154,18 @@ PROCESS_TREE_TWO_GENERATIONS_READABLE_RES = {
 
 
 def test_get_process_tree_item():
-    client = Client(BASE_URL, 'username', 'password')
+    from TaniumThreatResponse import get_process_tree_item
 
-    tree, readable_output = client.get_process_tree_item(PROCESS_TREE_RAW[0], 0)
+    tree, readable_output = get_process_tree_item(PROCESS_TREE_RAW[0], 0)
 
     assert tree == PROCESS_TREE_ITEM_RES
     assert readable_output == PROCESS_TREE_READABLE_RES
 
 
 def test_get_process_tree_item_two_generations():
-    client = Client(BASE_URL, 'username', 'password')
+    from TaniumThreatResponse import get_process_tree_item
 
-    tree, readable_output = client.get_process_tree_item(PROCESS_TREE_TWO_GENERATIONS_RAW[0], 0)
+    tree, readable_output = get_process_tree_item(PROCESS_TREE_TWO_GENERATIONS_RAW[0], 0)
 
     assert tree == PROCESS_TREE_ITEM_TWO_GENERATIONS_RES
     assert readable_output == PROCESS_TREE_TWO_GENERATIONS_READABLE_RES
