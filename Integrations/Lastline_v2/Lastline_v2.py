@@ -1,5 +1,5 @@
 import hashlib
-from typing import Dict
+from typing import Dict, List, Tuple
 from urllib3 import disable_warnings
 import demistomock as demisto
 from CommonServerPython import *
@@ -62,10 +62,14 @@ class Client(BaseClient):
                 self.command_params[param] = self.command_params[param].replace('T', ' ')
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
-            context_entry = self.get_status_and_time(argToList(result['data'].get('tasks')))
-            human_readable = '|UUID|Time|Status|\n|--|--|--|'
-            for uuid, task_time, status in context_entry:
-                human_readable += f'\n|{uuid}|{task_time}|{status}|'
+            context_entry: List = self.get_status_and_time(argToList(result['data'].get('tasks')))
+            for i in range(len(context_entry)):
+                context_entry[i] = {
+                    'UUID': context_entry[i][0],
+                    'Time': context_entry[i][1],
+                    'Status': context_entry[i][2]
+                }
+            human_readable = tableToMarkdown(name='tasks', t=context_entry, headers=['UUID', 'Time', 'Status'])
             return human_readable, {}, result
 
     def upload_file(self):
@@ -93,8 +97,8 @@ class Client(BaseClient):
             else:
                 raise error
 
-    def get_status_and_time(self, uuids):
-        task_list = []
+    def get_status_and_time(self, uuids) -> List[List]:
+        task_list: List[List] = []
         for uuid in uuids:
             self.command_params['uuid'] = uuid
             result = self.http_request('/analysis/get')
