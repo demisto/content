@@ -1,5 +1,5 @@
 import hashlib
-from typing import Dict, List, Tuple
+from typing import Dict, List
 from urllib3 import disable_warnings
 import demistomock as demisto
 from CommonServerPython import *
