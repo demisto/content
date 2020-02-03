@@ -471,7 +471,7 @@ class Docker:
             else:
                 message += "Docker memory usage is: {} Mib and configured memory threshold is: {} Mib\n".format(
                     container_memory_usage, memory_threshold)
-                message += "Docker pid number is: {} Mib and configured pid threshold is: {}\n".format(
+                message += "Docker pid number is: {} and configured pid threshold is: {}\n".format(
                     container_pids_usage, pids_threshold)
                 message += "------ Docker container: {} passed memory resource test ------\n".format(container_name)
 
