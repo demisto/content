@@ -188,7 +188,7 @@ def is_valid_risk_rule(client: Client, risk_rule):
         params=client.PARAMS,
         headers=client.headers
     )
-    risk_rules_list = [risk_rule['name'] for risk_rule in risk_rule_response['data']['results']]
+    risk_rules_list = [risk_rule['name'] for single_risk_rule in risk_rule_response['data']['results']]
     if risk_rule in risk_rules_list:
         return True
     else:
