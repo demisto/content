@@ -1323,6 +1323,8 @@ tasks:
     nexttasks:
       '#default#':
       - '55'
+      "yes":
+      - '142'
     separatecontext: false
     conditions:
     - label: 'yes'
