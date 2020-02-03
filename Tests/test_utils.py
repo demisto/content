@@ -431,7 +431,7 @@ class Docker:
             container_name = container_stat['container_name']
             container_memory_usage = container_stat['memory_usage']
             container_pids_usage = container_stat['pids']
-            message += "Looping over docker container: {}\n".format(container_name)
+            message += "------ Docker stats: {} ------\n".format(container_name)
 
             if container_memory_usage > memory_threshold:
                 message += ('Docker container {} exceeded the memory threshold, '
@@ -446,6 +446,10 @@ class Docker:
                 failed_memory_test = True
 
             if not failed_memory_test:
-                message += "Docker container: {} passed memory resource test\n".format(container_name)
+                message += "Docker memory usage is: {} Mib and configured memory threshold is: {} Mib\n".format(
+                    container_memory_usage, memory_threshold)
+                message += "Docker pid number is: {} Mib and configured pid threshold is: {}\n".format(
+                    container_pids_usage, pids_threshold)
+                message += "------ Docker container: {} passed memory resource test ------\n".format(container_name)
 
         return failed_memory_test, message
