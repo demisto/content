@@ -1,0 +1,148 @@
+category: Data Enrichment & Threat Intelligence
+fromversion: 5.5.0
+commonfields:
+  id: TAXIIFeed
+  version: -1
+configuration:
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: '240'
+  display: Fetch Interval
+  name: feedFetchInterval
+  required: true
+  type: 19
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
+  name: feedInstanceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: expiration
+  required: false
+  type: 17
+- defaultvalue: indicatorType
+  hidden: true
+  name: expirationPolicy
+  required: false
+  type: 0
+- hidden: true
+  name: expirationInterval
+  required: false
+  type: 1
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list will be ignored for this feed.
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
+  display: Discovery Service
+  name: discovery_service
+  required: true
+  type: 0
+- additionalinfo: Collection name to fetch indicators from.
+  display: Collection
+  name: collection
+  required: true
+  type: 0
+- additionalinfo: Subscription ID for the TAXII consumer.
+  display: Subscription ID
+  name: subscription_id
+  required: false
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: Time (in seconds) before HTTP requests timeout.
+  defaultvalue: '20'
+  display: Request Timeout
+  name: polling_timeout
+  required: false
+  type: 0
+- additionalinfo: Used by a TAXII Client to request information from a TAXII Server.
+  display: Poll Service
+  name: poll_service
+  required: false
+  type: 0
+- additionalinfo: API key used for authentication with the TAXII server.
+  display: API Key
+  name: api_key
+  required: false
+  type: 0
+- additionalinfo: API key header to be used to provide API key to the TAXII server. For example, "Authorization".
+  display: API Header Name
+  name: api_header
+  required: false
+  type: 0
+- additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12
+    hours, 7 days.
+  defaultvalue: 1 day
+  display: First Fetch Time
+  hidden: false
+  name: initial_interval
+  required: false
+  type: 0
+description: Ingests indicator feeds from TAXII 1.x servers.
+display: TAXII Feed
+name: TAXIIFeed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 1 day
+      description: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12
+        hours, 7 days.
+      isArray: false
+      name: initial_interval
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the the feed.
+    execution: false
+    name: get-indicators
+    outputs:
+    - contextPath: TAXII.Indicator.Value
+      description: The indicator value.
+      type: String
+    - contextPath: TAXII.Indicator.Type
+      description: The indicator type.
+      type: String
+    - contextPath: TAXII.Indicator.Rawjson
+      description: The indicator rawJSON value.
+      type: Unknown
+  dockerimage: demisto/taxii:1.0.0.5214
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- TAXII_Feed_Test

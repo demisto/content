@@ -6,7 +6,8 @@ import json
 import requests
 import traceback
 import urllib
-from requests.exceptions import HTTPError
+import re
+from requests.exceptions import HTTPError, ConnectionError
 from copy import deepcopy
 
 # disable insecure warnings
@@ -202,16 +203,11 @@ def dict_values_to_comma_separated_string(dic):
 # Sends request to the server using the given method, url, headers and params
 def send_request(method, url, headers=AUTH_HEADERS, params=None):
     try:
-        log_hdr = deepcopy(headers)
-        log_hdr.pop('SEC', None)
-        LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
-            .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
-        if TOKEN:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
-        else:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
-                                   auth=(USERNAME, PASSWORD))
-        res.raise_for_status()
+        try:
+            res = send_request_no_error_handling(headers, method, params, url)
+        except ConnectionError:
+            # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
+            res = send_request_no_error_handling(headers, method, params, url)
     except HTTPError:
         err_json = res.json()
         err_msg = ''
@@ -223,6 +219,23 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
             err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
         raise Exception(err_msg)
     return res.json()
+
+
+def send_request_no_error_handling(headers, method, params, url):
+    """
+        Send request with no error handling, so the error handling can be done via wrapper function
+    """
+    log_hdr = deepcopy(headers)
+    log_hdr.pop('SEC', None)
+    LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
+        .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
+    if TOKEN:
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+    else:
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
+                               auth=(USERNAME, PASSWORD))
+    res.raise_for_status()
+    return res
 
 
 # Generic function that receives a result json, and turns it into an entryObject
@@ -467,6 +480,7 @@ def test_module():
 
 def fetch_incidents():
     query = demisto.params().get('query')
+    full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
     if last_run and offense_id == 0:
@@ -479,14 +493,19 @@ def fetch_incidents():
         # start looking for the end of the list by doubling the page position until we're empty.
         # then start binary search back until you find the end of the list and finally return
         # `offensesPerCall` from the end.
+    demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
     raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
+    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
     if len(raw_offenses) >= OFFENSES_PER_CALL:
         last_offense_pos = find_last_page_pos(fetch_query)
         raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
                                     _filter=fetch_query)
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
-    enrich_offense_res_with_source_and_destination_address(raw_offenses)
+    if full_enrich:
+        demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
+        enrich_offense_res_with_source_and_destination_address(raw_offenses)
+        demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
@@ -525,8 +544,10 @@ def create_incident_from_offense(offense):
     labels = []
     for i in range(len(keys)):
         labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
+    formatted_description = re.sub(r'\s\n', ' ', offense['description']).replace('\n', ' ') if \
+        offense['description'] else ''
     return {
-        'name': '{0} {1}'.format(offense['id'], offense['description']),
+        'name': '{id} {description}'.format(id=offense['id'], description=formatted_description),
         'labels': labels,
         'rawJSON': json.dumps(offense),
         'occurred': occured
@@ -767,8 +788,11 @@ def create_assets_result(assets, full_values=False):
     human_readable_trans_assets = {}
     endpoint_dict = create_empty_endpoint_dict(full_values)
     for asset in assets:
-        asset_key = 'QRadar.Asset(val.ID === "{0}")'.format(asset['id'])
-        human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
+        asset_key = 'QRadar.Asset'
+        human_readable_key = 'Asset'
+        if 'id' in asset:
+            asset_key += '(val.ID === "{0}")'.format(asset['id'])
+            human_readable_key += '(ID:{0})'.format(asset['id'])
         populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
         trans_assets[asset_key] = populated_asset
         human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(populated_asset)
@@ -792,31 +816,33 @@ def transform_single_asset_to_hr(asset):
 
 
 def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
-    asset_dict = {'ID': asset['id']}
-    for interface in asset['interfaces']:
+    asset_dict = {'ID': asset.get('id')}
+    for interface in asset.get('interfaces', []):
         if full_values:
-            endpoint_dict['MACAddress'].append(interface['mac_address'])
-        for ip_address in interface['ip_addresses']:
-            endpoint_dict['IPAddress'].append(ip_address['value'])
+            endpoint_dict.get('MACAddress').append(interface.get('mac_address'))
+        for ip_address in interface.get('ip_addresses'):
+            endpoint_dict.get('IPAddress').append(ip_address.get('value'))
     if full_values:
-        domain_name = get_domain_name(asset['domain_id'])
-        endpoint_dict['Domain'].append(domain_name)
+        if 'domain_id' in asset:
+            domain_name = get_domain_name(asset.get('domain_id'))
+            endpoint_dict.get('Domain').append(domain_name)
     # Adding values found in properties of the asset
     enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
     return asset_dict
 
 
 def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values):
-    for prop in asset['properties']:
-        if prop['name'] in ASSET_PROPERTIES_NAMES_MAP:
-            asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'],
-                                                                    'LastUser': prop['last_reported_by']}
-        elif prop['name'] in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
-            endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
+    for prop in asset.get('properties', []):
+        if prop.get('name') in ASSET_PROPERTIES_NAMES_MAP:
+            asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop.get('name')]] = {'Value': prop.get('value'),
+                                                                        'LastUser': prop.get('last_reported_by')}
+        elif prop.get('name') in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
+            endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop.get('name')]] = prop.get('value')
         elif full_values:
-            if prop['name'] in FULL_ASSET_PROPERTIES_NAMES_MAP:
-                asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'],
-                                                                             'LastUser': prop['last_reported_by']}
+            if prop.get('name') in FULL_ASSET_PROPERTIES_NAMES_MAP:
+                asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop.get('name')]] = {'Value': prop.get('value'),
+                                                                                 'LastUser': prop.get(
+                                                                                     'last_reported_by')}
     return None
 
 

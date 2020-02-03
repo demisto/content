@@ -34,8 +34,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Get live feeds of IOC data from PhishLabs.
-display: PhishLabs IOC EIR v2
+description: Get Email Incident Reports from PhishLabs
+display: PhishLabs IOC EIR
 name: PhishLabs IOC EIR
 script:
   commands:
@@ -94,8 +94,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: How to sort returned incidents. This will be applied
-        to the given sort parameter. Can be "asc" (ascending) or "desc" (descending).
+      description: How to sort returned incidents. This will be applied to the given
+        sort parameter. Can be "asc" (ascending) or "desc" (descending).
       isArray: false
       name: direction
       predefined:
@@ -108,17 +108,24 @@ script:
       description: The maximum number of incidents to return (0-50). Default is 25.
       isArray: false
       name: limit
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '0'
       description: Offset from last incident.
       isArray: false
       name: offset
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The time range for which to return incidents (<number> <time unit>, e.g., 12 hours, 7 days)
+      isArray: false
+      name: period
+      required: false
       secret: false
     deprecated: false
-    description: Returns EIR incidents from PhishLabs-IOC EIR service. The default number of incidents returned is 25.
+    description: Returns EIR incidents from PhishLabs-IOC EIR service. The default
+      number of incidents returned is 25.
     execution: false
     name: phishlabs-ioc-eir-get-incidents
     outputs:
@@ -374,7 +381,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: String
-  dockerimage: demisto/python3:3.7.5.3066
+  dockerimage: demisto/python3:3.7.5.4583
   isfetch: true
   longRunning: false
   longRunningPort: false

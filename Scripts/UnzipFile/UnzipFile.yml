@@ -36,7 +36,6 @@ outputs:
   description: A list of file names that were extracted from the ZIP file.
   type: Unknown
 script: '-'
-subtype: python2
 system: false
 tags:
 - Utility
@@ -47,3 +46,5 @@ dockerimage: demisto/7zip
 runonce: false
 tests:
 - ZipFile-Test
+- UnzipFile-Test
+subtype: python2

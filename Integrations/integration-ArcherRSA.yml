@@ -3328,6 +3328,9 @@ script:
             }
         }
         var fileName = dq(invContext, "File(val.EntryID == '" + entryId + "').Name");
+        if (fileName === null) {
+            fileName = dq(invContext, "InfoFile(val.EntryID == '" + entryId + "').Name");
+        }
         if (Array.isArray(fileName)) {
             if (fileName.length > 0) {
                 fileName = fileName[0];

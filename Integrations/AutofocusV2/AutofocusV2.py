@@ -4,8 +4,10 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import re
 import json
 import requests
+import socket
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -19,6 +21,9 @@ SERVER = 'https://autofocus.paloaltonetworks.com'
 USE_SSL = not PARAMS.get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
+
+VENDOR_NAME = 'AutoFocus V2'
+
 # Headers to be sent in requests
 HEADERS = {
     'Content-Type': 'application/json'
@@ -226,6 +231,27 @@ SAMPLE_ANALYSIS_COVERAGE_KEYS = {
         'fields': ['url', 'cat']
     }
 }
+
+VERDICTS_TO_DBOTSCORE = {
+    'benign': 1,
+    'malware': 3,
+    'grayware': 2,
+    'phishing': 3,
+    'c2': 3
+}
+
+ERROR_DICT = {
+    '404': 'Invalid URL.',
+    '409': 'Invalid message or missing parameters.',
+    '500': 'Internal error.',
+    '503': 'Rate limit exceeded.'
+}
+
+if PARAMS.get('mark_as_malicious'):
+    verdicts = argToList(PARAMS.get('mark_as_malicious'))
+    for verdict in verdicts:
+        VERDICTS_TO_DBOTSCORE[verdict] = 3
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -774,6 +800,264 @@ def validate_no_multiple_indicators_for_search(arg_list):
     return
 
 
+def search_indicator(indicator_type, indicator_value):
+    headers = HEADERS
+    headers['apiKey'] = API_KEY
+
+    params = {
+        'indicatorType': indicator_type,
+        'indicatorValue': indicator_value,
+        'includeTags': 'true',
+    }
+
+    try:
+        result = requests.request(
+            method='GET',
+            url=f'{BASE_URL}/tic',
+            verify=USE_SSL,
+            headers=headers,
+            params=params
+        )
+        # Handle error responses gracefully
+        result.raise_for_status()
+        result_json = result.json()
+    # Unexpected errors (where no json object was received)
+    except Exception as err:
+        try:
+            text_error = result.json()
+        except ValueError:
+            text_error = {}
+        error_message = text_error.get('message')
+        if error_message:
+            return_error(f'Request Failed with status: {result.status_code}.\n'
+                         f'Reason is: {str(error_message)}.')
+        elif str(result.status_code) in ERROR_DICT:
+            return_error(f'Request Failed with status: {result.status_code}.\n'
+                         f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
+        else:
+            err_msg = f'Request Failed with message: {err}.'
+        return return_error(err_msg)
+
+    return result_json
+
+
+def parse_indicator_response(res, indicator_type):
+    if not res.get('indicator'):
+        raise ValueError('Invalid response for indicator')
+    raw_tags = res.get('tags')
+    res = res['indicator']
+
+    indicator = {}
+    indicator['IndicatorValue'] = res.get('indicatorValue', '')
+    indicator['IndicatorType'] = res.get('indicatorType', '')
+    indicator['LatestPanVerdicts'] = res.get('latestPanVerdicts', '')
+    indicator['WildfireRelatedSampleVerdictCounts'] = res.get('wildfireRelatedSampleVerdictCounts', '')
+    indicator['SeenBy'] = res.get('seenByDataSourceIds', '')
+
+    first_seen = res.get('firstSeenTsGlobal', '')
+    last_seen = res.get('lastSeenTsGlobal', '')
+
+    if first_seen:
+        indicator['FirstSeen'] = timestamp_to_datestring(first_seen)
+    if last_seen:
+        indicator['LastSeen'] = timestamp_to_datestring(last_seen)
+
+    if raw_tags:
+        tags = []
+        for tag in raw_tags:
+            tags.append({
+                'PublicTagName': tag.get('public_tag_name', ''),
+                'TagName': tag.get('tag_name', ''),
+                'CustomerName': tag.get('customer_name', ''),
+                'Source': tag.get('source', ''),
+                'TagDefinitionScopeID': tag.get('tag_definition_scope_id', ''),
+                'TagDefinitionStatusID': tag.get('tag_definition_status_id', ''),
+                'TagClassID': tag.get('tag_class_id', ''),
+                'Count': tag.get('count', ''),
+                'Lasthit': tag.get('lasthit', ''),
+                'Description': tag.get('description', '')})
+        indicator['Tags'] = tags
+
+    if indicator_type == 'Domain':
+        indicator['WhoisAdminCountry'] = res.get('whoisAdminCountry', '')
+        indicator['WhoisAdminEmail'] = res.get('whoisAdminEmail', '')
+        indicator['WhoisAdminName'] = res.get('whoisAdminName', '')
+        indicator['WhoisDomainCreationDate'] = res.get('whoisDomainCreationDate', '')
+        indicator['WhoisDomainExpireDate'] = res.get('whoisDomainExpireDate', '')
+        indicator['WhoisDomainUpdateDate'] = res.get('whoisDomainUpdateDate', '')
+        indicator['WhoisRegistrar'] = res.get('whoisRegistrar', '')
+        indicator['WhoisRegistrarUrl'] = res.get('whoisRegistrarUrl', '')
+        indicator['WhoisRegistrant'] = res.get('whoisRegistrant', '')
+
+    return indicator
+
+
+def calculate_dbot_score(indicator_response, indicator_type):
+    latest_pan_verdicts = indicator_response['indicator']['latestPanVerdicts']
+    if not latest_pan_verdicts:
+        raise Exception('latestPanVerdicts value is empty in indicator response.')
+
+    pan_db = latest_pan_verdicts.get('PAN_DB')
+    wf_sample = latest_pan_verdicts.get('WF_SAMPLE')
+
+    # use WF_SAMPLE value for file indicator and PAN_DB for domain,url and ip indicators
+    if indicator_type == 'File' and wf_sample:
+        return VERDICTS_TO_DBOTSCORE.get(wf_sample.lower(), 0)
+    elif pan_db:
+        return VERDICTS_TO_DBOTSCORE.get(pan_db.lower(), 0)
+    else:
+        score = next(iter(latest_pan_verdicts.values()))
+        return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
+
+
+def get_indicator_outputs(indicator_type, indicators, indicator_context_output):
+    human_readable = ''
+    raw_res = []
+    scores = []
+    _indicators = []
+    context = []
+
+    for indicator in indicators:
+        indicator_response = indicator['response']
+        indicator_value = indicator['value']
+
+        dbot_score = {
+            'Indicator': indicator_value,
+            'Type': indicator_type.lower(),
+            'Vendor': VENDOR_NAME,
+            'Score': indicator['score']
+        }
+
+        indicator_context = {
+            indicator_context_output: indicator_value
+        }
+
+        if indicator['score'] == 3:
+            indicator_context['Malicious'] = {
+                'Vendor': VENDOR_NAME
+            }
+
+        if indicator_type == 'Domain':
+            whois = dict()  # type: ignore
+            whois['Admin'] = dict()
+            whois['Registrant'] = dict()
+            whois['Registrar'] = dict()
+            whois['CreationDate'] = indicator_response['WhoisDomainCreationDate']
+            whois['ExpirationDate'] = indicator_response['WhoisDomainExpireDate']
+            whois['UpdatedDate'] = indicator_response['WhoisDomainUpdateDate']
+            whois['Admin']['Email'] = indicator_response['WhoisAdminEmail']
+            whois['Admin']['Name'] = indicator_response['WhoisAdminName']
+            whois['Registrar']['Name'] = indicator_response['WhoisRegistrar']
+            whois['Registrant']['Name'] = indicator_response['WhoisRegistrant']
+            indicator_context['WHOIS'] = whois
+
+        tags = indicator_response.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {indicator_value}'
+        if tags:
+            indicators_data = indicator_response.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data, headerTransform=string_to_table_header)
+            md += tableToMarkdown('Indicator Tags:', tags, headerTransform=string_to_table_header)
+        else:
+            md = tableToMarkdown(table_name, indicator_response, headerTransform=string_to_table_header)
+
+        human_readable += md
+        raw_res.append(indicator['raw_response'])
+        scores.append(dbot_score)
+        context.append(indicator_context)
+        _indicators.append(indicator_response)
+
+    ec = {
+        outputPaths['dbotscore']: scores,
+        outputPaths[indicator_type.lower()]: context,
+        f'AutoFocus.{indicator_type}(val.IndicatorValue === obj.IndicatorValue)': _indicators,
+    }
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=raw_res)
+
+
+def check_for_ip(indicator):
+    if '-' in indicator:
+        # check for address range
+        ip1, ip2 = indicator.split('-', 1)
+
+        if re.match(ipv4Regex, ip1) and re.match(ipv4Regex, ip2):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6Regex, ip1) and re.match(ipv6Regex, ip2):
+            return FeedIndicatorType.IPv6
+
+        elif re.match(ipv4cidrRegex, ip1) and re.match(ipv4cidrRegex, ip2):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv6cidrRegex, ip1) and re.match(ipv6cidrRegex, ip2):
+            return FeedIndicatorType.IPv6CIDR
+
+        return None
+
+    if '/' in indicator:
+
+        if re.match(ipv4cidrRegex, indicator):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv6cidrRegex, indicator):
+            return FeedIndicatorType.IPv6CIDR
+
+        return None
+
+    else:
+        if re.match(ipv4Regex, indicator):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6Regex, indicator):
+            return FeedIndicatorType.IPv6
+
+    return None
+
+
+def find_indicator_type(indicator):
+    """Infer the type of the indicator.
+
+    Args:
+        indicator(str): The indicator whose type we want to check.
+
+    Returns:
+        str. The type of the indicator.
+    """
+    # trying to catch X.X.X.X:portNum
+    if ':' in indicator and '/' not in indicator:
+        sub_indicator = indicator.split(':', 1)[0]
+        ip_type = check_for_ip(sub_indicator)
+        if ip_type:
+            return ip_type
+
+    ip_type = check_for_ip(indicator)
+
+    if ip_type:
+        # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
+        if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
+            return FeedIndicatorType.URL
+
+        else:
+            return ip_type
+
+    elif re.match(sha256Regex, indicator):
+        return FeedIndicatorType.File
+
+    # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
+    elif '/' in indicator:
+        return FeedIndicatorType.URL
+
+    else:
+        return FeedIndicatorType.Domain
+
+
+def resolve_ip_address(ip):
+    if check_for_ip(ip):
+        return socket.gethostbyaddr(ip)[0]
+
+    return None
+
+
 ''' COMMANDS'''
 
 
@@ -983,6 +1267,143 @@ def top_tags_results_command():
     })
 
 
+def search_ip_command(ip):
+    indicator_type = 'IP'
+    ip_list = argToList(ip)
+    indicator_details = []
+    for ip_address in ip_list:
+        raw_res = search_indicator('ipv4_address', ip_address)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        indicator_details.append({'raw_response': raw_res, 'value': ip_address, 'score': score, 'response': res})
+
+    get_indicator_outputs(indicator_type, indicator_details, 'Address')
+
+
+def search_domain_command(domain):
+    indicator_type = 'Domain'
+    domain_list = argToList(domain)
+    indicator_details = []
+    for _domain in domain_list:
+        raw_res = search_indicator('domain', _domain)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        indicator_details.append({'raw_response': raw_res, 'value': _domain, 'score': score, 'response': res})
+
+    get_indicator_outputs(indicator_type, indicator_details, 'Name')
+
+
+def search_url_command(url):
+    indicator_type = 'URL'
+    url_list = argToList(url)
+    indicator_details = []
+    for _url in url_list:
+        raw_res = search_indicator('url', _url)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        indicator_details.append({'raw_response': raw_res, 'value': _url, 'score': score, 'response': res})
+
+    get_indicator_outputs(indicator_type, indicator_details, 'Data')
+
+
+def search_file_command(file):
+    indicator_type = 'File'
+    file_list = argToList(file)
+    indicator_details = []
+    for _file in file_list:
+        raw_res = search_indicator('sha256', _file)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        indicator_details.append({'raw_response': raw_res, 'value': _file, 'score': score, 'response': res})
+
+    get_indicator_outputs(indicator_type, indicator_details, 'SHA256')
+
+
+def get_export_list_command(args):
+    # the label is the name of the export list we want to fetch.
+    # panosFormatted is a flag stating that only indicators should be returned in the list.
+    data = {
+        'label': args.get('label'),
+        'panosFormatted': True,
+        'apiKey': ''
+    }
+    results = http_request(url_suffix='/export', method='POST', data=data,
+                           err_operation=f"Failed to fetch export list: {args.get('label')}")
+
+    indicators = []
+    context_ip = []
+    context_url = []
+    context_domain = []
+    context_file = []
+    for indicator_value in results.get('export_list'):
+        indicator_type = find_indicator_type(indicator_value)
+        if indicator_type in [FeedIndicatorType.IP,
+                              FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]:
+            if '-' in indicator_value:
+                context_ip.append({
+                    'Address': indicator_value.split('-')[0]
+                })
+                context_ip.append({
+                    'Address': indicator_value.split('-')[1]
+                })
+
+            elif ":" in indicator_value:
+                context_ip.append({
+                    'Address': indicator_value.split(":", 1)[0]
+                })
+
+            else:
+                context_ip.append({
+                    'Address': indicator_value
+                })
+
+        elif indicator_type in [FeedIndicatorType.Domain]:
+            context_domain.append({
+                'Name': indicator_value
+            })
+
+        elif indicator_type in [FeedIndicatorType.File]:
+            context_file.append({
+                'SHA256': indicator_value
+            })
+
+        elif indicator_type in [FeedIndicatorType.URL]:
+            if ":" in indicator_value:
+                resolved_address = resolve_ip_address(indicator_value.split(":", 1)[0])
+                semicolon_suffix = indicator_value.split(":", 1)[1]
+                slash_suffix = None
+
+            else:
+                resolved_address = resolve_ip_address(indicator_value.split("/", 1)[0])
+                slash_suffix = indicator_value.split("/", 1)[1]
+                semicolon_suffix = None
+
+            if resolved_address:
+                if semicolon_suffix:
+                    indicator_value = resolved_address + ":" + semicolon_suffix
+
+                else:
+                    indicator_value = resolved_address + "/" + slash_suffix
+
+            context_url.append({
+                'Data': indicator_value,
+            })
+
+        indicators.append({
+            'Type': indicator_type,
+            'Value': indicator_value,
+        })
+
+    hr = tableToMarkdown(f"Export list {args.get('label')}", indicators, headers=['Type', 'Value'])
+
+    return_outputs(hr, {'AutoFocus.Indicator(val.Value == obj.Value && val.Type == obj.Type)': indicators,
+                        'IP(obj.Address == val.Address)': context_ip,
+                        'URL(obj.Data == val.Data)': context_url,
+                        'File(obj.SHA256 == val.SHA256)': context_file,
+                        'Domain(obj.Name == val.Name)': context_domain},
+                   results)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -991,6 +1412,8 @@ try:
     # Remove proxy if not set to true in params
     handle_proxy()
     active_command = demisto.command()
+
+    args = {k: v for (k, v) in demisto.args().items() if v}
     if active_command == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
@@ -1013,6 +1436,16 @@ try:
         top_tags_search_command()
     elif active_command == 'autofocus-top-tags-results':
         top_tags_results_command()
+    elif active_command == 'autofocus-get-export-list-indicators':
+        get_export_list_command(args)
+    elif active_command == 'ip':
+        search_ip_command(**args)
+    elif active_command == 'domain':
+        search_domain_command(**args)
+    elif active_command == 'url':
+        search_url_command(**args)
+    elif active_command == 'file':
+        search_file_command(**args)
 
 
 # Log exceptions

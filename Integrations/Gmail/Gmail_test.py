@@ -157,3 +157,10 @@ def test_no_label_mail_context_creation():
     assert context_gmail.get('To') == EXPECTED_GMAIL_CONTEXT.get('To')
     assert context_gmail.get('From') == EXPECTED_GMAIL_CONTEXT.get('From')
     assert context_gmail.get('Subject') == EXPECTED_GMAIL_CONTEXT.get('Subject')
+
+
+def test_parse_privileges():
+    from Gmail import parse_privileges
+    privileges = [{'serviceId': '', 'privilegeName': 'name_no_id'}, {'serviceId': '', 'privilegeName': ''},
+                  {'serviceId': 'id', 'privilegeName': 'name'}]
+    assert sorted(parse_privileges(privileges)) == sorted([{'ServiceID': 'id', 'Name': 'name'}, {'Name': 'name_no_id'}])

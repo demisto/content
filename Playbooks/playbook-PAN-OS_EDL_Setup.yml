@@ -2,9 +2,9 @@ id: PAN-OS EDL Setup
 version: -1
 name: PAN-OS EDL Setup
 fromversion: 4.0.0
-description: Sets up external dynamic list in PAN-OS.\nin case file exists in web
-  server it will sync it to demisto. then it will create an EDL object and a matching
-  rule.
+description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web
+  server, it will sync it to demisto. Then it will create an EDL object and a matching
+  rule."
 starttaskid: "0"
 tasks:
   "0":
@@ -288,7 +288,7 @@ tasks:
       id: c41aaffd-a288-4eaa-8afb-d7d2df2250ec
       version: -1
       name: Is there an external file?
-      description: Checks if an external file exists in the web server.
+      description: Checks if an external file exists on the web server.
       type: condition
       iscommand: false
       brand: ""
@@ -382,7 +382,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "33"
     separatecontext: true
     view: |-
       {
@@ -429,7 +429,7 @@ tasks:
       id: f0191f59-4221-4f88-8811-a8cc196f4971
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in arguments are equal. If either
+      description: Checks if the values provided in the arguments are equal. If either
         of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
@@ -466,14 +466,14 @@ tasks:
       id: fecf981d-2339-4dd6-880a-0af64002c524
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be
-        operational if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available
+        when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+      - "34"
     separatecontext: false
     view: |-
       {
@@ -493,8 +493,8 @@ tasks:
       id: c6cb98f4-5335-4271-860c-677955525d7f
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be
-        operational if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available
+        when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -512,16 +512,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "31":
-    id: "31"
-    taskid: 9e9faf50-d60c-4c98-8489-370871096184
+  "33":
+    id: "33"
+    taskid: a0cb1649-4257-4a9c-8f81-8fe1296f2920
     type: playbook
     task:
-      id: 9e9faf50-d60c-4c98-8489-370871096184
+      id: a0cb1649-4257-4a9c-8f81-8fe1296f2920
       version: -1
       name: PAN-OS - Create Or Edit Rule
       description: Creates or edits a Panorama rule and moves it into the desired
-        position
+        position.
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
@@ -538,7 +538,8 @@ tasks:
           root: inputs.device-group
       element-to-add:
         complex:
-          root: inputs.list-name
+          root: Panorama
+          accessor: EDL.Name
       inbound-or-outbound-rule:
         complex:
           root: inputs.inbound-or-outbound-rule
@@ -554,6 +555,12 @@ tasks:
       rule-position:
         complex:
           root: inputs.rule-position
+          transformers:
+          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
+            args:
+              defaultValue:
+                value:
+                  simple: top
       rule_name:
         complex:
           root: inputs.rule-name
@@ -572,15 +579,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "32":
-    id: "32"
-    taskid: 0a29b0bd-db3c-428c-8892-8441eab72736
+  "34":
+    id: "34"
+    taskid: b8a806b3-8153-4bcc-8a57-3446261f0ed9
     type: playbook
     task:
-      id: 0a29b0bd-db3c-428c-8892-8441eab72736
+      id: b8a806b3-8153-4bcc-8a57-3446261f0ed9
       version: -1
       name: PAN-OS - Create Or Edit Rule
-      description: ""
+      description: Creates or edits a Panorama rule and moves it into the desired
+        position.
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
@@ -597,7 +605,8 @@ tasks:
           root: inputs.device-group
       element-to-add:
         complex:
-          root: inputs.list-name
+          root: Panorama
+          accessor: EDL.Name
       inbound-or-outbound-rule:
         complex:
           root: inputs.inbound-or-outbound-rule
@@ -613,6 +622,12 @@ tasks:
       rule-position:
         complex:
           root: inputs.rule-position
+          transformers:
+          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
+            args:
+              defaultValue:
+                value:
+                  simple: top
       rule_name:
         complex:
           root: inputs.rule-name
@@ -657,12 +672,12 @@ inputs:
   required: true
   description: |-
     The name of the list that will store the IOCs.
-    The name of the file on the web server. This file name will be the name of the list with the extension ".txt".
+    The name of the file on the web server. This file name is the same as the name of the list with the extension ".txt" added.
 - key: ioc-type
   value: {}
   required: true
-  description: The type of the IOCs that the list will store. Can be "IP", "URL",
-    or "Domain".
+  description: The type of the IOCs that the list will store. Can be "ip", "url",
+    or "domain".
 - key: action-type
   value: {}
   required: true
@@ -670,8 +685,7 @@ inputs:
     The action that will be defined in the rule:
     allow/deny/drop
 - key: auto-commit
-  value:
-    simple: "No"
+  value: {}
   required: false
   description: Whether to commit the configuration automatically.
 - key: log-forwarding-object-name
@@ -684,19 +698,20 @@ inputs:
   description: The IP address of the web server on which the files are stored. The
     web server IP address is configured in the integration instance.
 - key: pre-post-rulebase
-  value:
-    simple: pre-rulebase
+  value: {}
   required: true
   description: Either pre-rulebase or post-rulebase,  according to the rule structure.
 - key: rule-position
   value: {}
-  required: true
+  required: false
   description: |-
     The position of the rule in the ruleset. Valid values are:
       * Top
       * Bottom
       * Before
       * After
+
+    The default position is 'Top'
 - key: relative-rule-name
   value: {}
   required: false
