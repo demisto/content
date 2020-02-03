@@ -406,7 +406,7 @@ class Docker:
             return [Docker.DEFAULT_PYTHON2_IMAGE, Docker.DEFAULT_PYTHON3_IMAGE]
 
     @classmethod
-    def docker_stats(cls, server_ip, docker_images):
+    def docker_stats(cls, server_ip, docker_images, prints_manager, thread_index):
         # example of cmd
         # docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopy-ews--|demistopy-ews2.0--"
         cmd = Docker._build_stats_cmd(server_ip, docker_images)
@@ -414,23 +414,30 @@ class Docker:
         stdout, stderr = process.communicate()
 
         if stderr:
-            print_warning("Failed running docker stats command. Additional information: {}".format(stderr))
+            # print_warning("Failed running docker stats command. Additional information: {}".format(stderr))
+            prints_manager.add_print_job(
+                "Failed running docker stats command. Additional information: {}".format(stderr), print_warning,
+                thread_index)
             return []
 
         return Docker._parse_stats_result(stdout)
 
     @classmethod
-    def check_resource_usage(cls, server_url, docker_images, memory_threshold, pids_threshold):
+    def check_resource_usage(cls, server_url, docker_images, memory_threshold, pids_threshold, prints_manager,
+                             thread_index):
         server_ip = server_url.lstrip("https://")
-        containers_stats = cls.docker_stats(server_ip, docker_images)
+        containers_stats = cls.docker_stats(server_ip, docker_images, prints_manager, thread_index)
         failed_memory_test = False
-        print("Number of collected docker stats: {}".format(len(containers_stats)))
+        # print("Number of collected docker stats: {}".format(len(containers_stats)))
+        prints_manager.add_print_job("Number of collected docker stats: {}".format(len(containers_stats)), print,
+                                     thread_index)
 
         for container_stat in containers_stats:
             container_name = container_stat['container_name']
             container_memory_usage = container_stat['memory_usage']
             container_pids_usage = container_stat['pids']
-            print("Looping over container name: {}".format(container_name))
+            # print("Looping over container name: {}".format(container_name))
+            prints_manager.add_print_job("Looping over container name: {}".format(container_name), print, thread_index)
 
             if container_memory_usage > memory_threshold:
                 error_message = ('Docker container {} exceeded the memory threshold, '
@@ -443,10 +450,13 @@ class Docker:
                                  'configured: {} and actual pid number is {}.\n'.format(container_name,
                                                                                         pids_threshold,
                                                                                         container_pids_usage))
-                print_error(error_message)
+                # print_error(error_message)
+                prints_manager.add_print_job(error_message, print_error, thread_index)
                 failed_memory_test = True
 
             if not failed_memory_test:
-                print("Docker image {} passed memory resource test.".format(container_name))
+                # print("Docker image {} passed memory resource test.".format(container_name))
+                prints_manager.add_print_job("Docker image {} passed memory resource test.".format(container_name),
+                                             print, thread_index)
 
         return failed_memory_test
