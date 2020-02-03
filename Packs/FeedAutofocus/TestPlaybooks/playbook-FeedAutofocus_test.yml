@@ -13,6 +13,7 @@ tasks:
     taskid: "7"
     type: start
     task:
+      elasticcommonfields: {}
       id: "7"
       version: -1
       name: ""
@@ -33,12 +34,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: "8"
     type: regular
     task:
+      elasticcommonfields: {}
       id: "8"
       version: -1
       name: DeleteContext
@@ -69,13 +71,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: "9"
+    taskid: 15ae4517-3f52-4ed4-8a03-deec4860cd4f
     type: regular
     task:
-      id: "9"
+      elasticcommonfields: {}
+      id: 15ae4517-3f52-4ed4-8a03-deec4860cd4f
       version: -1
       name: autofocus-get-indicators
       description: Gets the indicators from AutoFocus.
@@ -89,7 +92,8 @@ tasks:
     scriptarguments:
       extend-context:
         simple: Indicator=.[0]
-      limit: {}
+      limit:
+        simple: "10"
       offset: {}
     separatecontext: false
     view: |-
@@ -103,12 +107,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: "10"
     type: condition
     task:
+      elasticcommonfields: {}
       id: "10"
       version: -1
       name: Verify Outputs
@@ -148,12 +153,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: "11"
     type: title
     task:
+      elasticcommonfields: {}
       id: "11"
       version: -1
       name: Done
@@ -172,7 +178,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
