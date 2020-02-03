@@ -359,7 +359,8 @@ class Docker:
 
     @classmethod
     def _build_stats_cmd(cls, server_ip, docker_images):
-        # ssh -o StrictHostKeyChecking=no ec2-user@ec2-34-211-231-64.us-west-2.compute.amazonaws.com sudo docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopython33.7.2.214--"
+        # ssh -o StrictHostKeyChecking=no ec2-user@ec2-34-211-231-64.us-west-2.compute.amazonaws.com
+        # sudo docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopython33.7.2.214--"
         docker_command = 'sudo docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
         docker_images_regex = ['{}--'.format(sub('[:/]', '', docker_image)) for docker_image in docker_images]
         pipe = ' | '
@@ -425,31 +426,26 @@ class Docker:
         containers_stats = cls.docker_stats(server_ip, docker_images)
         failed_memory_test = False
         message = "Number of collected docker container resource usage statistics: {}\n".format(len(containers_stats))
-        # print("Number of collected docker stats: {}".format(len(containers_stats)))
 
         for container_stat in containers_stats:
             container_name = container_stat['container_name']
             container_memory_usage = container_stat['memory_usage']
             container_pids_usage = container_stat['pids']
-            # print("Looping over container name: {}".format(container_name))
             message += "Looping over docker container: {}\n".format(container_name)
 
             if container_memory_usage > memory_threshold:
                 message += ('Docker container {} exceeded the memory threshold, '
                             'configured: {} MiB and actual memory usage is {} MiB.\n'
                             .format(container_name, memory_threshold, container_memory_usage))
-                # print_error(error_message)
                 failed_memory_test = True
             if container_pids_usage > pids_threshold:
                 message += ('Docker container {} exceeded the pids threshold, '
                             'configured: {} and actual pid number is {}.\n'.format(container_name,
                                                                                    pids_threshold,
                                                                                    container_pids_usage))
-                # print_error(error_message)
                 failed_memory_test = True
 
             if not failed_memory_test:
-                # print("Docker container: {} passed memory resource test\n".format(container_name))
                 message += "Docker container: {} passed memory resource test\n".format(container_name)
 
         return failed_memory_test, message
