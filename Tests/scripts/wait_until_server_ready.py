@@ -4,6 +4,7 @@ import json
 import ast
 import argparse
 import time
+import re
 from time import sleep
 import datetime
 import requests
@@ -13,7 +14,7 @@ import demisto_client.demisto_api
 from typing import List, AnyStr
 import urllib3.util
 
-from Tests.test_utils import print_error, print_color, LOG_COLORS
+from Tests.test_utils import run_command, print_error, print_color, LOG_COLORS
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,6 +23,15 @@ MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
 SETUP_TIMEOUT = 30 * 60
 SLEEP_TIME = 45
+
+
+def is_release_branch():
+    """Check if we are working on a release branch."""
+    diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
+    if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
+        return True
+
+    return False
 
 
 def get_username_password():
