@@ -34,7 +34,7 @@ def is_release_branch():
     return False
 
 
-def get_username_password():
+def get_apikey_and_contentversion():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-c', '--confPath', help='The path for the secret conf file', required=True)
     parser.add_argument('-v', '--contentVersion', help='Content version to install', required=True)
@@ -108,7 +108,7 @@ def exit_if_timed_out(loop_start_time, current_time):
 
 
 def main():
-    api_key, content_version = get_username_password()
+    api_key, content_version = get_apikey_and_contentversion()
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()
