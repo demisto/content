@@ -1,4 +1,7 @@
 ## [Unreleased]
+Added the ability to run the integration as a separate process, which protects against memory depletion.
+
+## [19.12.0] - 2019-12-10
 Fixed issue where threads not closed after executing commands.
 
 ## [19.11.1] - 2019-11-26

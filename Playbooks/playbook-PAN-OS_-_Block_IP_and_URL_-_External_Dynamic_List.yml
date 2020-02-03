@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "16"
     scriptarguments:
       add_or_remove: {}
       file_path:
@@ -78,7 +78,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": -252.5,
           "y": 580
         }
       }
@@ -110,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 755
+          "x": -252.5,
+          "y": 1150
         }
       }
     note: false
@@ -185,7 +185,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "15"
     scriptarguments:
       add_or_remove:
         simple: add
@@ -216,7 +216,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
+          "x": 980,
           "y": 580
         }
       }
@@ -241,6 +241,8 @@ tasks:
       - "9"
     scriptarguments:
       device-group: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
       name:
         complex:
           root: inputs.URLListName
@@ -248,8 +250,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 755
+          "x": 980,
+          "y": 1150
         }
       }
     note: false
@@ -272,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 930
+          "y": 1320
         }
       }
     note: false
@@ -354,10 +356,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 03ac66c8-ebed-49d0-8d8a-8675db38e88a
+    taskid: 5aa360f1-019e-4a0a-8c5a-c7d7c46ed122
     type: playbook
     task:
-      id: 03ac66c8-ebed-49d0-8d8a-8675db38e88a
+      id: 5aa360f1-019e-4a0a-8c5a-c7d7c46ed122
       version: -1
       name: PAN-OS EDL Setup
       description: Sets up external dynamic list in PAN-OS.\nIn case file exists in
@@ -376,6 +378,8 @@ tasks:
       auto-commit:
         complex:
           root: inputs.AutoCommit
+      device-group: {}
+      inbound-or-outbound-rule: {}
       ioc-type:
         simple: URL
       list-name:
@@ -391,7 +395,13 @@ tasks:
                   simple: inputs.LogForwarding
                 iscontext: true
       pre-post-rulebase:
-        simple: pre-rulebase
+        complex:
+          root: inputs.url-pre-post-rulebase
+      relative-rule-name: {}
+      rule-name: {}
+      rule-position:
+        complex:
+          root: inputs.url-rule-position
       web-server-ip:
         complex:
           root: inputs.EDLServerIP
@@ -403,7 +413,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
+          "x": 980,
           "y": 410
         }
       }
@@ -412,10 +422,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 1b142fd6-27ca-4cad-8291-57380d422c8e
+    taskid: 5683eba8-05cf-4f3c-831d-15c9bb67f0f3
     type: playbook
     task:
-      id: 1b142fd6-27ca-4cad-8291-57380d422c8e
+      id: 5683eba8-05cf-4f3c-831d-15c9bb67f0f3
       version: -1
       name: PAN-OS EDL Setup
       playbookName: PAN-OS EDL Setup
@@ -431,6 +441,8 @@ tasks:
         simple: drop
       auto-commit:
         simple: "No"
+      device-group: {}
+      inbound-or-outbound-rule: {}
       ioc-type:
         simple: IP
       list-name:
@@ -446,7 +458,13 @@ tasks:
                   simple: inputs.LogForwarding
                 iscontext: true
       pre-post-rulebase:
-        simple: pre-rulebase
+        complex:
+          root: inputs.ip-pre-post-rulebase
+      relative-rule-name: {}
+      rule-name: {}
+      rule-position:
+        complex:
+          root: inputs.ip-rule-position
       web-server-ip:
         complex:
           root: inputs.EDLServerIP
@@ -458,7 +476,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": -252.5,
           "y": 410
         }
       }
@@ -521,18 +539,206 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 54176be2-f6e9-4e9c-83f1-e1d9811d4376
+    type: regular
+    task:
+      id: 54176be2-f6e9-4e9c-83f1-e1d9811d4376
+      version: -1
+      name: Fetch Instance info
+      description: Run any command supported in the API.
+      script: '|||panorama'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
+      dst: {}
+      element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 2644d700-ad53-4d39-8f11-189ecbc0e0d4
+    type: regular
+    task:
+      id: 2644d700-ad53-4d39-8f11-189ecbc0e0d4
+      version: -1
+      name: Fetch Instance info
+      description: Run any command supported in the API.
+      script: '|||panorama'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
+      dst: {}
+      element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -252.5,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 4f865f48-ec3d-4a3a-89ba-10a40827da3c
+    type: condition
+    task:
+      id: 4f865f48-ec3d-4a3a-89ba-10a40827da3c
+      version: -1
+      name: Is the instance type Panorama?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 052a65ca-2213-4f5c-88a6-324762675b35
+    type: condition
+    task:
+      id: 052a65ca-2213-4f5c-88a6-324762675b35
+      version: -1
+      name: Is the instance type Panorama?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    view: |-
+      {
+        "position": {
+          "x": -252.5,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "10_9_#default#": 0.45,
-      "11_9_#default#": 0.44,
-      "14_9_#default#": 0.84
+      "10_9_#default#": 0.21,
+      "11_9_#default#": 0.21,
+      "14_9_#default#": 0.28,
+      "17_9_yes": 0.45,
+      "18_9_yes": 0.51
     },
     "paper": {
       "dimensions": {
-        "height": 1205,
-        "width": 1520,
-        "x": -180,
+        "height": 1595,
+        "width": 1612.5,
+        "x": -252.5,
         "y": -210
       }
     }
@@ -573,7 +779,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: URL to block
+  description: URL to block.
 - key: URLListName
   value:
     simple: Demisto Remediation - URL EDL
@@ -596,6 +802,34 @@ inputs:
     This input establishes whether to commit the configuration automatically.
     Yes - Commit automatically.
     No - Commit manually.
+- key: url-pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+- key: ip-pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+- key: url-rule-position
+  value: {}
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
+- key: ip-rule-position
+  value: {}
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
 outputs: []
 tests:
   - PAN-OS - Block IP and URL - External Dynamic List Test

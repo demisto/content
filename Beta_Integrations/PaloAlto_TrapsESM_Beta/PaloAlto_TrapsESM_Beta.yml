@@ -27,6 +27,7 @@ script:
       name: hash
       required: true
       secret: false
+      description: ''
     deprecated: false
     description: Retrieve details about a specific hash
     execution: false
@@ -56,4 +57,5 @@ script:
   runonce: false
   script: ''
   type: python
+  subtype: python3
   dockerimage: demisto/btfl-soup:1.0.0.925

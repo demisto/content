@@ -15,6 +15,7 @@ import email
 from requests.exceptions import ConnectionError
 from collections import deque
 
+from multiprocessing import Process
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
@@ -327,6 +328,26 @@ if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
         demisto.results(PUBLIC_FOLDERS_ERROR)
         exit(3)
     raise Exception(PUBLIC_FOLDERS_ERROR)
+
+
+# NOTE: Same method used in EWSMailSender
+# If you are modifying this probably also need to modify in the other file
+def exchangelib_cleanup():
+    key_protocols = exchangelib.protocol.CachingProtocol._protocol_cache.items()
+    try:
+        exchangelib.close_connections()
+    except Exception as ex:
+        demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
+    for key, protocol in key_protocols:
+        try:
+            if "thread_pool" in protocol.__dict__:
+                demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
+                protocol.thread_pool.terminate()
+                del protocol.__dict__["thread_pool"]
+            else:
+                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+        except Exception as ex:
+            demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
 
 # Prep Functions
@@ -1940,7 +1961,7 @@ def encode_and_submit_results(obj):
     demisto.results(str_to_unicode(obj))
 
 
-def main():
+def sub_main():
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
     global config, credentials
     EWS_SERVER = demisto.params()['ewsServer']
@@ -2085,21 +2106,36 @@ def main():
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
     finally:
-        try:
-            if isinstance(config, Configuration):
-                # Sometimes new threads are created but never killed, so killing them manually.
-                if "thread_pool" in config.protocol.__dict__:
-                    config.protocol.thread_pool.terminate()
-                    del config.protocol.__dict__["thread_pool"]
-        except Exception:
-            demisto.debug("Error was found in terminating threads in config.protocol, ignoring.")
-        exchangelib.close_connections()
+        exchangelib_cleanup()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
                 log_stream.close()
             except Exception as ex:
                 demisto.error("EWS: unexpected exception when trying to remove log handler: {}".format(ex))
+
+
+def process_main():
+    """setup stdin to fd=0 so we can read from the server"""
+    sys.stdin = os.fdopen(0, "r")
+    sub_main()
+
+
+def main():
+    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+    # collector. `separate_process` flag will run the integration on a separate process that will prevent
+    # memory leakage.
+    separate_process = demisto.params().get("separate_process", False)
+    demisto.debug("Running as separate_process: {}".format(separate_process))
+    if separate_process:
+        try:
+            p = Process(target=process_main)
+            p.start()
+            p.join()
+        except Exception as ex:
+            demisto.error("Failed starting Process: {}".format(ex))
+    else:
+        sub_main()
 
 
 # python2 uses __builtin__ python3 uses builtins

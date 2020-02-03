@@ -149,7 +149,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.desktop-style.de/
+              simple: http://www.desktop-style.de
     view: |-
       {
         "position": {
