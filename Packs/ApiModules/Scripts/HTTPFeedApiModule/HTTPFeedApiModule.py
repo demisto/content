@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
+import traceback
 from typing import Optional, Pattern, List
 
 # disable insecure warnings
@@ -336,5 +337,5 @@ def feed_main(feed_name, params, prefix=''):
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} integration [{e}]'
+        err_msg = f'Error in {feed_name} integration [{e}]\nTrace\n:{traceback.format_exc()}'
         return_error(err_msg)
