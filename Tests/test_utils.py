@@ -356,6 +356,7 @@ class Docker:
     DEFAULT_CONTAINER_MEMORY_USAGE = 50
     DEFAULT_CONTAINER_PIDS_USAGE = 3
     REMOTE_MACHINE_USER = 'ec2-user'
+    SSH_OPTIONS = 'ssh -o StrictHostKeyChecking=no'
 
     @classmethod
     def _build_stats_cmd(cls, server_ip, docker_images):
@@ -366,7 +367,17 @@ class Docker:
         pipe = ' | '
         grep_command = 'grep -Ei "{}"'.format('|'.join(docker_images_regex))
         remote_command = docker_command + pipe + grep_command
-        ssh_prefix = 'ssh -o StrictHostKeyChecking=no {}@{}'.format(Docker.REMOTE_MACHINE_USER, server_ip)
+        remote_server = '{}@{}'.format(cls.REMOTE_MACHINE_USER, server_ip)
+        ssh_prefix = '{} {}'.format(cls.SSH_OPTIONS, remote_server)
+        cmd = "{} '{}'".format(ssh_prefix, remote_command)
+
+        return cmd
+
+    @classmethod
+    def _build_kill_cmd(cls, server_ip, container_name):
+        remote_command = 'sudo docker kill {}'.format(container_name)
+        remote_server = '{}@{}'.format(cls.REMOTE_MACHINE_USER, server_ip)
+        ssh_prefix = '{} {}'.format(cls.SSH_OPTIONS, remote_server)
         cmd = "{} '{}'".format(ssh_prefix, remote_command)
 
         return cmd
@@ -399,18 +410,18 @@ class Docker:
         integration_type = integration_script.get('type')
         docker_image = integration_script.get('dockerImage')
 
-        if integration_type == Docker.JAVASCRIPT_INTEGRATION_TYPE:
+        if integration_type == cls.JAVASCRIPT_INTEGRATION_TYPE:
             return None
-        elif integration_type == Docker.PYTHON_INTEGRATION_TYPE and docker_image:
+        elif integration_type == cls.PYTHON_INTEGRATION_TYPE and docker_image:
             return [docker_image]
         else:
-            return [Docker.DEFAULT_PYTHON2_IMAGE, Docker.DEFAULT_PYTHON3_IMAGE]
+            return [cls.DEFAULT_PYTHON2_IMAGE, cls.DEFAULT_PYTHON3_IMAGE]
 
     @classmethod
     def docker_stats(cls, server_ip, docker_images):
         # example of cmd
         # docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopy-ews--|demistopy-ews2.0--"
-        cmd = Docker._build_stats_cmd(server_ip, docker_images)
+        cmd = cls._build_stats_cmd(server_ip, docker_images)
         process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
         stdout, stderr = process.communicate()
 
@@ -418,7 +429,17 @@ class Docker:
             print_warning("Failed running docker stats command. Additional information: {}".format(stderr))
             return []
 
-        return Docker._parse_stats_result(stdout)
+        return cls._parse_stats_result(stdout)
+
+    @classmethod
+    def kill_container(cls, server_ip, container_name):
+        cmd = cls._build_kill_cmd(server_ip, container_name)
+
+        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
+        stdout, stderr = process.communicate()
+
+        if stderr:
+            print_warning("Failed killing container: {}\nAdditional information: {}".format(container_name, stderr))
 
     @classmethod
     def check_resource_usage(cls, server_url, docker_images, memory_threshold, pids_threshold):
@@ -445,7 +466,9 @@ class Docker:
                                                                                    container_pids_usage))
                 failed_memory_test = True
 
-            if not failed_memory_test:
+            if failed_memory_test:
+                cls.kill_container(server_ip, container_name)
+            else:
                 message += "Docker memory usage is: {} Mib and configured memory threshold is: {} Mib\n".format(
                     container_memory_usage, memory_threshold)
                 message += "Docker pid number is: {} Mib and configured pid threshold is: {}\n".format(
