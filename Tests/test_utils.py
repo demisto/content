@@ -429,15 +429,16 @@ class Docker:
         containers_stats = cls.docker_stats(server_ip, docker_images, prints_manager, thread_index)
         failed_memory_test = False
         # print("Number of collected docker stats: {}".format(len(containers_stats)))
-        prints_manager.add_print_job("Number of collected docker stats: {}".format(len(containers_stats)), print,
-                                     thread_index)
+        print_message = "Number of collected docker stats: {}".format(len(containers_stats))
+        prints_manager.add_print_job(print_message, print, thread_index)
 
         for container_stat in containers_stats:
             container_name = container_stat['container_name']
             container_memory_usage = container_stat['memory_usage']
             container_pids_usage = container_stat['pids']
             # print("Looping over container name: {}".format(container_name))
-            prints_manager.add_print_job("Looping over container name: {}".format(container_name), print, thread_index)
+            print_message = "Looping over container name: {}".format(container_name)
+            prints_manager.add_print_job(print_message, print, thread_index)
 
             if container_memory_usage > memory_threshold:
                 error_message = ('Docker container {} exceeded the memory threshold, '
