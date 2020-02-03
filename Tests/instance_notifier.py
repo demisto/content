@@ -25,7 +25,7 @@ def options_handler():
 
 
 def install_new_content(client, server):
-     prints_manager = ParallelPrintsManager(1)
+    prints_manager = ParallelPrintsManager(1)
     update_content_on_demisto_instance(client, server, prints_manager, 0)
     prints_manager.execute_thread_prints(0)
 
@@ -47,9 +47,11 @@ def test_instances(secret_conf_path, server, username, password):
 
     prints_manager = ParallelPrintsManager(1)
 
-    c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
-    install_new_content(c, server)
+    content_installation_client = demisto_client.configure(base_url=server, username=username, password=password,
+                                                           verify_ssl=False)
+    install_new_content(content_installation_client, server)
     for integration in integrations:
+        c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
         integrations_counter += 1
         integration_name = integration.get('name')
         integration_instance_name = integration.get('instance_name', '')
