@@ -3,9 +3,25 @@ commonfields:
   id: Recorded Future Feed
   version: -1
 configuration:
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - defaultvalue: A - Completely reliable
   display: Source reliability
-  name: feedInstanceReliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -15,36 +31,36 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: suddenDeath
-  hidden: true
-  name: expirationPolicy
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: suddenDeath
+  type: 17
   required: false
-  type: 0
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
 - hidden: true
-  name: expirationInterval
+  name: feedExpirationInterval
+  defaultvalue: "20160"
   required: false
   type: 1
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
-  defaultvalue: feedInstanceReputationNotSet
-  display: Indicator reputation
-  name: feedInstanceReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
 - defaultvalue: '60'
   display: Fetch Interval
   name: feedFetchInterval
-  required: true
+  required: false
   type: 19
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: |-
+    When selected, the exclusion list is ignored for indicators from this feed.
+    This means that if an indicator from this feed is on the exclusion list,
+    the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -78,7 +94,8 @@ configuration:
   - fusion
   required: true
   type: 16
-- additionalinfo: Limit the indicators list to a specific risk rule. To see available
+- additionalinfo: |-
+    Limit the indicators list to a specific risk rule. To see available
     risk rules run the rf-feed-get-risk-rules command. This parameter will only be
     used for the 'connectApi' sub-feed.
   display: Risk Rule
@@ -86,7 +103,8 @@ configuration:
   name: risk_rule
   required: false
   type: 0
-- additionalinfo: Load a custom risklist from a specified Recorded Future file path.
+- additionalinfo: |-
+    Load a custom risklist from a specified Recorded Future file path.
     If no file path is specified, the default risklist file is used. This parameter
     will only be used for the 'fusion' sub-feed.
   display: Fusion File Path
@@ -101,7 +119,8 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
-- additionalinfo: The minimum score from the feed in order to to determine whether
+- additionalinfo: |-
+    The minimum score from the feed in order to to determine whether
     the indicator is malicious. Default is "65"
   defaultvalue: '65'
   display: Threshold
