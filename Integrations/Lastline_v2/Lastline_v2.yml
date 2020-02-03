@@ -53,7 +53,6 @@ script:
       secret: false
     deprecated: false
     description: Checks the file reputation of the specified file hashes. Supports MD5, SHA1, and SHA256 hashes.
-    isArray: true
     execution: false
     name: file
     outputs:
