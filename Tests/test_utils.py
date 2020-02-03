@@ -445,36 +445,26 @@ class Docker:
     def check_resource_usage(cls, server_url, docker_images, memory_threshold, pids_threshold):
         server_ip = server_url.lstrip("https://")
         containers_stats = cls.docker_stats(server_ip, docker_images)
-        failed_memory_test = False
-        message = "Number of collected docker container resource usage statistics: {}\n".format(len(containers_stats))
+        error_message = ""
 
         for container_stat in containers_stats:
-            current_container_failed = False
+            failed_memory_test = False
             container_name = container_stat['container_name']
-            container_memory_usage = container_stat['memory_usage']
-            container_pids_usage = container_stat['pids']
-            message += "------ Docker container stats: {} ------\n".format(container_name)
+            memory_usage = container_stat['memory_usage']
+            pids_usage = container_stat['pids']
 
-            if container_memory_usage > memory_threshold:
-                message += ('Docker container {} exceeded the memory threshold, '
-                            'configured: {} MiB and actual memory usage is {} MiB.\n'
-                            .format(container_name, memory_threshold, container_memory_usage))
-                failed_memory_test = current_container_failed = True
-            if container_pids_usage > pids_threshold:
-                message += ('Docker container {} exceeded the pids threshold, '
-                            'configured: {} and actual pid number is {}.\n'.format(container_name,
-                                                                                   pids_threshold,
-                                                                                   container_pids_usage))
-                failed_memory_test = current_container_failed = True
+            if memory_usage > memory_threshold:
+                error_message += ('Failed docker resource test. Docker container {} exceeded the memory threshold, '
+                                  'configured: {} MiB and actual memory usage is {} MiB.\n'
+                                  .format(container_name, memory_threshold, memory_usage))
+                failed_memory_test = True
+            if pids_usage > pids_threshold:
+                error_message += ('Failed docker resource test. Docker container {} exceeded the pids threshold, '
+                                  'configured: {} and actual pid number is {}.\n'.format(container_name, pids_threshold,
+                                                                                         pids_usage))
+                failed_memory_test = True
 
-            if current_container_failed:
-                message += "------ Docker container: {} failed memory resource test ------\n".format(container_name)
+            if failed_memory_test:
                 cls.kill_container(server_ip, container_name)
-            else:
-                message += "Docker memory usage is: {} Mib and configured memory threshold is: {} Mib\n".format(
-                    container_memory_usage, memory_threshold)
-                message += "Docker pid number is: {} and configured pid threshold is: {}\n".format(
-                    container_pids_usage, pids_threshold)
-                message += "------ Docker container: {} passed memory resource test ------\n".format(container_name)
 
-        return failed_memory_test, message
+        return error_message
