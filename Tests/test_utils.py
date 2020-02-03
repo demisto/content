@@ -467,6 +467,7 @@ class Docker:
                 failed_memory_test = True
 
             if failed_memory_test:
+                message += "------ Docker container: {} failed memory resource test ------\n".format(container_name)
                 cls.kill_container(server_ip, container_name)
             else:
                 message += "Docker memory usage is: {} Mib and configured memory threshold is: {} Mib\n".format(
