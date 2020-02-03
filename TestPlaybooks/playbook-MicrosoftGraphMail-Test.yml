@@ -1,3 +1,4 @@
+elasticcommonfields: {}
 id: MicrosoftGraphMail-Test
 version: -1
 name: MicrosoftGraphMail-Test
@@ -9,6 +10,7 @@ tasks:
     taskid: b417a9e3-c300-4374-8a5f-79b73097439f
     type: start
     task:
+      elasticcommonfields: {}
       id: b417a9e3-c300-4374-8a5f-79b73097439f
       version: -1
       name: ""
@@ -35,6 +37,7 @@ tasks:
     taskid: fc2d6c42-f840-4f51-8d7f-a389ab0ac587
     type: regular
     task:
+      elasticcommonfields: {}
       id: fc2d6c42-f840-4f51-8d7f-a389ab0ac587
       version: -1
       name: msgraph-mail-get-attachment
@@ -72,6 +75,7 @@ tasks:
     taskid: de1dcc6d-670a-41d8-8063-e32ce75a4c2c
     type: regular
     task:
+      elasticcommonfields: {}
       id: de1dcc6d-670a-41d8-8063-e32ce75a4c2c
       version: -1
       name: msgraph-mail-get-email
@@ -109,6 +113,7 @@ tasks:
     taskid: 72076dc8-7c2a-4fe4-8939-f489a2efb97c
     type: regular
     task:
+      elasticcommonfields: {}
       id: 72076dc8-7c2a-4fe4-8939-f489a2efb97c
       version: -1
       name: msgraph-mail-list-attachments
@@ -144,6 +149,7 @@ tasks:
     taskid: 6759b662-8984-44bc-8864-beb1b6880953
     type: regular
     task:
+      elasticcommonfields: {}
       id: 6759b662-8984-44bc-8864-beb1b6880953
       version: -1
       name: msgraph-mail-list-emails
@@ -181,7 +187,7 @@ tasks:
     taskid: 3847a8d5-287c-43b1-8e8e-6492fde3174a
     type: regular
     task:
-      : {}
+      elasticcommonfields: {}
       id: 3847a8d5-287c-43b1-8e8e-6492fde3174a
       version: -1
       name: Delete Context
@@ -218,6 +224,7 @@ tasks:
     taskid: fe2b71b0-a015-48e3-8add-57897ee1337e
     type: title
     task:
+      elasticcommonfields: {}
       id: fe2b71b0-a015-48e3-8add-57897ee1337e
       version: -1
       name: Finish
@@ -242,6 +249,7 @@ tasks:
     taskid: 41e83ea4-4fd7-4db9-8510-13d58425222d
     type: regular
     task:
+      elasticcommonfields: {}
       id: 41e83ea4-4fd7-4db9-8510-13d58425222d
       version: -1
       name: run msgraph-mail-list-emails with more than one page
@@ -279,6 +287,7 @@ tasks:
     taskid: e81e3753-2f9c-40a3-86d6-42e60658833f
     type: regular
     task:
+      elasticcommonfields: {}
       id: e81e3753-2f9c-40a3-86d6-42e60658833f
       version: -1
       name: Delete Context
@@ -315,6 +324,7 @@ tasks:
     taskid: 18a42686-92ce-4fbb-8c9e-4252412deca1
     type: condition
     task:
+      elasticcommonfields: {}
       id: 18a42686-92ce-4fbb-8c9e-4252412deca1
       version: -1
       name: Untitled Task
