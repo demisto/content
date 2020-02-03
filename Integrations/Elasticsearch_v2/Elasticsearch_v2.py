@@ -500,13 +500,32 @@ def results_to_incidents_datetime(response, last_fetch):
                     'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
                     'labels': incident_label_maker(hit.get('_source')),
-                    # parse function returns iso format as YYYY-MM-DDThh:mm:ss+00:00
+                    # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
+                    # and sometimes as YYYY-MM-DDThh:mm:ss
                     # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
-                    'occurred': hit_date.isoformat()[:-6] + 'Z'
+                    'occurred': format_to_iso(hit_date.isoformat())
                 }
                 incidents.append(inc)
 
-    return incidents, last_fetch.isoformat()[:-6] + 'Z'
+    return incidents, format_to_iso(last_fetch.isoformat())
+
+
+def format_to_iso(date_string):
+    """Formatting function to make sure the date string is in YYYY-MM-DDThh:mm:ssZ format.
+
+    Args:
+        date_string(str): a date string in ISO format could be like: YYYY-MM-DDThh:mm:ss+00:00 or: YYYY-MM-DDThh:mm:ss
+
+    Returns:
+        str. A date string in the format: YYYY-MM-DDThh:mm:ssZ
+    """
+    if len(date_string) > 19 and not date_string.endswith('Z'):
+        date_string = date_string[:-6]
+
+    if not date_string.endswith('Z'):
+        date_string = date_string + 'Z'
+
+    return date_string
 
 
 def fetch_incidents():
@@ -517,19 +536,22 @@ def fetch_incidents():
     if last_fetch is None:
         last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%f', utc=False, to_timestamp=False)
         last_fetch = parse(str(last_fetch))
+        last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
 
         # if timestamp: get the last fetch to the correct format of timestamp
         if 'Timestamp' in TIME_METHOD:
             last_fetch = get_timestamp_first_fetch(last_fetch)
+            last_fetch_timestamp = last_fetch
 
     # if method is simple date - convert the date string to datetime
     elif 'Simple-Date' == TIME_METHOD:
         last_fetch = parse(str(last_fetch))
+        last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
 
     es = elasticsearch_builder()
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
-    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
+    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch_timestamp}}})
     search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)

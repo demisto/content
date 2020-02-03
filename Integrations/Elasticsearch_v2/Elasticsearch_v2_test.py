@@ -402,3 +402,15 @@ def test_incident_creation_with_timestamp_e7():
     incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
+
+
+def test_format_to_iso():
+    from Elasticsearch_v2 import format_to_iso
+    date_string_1 = "2020-02-03T10:00:00"
+    date_string_2 = "2020-02-03T10:00:00+02:00"
+    date_string_3 = "2020-02-03T10:00:00-02:00"
+    iso_format = "2020-02-03T10:00:00Z"
+    assert format_to_iso(date_string_1) == iso_format
+    assert format_to_iso(date_string_2) == iso_format
+    assert format_to_iso(date_string_3) == iso_format
+    assert format_to_iso(iso_format) == iso_format
