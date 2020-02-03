@@ -533,9 +533,6 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
         # delete integration instance
         __delete_integrations_instances(client, module_instances, prints_manager, thread_index=thread_index)
 
-    if failed_memory_test:
-        playbook_state = False
-
     return playbook_state, inc_id
 
 

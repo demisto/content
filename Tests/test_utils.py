@@ -449,24 +449,25 @@ class Docker:
         message = "Number of collected docker container resource usage statistics: {}\n".format(len(containers_stats))
 
         for container_stat in containers_stats:
+            current_container_failed = False
             container_name = container_stat['container_name']
             container_memory_usage = container_stat['memory_usage']
             container_pids_usage = container_stat['pids']
-            message += "------ Docker stats: {} ------\n".format(container_name)
+            message += "------ Docker container stats: {} ------\n".format(container_name)
 
             if container_memory_usage > memory_threshold:
                 message += ('Docker container {} exceeded the memory threshold, '
                             'configured: {} MiB and actual memory usage is {} MiB.\n'
                             .format(container_name, memory_threshold, container_memory_usage))
-                failed_memory_test = True
+                failed_memory_test = current_container_failed = True
             if container_pids_usage > pids_threshold:
                 message += ('Docker container {} exceeded the pids threshold, '
                             'configured: {} and actual pid number is {}.\n'.format(container_name,
                                                                                    pids_threshold,
                                                                                    container_pids_usage))
-                failed_memory_test = True
+                failed_memory_test = current_container_failed = True
 
-            if failed_memory_test:
+            if current_container_failed:
                 message += "------ Docker container: {} failed memory resource test ------\n".format(container_name)
                 cls.kill_container(server_ip, container_name)
             else:
