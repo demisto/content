@@ -507,7 +507,6 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
         i = i + 1
 
     __disable_integrations_instances(client, module_instances, prints_manager, thread_index=thread_index)
-    failed_memory_test = False
 
     if test_docker_images:
         memory_threshold = options.get('docker_memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE)
@@ -516,7 +515,12 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
                                                                   docker_images=test_docker_images,
                                                                   memory_threshold=memory_threshold,
                                                                   pids_threshold=pids_threshold)
-        prints_manager.add_print_job(message, print, thread_index)
+
+        if failed_memory_test:
+            prints_manager.add_print_job(message, print_error, thread_index)
+            return False, inc_id
+        else:
+            prints_manager.add_print_job(message, print, thread_index)
     else:
         prints_manager.add_print_job("Skipping docker container memory resource check for test {}".format(playbook_id),
                                      print_warning, thread_index)
