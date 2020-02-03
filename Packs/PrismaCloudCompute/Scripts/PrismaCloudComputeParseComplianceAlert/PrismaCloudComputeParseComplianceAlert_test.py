@@ -59,7 +59,7 @@ def test_parse_compliance():
         if test['expectedException']:
             with pytest.raises(Exception) as ex:
                 parse_compliance(test['input'])
-            assert str(ex.value) == f"Input should be a raw JSON compliance Alert, received: {test['input']}"
+            assert str(ex.value) == f"Input should be a raw JSON compliance alert, received: {test['input']}"
         else:
             assert parse_compliance(test['input']) == (
                 test['expectedResult']['readable'], test['expectedResult']['output'], test['expectedResult']['raw'])

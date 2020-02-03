@@ -1,6 +1,7 @@
 {
 	"id": "incident_emailautoreply",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-02T16:22:20.100411032Z",
 	"name": "Email Auto-reply",
 	"ownerOnly": false,
