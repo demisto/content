@@ -45,9 +45,6 @@ def get_username_password():
     with open(conf_path, 'r') as conf_file:
         conf = json.load(conf_file)
 
-    if options.non_ami:
-        return conf['temp_apikey'], options.contentVersion
-
     return conf['temp_apikey'], options.contentVersion
 
 
