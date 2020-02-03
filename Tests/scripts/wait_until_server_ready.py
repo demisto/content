@@ -14,7 +14,7 @@ import demisto_client.demisto_api
 from typing import List, AnyStr
 import urllib3.util
 
-from Tests.test_utils import run_command, print_error, print_color, LOG_COLORS
+from Tests.test_utils import run_command, print_warning, print_error, print_color, LOG_COLORS
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -81,9 +81,12 @@ def is_correct_content_installed(ips, content_version, api_key):
             notes = resp_json.get("releaseNotes")
             installed = resp_json.get("installed")
             if not (release and content_version in release and notes and installed):
-                print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
-                            "".format(ami_instance_name, release, content_version))
-                return False
+                if is_release_branch():
+                    print_warning('On a release branch - ignoring content mismatch.')
+                else:
+                    print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
+                                "".format(ami_instance_name, release, content_version))
+                    return False
             else:
                 print_color("Instance [{instance_name}] content verified with version [{content_version}]".format(
                     instance_name=ami_instance_name, content_version=release),
@@ -96,7 +99,6 @@ def is_correct_content_installed(ips, content_version, api_key):
                 err_msg += "Server response: {}".format(resp_json)
             print_error(err_msg)
             return False
-    print_color("Content was installed successfully on all of the instances! :)", LOG_COLORS.GREEN)
     return True
 
 
