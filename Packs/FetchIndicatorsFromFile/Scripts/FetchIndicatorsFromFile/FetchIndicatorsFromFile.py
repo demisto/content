@@ -198,9 +198,14 @@ def fetch_indicators_from_file(args):
             human_readable = human_readable + " indicator_type_column_number={}".format(indicator_type_col_num)
 
     # Create indicators in demisto
-    # we submit the indicators in batches
-    for b in batch(indicator_list, batch_size=2000):
-        demisto.createIndicators(b)
+    errors = []
+    for indicator in indicator_list:
+        res = demisto.executeCommand("createNewIndicator", indicator)
+        if is_error(res[0]):
+            errors.append("Error creating indicator - {}".format(res[0]["Contents"]))
+
+        if errors:
+            return_error(json.dumps(errors, indent=4))
 
     return human_readable, {
         "Indicator(val.Value == obj.Value && val.Type == obj.Type)": hr_indicators_list
