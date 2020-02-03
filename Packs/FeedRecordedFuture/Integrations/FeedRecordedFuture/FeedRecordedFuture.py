@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import csv
 import requests
 import itertools
+import traceback
 import urllib.parse
 from typing import Tuple, Optional
 
@@ -130,7 +131,8 @@ class Client(BaseClient):
                              "Try increasing the integration's fetch interval in order to decrease the amount of API"
                              " requests made to Recorded Future. ")
             else:
-                return_error('{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
+                return_error(
+                    '{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
 
         data = response.text.split('\n')
 
@@ -372,7 +374,7 @@ def main():
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}] \n Traceback: {traceback.format_exc()}'
         return_error(err_msg)
 
 
