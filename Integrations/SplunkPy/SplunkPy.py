@@ -187,7 +187,7 @@ def notable_to_incident(event):
     if demisto.get(event, "_time"):
         incident["occurred"] = event["_time"]
     else:
-        incident["occurred"] = datetime.now()
+        incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
     incident["rawJSON"] = json.dumps(event)
     labels = []
     if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
@@ -489,6 +489,54 @@ def splunk_submit_event_command():
         demisto.results('Event was created in Splunk index: ' + r.name)
 
 
+def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_):
+
+    if hec_token is None:
+        raise Exception('The HEC Token was not provided')
+
+    args = assign_params(
+        event=event,
+        host=host,
+        fields={'fields': fields} if fields else None,
+        index=index,
+        sourcetype=source_type,
+        source=source,
+        time=time_
+    )
+
+    headers = {
+        'Authorization': 'Splunk {}'.format(hec_token),
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.post(baseurl + '/services/collector/event', data=json.dumps(args), headers=headers,
+                             verify=VERIFY_CERTIFICATE)
+    return response
+
+
+def splunk_submit_event_hec_command():
+
+    hec_token = demisto.params().get('hec_token')
+    baseurl = demisto.params().get('hec_url')
+    if baseurl is None:
+        raise Exception('The HEC URL was not provided.')
+
+    event = demisto.args().get('event')
+    host = demisto.args().get('host')
+    fields = demisto.args().get('fields')
+    index = demisto.args().get('index')
+    source_type = demisto.args().get('source_type')
+    source = demisto.args().get('source')
+    time_ = demisto.args().get('time')
+
+    response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
+
+    if 'Success' not in response_info.text:
+        return_error('Could not send event to Splunk ' + response_info.text.encode('utf8'))
+    else:
+        demisto.results('The event was sent successfully to Splunk.')
+
+
 def splunk_edit_notable_event_command():
     if not proxy:
         os.environ["HTTPS_PROXY"] = ""
@@ -499,7 +547,8 @@ def splunk_edit_notable_event_command():
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
     auth_req = requests.post(baseurl + 'services/auth/login',
-                             data={'username': username, 'password': password, 'output_mode': 'json'}, verify=VERIFY_CERTIFICATE)
+                             data={'username': username, 'password': password, 'output_mode': 'json'},
+                             verify=VERIFY_CERTIFICATE)
 
     sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
@@ -530,6 +579,17 @@ def splunk_parse_raw_command():
 
 
 def test_module():
+    if demisto.params().get('isFetch'):
+        t = datetime.utcnow() - timedelta(days=3)
+        time = t.strftime(SPLUNK_TIME_FORMAT)
+        kwargs_oneshot = {'count': 1, 'earliest_time': time}
+        searchquery_oneshot = demisto.params()['fetchQuery']
+        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+        reader = results.ResultsReader(oneshotsearch_results)
+        for item in reader:
+            if item:
+                demisto.results('ok')
+
     if len(service.jobs) >= 0:  # type: ignore
         demisto.results('ok')
 
@@ -553,3 +613,5 @@ if demisto.command() == 'splunk-notable-event-edit':
     splunk_edit_notable_event_command()
 if demisto.command() == 'splunk-parse-raw':
     splunk_parse_raw_command()
+if demisto.command() == 'splunk-submit-event-hec':
+    splunk_submit_event_hec_command()
