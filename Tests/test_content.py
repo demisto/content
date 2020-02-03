@@ -18,7 +18,8 @@ from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
-from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
+from Tests.test_utils import print_color, print_error, print_warning, \
+    LOG_COLORS, str2bool, server_version_compare, Docker
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -554,7 +555,9 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     test_message = 'playbook: ' + playbook_id
 
     test_options = {
-        'timeout': t.get('timeout', default_test_timeout)
+        'timeout': t.get('timeout', default_test_timeout),
+        'memory_threshold': t.get('memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE),
+        'pid_threshold': t.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
     }
 
     if not isinstance(integrations_conf, list):
