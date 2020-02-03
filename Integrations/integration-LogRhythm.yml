@@ -283,8 +283,8 @@ script:
     '           <IncludeNullValues>false</IncludeNullValues>' +
     '         </LogQueryFilterDataModel>' +
     '       </PrimaryFilter>' +
-    '       <QueryEventManager>false</QueryEventManager>' +
-    '       <QueryLogManagers>true</QueryLogManagers>' +
+    '       <QueryEventManager>true</QueryEventManager>' +
+    '       <QueryLogManagers>false</QueryLogManagers>' +
     '       <CacheID i:nil="true" />' +
     '       <PageNumber>0</PageNumber>' +
     '       <TotalPages>0</TotalPages>' +

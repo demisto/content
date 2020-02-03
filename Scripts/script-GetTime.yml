@@ -4,8 +4,14 @@ commonfields:
 name: GetTime
 script: |-
   var d = new Date();
-  if ((args.date) && (args.date.length > 0)){
-      d =  new Date(args.date);
+  if (args.date){
+      if (args.date.length > 0){
+          // args.date is string
+          d =  new Date(args.date);
+      } else {
+          // args.date is object (Time.time in Go)
+          d =  new Date(args.date.Unix()*1000);
+      }
   }
   if (args.monthsAgo){
       d.setMonth(d.getMonth() - args.monthsAgo);
@@ -104,3 +110,4 @@ scripttarget: 0
 runonce: false
 tests:
 - GetTime-Test
+- GetTime-ObjectVsStringTest

@@ -76,7 +76,7 @@ script:
     - default: true
       defaultValue: ''
       description: The IP address to check.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -86,16 +86,16 @@ script:
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor of the indicator.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot Score of the indicator.
+      description: The actual score.
       type: Number
     - contextPath: IP.Address
       description: The IP Address.
@@ -110,7 +110,7 @@ script:
       description: The Id of the Indicator.
       type: Number
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: ThreatQ.Indicator.Source.ID
       description: The source ID of the indicator.
@@ -143,13 +143,13 @@ script:
       description: The description of the indicator.
       type: String
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
   - arguments:
     - default: true
       defaultValue: ''
       description: URL to check
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -159,16 +159,16 @@ script:
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor of the indicator.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot Score of the indicator.
+      description: The actual score.
       type: Number
     - contextPath: URL.Data
       description: The URL.
@@ -183,7 +183,7 @@ script:
       description: The ID of the indicator.
       type: Number
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: ThreatQ.Indicator.Source.ID
       description: The source of the indicator.
@@ -216,13 +216,13 @@ script:
       description: The description of the indicator.
       type: String
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
   - arguments:
     - default: true
       defaultValue: ''
       description: File MD5, SHA-1 or SHA-256
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
@@ -232,16 +232,16 @@ script:
     name: file
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor of the indicator.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot Score of the indicator.
+      description: The actual score.
       type: Number
     - contextPath: File.Name
       description: The name of the file.
@@ -271,7 +271,7 @@ script:
       description: The ID of the indicator.
       type: Number
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: ThreatQ.Indicator.Source.ID
       description: The source ID of the indicator.
@@ -304,13 +304,13 @@ script:
       description: The description of the indicator.
       type: String
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
   - arguments:
     - default: true
       defaultValue: ''
       description: The email address to check.
-      isArray: false
+      isArray: true
       name: email
       required: true
       secret: false
@@ -320,16 +320,16 @@ script:
     name: email
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor of the indicator.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot Score of the indicator.
+      description: The actual score.
       type: Number
     - contextPath: Account.Email.Address
       description: The Email Address.
@@ -344,7 +344,7 @@ script:
       description: The ID of the indicator.
       type: Number
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: ThreatQ.Indicator.Source.ID
       description: The source ID of the indicator.
@@ -377,12 +377,12 @@ script:
       description: The description of the indicator.
       type: String
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
   - arguments:
     - default: true
       description: Domain or FQDN
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -392,16 +392,16 @@ script:
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor of the indicator.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot Score of the indicator.
+      description: The actual score.
       type: Number
     - contextPath: Domain.Name
       description: The name of the domain.
@@ -416,7 +416,7 @@ script:
       description: The ID of the indicator.
       type: Number
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: ThreatQ.Indicator.Source.ID
       description: The source ID of the indicator.
@@ -449,7 +449,7 @@ script:
       description: The description of the indicator.
       type: String
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -508,7 +508,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the indicator.
+      description: The indicator that was tested.
       isArray: false
       name: value
       required: true
@@ -542,7 +542,7 @@ script:
       description: The ID of the indicator.
       type: Number
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: ThreatQ.Indicator.Source.ID
       description: The source ID of the indicator.
@@ -575,7 +575,7 @@ script:
       description: The description of the indicator.
       type: String
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
   - arguments:
     - default: false
@@ -1433,13 +1433,13 @@ script:
       description: Description of the indicator.
       type: string
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: ThreatQ.Indicator.Status
       description: The status of indicator.
       type: string
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator. For example, IP Address.
+      description: The indicator type. For example, IP Address.
       type: string
     - contextPath: ThreatQ.Indicator.TQScore
       description: The ThreatQ Score of the indicator.
@@ -1838,13 +1838,13 @@ script:
       description: The description of the indicator.
       type: string
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: ThreatQ.Indicator.Status
       description: The status of the indicator.
       type: string
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator. For example, IP Address.
+      description: The indicator type. For example, IP Address.
       type: string
     - contextPath: ThreatQ.Indicator.TQScore
       description: The ThreatQ Score of the indicator.
@@ -1998,13 +1998,13 @@ script:
       description: The description of the indicator.
       type: string
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: ThreatQ.Indicator.Status
       description: The status of the Indicator.
       type: string
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator. For example, IP Address.
+      description: The indicator type. For example, IP Address.
       type: string
     - contextPath: ThreatQ.Indicator.TQScore
       description: The ThreatQ Score of the indicator.
@@ -2068,13 +2068,13 @@ script:
       description: The description of the indicator.
       type: string
     - contextPath: ThreatQ.Indicator.Value
-      description: The value of the indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: ThreatQ.Indicator.Status
       description: The status of the indicator.
       type: string
     - contextPath: ThreatQ.Indicator.Type
-      description: The type of the indicator. For example, IP Address.
+      description: The indicator type. For example, IP Address.
       type: string
     - contextPath: ThreatQ.Indicator.TQScore
       description: The ThreatQ Score of the indicator.
@@ -2182,6 +2182,22 @@ script:
     - contextPath: ThreatQ.Adversary.CreatedAt
       description: The last update date of the adversary.
       type: date
+  - name: threatq-advanced-search
+    arguments:
+    - name: query
+      required: true
+      description: The search query.
+    - name: limit
+      description: The maximum number of results to return. Default is 10.
+      defaultValue: "10"
+    - name: indicator_type
+      required: true
+      description: "The indicator type for which to search. Can be either the name or the ID. Possible values:
+        Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path,
+        Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password,
+        Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject,
+        URL, URL Path, User-agent, Username, X-Mailer"
+    description: Runs an advanced indicator search.
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false

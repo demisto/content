@@ -1,7 +1,7 @@
 from Tanium_v2 import Client
 import json
 
-BASE_URL = 'https://test.com'
+BASE_URL = 'https://test.com/'
 
 parse_question_res = {
     'data': [
@@ -119,6 +119,73 @@ CREATE_ACTION_WITH_PARAMETERS_RES = {
         'id': 1},
     'expire_seconds': 360}
 
+QUESTION_RESULTS_RAW = {
+    "data": {
+        "result_sets": [
+            {
+                "age": 0,
+                "archived_question_id": 0,
+                "cache_id": "3891494157",
+                "columns": [
+                    {
+                        "hash": 3409330187,
+                        "name": "Computer Name",
+                        "type": 1
+                    },
+                    {
+                        "hash": 2801942354,
+                        "name": "IPv4 Address",
+                        "type": 5
+                    },
+                    {
+                        "hash": 1092986182,
+                        "name": "Logged In Users",
+                        "type": 1
+                    },
+                    {
+                        "hash": 0,
+                        "name": "Count",
+                        "type": 3
+                    }
+                ],
+                "estimated_total": 2,
+                "mr_tested": 2,
+                "rows": [
+                    {
+                        "cid": 2232836718,
+                        "data": [
+                            [
+                                {
+                                    "text": "host-name"
+                                }
+                            ],
+                            [
+                                {
+                                    "text": "127.0.0.1"
+                                }
+                            ],
+                            [
+                                {
+                                    "text": "[no results]"
+                                }
+                            ],
+                            [
+                                {
+                                    "text": "1"
+                                }
+                            ]
+                        ],
+                        "id": 699534294
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+
+QUESTION_RESULTS = [{"ComputerName": "host-name", "IPv4Address": "127.0.0.1", "Count": "1"}]
+
 
 def test_create_action_body_by_target_group_name(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
@@ -164,3 +231,9 @@ def test_create_action_body_with_parameters(requests_mock):
     res = json.dumps(CREATE_ACTION_WITH_PARAMETERS_RES)
 
     assert res == body
+
+
+def test_parse_question_results():
+    client = Client(BASE_URL, 'username', 'password', 'domain')
+    results = client.parse_question_results(QUESTION_RESULTS_RAW)
+    assert results == QUESTION_RESULTS
