@@ -84,7 +84,7 @@ configuration:
   - bots
   - strongips
   - bruteforcelogin
-  required: false
+  required: true
   type: 16
 description: Use the Blocklist.de feed integration to fetch indicators from the feed.
 display: Blocklist_de Feed
