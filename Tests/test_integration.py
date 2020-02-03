@@ -514,9 +514,11 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
         pids_threshold = options.get('docker_pids_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
         failed_memory_test = Docker.check_resource_usage(server_url=server_url, docker_images=test_docker_images,
                                                          memory_threshold=memory_threshold,
-                                                         pids_threshold=pids_threshold)
+                                                         pids_threshold=pids_threshold, prints_manager=prints_manager,
+                                                         thread_index=thread_index)
     else:
-        print_warning("Skipping docker container memory resource check for test {}".format(playbook_id))
+        prints_manager.add_print_job("Skipping docker container memory resource check for test {}".format(playbook_id),
+                                     print_warning, thread_index)
 
     test_pass = playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION
     if test_pass:
