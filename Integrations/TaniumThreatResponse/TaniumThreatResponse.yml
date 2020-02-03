@@ -1494,7 +1494,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Date of the download file request
+      description: 'Date of the download file request, For example: 2019-09-23T12:55:08.622'
       isArray: false
       name: request-date
       required: true

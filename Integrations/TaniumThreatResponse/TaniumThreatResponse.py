@@ -48,7 +48,10 @@ class Client(BaseClient):
             raise requests.HTTPError(res.json().get('text'))
 
         if resp_type == 'json':
-            return res.json()
+            try:
+                return res.json()
+            except json.JSONDecodeError:
+                return res.content
         if resp_type == 'text':
             return res.text, res.headers.get('Content-Disposition')
         if resp_type == 'content':
@@ -639,17 +642,19 @@ def get_events_by_connection(client, data_args):
     filter_dict = filter_to_tanium_api_syntax(data_args.get('filter'))
     match = data_args.get('match')
 
-    g1 = ','.join([str(i) for i in range(len(filter_dict) // 3)])  # A weird param that must be passed
-
     params = {
         'limit': limit,
         'offset': offset,
         'sort': sort,
         'fields': fields,
-        'gm1': match,
-        'g1': g1
+        'match': match
     }
-    params.update(filter_dict)
+
+    if filter_dict:
+        g1 = ','.join([str(i) for i in range(len(filter_dict) // 3)])  # A weird param that must be passed
+        params['gm1'] = match
+        params['g1'] = g1
+        params.update(filter_dict)
 
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{connection}/{event_type}/events/',
                                      params=params)
@@ -820,6 +825,8 @@ def list_evidence(client, data_args):
 def get_evidence(client, data_args):
     evidence_id = data_args.get('evidence-id')
     raw_response = client.do_request('GET', f'/plugin/products/trace/evidence/{evidence_id}')
+    if not raw_response:
+        raise DemistoException(f'Evidence {evidence_id} was not found.')
     evidence = get_evidence_item(raw_response)
 
     context = createContext(evidence, removeNull=True)
@@ -881,7 +888,7 @@ def request_file_download(client, data_args):
 
 
 def get_file_download_request_status(client, data_args):
-    downloaded = data_args.get('request-date')
+    downloaded = str(data_args.get('request-date')).replace('T', ' ')
     host = data_args.get('host')
     path = data_args.get('path')
 

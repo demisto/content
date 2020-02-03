@@ -1,5 +1,6 @@
 id: Tanium Threat Response - Create Connection
 version: -1
+fromversion: ""
 contentitemfields:
   propagationLabels:
   - all
@@ -16,6 +17,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -32,7 +34,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "1":
     id: "1"
     taskid: a3579962-bec9-4e8e-847e-6d1015e66e37
@@ -70,7 +71,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "2":
     id: "2"
     taskid: 2ec7675d-baf2-49df-840b-edea78b32206
@@ -82,6 +82,7 @@ tasks:
       playbookName: GenericPolling
       type: playbook
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -106,7 +107,6 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -118,7 +118,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "3":
     id: "3"
     taskid: 04183da4-fefd-4739-8fb2-e28034f9907f
@@ -129,6 +128,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
+      description: ""
       brand: ""
     separatecontext: false
     view: |-
@@ -142,7 +142,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -160,20 +159,16 @@ inputs:
   value: {}
   required: true
   description: ""
-  playbookInputQuery: null
 - key: destination-type
   value: {}
   required: true
   description: ""
-  playbookInputQuery: null
 - key: remote
   value: {}
   required: true
   description: ""
-  playbookInputQuery: null
 - key: connection-timeout
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
 outputs: []

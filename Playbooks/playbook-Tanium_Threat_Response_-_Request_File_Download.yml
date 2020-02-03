@@ -1,4 +1,5 @@
 id: Tanium Threat Response - Request File Download
+fromversion: ""
 version: -1
 contentitemfields:
   propagationLabels:
@@ -15,6 +16,7 @@ tasks:
       id: d8c82418-fe27-4e68-880d-a871016a49af
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -32,7 +34,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "1":
     id: "1"
     taskid: 37898cab-ef34-4cb2-8120-77459d73ec0a
@@ -66,7 +67,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "2":
     id: "2"
     taskid: ba08ebe9-6939-4b3e-85ce-ea9cd96b8311
@@ -112,7 +112,6 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -124,7 +123,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "3":
     id: "3"
     taskid: 544e1dad-1998-4feb-84e9-d6d564ffb89e
@@ -133,6 +131,7 @@ tasks:
       id: 544e1dad-1998-4feb-84e9-d6d564ffb89e
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -148,7 +147,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "5":
     id: "5"
     taskid: 3f60da64-6615-4342-881e-dfbaa0321ae8
@@ -180,7 +178,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "8":
     id: "8"
     taskid: 85c86dac-494b-45e0-8f8b-57c96feaac15
@@ -190,6 +187,7 @@ tasks:
       version: -1
       name: Delete connection?
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -220,7 +218,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "9":
     id: "9"
     taskid: 766877f7-638d-45ca-8d30-274da1f6aeaf
@@ -273,7 +270,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "10":
     id: "10"
     taskid: 64bba2d4-252f-4a4a-8ed2-287d40c94def
@@ -281,6 +277,7 @@ tasks:
     task:
       id: 64bba2d4-252f-4a4a-8ed2-287d40c94def
       version: -1
+      description: ""
       name: Should the file be downloaded?
       type: condition
       iscommand: false
@@ -313,7 +310,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "11":
     id: "11"
     taskid: 19fbd9c1-0372-4363-88a1-3d2f1937475c
@@ -322,6 +318,7 @@ tasks:
       id: 19fbd9c1-0372-4363-88a1-3d2f1937475c
       version: -1
       name: Tanium Threat Response - Create Connection
+      description: ""
       playbookName: Tanium Threat Response - Create Connection
       type: playbook
       iscommand: false
@@ -343,7 +340,6 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -355,7 +351,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
   "12":
     id: "12"
     taskid: a54d98f3-e4c0-4031-82d0-12408af79302
@@ -391,7 +386,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -409,41 +403,34 @@ inputs:
   value: {}
   required: true
   description: Connection ID.
-  playbookInputQuery: null
 - key: destination-type
   value: {}
   required: true
   description: 'Type of destination: ip_address or computer_name.'
-  playbookInputQuery: null
 - key: path
   value: {}
   required: true
   description: Path of file.
-  playbookInputQuery: null
 - key: download-file
   value:
     simple: "true"
   required: false
   description: If true, the file will be downloaded, otherwise, only a file download
     object will be created.
-  playbookInputQuery: null
 - key: delete-connection
   value:
     simple: "true"
   required: false
   description: If true, the connection will be deleted in the end of the playbook,
     otherwise, it will remain open.
-  playbookInputQuery: null
 - key: remote
   value: {}
   required: true
   description: True if remote connection.
-  playbookInputQuery: null
 - key: connection-timeout
   value: {}
   required: false
   description: Connection timeout, in milliseconds.
-  playbookInputQuery: null
 outputs:
 - contextPath: File.ID
   description: File download entry ID.
