@@ -6,7 +6,7 @@ import re
 import xlrd
 
 
-def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row):
+def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type):
     indicator_list = []
 
     xl_woorkbook = xlrd.open_workbook(file_path)
@@ -21,7 +21,7 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row):
             indicator = xl_sheet.cell(row_index, col_num)
             indicator_list.append(indicator.value)
 
-    return indicator_list
+    return parse_indicators(indicator_list, auto_detect=auto_detect, default_type=default_type)
 
 
 def xls_file_to_parsed_indicators(file_path, sheet_name, indicator_col, type_col, starting_row):
@@ -47,21 +47,39 @@ def xls_file_to_parsed_indicators(file_path, sheet_name, indicator_col, type_col
     return indicator_list
 
 
-def txt_file_to_indicator_list(file_path):
+def txt_file_to_indicator_list(file_path, auto_detect, default_type):
     with open(file_path, "r") as fp:
         file_data = fp.read()
 
     indicator_list = re.split('\n|,|, ', file_data)
-    return indicator_list
+
+    return parse_indicators(indicator_list, auto_detect, default_type)
+
+
+def parse_indicators(indicator_list, auto_detect, default_type):
+    parsed_indicators = []
+    for indicator in indicator_list:
+        if auto_detect:
+            indicator_type = detect_type(indicator)
+
+        else:
+            indicator_type = default_type
+
+        parsed_indicators.append({
+            "Type": indicator_type,
+            "Value": indicator
+        })
+
+    return parsed_indicators
 
 
 def detect_type(indicator):
     """Infer the type of the indicator.
-            Args:
-                indicator(str): The indicator whose type we want to check.
-            Returns:
-                str. The type of the indicator.
-            """
+    Args:
+        indicator(str): The indicator whose type we want to check.
+    Returns:
+        str. The type of the indicator.
+    """
     if re.match(ipv4cidrRegex, indicator):
         return FeedIndicatorType.CIDR
 
@@ -99,55 +117,40 @@ def fetch_indicators_from_file(args):
     file_name = file['name']
     auto_detect = True if args.get('auto_detect') == 'True' else False
     default_type = args.get('default_type')
-    limit = args.get("limit")
+    limit = args.get("limit") if args.get('limit') else 100
     offset = int(str(args.get("offset"))) if args.get('offset') else 0
-    skip_parsing = False
+
+    # the below params are for Excel type files.
     sheet_name = args.get('sheet_name')
     indicator_col_num = args.get('indicator_column_number')
-    type_col_num = args.get('indicator_type_column_number')
+    indicator_type_col_num = args.get('indicator_type_column_number')
     starting_row = args.get('starting_row')
 
     if file_name.endswith('xls') or file_name.endswith('csv') or file_name.endswith('xlsx'):
 
-        if not type_col_num:
+        if not indicator_type_col_num:
             indicator_list = xls_file_to_indicator_list(file_path, sheet_name,
-                                                        int(indicator_col_num) - 1, int(starting_row) - 1)
+                                                        int(indicator_col_num) - 1, int(starting_row) - 1,
+                                                        auto_detect, default_type)
 
         else:
             indicator_list = xls_file_to_parsed_indicators(file_path, sheet_name,
-                                                           int(indicator_col_num) - 1, int(type_col_num) - 1,
+                                                           int(indicator_col_num) - 1, int(indicator_type_col_num) - 1,
                                                            int(starting_row) - 1)
-            skip_parsing = True
 
     else:
-        indicator_list = txt_file_to_indicator_list(file_path)
+        indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type)
 
-    if not skip_parsing:
-
-        parsed_indicators = []
-        for indicator in indicator_list:
-            if auto_detect:
-                indicator_type = detect_type(indicator)
-
-            else:
-                indicator_type = default_type
-
-            parsed_indicators.append({
-                "Type": indicator_type,
-                "Value": indicator
-            })
-
-    else:
-        parsed_indicators = indicator_list
+    indicator_list_len = len(indicator_list)
 
     if limit:
         limit = int(str(limit))
-        parsed_indicators = parsed_indicators[offset: limit + offset]
+        indicator_list = indicator_list[offset: limit + offset]
 
-    human_readable = tableToMarkdown("Indicators from {}:".format(file_path), parsed_indicators,
+    human_readable = tableToMarkdown("Indicators from {}:".format(file_path), indicator_list,
                                      headers=['Value', 'Type'], removeNull=True)
 
-    if limit:
+    if limit and indicator_list_len > limit:
         human_readable = human_readable + "\nTo bring the next batch of indicators run:\n!FetchIndicatorsFromFile " \
             "limit={} offset={} entry_id={}".format(limit, int(limit) + int(offset), args.get('entry_id'))
 
@@ -157,11 +160,11 @@ def fetch_indicators_from_file(args):
         if int(indicator_col_num) != 1:
             human_readable = human_readable + " indicator_column_number={}".format(indicator_col_num)
 
-        if type_col_num:
-            human_readable = human_readable + " indicator_type_column_number={}".format(type_col_num)
+        if indicator_type_col_num:
+            human_readable = human_readable + " indicator_type_column_number={}".format(indicator_type_col_num)
 
     return human_readable, {
-        "Indicator(val.Value == obj.Value && val.Type == obj.Type)": parsed_indicators
+        "Indicator(val.Value == obj.Value && val.Type == obj.Type)": indicator_list
     }, indicator_list
 
 
