@@ -518,7 +518,7 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
 
         if error_message:
             prints_manager.add_print_job(error_message, print_error, thread_index)
-            return False, inc_id
+            return PB_Status.FAILED_DOCKER_TEST, inc_id
     else:
         prints_manager.add_print_job("Skipping docker container memory resource check for test {}".format(playbook_id),
                                      print_warning, thread_index)
