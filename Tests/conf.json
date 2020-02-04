@@ -2182,6 +2182,10 @@
         {
             "playbookID": "Indicator Feed - Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "playbook-BruteForceBlocker_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
