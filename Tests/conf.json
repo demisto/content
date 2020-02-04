@@ -2184,7 +2184,8 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "FetchIndicatorsFromFile-test"
+            "playbookID": "FetchIndicatorsFromFile-test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
