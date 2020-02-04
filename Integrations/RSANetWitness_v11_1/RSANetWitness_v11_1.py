@@ -409,7 +409,6 @@ def get_incidents():
         }
     }
     if has_next:
-        entry['EntryContext']['NetWitness.Incidents(val.NextPage).NextPage'] = next_page
         entry['HumanReadable'] += '\n### Not all incidents were fetched. Next page: {}'.format(next_page)
     demisto.results(entry)
 
