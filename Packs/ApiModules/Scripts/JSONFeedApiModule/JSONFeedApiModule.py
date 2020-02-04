@@ -9,16 +9,15 @@ urllib3.disable_warnings()
 
 
 class Client:
-    def __init__(self, url: str = '', credentials: Dict[str, str] = None,
+    def __init__(self, url: str = '', credentials: dict = None,
                  feed_name_to_config: Dict[str, dict] = None, source_name: str = 'JSON',
                  extractor: str = '', indicator: str = 'indicator', fields: Union[List, str] = None,
                  insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
         :param url: URL of the feed.
-        :param credentials:
-            username: username for BasicAuth authentication
-            password: password for BasicAuth authentication
+        :param credentials: username and password used for basic authentication.
+         Can be also used as API key header and value by specifying _header in the username field.
         :param extractor: JMESPath expression for extracting the indicators from
         :param indicator: the JSON attribute to use as indicator. Default: indicator
         :param source_name: feed source name
@@ -57,11 +56,21 @@ class Client:
         self.url = url
         self.verify = not insecure
         self.auth: Optional[tuple] = None
-        if credentials:
-            self.auth = (credentials.get('username'), credentials.get('password'))
-
-        # Hidden params
         self.headers = headers
+
+        if credentials:
+            username = credentials.get('identifier', '')
+            if username.startswith('_header:'):
+                header_name = username.split(':')[1]
+                header_value = credentials.get('password', '')
+                if not self.headers:
+                    self.headers = {}
+                self.headers[header_name] = header_value
+            else:
+                password = credentials.get('password', '')
+                if username is not None and password is not None:
+                    self.auth = (username, password)
+
         self.cert = (cert_file, key_file) if cert_file and key_file else None
 
     def build_iterator(self, **kwargs) -> List:
