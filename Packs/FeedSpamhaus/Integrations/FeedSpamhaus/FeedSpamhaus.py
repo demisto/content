@@ -27,13 +27,13 @@ def main():
             ]
         },
         'https://www.spamhaus.org/drop/drop.txt': {
-            'indicator_type': FeedIndicatorType.IP,
+            'indicator_type': FeedIndicatorType.CIDR,
             'indicator': {
                 'regex': r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}'
             }
         },
         'https://www.spamhaus.org/drop/edrop.txt': {
-            'indicator_type': FeedIndicatorType.IP,
+            'indicator_type': FeedIndicatorType.CIDR,
             'indicator': {
                 'regex': r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}'
             }
