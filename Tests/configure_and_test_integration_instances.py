@@ -515,12 +515,14 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
         if release == cd_release and asset_id == cd_asset_id:
-            prints_manager.add_print_job('Content Update Successfully Installed!', print_color, LOG_COLORS.GREEN)
+            prints_manager.add_print_job('Content Update Successfully Installed!', print_color, thread_index,
+                                         LOG_COLORS.GREEN)
         else:
             err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release)
             err_details += '"{}" but release "{}" and assetId "{}" were '.format(cd_asset_id, release, asset_id)
             err_details += 'retrieved from the instance post installation.'
-            prints_manager.add_print_job('Content Update was Unsuccessful:\n{}'.format(err_details), print_error)
+            prints_manager.add_print_job('Content Update was Unsuccessful:\n{}'.format(err_details), print_error,
+                                         thread_index)
             sys.exit(1)
 
 
