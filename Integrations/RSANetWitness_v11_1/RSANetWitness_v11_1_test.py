@@ -11,7 +11,7 @@ INCIDENT_NEW = {
         "sources": [
             "NetWitness Investigate"
         ],
-        "id": "INC-2",
+        "id": "INC-3",
         "journalEntries": None,
         "ruleId": None,
         "created": "2019-01-14T17:19:16.029Z",
@@ -34,13 +34,53 @@ INCIDENT_NEW = {
     }],
     "pageNumber": 0,
     "pageSize": 1,
-    "totalPages": 2,
-    "totalItems": 2,
+    "totalPages": 3,
+    "totalItems": 3,
     "hasNext": True,
     "hasPrevious": False
 }
 
 INCIDENT_OLD = {
+    "items": [{
+        "eventCount": 1,
+        "alertMeta": {
+            "SourceIp": ["8.8.8.8"],
+            "DestinationIp": ["8.8.4.4"]
+        },
+        "openRemediationTaskCount": 0,
+        "sources": [
+            "NetWitness Investigate"
+        ],
+        "id": "INC-2",
+        "journalEntries": None,
+        "ruleId": None,
+        "created": "2019-01-14T17:19:16.029Z",
+        "priority": "Critical",
+        "sealed": True,
+        "status": "Assigned",
+        "averageAlertRiskScore": 50,
+        "lastUpdated": "2019-01-30T13:50:10.148Z",
+        "lastUpdatedBy": "admin",
+        "alertCount": 1,
+        "createdBy": "admin",
+        "deletedAlertCount": 0,
+        "categories": [],
+        "assignee": None,
+        "title": "Test",
+        "summary": "Test",
+        "firstAlertTime": None,
+        "totalRemediationTaskCount": 0,
+        "riskScore": 50
+    }],
+    "pageNumber": 1,
+    "pageSize": 1,
+    "totalPages": 3,
+    "totalItems": 3,
+    "hasNext": True,
+    "hasPrevious": True
+}
+
+INCIDENT_OLDEST = {
     "items": [{
         "eventCount": 1,
         "alertMeta": {
@@ -72,10 +112,10 @@ INCIDENT_OLD = {
         "totalRemediationTaskCount": 0,
         "riskScore": 50
     }],
-    "pageNumber": 1,
+    "pageNumber": 2,
     "pageSize": 1,
-    "totalPages": 2,
-    "totalItems": 2,
+    "totalPages": 3,
+    "totalItems": 3,
     "hasNext": False,
     "hasPrevious": True
 }
@@ -125,8 +165,8 @@ def test_fetch_incidents_fetch_oldest_first(mocker):
     """
     def return_incidents_by_page(page_number, **kwargs):
         if page_number == 0:
-            return INCIDENT_NEW
-        return INCIDENT_OLD
+            return INCIDENT_OLD
+        return INCIDENT_OLDEST
 
     def mock_demisto():
         mocked_dict = {
@@ -151,6 +191,53 @@ def test_fetch_incidents_fetch_oldest_first(mocker):
     mock_demisto()
     from RSANetWitness_v11_1 import fetch_incidents
 
-    res = fetch_incidents()
+    fetched_inc = fetch_incidents()
     # assert fetch
-    assert res[0]['labels'][0]['value'] == '"{}"'.format(INCIDENT_OLD['items'][0]['id'])
+    assert len(fetched_inc) == 1
+    assert fetched_inc[0]['labels'][0]['value'] == '"{}"'.format(INCIDENT_OLDEST['items'][0]['id'])
+
+
+def test_fetch_incidents_fetch_with_ignore_id(mocker):
+    """
+    Given:
+        There are 2 incidents to fetch
+    When:
+        fetch-incidents with limit size of 1
+    Then:
+        The oldest incident will be fetched
+    """
+    def return_incidents_by_page(page_number, **kwargs):
+        if page_number == 0:
+            return INCIDENT_NEW
+        elif page_number == 1:
+            return INCIDENT_OLD
+        return INCIDENT_OLDEST
+
+    def mock_demisto():
+        mocked_dict = {
+            'server': '',
+            'credentials': {
+                'identifier': '',
+                'password': ''
+            },
+            'insecure': '',
+            'version': '',
+            'isFetch': '',
+            'fetch_limit': 1
+        }
+        mocker.patch.object(demisto, 'params', return_value=mocked_dict)
+        mocker.patch.object(demisto, "getLastRun", return_value={
+            "timestamp": "2018-08-13T09:56:02.000000",
+            "ignore_id": INCIDENT_OLD['items'][0]['id']
+        })
+        mocker.patch.object(demisto, 'incidents')
+        mocker.patch('RSANetWitness_v11_1.get_incidents_request', return_value='1',
+                     side_effect=return_incidents_by_page)
+
+    mock_demisto()
+    from RSANetWitness_v11_1 import fetch_incidents
+
+    fetched_inc = fetch_incidents()
+    # assert fetch
+    assert len(fetched_inc) == 1
+    assert fetched_inc[0]['labels'][0]['value'] == '"{}"'.format(INCIDENT_NEW['items'][0]['id'])

@@ -311,7 +311,7 @@ def get_all_incidents(since=None, until=None, limit=None, page_number=0):
     return incidents, has_next, page_number
 
 
-def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_number=None, ignore_id=None):
+def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_number=0, ignore_id=None):
     """
 
     returns
@@ -324,11 +324,11 @@ def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_nu
     if not limit:
         limit = float('inf')
     has_next = True
-    page_number = 0
-    incidents = []  # type: list
+    incidents_result = []  # type: list
+    continue_loop = True
     LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s=since or 'not specified',
                                                                      u=until or 'not specified'))
-    while has_next:
+    while has_next and continue_loop:
         # call get_incidents_request(), given user arguments
         # returns the response body on success
         # raises an exception on failed request
@@ -338,16 +338,21 @@ def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_nu
             until=until,
             page_number=page_number
         )
-        incidents.extend(response_body.get('items'))
+        incidents = response_body.get('items')
+        # clear incidents after ignore_id
+        for inc in incidents:
+            if inc.get('id') == ignore_id:
+                continue_loop = False
+                break
+            incidents_result.append(inc)
         has_next = response_body.get('hasNext')
         page_number += 1
 
-    incidents.reverse()
-    incidents = list(filter(lambda inc: inc.get('id') != ignore_id, incidents))
+    incidents_result.reverse()
     # if incidents list larger then limit - fit to limit
-    if len(incidents) > limit:
-        return incidents[:limit]
-    return incidents
+    if len(incidents_result) > limit:
+        return incidents_result[:limit]
+    return incidents_result
 
 
 def get_incidents():
