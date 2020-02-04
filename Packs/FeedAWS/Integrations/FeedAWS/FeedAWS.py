@@ -30,7 +30,7 @@ def get_feed_config(sub_feeds: list, regions: list):
     for feed in available_feeds:
         feed_name_to_config[feed] = {
             'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
-            'extractor': f"prefixes[?service=={feed}{region_path}]",
+            'extractor': f"prefixes[?service=='{feed}'{region_path}]",
             'indicator': 'ip_prefix',
             'indicator_type': FeedIndicatorType.CIDR,
             'fields': ['region', 'service'],
