@@ -18,35 +18,34 @@ jobs:
           name: Prepare Environment
           when: always
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo "Skipping - instance tests tasks are running only in container number 0"
-                exit 0
-            fi
-
-            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-            echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
-            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
-            echo "=== sourcing $BASH_ENV ==="
-            source $BASH_ENV
-            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-            chmod +x ./Tests/scripts/*
-            chmod +x ./Tests/lastest_server_build_scripts/*
-            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
-            if [ ! -e "venv" ]; then
-              echo "installing venv"
-              NO_HOOKS=1 .hooks/bootstrap
-              source ./venv/bin/activate
-              pip install -r .circleci/build-requirements.txt
-              pip3 install -r .circleci/build-requirements.txt
-            else
-              echo "venv exists (from cache). activating"
-              source ./venv/bin/activate
-            fi
-            # store in bash env so we load our venv in each step
-            echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
-            python --version
-            python3 --version
+              if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+                then
+                  echo "Skipping - instance tests tasks are running only in container number 0"
+                  exit 0
+              fi
+              echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+              echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+              echo "=== sourcing $BASH_ENV ==="
+              source $BASH_ENV
+              sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+              chmod +x ./Tests/scripts/*
+              chmod +x ./Tests/lastest_server_build_scripts/*
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
+              if [ ! -e "venv" ]; then
+                echo "installing venv"
+                NO_HOOKS=1 .hooks/bootstrap
+                source ./venv/bin/activate
+                pip install -r .circleci/build-requirements.txt
+                pip3 install -r .circleci/build-requirements.txt
+              else
+                echo "venv exists (from cache). activating"
+                source ./venv/bin/activate
+              fi
+              # store in bash env so we load our venv in each step
+              echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+              python --version
+              python3 --version
       - save_cache:
           paths:
             - venv
@@ -84,7 +83,7 @@ jobs:
             python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
-
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
@@ -194,12 +193,12 @@ jobs:
                 echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
-            if [ $NIGHTLY ] ;
-              then
-                demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt
-
-              else
-                demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt
+            
+            if [ $NIGHTLY ] ; then
+              echo -e  "----------\nLinting all because:\n$SHOULD_LINT_ALL\n----------"
+              demisto-sdk lint --run-all-tests --parallel --outfile ./artifacts/failed_unittests.txt
+            else
+              demisto-sdk lint --git --parallel --outfile ./artifacts/failed_unittests.txt
             fi
       - run:
           name: Verify Base Branch for Contribution
@@ -267,10 +266,10 @@ jobs:
               then
                 if [ -n "${NIGHTLY}" ] || [ -n "${INSTANCE_TESTS}" ] ;
                   then
-                    export IFRA_ENV_TYPE=Content-Master
+                    export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
 
                   else
-                    export IFRA_ENV_TYPE=Content-Env
+                    export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
 
@@ -309,9 +308,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -330,9 +329,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -351,9 +350,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] || [ -n "${NIGHTLY}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -399,12 +398,12 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ] ;
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build"
                 exit 0
             fi
-            ./Tests/scripts/slack_notifier.sh ./env_results.json
+            ./Tests/scripts/slack_notifier.sh $CIRCLE_NODE_INDEX ./env_results.json
 
           when: always
       - run:

@@ -94,7 +94,7 @@ def test_get_pdf_text_with_encrypted(mocker, tmp_path):
 
 def test_get_pdf_text_without_encrypted(tmp_path):
     from ReadPDFFileV2 import get_pdf_text
-
+    # assert error raised
     try:
         get_pdf_text(f'{CWD}/encrypted.pdf', f'{tmp_path}/encrypted.txt')
         raise Exception("Incorrect password exception should've been thrown")
@@ -102,6 +102,11 @@ def test_get_pdf_text_without_encrypted(tmp_path):
         assert 'Incorrect password' in str(e)
         assert 'error code: 1' in str(e)
 
+    # assert not warnings are raised
+    text = get_pdf_text(f'{CWD}/warning_trigger.pdf', f'{tmp_path}/warning_trigger.txt')
+    assert 'Riu Plaza Berlin' in text
+
+    # assert extract file correctly
     text = get_pdf_text(f'{CWD}/text-only.pdf', f'{tmp_path}/text-only.txt')
     expected = "עברית"
     assert expected in text
