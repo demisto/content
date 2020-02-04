@@ -69,7 +69,7 @@ def test_parse_audit():
         if test['expectedException']:
             with pytest.raises(Exception) as ex:
                 parse_audit(test['input'])
-            assert str(ex.value) == f"Input should be a raw JSON audit Alert, received: {test['input']}"
+            assert str(ex.value) == f"Input should be a raw JSON audit alert, received: {test['input']}"
         else:
             assert parse_audit(test['input']) == (
                 test['expectedResult']['readable'], test['expectedResult']['output'], test['expectedResult']['raw'])
