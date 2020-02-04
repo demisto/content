@@ -18,11 +18,6 @@ def main():
             "regex": "^.*\\t.*\\t[0-9]+\\t([0-9]+)",
             "transform": "\\1"
         },
-        # name will change.
-        "dshield_name": {
-            "regex": "^.*\\t.*\\t[0-9]+\\t[0-9]+\\t([^\\t]+)",
-            "transform": "\\1"
-        },
         "geocountry": {
             "regex": "^.*\\t.*\\t[0-9]+\\t[0-9]+\\t[^\\t]+\\t([A-Z]+)",
             "transform": "\\1"
