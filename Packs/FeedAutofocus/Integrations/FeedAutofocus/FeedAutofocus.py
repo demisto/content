@@ -5,8 +5,7 @@ from CommonServerUserPython import *
 # IMPORTS
 import re
 import requests
-import socket
-from typing import List, Dict
+from typing import List
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -43,7 +42,6 @@ class Client(BaseClient):
             self.custom_feed_url_list = url_list
 
         self.verify = not insecure
-        self.resolution_mapping = {}  # type:Dict
         if proxy:
             handle_proxy()
 
@@ -147,18 +145,6 @@ class Client(BaseClient):
         else:
             return FeedIndicatorType.Domain
 
-    def resolve_ip_address(self, ip):
-        if self.get_ip_type(ip):
-            if ip in self.resolution_mapping.keys():
-                return self.resolution_mapping[ip]
-
-            else:
-                resolved_domain = socket.gethostbyaddr(ip)[0]
-                self.resolution_mapping[ip] = resolved_domain
-                return resolved_domain
-
-        return None
-
     def build_iterator(self, limit=None, offset=None):
         """Builds a list of indicators.
 
@@ -186,24 +172,6 @@ class Client(BaseClient):
                 if indicator_type in [FeedIndicatorType.IP, FeedIndicatorType.CIDR,
                                       FeedIndicatorType.IPv6CIDR, FeedIndicatorType.IPv6] and ":" in indicator:
                     indicator = indicator.split(":", 1)[0]
-
-                elif indicator_type == FeedIndicatorType.URL:
-                    if ":" in indicator:
-                        resolved_address = self.resolve_ip_address(indicator.split(":", 1)[0])
-                        semicolon_suffix = indicator.split(":", 1)[1]
-                        slash_suffix = None
-
-                    else:
-                        resolved_address = self.resolve_ip_address(indicator.split("/", 1)[0])
-                        slash_suffix = indicator.split("/", 1)[1]
-                        semicolon_suffix = None
-
-                    if resolved_address:
-                        if semicolon_suffix:
-                            indicator = resolved_address + ":" + semicolon_suffix
-
-                        else:
-                            indicator = resolved_address + "/" + slash_suffix
 
                 parsed_indicators.append({
                     "type": indicator_type,
