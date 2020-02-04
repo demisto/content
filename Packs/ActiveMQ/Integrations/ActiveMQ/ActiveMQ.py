@@ -119,7 +119,15 @@ def subscribe(client, conn, subscription_id, topic_name, queue_name):
         conn.set_listener('Demisto', listener)
 
     # ack='client-individual', headers={'activemq.subscriptionName': client})
-    conn.subscribe('/queue/' + topic_name, subscription_id, ack='auto')
+    if queue_name:
+        conn.subscribe('/queue/' + queue_name, subscription_id, ack='auto')
+    elif topic_name:
+        conn.subscribe(
+            '/topic/' + topic_name, subscription_id,
+            ack='client-individual',
+            headers={'activemq.subscriptionName': client}
+        )
+
     time.sleep(1)
     for msg in listener.result_arr:
         demisto.results(msg)
