@@ -13,7 +13,7 @@ def main():
     })
 
     fields = json.dumps({
-        "upatedate": {
+        "updatedate": {
             "regex": r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})",
             "transform": "\\1"
         }
