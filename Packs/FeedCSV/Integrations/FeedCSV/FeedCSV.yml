@@ -85,7 +85,7 @@ configuration:
   type: 0
 - additionalinfo: Name of the field names in the CSV feed. If several are given, will
     use "indicator" as the default indicator value field.
-  defaultvalue: indicator
+  defaultvalue: value
   display: Field Names
   name: fieldnames
   required: false
