@@ -202,13 +202,15 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                     if not indicator_type:
                         indicator_type = default_indicator_type
                     raw_json['type'] = indicator_type
-
-                    indicator = {field: raw_json[key] for key, field in mapping.items()}
-                    indicator['value'] = value
-                    indicator['type'] = indicator_type
-                    indicator['rawJSON'] = raw_json
-
+                    
+                    indicator = {
+                        'value': value,
+                        'type': indicator_type,
+                        'rawJSON': raw_json,
+                        'CustomFields': {field: raw_json[key] for key, field in mapping.items()}
+                    }
                     indicators.append(indicator)
+                    
     return indicators
 
 
