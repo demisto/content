@@ -1,6 +1,7 @@
 {
 	"id": "incident_googleadminrolesstatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-05T15:54:52.596475456Z",
 	"name": "Google Admin Roles Status",
 	"ownerOnly": false,
