@@ -408,6 +408,11 @@ def collect_content_items_data(pack_path):
                     if new_data.get('comment', ''):
                         file_info['description'] = new_data.get('comment', '')
 
+                    if directory == "Integrations":
+                        integration_commands = new_data.get('script', {}).get('commands', [])
+                        file_info['commands'] = [{'name': c.get('name', ''), 'description': c.get('description', '')}
+                                                 for c in integration_commands]
+
                     dir_data.append(file_info)
 
         data[directory] = dir_data
