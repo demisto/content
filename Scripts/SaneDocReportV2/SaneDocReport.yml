@@ -34,11 +34,10 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/sane-doc-reports:1.0.0.5675
+dockerimage: demisto/sane-doc-reports:1.0.0.5825
 runas: DBotWeakRole
 runonce: false
 tests:
 - No Test
 deprecated: true
-fromversion: 5.0.0
-toversion: 5.4.9
+fromversion: 5.5.0
