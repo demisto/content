@@ -69,12 +69,12 @@ def test_get_indicators_with_mapping():
         assert len(indicators_ec) == 35
         for ind_json in raw_json:
             ind_val = ind_json.get('value')
-            ind_map = ind_json.get('AAA')
+            ind_map = ind_json['CustomFields'].get('AAA')
             ind_type = ind_json.get('type')
             ind_rawjson = ind_json.get('rawJSON')
             assert ind_val
             assert ind_type == itype
-            assert ind_json['AAA'] == ind_map
+            assert ind_map == 'a'
             assert ind_rawjson['value'] == ind_val
             assert ind_rawjson['type'] == ind_type
 
