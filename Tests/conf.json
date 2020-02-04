@@ -3,6 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AzureFeed",
+            "playbookID": "AzureFeed - Test",
+            "fromversion": "5.5.0"
+        },
+         {
+            "playbookID": "CreateIndicatorFromSTIXTest",
+             "fromversion": "5.0.0"
+         },
+         {
+            "integrations": "SpamhausFeed",
+            "playbookID": "Spamhaus_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
         },
@@ -12,7 +26,8 @@
         },
         {
             "integrations": "CSVFeed",
-            "playbookID": "CSV_Feed_Test"
+            "playbookID": "CSV_Feed_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Digital Shadows",
@@ -65,6 +80,11 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_prod"
+        },
+        {
+            "integrations": "CloudShark",
+            "playbookID": "CloudShark - Test Playbook",
+            "timeout": 500
         },
         {
             "integrations": "nmap",
@@ -1042,6 +1062,9 @@
             "playbookID": "ZipFile-Test"
         },
         {
+            "playbookID": "UnzipFile-Test"
+        },
+        {
             "playbookID": "ExtractDomainTest"
         },
         {
@@ -1661,7 +1684,8 @@
         },
         {
             "integrations": "TAXIIFeed",
-            "playbookID": "TAXII_Feed_Test"
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Traps",
@@ -1731,6 +1755,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "playbookID": "Wait Until Datetime - Test",
+            "fromversion": "4.5.0"
         },
         {
             "playbookID": "PAN OS EDL Management - Test",
@@ -2044,6 +2072,12 @@
         },
         {
             "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_Fetch_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
         },
@@ -2085,7 +2119,7 @@
           "integrations": "QRadar",
           "playbookID": "QRadar Indicator Hunting Test",
           "timeout": 1200,
-          "fromversion": "4.5.0"
+          "fromversion": "5.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",
@@ -2122,9 +2156,36 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "IsInternalHostName Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "Splunk Indicator Hunting Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "PaloAltoNetworks_PrismaCloudCompute",
+            "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
+        },
+        {
+            "playbookID": "Indicator Feed - Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -2155,10 +2216,14 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "ssdeepreputationtest": "Issue #20953"
+        "ssdeepreputationtest": "Issue #20953",
+        "Elasticsearch_v2_test-v6": "Issue #21510",
+        "ssdeepreputationtest": "Issue #20953",
+        "C2sec-Test": "Issue #21633"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
@@ -2216,7 +2281,8 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
-        "QRadar Indicator Hunting Test": "Issue 21150",
+        "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
+        "LogRhythm": "Issue 21672",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2231,6 +2297,7 @@
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
+        "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
