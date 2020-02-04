@@ -33,11 +33,6 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- additionalinfo: When selected, the exclusion list will be ignored for this feed.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
   defaultvalue: Bad
@@ -59,6 +54,11 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
+- additionalinfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
