@@ -286,6 +286,7 @@ def get_all_incidents(since=None, until=None, limit=None, page_number=0):
     # if limit is None, set to infinity
     if not limit:
         limit = float('inf')
+    page_size = 10 if limit > 10 else limit
     has_next = True
     incidents = []  # type: list
     LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s=since or 'not specified',
@@ -298,7 +299,8 @@ def get_all_incidents(since=None, until=None, limit=None, page_number=0):
         response_body = get_incidents_request(
             since=since,
             until=until,
-            page_number=page_number
+            page_number=page_number,
+            page_size=page_size
         )
         incidents.extend(response_body.get('items'))
         has_next = response_body.get('hasNext')
@@ -408,7 +410,7 @@ def get_incidents():
     }
     if has_next:
         entry['EntryContext']['NetWitness.Incidents(val.NextPage).NextPage'] = next_page
-        entry['HumanReadable'] += '\n## Not all incidents were fetched. Next page: {}'.format(next_page)
+        entry['HumanReadable'] += '\n### Not all incidents were fetched. Next page: {}'.format(next_page)
     demisto.results(entry)
 
 
