@@ -46,6 +46,10 @@ configuration:
   - GLOBAL
   required: false
   type: 16
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
 - defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
