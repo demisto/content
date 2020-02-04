@@ -352,7 +352,14 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
             prints_manager.add_print_job(end_mock_message, print, thread_index)
 
             return
+        elif status == PB_Status.FAILED_DOCKER_TEST:
+            error_message = 'Failed: {} failed'.format(test_message)
+            prints_manager.add_print_job(error_message, print_error, thread_index)
+            failed_playbooks.append(playbook_id)
+            end_mock_message = '------ Test {} end ------\n'.format(test_message)
+            prints_manager.add_print_job(end_mock_message, print, thread_index)
 
+            return
         else:
             mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
             prints_manager.add_print_job(mock_failed_message, print, thread_index)
