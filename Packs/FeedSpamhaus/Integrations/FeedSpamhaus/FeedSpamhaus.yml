@@ -22,7 +22,7 @@ configuration:
   type: 19
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
-  name: feedInstanceReliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
