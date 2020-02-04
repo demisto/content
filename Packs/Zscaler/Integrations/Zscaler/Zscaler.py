@@ -489,7 +489,7 @@ def category_add_url(category_id, url):
             found_category = True
             break
     if found_category:
-        url_list = url.split(',')
+        url_list = argToList(url)
         all_urls = url_list[:]
         all_urls.extend(category_data['urls'])
         category_data['urls'] = all_urls
