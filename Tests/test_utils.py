@@ -460,8 +460,8 @@ class Docker:
                 failed_memory_test = True
             if pids_usage > pids_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the pids threshold, '
-                                  'configured: {} and actual pid number is {}.\n'.format(container_name, pids_threshold,
-                                                                                         pids_usage))
+                                  'configured: {} and actual pid number is {}.\n'.
+                                  format(container_name, pids_threshold, pids_usage))
                 failed_memory_test = True
 
             if failed_memory_test:
