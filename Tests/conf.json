@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+        {
+            "integrations": "AzureFeed",
+            "playbookID": "AzureFeed - Test",
+            "fromversion": "5.5.0"
+        },
          {
             "playbookID": "CreateIndicatorFromSTIXTest",
              "fromversion": "5.0.0"
