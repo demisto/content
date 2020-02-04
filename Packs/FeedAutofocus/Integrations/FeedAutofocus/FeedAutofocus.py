@@ -160,7 +160,7 @@ class Client(BaseClient):
             indicators.extend(self.http_request(feed_type="Custom Feed"))
 
         if limit:
-            indicators = indicators[int(offset): int(limit)]
+            indicators = indicators[int(offset): int(offset)+int(limit)]
 
         parsed_indicators = []  # type:List
 
