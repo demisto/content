@@ -80,35 +80,16 @@ def get_process_timeline_item(raw_item, category_name, limit, offset):
     for category in raw_item:
         if category['name'].lower() == category_name.lower():
             sorted_timeline_dates = sorted(category['details'].keys())
-            for i in range(offset, offset + limit):
+            for i in range(offset, min(offset + limit, len(sorted_timeline_dates))):
                 current_date = sorted_timeline_dates[i]
                 events_in_current_date = category['details'][current_date]
-                events_for_date_i = parse_events_by_category(events_in_current_date, category_name)
                 timeline_item.append({
-                    'Date': sorted_timeline_dates[i],
+                    'Date': timestamp_to_datestring(sorted_timeline_dates[i], date_format='%Y-%m-%d %H:%M:%S.%f'),
                     'Category': category_name,
-                    'Event': events_for_date_i
+                    'Event': events_in_current_date
                 })
 
     return timeline_item
-
-
-def parse_events_by_category(events, category_name):
-    # todo: If possible, complete method (parse). Otherwise, remove this method and pass events list as is.
-    parsed_events = events
-    if category_name.lower() == 'file':
-        pass
-    elif category_name.lower() == 'dns':
-        pass
-    elif category_name.lower() == 'registry':
-        pass
-    elif category_name.lower() == 'network':
-        pass
-    elif category_name.lower() == 'image':
-        pass
-    else:  # category_name.lower() == 'process'
-        pass
-    return parsed_events
 
 
 def get_evidence_item(raw_item):
@@ -1015,6 +996,8 @@ def get_process_timeline(client, data_args):
     offset = int(data_args.get('offset'))
 
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/eprocesstimelines/{ptid}')
+    demisto.info('AAAAAAAAAA')
+    demisto.info(str(raw_response))
     timeline = get_process_timeline_item(raw_response, category, limit, offset)
 
     context = createContext(timeline, removeNull=True)
@@ -1139,7 +1122,7 @@ def main():
             raise
 
         else:
-            return_error('Error in Tanium v2 Integration: {}'.format(str(e)), traceback.format_exc())
+            return_error('Error in Tanium Threat Response Integration: {}'.format(str(e)), traceback.format_exc())
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
