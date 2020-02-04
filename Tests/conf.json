@@ -2177,6 +2177,11 @@
         {
             "playbookID": "Indicator Feed - Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "DShield Feed",
+            "playbookID": "playbook-DshieldFeed_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
