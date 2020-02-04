@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.0] - 2020-02-04
 Added an immediate recovery for HTTP requests in case of connection error, which should help if QRadar SIEM is busy.
 
 ## [20.1.2] - 2020-01-22

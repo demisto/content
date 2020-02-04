@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.0] - 2020-02-04
   - Fixed issue where trailing whitespaces would effect outputs. 
   - Implemented the Cortex XDR API v2. 
   -  Added 11 Traps commands.
