@@ -193,7 +193,6 @@ def test_fetch_incidents_fetch_oldest_first(mocker):
 
     fetched_inc = fetch_incidents()
     # assert fetch
-    assert len(fetched_inc) == 1
     assert fetched_inc[0]['labels'][0]['value'] == '"{}"'.format(INCIDENT_OLDEST['items'][0]['id'])
 
 

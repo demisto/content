@@ -276,7 +276,7 @@ def get_incidents_request(since=None, until=None, page_number=None, page_size=10
 def get_all_incidents(since=None, until=None, limit=None, page_number=0):
     """
 
-    returns 
+    returns
     1. all/up to limit incidents in a time window
     2. has_next
     3. next_page
