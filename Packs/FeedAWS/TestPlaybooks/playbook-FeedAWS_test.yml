@@ -85,7 +85,7 @@ tasks:
       - "6"
     scriptarguments:
       extend-context:
-        simple: Type=Type
+        simple: Type=type
       limit:
         simple: "1"
     separatecontext: false
