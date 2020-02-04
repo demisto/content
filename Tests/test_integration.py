@@ -508,7 +508,7 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
 
     __disable_integrations_instances(client, module_instances, prints_manager, thread_index=thread_index)
 
-    if test_docker_images and not is_mock_run:
+    if test_docker_images:
         memory_threshold = options.get('memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE)
         pids_threshold = options.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
         error_message = Docker.check_resource_usage(server_url=server_url,
