@@ -537,7 +537,7 @@ def get_connections(client, data_args):
 def get_connection(client, data_args):
     conn_name = data_args.get('connection-name')
     raw_response = client.do_request('GET', '/plugin/products/trace/conns')
-    connection_raw_response = {}
+    connection_raw_response: dict = {}
     found = False
     for conn in raw_response:
         if conn.get('name') and conn['name'] == conn_name:
