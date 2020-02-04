@@ -8,56 +8,6 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: Fetch Interval
-  name: feedFetchInterval
-  defaultvalue: 240
-  type: 19
-  required: true
-- additionalinfo: Type of the indicator in the feed.
-  display: Indicator Type
-  name: indicator_type
-  required: true
-  type: 0
-- defaultvalue: F - Reliability cannot be judged
-  display: Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- name: expiration
-  required: false
-  type: 17
-- display: Bypass exclusion list
-  name: bypassExclusionList
-  defaultvalue: ""
-  type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list will be ignored for this feed.
-- defaultvalue: feedInstanceReputationNotSet
-  display: Mark as reputation
-  name: feedInstanceReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
 - display: URL
   name: url
   required: true
@@ -66,6 +16,61 @@ configuration:
   name: credentials
   required: false
   type: 9
+- additionalinfo: Type of the indicator in the feed.
+  display: Indicator Type
+  name: indicator_type
+  required: true
+  type: 0
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
