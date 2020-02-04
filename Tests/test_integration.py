@@ -418,7 +418,7 @@ def configure_proxy_unsecure(integration_params):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return playbook status
-def test_integration(client, integrations, playbook_id, prints_manager, server_url, options=None, is_mock_run=False,
+def test_integration(client, server_url, integrations, playbook_id, prints_manager, options=None, is_mock_run=False,
                      thread_index=0):
     options = options if options is not None else {}
     # create integrations instances
@@ -468,7 +468,8 @@ def test_integration(client, integrations, playbook_id, prints_manager, server_u
         prints_manager.add_print_job(incident_id_not_found_msg, print_error, thread_index)  # disable-secrets-detection
         return False, -1
 
-    prints_manager.add_print_job('Investigation ID: {}'.format(investigation_id), print, thread_index)
+    prints_manager.add_print_job('Investigation URL: {}/WorkPlan/{}'.format(server_url, investigation_id), print,
+                                 thread_index)
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount
