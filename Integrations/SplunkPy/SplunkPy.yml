@@ -61,6 +61,10 @@ configuration:
   name: useSplunkTime
   required: false
   type: 8
+- display: Additional Labels
+  name: additional_labels
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false

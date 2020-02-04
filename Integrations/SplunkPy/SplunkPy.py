@@ -21,6 +21,7 @@ SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+LABELS = demisto.params().get('additional_labels')
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -94,12 +95,19 @@ def rawToDict(raw):
 
 
 # Converts to an str
-
-
 def convert_to_str(obj):
     if isinstance(obj, unicode):
         return obj.encode('utf-8')
     return str(obj)
+
+
+# Remove duplicates from a list
+def remove(duplicate):
+    final_list = []
+    for num in duplicate:
+        if num not in final_list:
+            final_list.append(num)
+    return final_list
 
 
 def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
@@ -196,9 +204,16 @@ def notable_to_incident(event):
             rawDict = rawToDict(event['_raw'])
             for rawKey in rawDict:
                 labels.append({'type': rawKey, 'value': rawDict[rawKey]})
+    if LABELS:
+        for field in event:
+            if isinstance(event[field], list) and field != "_raw":
+                list_to_string = ''.join(str(element) for element in event[field])
+                labels.append({'type': field, 'value': list_to_string})
+            elif field != "_raw":
+                labels.append({'type': field, 'value': event[field]})
     if demisto.get(event, 'security_domain'):
         labels.append({'type': 'security_domain', 'value': event["security_domain"]})
-    incident['labels'] = labels
+    incident['labels'] = remove(labels)
     return incident
 
 
