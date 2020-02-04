@@ -81,6 +81,10 @@
 					"complex": null,
 					"simple": "user_count"
 				},
+				"XDR Host Count": {
+					"complex": null,
+					"simple": "host_count"
+				},
 				"occurred": {
 					"complex": {
 						"accessor": "",
