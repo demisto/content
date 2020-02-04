@@ -33,10 +33,6 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- display: expiration
-  name: expiration
-  required: false
-  type: 17
 - additionalinfo: When selected, the exclusion list will be ignored for this feed.
   display: Bypass exclusion list
   name: feedBypassExclusionList
