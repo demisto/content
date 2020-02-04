@@ -172,3 +172,5 @@ inputs:
   required: false
   description: ""
 outputs: []
+tests:
+- Tanium Threat Response Test

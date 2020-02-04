@@ -435,3 +435,5 @@ outputs:
 - contextPath: File.ID
   description: File download entry ID.
   type: string
+tests:
+- Tanium Threat Response Test
