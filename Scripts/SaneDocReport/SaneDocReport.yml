@@ -41,3 +41,4 @@ tests:
 - No Test
 deprecated: true
 toversion: 5.4.9
+fromversion: 5.0.0
