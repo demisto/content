@@ -14,7 +14,8 @@ configuration:
   - S3
   required: true
   type: 16
-- additionalinfo: The AWS Regions to fetch indicators by.
+- additionalinfo: The AWS Regions to fetch indicators by. If empty, all regions will
+    be included.
   display: Regions
   hidden: false
   name: regions

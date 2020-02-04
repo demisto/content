@@ -81,5 +81,6 @@ def test_json_feed_with_config_mapping():
         indicators = fetch_indicators_command(client=client, indicator_type='CIDR')
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
         indicator = indicators[0]
-        assert 'Region' in indicator
+        custom_fields = indicator['CustomFields']
+        assert 'Region' in custom_fields
         assert 'region' in indicator['rawJSON']
