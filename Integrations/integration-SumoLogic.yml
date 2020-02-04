@@ -260,9 +260,10 @@ script:
                 query = beforeHttp + url + afterWhitespace
             }
             var headers = 'headers' in args ? argToList(args.headers) : undefined;
+            var waitForSearchComplete = args.waitForSearchComplete == 'true';
             var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
                 a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep),
-                args.waitForSearchComplete);
+                waitForSearchComplete);
             var md = '';
             var ec = {};
             if (s.messages && s.messages.length > 0) {
