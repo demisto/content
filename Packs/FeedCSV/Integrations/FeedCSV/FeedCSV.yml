@@ -35,7 +35,7 @@ configuration:
   type: 8
 - defaultvalue: feedInstanceReputationNotSet
   display: Mark as reputation
-  name: feedInstanceReputation
+  name: feedReputation
   options:
   - None
   - Good
@@ -44,12 +44,11 @@ configuration:
   required: false
   type: 18
 - defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
+  name: feedExpirationPolicy
   required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
+  type: 17
+- display: expirationInterval
+  name: feedExpirationInterval
   required: false
   type: 1
 - additionalinfo: Type of the indicator in the feed.

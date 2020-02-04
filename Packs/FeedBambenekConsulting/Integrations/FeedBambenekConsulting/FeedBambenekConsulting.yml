@@ -52,12 +52,10 @@ configuration:
   type: 18
 - defaultvalue: indicatorType
   display: expirationPolicy
-  hidden: true
   name: feedExpirationPolicy
   required: false
-  type: 0
+  type: 17
 - display: expirationInterval
-  hidden: true
   name: feedExpirationInterval
   required: false
   type: 1
