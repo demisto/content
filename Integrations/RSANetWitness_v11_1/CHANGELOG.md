@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fixed an issue with ***fetch-incidents*** when setting a *Fetch Limit*, it would drop older incidents if the fetched incidents number was greater than the limit.
 
 ## [19.12.1] - 2019-12-25
   - Fixed an issue where environment proxy effects the integration when even though no proxy should be used.
