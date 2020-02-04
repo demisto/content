@@ -66,14 +66,6 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 description: BruteForceBlocker is a Perl script that works with pf – firewall developed
   by the OpenBSD team, and is also available on FreeBSD from version 5.2. From BruteForceBlocker
   version 1.2 it is also possible to report blocked IP addresses to the project site
