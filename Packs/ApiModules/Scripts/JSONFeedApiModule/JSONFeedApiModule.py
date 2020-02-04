@@ -131,12 +131,12 @@ def fetch_indicators_command(client: Client, indicator_type: str, **kwargs) -> U
             for item in items:
                 mapping = feed_config.get('mapping')
                 indicator_value = item.get(indicator_field)
-                indicator = {'value': indicator_value, 'type': indicator_type}
+                indicator = {'value': indicator_value, 'type': indicator_type, 'CustomFields': {}}
                 attributes = {'source_name': sub_feed_name, 'value': indicator_value, 'type': indicator_type}
                 for f in fields:
                     attributes[f] = item.get(f)
                     if mapping and f in mapping:
-                        indicator[mapping[f]] = item.get(f)
+                        indicator['CustomFields'][mapping[f]] = item.get(f)
 
                 indicator['rawJSON'] = attributes
 
