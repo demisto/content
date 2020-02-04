@@ -835,6 +835,7 @@ script:
       description: The ID of the event.
       type: Number
     - contextPath: Tanium.Event.EventOpcode
+      description: The event opcode.
       type: Number
     - contextPath: Tanium.Event.EventRecordID
       description: The ID of the event record.
@@ -1219,11 +1220,13 @@ script:
   - arguments:
     - default: false
       isArray: false
+      description: The ID of the evidence.
       name: evidence-id
       required: true
       secret: false
     deprecated: false
     execution: false
+    description: Retrive the evidence by it's ID.
     name: tanium-tr-get-evidence-by-id
     outputs:
     - contextPath: Tanium.Evidence.ID
@@ -1266,29 +1269,35 @@ script:
     - default: false
       isArray: false
       name: connection-name
+      description: The name of the connection.
       required: true
       secret: false
     - default: false
       isArray: false
+      description: The host.
       name: host
       required: true
       secret: false
     - default: false
       isArray: false
+      description: The process instance ID.
       name: ptid
       required: true
       secret: false
     deprecated: false
     execution: false
+    description: Create an evidence.
     name: tanium-tr-create-evidence
   - arguments:
     - default: false
       isArray: false
+      description: The ID of the evidence.
       name: evidence-id
       required: true
       secret: false
     deprecated: false
     execution: false
+    description: Deletes an evidence.
     name: tanium-tr-delete-evidence
   - arguments:
     - default: false
@@ -1388,12 +1397,14 @@ script:
     - default: false
       defaultValue: Connection ID.
       isArray: false
+      description: The ID of the connection.
       name: connection-id
       required: true
       secret: false
     - default: false
       defaultValue: Path to file.
       isArray: false
+      description: The path to the file.
       name: path
       required: true
       secret: false

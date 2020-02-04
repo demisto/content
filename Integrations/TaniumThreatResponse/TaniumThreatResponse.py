@@ -848,7 +848,6 @@ def list_evidence(client, data_args):
 
     evidences = []
     for item in raw_response:
-        pass
         evidence = get_evidence_item(item)
         evidences.append(evidence)
 
