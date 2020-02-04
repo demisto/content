@@ -1,7 +1,9 @@
 ## [Unreleased]
  - Fixed an issue where the listing emails were not comparing the mail ID.
- - Fixed an issue where ***msgraph-mail-list-folders*** failed when handling multiple pages.
- 
+
+## [20.2.0] - 2020-02-04
+Fixed an issue where the listing emails were not comparing the mail ID.
+
 ## [20.1.2] - 2020-01-22
 Added support to authenticate using a self-deployed Azure application.
 
