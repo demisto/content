@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import re
 import requests
 import socket
-from typing import List
+from typing import List, Dict
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -43,6 +43,7 @@ class Client(BaseClient):
             self.custom_feed_url_list = url_list
 
         self.verify = not insecure
+        self.resolution_mapping = {}  # type:Dict
         if proxy:
             handle_proxy()
 
@@ -148,11 +149,17 @@ class Client(BaseClient):
 
     def resolve_ip_address(self, ip):
         if self.get_ip_type(ip):
-            return socket.gethostbyaddr(ip)[0]
+            if ip in self.resolution_mapping.keys():
+                return self.resolution_mapping[ip]
+
+            else:
+                resolved_domain = socket.gethostbyaddr(ip)[0]
+                self.resolution_mapping[ip] = resolved_domain
+                return resolved_domain
 
         return None
 
-    def build_iterator(self):
+    def build_iterator(self, limit=None, offset=None):
         """Builds a list of indicators.
 
         Returns:
@@ -165,6 +172,9 @@ class Client(BaseClient):
 
         if "Custom Feed" in self.indicator_feeds:
             indicators.extend(self.http_request(feed_type="Custom Feed"))
+
+        if limit:
+            indicators = indicators[int(offset): int(limit)]
 
         parsed_indicators = []  # type:List
 
@@ -222,7 +232,7 @@ def module_test_command(client: Client, args: dict):
     if 'Daily Threat Feed' in indicator_feeds:
         client.indicator_feeds = ['Daily Threat Feed']
         try:
-            client.build_iterator()
+            client.build_iterator(1, 0)
         except Exception:
             exception_list.append("Could not fetch Daily Threat Feed\n"
                                   "\nCheck your API key and your connection to AutoFocus.")
@@ -233,7 +243,7 @@ def module_test_command(client: Client, args: dict):
         for url in url_list:
             client.custom_feed_url_list = [url]
             try:
-                client.build_iterator()
+                client.build_iterator(1, 0)
             except Exception:
                 exception_list.append(f"Could not fetch Custom Feed {url}\n"
                                       f"\nCheck your API key the URL for the feed and Check "
@@ -255,12 +265,10 @@ def get_indicators_command(client: Client, args: dict):
     Returns:
         str, dict, list. the markdown table, context JSON and list of indicators
     """
-    indicators = fetch_indicators_command(client)
-    if args.get('offset'):
-        indicators = indicators[int(str(args.get('offset'))):]
+    offset = int(args.get('offset', 0))
+    limit = int(args.get('limit', 100))
 
-    if args.get('limit'):
-        indicators = indicators[:int(str(args.get('limit')))]
+    indicators = fetch_indicators_command(client, limit, offset)
 
     hr_indicators = []
     for indicator in indicators:
@@ -279,16 +287,18 @@ def get_indicators_command(client: Client, args: dict):
     return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: Client):
+def fetch_indicators_command(client: Client, limit=None, offset=None):
     """Fetch-indicators command from AutoFocus Feeds
 
     Args:
         client(Client): AutoFocus Feed client.
+        limit: limit the amount of incidators fetched.
+        offset: the index of the first index to fetch.
 
     Returns:
         list. List of indicators.
     """
-    indicators = client.build_iterator()
+    indicators = client.build_iterator(limit, offset)
 
     return indicators
 
