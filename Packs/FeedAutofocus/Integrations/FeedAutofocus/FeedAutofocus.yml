@@ -32,7 +32,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: indicatorType
+- defaultvalue: suddenDeath
   name: feedExpirationPolicy
   options:
   - never
