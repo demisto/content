@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Dshield Feed
+  id: DShield Feed
   version: -1
 configuration:
 - display: Fetch indicators
@@ -67,8 +67,8 @@ configuration:
   type: 8
 description: This integration fetches a list that summarizes the top 20 attacking
   class C (/24) subnets over the last three days from Dshield.
-display: Dshield Feed
-name: Dshield Feed
+display: DShield Feed
+name: DShield Feed
 fromversion: 5.5.0
 script:
   commands:
