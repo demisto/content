@@ -120,10 +120,10 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     human_readable = []
     context: Dict[str, Any] = {}
     params = {
-        f'id[]': args.get('id'),
-        f'top_priority[]': args.get('top-priority'),
+        f'id[]': argToList(args.get('id'),','),
+        f'top_priority[]': argToList(args.get('top-priority'),','),
         f'min_risk_meter_score': args.get('min-score'),
-        f'status[]': args.get('status')
+        f'status[]': argToList(args.get('status'),','),
     }
     response = client.http_request(message='GET', suffix=url_suffix,
                                    params=params).get('vulnerabilities')
@@ -187,7 +187,7 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
                 'Running': connector.get('running'),
                 'ID': connector.get('id')
             }
-            human_readable.append(curr_dict)
+            human_readable.appesnd(curr_dict)
         context = {
             'Kenna.ConnectorsList(val.ID === obj.ID)': context_list
         }
@@ -230,10 +230,10 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     to_context = args.get('to_context')
     context: Dict[str, Any] = {}
     params = {
-        f'id[]': args.get('id'),
-        f'top_priority[]': args.get('top-priority'),
+        f'id[]': argToList(args.get('id'),','),
+        f'top_priority[]': argToList(args.get('top-priority'),','),
         f'min_risk_meter_score': args.get('min-score'),
-        f'status[]': args.get('status'),
+        f'status[]': argToList(args.get('status'),','),
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
     if response:
@@ -339,8 +339,8 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     else:
         tags = args.get('tags')
     params = {
-        f'id[]': args.get('id'),
-        f'hostname[]': args.get('hostname'),
+        f'id[]': argToList(args.get('id'),','),
+        f'hostname[]': argToList(args.get('hostname'),','),
         f'min_risk_meter_score': args.get('min-score'),
         f'tags[]': tags
     }
