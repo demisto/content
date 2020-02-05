@@ -2,6 +2,20 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+        {
+            "integrations": "Blocklist_de Feed",
+            "playbookID": "Blocklist_de - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AzureFeed",
+            "playbookID": "AzureFeed - Test",
+            "fromversion": "5.5.0"
+        },
+         {
+            "playbookID": "CreateIndicatorFromSTIXTest",
+             "fromversion": "5.0.0"
+         },
          {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
@@ -10,6 +24,16 @@
         {
             "integrations": "Cofense Feed",
             "playbookID": "TestCofenseFeed",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Bambenek Consulting Feed",
+            "playbookID": "BambenekConsultingFeed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AWS Feed",
+            "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
         },
         {
@@ -23,6 +47,11 @@
         {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ProofpointFeed",
+            "playbookID": "TestProofpointFeed",
             "fromversion": "5.5.0"
         },
         {
@@ -76,6 +105,11 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_prod"
+        },
+        {
+            "integrations": "CloudShark",
+            "playbookID": "CloudShark - Test Playbook",
+            "timeout": 500
         },
         {
             "integrations": "nmap",
@@ -496,6 +530,11 @@
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Test_export_indicators_service",
+            "integrations": "ExportIndicators",
             "fromversion": "5.5.0"
         },
         {
@@ -1051,6 +1090,9 @@
         },
         {
             "playbookID": "ZipFile-Test"
+        },
+        {
+            "playbookID": "UnzipFile-Test"
         },
         {
             "playbookID": "ExtractDomainTest"
@@ -1745,6 +1787,10 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
+            "playbookID": "Wait Until Datetime - Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "PAN OS EDL Management - Test",
             "integrations": "palo_alto_networks_pan_os_edl_management"
         },
@@ -2056,6 +2102,12 @@
         },
         {
             "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_Fetch_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
         },
@@ -2130,13 +2182,47 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "IsInternalHostName Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "Splunk Indicator Hunting Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AutoFocus Feed",
+            "playbookID": "playbook-FeedAutofocus_test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
+        },
+        {
+            "playbookID": "Indicator Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Recorded Future Feed",
+            "playbookID": "RecordedFutureFeed - Test",
+            "timeout": 1000,
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -2167,7 +2253,10 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "ssdeepreputationtest": "Issue #20953"
+        "ssdeepreputationtest": "Issue #20953",
+        "Elasticsearch_v2_test-v6": "Issue #21510",
+        "ssdeepreputationtest": "Issue #20953",
+        "C2sec-Test": "Issue #21633"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2230,6 +2319,7 @@
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
+        "LogRhythm": "Issue 21672",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
