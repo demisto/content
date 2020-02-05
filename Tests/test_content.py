@@ -494,14 +494,14 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
     return True
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations,
+                         playbook_skipped_integrations):
     integrations = []
     is_nightly_integration = False
-    has_skipped_integration = False
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
-            has_skipped_integration = True
+            playbook_skipped_integrations.add(integration)
 
         if integration in nightly_integrations:
             is_nightly_integration = True
@@ -512,7 +512,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return has_skipped_integration, integrations, is_nightly_integration
+    return integrations, is_nightly_integration
 
 
 def extract_filtered_tests(is_nightly):
@@ -542,7 +542,7 @@ def load_conf_files(conf_path, secret_conf_path):
 
 def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
-                      filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                      filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
                       server_numeric_version, demisto_api_key, prints_manager, thread_index=0, is_ami=True):
     playbook_id = t['playbookID']
@@ -562,8 +562,9 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     if not isinstance(instance_names_conf, list):
         instance_names_conf = [instance_names_conf, ]
 
-    has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
-        integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+    integrations, is_nightly_integration = collect_integrations(
+        integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations,
+        playbook_skipped_integration)
 
     skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
 
@@ -585,7 +586,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
         return
 
     # Skip integration
-    if has_skipped_integration:
+    if playbook_skipped_integration:
         return
 
     # Skip version mismatch test
@@ -707,6 +708,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+    playbook_skipped_integration = set([])
 
     disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
@@ -725,8 +727,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         for t in mockable_tests:
             run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                              is_filter_configured,
-                              filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                              is_filter_configured, filtered_tests,
+                              skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version, demisto_api_key, prints_manager,
                               thread_index=thread_index)
@@ -746,12 +748,16 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                           is_filter_configured,
-                          filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                          filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, demisto_api_key,
                           prints_manager, thread_index, is_ami)
 
         prints_manager.execute_thread_prints(thread_index)
+
+    prints_manager.add_print_job('=================== playbook_skipped_integration{}'.
+                                 format(playbook_skipped_integration), print_color, thread_index,
+                                 message_color=LOG_COLORS.GREEN)
 
     tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
                                      skipped_integration, unmockable_integrations)
