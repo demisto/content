@@ -3,8 +3,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
-from typing import List, Dict, Optional, Tuple, Generator
 import urllib3
+import traceback
+from typing import List, Dict, Optional, Tuple, Generator
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -172,7 +173,7 @@ def test_module(client: Client) -> str:
         str -- "ok" if succeeded, else raises a error.
     """
     client.build_iterator()
-    return "ok"
+    return "ok", {}, {}
 
 
 def fetch_indicators_command(
@@ -289,19 +290,21 @@ def main():
     demisto.info(f"Command being called is {demisto.command()}")
     try:
         if demisto.command() == "test-module":
-            return_outputs(test_module(client))
+            return_outputs(*test_module(client))
         elif demisto.command() == "fetch-indicators":
             begin_time, end_time = build_fetch_times(params.get("fetch_time", "3 days"))
             indicators = fetch_indicators_command(client, begin_time, end_time)
             # Send indicators to demisto
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
+
         elif demisto.command() == "cofense-get-indicators":
             # dummy command for testing
             readable_outputs, raw_response = get_indicators_command(client, demisto.args())
-            return_outputs(readable_outputs, raw_response=raw_response)
+            return_outputs(readable_outputs, {}, raw_response=raw_response)
+
     except Exception as err:
-        return_error(str(err))
+        return_error(f"Error in {INTEGRATION_NAME} integration:\n{str(err)}\n\nTrace:{traceback.format_exc()}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
