@@ -313,7 +313,7 @@ def get_all_incidents(since=None, until=None, limit=None, page_number=0):
     return incidents, has_next, page_number
 
 
-def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_number=0, ignore_id=None):
+def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_number=0, last_fetched_id=None):
     """
 
     returns
@@ -341,9 +341,9 @@ def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_nu
             page_number=page_number
         )
         incidents = response_body.get('items')
-        # clear incidents after ignore_id
+        # clear incidents after last_fetched_id
         for inc in incidents:
-            if inc.get('id') == ignore_id:
+            if inc.get('id') == last_fetched_id:
                 continue_loop = False
                 break
             incidents_result.append(inc)
@@ -658,18 +658,18 @@ def fetch_incidents():
     # if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
     if last_run and last_run.get('timestamp'):
         timestamp = last_run.get('timestamp')
-        ignore_id = last_run.get('ignore_id')
+        last_fetched_id = last_run.get('last_fetched_id')
     else:
         last_fetch, _ = parse_date_range(FETCH_TIME)
         # convert to ISO 8601 format and add Z suffix
         timestamp = last_fetch.isoformat() + 'Z'
-        ignore_id = None
+        last_fetched_id = None
 
     LOG('Fetching incidents since {}'.format(timestamp))
     netwitness_incidents = get_all_incidents_from_beginning(
         since=timestamp,
         limit=FETCH_LIMIT,
-        ignore_id=ignore_id
+        last_fetched_id=last_fetched_id
     )
 
     demisto_incidents = []
@@ -707,7 +707,7 @@ def fetch_incidents():
     demisto.incidents(demisto_incidents)
     last_run = {'timestamp': last_incident_timestamp}
     if netwitness_incidents:
-        last_run['ignore_id'] = netwitness_incidents[-1].get('id')
+        last_run['last_fetched_id'] = netwitness_incidents[-1].get('id')
     demisto.setLastRun(last_run)
     return demisto_incidents
 
