@@ -196,7 +196,7 @@ def test_fetch_incidents_fetch_oldest_first(mocker):
     assert fetched_inc[0]['labels'][0]['value'] == '"{}"'.format(INCIDENT_OLDEST['items'][0]['id'])
 
 
-def test_fetch_incidents_fetch_with_ignore_id(mocker):
+def test_fetch_incidents_fetch_with_last_fetched_id(mocker):
     """
     Given:
         There are 2 incidents to fetch
@@ -227,7 +227,7 @@ def test_fetch_incidents_fetch_with_ignore_id(mocker):
         mocker.patch.object(demisto, 'params', return_value=mocked_dict)
         mocker.patch.object(demisto, "getLastRun", return_value={
             "timestamp": "2018-08-13T09:56:02.000000",
-            "ignore_id": INCIDENT_OLD['items'][0]['id']
+            "last_fetched_id": INCIDENT_OLD['items'][0]['id']
         })
         mocker.patch.object(demisto, 'incidents')
         mocker.patch('RSANetWitness_v11_1.get_incidents_request', return_value='1',
