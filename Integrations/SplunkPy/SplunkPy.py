@@ -276,6 +276,8 @@ def build_search_kwargs(args):
         kwargs_normalsearch['earliest_time'] = args['earliest_time']
     if demisto.get(args, 'latest_time'):
         kwargs_normalsearch['latest_time'] = args['latest_time']
+    if demisto.get(args, 'app'):
+        kwargs_normalsearch['app'] = args['app']
     return kwargs_normalsearch
 
 
@@ -318,7 +320,7 @@ def get_current_results_batch(search_job, batch_size, results_offset):
     return results_batch
 
 
-def parse_batch_of_results(current_batch_of_results, max_results_to_add):
+def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     parsed_batch_results = []
     batch_dbot_scores = []
     results_reader = results.ResultsReader(io.BufferedReader(ResponseReaderWrapper(current_batch_of_results)))
@@ -332,6 +334,8 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add):
             if demisto.get(item, 'host'):
                 batch_dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname',
                                           'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
+            if app:
+                item['app'] = app
             # Normal events are returned as dicts
             parsed_batch_results.append(item)
 
@@ -361,7 +365,8 @@ def splunk_search_command():
     while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
         current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
         max_results_to_add = results_limit - len(total_parsed_results)
-        parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add)
+        parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add,
+                                                                         search_kwargs['app'])
         total_parsed_results.extend(parsed_batch_results)
         dbot_scores.extend(batch_dbot_scores)
 
@@ -381,10 +386,12 @@ def splunk_search_command():
 
 def splunk_job_create_command():
     query = demisto.args()['query']
+    app = demisto.args().get('app', '')
     if not query.startswith('search'):
         query = 'search ' + query
     search_kwargs = {
-        "exec_mode": "normal"
+        "exec_mode": "normal",
+        "app": app
     }
     search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
 
