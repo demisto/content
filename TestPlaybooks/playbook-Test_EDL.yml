@@ -47,8 +47,6 @@ tasks:
     scriptarguments:
       edl_size:
         simple: "2"
-      format:
-        simple: text
       print_indicators:
         simple: "true"
       query:
