@@ -163,6 +163,13 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: A string that contains the application namespace in which to restrict
+        searches.
+      isArray: false
+      name: app
+      required: false
+      secret: false
     deprecated: false
     description: Searches Splunk for events.
     execution: false
@@ -256,6 +263,13 @@ script:
       isArray: false
       name: query
       required: true
+      secret: false
+    - default: false
+      description: A string that contains the application namespace in which to restrict
+        searches.
+      isArray: false
+      name: app
+      required: false
       secret: false
     deprecated: false
     description: Creates a new search job in Splunk.
