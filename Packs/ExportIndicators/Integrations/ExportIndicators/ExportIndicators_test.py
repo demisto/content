@@ -184,7 +184,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
             limit = 50
-            mocker.patch.object(demisto, 'findIndicators', return_value=iocs_dict)
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             ei_vals, nxt_pg = ei.find_indicators_with_limit_loop(indicator_query='', limit=limit)
             assert nxt_pg == 1  # assert entered into loop
 
@@ -195,7 +195,7 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
             limit = 30
-            mocker.patch.object(demisto, 'findIndicators', return_value=iocs_dict)
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             ei.PAGE_SIZE = IOC_RES_LEN
             ei_vals, nxt_pg = ei.find_indicators_with_limit_loop(indicator_query='', limit=limit,
                                                                  last_found_len=IOC_RES_LEN)
