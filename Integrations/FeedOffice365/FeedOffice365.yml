@@ -124,7 +124,7 @@ script:
     - contextPath: O365.Indicator.Type
       description: The indicator type.
       type: Unknown
-  dockerimage: demisto/python3:3.7.5.4328
+  dockerimage: demisto/python3:3.8.1.5734
   isfetch: false
   feed: true
   longRunning: false
