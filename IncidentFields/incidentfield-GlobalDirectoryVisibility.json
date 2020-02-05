@@ -1,6 +1,7 @@
 {
 	"id": "incident_globaldirectoryvisibility",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-05T15:49:35.636717915Z",
 	"name": "Global Directory Visibility",
 	"ownerOnly": false,

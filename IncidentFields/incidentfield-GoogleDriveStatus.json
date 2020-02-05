@@ -1,6 +1,7 @@
 {
 	"id": "incident_googledrivestatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-05T15:55:42.348461295Z",
 	"name": "Google Drive Status",
 	"ownerOnly": false,
