@@ -2,7 +2,7 @@
 - Added the ability to run the commands ***kenna-search-vulnerabilities***, ***kenna-search-assets***, ***kenna-get-asset-vulnerabilities***,  ***kenna-search-fixes***  with a list of the following arguments:
     - ***id*** 
     - ***status*** 
-    - ***top priorities*** 
+    - ***top priorities***
 
     
 ## [20.1.2] - 2020-01-22
