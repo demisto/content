@@ -42,7 +42,7 @@ tasks:
       direction:
         simple: both
       ip:
-        simple: 10.10.10.10
+        simple: 127.0.0.1
       ipname:
         simple: nameip
       rulename:
