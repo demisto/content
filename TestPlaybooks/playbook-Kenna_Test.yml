@@ -1,5 +1,5 @@
 id: Kenna Test
-version: 51
+version: 66
 contentitemfields:
   propagationLabels: []
 name: Kenna Test
@@ -185,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 3185
+          "x": 1430,
+          "y": 3380
         }
       }
     note: false
@@ -213,8 +213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 457.5,
-          "y": 3170
+          "x": 140,
+          "y": 3390
         }
       }
     note: false
@@ -223,17 +223,17 @@ tasks:
     skipunavailable: false
   "10":
     id: "10"
-    taskid: 1d33cc53-4ec3-44d7-85da-bcd9eb6fc432
+    taskid: b3b51dc0-8d19-43d4-8a36-38d9ee0ccbf3
     type: regular
     task:
-      id: 1d33cc53-4ec3-44d7-85da-bcd9eb6fc432
+      id: b3b51dc0-8d19-43d4-8a36-38d9ee0ccbf3
       version: -1
       name: kenna-get-asset-vulnerabilities
-      description: Get Vulenerabilities of specific asset
-      script: '|||kenna-get-asset-vulnerabilities'
+      description: Gets vulnerabilities of the specified asset.
+      script: Kennav2|||kenna-get-asset-vulnerabilities
       type: regular
       iscommand: true
-      brand: ""
+      brand: Kennav2
     nexttasks:
       '#none#':
       - "31"
@@ -244,6 +244,8 @@ tasks:
           accessor: Assets.ID
           transformers:
           - operator: FirstArrayElement
+      limit: {}
+      to_context: {}
     separatecontext: false
     view: |-
       {
@@ -423,10 +425,10 @@ tasks:
     skipunavailable: false
   "18":
     id: "18"
-    taskid: 9c495c58-9a70-4361-8e9e-185af337581c
+    taskid: fc7583ce-31b1-4663-8af0-22c4435ca684
     type: regular
     task:
-      id: 9c495c58-9a70-4361-8e9e-185af337581c
+      id: fc7583ce-31b1-4663-8af0-22c4435ca684
       version: -1
       name: check vulnerabilities after update
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -444,8 +446,10 @@ tasks:
           accessor: Vulnerabilities.ID
           transformers:
           - operator: FirstArrayElement
+      limit: {}
       min-score: {}
       status: {}
+      to_context: {}
       top-priority: {}
     separatecontext: false
     view: |-
@@ -836,25 +840,27 @@ tasks:
     skipunavailable: false
   "30":
     id: "30"
-    taskid: 6ea0ee0a-8ebc-49bd-84a4-fe408b27bccd
+    taskid: 546a8706-b33d-4211-8dca-5b956e136d34
     type: regular
     task:
-      id: 6ea0ee0a-8ebc-49bd-84a4-fe408b27bccd
+      id: 546a8706-b33d-4211-8dca-5b956e136d34
       version: -1
       name: Kenna-search-fixes
       description: Filters fixes by a given set of vulnerability and asset parameters
-        and returns the filtered fixes
-      script: '|||kenna-search-fixes'
+        and returns the filtered fixes.
+      script: Kennav2|||kenna-search-fixes
       type: regular
       iscommand: true
-      brand: ""
+      brand: Kennav2
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
       id: {}
+      limit: {}
       min-score: {}
       status: {}
+      to_context: {}
       top-priority: {}
       vulnerabilities: {}
     separatecontext: false
@@ -884,7 +890,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "8"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -916,6 +922,82 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+  "32":
+    id: "32"
+    taskid: a402dcd3-28a0-4bda-8a9c-a4f2cba8aac5
+    type: regular
+    task:
+      id: a402dcd3-28a0-4bda-8a9c-a4f2cba8aac5
+      version: -1
+      name: Check list of ids
+      description: Searches for vulnerabilities in Kenna.
+      script: Kennav2|||kenna-search-vulnerabilities
+      type: regular
+      iscommand: true
+      brand: Kennav2
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      id:
+        complex:
+          root: Kenna
+          accessor: Vulnerabilities.ID
+      limit: {}
+      min-score:
+        simple: "60"
+      status:
+        simple: open
+      to_context: {}
+      top-priority: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 3040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "33":
+    id: "33"
+    taskid: b9a91f54-6480-44aa-80dd-930e34a74808
+    type: condition
+    task:
+      id: b9a91f54-6480-44aa-80dd-930e34a74808
+      version: -1
+      name: check for all ids
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Kenna.Vulnerabilities.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -923,8 +1005,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3215,
-        "width": 1740,
+        "height": 3435,
+        "width": 1870,
         "x": 50,
         "y": 50
       }
