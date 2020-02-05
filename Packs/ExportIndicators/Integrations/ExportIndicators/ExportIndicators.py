@@ -57,7 +57,7 @@ def get_params_port(params: dict = demisto.params()) -> int:
 
 def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0) -> str:
     """
-    Refresh the cache values and format using an indicator_query to call demisto.findIndicators
+    Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
@@ -76,7 +76,7 @@ def save_context(now: datetime, out_dict: dict):
 
 def find_indicators_with_limit(indicator_query: str, limit: int) -> list:
     """
-    Finds indicators using demisto.findIndicators
+    Finds indicators using demisto.searchIndicators
     """
     iocs, _ = find_indicators_with_limit_loop(indicator_query, limit)
     return iocs[:limit]
@@ -85,7 +85,7 @@ def find_indicators_with_limit(indicator_query: str, limit: int) -> list:
 def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
                                     last_found_len: int = PAGE_SIZE):
     """
-    Finds indicators using while loop with demisto.findIndicators, and returns result and last page
+    Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
     """
     iocs: List[dict] = []
     if not last_found_len:
