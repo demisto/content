@@ -17,6 +17,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Bambenek Consulting Feed",
+            "playbookID": "BambenekConsultingFeed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "AWS Feed",
             "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
