@@ -249,7 +249,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
         }
     obj = filter_dict_null(obj)
     if headers:
-        if isinstance(headers, str):
+        if isinstance(headers, STRING_TYPES):
             headers = headers.split(',')
         if isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
