@@ -13,9 +13,9 @@ def test_fetch_indicators_command():
             "Service": 'Any'
         }
         mock.get(url_dict.get('FeedURL'), json=RESPONSE_DATA)
-        client = Client([url_dict], indicator='ips')
+        client = Client([url_dict])
         indicators = fetch_indicators_command(client)
-        assert len(indicators) == 4
+        assert len(indicators) == 10
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -29,7 +29,7 @@ def test_commands(command, args, response, length, mocker):
         "Region": 'Worldwide',
         "Service": 'Any'
     }
-    client = Client([url_dict], args, False, False)
+    client = Client([url_dict], False, False)
     mocker.patch.object(client, 'build_iterator', return_value=response)
     human_readable, indicators_ec, raw_json = command(client, args)
     indicators = raw_json.get('raw_response')
