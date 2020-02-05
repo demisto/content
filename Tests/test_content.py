@@ -759,6 +759,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                  format(playbook_skipped_integration), print_color, thread_index,
                                  message_color=LOG_COLORS.GREEN)
 
+    prints_manager.execute_thread_prints(thread_index)
+
     tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
                                      skipped_integration, unmockable_integrations)
     if not tests_settings.is_local_run:
