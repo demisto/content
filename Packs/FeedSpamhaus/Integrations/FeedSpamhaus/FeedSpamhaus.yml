@@ -69,15 +69,6 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
