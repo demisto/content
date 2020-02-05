@@ -523,6 +523,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Test_export_indicators_service",
+            "integrations": "ExportIndicators",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
