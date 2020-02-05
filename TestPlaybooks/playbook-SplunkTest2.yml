@@ -108,22 +108,20 @@ tasks:
     quiet: false
   "3":
     id: "3"
-    taskid: "16"
+    taskid: "43"
     type: regular
     task:
-      id: "16"
+      id: "43"
       version: -1
       name: Get indexes names
-      script: SplunkPy|||splunk-get-indexes
+      description: Prints all Splunk index names.
+      script: '|||splunk-get-indexes'
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
-    scriptarguments:
-      extend-context:
-        simple: indexes=
     separatecontext: false
     view: |-
       {
@@ -177,16 +175,17 @@ tasks:
     quiet: false
   "5":
     id: "5"
-    taskid: "13"
+    taskid: "41"
     type: regular
     task:
-      id: "13"
+      id: "41"
       version: -1
       name: Create new Splunk event
-      script: SplunkPy|||splunk-submit-event
+      description: Creates a new event in Splunk.
+      script: '|||splunk-submit-event'
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -278,27 +277,29 @@ tasks:
     quiet: false
   "8":
     id: "8"
-    taskid: "6"
+    taskid: "44"
     type: regular
     task:
-      id: "6"
+      id: "44"
       version: -1
       name: Test eventcount query
-      script: SplunkPy|||splunk-search
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
+      app: {}
+      batch_limit: {}
       earliest_time: {}
       event_limit: {}
-      extend-context:
-        simple: eventcount=
       latest_time: {}
       query:
         simple: '| eventcount'
+      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -434,16 +435,17 @@ tasks:
     quiet: false
   "13":
     id: "13"
-    taskid: "22"
+    taskid: "45"
     type: regular
     task:
-      id: "22"
+      id: "45"
       version: -1
       name: Parse Raw
-      script: SplunkPy|||splunk-parse-raw
+      description: Parses the raw part of the event.
+      script: '|||splunk-parse-raw'
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -538,22 +540,21 @@ tasks:
     quiet: false
   "16":
     id: "16"
-    taskid: "19"
+    taskid: "42"
     type: regular
     task:
-      id: "19"
+      id: "42"
       version: -1
       name: Parse Raw example
-      script: SplunkPy|||splunk-parse-raw
+      description: Parses the raw part of the event.
+      script: '|||splunk-parse-raw'
       type: regular
       iscommand: true
-      brand: SplunkPy
+      brand: ""
     nexttasks:
       '#none#':
       - "17"
     scriptarguments:
-      extend-context:
-        simple: parsedRaw=
       raw:
         simple: ${rawEvent}
     separatecontext: false
@@ -647,10 +648,10 @@ tasks:
     quiet: false
   "19":
     id: "19"
-    taskid: "28"
+    taskid: "46"
     type: regular
     task:
-      id: "28"
+      id: "46"
       version: -1
       name: Splunk Search from app
       description: Searches Splunk for events.
@@ -667,7 +668,7 @@ tasks:
       batch_limit: {}
       earliest_time: {}
       event_limit:
-        simple: "2"
+        simple: "1"
       latest_time: {}
       query:
         simple: sourcetype=pan:threat
