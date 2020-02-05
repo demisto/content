@@ -1,14 +1,14 @@
-id: Spamhaus_Feed_Test
+id: Blocklist_de - Test
 version: -1
-name: Spamhaus_Feed_Test
+name: Blocklist_de - Test
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: e0aff3ab-2115-441d-8b1f-580a4c4dafb2
+    taskid: b58846b4-e65f-4987-8707-4fff9506efba
     type: start
     task:
-      id: e0aff3ab-2115-441d-8b1f-580a4c4dafb2
+      id: b58846b4-e65f-4987-8707-4fff9506efba
       version: -1
       name: ''
       iscommand: false
@@ -16,7 +16,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '4'
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -30,20 +30,54 @@ tasks:
     ignoreworker: false
   '1':
     id: '1'
-    taskid: 0c4670d9-2240-4b58-879a-f18f8bd5e730
+    taskid: 2d39d354-6502-42c0-80c1-c6af7f2c3099
     type: regular
     task:
-      id: 0c4670d9-2240-4b58-879a-f18f8bd5e730
+      id: 2d39d354-6502-42c0-80c1-c6af7f2c3099
       version: -1
-      name: Get Indicators
+      name: DeleteContext
       description: ''
-      script: SpamhausFeed|||spamhaus-get-indicators
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: SpamhausFeed
+      iscommand: false
+      brand: ''
     nexttasks:
       '#none#':
-      - '2'
+      - '3'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: cd682731-338a-416f-89a4-27b9ace8127a
+    type: regular
+    task:
+      id: cd682731-338a-416f-89a4-27b9ace8127a
+      version: -1
+      name: blocklist_de-get-indicators
+      description: ''
+      script: '|||blocklist_de-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
     scriptarguments:
       extend-context:
         simple: first_object=.[0]
@@ -62,21 +96,44 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
-    taskid: 97cdfd3c-3076-4086-8f00-7d6e0b08104d
+  '14':
+    id: '14'
+    taskid: 2b4f3651-6954-40ca-8b06-fae67c14894f
+    type: title
+    task:
+      id: 2b4f3651-6954-40ca-8b06-fae67c14894f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: fd78719f-a4e9-4246-8939-c8f81905d313
     type: condition
     task:
-      id: 97cdfd3c-3076-4086-8f00-7d6e0b08104d
+      id: fd78719f-a4e9-4246-8939-c8f81905d313
       version: -1
-      name: Assert Output
-      description: ''
+      name: verify get indicators
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       'yes':
-      - '3'
+      - '14'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -101,63 +158,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
-    taskid: 46243dc9-5489-4a7e-8f7b-a8edcbfe5dbd
-    type: title
-    task:
-      id: 46243dc9-5489-4a7e-8f7b-a8edcbfe5dbd
-      version: -1
-      name: Done
-      description: ''
-      type: title
-      iscommand: false
-      brand: ''
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '4':
-    id: '4'
-    taskid: e33eb837-7041-4581-887b-ff9c9f9234fd
-    type: regular
-    task:
-      id: e33eb837-7041-4581-887b-ff9c9f9234fd
-      version: -1
-      name: Delete Context
-      description: ''
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '1'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -172,6 +172,6 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: Spamhaus_Feed_Test
+sourceplaybookid: Blocklist_de - Test
 description: ''
 fromversion: 5.5.0
