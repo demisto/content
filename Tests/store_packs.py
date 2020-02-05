@@ -70,6 +70,7 @@ class Pack:
 
     def _parse_pack_metadata(self, user_metadata):
         pack_metadata = {}
+        user_metadata = {} if isinstance(user_metadata, list) else user_metadata
         pack_metadata['id'] = self._pack_name
         pack_metadata['name'] = user_metadata.get('displayName', '')
         pack_metadata['description'] = user_metadata.get('description', '')
