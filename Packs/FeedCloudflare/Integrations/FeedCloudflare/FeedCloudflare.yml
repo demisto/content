@@ -73,7 +73,7 @@ configuration:
   name: polling_timeout
   required: false
   type: 0
-description: Use the Spamhaus feed integration to fetch indicators from the feed.
+description: Use the Cloudflare feed integration to fetch indicators from the feed.
 display: Cloudflare feed
 name: Cloudflare feed
 script:
