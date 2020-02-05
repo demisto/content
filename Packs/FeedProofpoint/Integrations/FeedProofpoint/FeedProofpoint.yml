@@ -22,7 +22,7 @@ configuration:
   type: 18
 - defaultvalue: A - Completely reliable
   display: Source Reliability
-  name: feedInstanceReliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -70,7 +70,7 @@ configuration:
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
   display: Bypass exclusion list
-  name: bypassExclusionList
+  name: feedBypassExclusionList
   required: false
   type: 8
 - display: Trust any certificate (not secure)
