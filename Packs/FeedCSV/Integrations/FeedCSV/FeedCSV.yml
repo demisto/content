@@ -52,6 +52,7 @@ configuration:
   type: 19
 - additionalinfo: Type of the indicator in the feed.
   display: Indicator Type.
+  name: indicator_type
   required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
