@@ -1,6 +1,5 @@
 ## [Unreleased]
-- Fixed an issue with search_vulnerability command while running on a list of id's"
-- Added the ability to run commands on a list of args of:
+- Added the ability to run the commands ***kenna-search-vulnerabilities***, ***kenna-search-assets***, ***kenna-get-asset-vulnerabilities***,  ***kenna-search-fixes***  with a list of the following arguments:
     - ***id*** 
     - ***status*** 
     - ***top priorities*** 

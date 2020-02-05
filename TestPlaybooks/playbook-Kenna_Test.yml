@@ -230,10 +230,10 @@ tasks:
       version: -1
       name: kenna-get-asset-vulnerabilities
       description: Gets vulnerabilities of the specified asset.
-      script: Kennav2|||kenna-get-asset-vulnerabilities
+      script: '|||kenna-get-asset-vulnerabilities'
       type: regular
       iscommand: true
-      brand: Kennav2
+      brand: ""
     nexttasks:
       '#none#':
       - "31"
@@ -848,10 +848,10 @@ tasks:
       name: Kenna-search-fixes
       description: Filters fixes by a given set of vulnerability and asset parameters
         and returns the filtered fixes.
-      script: Kennav2|||kenna-search-fixes
+      script: '|||kenna-search-fixes'
       type: regular
       iscommand: true
-      brand: Kennav2
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -929,12 +929,12 @@ tasks:
     task:
       id: a402dcd3-28a0-4bda-8a9c-a4f2cba8aac5
       version: -1
-      name: Check list of ids
+      name: Kenna-search-vulnerabilities - check list of ids
       description: Searches for vulnerabilities in Kenna.
-      script: Kennav2|||kenna-search-vulnerabilities
+      script: '|||kenna-search-vulnerabilities'
       type: regular
       iscommand: true
-      brand: Kennav2
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
