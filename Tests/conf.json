@@ -7,6 +7,11 @@
             "playbookID": "Blocklist_de - Test",
             "fromversion": "5.5.0"
         },
+        {
+            "integrations": "AzureFeed",
+            "playbookID": "AzureFeed - Test",
+            "fromversion": "5.5.0"
+        },
          {
             "playbookID": "CreateIndicatorFromSTIXTest",
              "fromversion": "5.0.0"
@@ -14,6 +19,16 @@
          {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Bambenek Consulting Feed",
+            "playbookID": "BambenekConsultingFeed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AWS Feed",
+            "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
         },
         {
@@ -2181,6 +2196,12 @@
         },
         {
             "playbookID": "Indicator Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Recorded Future Feed",
+            "playbookID": "RecordedFutureFeed - Test",
+            "timeout": 1000,
             "fromversion": "5.5.0"
         }
     ],

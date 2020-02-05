@@ -1,23 +1,21 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 5.5.0
 commonfields:
   id: CSVFeed
   version: -1
 configuration:
+- display: URL
+  name: url
+  required: true
+  type: 0
 - display: Fetch indicators
   name: feed
   required: false
   type: 8
-- display: Fetch Interval
+- defaultvalue: '240'
+  display: Fetch Interval
   name: feedFetchInterval
-  defaultvalue: 240
+  required: true
   type: 19
-  required: true
-- additionalinfo: Type of the indicator in the feed.
-  display: Indicator Type
-  name: indicator_type
-  required: true
-  type: 0
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
@@ -30,18 +28,14 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: expiration
-  required: false
-  type: 17
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
   name: bypassExclusionList
-  defaultvalue: ""
-  type: 8
   required: false
-  additionalinfo: When selected, the exclusion list will be ignored for this feed.
+  type: 8
 - defaultvalue: feedInstanceReputationNotSet
   display: Mark as reputation
-  name: feedInstanceReputation
+  name: feedReputation
   options:
   - None
   - Good
@@ -50,24 +44,23 @@ configuration:
   required: false
   type: 18
 - defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
+  name: feedExpirationPolicy
   required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
+  type: 17
+- display: expirationInterval
+  name: feedExpirationInterval
   required: false
   type: 1
-- display: URL
-  name: url
-  required: true
+- additionalinfo: Type of the indicator in the feed.
+  display: Indicator Type
+  name: indicator_type
+  required: false
   type: 0
 - display: Username
   name: credentials
   required: false
   type: 9
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -86,22 +79,23 @@ configuration:
   name: ignore_regex
   required: false
   type: 0
-- additionalinfo: Name of the field names in the CSV feed. If several are given, will use
-    "indicator" as the default indicator value field.
-  defaultvalue: indicator
+- additionalinfo: Name of the field names in the CSV feed. If several are given, will
+    use "indicator" as the default indicator value field.
+  defaultvalue: value
   display: Field Names
   name: fieldnames
   required: false
   type: 0
-- additionalinfo: A one-character string used to separate fields. For example, a comma ",".
+- additionalinfo: A one-character string used to separate fields. For example, a comma
+    ",".
   defaultvalue: ','
   display: Delimiter
   name: delimiter
   required: false
   type: 0
-- additionalinfo: Controls how instances of quotechar in a field should
-    themselves be quoted. When True, the character is doubled.
-  display: Doublequote
+- additionalinfo: Controls how instances of quotechar in a field should themselves
+    be quoted. When True, the character is doubled.
+  display: Double quote
   name: doublequote
   required: false
   type: 8
@@ -143,18 +137,18 @@ script:
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
-    name: get-indicators
+    name: csv-get-indicators
     outputs:
-    - contextPath: CSV.Indicator.Value
+    - contextPath: CSV.Indicator.value
       description: The indicator value.
       type: String
-    - contextPath: CSV.Indicator.Type
+    - contextPath: CSV.Indicator.type
       description: The indicator type.
       type: String
-    - contextPath: CSV.Indicator.Rawjson
+    - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/python3:3.7.5.4583
+  dockerimage: demisto/python3:3.8.1.5734
   feed: true
   isfetch: false
   longRunning: false
@@ -165,3 +159,4 @@ script:
   type: python
 tests:
 - CSV_Feed_Test
+fromversion: 5.5.0
