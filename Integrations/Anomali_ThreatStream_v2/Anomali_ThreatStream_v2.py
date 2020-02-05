@@ -849,7 +849,6 @@ def main():
     """
     command = demisto.command()
     LOG(f'Command being called is {command}')
-
     try:
         handle_proxy()
         args = prepare_args(demisto.args())
@@ -892,13 +891,13 @@ def main():
         elif command == 'threatstream-add-tag-to-model':
             add_tag_to_model(**args)
 
-    except Exception as e:
-        if isinstance(e, MissingSchema):
+    except Exception as err:
+        if isinstance(err, MissingSchema):
             return_error("Not valid server url. Check url format")
-        elif isinstance(e, ConnectionError):
+        elif isinstance(err, ConnectionError):
             return_error("The server is not reachable.")
         else:
-            return_error(e)
+            return_error(err)
 
 
 # python2 uses __builtin__ python3 uses builtins

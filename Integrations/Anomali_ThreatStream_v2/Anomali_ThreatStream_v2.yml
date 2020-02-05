@@ -65,7 +65,7 @@ script:
       default: false
       defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -164,7 +164,7 @@ script:
       default: false
       defaultValue: 'False'
       description: Whether to include results with status of "Inactive". Default is
-        "True".
+        "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -278,7 +278,7 @@ script:
       default: false
       defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -356,9 +356,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -1517,7 +1517,7 @@ script:
       default: false
       defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
