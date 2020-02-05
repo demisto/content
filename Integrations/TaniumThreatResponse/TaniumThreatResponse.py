@@ -666,8 +666,8 @@ def get_events_by_connection(client, data_args):
 
     context = createContext(events, removeNull=True)
     outputs = {'Tanium.Event(val.ID && val.ID === obj.ID)': context}
-    headers = ['ID', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessCommandLine', 'ProcessID', 'ProcessName', 'ProcessHash',
-               'ExitCode', 'SID', 'Username', 'Hashes', 'Operation', 'File', 'DestinationAddress',
+    headers = ['ID', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessCommandLine', 'ProcessID', 'ProcessName',
+               'ProcessHash', 'ExitCode', 'SID', 'Username', 'Hashes', 'Operation', 'File', 'DestinationAddress',
                'DestinationPort', 'SourceAddress', 'SourcePort', 'KeyPath', 'ValueName', 'EndTime', 'ImageLoaded',
                'Signature', 'Signed', 'EventId', 'EventOpcode', 'EventRecordID', 'EventTaskID', 'Query', 'Response']
     human_readable = tableToMarkdown(f'Events for {connection}', events, headers=headers)
