@@ -366,7 +366,7 @@ def splunk_search_command():
         current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
         max_results_to_add = results_limit - len(total_parsed_results)
         parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add,
-                                                                         search_kwargs['app'])
+                                                                         search_kwargs.get('app', ''))
         total_parsed_results.extend(parsed_batch_results)
         dbot_scores.extend(batch_dbot_scores)
 
