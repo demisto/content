@@ -163,7 +163,7 @@ class Client(BaseClient):
         return results
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> Tuple[str, dict, dict]:
     """A simple test module
 
     Arguments:
