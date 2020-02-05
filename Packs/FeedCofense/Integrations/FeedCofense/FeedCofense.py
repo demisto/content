@@ -207,7 +207,7 @@ def fetch_indicators_command(
 
 
 def build_fetch_times(fetch_time: str, last_fetch: Optional[dict] = None) -> Tuple[int, int]:
-    """Build the fetch_indicators and saves timestamp to lastRun
+    """Build the start and end time of the fetch session.
 
     Args:
         fetch_time: fetch time (for example: "3 days")
@@ -221,7 +221,7 @@ def build_fetch_times(fetch_time: str, last_fetch: Optional[dict] = None) -> Tup
         end_time = get_now()
     else:  # First fetch
         begin_time, end_time = parse_date_range_no_milliseconds(fetch_time)
-    return begin_time, end_time,
+    return begin_time, end_time
 
 
 def parse_date_range_no_milliseconds(from_time: str) -> Tuple[int, int]:
@@ -291,6 +291,7 @@ def main():
     try:
         if demisto.command() == "test-module":
             return_outputs(*test_module(client))
+
         elif demisto.command() == "fetch-indicators":
             begin_time, end_time = build_fetch_times(params.get("fetch_time", "3 days"))
             indicators = fetch_indicators_command(client, begin_time, end_time)
