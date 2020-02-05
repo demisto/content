@@ -908,10 +908,8 @@ def main():
     # should be removed after solving: https://github.com/demisto/etc/issues/21383
     # -------------
     if 'master' in tests_settings.serverVersion.lower():
-        sleep(100)
-        print('slept for 100 secs')
-        sleep(100)
-        print('slept for 100 secs')
+        print('[{}] sleeping for 60 secs'.format(datetime.now()))
+        sleep(60)
     # -------------
     manage_tests(tests_settings)
 
