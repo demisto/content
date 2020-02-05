@@ -48,7 +48,7 @@ class MsGraphClient:
             next_link = response.get('@odata.nextLink')
             if next_link:
                 responses.append(
-                    self.ms_client.http_request('GET', url=next_link)
+                    self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
                 )
 
             else:
