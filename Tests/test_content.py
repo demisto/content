@@ -494,14 +494,14 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
     return True
 
 
-def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations,
-                         playbook_skipped_integrations):
+def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
     integrations = []
     is_nightly_integration = False
+    test_skipped_integration = []
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
-            playbook_skipped_integrations.add(integration)
+            test_skipped_integration.append(integration)
 
         if integration in nightly_integrations:
             is_nightly_integration = True
@@ -512,7 +512,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return integrations, is_nightly_integration
+    return test_skipped_integration, integrations, is_nightly_integration
 
 
 def extract_filtered_tests(is_nightly):
@@ -562,9 +562,11 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     if not isinstance(instance_names_conf, list):
         instance_names_conf = [instance_names_conf, ]
 
-    integrations, is_nightly_integration = collect_integrations(
-        integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations,
-        playbook_skipped_integration)
+    test_skipped_integration, integrations, is_nightly_integration = collect_integrations(
+        integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+
+    if playbook_id in filtered_tests:
+        playbook_skipped_integration.update(test_skipped_integration)
 
     skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
 
@@ -586,7 +588,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
         return
 
     # Skip integration
-    if playbook_skipped_integration:
+    if test_skipped_integration:
         return
 
     # Skip version mismatch test
@@ -755,7 +757,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
         prints_manager.execute_thread_prints(thread_index)
 
-    prints_manager.add_print_job('=================== playbook_skipped_integration{}'.
+    prints_manager.add_print_job('=================== playbook_skipped_integration\n{}'.
                                  format(playbook_skipped_integration), print_color, thread_index,
                                  message_color=LOG_COLORS.GREEN)
 
