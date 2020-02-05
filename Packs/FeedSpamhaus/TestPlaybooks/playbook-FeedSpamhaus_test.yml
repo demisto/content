@@ -1,16 +1,20 @@
+elasticcommonfields: {}
 id: Spamhaus_Feed_Test
 version: -1
-contentitemfields:
-  propagationLabels: []
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 name: Spamhaus_Feed_Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 629b23e0-7b34-4e9e-8709-e40d1033914a
+    taskid: "6"
     type: start
     task:
-      id: 629b23e0-7b34-4e9e-8709-e40d1033914a
+      elasticcommonfields: {}
+      id: "6"
       version: -1
       name: ""
       iscommand: false
@@ -30,12 +34,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: cb2f9784-b8a9-4736-8770-a26a88852c9d
+    taskid: "11"
     type: regular
     task:
-      id: cb2f9784-b8a9-4736-8770-a26a88852c9d
+      elasticcommonfields: {}
+      id: "11"
       version: -1
       name: Get Indicators
       description: Get the feed indicators.
@@ -63,12 +69,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 08488b5a-a7d0-454f-8e07-ad6a3364b560
+    taskid: "1"
     type: condition
     task:
-      id: 08488b5a-a7d0-454f-8e07-ad6a3364b560
+      elasticcommonfields: {}
+      id: "1"
       version: -1
       name: Assert Output
       description: Asserts output.
@@ -124,12 +132,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
+    taskid: "2"
     type: title
     task:
-      id: 012a601e-ed7e-4091-80ee-d9071f0c9937
+      elasticcommonfields: {}
+      id: "2"
       version: -1
       name: Done
       description: Done
@@ -148,12 +158,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
+    taskid: "5"
     type: regular
     task:
-      id: 4e5d7a78-4f39-481d-8168-de2e970706e5
+      elasticcommonfields: {}
+      id: "5"
       version: -1
       name: Delete Context
       description: Delete field from context.
@@ -183,6 +195,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
