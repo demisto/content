@@ -2182,6 +2182,12 @@
         {
             "playbookID": "Indicator Feed - Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Recorded Future Feed",
+            "playbookID": "RecordedFutureFeed - Test",
+            "timeout": 1000,
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
