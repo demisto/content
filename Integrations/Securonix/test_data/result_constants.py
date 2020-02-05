@@ -113,6 +113,42 @@ EXPECTED_GET_INCIDENT = {
         }
     ]
 }
+EXPECTED_CREATE_INCIDENT = {
+    'Securonix.Incidents(val.IncidentID === obj.IncidentID)': [
+        {
+            "ViolatorText": "jon doe",
+            "LastUpdateDate": 1579686449882,
+            "Casecreatetime": 1579686449882,
+            "ViolatorID": "3",
+            "IncidentType": "Policy",
+            "IncidentID": "30053",
+            "IncidentStatus": "Open",
+            "Riskscore": 0.0,
+            "AssignedUser": "Admin Admin",
+            "Priority": "Low",
+            "Reason": [
+                "Resource: BLUECOAT",
+                "Policy: Uploads to personal websites",
+                "Threat: Data egress via network uploads"
+            ],
+            "ViolatorSubText": "1003",
+            "Entity": "Users",
+            "WorkflowName": "SOCTeamReview",
+            "Url": "url.com",
+            "IsWhitelisted": False,
+            "Watchlisted": True,
+            'TenantInfo': {
+                'tenantid': 1,
+                'tenantname': 'Securonix',
+                'tenantcolor': '#000000',
+                'tenantshortcode': 'SE'
+            },
+            "StatusCompleted": False,
+            "SandBoxPolicy": False,
+            "ParentCaseId": ''
+        }
+    ]
+}
 EXPECTED_LIST_WATCHLISTS = {
     'Securonix.WatchlistsNames':
         [
@@ -160,3 +196,13 @@ EXPECTED_GET_WATCHLIST = {
                 ]
         }
 }
+EXPECTED_CREATE_WATCHLIST = {
+    'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': 'test234'
+}
+EXPECTED_ENTITY_IN_WATCHLIST = {
+    'Securonix.EntityInWatchlist(val.Entityname === obj.Entityname)': {
+        'Watchlistname': 'test234',
+        'Entityname': '1002'
+    }
+}
+EXPECTED_ADD_ENTITY_TO_WATCHLIST = {}
