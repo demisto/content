@@ -1,5 +1,4 @@
 import pytest
-import os
 import demistomock as demisto
 
 SERVER_URL = "https://1.2.3.4"
