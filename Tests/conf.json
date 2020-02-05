@@ -820,7 +820,7 @@
         {
             "integrations": [
                 "Mail Sender (New)",
-                "google"
+                "Gmail"
             ],
             "playbookID": "Mail Sender (New) Test"
         },
