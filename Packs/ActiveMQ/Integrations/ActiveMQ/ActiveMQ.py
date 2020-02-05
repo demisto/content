@@ -120,7 +120,7 @@ def subscribe(client, conn, subscription_id, topic_name, queue_name):
 
     # ack='client-individual', headers={'activemq.subscriptionName': client})
     if queue_name:
-        conn.subscribe('/queue/' + queue_name, subscription_id, ack='auto')
+        conn.subscribe('/queue/' + queue_name, subscription_id, ack='client-individual')
     elif topic_name:
         conn.subscribe(
             '/topic/' + topic_name, subscription_id,
@@ -129,8 +129,10 @@ def subscribe(client, conn, subscription_id, topic_name, queue_name):
         )
 
     time.sleep(1)
+
     for msg in listener.result_arr:
         demisto.results(msg)
+
     for msg_id in listener.msg_ids:
         conn.ack(msg_id, subscription_id)
 
@@ -147,7 +149,7 @@ def fetch_incidents(client, conn, subscription_id, queue_name, topic_name):
         conn.set_listener('Demisto', listener)
 
     if queue_name:
-        conn.subscribe('/queue/' + queue_name, subscription_id, ack='auto')
+        conn.subscribe('/queue/' + queue_name, subscription_id, ack='client-individual')
     else:
         conn.subscribe(
             '/topic/' + topic_name,
