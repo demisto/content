@@ -83,16 +83,6 @@ configuration:
   additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
-- additionalinfo: 'IPs contains: IPv4, CIDR, IPv6, IPv6CIDR. URLs contains: URLs and Domains.'
-  defaultvalue: IPs
-  display: JSON attribute to use as an indicator
-  name: indicator
-  options:
-  - IPs
-  - URLs
-  - Both
-  required: true
-  type: 15
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

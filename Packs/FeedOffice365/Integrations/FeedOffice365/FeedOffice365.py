@@ -45,16 +45,14 @@ class Client(BaseClient):
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
 
-    def __init__(self, urls_list: list, indicator: str, insecure: bool = False, proxy: bool = False):
+    def __init__(self, urls_list: list, insecure: bool = False, proxy: bool = False):
         """
         Implements class for Office365 feeds.
         :param urls_list: List of url, regions and service of each sub feed.
-        :param indicator: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
         super().__init__(base_url=urls_list, verify=insecure, proxy=proxy)
-        self.indicator = indicator
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -204,8 +202,7 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicator_type_lower = client.indicator.lower()
-    indicators = fetch_indicators(client, indicator_type_lower)
+    indicators = fetch_indicators(client, 'both')
     return indicators
 
 
@@ -217,7 +214,6 @@ def main():
     regions_list = argToList(demisto.params().get('regions'))
     services_list = argToList(demisto.params().get('services'))
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
-    indicator = demisto.params().get('indicator')
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy')
 
@@ -225,7 +221,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(urls_list, indicator, insecure, proxy)
+        client = Client(urls_list, insecure, proxy)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'office365-get-indicators': get_indicators_command
