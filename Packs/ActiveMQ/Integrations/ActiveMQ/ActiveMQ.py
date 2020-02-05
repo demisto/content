@@ -97,10 +97,12 @@ def send_message(conn):
     if 'headers' in demisto.args():
         try:
             headers_demisto = json.loads(demisto.args()['headers'])
-            conn.send(dest, body, transaction=txid, headers=headers_demisto)
         except Exception as e:
+            demisto.error('Failed to parse "headers". Error: {}'.format(e))
             raise ValueError('Failed to parse "headers" argument to JSON. "headers"={}'
                              .format(demisto.args()['headers']))
+
+        conn.send(dest, body, transaction=txid, headers=headers_demisto)
     else:
         conn.send(dest, body, transaction=txid)
 
