@@ -7,7 +7,6 @@ from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 import yaml
 import requests
-from re import sub
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX, PACKS_DIR_REGEX, PACKS_DIR
 
@@ -381,7 +380,7 @@ class Docker:
         # docker stats command with json output
         docker_command = 'sudo docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
         # replacing : and / in docker images names in order to grep the stats by container name
-        docker_images_regex = ['{}--'.format(sub('[:/]', '', docker_image)) for docker_image in docker_images]
+        docker_images_regex = ['{}--'.format(re.sub('[:/]', '', docker_image)) for docker_image in docker_images]
         pipe = ' | '
         grep_command = 'grep -Ei "{}"'.format('|'.join(docker_images_regex))
         remote_command = docker_command + pipe + grep_command
@@ -437,6 +436,8 @@ class Docker:
                 pids_number = int(container_stat.get(cls.PIDS_USAGE))
                 container_name = container_stat.get(cls.CONTAINER_NAME)
                 stats_result.append({'memory_usage': mib_usage, 'pids': pids_number, 'container_name': container_name})
+        except Exception as e:
+            print_warning("Failed in parsing docker stats result, returned empty list.")
         finally:
             return stats_result
 
