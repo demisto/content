@@ -498,3 +498,28 @@ def test_unknown_file_type(mocker):
     assert len(results) == 1
     assert 'Unknown file format:' in results[0]['Contents']
     assert 'smtp_email_type.eml' in results[0]['Contents']
+
+
+def test_no_content_type_file(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('no_content_type.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'No content type'
+
+
+def test_no_content_file(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('no_content.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'results')
+    try:
+        main()
+    except SystemExit:
+        gotexception = True
+    assert gotexception
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert 'Could not extract email from file' in results[0]['Contents']
