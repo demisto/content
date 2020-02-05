@@ -437,7 +437,7 @@ class Docker:
                 container_name = container_stat.get(cls.CONTAINER_NAME)
                 stats_result.append({'memory_usage': mib_usage, 'pids': pids_number, 'container_name': container_name})
         except Exception as e:
-            print_warning("Failed in parsing docker stats result, returned empty list.")
+            print_warning("Failed in parsing docker stats result, returned empty list. Additional info {}".format(e))
         finally:
             return stats_result
 
