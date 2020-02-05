@@ -17,6 +17,16 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Bambenek Consulting Feed",
+            "playbookID": "BambenekConsultingFeed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AWS Feed",
+            "playbookID": "AWS Feed Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
         },
@@ -2181,6 +2191,12 @@
         },
         {
             "playbookID": "Indicator Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Recorded Future Feed",
+            "playbookID": "RecordedFutureFeed - Test",
+            "timeout": 1000,
             "fromversion": "5.5.0"
         }
     ],

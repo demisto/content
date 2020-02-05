@@ -39,7 +39,7 @@ tasks:
       version: -1
       name: Get Indicators
       description: Get the feed indicators.
-      script: CSVFeed|||get-indicators
+      script: CSVFeed|||csv-get-indicators
       type: regular
       iscommand: true
       brand: CSVFeed
@@ -48,7 +48,7 @@ tasks:
       - "2"
     scriptarguments:
       indicator_type:
-        simple: IP
+        simple: URL
       limit:
         simple: "10"
     separatecontext: false
@@ -98,7 +98,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: IP
+              simple: URL
       - - operator: isExists
           left:
             value:
