@@ -7,11 +7,11 @@
   "commitMessage": "",
   "shouldPublish": false,
   "shouldCommit": false,
-  "regex": "",
+  "regex": "CVE-\\d{4}-\\d{4,7}",
   "details": "CVE",
   "prevDetails": "CVE",
-  "reputationScriptName": "",
-  "reputationCommand": "",
+  "reputationScriptName": "cveReputation",
+  "reputationCommand": "cve",
   "enhancementScriptNames": [],
   "system": false,
   "locked": false,
@@ -20,8 +20,8 @@
   "updateAfter": 0,
   "mergeContext": false,
   "formatScript": "",
-  "contextPath": "",
-  "contextValue": "",
+  "contextPath": "CVE(val.ID && val.ID === obj.ID)",
+  "contextValue": "ID",
   "excludedBrands": [],
   "defaultMapping": {
     "cvedescription": {
@@ -52,7 +52,7 @@
         ]
       }
     },
-    "id": {
+    "indicatoridentification": {
       "simple": "",
       "complex": {
         "root": "CVE",
@@ -70,7 +70,7 @@
         ]
       }
     },
-    "modified": {
+    "cvemodified": {
       "simple": "",
       "complex": {
         "root": "CVE",

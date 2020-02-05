@@ -4,16 +4,17 @@ Please notice that to add custom common code, add it to the CommonServerUserPyth
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
 from __future__ import print_function
-import socket
-import time
+
+import base64
 import json
-import sys
+import logging
 import os
 import re
-import base64
-import logging
-from collections import OrderedDict
+import socket
+import sys
+import time
 import xml.etree.cElementTree as ET
+from collections import OrderedDict
 from datetime import datetime, timedelta
 
 import demistomock as demisto
@@ -144,6 +145,31 @@ class FeedIndicatorType(object):
             FeedIndicatorType.SSDeep,
             FeedIndicatorType.URL
         )
+
+    @staticmethod
+    def ip_to_indicator_type(ip):
+        """Returns the indicator type of the input IP.
+
+        :type ip: ``str``
+        :param ip: IP address to get it's indicator type.
+
+        :rtype: ``str``
+        :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
+        """
+        if re.match(ipv4cidrRegex, ip):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv4Regex, ip):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6cidrRegex, ip):
+            return FeedIndicatorType.IPv6CIDR
+
+        elif re.match(ipv6Regex, ip):
+            return FeedIndicatorType.IPv6
+
+        else:
+            return None
 
 
 
@@ -634,6 +660,23 @@ def b64_encode(text):
     if IS_PY3:
         res = res.decode('utf-8')  # type: ignore
     return res
+
+
+def encode_string_results(text):
+    """
+    Encode string as utf-8, if any unicode character exists.
+
+    :param text: string to encode
+    :type text: str
+    :return: encoded string
+    :rtype: str
+    """
+    if not isinstance(text, STRING_OBJ_TYPES):
+        return text
+    try:
+        return str(text)
+    except UnicodeEncodeError as exception:
+        return text.encode("utf8", "replace")
 
 
 class IntegrationLogger(object):
@@ -1596,7 +1639,8 @@ def return_error(message, error='', outputs=None):
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution',
+                                                             'fetch-indicators'):
         raise Exception(message)
     else:
         demisto.results({
@@ -2351,10 +2395,11 @@ if 'requests' in sys.modules:
             :type files: ``dict``
             :param files: The file data to send in a 'POST' request.
 
-            :type timeout: ``float``
+            :type timeout: ``float`` or ``tuple``
             :param timeout:
                 The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
 
             :type resp_type: ``str``
             :param resp_type:
@@ -2372,7 +2417,7 @@ if 'requests' in sys.modules:
             """
             try:
                 # Replace params if supplied
-                address = full_url if full_url else self._base_url + url_suffix
+                address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 # Execute
@@ -2460,6 +2505,7 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
 
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.
