@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.2.0] - 2020-02-04
+Added functionality that allows offboarding employees on a future date.
+
 ## [20.1.2] - 2020-01-22
 Fixed an issue where the playbook would open up at a location where the tasks are not centered.
 
