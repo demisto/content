@@ -45,6 +45,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "ProofpointFeed",
+            "playbookID": "TestProofpointFeed",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },
