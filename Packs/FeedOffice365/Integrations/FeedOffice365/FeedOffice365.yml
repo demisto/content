@@ -3,11 +3,11 @@ commonfields:
   id: Office365 Feed
   version: -1
 configuration:
-- defaultvalue: '30'
-  display: Fetch Interval
-  name: feedFetchInterval
-  required: true
-  type: 19
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
 - defaultvalue: Worldwide
   display: Regions
   name: regions
@@ -30,13 +30,23 @@ configuration:
   - All
   required: true
   type: 16
-- display: Fetch indicators
-  name: feed
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Good
+  type: 18
   required: false
-  type: 8
-- defaultvalue: A - Completely reliable
-  display: Reliability
-  name: feedInstanceReliability
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: A - Completely reliable
+  type: 15
+  required: true
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -44,39 +54,35 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
-- name: expiration
-  required: false
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: suddenDeath
   type: 17
-- defaultvalue: suddenDeath
-  hidden: true
-  name: expirationPolicy
   required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
-  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
   type: 1
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: bypassExclusionList
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "30"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
   defaultvalue: ""
   type: 8
   required: false
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  defaultvalue: Good
-  display: Indicator reputation
-  name: feedInstanceReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
 - additionalinfo: 'IPs contains: IPv4, CIDR, IPv6, IPv6CIDR. URLs contains: URLs and Domains.'
   defaultvalue: IPs
   display: JSON attribute to use as an indicator
