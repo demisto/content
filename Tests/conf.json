@@ -2191,6 +2191,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "AutoFocus Feed",
+            "playbookID": "playbook-FeedAutofocus_test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
         },
