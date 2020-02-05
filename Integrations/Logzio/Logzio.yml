@@ -4,6 +4,7 @@ commonfields:
 name: Logz.io
 display: Logz.io
 category: Analytics & SIEM
+image: data:image/png;base64,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AQDjO8j/5vG9GwAA3ABq2gHiCwEi2wF2FAJYFAKo+wPE+APE+wPq7Kx6/h25Gc5O417UFgB8+djYuyQAojXAt56xsdGWsbFvtQDYA4D2D+O7PACAxiGAvQWObp6Rtw/39cJ/xb8AINYR3fMfLi8AAAAJcEhZcwAACxMAAAsTAQCanBgAAAXnaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjYtYzE0MCA3OS4xNjA0NTEsIDIwMTcvMDUvMDYtMDE6MDg6MjEgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDQyAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjAtMDEtMDFUMTQ6MzE6NDUrMDI6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjAtMDEtMDFUMTQ6MzE6NDUrMDI6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDIwLTAxLTAxVDE0OjMxOjQ1KzAyOjAwIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjUyZjcwYjE5LTlkMDgtNDA0Zi04NTIyLTkwODIxMmNlZjhjMyIgeG1wTU06RG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjU3NGRhZWNlLWI0MGEtNjA0Zi05M2MwLWUzYThiNWQ5OGM1YyIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOmY1OWMxNjc3LWUzYWItNDk3Mi1iMDliLTAwYmU2NGU3NWU3YiIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJEaXNwbGF5Ij4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpmNTljMTY3Ny1lM2FiLTQ5NzItYjA5Yi0wMGJlNjRlNzVlN2IiIHN0RXZ0OndoZW49IjIwMjAtMDEtMDFUMTQ6MzE6NDUrMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAoTWFjaW50b3NoKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NTJmNzBiMTktOWQwOC00MDRmLTg1MjItOTA4MjEyY2VmOGMzIiBzdEV2dDp3aGVuPSIyMDIwLTAxLTAxVDE0OjMxOjQ1KzAyOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgKE1hY2ludG9zaCkiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+evVwnwAADklJREFUaIHtW39Q02ea/7xpIsQOoSYmMpKIrglTiIc7/AoG56ZYpwPsdalVqXdaGqdTOlBXO9srzG539erZnrZ7vUJ7MoW9GeXo7eFAXbaDQacGd5TEGGDrj4Alsf4AHExMbOKV/DTv/RHyTYAEAuvWdpfPzHdI8n3f531+vM/zPu/7PhBKKeYKs9OVIOu6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
 description: Manage Logz.io rules with CLI
 configuration:
 - display: Fetch incidents
@@ -17,23 +18,67 @@ configuration:
   type: 13
   required: false
 - display: Security API Token
-  name: api_token
+  name: security_api_token
   defaultvalue: ""
   type: 4
   required: true
+- display: Operational API Token
+  name: operational_api_token
+  defaultvalue: ""
+  type: 4
+  required: false
 - display: Region Code
   name: region
   defaultvalue: us
   type: 0
   required: false
+- display: Logzio API Server URL
+  name: url
+  defaultvalue: api.logz.io
+  type: 0
+  required: true
+- display: Searches part of the rule
+  name: search
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Rules Severities
+  name: severities
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - SEVERE
+  - HIGH
+  - MEDIUM
+  - LOW
+  - INFO
+- display: Array of Rule Tags
+  name: tags
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: fetch_time
+  defaultvalue: 1 hours
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: ''
   type: python
   commands:
-  - name: logz-fetch-triggered-rules
+  - name: logzio-fetch-triggered-rules
     arguments:
-    - name: from_page
-      description: Start page of rules to return
     - name: search
       description: Part of the alert name to filter by name (case insensitive)
     - name: severities
@@ -49,6 +94,44 @@ script:
     - name: tags
       description: List of tags the alert is related to
     description: Fetch triggered rules from Logz.io
+  - name: logzio-search-logs
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Lucene query_string to search for
+      defaultValue: '*'
+    - name: size
+      description: Size of results to return
+    - name: from_time
+      description: Unix time - start time range of the logs to search
+    - name: to_time
+      description: Unix time - end time range of the logs to search
+    description: Get logs from your logz.io accont by query
+  - name: logzio-search-logs-by-fields
+    arguments:
+    - name: key1
+      required: true
+      description: First key to search for
+    - name: value1
+      required: true
+      description: Value for key1
+    - name: key2
+      description: Second  key to search for
+    - name: value2
+      description: Value for key2
+    - name: key3
+      description: Third  key to search for
+    - name: value3
+      description: Value for key3
+    - name: size
+      description: Size of result logs
+    - name: from_time
+      description: Start time range of logs
+    - name: to_time
+      description: End time range of logs
+    description: Search raw logs from your Logz.io account by up to 3 fields
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: true
   runonce: false
+  subtype: python3
