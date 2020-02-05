@@ -51,7 +51,7 @@ configuration:
   required: false
   type: 19
 - additionalinfo: Type of the indicator in the feed.
-  display: Indicator Type.
+  display: Indicator Type
   name: indicator_type
   required: false
   type: 0
