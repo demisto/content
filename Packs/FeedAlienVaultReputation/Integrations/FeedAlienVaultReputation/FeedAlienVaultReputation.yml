@@ -3,75 +3,66 @@ commonfields:
   id: AlienVault Reputation Feed
   version: -1
 configuration:
-- display: Sub-Feeds
-  name: url
-  options:
-    - http://reputation.alienvault.com/reputation.data
-  required: true
-  type: 16
 - display: Fetch indicators
   name: feed
-  required: false
+  defaultvalue: '60'
   type: 8
-- defaultvalue: '60'
-  display: Fetch Interval
-  name: feedFetchInterval
   required: false
-  type: 19
-- defaultvalue: C - Fairly reliable
-  display: Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: false
-  type: 15
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
-  defaultvalue: Bad
-  display: Indicator reputation
+- display: Indicator Reputation
   name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
+  defaultvalue: Bad
   type: 18
-- defaultvalue: indicatorType
-  display: expirationPolicy
-  name: feedExpirationPolicy
   required: false
-  type: 17
-- display: expirationInterval
-  name: feedExpirationInterval
-  required: false
-  type: 1
-- additionalinfo: When selected, the exclusion list will be ignored for this feed.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- additionalinfo: Time in seconds before http requests timeout.
-  defaultvalue: '20'
-  display: Request Timeout
-  name: polling_timeout
+  options:
+    - None
+    - Good
+    - Suspicious
+    - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: C - Fairly reliable
+  type: 15
   required: true
-  type: 0
+  options:
+    - A - Completely reliable
+    - B - Usually reliable
+    - C - Fairly reliable
+    - D - Not usually reliable
+    - E - Unreliable
+    - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: Expiration Policy 
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+    - never
+    - interval
+    - indicatorType
+    - suddenDeath
+- display: Expiration Interval
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass Exclusion List
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
 description: Use the AlienVault Reputation feed integration to fetch indicators from
-  the feed.
+    the feed.
 display: AlienVault Reputation Feed
 name: AlienVault Reputation Feed
 script:

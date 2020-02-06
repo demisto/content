@@ -4,12 +4,14 @@ from CommonServerPython import *
 def main():
     feed_url_to_config = {
         'http://reputation.alienvault.com/reputation.data': {
-            'fieldnames': ['value', 'reliability', 'risk', 'type'],
+            'fieldnames': ['value', 'reliability', 'risk', 'threat_type', 'geocountry', 'geocity', 'geolocation'
+                                                                                                   'unknown'],
             'indicator_type': FeedIndicatorType.IP
         }
     }
 
     params = {k: v for k, v in demisto.params().items() if v is not None}
+    params['url'] = 'http://reputation.alienvault.com/reputation.data'
     params['feed_url_to_config'] = feed_url_to_config
     params['delimiter'] = '#'
 
