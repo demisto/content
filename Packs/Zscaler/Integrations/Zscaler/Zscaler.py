@@ -119,39 +119,6 @@ def logout():
     http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
 
 
-def update_blacklist(url, action, ioc_type):
-    blacklist_urls = url.split(',')
-    if action == 'add':
-        cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
-    else:  # Action is 'remove' from blacklist
-        cmd_url = '/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST'
-        # Check if given IOC is blacklisted
-        blacklist_urls = get_blacklist()['blacklistUrls']
-        if len(blacklist_urls) == 1:  # Given only one IOC to blacklist
-            if blacklist_urls[0] not in blacklist_urls:
-                raise Exception('Given host address is not blacklisted')
-        elif blacklist_urls not in blacklist_urls:  # Given more than one IOC to blacklist
-            raise Exception('Given host address is not blacklisted')
-    data = {
-        'blacklistUrls': blacklist_urls
-    }
-    json_data = json.dumps(data)
-    http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
-    list_of_urls = ''
-    for url in blacklist_urls:
-        list_of_urls += '- ' + url + '\n'
-    if action == 'add':
-        if ioc_type == 'url':
-            return 'Added the following URLs to the blacklist successfully:\n' + list_of_urls
-        else:  # IOC type is IP address
-            return 'Added the following IP addresses to the blacklist successfully:\n' + list_of_urls
-    else:  # Action is 'remove' from blacklist
-        if ioc_type == 'url':
-            return 'Removed the following URLs from the blacklist successfully:\n' + list_of_urls
-        else:  # IOC type is IP address
-            return 'Removed the following IP addresses from the blacklist successfully:\n' + list_of_urls
-
-
 def blacklist_url(url):
     blacklist_urls = url.split(',')
     validate_urls(blacklist_urls)
@@ -168,15 +135,15 @@ def blacklist_url(url):
 
 
 def unblacklist_url(url):
-    blacklist_urls = url.split(',')
+    # blacklist_urls = url.split(',')
     cmd_url = '/security/advanced/blacklist_urls?action=REMOVE_FROM_LIST'
     # Check if given URLs is blacklisted
     blacklist_urls = get_blacklist()['blacklistUrls']
     if len(blacklist_urls) == 1:  # Given only one URL to blacklist
         if blacklist_urls[0] not in blacklist_urls:
             raise Exception('Given URL is not blacklisted')
-    elif blacklist_urls not in blacklist_urls:  # Given more than one URL to blacklist
-        raise Exception('Given URL is not blacklisted')
+    # elif blacklist_urls not in blacklist_urls:  # Given more than one URL to blacklist
+    #     raise Exception('Given URL is not blacklisted')
     data = {
         'blacklist_urls': blacklist_urls
     }
@@ -203,15 +170,15 @@ def blacklist_ip(ip):
 
 
 def unblacklist_ip(ip):
-    blacklist_ips = ip.split(',')
+    # blacklist_ips = ip.split(',')
     cmd_url = '/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST'
     # Check if given IPs is blacklisted
     blacklist_ips = get_blacklist()['blacklistUrls']
     if len(blacklist_ips) == 1:  # Given only one IP address to blacklist
         if blacklist_ips[0] not in blacklist_ips:
             raise Exception('Given IP address is not blacklisted')
-    elif blacklist_ips not in blacklist_ips:  # Given more than one IP address to blacklist
-        raise Exception('Given IP address is not blacklisted')
+    # elif blacklist_ips not in blacklist_ips:  # Given more than one IP address to blacklist
+    #     raise Exception('Given IP address is not blacklisted')
     data = {
         'blacklistUrls': blacklist_ips
     }
@@ -225,7 +192,7 @@ def unblacklist_ip(ip):
 
 def whitelist_url(url):
     cmd_url = '/security'
-    whitelist_urls = url.split(',')
+    # whitelist_urls = url.split(',')
     # Get the current whitelist
     whitelist_urls = get_whitelist()
     if not whitelist_urls:
@@ -242,7 +209,7 @@ def whitelist_url(url):
 
 def unwhitelist_url(url):
     cmd_url = '/security'
-    whitelist_urls = url.split(',')
+    # whitelist_urls = url.split(',')
     # Get the current whitelist
     whitelist_urls = get_whitelist()
     if not whitelist_urls:
@@ -266,7 +233,7 @@ def unwhitelist_url(url):
 
 def whitelist_ip(ip):
     cmd_url = '/security'
-    whitelist_ips = ip.split(',')
+    # whitelist_ips = ip.split(',')
     # Get the current whitelist
     whitelist_ips = get_whitelist()
     if not whitelist_ips:
