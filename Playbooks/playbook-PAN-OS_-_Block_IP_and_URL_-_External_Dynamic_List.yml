@@ -379,9 +379,10 @@ tasks:
         complex:
           root: inputs.AutoCommit
       device-group: {}
-      inbound-or-outbound-rule: {}
+      inbound-or-outbound-rule:
+        simple: outbound
       ioc-type:
-        simple: URL
+        simple: url
       list-name:
         complex:
           root: inputs.URLListName
@@ -442,9 +443,10 @@ tasks:
       auto-commit:
         simple: "No"
       device-group: {}
-      inbound-or-outbound-rule: {}
+      inbound-or-outbound-rule:
+        simple: outbound
       ioc-type:
-        simple: IP
+        simple: ip
       list-name:
         complex:
           root: inputs.IPListName
