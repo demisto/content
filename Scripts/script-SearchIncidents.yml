@@ -2,7 +2,6 @@ commonfields:
   id: SearchIncidents
   version: -1
 name: SearchIncidents
-toversion: 4.9.9
 script: |-
   function invalideEscape(str) {
       var i;
