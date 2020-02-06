@@ -32,7 +32,8 @@ def test_list_dsns_command(requests_mock, mocker):
     results = demisto.results.call_args[0][0]
     assert (
         results["HumanReadable"]
-        == "### Deception Support Node\n|Id|Name|Description|Hostname|Port|\n|---|---|---|---|---|\n| 2 | Remote DSN | Remote DSN | 1.2.3.3 | 7080 |\n| 1 | Local network | Local network | thedsn | 7080 |\n"
+        == "### Deception Support Node\n|Id|Name|Description|Hostname|Port|\n|---|---|---|---|---|\n| 2 | \
+        Remote DSN | Remote DSN | 1.2.3.3 | 7080 |\n| 1 | Local network | Local network | thedsn | 7080 |\n"
     )
     assert results["Contents"] == json_response["data"]
     assert results["EntryContext"] == {
@@ -70,7 +71,11 @@ def test_list_providers_command(requests_mock, mocker):
     results = demisto.results.call_args[0][0]
     assert (
         results["HumanReadable"]
-        == "### Providers\n|Id|Name|Description|Typecode|Statuscode|\n|---|---|---|---|---|\n| 1 | ManualMachine | Hosts that are manually created | MANUAL_MACHINE | ACTIVE |\n| 2 | CompanyProvider | Hosts that are automatically created when activating breadcrumbs | COMPANY_PROVIDER | ACTIVE |\n| 3 | ManualIdentity | Identities that are manually created | MANUAL_IDENTITY | ACTIVE |\n| 4 | ManualRouter | Routers that are manually created | MANUAL_ROUTER | ACTIVE |\n| 5 | MISP Provider |  | MISP_PROVIDER | ACTIVE |\n"
+        == "### Providers\n|Id|Name|Description|Typecode|Statuscode|\n|---|---|---|---|---|\n| 1 | \
+        ManualMachine | Hosts that are manually created | MANUAL_MACHINE | ACTIVE |\n| 2 | CompanyProvider | \
+        Hosts that are automatically created when activating breadcrumbs | COMPANY_PROVIDER | ACTIVE |\n| 3 | \
+        ManualIdentity | Identities that are manually created | MANUAL_IDENTITY | ACTIVE |\n| 4 | ManualRouter | \
+        Routers that are manually created | MANUAL_ROUTER | ACTIVE |\n| 5 | MISP Provider |  | MISP_PROVIDER | ACTIVE |\n"
     )
     assert results["Contents"] == json_response["data"]
     assert results["EntryContext"] == {
@@ -128,7 +133,9 @@ def test_list_campaigns_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Campaigns\n|Id|Name|Description|Statuscode|\n|---|---|---|---|\n| 1 | Devel Campaign | Campaign just to be used in devel | DESIGN |\n| 2 | 2nd Campaign | Campaign just to be used in devel 2 | DESIGN |\n"
+        == "### Campaigns\n|Id|Name|Description|Statuscode|\n|---|---|---|---|\n| 1 | \
+        Devel Campaign | Campaign just to be used in devel | DESIGN |\n| 2 | 2nd Campaign | \
+        Campaign just to be used in devel 2 | DESIGN |\n"
     )
     assert results["Contents"] == json_response["data"]
     assert results["EntryContext"] == {
@@ -162,7 +169,8 @@ def test_list_hosts_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Hosts\n|Id|Name|Description|Statuscode|Typecode|\n|---|---|---|---|---|\n| 1 | Linux in AWS | Linux machine in AWS | DESIGN | MACHINE |\n"
+        == "### Hosts\n|Id|Name|Description|Statuscode|Typecode|\n|---|---|---|---|---|\n| 1 | \
+        Linux in AWS | Linux machine in AWS | DESIGN | MACHINE |\n"
     )
     assert results["Contents"] == json_response["data"]
     assert results["EntryContext"] == {
@@ -191,7 +199,8 @@ def test_list_services_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Services\n|Id|Name|Description|Statuscode|Typecode|\n|---|---|---|---|---|\n| 1 | Employee web portal | <p>-</p> | ACTIVE | WEB_SERVER |\n| 2 | Test | <p>-</p> | DESIGN | WEB_SERVER |\n"
+        == "### Services\n|Id|Name|Description|Statuscode|Typecode|\n|---|---|---|---|---|\n| 1 | \
+        Employee web portal | <p>-</p> | ACTIVE | WEB_SERVER |\n| 2 | Test | <p>-</p> | DESIGN | WEB_SERVER |\n"
     )
     assert results["Contents"] == json_response["data"]
     assert results["EntryContext"] == {
@@ -229,7 +238,8 @@ def test_list_breadcrumbs_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Breadcrumbs\n|Id|Name|Description|Statuscode|Typecode|\n|---|---|---|---|---|\n| 1 | Fake Document | <p>-</p> | DESIGN | DOCUMENT |\n| 2 | Fake Mobile App | <p>-</p> | ACTIVE | MOBILE_APP |\n"
+        == "### Breadcrumbs\n|Id|Name|Description|Statuscode|Typecode|\n|---|---|---|---|---|\n| 1 | \
+        Fake Document | <p>-</p> | DESIGN | DOCUMENT |\n| 2 | Fake Mobile App | <p>-</p> | ACTIVE | MOBILE_APP |\n"
     )
     assert results["Contents"] == json_response["data"]
     assert results["EntryContext"] == {
@@ -267,7 +277,8 @@ def test_list_incidents_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Incidents\n|Id|Name|Description|Statuscode|Tlpcode|Tags|\n|---|---|---|---|---|---|\n| 1 | Invalid auth | Invalid auth incident. | OPEN | GREEN |  |\n"
+        == "### Incidents\n|Id|Name|Description|Statuscode|Tlpcode|Tags|\n|---|---|---|---|---|---|\n| 1 | \
+        Invalid auth | Invalid auth incident. | OPEN | GREEN |  |\n"
     )
     assert results["Contents"] == json_response["data"]
     assert results["EntryContext"] == {
@@ -298,7 +309,9 @@ def test_get_object_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Objects\n|Id|Value|Hits|Eventscount|Typecode|Score|Firstseen|Lastseen|Tags|\n|---|---|---|---|---|---|---|---|---|\n| 1411 | 1.2.3.3 | 370 | 168 | CC_IP | 0 | Tue Oct  3 13:27:19 2017 | Fri Oct  6 20:19:57 2017 |  |\n"
+        == "### Objects\n|Id|Value|Hits|Eventscount|Typecode|Score|Firstseen|Lastseen|Tags|\n|\
+        ---|---|---|---|---|---|---|---|---|\n| 1411 | 1.2.3.3 | 370 | 168 | CC_IP | 0 | \
+        Tue Oct  3 13:27:19 2017 | Fri Oct  6 20:19:57 2017 |  |\n"
     )
 
     # Only dates have been changed
@@ -340,7 +353,11 @@ def test_get_events_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Events\n|Id|Campaignname|Categorycode|Hostname|Servicename|Eventdate|Score|Typecode|Data|Tags|\n|---|---|---|---|---|---|---|---|---|---|\n| 7882 | Linux Campaign |  | Ubuntu18.04 | SYSTEM (Ubuntu18.04) | Wed Oct  2 22:53:50 2019 | 100 | ValidAuth | event: ValidAuth<br>subject: Login successful<br>username: ubuntu<br>logon_type: -1<br>process_basename: su | attack.T1078 |\n"
+        == "### Events\n|Id|Campaignname|Categorycode|Hostname|Servicename|Eventdate|Score|\
+        Typecode|Data|Tags|\n|---|---|---|---|---|---|---|---|---|---|\n| 7882 | Linux Campaign |  | \
+        Ubuntu18.04 | SYSTEM (Ubuntu18.04) | Wed Oct  2 22:53:50 2019 | 100 | ValidAuth | \
+        event: ValidAuth<br>subject: Login successful<br>username: ubuntu<br>logon_type: -1<br>process_basename: su | \
+        attack.T1078 |\n"
     )
 
     # Only dates have been changed
@@ -390,7 +407,8 @@ def test_create_campaign_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Campaign\n|Id|Name|Description|Statuscode|\n|---|---|---|---|\n| 1 | Devel Campaign | Campaign just to be used in devel | DESIGN |\n"
+        == "### Campaign\n|Id|Name|Description|Statuscode|\n|---|---|---|---|\n| 1 | Devel Campaign | \
+        Campaign just to be used in devel | DESIGN |\n"
     )
 
     assert results["Contents"] == json_response["data"][0]
@@ -466,7 +484,8 @@ def test_create_host_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Hosts\n|Id|Name|Description|Statuscode|Typecode|\n|---|---|---|---|---|\n| 1 | Linux in AWS | Linux machine in AWS | DESIGN | MACHINE |\n"
+        == "### Hosts\n|Id|Name|Description|Statuscode|Typecode|\n|---|---|---|---|---|\n| 1 | \
+        Linux in AWS | Linux machine in AWS | DESIGN | MACHINE |\n"
     )
 
     assert results["Contents"] == json_response["data"][0]
@@ -583,9 +602,7 @@ def test_fetch_incidents_command(requests_mock, mocker):
     from test_data.api_response import response_alerts as json_response
 
     requests_mock.get(
-        f"{SERVER_URL}/api/notifications",
-        json=json_response,
-        status_code=200,
+        f"{SERVER_URL}/api/notifications", json=json_response, status_code=200,
     )
 
     mocker.patch.object(demisto, "incidents")
@@ -593,4 +610,4 @@ def test_fetch_incidents_command(requests_mock, mocker):
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
-    assert incidents[0]['name'] == 'Possible mimikatz'
+    assert incidents[0]["name"] == "Possible mimikatz"

@@ -329,7 +329,7 @@ response_breadcrumbs = {
             "cuid": 2,
             "campaign_id": 1,
             "dsn_id": 1,
-            "data": {"mobileAppType": "public", "url": "http://1.2.3.4/jax9ij2w",},
+            "data": {"mobileAppType": "public", "url": "http://1.2.3.4/jax9ij2w"},
             "description": "<p>-</p>",
             "dtime": None,
             "duid": None,
