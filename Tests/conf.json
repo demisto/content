@@ -1014,7 +1014,7 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test"
+            "playbookID": "SplunkPy-Test-V2"
         },
         {
             "integrations": "SplunkPy",
