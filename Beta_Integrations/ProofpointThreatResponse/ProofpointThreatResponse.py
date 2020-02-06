@@ -91,7 +91,7 @@ def add_to_list_command():
 
 def block_ip_command():
     ''' Adds given IPs to the relevant blacklist in Threat Response '''
-    list_id = demisto.params().get('blacklist_ip')
+    list_id = demisto.args().get('blacklist_ip')
     ips = argToList(demisto.args().get('ip'))
     expiration = demisto.args().get('expiration')
 
@@ -105,7 +105,7 @@ def block_ip_command():
 
 def block_domain_command():
     ''' Adds given domains to the relevant blacklist in Threat Response '''
-    list_id = demisto.params().get('blacklist_domain')
+    list_id = demisto.args().get('blacklist_domain')
     domains = argToList(demisto.args().get('domain'))
     expiration = demisto.args().get('expiration')
 
@@ -119,7 +119,7 @@ def block_domain_command():
 
 def block_url_command():
     ''' Adds given URLs to the relevant blacklist in Threat Response '''
-    list_id = demisto.params().get('blacklist_url')
+    list_id = demisto.args().get('blacklist_url')
     urls = argToList(demisto.args().get('url'))
     expiration = demisto.args().get('expiration')
 
@@ -133,7 +133,7 @@ def block_url_command():
 
 def block_hash_command():
     ''' Adds given hashes to the relevant blacklist in Threat Response '''
-    list_id = demisto.params().get('blacklist_hash')
+    list_id = demisto.args().get('blacklist_hash')
     hashes = argToList(demisto.args().get('hash'))
     expiration = demisto.args().get('expiration')
 

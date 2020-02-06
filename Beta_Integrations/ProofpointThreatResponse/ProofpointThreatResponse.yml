@@ -26,30 +26,9 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: ID of IPs blacklist
-  name: blacklist_ip
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: ID of Domains blacklist
-  name: blacklist_domain
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: ID of URLs blacklist
-  name: blacklist_url
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: ID of hashes blacklist
-  name: blacklist_hash
-  defaultvalue: ""
-  type: 0
-  required: false
 script:
   script: ''
   type: python
-  subtype: python3
   commands:
   - name: proofpoint-tr-get-list
     arguments:
@@ -79,8 +58,12 @@ script:
       description: List of IPs
       isArray: true
     - name: expiration
-      description: Expiration of the IP
-    description: 'Block IP '
+      description: 'Expiration of the IP in format YYYY-MM-DDTHH:MM:SSZ. For example:
+        2020-02-02T19:00:00Z'
+    - name: blacklist_ip
+      required: true
+      description: 'The ID of the IP blacklist '
+    description: Block IP
     execution: true
   - name: proofpoint-tr-block-domain
     arguments:
@@ -89,7 +72,11 @@ script:
       description: List of domains
       isArray: true
     - name: expiration
-      description: Expiration of the Domain
+      description: 'Expiration of the Domain in format YYYY-MM-DDTHH:MM:SSZ. For example:
+        2020-02-02T19:00:00Z'
+    - name: blacklist_domain
+      required: true
+      description: The ID of the domain blacklist
     description: Block Domain
   - name: proofpoint-tr-search-indicator
     arguments:
@@ -100,7 +87,7 @@ script:
       required: true
       description: Filter for the search. For example, "1.1" will return [1.1.1.1,
         22.22.1.1,1.1.22.22]
-    description: 'Return a list of indicators '
+    description: Return a list of indicators
   - name: proofpoint-tr-delete-indicator
     arguments:
     - name: list-id
@@ -117,7 +104,11 @@ script:
       description: List of URLs
       isArray: true
     - name: expiration
-      description: Expiration of the URLs
+      description: 'Expiration of the URLs in format YYYY-MM-DDTHH:MM:SSZ. For example:
+        2020-02-02T19:00:00Z'
+    - name: blacklist_url
+      required: true
+      description: The ID of the URL blacklist
     description: Block URL
   - name: proofpoint-tr-block-hash
     arguments:
@@ -126,9 +117,14 @@ script:
       description: List of hashes
       isArray: true
     - name: expiration
-      description: Expiration of the hash
+      description: 'Expiration of the hash in format YYYY-MM-DDTHH:MM:SSZ. For example:
+        2020-02-02T19:00:00Z'
+    - name: blacklist_hash
+      required: true
+      description: The ID of the hash blacklist
     description: Block hash
   runonce: false
+  subtype: python3
 beta: true
 tests:
 - No test - beta_integration
