@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added ignore to deprecated warnings of STIX
 
 ## [20.1.0] - 2020-01-07
 Removed ***firstSeen*** as qualifier for STIX 2 object.
