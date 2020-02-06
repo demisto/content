@@ -1,8 +1,7 @@
 commonfields:
-  id: SearchIncidents
+  id: SearchIncidentsV2
   version: -1
-name: SearchIncidents
-fromversion: 5.0.0
+name: SearchIncidentsV2
 script: '-'
 system: false
 timeout: '0'
@@ -22,10 +21,10 @@ args:
   description: A comma-separated list of incident names by which to filter the results.
   isArray: true
 - name: status
-  description: ' A comma-separated list of incident statuses by which to filter the results. For example: assigned. '
+  description: "A comma-separated list of incident statuses by which to filter the results. For example: assigned."
   isArray: true
 - name: notstatus
-  description: ' A comma-separated list of incident statuses to exclude from the results.  For example: assigned. '
+  description: "A comma-separated list of incident statuses to exclude from the results.  For example: assigned."
   isArray: true
 - name: reason
   description: A comma-separated list of incident close reasons by which to filter the results.
