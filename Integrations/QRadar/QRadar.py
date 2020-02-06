@@ -249,7 +249,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
         }
     obj = filter_dict_null(obj)
     if headers:
-        if isinstance(headers, str):
+        if isinstance(headers, STRING_TYPES):
             headers = headers.split(',')
         if isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
@@ -259,7 +259,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
         'Contents': contents,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable if human_readable else tableToMarkdown(title, obj, headers),
+        'HumanReadable': human_readable if human_readable else tableToMarkdown(title, obj, headers).replace('\t', ' '),
         'EntryContext': ec
     }
 
@@ -740,9 +740,7 @@ def get_search_results_command():
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
-    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', ' ')
-    return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key,
-                                human_readable=human_readable)
+    return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key)
 
 
 def get_assets_command():
