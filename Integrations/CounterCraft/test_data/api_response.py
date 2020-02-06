@@ -1,3 +1,5 @@
+import time
+
 response_dsns = {
     "data": [
         {
@@ -462,7 +464,7 @@ response_alerts = {
             "acknowledged": True,
             "campaign_id": 1,
             "campaign": {"id": 1, "name": "Campaign Test"},
-            "ctime": 1580852613,
+            "ctime": time.time(),
             "cuid": 1,
             "data": {
                 "html": "LSASS process injection detected",
