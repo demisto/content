@@ -918,7 +918,7 @@ def add_pr_comment(skipped_tests):
     token = os.environ['CONTENT_GITHUB_TOKEN']
     branch_name = os.environ['CIRCLE_BRANCH']
     sha1 = os.environ['CIRCLE_SHA1']
-    query = f'?q={sha1}+head:{branch_name}+is:open+is:pr+org:demisto+repo:demisto/contetnt'
+    query = '?q={}+head:{}+is:open+is:pr+org:demisto+repo:demisto/contetnt'.format(sha1, branch_name)
     url = 'https://api.github.com/search/issues'
     headers = {'Authorization': 'Bearer ' + token}
     res = requests.get(url + query, headers=headers, verify=False)
