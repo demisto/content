@@ -1,7 +1,16 @@
-  ### Prerequisites:
-   1.  [Create certificates & configure dxl](https://opendxl.github.io/opendxl-client-python/pydoc/index.html). 
-   2.  You must have the following files:
-       * Broker CA certificates (`brokercerts.crt` file)
-       * Client certificate (`client.crt` file)
-       * Client private key (`client.key` file)
-       * Broker list properties file (`brokerlist.properties` file)
+## how to configure DXL based integration
+- make sure that **openssl** is installed
+- open a new directory.
+- download the sh script https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys.sh.zip and move to the directory.
+- unzip the file and double click it to run.
+- fill out the required fields except the challenge password (leave it empty).
+- upload the public key as shown in
+    - https://opendxl.github.io/opendxl-client-python/pydoc/epocaimport.html
+- download the brokers certificate as shown in
+    - https://opendxl.github.io/opendxl-client-python/pydoc/epobrokercertsexport.html
+- download the brokers list as shown in
+    - https://opendxl.github.io/opendxl-client-python/pydoc/epobrokerlistexport.html
+- copy the body of the file `brokercerts.crt` to `Broker CA certificates content` field.
+- copy the body of the file `client.crt` to `Client certificates content` field.
+- copy the body of the file `client.key` to `Client private key content` field.
+- test (it may tyke a while before the key will be enable).
