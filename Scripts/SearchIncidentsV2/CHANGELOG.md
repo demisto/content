@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.1] - 2020-02-06
 Fixed an issue where an error was raised when no incidents were found.
 
 ## [20.2.0] - 2020-02-04
