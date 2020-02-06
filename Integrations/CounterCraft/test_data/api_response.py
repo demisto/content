@@ -437,27 +437,6 @@ response_events = {
     ]
 }
 
-response_incidents = {
-    "data": [
-        {
-            "ctime": 1580852613,
-            "cuid": 2,
-            "campaign_id": 1,
-            "description": "Invalid auth incident.",
-            "id": 1,
-            "mtime": 1507718626.7619,
-            "muid": None,
-            "name": "Invalid auth",
-            "status_code": "OPEN",
-            "tlp_code": "GREEN",
-            "tags": None,
-            "vsn": 2,
-            "objects": [1, 2, 3, 4],
-            "events": [1, 2, 3, 4],
-        }
-    ]
-}
-
 response_alerts = {
     "data": [
         {
