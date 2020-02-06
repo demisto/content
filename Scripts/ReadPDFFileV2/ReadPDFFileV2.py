@@ -7,6 +7,7 @@ import os
 import re
 import errno
 import shutil
+import json
 from typing import List
 
 
@@ -152,7 +153,7 @@ def get_pdf_htmls_content(pdf_path, output_folder):
     return html_content
 
 
-def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
+def build_readpdf_entry_object(pdf_file, metadata, text, urls, emails, images):
     """Builds an entry object for the main script flow"""
     # Add Text to file entity
     pdf_file["Text"] = text
@@ -197,13 +198,14 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
             all_pdf_data += u
 
     # Extract indicators (omitting context output, letting auto-extract work)
-    indicators_hr = demisto.executeCommand("extractIndicators", {
-        "text": all_pdf_data})[0][u"Contents"]
+    indicators_map = json.loads(demisto.executeCommand("extractIndicators", {"text": all_pdf_data})[0][u"Contents"])
+    if emails:
+        indicators_map["Email"] = emails
     results.append({
         "Type": entryTypes["note"],
         "ContentsFormat": formats["json"],
-        "Contents": indicators_hr,
-        "HumanReadable": indicators_hr
+        "Contents": indicators_map,
+        "HumanReadable": indicators_map,
     })
     return results
 
@@ -233,6 +235,7 @@ def main():
 
     # URLS
     urls_ec = []
+    emails_ec = []
     folders_to_remove = []
     try:
         path = demisto.getFilePath(entry_id).get('path')
@@ -262,15 +265,20 @@ def main():
                 pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
                 urls = re.findall(urlRegex, pdf_html_content)
                 urls_set = set(urls)
-                emails = re.findall(EMAIL_REGXEX, pdf_html_content)
+                emails_set = set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
                 urls_set = urls_set.union(binary_file_urls)
-                urls_set = urls_set.union(set(emails))
 
                 # this url is always generated with the pdf html file, and that's why we remove it
                 urls_set.remove('http://www.w3.org/1999/xhtml')
                 for url in urls_set:
-                    urls_ec.append({"Data": url})
+                    if re.match(emailRegex, url):
+                        emails_set.add(url)
+                    else:
+                        urls_ec.append({"Data": url})
+
+                for email in emails_set:
+                    emails_ec.append(email)
 
                 # Get images:
                 images = get_images_paths_in_path(output_folder)
@@ -281,7 +289,7 @@ def main():
                     "Contents": f"Could not load pdf file in EntryID {entry_id}\nError: {str(e)}"
                 })
                 raise e
-            readpdf_entry_object = build_readpdf_entry_object(pdf_file, metadata, text, urls_ec, images)
+            readpdf_entry_object = build_readpdf_entry_object(pdf_file, metadata, text, urls_ec, emails_ec, images)
             demisto.results(readpdf_entry_object)
         else:
             demisto.results({
