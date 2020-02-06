@@ -132,3 +132,5 @@ outputs:
   description: Phases of the found incidents
 scripttarget: 0
 deprecated: true
+tests:
+  - No test
