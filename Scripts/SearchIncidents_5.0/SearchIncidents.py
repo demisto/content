@@ -12,7 +12,8 @@ def check_if_found_incident(res: List):
         if 'data' not in res[0]['Contents']:
             raise DemistoException(res[0].get('Contents'))
         elif res[0]['Contents']['data'] is None:
-            raise DemistoException("Incidents not found.")
+            return_outputs("Incidents not found.", {}, {})
+            sys.exit(0)
 
     else:
         raise DemistoException(f'failed to get incidents from demisto.\nGot: {res}')
