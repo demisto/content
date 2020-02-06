@@ -53,10 +53,11 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
     if headers is None:
         headers = DEFAULT_HEADERS
     data = {} if data is None else data
-    LOG('running request with url=%s\theaders=%s' % (BASE_URL + url_suffix, headers))
+    url = BASE_URL + url_suffix
+    LOG('running request with url=%s\theaders=%s' % (url, headers))
     try:
         res = requests.request(method,
-                               BASE_URL + url_suffix,
+                               url,
                                verify=USE_SSL,
                                data=data,
                                headers=headers
@@ -70,6 +71,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
             else:
                 raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
     except Exception as e:
+        LOG('Zscaler request failed with url={url}\theaders={hdrs}\tdata={data}'.format(url=url, hdrs=headers, data=data))
         LOG(e)
         raise
     return res
@@ -491,7 +493,7 @@ def category_add_url(category_id, url):
     if found_category:
         url_list = argToList(url)
         all_urls = url_list[:]
-        all_urls.extend(category_data['urls'])
+        all_urls.extend(list(map(lambda x: x.strip(), category_data['urls'])))
         category_data['urls'] = all_urls
         category_ioc_update(category_data)
         context = {
