@@ -61,9 +61,9 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
 
 
 @APP.route('/taxii-discovery-service', methods=['GET'])
-def route_edl_values() -> Response:
+def taxii_discovery_service() -> Response:
     """
-    Main handler for values saved in the integration context
+    Route for discovery service
     """
     params = demisto.params()
 
