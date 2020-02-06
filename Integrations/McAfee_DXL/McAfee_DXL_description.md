@@ -1,7 +1,7 @@
 ## how to configure DXL based integration
 - make sure that **openssl** is installed
 - open a new directory.
-- download the sh script https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys.sh.zip and move to the directory.
+- download the sh script https://github.com/demisto/content/raw/master/Integrations/McAfee_DXL/create_keys.sh.zip and move to the directory.
 - unzip the file and double click it to run.
 - fill out the required fields except the challenge password (leave it empty).
 - upload the public key as shown in
