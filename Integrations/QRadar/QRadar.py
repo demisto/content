@@ -208,6 +208,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
         except ConnectionError:
             # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
             res = send_request_no_error_handling(headers, method, params, url)
+            res.raise_for_status()
     except HTTPError:
         err_json = res.json()
         err_msg = ''
@@ -234,7 +235,6 @@ def send_request_no_error_handling(headers, method, params, url):
     else:
         res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
                                auth=(USERNAME, PASSWORD))
-    res.raise_for_status()
     return res
 
 
