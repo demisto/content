@@ -58,15 +58,6 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - additionalinfo: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
   display: Discovery Service
   name: discovery_service
@@ -115,6 +106,15 @@ configuration:
   name: initial_interval
   required: false
   type: 0
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Ingests indicator feeds from TAXII 1.x servers.
 display: TAXII Feed
 name: TAXIIFeed
