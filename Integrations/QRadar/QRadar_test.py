@@ -190,7 +190,6 @@ def test_create_incident_from_offense_new_line_description():
         - The function will create an incident from the offense without \n in the incident name
     """
     import QRadar as qradar
-
     raw_offense = copy.deepcopy(OFFENSE_RAW_RESULT[0])
     raw_offense['description'] = '\n{}\n'.format(raw_offense['description'])
     incident = qradar.create_incident_from_offense(raw_offense)
@@ -205,6 +204,38 @@ def test_create_incident_from_offense_new_line_description():
             assert label.get('value') == '\nActivacion\n'
             description_asserted = True
     assert description_asserted
+
+
+def test_get_entry_for_object():
+    """
+    Given:
+        There's a title, obj, contents, and headers
+    When:
+        I call get_entry_for_object
+    Then:
+        get_entry_for_object will return a an entry with the given headers
+    """
+    import QRadar as qradar
+    title = "Title"
+    obj = {'id': 1, 'name': 'test', 'field_to_drop': 'sensitive data'}
+    contents = {'test': 'test'}
+    headers = u'name'
+    # single header
+    entry = qradar.get_entry_for_object(title, obj, contents, headers)
+    assert entry['HumanReadable'] == '### Title\n|name|\n|---|\n| test |\n'
+    entry = qradar.get_entry_for_object(title, obj, contents, str(headers))
+    assert entry['HumanReadable'] == '### Title\n|name|\n|---|\n| test |\n'
+    assert entry['EntryContext'] == obj
+    assert entry['Contents'] == contents
+
+    # multiple headers
+    headers = ['name', 'id']
+    entry = qradar.get_entry_for_object(title, obj, contents, headers)
+    assert 'sensitive data' not in entry['HumanReadable']
+    assert 'id' in entry['HumanReadable']
+    assert 'name' in entry['HumanReadable']
+    assert entry['EntryContext'] == obj
+    assert entry['Contents'] == contents
 
 
 def test_upload_indicators_command_indicators_found(mocker):
