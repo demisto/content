@@ -1,7 +1,10 @@
 ## [Unreleased]
-- Added an immediate recovery for HTTP requests in case of connection error, which should help if QRadar SIEM is busy.
-- Added **Upload Indicators** command which allows to add indicators from Demisto to QRadar reference set 
+- Fixed an issue where ***qradar-get-search-results*** and ***qradar-get-search*** ignored headers argument.
 - Added to **update-reference-set-value** an option to set a list of values and not just a single value
+- Added **Upload Indicators** command which allows to add indicators from Demisto to QRadar reference set 
+
+## [20.2.0] - 2020-02-04
+Added an immediate recovery for HTTP requests in case of connection error, which should help if QRadar SIEM is busy.
 
 ## [20.1.2] - 2020-01-22
 Added **Full Incident Enrichment** instance parameter. Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.
