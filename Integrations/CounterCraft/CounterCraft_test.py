@@ -1,5 +1,6 @@
 import pytest
 import demistomock as demisto
+from CommonServerPython import formatEpochDate
 
 SERVER_URL = "https://1.2.3.4"
 
@@ -309,9 +310,9 @@ def test_get_object_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Objects\n|Id|Value|Hits|Eventscount|Typecode|Score|Firstseen|Lastseen|Tags|\n|\
+        == f"### Objects\n|Id|Value|Hits|Eventscount|Typecode|Score|Firstseen|Lastseen|Tags|\n|\
 ---|---|---|---|---|---|---|---|---|\n| 1411 | 1.2.3.3 | 370 | 168 | CC_IP | 0 | \
-Tue Oct  3 13:27:19 2017 | Fri Oct  6 20:19:57 2017 |  |\n"
+{formatEpochDate(json_response['data'][0]['first_seen'])} | {formatEpochDate(json_response['data'][0]['last_seen'])} |  |\n"
     )
 
     # Only dates have been changed
@@ -326,8 +327,8 @@ Tue Oct  3 13:27:19 2017 | Fri Oct  6 20:19:57 2017 |  |\n"
                 "Hits": 370,
                 "Score": 0,
                 "TypeCode": "CC_IP",
-                "FirstSeen": "Tue Oct  3 13:27:19 2017",
-                "LastSeen": "Fri Oct  6 20:19:57 2017",
+                "FirstSeen": f"{formatEpochDate(json_response['data'][0]['first_seen'])}",
+                "LastSeen": f"{formatEpochDate(json_response['data'][0]['last_seen'])}",
                 "EventsCount": 168,
             }
         ]
@@ -353,9 +354,9 @@ def test_get_events_command(requests_mock, mocker):
 
     assert (
         results["HumanReadable"]
-        == "### Events\n|Id|Campaignname|Categorycode|Hostname|Servicename|Eventdate|Score|\
+        == f"### Events\n|Id|Campaignname|Categorycode|Hostname|Servicename|Eventdate|Score|\
 Typecode|Data|Tags|\n|---|---|---|---|---|---|---|---|---|---|\n| 7882 | Linux Campaign |  | \
-Ubuntu18.04 | SYSTEM (Ubuntu18.04) | Wed Oct  2 22:53:50 2019 | 100 | ValidAuth | \
+Ubuntu18.04 | SYSTEM (Ubuntu18.04) | {formatEpochDate(json_response['data'][0]['event_date'])} | 100 | ValidAuth | \
 event: ValidAuth<br>subject: Login successful<br>username: ubuntu<br>logon_type: -1<br>process_basename: su | \
 attack.T1078 |\n"
     )
@@ -370,7 +371,7 @@ attack.T1078 |\n"
                 "CampaignName": "Linux Campaign",
                 "HostName": "Ubuntu18.04",
                 "ServiceName": "SYSTEM (Ubuntu18.04)",
-                "EventDate": "Wed Oct  2 22:53:50 2019",
+                "EventDate": f"{formatEpochDate(json_response['data'][0]['event_date'])}",
                 "Score": 100,
                 "TypeCode": "ValidAuth",
                 "Data": {
