@@ -381,7 +381,7 @@ tasks:
       device-group: {}
       inbound-or-outbound-rule: {}
       ioc-type:
-        simple: URL
+        simple: url
       list-name:
         complex:
           root: inputs.URLListName
@@ -444,7 +444,7 @@ tasks:
       device-group: {}
       inbound-or-outbound-rule: {}
       ioc-type:
-        simple: IP
+        simple: ip
       list-name:
         complex:
           root: inputs.IPListName
