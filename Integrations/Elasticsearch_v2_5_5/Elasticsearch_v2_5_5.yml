@@ -359,9 +359,12 @@ script:
     execution: false
     name: get-shared-indicators
     outputs:
-    - contextPath: ElasticsearchFeed.SharedIndicators
+    - contextPath: ElasticsearchFeed.SharedIndicators.Indicators
       description: Indicators shared from other tenants.
       type: Unknown
+    - contextPath: ElasticsearchFeed.SharedIndicators.Enrichments
+        description: Enrichment indicators shared from other tenants.
+        type: Unknown
   dockerimage: demisto/elasticsearch:1.0.0.4677
   feed: true
   isfetch: true

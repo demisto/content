@@ -531,12 +531,13 @@ def test_incident_creation_with_timestamp_e7():
 def test_extract_indicators_from_insight_hit(mocker):
     import Elasticsearch_v2_5_5 as es2
     mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
-    ioc_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    ioc_lst, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
     # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
-    assert len(ioc_lst) == 3
+    assert len(ioc_lst) == 1
+    assert len(ioc_enrch_lst) == 2
     assert ioc_lst[0].get('value')
     # moduleToFeedMap with isEnrichment: False should be added to ioc_lst
     assert ioc_lst[0].get('moduleToFeedMap').get('Demisto.Demisto')
     assert ioc_lst[0].get('moduleToFeedMap').get('VirusTotal.VirusTotal') is None
-    set(FEED_IOC_KEYS).issubset(ioc_lst[1])
-    set(FEED_IOC_KEYS).issubset(ioc_lst[2])
+    set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0])
+    set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[1])

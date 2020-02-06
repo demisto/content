@@ -518,21 +518,32 @@ def get_indicators_command():
     search, _ = get_indicators_search_scan()
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     indicators_list: list = []
+    ioc_enrch_lst = []
     for hit in search.scan():
-        indicators_list.extend(extract_indicators_from_insight_hit(hit))
+        hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
+        indicators_list.extend(hit_lst)
+        ioc_enrch_lst.extend(hit_enrch_lst)
         if len(indicators_list) >= limit:
             break
     hr = tableToMarkdown('Indicators', indicators_list, ['name'])
-    return_outputs(hr, {'ElasticsearchFeed.SharedIndicators': indicators_list}, indicators_list)
+    hr += tableToMarkdown('Enrichments', ioc_enrch_lst, ['value', 'sourceBrand', 'score'])
+    ec = {'ElasticsearchFeed.SharedIndicators': {'Indicators': indicators_list, 'Enrichments': ioc_enrch_lst}}
+    return_outputs(hr, ec, indicators_list)
 
 
 def fetch_indicators_command():
     search, now = get_indicators_search_scan()
     ioc_lst: list = []
+    ioc_enrch_lst: list = []
     for hit in search.scan():
-        ioc_lst.extend(extract_indicators_from_insight_hit(hit))
+        hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
+        ioc_lst.extend(hit_lst)
+        ioc_enrch_lst.extend(hit_enrch_lst)
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
+            demisto.createIndicators(b)
+    if ioc_enrch_lst:
+        for b in batch(ioc_enrch_lst, batch_size=2000):
             demisto.createIndicators(b)
     demisto.setLastRun({'time': now})
 
@@ -554,6 +565,7 @@ def get_indicators_search_scan():
 
 def extract_indicators_from_insight_hit(hit):
     ioc_lst = []
+    ioc_enirhcment_list = []
     ioc = results_to_indicator(hit)
     if ioc.get('value'):
         ioc_lst.append(ioc)
@@ -562,11 +574,11 @@ def extract_indicators_from_insight_hit(hit):
         if module_to_feedmap:
             for key, val in module_to_feedmap.items():
                 if val.get('isEnrichment'):
-                    ioc_lst.append(val)
+                    ioc_enirhcment_list.append(val)
                 else:
                     updated_module_to_feedmap[key] = val
             ioc[MODULE_TO_FEEDMAP_KEY] = updated_module_to_feedmap
-    return ioc_lst
+    return ioc_lst, ioc_enirhcment_list
 
 
 def results_to_indicator(hit):
