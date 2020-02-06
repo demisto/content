@@ -20,6 +20,50 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
+    def get_ip_reputation(ip):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/ip/{ip}'
+        )
+
+    def get_domain_reputation(domain):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/domain/{domain}'
+        )
+
+    def search_alerts(status, severity, alert_type):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/alerts',
+            params={
+            }
+        )
+
+    def get_alert(alert_id):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/alerts/{alert_id}'
+        )
+
+    def scan_start(hostname):
+        return self._http_request(
+            method='POST',
+            url_suffix='/scan'
+        )
+
+    def scan_status(scan_id):
+        return self._http_request(
+            method='GET',
+            url_suffix='/scan/'
+        )
+
+    def scan_results(scan_id):
+        # do multi-form data request
+        data = self._http_request()
+
+        return data
+
     def say_hello(self, name):
         return f'Hello {name}'
 
@@ -164,6 +208,87 @@ def fetch_incidents(client, last_run, first_fetch_time):
     return next_run, incidents
 
 
+def ip_reputation_command(client, args, threshold):
+    ips = argToList(args.get('ip'))
+    threshold = int(args.get('threshold', threshold))
+
+    for ip in ips:
+        ip_data = client.get_ip_reputation(ip)
+
+        score = 0
+        reputation = ip_data.get('reputation')
+        if reputation => threshold:
+            score = 3 # bad
+        elif reputation >= threshold/2:
+            score = 2 # suspicious
+        else:
+            score = 1 # good
+
+        dbot_score = {
+            'Indicator': ip,
+            'Vendor': 'HelloWorld',
+            'Type': 'ip',
+            'Score': score
+        }
+        ip_standard_context = {
+            'Address': ip,
+            'ASN': ip_data.get('ip')
+        }
+
+        if score == 3:
+            # if score is bad
+            ip_standard_context['Malicious'] = {
+                'Vendor': 'HelloWorld',
+                'Desciption': f'Hello World returned repuration {reputation}'
+            }
+
+        outputs = {
+            'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score,
+            outputPaths['ip']: ip_standard_context,
+            'HelloWorld.IP(val.ip == obj.ip)': ip_data
+        }
+
+        readable_output = tableToMarkdown('IP List', ip)
+
+
+def domain_reputation_command(client, args):
+    pass
+
+
+def search_alerts_command(client, args):
+    status = args.get('status')
+    severity = args.get('severity')
+
+    alerts = client.search_alerts(
+        severity=severity,
+        status=status
+    )
+
+    return (
+        tableToMarkdown('HelloWorld Alerts', alerts, ['id', 'name', 'description', 'severity', 'status', 'type']),
+        {
+            'HelloWorld.Alert(val.id == obj.id)': alerts
+        },
+        alerts
+    )
+
+
+def get_alert_command(client, args):
+    pass
+
+
+def scan_start_command(client, args):
+    pass
+
+
+def scan_status_command(client, args):
+    pass
+
+
+def scan_results_command(client, args):
+    pass
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -204,8 +329,36 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
+        elif demisto.command() == 'ip':
+            threshold = int(demisto.params().get('threshold_ip'))
+            return_outputs(*ip_reputation_command(client, demisto.args(), threshold))
+
+        elif demisto.command() == 'domain':
+            return_outputs(*domain_reputation_command(client, demisto.args()))
+
         elif demisto.command() == 'helloworld-say-hello':
             return_outputs(*say_hello_command(client, demisto.args()))
+
+        elif demisto.command() == 'helloworld-search-alerts':
+            return_outputs(*search_alerts_command(client, demisto.args()))
+
+        elif demisto.command() == 'helloworld-get-alert':
+            return_outputs(*get_alert_command(client, demisto.args()))
+
+        elif demisto.command() == 'helloworld-scan-start':
+            return_outputs(*scan_start_command(client, demisto.args()))
+
+        elif demisto.command() == 'helloworld-scan-status':
+            return_outputs(*scan_status_command(client, demisto.args()))
+
+        elif demisto.command() == 'helloworld-scan-results':
+            return_outputs(*scan_results_command(client, demisto.args()))
+
+        
+
+        
+
+        
 
     # Log exceptions
     except Exception as e:
