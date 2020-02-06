@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: EDL
+  id: TAXIIServer
   version: -1
 configuration:
 - additionalinfo: The query to run to update its EDL. To view expected results, you
@@ -56,8 +56,8 @@ configuration:
   type: 8
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
-display: Palo Alto Networks PAN-OS EDL Service
-name: EDL
+display: TAXII Server
+name: TAXIIServer
 script:
   commands:
   - arguments:
@@ -89,7 +89,7 @@ script:
     description: Updates values stored in the EDL (only avaialable On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.4937
+  dockerimage: devdemisto/taxii-server:1.0.0.5852
   feed: false
   isfetch: false
   longRunning: true

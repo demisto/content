@@ -1,8 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from flask import Flask, Response
+from flask import Flask, request, make_response, Response
 from gevent.pywsgi import WSGIServer
+import re
+
+import libtaxii
+import libtaxii.messages_11
+import libtaxii.constants
+
 from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any
 
@@ -10,6 +16,21 @@ from typing import Callable, List, Any
 INTEGRATION_NAME: str = 'TAXII Server'
 PAGE_SIZE = 100
 APP: Flask = Flask('demisto-taxii')
+
+SERVICE_INSTANCES = [
+    {
+        'type': libtaxii.constants.SVC_DISCOVERY,
+        'path': 'taxii-discovery-service'
+    },
+    {
+        'type': libtaxii.constants.SVC_COLLECTION_MANAGEMENT,
+        'path': 'taxii-collection-management-service'
+    },
+    {
+        'type': libtaxii.constants.SVC_POLL,
+        'path': 'taxii-poll-service'
+    }
+]
 
 ''' HELPER FUNCTIONS '''
 
@@ -57,18 +78,46 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
     return iocs, next_page
 
 
+def taxii_make_response(m11):
+    h = {
+        'Content-Type': "application/xml",
+        'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1',
+        'X-TAXII-Protocol': 'urn:taxii.mitre.org:protocol:http:1.0'
+    }
+    r = make_response((m11.to_xml(pretty_print=True), 200, h))
+
+    return r
+
+
 ''' ROUTE FUNCTIONS '''
 
 
-@APP.route('/taxii-discovery-service', methods=['GET'])
+@APP.route('/taxii-discovery-service', methods=['POST'])
 def taxii_discovery_service() -> Response:
     """
     Route for discovery service
     """
-    params = demisto.params()
+    tm = libtaxii.messages_11.get_message_from_xml(request.data)
+    if tm.message_type != libtaxii.constants.MSG_DISCOVERY_REQUEST:
+        return make_response(('Invalid message, invalid Message Type', 400))
 
+    dresp = libtaxii.messages_11.DiscoveryResponse(
+        libtaxii.messages_11.generate_message_id(),
+        tm.message_id
+    )
 
-    return Response(values, status=200, mimetype='text/plain')
+    for si in SERVICE_INSTANCES:
+        sii = libtaxii.messages_11.ServiceInstance(
+            si['type'],
+            'urn:taxii.mitre.org:services:1.1',
+            'urn:taxii.mitre.org:protocol:http:1.0',
+            "{}/{}".format('', si['path']),
+            ['urn:taxii.mitre.org:message:xml:1.1'],
+            available=True
+        )
+        dresp.service_instances.append(sii)
+
+    return taxii_make_response(dresp)
 
 
 ''' COMMAND FUNCTIONS '''
