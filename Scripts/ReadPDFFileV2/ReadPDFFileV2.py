@@ -201,13 +201,30 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, emails, images):
     indicators_map = json.loads(demisto.executeCommand("extractIndicators", {"text": all_pdf_data})[0][u"Contents"])
     if emails:
         indicators_map["Email"] = emails
+    ec = build_readpdf_entry_context(indicators_map)
     results.append({
         "Type": entryTypes["note"],
         "ContentsFormat": formats["json"],
         "Contents": indicators_map,
         "HumanReadable": indicators_map,
+        "EntryContext": ec
     })
     return results
+
+
+def build_readpdf_entry_context(indicators_map):
+    ec = {}
+    if 'URL' in indicators_map:
+        ec_url = []
+        for url in indicators_map['URL']:
+            ec_url.append({'Data': url})
+        ec['URL'] = ec_url
+    if 'Email' in indicators_map:
+        ec_email = []
+        for email in indicators_map['Email']:
+            ec_email.append({'Email': email})
+        ec['Account'] = ec_email
+    return ec
 
 
 def get_urls_from_binary_file(file_path):
