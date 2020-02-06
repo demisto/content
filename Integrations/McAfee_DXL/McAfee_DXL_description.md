@@ -13,4 +13,4 @@
 - copy the body of the file `brokercerts.crt` to `Broker CA certificates content` field.
 - copy the body of the file `client.crt` to `Client certificates content` field.
 - copy the body of the file `client.key` to `Client private key content` field.
-- test (it may tyke a while before the key will be enable).
+- test (it may take a while before the key will be enable).
