@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Blocklist_de Feed",
+            "playbookID": "Blocklist_de - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "AzureFeed",
             "playbookID": "AzureFeed - Test",
             "fromversion": "5.5.0"
@@ -37,6 +42,11 @@
         {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ProofpointFeed",
+            "playbookID": "TestProofpointFeed",
             "fromversion": "5.5.0"
         },
         {
@@ -515,6 +525,11 @@
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Test_export_indicators_service",
+            "integrations": "ExportIndicators",
             "fromversion": "5.5.0"
         },
         {
@@ -2184,6 +2199,11 @@
             "integrations": "Sixgill",
             "playbookID": "Sixgill - Darkfeed - Indicators-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AutoFocus Feed",
+            "playbookID": "playbook-FeedAutofocus_test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
