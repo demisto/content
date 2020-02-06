@@ -42,6 +42,8 @@ def is_valid_args(args: Dict):
 def search_incidents(args: Dict):
     if is_valid_args(args):
         res: List = demisto.executeCommand('getIncidents', args)
+        if is_error(res):
+            raise DemistoException(get_error(res))
         incident_found: bool = check_if_found_incident(res)
         if incident_found is False:
             return 'Incidents not found.', {}, {}

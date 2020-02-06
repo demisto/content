@@ -55,7 +55,7 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Deprecated. use SearchIncidents instead.
+comment: Deprecated. use SearchIncidentsV2 instead.
 enabled: true
 args:
 - name: id
