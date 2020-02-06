@@ -3,6 +3,13 @@
  - Added new enums: **IndicatorType**, **EntryFormat**, **EntryType**, **DBotScore** (replaced the deprecated ones) 
  - Added encode string results - safe handle unicode strings to demisto results
 
+## [20.2.0] - 2020-02-04
+Added ***ip_to_indicator_type*** command.
+
+
+## [20.1.2] - 2020-01-22
+Added encode string results - safe handle unicode strings to demisto results
+
 ## [20.1.0] - 2020-01-07
  - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
  - Added the **batch** command, which takes an iterable and how many items to return and yields batches of that size.
