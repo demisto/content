@@ -1115,7 +1115,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     if not last_run:  # if first time running
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
-        new_last_run = last_run
+        new_last_run = {'time': last_run}
 
     demisto_incidents: List = list()
     from_epoch = date_to_timestamp(new_last_run.get('time'), date_format=timestamp_format)

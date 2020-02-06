@@ -1,8 +1,12 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedOffice365
+  id: Office365 Feed
   version: -1
 configuration:
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
 - defaultvalue: Worldwide
   display: Regions
   name: regions
@@ -14,7 +18,7 @@ configuration:
   - Worldwide
   required: true
   type: 16
-- defaultvalue: Any
+- defaultvalue: All
   display: Services
   name: services
   options:
@@ -25,13 +29,9 @@ configuration:
   - All
   required: true
   type: 16
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -54,7 +54,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: indicatorType
+- defaultvalue: suddenDeath
   name: feedExpirationPolicy
   options:
   - never
@@ -90,7 +90,7 @@ configuration:
   type: 8
 description: Use the Office365 feed integration to get indicators from the feed.
 display: Office365 Feed
-name: FeedOffice365
+name: Office365 Feed
 script:
   commands:
   - arguments:
@@ -103,34 +103,30 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'IPS'
-      description: The indicator type. Can be "IPS", "URLS", or "Both". The default value is "IPS".
+      defaultValue: IPs
+      description: The indicator type. Can be "IPs", "URLs", or "Both". The default
+        value is "IPs".
       isArray: false
       name: indicator_type
       predefined:
-      - 'IPS'
-      - 'URLS'
-      - 'Both'
+      - IPs
+      - URLs
+      - Both
       required: false
       secret: false
     deprecated: false
     description: Gets indicators from the feed.
     execution: false
-    name: get-indicators
-    outputs:
-    - contextPath: O365.Indicator.Value
-      description: The indicator value.
-      type: String
-    - contextPath: O365.Indicator.Type
-      description: The indicator type.
-      type: Unknown
+    name: office365-get-indicators
   dockerimage: demisto/python3:3.8.1.5734
-  isfetch: false
   feed: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
+tests:
+- Office365_Feed_Test
 fromversion: 5.5.0

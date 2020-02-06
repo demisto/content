@@ -1,4 +1,3 @@
-import ipaddress
 from typing import Dict, List, Tuple, Any, Callable
 
 import uuid
@@ -38,38 +37,6 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[
     return urls_list
 
 
-def check_indicator_type(indicator):
-    """Checks the indicator type
-
-    Args:
-        indicator: IP
-
-    Returns:
-        The IP type per the indicators defined in Demisto
-    """
-    if '/' in indicator:  # check for network
-        try:
-            ip_ = ipaddress.ip_network(indicator)
-        except Exception:
-            return 'URL'
-        if ip_.version == 4:
-            return 'CIDR'
-        if ip_.version == 6:
-            return 'IPv6CIDR'
-        demisto.debug(f'Office365 feed indicator type unknown: {str(indicator)}')
-        return None
-    try:
-        ip_ = ipaddress.ip_address(indicator)
-    except Exception:
-        return 'URL'
-    if ip_.version == 4:
-        return 'IPv4'
-    if ip_.version == 6:
-        return 'IPv6'
-    demisto.debug(f'Office365 feed indicator type unknown: {str(indicator)}')
-    return None
-
-
 class Client(BaseClient):
     """
     Client to use in the Office365 Feed integration. Overrides BaseClient.
@@ -78,16 +45,14 @@ class Client(BaseClient):
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
 
-    def __init__(self, urls_list: list, indicator: str, insecure: bool = False, proxy: bool = False):
+    def __init__(self, urls_list: list, insecure: bool = False, proxy: bool = False):
         """
         Implements class for Office365 feeds.
         :param urls_list: List of url, regions and service of each sub feed.
-        :param indicator: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
         super().__init__(base_url=urls_list, verify=insecure, proxy=proxy)
-        self.indicator = indicator
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -131,6 +96,27 @@ class Client(BaseClient):
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
         return result
 
+    def check_indicator_type(self, indicator):
+        """Checks the indicator type
+
+        Args:
+            indicator: indicator value
+
+        Returns:
+            The type of the indicator
+        """
+        if re.match(ipv4cidrRegex, indicator):
+            return FeedIndicatorType.CIDR
+        if re.match(ipv6cidrRegex, indicator):
+            return FeedIndicatorType.IPv6CIDR
+        if re.match(ipv4Regex, indicator):
+            return FeedIndicatorType.IP
+        if re.match(ipv6Regex, indicator):
+            return FeedIndicatorType.IPv6
+        if re.match(urlRegex, indicator):
+            return FeedIndicatorType.URL
+        return FeedIndicatorType.Domain
+
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
@@ -144,8 +130,51 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}
 
 
+def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> List[Dict]:
+    """Retrieves indicators from the feed
+
+    Args:
+        client: Client object with request
+        indicator_type_lower: indicator type
+        limit: limit the results
+
+    Returns:
+        Indicators.
+    """
+    iterator = client.build_iterator()
+    # filter indicator_type specific entries
+    if not indicator_type_lower == 'both':
+        iterator = [i for i in iterator if indicator_type_lower in i]
+    indicators = []
+    if limit > 0:
+        iterator = iterator[:limit]
+
+    for item in iterator:
+        if indicator_type_lower == 'both':
+            values = item.get('ips', []) + item.get('urls', [])
+        else:
+            values = item.get(indicator_type_lower)
+        if values:
+            for value in values:
+                type_ = client.check_indicator_type(value)
+                raw_data = {
+                    'value': value,
+                    'type': type_,
+                }
+                for key, val in item.items():
+                    if key not in ['ips', 'urls']:
+                        raw_data.update({key: val})
+                indicators.append({
+                    "value": value,
+                    "type": type_,
+                    "rawJSON": raw_data,
+                })
+
+    return indicators
+
+
 def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-    """Retrieves indicators from the feed to the war-room.
+    """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
         client: Client object with request
@@ -155,45 +184,17 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
         Outputs.
     """
     indicator_type = str(args.get('indicator_type'))
-    iterator = client.build_iterator()
     indicator_type_lower = indicator_type.lower()
-    indicators = []
-    raw_response = []
-
-    # filter indicator_type specific entries
-    iterator = [i for i in iterator if indicator_type_lower in i or indicator_type_lower == 'both']
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    iterator = iterator[:limit]
-
-    for item in iterator:
-        if indicator_type_lower == 'both':
-            values = item.get('ips') if 'ips' in iterator else item.get('urls')
-        else:
-            values = item.get(indicator_type_lower)
-        if values:
-            for value in values:
-                type_ = check_indicator_type(value)
-                indicators.append({
-                    "Value": value,
-                    "Type": type_,
-                    'rawJSON': {"Value": value, "Type": type_}
-                })
-                raw_data = {
-                    'value': value,
-                    'type': type_
-                }
-                for k, v in item.items():
-                    if k not in ['ips', 'urls']:
-                        raw_data.update({k: v})
-                raw_response.append(raw_data)
+    indicators = fetch_indicators(client, indicator_type_lower, limit)
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
-                                     headers=['Value', 'Type'], removeNull=True)
+                                     headers=['value', 'type'], removeNull=True)
 
-    return human_readable, {f'{INTEGRATION_NAME}.Indicator': indicators}, {'raw_response': raw_response}
+    return human_readable, {}, {'raw_response': indicators}
 
 
-def fetch_indicators_command(client: Client, *_) -> List[Dict]:
-    """Fetches indicators from the feed to the indicators tab.
+def fetch_indicators_command(client: Client) -> List[Dict]:
+    """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
         client: Client object with request
@@ -201,30 +202,7 @@ def fetch_indicators_command(client: Client, *_) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicator_type = client.indicator
-    indicator_type_lower = indicator_type.lower()
-    iterator = client.build_iterator()
-    indicators = []
-    for item in iterator:
-        if indicator_type_lower == 'both':
-            values = item.get('ips') if 'ips' in iterator else item.get('urls')
-        else:
-            values = item.get(indicator_type_lower)
-        if values:
-            for value in values:
-                type_ = check_indicator_type(value)
-                raw_data = {
-                    'value': value,
-                    'type': type_,
-                }
-                for k, v in item.items():
-                    if k not in ['ips', 'urls']:
-                        raw_data.update({k: v})
-                indicators.append({
-                    "value": value,
-                    "type": type_,
-                    "rawJSON": raw_data,
-                })
+    indicators = fetch_indicators(client, 'both')
     return indicators
 
 
@@ -236,7 +214,6 @@ def main():
     regions_list = argToList(demisto.params().get('regions'))
     services_list = argToList(demisto.params().get('services'))
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
-    indicator = demisto.params().get('indicator')
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy')
 
@@ -244,10 +221,10 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(urls_list, indicator, insecure, proxy)
+        client = Client(urls_list, insecure, proxy)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
-            'get-indicators': get_indicators_command
+            'office365-get-indicators': get_indicators_command
         }
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
