@@ -763,7 +763,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                                  message_color=LOG_COLORS.GREEN)
 
     prints_manager.execute_thread_prints(thread_index)
-    add_pr_comment(add_pr_comment)
+
+    comment = 'This integrations are skipped and critical for the test: {}'.\
+        format('\n'.join(playbook_skipped_integration))
+
+    add_pr_comment(comment)
 
     tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
                                      skipped_integration, unmockable_integrations)
@@ -914,25 +918,32 @@ def manage_tests(tests_settings):
             is_build_passed_file.write('Build passed')
 
 
-def add_pr_comment(skipped_tests):
+def add_pr_comment(comment):
     token = os.environ['CONTENT_GITHUB_TOKEN']
     branch_name = os.environ['CIRCLE_BRANCH']
     sha1 = os.environ['CIRCLE_SHA1']
-    query = '?q={}+head:{}+is:open+is:pr+org:demisto+repo:demisto/contetnt'.format(sha1, branch_name)
+
+    query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
     url = 'https://api.github.com/search/issues'
     headers = {'Authorization': 'Bearer ' + token}
-    res = requests.get(url + query, headers=headers, verify=False)
-    res = github_errors(res)
-    if res and res.get('total_count', 0) == 1:
-        issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
-        if issue_url:
-            res = requests.post(issue_url, json={'body': skipped_tests}, headers=headers, verify=False)
-            github_errors(res)
-    else:
-        raise Exception('there is more then one open pr to the same branch.')
+    try:
+        res = requests.get(url + query, headers=headers, verify=False)
+        handle_github_errors(res)
+
+        res = res.json()
+        if res and res.get('total_count', 0) == 1:
+            issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
+            if issue_url:
+                res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
+                handle_github_errors(res)
+        else:
+            raise Exception('There is more then one open pull request for branch {}.'.format(branch_name))
+
+    except Exception as e:
+            print_error('Add pull request comment failed: {}'.format(e))
 
 
-def github_errors(response):
+def handle_github_errors(response):
     res_dict = response.json()
     if response.ok:
         return res_dict
