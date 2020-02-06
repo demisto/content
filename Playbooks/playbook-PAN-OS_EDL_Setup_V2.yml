@@ -375,6 +375,7 @@ tasks:
       id: 2eefa1ba-e662-4fd2-8327-435b99c7d466
       version: -1
       name: PAN-OS-Commit-Configuration
+      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -401,6 +402,7 @@ tasks:
       id: 4adc4ddf-8cbc-4665-8a3d-562f55c364e9
       version: -1
       name: PAN-OS-Commit-Configuration
+      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
