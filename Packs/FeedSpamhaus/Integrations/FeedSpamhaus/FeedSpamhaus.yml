@@ -9,43 +9,17 @@ configuration:
   options:
   - https://www.spamhaus.org/drop/edrop.txt
   - https://www.spamhaus.org/drop/drop.txt
-  required: false
+  required: true
   type: 16
 - display: Fetch indicators
   name: feed
-  required: false
+  defaultvalue: ""
   type: 8
-- defaultvalue: '60'
-  display: Fetch Interval
-  name: feedFetchInterval
   required: false
-  type: 19
-- defaultvalue: B - Usually reliable
-  display: Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: false
-  type: 15
-- name: expiration
-  required: false
-  type: 17
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+    reputation
   defaultvalue: Bad
-  display: Indicator reputation
+  display: Indicator Reputation
   name: feedReputation
   options:
   - None
@@ -54,15 +28,56 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: indicatorType
-  hidden: true
+- defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  defaultvalue: indicatorType
   name: feedExpirationPolicy
   required: false
-  type: 0
-- hidden: true
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
   name: feedExpirationInterval
-  required: false
+  defaultvalue: "20160"
   type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "60"
+  type: 19
+  required: false
+- name: expiration
+  required: false
+  type: 17
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- additionalinfo: Timeout of the polling request in seconds.
+  defaultvalue: '20'
+  display: Request Timeout
+  name: polling_timeout
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -71,12 +86,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Timeout of the polling request in seconds.
-  defaultvalue: '20'
-  display: Request Timeout
-  name: polling_timeout
-  required: false
-  type: 0
 description: Use the Spamhaus feed integration to fetch indicators from the feed.
 display: Spamhaus Feed
 name: SpamhausFeed
