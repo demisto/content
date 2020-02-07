@@ -674,11 +674,11 @@ tasks:
     task:
       id: 14bfbeb6-b140-48c2-8c2a-dc708d5e492b
       version: -1
-      name: PAN-OS EDL Setup V2
+      name: PAN-OS EDL Setup v2
       description: |-
         Configures an external dynamic list in PAN-OS.
         In the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
-      playbookName: PAN-OS EDL Setup V2
+      playbookName: PAN-OS EDL Setup v2
       type: playbook
       iscommand: false
       brand: ""
