@@ -37,7 +37,7 @@ def reformat_outputs(text: str) -> str:
         return reformat_resource_groups_outputs(text)
     if text == 'id':
         return 'ID'
-    if text == 'lanId':
+    if text in ['lanid', 'u_lanid']:
         return 'LanID'
     if text == 'jobId':
         return 'JobID'
@@ -443,6 +443,43 @@ class Client(BaseClient):
         incident = self.http_request('POST', '/incident/actions', headers={'token': self._token}, params=params)
         return incident.get('result')
 
+    def create_incident_request(self, violation_name: str, resource_group: str, resource_name: str,
+                                entity_type: str, entity_name: str, action_name: str, workflow: str = None,
+                                comment: str = None, criticality: str = None) -> Dict:
+        """create an incident by sending a POST request.
+
+        Args:
+            violation_name: violation or policy name.
+            resource_group: resource group name.
+            resource_name: resource name.
+            entity_type: entity type.
+            entity_name: entity name.
+            action_name: action name.
+            workflow: workflow name.
+            comment: comment on the incident.
+            criticality: criticality for the incident.
+
+        Returns:
+            Response from API.
+        """
+        params = {
+            'violationName': violation_name,
+            'datasourceName': resource_group,
+            'resourceName': resource_name,
+            'entityType': entity_type,
+            'entityName': entity_name,
+            'actionName': action_name,
+        }
+        if workflow:
+            params['workflow'] = workflow
+        if comment:
+            params['comment'] = comment
+        if criticality:
+            params['criticality'] = criticality
+
+        response = self.http_request('POST', '/incident/actions', headers={'token': self._token}, params=params)
+        return response
+
     def list_watchlist_request(self):
         """list watchlists by sending a GET request.
 
@@ -465,6 +502,63 @@ class Client(BaseClient):
             'query': f'index=watchlist AND watchlistname=\"{watchlist_name}\"',
         }
         watchlist = self.http_request('GET', '/spotter/index/search', headers={'token': self._token}, params=params)
+        return watchlist
+
+    def create_watchlist_request(self, watchlist_name: str) -> Dict:
+        """Create a watchlist by sending a POST request.
+
+        Args:
+            watchlist_name: watchlist name.
+
+        Returns:
+            Response from API.
+        """
+        params = {
+            'watchlistname': watchlist_name
+        }
+        watchlist = self.http_request('POST', '/incident/createWatchlist',
+                                      headers={'token': self._token}, params=params, response_type='text')
+        return watchlist
+
+    def check_entity_in_watchlist_request(self, entity_name: str, watchlist_name: str) -> Dict:
+        """Check if an entity is whitelisted by sending a GET request.
+
+        Args:
+            entity_name: Entity name.
+            watchlist_name: Watchlist name.
+
+        Returns:
+            Response from API.
+        """
+        params = {
+            'entityId': entity_name,
+            'watchlistname': watchlist_name
+        }
+        response = self.http_request('GET', '/incident/checkIfWatchlisted',
+                                     headers={'token': self._token}, params=params)
+        return response
+
+    def add_entity_to_watchlist_request(self, watchlist_name: str, entity_type: str, entity_name: str,
+                                        expiry_days: str) -> Dict:
+        """Check if an entity is whitelisted by sending a GET request.
+
+        Args:
+            watchlist_name: Watchlist name.
+            entity_type: Entity type.
+            entity_name: Entity name.
+            expiry_days: Expiry in days.
+        Returns:
+            Response from API.
+        """
+        params = {
+            'watchlistname': watchlist_name,
+            'entityType': entity_type,
+            'entityId': entity_name,
+            'expirydays': expiry_days,
+            'resourcegroupid': '-1'
+        }
+        watchlist = self.http_request('POST', '/incident/addToWatchlist',
+                                      headers={'token': self._token}, params=params, response_type='txt')
         return watchlist
 
 
@@ -838,6 +932,52 @@ def add_comment_to_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return f'Comment was added to the incident {incident_id} successfully.', {}, incident
 
 
+def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Create an incident.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    violation_name = str(args.get('violation_name'))
+    resource_group = str(args.get('resource_group'))
+    resource_name = str(args.get('resource_name'))
+    entity_type = str(args.get('entity_type'))
+    entity_name = str(args.get('entity_name'))
+    action_name = str(args.get('action_name'))
+    workflow = str(args.get('workflow')) if 'workflow' in args else None
+    comment = str(args.get('comment')) if 'comment' in args else None
+    criticality = str(args.get('criticality')) if 'criticality' in args else None
+
+    if 'create incident' in action_name and not workflow:
+        raise Exception(f'Creating an incident with the action: {action_name}, Supply a workflow.')
+    response = client.create_incident_request(violation_name, resource_group, resource_name, entity_type, entity_name,
+                                              action_name, workflow, comment, criticality)
+    result = response.get('result')
+    if not result:
+        raise Exception(f'Failed to create the incident.\nResponse from Securonix is: {str(response)}')
+
+    message = response.get('messages')
+    if message:
+        if isinstance(message, list) and 'Invalid' in message[0]:
+            message = message[0]
+            raise Exception(f'Failed to create the incident with message:\n{message}')
+        if 'Invalid' in message:
+            raise Exception(f'Failed to create the incident with message:\n{message}')
+
+    incident_data = result.get('data')
+    incident_items = incident_data.get('incidentItems')
+    incident_readable, incident_outputs = parse_data_arr(incident_items)
+    headers = ['Entity', 'Incident Status', 'Incident Type', 'IncidentID', 'Priority', 'Reason', 'Url']
+    human_readable = tableToMarkdown(name="Incident was created successfully", t=incident_readable,
+                                     headers=headers, removeNull=True)
+    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
+    return human_readable, entry_context, response
+
+
 def list_watchlists(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """List all watchlists.
 
@@ -857,7 +997,7 @@ def list_watchlists(client: Client, *_) -> Tuple[str, Dict, Dict]:
 
 
 def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
-    """List all watchlists.
+    """Get watchlist data.
 
     Args:
         client: Client object with request.
@@ -888,6 +1028,76 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, watchlist
 
 
+def create_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
+    """Create a watchlist.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+    Returns:
+        Outputs.
+    """
+    watchlist_name = args.get('watchlist_name')
+
+    response = client.create_watchlist_request(watchlist_name)
+
+    if 'successfully' not in response:
+        raise Exception(f'Failed to list watchlists.\nResponse from Securonix is:{str(response)}')
+    human_readable = f'Watchlist {watchlist_name} was created successfully.'
+    entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_name}
+    return human_readable, entry_context, response
+
+
+def check_entity_in_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
+    """Check if entity is in a watchlist.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+    Returns:
+        Outputs.
+    """
+    entity_name = args.get('entity_name')
+    watchlist_name = args.get('watchlist_name')
+    watchlist = client.check_entity_in_watchlist_request(entity_name, watchlist_name)
+
+    result = watchlist.get('result')
+    if result == 'NO' or (isinstance(result, list) and result[0] == 'NO'):
+        human_readable = f'Entity unique identifier {entity_name} provided is not on the watchlist: {watchlist_name}.'
+        output = {'Entityname': entity_name}
+    else:  # YES
+        human_readable = f'The Entity unique identifier {entity_name} provided is on the watchlist: {watchlist_name}.'
+        output = {
+            'Entityname': entity_name,
+            'Watchlistname': watchlist_name
+        }
+    entry_context = {f'Securonix.EntityInWatchlist(val.Entityname === obj.Entityname)': output}
+    return human_readable, entry_context, watchlist
+
+
+def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
+    """Adds an entity to a watchlist.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+    Returns:
+        Outputs.
+    """
+    watchlist_name = args.get('watchlist_name')
+    entity_type = args.get('entity_type')
+    entity_name = args.get('entity_name')
+    expiry_days = args.get('expiry_days') if 'expiry_days' in args else '30'
+
+    response = client.add_entity_to_watchlist_request(watchlist_name, entity_type, entity_name, expiry_days)
+
+    if 'successfull' not in response:
+        raise Exception(f'Failed to add entity {entity_name} to the watchlist {watchlist_name}.\n'
+                        f'Error from Securonix is: {response}.')
+    human_readable = f'Added successfully the entity {entity_name} to the watchlist {watchlist_name}.'
+    return human_readable, {}, response
+
+
 def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: str, last_run: Dict) -> list:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
@@ -905,7 +1115,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     if not last_run:  # if first time running
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
-        new_last_run = last_run
+        new_last_run = {'time': last_run}
 
     demisto_incidents: List = list()
     from_epoch = date_to_timestamp(new_last_run.get('time'), date_format=timestamp_format)
@@ -936,13 +1146,19 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-
+    host = params.get("host", None)
     tenant = params.get("tenant")
-    server_url = tenant
-    if not tenant.startswith('http://') and not tenant.startswith('https://'):
-        server_url = f'https://{tenant}'
-    if not tenant.endswith('.securonix.net/Snypr/ws/'):
-        server_url += '.securonix.net/Snypr/ws/'
+    if not host:
+        server_url = tenant
+        if not tenant.startswith('http://') and not tenant.startswith('https://'):
+            server_url = f'https://{tenant}'
+        if not tenant.endswith('.securonix.net/Snypr/ws/'):
+            server_url += '.securonix.net/Snypr/ws/'
+    else:
+        host = host.rstrip('/')
+        if not host.endswith('/ws'):
+            host += '/ws/'
+        server_url = host
 
     username = params.get('username')
     password = params.get('password')
@@ -972,8 +1188,12 @@ def main():
             'securonix-get-incident-available-actions': get_incident_available_actions,
             'securonix-perform-action-on-incident': perform_action_on_incident,
             'securonix-add-comment-to-incident': add_comment_to_incident,
+            'securonix-create-incident': create_incident,
             'securonix-list-watchlists': list_watchlists,
-            'securonix-get-watchlist': get_watchlist
+            'securonix-get-watchlist': get_watchlist,
+            'securonix-create-watchlist': create_watchlist,
+            'securonix-check-entity-in-watchlist': check_entity_in_watchlist,
+            'securonix-add-entity-to-watchlist': add_entity_to_watchlist
         }
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time')
