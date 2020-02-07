@@ -1,6 +1,7 @@
 {
 	"id": "incident_employeeemail",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-01T18:10:28.395031508Z",
 	"name": "Employee Email",
 	"ownerOnly": false,
