@@ -1,0 +1,197 @@
+category: Network Security
+commonfields:
+  id: Expanse
+  version: -1
+configuration:
+- name: api_key
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '10'
+  display: How many events to pull from Expander per run
+  hidden: false
+  name: page_limit
+  required: false
+  type: 0
+description: The Expanse App for Demisto leverages the Expander API to retrieve network
+  exposures and create incidents in Demisto.  This application also allows for IP
+  and Domain enrichment, retrieving assets and exposures information drawn from Expanse’s
+  unparalleled view of the Internet.
+display: Expanse
+name: Expanse
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      type: String
+    - contextPath: IP.Geo.Location
+      type: String
+    - contextPath: IP.Geo.Country
+      type: String
+    - contextPath: IP.Geo.Description
+      type: String
+    - contextPath: Expanse.IP.Address
+      type: String
+    - contextPath: Expanse.IP.Version
+      type: String
+    - contextPath: Expanse.IP.BusinessUnits
+      type: String
+    - contextPath: Expanse.IP.IPRange.StartAdress
+      type: String
+    - contextPath: Expanse.IP.IPRange.EndAddress
+      type: String
+    - contextPath: Expanse.IP.IPRange.RangeSize
+      type: Number
+    - contextPath: Expanse.IP.IPRange.ResponsiveIPCount
+      type: Number
+    - contextPath: Expanse.IP.IPRange.RangeIntroduced
+      type: Date
+    - contextPath: Expanse.IP.IPRange.AttributionReasons
+      type: String
+    - contextPath: Expanse.IP.Geo.Latitude
+      type: String
+    - contextPath: Expanse.IP.Geo.Longitude
+      type: String
+    - contextPath: Expanse.IP.Geo.City
+      type: String
+    - contextPath: Expanse.IP.Geo.RegionCode
+      type: String
+    - contextPath: Expanse.IP.Geo.CountryCode
+      type: String
+    - contextPath: Expanse.IP.Annotations.Tags
+      type: String
+    - contextPath: Expanse.IP.Annotations.AdditionalNotes
+      type: String
+    - contextPath: Expanse.IP.Annotations.PointsOfContact
+      type: String
+    - contextPath: Expanse.IP.SeverityCounts.CRITICAL
+      type: Number
+    - contextPath: Expanse.IP.SeverityCounts.ROUTINE
+      type: Number
+    - contextPath: Expanse.IP.SeverityCounts.WARNING
+      type: Number
+  - arguments:
+    - default: false
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      type: String
+    - contextPath: Domain.DNS
+      type: String
+    - contextPath: Domain.CreationDate
+      type: Date
+    - contextPath: Domain.DomainStatus
+      type: String
+    - contextPath: Domain.ExpirationDate
+      type: Date
+    - contextPath: Domain.NameServers
+      type: String
+    - contextPath: Domain.Organization
+      type: String
+    - contextPath: Domain.Admin.Country
+      type: String
+    - contextPath: Domain.Admin.Email
+      type: String
+    - contextPath: Domain.Admin.Name
+      type: String
+    - contextPath: Domain.Admin.Phone
+      type: String
+    - contextPath: Domain.Registrant.Country
+      type: String
+    - contextPath: Domain.Registrant.Email
+      type: String
+    - contextPath: Domain.Registrant.Name
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      type: String
+    - contextPath: Domain.WHOIS.DomainStatus
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      type: Date
+    - contextPath: Domain.WHOIS.Registrant.Email
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbusePhone
+      type: Unknown
+    - contextPath: Domain.WHOIS.Admin.Name
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      type: Unknown
+    - contextPath: Expanse.Domain.Name
+      type: String
+    - contextPath: Expanse.Domain.DateAdded
+      type: Date
+    - contextPath: Expanse.Domain.FirstObserved
+      type: Date
+    - contextPath: Expanse.Domain.LastObserved
+      type: Date
+    - contextPath: Expanse.Domain.HasLinkedCloudResources
+      type: Boolean
+    - contextPath: Expanse.Domain.SourceDomain
+      type: String
+    - contextPath: Expanse.Domain.Tenant
+      type: String
+    - contextPath: Expanse.Domain.BusinessUnits
+      type: String
+    - contextPath: Expanse.Domain.DNSSEC
+      type: String
+    - contextPath: Expanse.Domain.RecentIPs
+      type: String
+    - contextPath: Expanse.Domain.CloudResources
+      type: String
+    - contextPath: Expanse.Domain.LastSubdomainMetadata
+      type: String
+    - contextPath: Expanse.Domain.ServiceStatus
+      type: String
+    - contextPath: Expanse.Domain.LastSampledIP
+      type: String
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
