@@ -1,5 +1,8 @@
 ## [Unreleased]
+- 
 
+## [20.2.0] - 2020-02-04
+Fixed an issue where in rare cases the investigation reports crashed.
 
 ## [19.12.1] - 2019-12-25
   - Fixed an issue where the line chart x-axis was not readable.
