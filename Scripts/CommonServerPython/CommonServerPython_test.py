@@ -791,7 +791,7 @@ class TestBuildDBotEntry(object):
 
 class TestCommandResults:
     def test_return_command_results(self):
-        from CommonServerPython import IP, DBotScore, CommandResults, EntryFormat, EntryType
+        from CommonServerPython import IP, DBotScore, CommandResults, EntryFormat, EntryType, DBotScoreType
         ip = IP(
             ip='8.8.8.8',
             asn='some asn',
@@ -840,7 +840,7 @@ class TestCommandResults:
         }
 
     def test_create_dbot_score(self):
-        from CommonServerPython import DBotScore, CommandResults, EntryFormat, EntryType
+        from CommonServerPython import DBotScore, CommandResults, EntryFormat, EntryType, DBotScoreType
 
         dbot_score = DBotScore(
             indicator='8.8.8.8',

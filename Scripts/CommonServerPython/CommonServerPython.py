@@ -1849,7 +1849,7 @@ class File(Indicator):
                    'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
                    'val.SSDeep && val.SSDeep == obj.SSDeep)'
 
-    def __init__(self, name, entry_id, size, md5, sha1, sha256, sha512, ssdeep, extension, type_, hostname, path,
+    def __init__(self, name, entry_id, size, md5, sha1, sha256, sha512, ssdeep, extension, file_type, hostname, path,
                  company, product_name, digital_signature, signature, author, tags):
         self.name = name
         self.entry_id = entry_id
@@ -1860,7 +1860,7 @@ class File(Indicator):
         self.sha512 = sha512
         self.ssdeep = ssdeep
         self.extension = extension
-        self.type_ = type_
+        self.file_type = file_type
         self.hostname = hostname
         self.path = path
         self.company = company
@@ -1901,8 +1901,8 @@ class File(Indicator):
             file_context['SSDeep'] = self.ssdeep
         if self.extension:
             file_context['Extension'] = self.extension
-        if self.type_:
-            file_context['Type'] = self.type_
+        if self.file_type:
+            file_context['Type'] = self.file_type
         if self.hostname:
             file_context['Hostname'] = self.hostname
         if self.path:
@@ -2026,21 +2026,31 @@ class URL(Indicator):
         return ret_value
 
 
-
 class WHOIS(object):
     """
     WHOIS is a class that used with Domain class
     """
-    def __init__(self, domain_status, name_servers, creation_date, update_date, expiration_date, registrar, registrant,
-                 admin):
+    def __init__(self, domain_status, name_servers, creation_date, update_date, expiration_date,
+                 registrar_name, registrar_abuse_email, registrar_abuse_phone,
+                 registrant_name, registrant_email, registrant_phone,
+                 admin_name, admin_email, admin_phone):
+
         self.domain_status = domain_status
         self.name_servers = name_servers
         self.creation_date = creation_date
         self.update_date = update_date
         self.expiration_date = expiration_date
-        self.registrar = registrar
-        self.registrant = registrant
-        self.admin = admin
+        self.registrar_name = registrar_name
+        self.registrar_abuse_email = registrar_abuse_email
+        self.registrar_abuse_phone = registrar_abuse_phone
+
+        self.registrant_name = registrant_name
+        self.registrant_email = registrant_email
+        self.registrant_phone = registrant_phone
+
+        self.admin_name = admin_name
+        self.admin_email = admin_email
+        self.admin_phone = admin_phone
 
     def to_context(self):
         whois_context = {}
@@ -2060,14 +2070,26 @@ class WHOIS(object):
         if self.expiration_date:
             whois_context['ExpirationDate'] = self.expiration_date
 
-        if self.registrar:
-            whois_context['Registrar'] = self.registrar.to_context()
+        if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
+            whois_context['Registrar'] = {
+                'Name': self.registrar_name,
+                'AbuseEmail': self.registrar_abuse_email,
+                'AbusePhone': self.registrar_abuse_phone
+            }
 
-        if self.registrant:
-            whois_context['Registrant'] = self.registrant.to_context()
+        if self.registrant_name or self.registrant_phone or self.registrant_email:
+            whois_context['Registrant'] = {
+                'Name': self.registrant_name,
+                'Email': self.registrant_email,
+                'Phone': self.registrant_phone
+            }
 
-        if self.admin:
-            whois_context['Admin'] = self.admin.to_context()
+        if self.admin_name or self.admin_email or self.admin_phone:
+            whois_context['Admin'] = {
+                'Name': self.admin_name,
+                'Email': self.admin_email,
+                'Phone': self.admin_phone
+            }
 
         return whois_context
 
@@ -2078,14 +2100,21 @@ class Domain(Indicator):
     """
     CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
-    def __init__(self, domain, dns, detection_engines, positive_detections, whois, organazation, sub_domains):
+    def __init__(self, domain, dns, detection_engines, positive_detections, whois, organization, sub_domains,
+                 creation_date, update_date, expiration_date, domain_status, name_servers):
         self.domain = domain
         self.dns = dns
         self.detection_engines = detection_engines
         self.positive_detections = positive_detections
         self.whois = whois
-        self.organazation = organazation
+        self.organization = organization
         self.sub_domains = sub_domains
+        self.creation_date = creation_date
+        self.update_date = update_date
+        self.expiration_date = expiration_date
+
+        self.domain_status = domain_status
+        self.name_servers = name_servers
 
         # DBotScore fields
         self.dbot_score = None  # type: ignore
@@ -2102,6 +2131,27 @@ class Domain(Indicator):
 
         if self.dns:
             domain_context['DNS'] = self.dns
+
+        if self.detection_engines:
+            domain_context['DetectionEngines'] = self.detection_engines
+
+        if self.positive_detections:
+            domain_context['PositiveDetections'] = self.positive_detections
+
+        if self.whois:
+            domain_context['WHOIS'] = self.whois
+
+        if self.organization:
+            domain_context['Organization'] = self.organization
+
+        if self.sub_domains:
+            domain_context['Subdomains'] = self.sub_domains
+
+        if self.domain_status:
+            domain_context['DomainStatus'] = self.domain_status
+
+        if self.name_servers:
+            domain_context['NameServers'] = self.name_servers
 
         if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
             domain_context['Malicious'] = {
@@ -2123,7 +2173,7 @@ old_demisto_results = demisto.results
 def new_demisto_results(results):
     if results is None:
         # backward compatibility reasons
-        old_demisto_results('None')
+        old_demisto_results(None)
         return
 
     if isinstance(results, CommandResults):
@@ -2134,6 +2184,7 @@ def new_demisto_results(results):
 
 
 demisto.results = new_demisto_results
+
 
 def return_outputs(readable_output, outputs=None, raw_response=None):
     """
