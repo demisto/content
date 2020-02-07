@@ -103,8 +103,6 @@ def test_command(client):
 
 
 def search_command(client):
-    base = demisto.args().get('search_base')
-    inputFilter = demisto.args().get('search_filter')
     attributes = demisto.args().get('attributes', None)
     if attributes:
         attributes = attributes.replace(" ", "").split(",")
@@ -123,7 +121,7 @@ def createEntry_command(client):
             attributes = json.loads(attributes)
         except Exception as err:
             return_error('Error parsing attributes - {}'.format(err))
-    res = client.createEntry(dn, objectClass, attributes)
+    client.createEntry(dn, objectClass, attributes)
     if not client.conn.result['dn']:
         client.conn.result['dn'] = dn
     return_results('Object create:', client.conn.result, 'LDAP.Object.Create(val.dn && val.dn == obj.dn)')
@@ -132,7 +130,7 @@ def createEntry_command(client):
 def renameEntry_command(client):
     oldDN = demisto.args().get('oldDN')
     newDN = demisto.args().get('newDN')
-    res = client.renameEntry(oldDN, newDN)
+    client.renameEntry(oldDN, newDN)
     if not client.conn.result['dn']:
         client.conn.result['dn'] = newDN
     return_results('Object rename:', client.conn.result, 'LDAP.Object.Rename(val.dn && val.dn == obj.dn)')
@@ -142,7 +140,7 @@ def moveEntry_command(client):
     dn = demisto.args().get('dn')
     location = demisto.args().get('location')
     rn = safe_rdn(dn)
-    res = client.moveEntry(dn, rn, location)
+    client.moveEntry(dn, rn, location)
     if not client.conn.result['dn']:
         client.conn.result['dn'] = dn
     return_results('Object move:', client.conn.result, 'LDAP.Object.Move(val.dn && val.dn == obj.dn)')
@@ -158,10 +156,10 @@ def addAttribute_command(client):
         return_error('Error parsing attributes = {}'.format(err))
     for k,v in attributes.items():
         attrib = {k: [MODIFY_ADD, v]}
-        res = client.modifyAttribute(dn, attrib)
+        client.modifyAttribute(dn, attrib)
         if client.conn.result['description'] == "attributeOrValueExists":
             attrib = {k: [MODIFY_REPLACE, v]}
-            res = client.modifyAttribute(dn, attrib)
+            client.modifyAttribute(dn, attrib)
         if client.conn.result['description'] == "success":
             if not client.conn.result['dn']:
                 client.conn.result['dn'] = dn
@@ -181,10 +179,10 @@ def modifyAttribute_command(client):
         return_error('Error parsing attributes = {}'.format(err))
     for k,v in attributes.items():
         attrib = {k: [MODIFY_REPLACE, v]}
-        res = client.modifyAttribute(dn, attrib)
+        client.modifyAttribute(dn, attrib)
         if client.conn.result['description'] == "attributeOrValueExists":
             attrib = {k: [MODIFY_ADD, v]}
-            res = client.modifyAttribute(dn, attrib)
+            client.modifyAttribute(dn, attrib)
         if client.conn.result['description'] == "success":
             if not client.conn.result['dn']:
                 client.conn.result['dn'] = dn
@@ -204,7 +202,7 @@ def deleteAttribute_command(client):
         client.modifyAttribute(dn, attrib)
         # Then delete it
         attrib = {k: [MODIFY_DELETE, "blank"]}
-        res = client.modifyAttribute(dn, attrib)
+        client.modifyAttribute(dn, attrib)
         if not client.conn.result['dn']:
             client.conn.result['dn'] = dn
         client.conn.result['attribute'] = k
@@ -227,14 +225,13 @@ def getInfo_command(host, port, username, password, secure):
     client.establishConnection()
     try:
         info = json.loads(client.server.info.to_json())
-    except:
+    except:     #lgtm [py/catch-base-exception]
         info = None
         pass
     try:
         schema = json.loads(client.server.schema.to_json())
-    except:
+    except:     #lgtm [py/catch-base-exception]
         schema = None
-        pass
     if info:
         return_results('LDAP Information:', info, 'LDAP.Server.Info(val.type && val.type == obj.type)')
     if schema:
