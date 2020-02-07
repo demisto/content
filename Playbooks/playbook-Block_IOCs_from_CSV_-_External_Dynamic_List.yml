@@ -159,65 +159,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: fcd7e62a-1b1a-4bb1-8427-f7c2b3760a6f
-    type: playbook
-    task:
-      id: fcd7e62a-1b1a-4bb1-8427-f7c2b3760a6f
-      version: -1
-      name: Add Indicator to Miner - Palo Alto MineMeld
-      playbookName: Add Indicator to Miner - Palo Alto MineMeld
-      description: ""
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-      - "13"
-    scriptarguments:
-      Indicator:
-        complex:
-          root: File
-          filters:
-          - - operator: isNotExists
-              left:
-                value:
-                  simple: File.EntryID
-                iscontext: true
-          accessor: MD5
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Domain.Name
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: IP.Address
-                iscontext: true
-      MinerName:
-        complex:
-          root: inputs.Miner
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "6":
     id: "6"
     taskid: 0f8b61fe-bd84-439a-8acc-51a166db74b8
@@ -315,7 +256,8 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "5"
+      - "6"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -441,10 +383,6 @@ inputs:
   value: {}
   required: false
   description: The column number that contains hashes. (First column is column 0).
-- key: Miner
-  value: {}
-  required: false
-  description: Miner name to upload the indicators to in MineMeld.
 - key: IPListName
   value:
     simple: Demisto Remediation - IP EDL
