@@ -134,6 +134,21 @@ tasks:
                         simple: csv
                     ignorecase: true
             iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: text/csv
+            iscontext: true
     view: |-
       {
         "position": {
