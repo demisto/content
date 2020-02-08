@@ -712,6 +712,7 @@ tasks:
       id: 2f378d63-f26d-4615-89ae-cea1e2895022
       version: -1
       name: Is Instance type Panorama?
+      description: ''
       type: condition
       iscommand: false
       brand: ""

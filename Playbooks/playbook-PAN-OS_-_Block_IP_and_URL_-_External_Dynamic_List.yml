@@ -823,7 +823,7 @@ inputs:
   description: Either pre-rulebase or post-rulebase,  according to the rule structure.
 - key: url-rule-position
   value:
-    simple: top
+    simple: "top"
   required: false
   description: |-
     The position of the rule in the ruleset. Valid values are:
@@ -833,7 +833,7 @@ inputs:
       * after
 - key: ip-rule-position
   value:
-    simple: top
+    simple: "top"
   required: false
   description: |-
     The position of the rule in the ruleset. Valid values are:
