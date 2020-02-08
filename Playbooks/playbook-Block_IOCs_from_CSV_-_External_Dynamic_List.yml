@@ -418,14 +418,14 @@ inputs:
   description: Either pre-rulebase or post-rulebase,  according to the rule structure.
 - key: rule-position
   value:
-    simple: Top
+    simple: top
   required: false
   description: |-
     The position of the rule in the ruleset. Valid values are:
-      * Top
-      * Bottom
-      * Before
-      * After
+      * top
+      * bottom
+      * before
+      * after
 outputs: []
 tests:
   - No Test

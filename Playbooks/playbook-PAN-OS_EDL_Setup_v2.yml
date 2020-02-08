@@ -839,12 +839,12 @@ inputs:
   required: false
   description: |-
     The position of the rule in the ruleset. Valid values are:
-      * Top
-      * Bottom
-      * Before
-      * After
+      * top
+      * bottom
+      * before
+      * after
 
-    The default position is 'Top'
+    The default position is 'top'
 - key: relative-rule-name
   value: {}
   required: false
