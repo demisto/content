@@ -222,7 +222,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "45"
     scriptarguments:
       file_path:
         simple: ${inputs.list-name}.txt
@@ -330,10 +330,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 225d6f92-5997-4a90-8bab-460e89212d17
+    taskid: 580c92fa-cc3e-4ecc-8cd5-f7b3ed06a30e
     type: regular
     task:
-      id: 225d6f92-5997-4a90-8bab-460e89212d17
+      id: 580c92fa-cc3e-4ecc-8cd5-f7b3ed06a30e
       version: -1
       name: Create EDL Object
       description: Creates an external dynamic list in PAN-OS and connects it to the
@@ -348,6 +348,9 @@ tasks:
     scriptarguments:
       certificate_profile: {}
       description: {}
+      device-group:
+        complex:
+          root: inputs.device-group
       name:
         simple: ${inputs.list-name}-${inputs.ioc-type}-edl-object
       recurring:
@@ -647,6 +650,129 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 4e3c6d4a-0742-4abc-83d5-035a353ee731
+    type: regular
+    task:
+      id: 4e3c6d4a-0742-4abc-83d5-035a353ee731
+      version: -1
+      name: Fetch Instance Info
+      description: Run any command supported in the API.
+      script: '|||panorama'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
+      dst: {}
+      element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.mode
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 2f378d63-f26d-4615-89ae-cea1e2895022
+    type: condition
+    task:
+      id: 2f378d63-f26d-4615-89ae-cea1e2895022
+      version: -1
+      name: Is Instance type Panorama?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 7992acd6-5925-4405-8ed2-9a22b546dc8c
+    type: regular
+    task:
+      id: 7992acd6-5925-4405-8ed2-9a22b546dc8c
+      version: -1
+      name: Get EDL Object
+      description: Returns information for an external dynamic list
+      script: '|||panorama-get-edl'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      device-group: {}
+      name:
+        simple: ${inputs.list-name}-${inputs.ioc-type}-edl-object
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2020,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -659,7 +785,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2155,
-        "width": 1835,
+        "width": 2145,
         "x": 255,
         "y": 50
       }
