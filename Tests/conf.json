@@ -674,8 +674,8 @@
             "playbookID": "BigFixTest"
         },
         {
-            "integrations": "Lastline",
-            "playbookID": "Lastline - testplaybook",
+            "integrations": "Lastline v2",
+            "playbookID": "Lastline v2 - Test",
             "nightly": true
         },
         {
@@ -1460,7 +1460,7 @@
         },
         {
             "integrations": [
-                "Lastline",
+                "Lastline v2",
                 "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
@@ -1484,7 +1484,7 @@
             "integrations": [
                 "McAfee Advanced Threat Defense",
                 "VxStream",
-                "Lastline"
+                "Lastline v2"
             ]
         },
         {
@@ -2344,7 +2344,7 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nightly_integrations": [
-        "Lastline",
+        "Lastline v2",
         "TruSTAR",
         "SlackV2"
     ],
