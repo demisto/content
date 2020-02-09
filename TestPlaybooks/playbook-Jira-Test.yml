@@ -26,6 +26,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 3c58da08-7839-4473-8319-bf44ec6db001
@@ -51,11 +52,12 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
@@ -102,6 +104,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: de36e03d-39df-47f0-8770-3814fb47309d
@@ -135,35 +138,39 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: ef93cc85-2f16-4f5a-893a-2736c25a6508
-    type: regular
+    taskid: adae51f9-aa32-4b00-81d6-0697df495494
+    type: condition
     task:
-      id: ef93cc85-2f16-4f5a-893a-2736c25a6508
+      id: adae51f9-aa32-4b00-81d6-0697df495494
       version: -1
       name: VerifyContextFields
-      scriptName: VerifyContextFields
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "5"
-    scriptarguments:
-      field1:
-        simple: Ticket.Summary
-      field2:
-        simple: Ticket.Id
-      field3: {}
-      field4: {}
-      value1:
-        simple: '"jira playbook test - delete"'
-      value2:
-        simple: ${Ticket.Id}
-      value3: {}
-      value4: {}
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Creator
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Id
+            iscontext: true
     view: |-
       {
         "position": {
@@ -173,6 +180,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
@@ -205,6 +213,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
@@ -241,6 +250,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
@@ -272,35 +282,39 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: f0a00a75-2589-4912-8d4f-5db6ca467b93
-    type: regular
+    taskid: 44e29318-8db9-4ccb-834d-fb6c68a15c13
+    type: condition
     task:
-      id: f0a00a75-2589-4912-8d4f-5db6ca467b93
+      id: 44e29318-8db9-4ccb-834d-fb6c68a15c13
       version: -1
       name: VerifyContextFields
-      scriptName: VerifyContextFields
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "14"
-    scriptarguments:
-      field1:
-        simple: Ticket.Summary
-      field2:
-        simple: Ticket.Id
-      field3: {}
-      field4: {}
-      value1:
-        simple: '"jira playbook test - delete"'
-      value2:
-        simple: ${Ticket.Id}
-      value3: {}
-      value4: {}
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Creator
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Status
+            iscontext: true
     view: |-
       {
         "position": {
@@ -310,6 +324,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
@@ -342,6 +357,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
@@ -374,6 +390,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
     taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
@@ -412,28 +429,45 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: 4c264332-3528-4f2b-812c-bd29fc08cfe6
-    type: regular
+    taskid: acab642c-cb9f-4dd1-864e-96b7d1e050b4
+    type: condition
     task:
-      id: 4c264332-3528-4f2b-812c-bd29fc08cfe6
+      id: acab642c-cb9f-4dd1-864e-96b7d1e050b4
       version: -1
-      name: VerifyContext - Summary
-      scriptName: VerifyContext
-      type: regular
+      name: VerifyContext - Summary&Status
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      expectedValue:
-        simple: please delete this issue
-      fields: {}
-      path:
-        simple: Ticket.[0].Summary
+      "yes":
+      - "25"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Summary
+            iscontext: true
+          right:
+            value:
+              simple: please delete this issue
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Done
     view: |-
       {
         "position": {
@@ -443,37 +477,7 @@ tasks:
       }
     note: false
     timertriggers: []
-  "21":
-    id: "21"
-    taskid: 4f94c3a0-5c82-473f-8604-2f010861a7a7
-    type: regular
-    task:
-      id: 4f94c3a0-5c82-473f-8604-2f010861a7a7
-      version: -1
-      name: VerifyContext - Status
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      expectedValue:
-        simple: Done
-      fields: {}
-      path:
-        simple: Ticket.[0].Status
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
     taskid: 178e2167-e603-4868-8920-20489b8227e4
@@ -497,42 +501,47 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 06dc839a-80f7-4c4c-8a1b-796653d56a93
+    type: condition
+    task:
+      id: 06dc839a-80f7-4c4c-8a1b-796653d56a93
+      version: -1
+      name: VerifyContext - comment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Comment.Comment
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 2645
         }
       }
     note: false
     timertriggers: []
-  "23":
-    id: "23"
-    taskid: 44df5166-91cf-498c-88b6-66dc581ffcb1
-    type: regular
-    task:
-      id: 44df5166-91cf-498c-88b6-66dc581ffcb1
-      version: -1
-      name: VerifyContext - comment
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      expectedValue:
-        simple: '["Test Comment"]'
-      fields: {}
-      path:
-        simple: Ticket.Comment.Comment
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
     taskid: de947b49-a588-4983-8176-b3677c8575cd
@@ -545,6 +554,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
     scriptarguments:
       issueIdOrKey:
         simple: ${Ticket.Id}
@@ -553,11 +565,12 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2820
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
     taskid: 0c7ebbec-bbc5-46cc-8de8-72c73f11ffe8
@@ -584,17 +597,40 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: f54ce494-de4a-4783-80ff-734135872669
+    type: title
+    task:
+      id: f54ce494-de4a-4783-80ff-734135872669
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3040,
+        "height": 3010,
         "width": 380,
         "x": 50,
         "y": 50

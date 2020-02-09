@@ -1,0 +1,306 @@
+id: Wait Until Datetime - Test
+version: -1
+fromversion: 4.5.0
+name: Wait Until Datetime - Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 582f8bb4-66ab-4700-8530-33ca9ed1c384
+    type: start
+    task:
+      id: 582f8bb4-66ab-4700-8530-33ca9ed1c384
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 160b5333-e8e8-49e0-8b8c-9057c4078198
+    type: playbook
+    task:
+      id: 160b5333-e8e8-49e0-8b8c-9057c4078198
+      version: -1
+      name: Wait Until Datetime
+      description: ''
+      playbookName: Wait Until Datetime
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      DatetimeToWaitFrom: {}
+      DatetimeToWaitUntil:
+        complex:
+          root: FutureDatetime
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 833770f7-610e-467c-8abb-23fd42c7026d
+    type: regular
+    task:
+      id: 833770f7-610e-467c-8abb-23fd42c7026d
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: a9c3b436-d750-446b-858d-028885ddc956
+    type: regular
+    task:
+      id: a9c3b436-d750-446b-858d-028885ddc956
+      version: -1
+      name: Save datetime for a minute from now
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      append: {}
+      key:
+        simple: FutureDatetime
+      stringify: {}
+      value:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: toUnix
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: '60'
+          - operator: TimeStampToDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 3fb38a15-2468-409a-84ff-1a6c810791ae
+    type: condition
+    task:
+      id: 3fb38a15-2468-409a-84ff-1a6c810791ae
+      version: -1
+      name: Did we wait the time needed?
+      description: Checks whether the time right now is equal to or later than the
+        future time that was chosen previously, which means we waited for the time
+        needed.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isAfter
+          left:
+            value:
+              simple: NewTimeNow
+            iscontext: true
+          right:
+            value:
+              simple: FutureDatetime
+            iscontext: true
+        - operator: isSame
+          left:
+            value:
+              simple: NewTimeNow
+            iscontext: true
+          right:
+            value:
+              simple: FutureDatetime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 01e485cb-9fa7-48c8-8719-948d7e97ac8a
+    type: regular
+    task:
+      id: 01e485cb-9fa7-48c8-8719-948d7e97ac8a
+      version: -1
+      name: Get current time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      contextKey:
+        simple: New
+      date: {}
+      dateFormat:
+        simple: ISO
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 4150c841-0e65-467e-8d0c-416fe866ce94
+    type: title
+    task:
+      id: 4150c841-0e65-467e-8d0c-416fe866ce94
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: d5370661-671b-409e-893e-6ff044a47fcf
+    type: regular
+    task:
+      id: d5370661-671b-409e-893e-6ff044a47fcf
+      version: -1
+      name: Raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      message:
+        simple: The condition that checks if the time right now is past the future
+          time that we set - failed. This means that the playbook did not sleep for
+          the amount of time that we expected. Either the calculation of time difference
+          between the time now and the future time was wrong, or there is a bug in
+          the logic, or with the Sleep command.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_7_yes": 0.39
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 830,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

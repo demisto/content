@@ -1,6 +1,6 @@
-from rasterize import *
+from rasterize import rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS
 from tempfile import NamedTemporaryFile
-from subprocess import *
+import subprocess
 import os
 
 
@@ -41,9 +41,51 @@ def test_rasterize_no_defunct_processes(caplog):
         path = os.path.realpath(f.name)
         f.flush()
         rasterize(path=f'file://{path}', width=250, height=250, r_type='pdf', offline_mode=False)
-        process = Popen(['ps', '-aux'], stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                   universal_newlines=True)
         processes_str, _ = process.communicate()
         processes = processes_str.split('\n')
         defunct_process_list = [process for process in processes if 'defunct' in process]
         assert not defunct_process_list
+
+        zombies, output = find_zombie_processes()
+        assert not zombies
+        assert 'defunct' not in output
         caplog.clear()
+
+
+def test_find_zombie_processes(mocker):
+    ps_output = '''   PID  PPID S CMD
+    1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
+   39     1 Z [soffice.bin] <defunct>
+   55     1 Z [gpgconf] <defunct>
+   57     1 Z [gpgconf] <defunct>
+   59     1 Z [gpg] <defunct>
+   61     1 Z [gpgsm] <defunct>
+   63     1 Z [gpgconf] <defunct>
+   98     1 Z [gpgconf] <defunct>
+  100     1 Z [gpgconf] <defunct>
+  102     1 Z [gpg] <defunct>
+'''
+    mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
+    mocker.patch.object(os, 'getpid', return_value=1)
+    zombies, output = find_zombie_processes()
+
+    assert len(zombies) == 9
+    assert output == ps_output
+
+
+def test_merge_options():
+    res = merge_options(DEFAULT_CHROME_OPTIONS, [])
+    assert res == DEFAULT_CHROME_OPTIONS
+    res = merge_options(DEFAULT_CHROME_OPTIONS, ['[--disable-dev-shm-usage]', '--disable-auto-reload', '--headless'])
+    assert '--disable-dev-shm-usage' not in res
+    assert '--no-sandbox' in res  # part of default options
+    assert '--disable-auto-reload' in res
+    assert len([x for x in res if x == '--headless']) == 1  # should have only one headless option
+
+
+def test_rasterize_large_html(caplog):
+    path = os.path.realpath('test_data/large.html')
+    rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
+    caplog.clear()

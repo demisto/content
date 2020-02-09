@@ -1,4 +1,9 @@
 ## [Unreleased]
+
+
+## [20.1.2] - 2020-01-22
+Deprecated. Use the "PANW - Hunting and threat detection by indicator type V2" playbook instead.
+## [20.1.0] - 2020-01-07
 -
 
 ## [19.12.1] - 2019-12-25
