@@ -1,0 +1,200 @@
+id: BambenekConsultingFeed_Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: BambenekConsultingFeed_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 629b23e0-7b34-4e9e-8709-e40d1033914a
+    type: start
+    task:
+      id: 629b23e0-7b34-4e9e-8709-e40d1033914a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: f7c21a7b-4e7c-4bfb-8af9-a63dc117e650
+    type: regular
+    task:
+      id: f7c21a7b-4e7c-4bfb-8af9-a63dc117e650
+      version: -1
+      name: Get Indicators
+      description: Gets the feed indicators.
+      script: Bambenek Consulting Feed|||bambenek-get-indicators
+      type: regular
+      iscommand: true
+      brand: Bambenek Consulting Feed
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      indicator_type:
+        simple: IP
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: 08488b5a-a7d0-454f-8e07-ad6a3364b560
+    type: condition
+    task:
+      id: 08488b5a-a7d0-454f-8e07-ad6a3364b560
+      version: -1
+      name: Assert Output
+      description: Asserts output.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: BambenekConsultingFeed
+                accessor: Indicator.Value
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: BambenekConsultingFeed
+                accessor: Indicator.Type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: BambenekConsultingFeed
+                accessor: Indicator.Rawjson.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: BambenekConsultingFeed
+                accessor: Indicator.Rawjson.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
+    type: title
+    task:
+      id: 012a601e-ed7e-4091-80ee-d9071f0c9937
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
+    type: regular
+    task:
+      id: 4e5d7a78-4f39-481d-8168-de2e970706e5
+      version: -1
+      name: Delete Context
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: BambenekConsultingFeed_Test
