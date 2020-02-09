@@ -18,7 +18,7 @@ def main():
             "regex": "^.*\\t.*\\t[0-9]+\\t([0-9]+)",
             "transform": "\\1"
         },
-        "networkneame": {
+        "networkname": {
             "regex": "^.*\\t.*\\t[0-9]+\\t[0-9]+\\t([^\\t]+)",
             "transform": "\\1"
         },
