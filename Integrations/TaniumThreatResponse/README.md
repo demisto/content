@@ -202,8 +202,8 @@ Returns a list of all alerts.
     "Tanium": {
         "Alert": {
             "AlertedAt": "2019-09-22T14:01:31.000Z",
-            "ComputerIpAddress": "172.31.38.159",
-            "ComputerName": "EC2AMAZ-KGMRO60",
+            "ComputerIpAddress": "172.0.0.0",
+            "ComputerName": "HOST_NAME",
             "CreatedAt": "2019-09-22T14:01:59.768Z",
             "GUID": "a33e3482-556e-4e9d-bbbd-2fdbe330d492",
             "ID": 1,
@@ -222,7 +222,7 @@ Returns a list of all alerts.
 ### Alerts
 |ID|Name|Type|Severity|Priority|AlertedAt|CreatedAt|UpdatedAt|ComputerIpAddress|ComputerName|GUID|State|IntelDocId|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 |  | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2020-02-05T14:55:41.440Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
+| 1 |  | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2020-02-05T14:55:41.440Z | 172.0.0.0 | HOST_NAME | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
 
 
 ### tanium-tr-get-alert-by-id
@@ -265,8 +265,8 @@ Returns alert object based on ID.
     "Tanium": {
         "Alert": {
             "AlertedAt": "2019-09-22T14:01:31.000Z",
-            "ComputerIpAddress": "172.31.38.159",
-            "ComputerName": "EC2AMAZ-KGMRO60",
+            "ComputerIpAddress": "172.0.0.0",
+            "ComputerName": "HOST_NAME",
             "CreatedAt": "2019-09-22T14:01:59.768Z",
             "GUID": "a33e3482-556e-4e9d-bbbd-2fdbe330d492",
             "ID": 1,
@@ -285,7 +285,7 @@ Returns alert object based on ID.
 ### Alert information
 |ID|Name|Type|Severity|Priority|AlertedAt|CreatedAt|UpdatedAt|ComputerIpAddress|ComputerName|GUID|State|IntelDocId|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 |  | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2020-02-05T14:55:41.440Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
+| 1 |  | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2020-02-05T14:55:41.440Z | 172.0.0.0 | HOST_NAME | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
 
 
 ### tanium-tr-alert-update-state
@@ -330,7 +330,7 @@ Update the state of a single alert.
         "Alert": {
             "AlertedAt": "2019-09-22T14:01:31.000Z",
             "ComputerIpAddress": "172.0.0.0",
-            "ComputerName": "EC2AMAZ-KGMRO60",
+            "ComputerName": "HOST_NAME",
             "CreatedAt": "2019-09-22T14:01:59.768Z",
             "GUID": "a33e3482-556e-4e9d-bbbd-2fdbe330d492",
             "ID": 1,
@@ -349,7 +349,7 @@ Update the state of a single alert.
 ### Alert state updated to Unresolved
 |ID|Name|Type|Severity|Priority|AlertedAt|CreatedAt|UpdatedAt|ComputerIpAddress|ComputerName|GUID|State|IntelDocId|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 |  | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2020-02-05T14:55:41.440Z | 172.0.0.0 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
+| 1 |  | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2020-02-05T14:55:41.440Z | 172.0.0.0 | HOST_NAME | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
 
 
 ### tanium-tr-list-snapshots
@@ -385,13 +385,13 @@ Returns all snapshots.
     "Tanium": {
         "Snapshot": [
             {
-                "DirectoryName": "EC2AMAZ-KGMRO60",
+                "DirectoryName": "HOST_NAME",
                 "FileName": "2020_02_06T15.54.43.600Z.db",
                 "Started": "2020-02-06T15:54:43.600Z",
                 "State": "complete"
             },
             {
-                "DirectoryName": "EC2AMAZ-KGMRO60",
+                "DirectoryName": "HOST_NAME",
                 "Error": "Error checkpointing remote database",
                 "FileName": "2020_02_06T15.54.46.795Z.db",
                 "Started": "2020-02-06T15:54:46.795Z",
@@ -406,8 +406,8 @@ Returns all snapshots.
 ### Snapshots
 |FileName|DirectoryName|State|Started|Error|
 |---|---|---|---|---|
-| 2020_02_06T15.54.43.600Z.db | EC2AMAZ-KGMRO60 | complete | 2020-02-06T15:54:43.600Z |  |
-| 2020_02_06T15.54.46.795Z.db | EC2AMAZ-KGMRO60 | error | 2020-02-06T15:54:46.795Z | Error checkpointing remote database |
+| 2020_02_06T15.54.43.600Z.db | HOST_NAME | complete | 2020-02-06T15:54:43.600Z |  |
+| 2020_02_06T15.54.46.795Z.db | HOST_NAME | error | 2020-02-06T15:54:46.795Z | Error checkpointing remote database |
 
 
 ### tanium-tr-create-snapshot
@@ -428,10 +428,10 @@ Capture a new snapshot by connection ID.
 There is no context output for this command.
 
 ##### Command Example
-```!tanium-tr-create-snapshot connection-id=ip-172-31-44-5.eu-central-1.compute.internal```
+```!tanium-tr-create-snapshot connection-id=HOST_NAME```
 
 ##### Human Readable Output
-Initiated snapshot creation request for ip-172-31-44-5.eu-central-1.compute.internal.
+Initiated snapshot creation request for HOST_NAME.
 
 ### tanium-tr-delete-snapshot
 ***
@@ -452,7 +452,7 @@ Delete a snapshot by connection ID and snapshot ID.
 There is no context output for this command.
 
 ##### Command Example
-```!tanium-tr-delete-snapshot connection-id=EC2AMAZ-KGMRO60 snapshot-id=2020_02_06T15.54.43.600Z.db```
+```!tanium-tr-delete-snapshot connection-id=HOST_NAME snapshot-id=2020_02_06T15.54.43.600Z.db```
 
 ##### Human Readable Output
 Snapshot 2020_02_06T15.54.43.600Z.db deleted successfully.
@@ -488,11 +488,11 @@ Returns all local snapshots.
         "LocalSnapshot": {
             "DirectoryName": [
                 {
-                    "DirectoryName": "EC2AMAZ-KGMRO60",
+                    "DirectoryName": "HOST_NAME",
                     "FileName": "2020_02_06T15.54.43.600Z.db"
                 },
                 {
-                    "DirectoryName": "ip-172-31-44-5.eu-central-1.compute.internal",
+                    "DirectoryName": "HOST_NAME",
                     "FileName": "2020_01_09T15.25.13.535Z.db"
                 }
             ]
@@ -505,8 +505,8 @@ Returns all local snapshots.
 ### Local snapshots
 |FileName|DirectoryName|
 |---|---|
-| 2020_02_06T15.54.43.600Z.db | EC2AMAZ-KGMRO60 |
-| 2020_01_09T15.25.13.535Z.db | ip-172-31-44-5.eu-central-1.compute.internal |
+| 2020_02_06T15.54.43.600Z.db | HOST_NAME |
+| 2020_01_09T15.25.13.535Z.db | HOST_NAME |
 
 
 ### tanium-tr-delete-local-snapshot
@@ -528,10 +528,10 @@ Delete a local snapshot by directory name and file name.
 There is no context output for this command.
 
 ##### Command Example
-```!tanium-tr-delete-local-snapshot directory-name=EC2AMAZ-KGMRO60 file-name=2020_02_06T15.54.43.600Z.db```
+```!tanium-tr-delete-local-snapshot directory-name=HOST_NAME file-name=2020_02_06T15.54.43.600Z.db```
 
 ##### Human Readable Output
-Local snapshot from Directory EC2AMAZ-KGMRO60 and File 2020_02_06T15.54.43.600Z.db is deleted successfully.
+Local snapshot from Directory HOST_NAME and File 2020_02_06T15.54.43.600Z.db is deleted successfully.
 
 
 ### tanium-tr-list-connections
@@ -566,13 +566,13 @@ Returns all connections.
     "Tanium": {
         "Connection": [
             {
-                "DST": "local-ip-172-31-44-5.eu-central-1",
-                "Name": "local-ip-172-31-44-5.eu-central-1",
+                "DST": "HOST_NAME",
+                "Name": "HOST_NAME",
                 "State": "timeout"
             },
             {
-                "DST": "local-ip-172-31-44-5.eu-central-1.compute.internal-2020_01_09T15.25.13.535Z.db",
-                "Name": "local-ip-172-31-44-5.eu-central-1.compute.internal-2020_01_09T15.25.13.535Z.db",
+                "DST": "HOST_NAME-2020_01_09T15.25.13.535Z.db",
+                "Name": "HOST_NAME-2020_01_09T15.25.13.535Z.db",
                 "State": "timeout"
             }
         ]
@@ -584,8 +584,8 @@ Returns all connections.
 ### Connections
 |Name|State|Remote|CreateTime|DST|OsName|
 |---|---|---|---|---|---|
-| local-ip-172-31-44-5.eu-central-1 | timeout |  |  | local-ip-172-31-44-5.eu-central-1 |  |
-| local-ip-172-31-44-5.eu-central-1.compute.internal-2020_01_09T15.25.13.535Z.db | timeout |  |  | local-ip-172-31-44-5.eu-central-1.compute.internal-2020_01_09T15.25.13.535Z.db |  |
+| HOST_NAME | timeout |  |  | HOST_NAME |  |
+| HOST_NAME-2020_01_09T15.25.13.535Z.db | timeout |  |  | HOST_NAME-2020_01_09T15.25.13.535Z.db |  |
 
 ### tanium-tr-get-connection-by-name
 ***
@@ -611,7 +611,7 @@ Returns a connection object based on name.
 
 
 ##### Command Example
-```!tanium-tr-get-connection-by-name connection-name=EC2AMAZ-KGMRO60```
+```!tanium-tr-get-connection-by-name connection-name=HOST_NAME```
 
 ##### Context Example
 ```
@@ -619,7 +619,7 @@ Returns a connection object based on name.
     "Tanium": {
         "Connection": {
             "CreateTime": "2020-02-06T15:54:40.830Z",
-            "Name": "EC2AMAZ-KGMRO60",
+            "Name": "HOST_NAME",
             "OsName": "Windows",
             "Remote": true,
             "State": "active"
@@ -632,7 +632,7 @@ Returns a connection object based on name.
 ### Connection information
 |Name|State|Remote|CreateTime|DST|OsName|
 |---|---|---|---|---|---|
-| EC2AMAZ-KGMRO60 | active | true | 2020-02-06T15:54:40.830Z |  | Windows |
+| HOST_NAME | active | true | 2020-02-06T15:54:40.830Z |  | Windows |
 
 
 ### tanium-tr-create-connection
@@ -656,10 +656,10 @@ Creates a local or remote connection.
 There is no context output for this command.
 
 ##### Command Example
-```!tanium-tr-create-connection destination=ip-172-31-44-5.eu-central-1.compute.internal destination-type=computer_name remote=False```
+```!tanium-tr-create-connection destination=HOST_NAME destination-type=computer_name remote=False```
 
 ##### Human Readable Output
-Initiated connection request to ip-172-31-44-5.eu-central-1.compute.internal.
+Initiated connection request to HOST_NAME.
 
 ### tanium-tr-delete-connection
 ***
@@ -679,10 +679,10 @@ Delete a connection by connection name.
 There is no context output for this command.
 
 ##### Command Example
-```!tanium-tr-delete-connection connection-name=ip-172-31-44-5.eu-central-1.compute.internal```
+```!tanium-tr-delete-connection connection-name=HOST_NAME```
 
 ##### Human Readable Output
-Connection ip-172-31-44-5.eu-central-1.compute.internal deleted successfully.
+Connection HOST_NAME deleted successfully.
 
 ### tanium-tr-list-labels
 ***
@@ -838,7 +838,7 @@ Returns all downloaded files in the system.
 
 
 ##### Command Example
-```!tanium-tr-list-file-downloads host=EC2AMAZ-KGMRO60 limit=2 offset=1```
+```!tanium-tr-list-file-downloads host=HOST_NAME limit=2 offset=1```
 
 ##### Context Example
 ```
@@ -851,7 +851,7 @@ Returns all downloaded files in the system.
                 "CreatedByProc": "C:\\Windows\\System32\\svchost.exe",
                 "Downloaded": "2020-01-02 15:40:29.003",
                 "Hash": "2ae2da9237309b13b9a9d52d1358c826",
-                "Host": "EC2AMAZ-KGMRO60",
+                "Host": "EHOST_NAME",
                 "ID": 4,
                 "LastModified": "2020-01-02 15:39:57.289",
                 "LastModifiedBy": "NT AUTHORITY\\LOCAL SERVICE",
@@ -864,7 +864,7 @@ Returns all downloaded files in the system.
                 "Created": "Tue, 03 Sep 2019 17:51:40 GMT",
                 "Downloaded": "2020-01-15 13:04:02.827",
                 "Hash": "99297a0e626ca092ff1884ad28f54453",
-                "Host": "EC2AMAZ-KGMRO60",
+                "Host": "HOST_NAME",
                 "ID": 6,
                 "LastModified": "Wed, 15 Jan 2020 08:57:19 GMT",
                 "Path": "C:\\Program Files (x86)\\Tanium\\Tanium Client\\Logs\\log1.txt",
@@ -880,8 +880,8 @@ Returns all downloaded files in the system.
 ### File downloads
 |ID|Host|Path|Hash|Downloaded|Size|Created|CreatedBy|CreatedByProc|LastModified|LastModifiedBy|LastModifiedByProc|SPath|Comments|Tags|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 4 | EC2AMAZ-KGMRO60 | C:\Windows\ServiceProfiles\LocalService\AppData\Local\lastalive1.dat | 2ae2da9237309b13b9a9d52d1358c826 | 2020-01-02 15:40:29.003 | 2048 | 2020-01-02 15:39:57.289 | NT AUTHORITY\LOCAL SERVICE | C:\Windows\System32\svchost.exe | 2020-01-02 15:39:57.289 | NT AUTHORITY\LOCAL SERVICE | C:\Windows\System32\svchost.exe | 6ae86937-611f-45e9-900c-3ba57298f264.zip |  |  |
-| 6 | EC2AMAZ-KGMRO60 | C:\Program Files (x86)\Tanium\Tanium Client\Logs\log1.txt | 99297a0e626ca092ff1884ad28f54453 | 2020-01-15 13:04:02.827 | 10485904 | Tue, 03 Sep 2019 17:51:40 GMT |  |  | Wed, 15 Jan 2020 08:57:19 GMT |  |  | c0531415-87a6-4d28-a226-b485784b1881.zip |  |  |
+| 4 | HOST_NAME | C:\Windows\ServiceProfiles\LocalService\AppData\Local\lastalive1.dat | 2ae2da9237309b13b9a9d52d1358c826 | 2020-01-02 15:40:29.003 | 2048 | 2020-01-02 15:39:57.289 | NT AUTHORITY\LOCAL SERVICE | C:\Windows\System32\svchost.exe | 2020-01-02 15:39:57.289 | NT AUTHORITY\LOCAL SERVICE | C:\Windows\System32\svchost.exe | 6ae86937-611f-45e9-900c-3ba57298f264.zip |  |  |
+| 6 | HOST_NAME | C:\Program Files (x86)\Tanium\Tanium Client\Logs\log1.txt | 99297a0e626ca092ff1884ad28f54453 | 2020-01-15 13:04:02.827 | 10485904 | Tue, 03 Sep 2019 17:51:40 GMT |  |  | Wed, 15 Jan 2020 08:57:19 GMT |  |  | c0531415-87a6-4d28-a226-b485784b1881.zip |  |  |
 
 ### tanium-tr-get-downloaded-file
 ***
@@ -981,7 +981,7 @@ Queries events for a connection.
 
 
 ##### Command Example
-```!tanium-tr-list-events-by-connection connection-name=ip-172-31-44-5.eu-central-1.compute.internal event-type=Process limit=2```
+```!tanium-tr-list-events-by-connection connection-name=HOST_NAME event-type=Process limit=2```
 
 ##### Context Example
 ```
@@ -1019,7 +1019,7 @@ Queries events for a connection.
 ```
 
 ##### Human Readable Output
-### Events for ip-172-31-44-5.eu-central-1.compute.internal
+### Events for HOST_NAME
 |ID|Timestamp|Domain|ProcessTableID|ProcessCommandLine|ProcessID|ProcessName|ProcessHash|ExitCode|SID|Username|Hashes|Operation|File|DestinationAddress|DestinationPort|SourceAddress|SourcePort|KeyPath|ValueName|EndTime|ImageLoaded|Signature|Signed|EventId|EventOpcode|EventRecordID|EventTaskID|Query|Response|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 |  |  | root | 9938787 | mkdir -p /opt/Tanium/TaniumClient/Tools/Detect3/tmp | 15210 | /usr/bin/mkdir |  | 0 | 5 | root |  |  |  |  |  |  |  |  |  | 2020-01-11 04:19:21.134 |  |  |  |  |  |  |  |  |  |
@@ -1062,7 +1062,7 @@ Get file download metadata. At least one of the arguments `path` or `id` must be
 
 
 ##### Command Example
-```!tanium-tr-get-file-download-info host=EC2AMAZ-KGMRO60 id=4```
+```!tanium-tr-get-file-download-info host=HOST_NAME id=4```
 
 ##### Context Example
 ```
@@ -1074,7 +1074,7 @@ Get file download metadata. At least one of the arguments `path` or `id` must be
             "CreatedByProc": "C:\\Windows\\System32\\svchost.exe",
             "Downloaded": "2020-01-02 15:40:29.003",
             "Hash": "2ae2da9237309b13b9a9d52d1358c826",
-            "Host": "EC2AMAZ-KGMRO60",
+            "Host": "HOST_NAME",
             "ID": 4,
             "LastModified": "2020-01-02 15:39:57.289",
             "LastModifiedBy": "NT AUTHORITY\\LOCAL SERVICE",
@@ -1091,7 +1091,7 @@ Get file download metadata. At least one of the arguments `path` or `id` must be
 ### File download metadata for file `C:\Windows\ServiceProfiles\LocalService\AppData\Local\lastalive1.dat`
 |ID|Host|Path|Hash|Downloaded|Size|Created|CreatedBy|CreatedByProc|LastModified|LastModifiedBy|LastModifiedByProc|SPath|Comments|Tags|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 4 | EC2AMAZ-KGMRO60 | C:\Windows\ServiceProfiles\LocalService\AppData\Local\lastalive1.dat | 2ae2da9237309b13b9a9d52d1358c826 | 2020-01-02 15:40:29.003 | 2048 | 2020-01-02 15:39:57.289 | NT AUTHORITY\LOCAL SERVICE | C:\Windows\System32\svchost.exe | 2020-01-02 15:39:57.289 | NT AUTHORITY\LOCAL SERVICE | C:\Windows\System32\svchost.exe | 6ae86937-611f-45e9-900c-3ba57298f264.zip |  |  |
+| 4 | HOST_NAME | C:\Windows\ServiceProfiles\LocalService\AppData\Local\lastalive1.dat | 2ae2da9237309b13b9a9d52d1358c826 | 2020-01-02 15:40:29.003 | 2048 | 2020-01-02 15:39:57.289 | NT AUTHORITY\LOCAL SERVICE | C:\Windows\System32\svchost.exe | 2020-01-02 15:39:57.289 | NT AUTHORITY\LOCAL SERVICE | C:\Windows\System32\svchost.exe | 6ae86937-611f-45e9-900c-3ba57298f264.zip |  |  |
 
 
 ### tanium-tr-get-process-info
@@ -1124,7 +1124,7 @@ Get information for a process.
 
 
 ##### Command Example
-```!tanium-tr-get-process-info ptid=667680 connection-name=EC2AMAZ-KGMRO60 limit=5```
+```!tanium-tr-get-process-info ptid=667680 connection-name=HOST_NAME limit=5```
 
 ##### Context Example
 ```
@@ -1179,7 +1179,7 @@ Get events for a process.
 
 
 ##### Command Example
-```!tanium-tr-get-events-by-process ptid=667680 connection-name=EC2AMAZ-KGMRO60 limit=1```
+```!tanium-tr-get-events-by-process ptid=667680 connection-name=HOST_NAME limit=1```
 
 ##### Context Example
 ```
@@ -1229,7 +1229,7 @@ Get children of this process instance.
 
 
 ##### Command Example
-```!tanium-tr-get-process-children ptid=667680 connection-name=EC2AMAZ-KGMRO60```
+```!tanium-tr-get-process-children ptid=667680 connection-name=HOST_NAME```
 
 ##### Context Example
 ```
@@ -1301,7 +1301,7 @@ Get parent process information.
 
 
 ##### Command Example
-```!tanium-tr-get-parent-process ptid=667681 connection-name=EC2AMAZ-KGMRO60```
+```!tanium-tr-get-parent-process ptid=667681 connection-name=HOST_NAME```
 
 ##### Context Example
 ```
@@ -1356,7 +1356,7 @@ Get parent process tree for process instance.
 
 
 ##### Command Example
-```!tanium-tr-get-parent-process-tree ptid=667681 connection-name=EC2AMAZ-KGMRO60```
+```!tanium-tr-get-parent-process-tree ptid=667681 connection-name=HOST_NAME```
 
 ##### Context Example
 ```
@@ -1438,7 +1438,7 @@ Get process tree for process instance.
 
 
 ##### Command Example
-```!tanium-tr-get-process-tree ptid=667680 connection-name=EC2AMAZ-KGMRO60```
+```!tanium-tr-get-process-tree ptid=667680 connection-name=HOST_NAME```
 
 ##### Context Example
 ```
@@ -1535,9 +1535,9 @@ Returns a list of all available evidence in the system.
     "Tanium": {
         "Evidence": [
             {
-                "ConnectionID": "EC2AMAZ-KGMRO60",
+                "ConnectionID": "HOST_NAME",
                 "CreatedAt": "2020-01-02 15:40:03",
-                "Host": "EC2AMAZ-KGMRO60",
+                "Host": "HOST_NAME",
                 "ID": 2,
                 "Summary": "CreateProcess: C:\\Windows\\SysWOW64\\cmd.exe",
                 "Timestamp": "2020-01-02 15:39:28.809",
@@ -1546,15 +1546,15 @@ Returns a list of all available evidence in the system.
                 "User": "actionapprover"
             },
             {
-                "ConnectionID": "EC2AMAZ-KGMRO60",
+                "ConnectionID": "HOST_NAME",
                 "CreatedAt": "2020-01-13 18:02:01",
-                "Host": "EC2AMAZ-KGMRO60",
+                "Host": "HOST_NAME",
                 "ID": 13,
                 "Summary": "CreateProcess: C:\\Windows\\System32\\wsqmcons.exe",
                 "Timestamp": "2020-01-13 18:00:01.010",
                 "Type": 2,
                 "UpdatedAt": "2020-01-13 18:02:01",
-                "User": "EC2AMAZ-N5ETQVT\\administrator"
+                "User": "HOST_NAME\\administrator"
             }
         ]
     }
@@ -1565,8 +1565,8 @@ Returns a list of all available evidence in the system.
 ### Evidences
 |ID|Timestamp|Host|User|Summary|ConntectionID|Type|CreatedAt|UpdatedAt|ProcessTableId|Comments|Tags|
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2 | 2020-01-02 15:39:28.809 | EC2AMAZ-KGMRO60 | actionapprover | CreateProcess: C:\Windows\SysWOW64\cmd.exe |  | 2 | 2020-01-02 15:40:03 | 2020-01-02 15:40:03 |  |  |  |
-| 13 | 2020-01-13 18:00:01.010 | EC2AMAZ-KGMRO60 | EC2AMAZ-N5ETQVT\administrator | CreateProcess: C:\Windows\System32\wsqmcons.exe |  | 2 | 2020-01-13 18:02:01 | 2020-01-13 18:02:01 |  |  |  |
+| 2 | 2020-01-02 15:39:28.809 | HOST_NAME | actionapprover | CreateProcess: C:\Windows\SysWOW64\cmd.exe |  | 2 | 2020-01-02 15:40:03 | 2020-01-02 15:40:03 |  |  |  |
+| 13 | 2020-01-13 18:00:01.010 | HOST_NAME | HOST_NAME\administrator | CreateProcess: C:\Windows\System32\wsqmcons.exe |  | 2 | 2020-01-13 18:02:01 | 2020-01-13 18:02:01 |  |  |  |
 
 
 ### tanium-tr-get-evidence-by-id
@@ -1608,9 +1608,9 @@ Retrive the evidence by it's ID.
 {
     "Tanium": {
         "Evidence": {
-            "ConnectionID": "EC2AMAZ-KGMRO60",
+            "ConnectionID": "HOST_NAME",
             "CreatedAt": "2020-01-02 15:40:03",
-            "Host": "EC2AMAZ-KGMRO60",
+            "Host": "HOST_NAME",
             "ID": 2,
             "Summary": "CreateProcess: C:\\Windows\\SysWOW64\\cmd.exe",
             "Timestamp": "2020-01-02 15:39:28.809",
@@ -1626,7 +1626,7 @@ Retrive the evidence by it's ID.
 ### Label information
 |ID|Timestamp|Host|User|Summary|ConntectionID|Type|CreatedAt|UpdatedAt|ProcessTableId|Comments|Tags|
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2 | 2020-01-02 15:39:28.809 | EC2AMAZ-KGMRO60 | actionapprover | CreateProcess: C:\Windows\SysWOW64\cmd.exe |  | 2 | 2020-01-02 15:40:03 | 2020-01-02 15:40:03 |  |  |  |
+| 2 | 2020-01-02 15:39:28.809 | HOST_NAME | actionapprover | CreateProcess: C:\Windows\SysWOW64\cmd.exe |  | 2 | 2020-01-02 15:40:03 | 2020-01-02 15:40:03 |  |  |  |
 
 
 
@@ -1650,7 +1650,7 @@ Create an evidence.
 There is no context output for this command.
 
 ##### Command Example
-```!tanium-tr-create-evidence connection-name=ip-172-31-44-5.eu-central-1.compute.internal host=ip-172-31-44-5.eu-central-1.compute.internal ptid=13538572```
+```!tanium-tr-create-evidence connection-name=HOST_NAME host=HOST_NAME ptid=13538572```
 
 ##### Human Readable Output
 Evidence have been created.
@@ -1704,7 +1704,7 @@ Request a new file download
 
 
 ##### Command Example
-```!tanium-tr-request-file-download connection-id=ip-172-31-44-5.eu-central-1.compute.internal path=dev/autofs```
+```!tanium-tr-request-file-download connection-id=HOST_NAME path=dev/autofs```
 
 ##### Context Example
 ```
@@ -1712,7 +1712,7 @@ Request a new file download
     "Tanium": {
         "FileDownload": {
             "Downloaded": "2020-02-06 16:05:40.227674",
-            "Host": "ip-172-31-44-5.eu-central-1.compute.internal",
+            "Host": "HOST_NAME",
             "Path": "dev/autofs"
         }
     }
@@ -1774,7 +1774,7 @@ List files in the given directory.
 
 
 ##### Command Example
-```!tanium-tr-list-files-in-directory path=`C:\Program Files (x86)\Tanium\Tanium Client\` connection-id=EC2AMAZ-KGMRO60 limit=2```
+```!tanium-tr-list-files-in-directory path=`C:\Program Files (x86)\Tanium\Tanium Client\` connection-id=HOST_NAME limit=2```
 
 ##### Context Example
 ```
@@ -1803,7 +1803,7 @@ List files in the given directory.
 ```
 
 ##### Human Readable Output
-### Files in directory `C%3A%5CProgram%20Files%20%28x86%29%5CTanium%5CTanium%20Client%5C`
+### Files in directory `C:\Program Files (x86)\Tanium\Tanium Client\`
 |Path|Size|Created|LastModified|Permissions|IsDirectory|
 |---|---|---|---|---|---|
 | .detect-engine.lock | 0 | 1970-01-19 03:25:44 | 1970-01-19 03:25:44 | rw-rw-rw- | false |
@@ -1835,7 +1835,7 @@ Get information about file from a remote connection.
 
 
 ##### Command Example
-```!tanium-tr-get-file-info connection-id=EC2AMAZ-KGMRO60 path=`C:\Program Files (x86)\Tanium\Tanium Client\TaniumClient.exe````
+```!tanium-tr-get-file-info connection-id=HOST_NAME path=`C:\Program Files (x86)\Tanium\Tanium Client\TaniumClient.exe````
 
 ##### Context Example
 ```
@@ -1877,10 +1877,10 @@ Delete file from endpoint
 There is no context output for this command.
 
 ##### Command Example
-```!tanium-tr-delete-file-from-endpoint path=`C:\Program Files (x86)\Tanium\Tanium Client\Logs\log0.txt` connection-id=EC2AMAZ-KGMRO60```
+```!tanium-tr-delete-file-from-endpoint path=`C:\Program Files (x86)\Tanium\Tanium Client\Logs\log0.txt` connection-id=HOST_NAME```
 
 ##### Human Readable Output
-Delete request of file C:\Program Files (x86)\Tanium\Tanium Client\Logs\log0.txt from endpoint EC2AMAZ-KGMRO60 has been sent successfully.
+Delete request of file C:\Program Files (x86)\Tanium\Tanium Client\Logs\log0.txt from endpoint HOST_NAME has been sent successfully.
 
 ### tanium-tr-get-process-timeline
 ***
@@ -1911,7 +1911,7 @@ Get process timeline.
 
 
 ##### Command Example
-```!tanium-tr-get-process-timeline ptid=13530396 connection-id=ip-172-31-44-5.eu-central-1.compute.internal category=Process limit=2```
+```!tanium-tr-get-process-timeline ptid=13530396 connection-id=HOST_NAME category=Process limit=2```
 
 ##### Context Example
 ```

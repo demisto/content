@@ -950,7 +950,8 @@ def delete_file_download(client, data_args):
 
 def list_files_in_dir(client, data_args):
     con_id = data_args.get('connection-id')
-    dir_path = urllib.parse.quote(data_args.get('path'))
+    dir_path_name = data_args.get('path')
+    dir_path = urllib.parse.quote(dir_path_name)
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
 
@@ -963,7 +964,7 @@ def list_files_in_dir(client, data_args):
     context = createContext(files, removeNull=True)
     outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
     headers = ['Path', 'Size', 'Created', 'LastModified', 'Permissions', 'IsDirectory']
-    human_readable = tableToMarkdown(f'Files in directory `{dir_path}`', files, headers=headers)
+    human_readable = tableToMarkdown(f'Files in directory `{dir_path_name}`', files, headers=headers)
     return human_readable, outputs, raw_response
 
 
