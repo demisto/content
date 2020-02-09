@@ -1,6 +1,6 @@
 ## [Unreleased]
-- Fixed an issue in ***panorama-create-rule*** and ***panorama-create-block-rule***
-- Add argument ***category*** to ***panorama-create-rule*** command  
+- Fixed an issue in ***panorama-create-rule*** and ***panorama-create-block-rule*** commands.
+- Added the *category* argument to the ***panorama-create-rule*** command.
 
 ## [20.1.2] - 2020-01-22
 Fixed an issue where trying to download a filter-pcap with the necessary arguments did not return the correct results.
