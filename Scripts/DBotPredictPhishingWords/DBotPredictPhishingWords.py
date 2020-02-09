@@ -1,4 +1,6 @@
 # pylint: disable=no-member
+from string import punctuation
+
 import demisto_ml
 
 from CommonServerPython import *
@@ -64,6 +66,9 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     negative_tokens = set([''.join(c for c in word if c.isalnum()) for word in explain_result['NegativeWords']])
     positive_words = find_words_contain_tokens(positive_tokens, words_to_token_maps)
     negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
+    positive_words = [s.strip(punctuation) for s in positive_words]
+    negative_words = [s.strip(punctuation) for s in negative_words]
+
     explain_result['PositiveWords'] = positive_words
     explain_result['NegativeWords'] = negative_words
     explain_result['OriginalText'] = tokenized_text_result['originalText'].strip()
@@ -76,8 +81,8 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         highlighted_text_markdown = res['Contents']
         explain_result['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr = dict(explain_result)
-    explain_result_hr['PositiveWords'] = ", ".join(positive_tokens)
-    explain_result_hr['NegativeWords'] = ", ".join(negative_tokens)
+    explain_result_hr['PositiveWords'] = ", ".join(positive_words)
+    explain_result_hr['NegativeWords'] = ", ".join(negative_words)
     explain_result_hr['Probability'] = "%.2f" % explain_result_hr['Probability']
     return {
         'Type': entryTypes['note'],
