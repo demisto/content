@@ -1,5 +1,6 @@
 import pytest
 import demistomock as demisto
+import copy
 
 
 @pytest.fixture(autouse=True)
@@ -143,6 +144,100 @@ def test_delete_reference_set_value(mocker):
         NON_URL_SAFE_MSG_URL_ENCODED), params={'name': NON_URL_SAFE_MSG, 'value': 'value'})
 
 
+def test_create_incident_from_offense():
+    """
+    Given:
+        - There's an offense
+    When:
+        - I fetch incidents
+    Then:
+        - The function will create an incident from the offense
+    """
+    import QRadar as qradar
+    incident = qradar.create_incident_from_offense(OFFENSE_RAW_RESULT[0])
+    assert incident['name'] == INCIDENT_RESULT['name']
+
+
+def test_create_incident_from_offense_no_description():
+    """
+    Given:
+        - There's an offense
+    When:
+        - I fetch incidents
+    Then:
+        - The function will create an incident from the offense
+    """
+    import QRadar as qradar
+    expected_incident_name = '49473 '
+
+    raw_offense = copy.deepcopy(OFFENSE_RAW_RESULT[0])
+    raw_offense['description'] = ''
+    incident = qradar.create_incident_from_offense(raw_offense)
+    assert incident['name'] == expected_incident_name
+
+    raw_offense['description'] = None
+    incident = qradar.create_incident_from_offense(raw_offense)
+    assert incident['name'] == expected_incident_name
+
+
+def test_create_incident_from_offense_new_line_description():
+    """
+    Given:
+        - There's an offense with \n in its description
+    When:
+        - I fetch incidents
+    Then:
+        - The function will create an incident from the offense without \n in the incident name
+    """
+    import QRadar as qradar
+    raw_offense = copy.deepcopy(OFFENSE_RAW_RESULT[0])
+    raw_offense['description'] = '\n{}\n'.format(raw_offense['description'])
+    incident = qradar.create_incident_from_offense(raw_offense)
+
+    # assert incident['name'] was altered correctly
+    assert incident['name'] == '49473  Activacion '
+
+    # assert offense['description'] wasn't altered
+    description_asserted = False
+    for label in incident['labels']:
+        if label.get('type') == 'description':
+            assert label.get('value') == '\nActivacion\n'
+            description_asserted = True
+    assert description_asserted
+
+
+def test_get_entry_for_object():
+    """
+    Given:
+        There's a title, obj, contents, and headers
+    When:
+        I call get_entry_for_object
+    Then:
+        get_entry_for_object will return a an entry with the given headers
+    """
+    import QRadar as qradar
+    title = "Title"
+    obj = {'id': 1, 'name': 'test', 'field_to_drop': 'sensitive data'}
+    contents = {'test': 'test'}
+    headers = u'name'
+    # single header
+    entry = qradar.get_entry_for_object(title, obj, contents, headers)
+    assert entry['HumanReadable'] == '### Title\n|name|\n|---|\n| test |\n'
+    entry = qradar.get_entry_for_object(title, obj, contents, str(headers))
+    assert entry['HumanReadable'] == '### Title\n|name|\n|---|\n| test |\n'
+    assert entry['EntryContext'] == obj
+    assert entry['Contents'] == contents
+
+    # multiple headers
+    headers = ['name', 'id']
+    entry = qradar.get_entry_for_object(title, obj, contents, headers)
+    assert 'sensitive data' not in entry['HumanReadable']
+    assert 'id' in entry['HumanReadable']
+    assert 'name' in entry['HumanReadable']
+    assert entry['EntryContext'] == obj
+    assert entry['Contents'] == contents
+
+
 """ CONSTANTS """
 REQUEST_HEADERS = {'Content-Type': 'application/json', 'SEC': 'token'}
 NON_URL_SAFE_MSG = 'non-safe/;/?:@=&"<>#%{}|\\^~[] `'
@@ -237,3 +332,167 @@ ENRICH_OFFENSES_ADDR_EXPECTED = [
      'relevance': 4, 'local_destination_address_ids': ['192.168.0.2'],
      'log_sources': [{'type_name': 'EventCRE', 'type_id': 18, 'id': 115, 'name': 'Custom Rule Engine'},
                      {'type_name': 'FortiGate', 'type_id': 73, 'id': 2439, 'name': 'FortiGate 02'}]}]
+
+INCIDENT_RESULT = {
+    "labels": [
+        {
+            "type": "offense_source",
+            "value": "192.168.0.1"
+        },
+        {
+            "type": "status",
+            "value": "OPEN"
+        },
+        {
+            "type": "remote_destination_count",
+            "value": "0"
+        },
+        {
+            "type": "source_count",
+            "value": "1"
+        },
+        {
+            "type": "description",
+            "value": "Activacion"
+        },
+        {
+            "type": "rules",
+            "value": "[{'type': 'CRE_RULE', 'id': 166}]"
+        },
+        {
+            "type": "destination_networks",
+            "value": "['mock_net']"
+        },
+        {
+            "type": "source_address_ids",
+            "value": "[294626]"
+        },
+        {
+            "type": "policy_category_count",
+            "value": "0"
+        },
+        {
+            "type": "last_updated_time",
+            "value": "1563433313767"
+        },
+        {
+            "type": "offense_type",
+            "value": "0"
+        },
+        {
+            "type": "category_count",
+            "value": "2"
+        },
+        {
+            "type": "inactive",
+            "value": "False"
+        },
+        {
+            "type": "security_category_count",
+            "value": "2"
+        },
+        {
+            "type": "flow_count",
+            "value": "0"
+        },
+        {
+            "type": "protected",
+            "value": "False"
+        },
+        {
+            "type": "domain_id",
+            "value": "27"
+        },
+        {
+            "type": "categories",
+            "value": "['Unknown Potential Exploit Attack', 'Potential Web Exploit']"
+        },
+        {
+            "type": "follow_up",
+            "value": "False"
+        },
+        {
+            "type": "close_time",
+            "value": "None"
+        },
+        {
+            "type": "start_time",
+            "value": "1563433305606"
+        },
+        {
+            "type": "severity",
+            "value": "6"
+        },
+        {
+            "type": "event_count",
+            "value": "2"
+        },
+        {
+            "type": "credibility",
+            "value": "2"
+        },
+        {
+            "type": "local_destination_count",
+            "value": "1"
+        },
+        {
+            "type": "closing_reason_id",
+            "value": "None"
+        },
+        {
+            "type": "device_count",
+            "value": "2"
+        },
+        {
+            "type": "id",
+            "value": "49473"
+        },
+        {
+            "type": "username_count",
+            "value": "0"
+        },
+        {
+            "type": "magnitude",
+            "value": "4"
+        },
+        {
+            "type": "closing_user",
+            "value": "None"
+        },
+        {
+            "type": "source_network",
+            "value": "other"
+        },
+        {
+            "type": "assigned_to",
+            "value": "mocker"
+        },
+        {
+            "type": "relevance",
+            "value": "4"
+        },
+        {
+            "type": "local_destination_address_ids",
+            "value": "[1234412]"
+        },
+        {
+            "type": "log_sources",
+            "value": "[{'type_name': 'EventCRE', 'type_id': 18, 'id': 115, 'name': 'Custom Rule Engine'}, {'type_name':"
+                     " 'FortiGate', 'type_id': 73, 'id': 2439, 'name': 'FortiGate 02'}]"
+        }
+    ],
+    "name": "49473 Activacion",
+    "occurred": "2019-07-18T07:01:45.606000Z",
+    "rawJSON": "{\"offense_source\": \"192.168.0.1\", \"status\": \"OPEN\", \"remote_destination_count\": 0, \"source_"
+               "count\": 1, \"description\": \"Activacion\", \"rules\": [{\"type\": \"CRE_RULE\", \"id\": 166}], \"de"
+               "stination_networks\": [\"mock_net\"], \"source_address_ids\": [294626], \"policy_category_count\": 0, "
+               "\"last_updated_time\": 1563433313767, \"offense_type\": 0, \"category_count\": 2, \"inactive\": false, "
+               "\"security_category_count\": 2, \"flow_count\": 0, \"protected\": false, \"domain_id\": 27, \"cate"
+               "gories\": [\"Unknown Potential Exploit Attack\", \"Potential Web Exploit\"], \"follow_up\": false, \"c"
+               "lose_time\": null, \"start_time\": 1563433305606, \"severity\": 6, \"event_count\": 2, \"credibility\":"
+               " 2, \"local_destination_count\": 1, \"closing_reason_id\": null, \"device_count\": 2, \"id\": 4947"
+               "3, \"username_count\": 0, \"magnitude\": 4, \"closing_user\": null, \"source_network\": \"other\", \"as"
+               "signed_to\": \"mocker\", \"relevance\": 4, \"local_destination_address_ids\": [1234412], \"log_sour"
+               "ces\": [{\"type_name\": \"EventCRE\", \"type_id\": 18, \"id\": 115, \"name\": \"Custom Rule Engine\"}, "
+               "{\"type_name\": \"FortiGate\", \"type_id\": 73, \"id\": 2439, \"name\": \"FortiGate 02\"}]}"
+}
