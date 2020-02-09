@@ -87,6 +87,7 @@ script:
       required: false
       secret: false
     execution: false
+    description: Gets the feed indicators.
     name: cloudflare-get-indicators
   dockerimage: demisto/python3:3.8.1.5734
   feed: true
