@@ -623,11 +623,11 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: c8c3ddcb-cd91-4471-838c-be2a3750c827
+    taskid: 1020e641-dd2a-4558-83f2-34ee3dc56fca
     type: regular
     task:
       elasticcommonfields: {}
-      id: c8c3ddcb-cd91-4471-838c-be2a3750c827
+      id: 1020e641-dd2a-4558-83f2-34ee3dc56fca
       version: -1
       name: Get file events by connection
       description: Queries events for a connection.
@@ -640,7 +640,7 @@ tasks:
       - "22"
     scriptarguments:
       connection-name:
-        simple: local-ip-172-31-44-5.eu-central-1.compute.internal-2020_01_16T14.42.07.199Z.db
+        simple: local-EC2AMAZ-KGMRO60-2020_02_09T13.39.59.431Z.db
       event-type:
         simple: Process
       fields: {}
@@ -664,11 +664,11 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: d42fd90f-f7c2-4c1e-85a6-593d095eb613
+    taskid: 67026d04-a417-4cc9-8cbf-2a4e7b53f908
     type: regular
     task:
       elasticcommonfields: {}
-      id: d42fd90f-f7c2-4c1e-85a6-593d095eb613
+      id: 67026d04-a417-4cc9-8cbf-2a4e7b53f908
       version: -1
       name: tanium-tr-create-connection
       description: Creates a local or remote connection.
@@ -682,7 +682,7 @@ tasks:
     scriptarguments:
       connection-timeout: {}
       destination:
-        simple: local-ip-172-31-44-5.eu-central-1.compute.internal-2020_01_16T14.42.07.199Z.db
+        simple: '`EC2AMAZ - KGMRO60-2020_02_09T13.39.59.431Z.db`'
       destination-type:
         simple: computer_name
       remote:
@@ -702,11 +702,11 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 391b4a77-0412-447f-8342-e79261dd43f2
+    taskid: dbebc722-14e8-4939-8795-ce2090c73810
     type: regular
     task:
       elasticcommonfields: {}
-      id: 391b4a77-0412-447f-8342-e79261dd43f2
+      id: dbebc722-14e8-4939-8795-ce2090c73810
       version: -1
       name: tanium-tr-get-process-info
       description: Get information for a process.
@@ -719,9 +719,9 @@ tasks:
       - "23"
     scriptarguments:
       connection-name:
-        simple: local-ip-172-31-44-5.eu-central-1.compute.internal-2020_01_16T14.42.07.199Z.db
+        simple: local-EC2AMAZ-KGMRO60-2020_02_09T13.39.59.431Z.db
       ptid:
-        simple: "7585322"
+        simple: "667692"
     separatecontext: false
     view: |-
       {
@@ -737,11 +737,11 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: d768834b-ec29-453f-8d98-33b9d23cb83a
+    taskid: 798f019b-bf69-4f63-8de3-40e9dcfd0ea2
     type: regular
     task:
       elasticcommonfields: {}
-      id: d768834b-ec29-453f-8d98-33b9d23cb83a
+      id: 798f019b-bf69-4f63-8de3-40e9dcfd0ea2
       version: -1
       name: tanium-tr-get-evidence-by-id
       description: Retrive the evidence by it's ID.
