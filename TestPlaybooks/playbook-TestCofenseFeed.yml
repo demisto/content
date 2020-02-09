@@ -49,7 +49,7 @@ tasks:
       - "2"
     scriptarguments:
       from_time:
-        simple: 1 year
+        simple: 18 months
       limit: {}
     separatecontext: false
     view: |-
