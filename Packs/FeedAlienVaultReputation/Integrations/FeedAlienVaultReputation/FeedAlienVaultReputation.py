@@ -4,8 +4,9 @@ from CommonServerPython import *
 def main():
     feed_url_to_config = {
         'http://reputation.alienvault.com/reputation.data': {
-            'fieldnames': ['value', 'reliability', 'risk', 'threat_type', 'geocountry', 'geocity', 'geolocation',
-                                                                                                   'unknown'],
+            'fieldnames': [
+                'value', 'reliability', 'risk', 'threat_type', 'geocountry', 'geocity', 'geolocation', 'unknown'
+            ],
             'indicator_type': FeedIndicatorType.IP,
             'mapping': {
                 'geocountry': 'geocountry',
