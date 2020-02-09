@@ -2229,6 +2229,11 @@
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AlienVault Reputation Feed",
+            "playbookID": "AlienVaultReputationFeed_Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
