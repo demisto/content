@@ -6,7 +6,8 @@ import json
 import requests
 import traceback
 import urllib
-from requests.exceptions import HTTPError
+import re
+from requests.exceptions import HTTPError, ConnectionError
 from copy import deepcopy
 
 # disable insecure warnings
@@ -202,16 +203,11 @@ def dict_values_to_comma_separated_string(dic):
 # Sends request to the server using the given method, url, headers and params
 def send_request(method, url, headers=AUTH_HEADERS, params=None):
     try:
-        log_hdr = deepcopy(headers)
-        log_hdr.pop('SEC', None)
-        LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
-            .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
-        if TOKEN:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
-        else:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
-                                   auth=(USERNAME, PASSWORD))
-        res.raise_for_status()
+        try:
+            res = send_request_no_error_handling(headers, method, params, url)
+        except ConnectionError:
+            # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
+            res = send_request_no_error_handling(headers, method, params, url)
     except HTTPError:
         err_json = res.json()
         err_msg = ''
@@ -225,6 +221,23 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
     return res.json()
 
 
+def send_request_no_error_handling(headers, method, params, url):
+    """
+        Send request with no error handling, so the error handling can be done via wrapper function
+    """
+    log_hdr = deepcopy(headers)
+    log_hdr.pop('SEC', None)
+    LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
+        .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
+    if TOKEN:
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+    else:
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
+                               auth=(USERNAME, PASSWORD))
+    res.raise_for_status()
+    return res
+
+
 # Generic function that receives a result json, and turns it into an entryObject
 def get_entry_for_object(title, obj, contents, headers=None, context_key=None, human_readable=None):
     if len(obj) == 0:
@@ -236,7 +249,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
         }
     obj = filter_dict_null(obj)
     if headers:
-        if isinstance(headers, str):
+        if isinstance(headers, STRING_TYPES):
             headers = headers.split(',')
         if isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
@@ -246,7 +259,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
         'Contents': contents,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable if human_readable else tableToMarkdown(title, obj, headers),
+        'HumanReadable': human_readable if human_readable else tableToMarkdown(title, obj, headers).replace('\t', ' '),
         'EntryContext': ec
     }
 
@@ -467,6 +480,7 @@ def test_module():
 
 def fetch_incidents():
     query = demisto.params().get('query')
+    full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
     if last_run and offense_id == 0:
@@ -479,14 +493,19 @@ def fetch_incidents():
         # start looking for the end of the list by doubling the page position until we're empty.
         # then start binary search back until you find the end of the list and finally return
         # `offensesPerCall` from the end.
+    demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
     raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
+    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
     if len(raw_offenses) >= OFFENSES_PER_CALL:
         last_offense_pos = find_last_page_pos(fetch_query)
         raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
                                     _filter=fetch_query)
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
-    enrich_offense_res_with_source_and_destination_address(raw_offenses)
+    if full_enrich:
+        demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
+        enrich_offense_res_with_source_and_destination_address(raw_offenses)
+        demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
@@ -525,8 +544,10 @@ def create_incident_from_offense(offense):
     labels = []
     for i in range(len(keys)):
         labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
+    formatted_description = re.sub(r'\s\n', ' ', offense['description']).replace('\n', ' ') if \
+        offense['description'] else ''
     return {
-        'name': '{0} {1}'.format(offense['id'], offense['description']),
+        'name': '{id} {description}'.format(id=offense['id'], description=formatted_description),
         'labels': labels,
         'rawJSON': json.dumps(offense),
         'occurred': occured
@@ -719,9 +740,7 @@ def get_search_results_command():
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
-    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', ' ')
-    return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key,
-                                human_readable=human_readable)
+    return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key)
 
 
 def get_assets_command():

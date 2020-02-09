@@ -64,7 +64,7 @@ if demisto.command() == 'dnstwist-domain-variations':
         ec["Name"] = domain_context["domain-name"]
     if "IP Address" in domain_context:
         ec["IP"] = domain_context["IP Address"]
-    if "dns-ns" in domain_context:
+    if "dns-mx" in domain_context:
         ec["DNS-MX"] = domain_context["dns-mx"]
     if "dns-ns" in domain_context:
         ec["DNS-NS"] = domain_context["dns-ns"]
