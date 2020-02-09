@@ -1,22 +1,23 @@
+elasticcommonfields: {}
 id: cloudflare - Test
-version: -1
+version: 5
 name: cloudflare - Test
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: b58846b4-e65f-4987-8707-4fff9506efba
     type: start
     task:
+      elasticcommonfields: {}
       id: b58846b4-e65f-4987-8707-4fff9506efba
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -28,25 +29,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
     taskid: 2d39d354-6502-42c0-80c1-c6af7f2c3099
     type: regular
     task:
+      elasticcommonfields: {}
       id: 2d39d354-6502-42c0-80c1-c6af7f2c3099
       version: -1
       name: DeleteContext
-      description: ''
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     scriptarguments:
       all:
-        simple: 'yes'
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
@@ -62,29 +65,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
-    taskid: cd682731-338a-416f-89a4-27b9ace8127a
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 86484526-5423-432d-88e4-58274e76ac51
     type: regular
     task:
-      id: cd682731-338a-416f-89a4-27b9ace8127a
+      elasticcommonfields: {}
+      id: 86484526-5423-432d-88e4-58274e76ac51
       version: -1
       name: cloudflare-get-indicators
-      description: ''
+      description: Gets the feed indicators.
       script: '|||cloudflare-get-indicators'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
+      - "15"
     scriptarguments:
       extend-context:
         simple: first_object=.[0]
-      indicator_type:
-        simple: IP
       limit:
-        simple: '10'
+        simple: "10"
     separatecontext: false
     view: |-
       {
@@ -96,18 +100,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '14':
-    id: '14'
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
     taskid: 2b4f3651-6954-40ca-8b06-fae67c14894f
     type: title
     task:
+      elasticcommonfields: {}
       id: 2b4f3651-6954-40ca-8b06-fae67c14894f
       version: -1
       name: Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
     view: |-
       {
@@ -119,24 +125,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '15':
-    id: '15'
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
     taskid: fd78719f-a4e9-4246-8939-c8f81905d313
     type: condition
     task:
+      elasticcommonfields: {}
       id: fd78719f-a4e9-4246-8939-c8f81905d313
       version: -1
       name: verify get indicators
       type: condition
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
-      'yes':
-      - '14'
+      "yes":
+      - "14"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -158,6 +166,9 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -173,5 +184,3 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: cloudflare - Test
-description: ''
-fromversion: 5.5.0
