@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where ***qradar-get-search-results*** and ***qradar-get-search*** ignored headers argument.
 
 ## [20.2.0] - 2020-02-04
 Added an immediate recovery for HTTP requests in case of connection error, which should help if QRadar SIEM is busy.
