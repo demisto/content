@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.0] - 2020-02-04
 Fixed missing task link.
 
 ## [20.1.2] - 2020-01-22
