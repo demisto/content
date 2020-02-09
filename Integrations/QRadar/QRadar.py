@@ -203,15 +203,18 @@ def dict_values_to_comma_separated_string(dic):
 
 # Sends request to the server using the given method, url, headers and params
 def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
+    res = None
     try:
-        res = None
         try:
             res = send_request_no_error_handling(headers, method, params, url, data=data)
+            res.raise_for_status()
         except ConnectionError:
             # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
             res = send_request_no_error_handling(headers, method, params, url, data=data)
-    except HTTPError as e:
-        if res:
+            res.raise_for_status()
+
+    except HTTPError:
+        if res is not None:
             err_json = res.json()
             err_msg = ''
             if 'message' in err_json:
@@ -220,9 +223,11 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
                 err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
             if 'code' in err_json:
                 err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+
             raise Exception(err_msg)
         else:
-            raise e
+            raise
+
     return res.json()
 
 
@@ -239,7 +244,6 @@ def send_request_no_error_handling(headers, method, params, url, data):
     else:
         res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data,
                                auth=(USERNAME, PASSWORD))
-    res.raise_for_status()
     return res
 
 
@@ -993,13 +997,17 @@ def update_reference_set_value_command():
         The function creates or updates values in QRadar reference set
     """
     args = demisto.args()
-    values = argToList(args.get('value'))
+    indicators_list = argToList(args.get('values'))
+    indicators_values_list = []
+    for indicator in indicators_list:
+        indicators_values_list.append(indicator['value'])
     if args.get('date_value') == 'True':
-        values = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for value in values]
-    if len(values) > 1:
-        raw_ref = upload_indicators_list_request(args.get('ref_name'), values)
-    elif len(values) == 1:
-        raw_ref = update_reference_set_value(args.get('ref_name'), values[0], args.get('source'))
+        indicators_list = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+                           for value in indicators_list]
+    if len(indicators_list) > 1:
+        raw_ref = upload_indicators_list_request(args.get('ref_name'), indicators_values_list)
+    elif len(indicators_list) == 1:
+        raw_ref = update_reference_set_value(args.get('ref_name'), indicators_list[0], args.get('source'))
     else:
         raise DemistoException('Expected at least a single value, cant create or update an empty value')
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
@@ -1111,11 +1119,13 @@ def upload_indicators_command():
             enrich_reference_set_result(ref)
             indicator_headers = ['value', 'indicator_type']
             ref_set_headers = ['Name', 'ElementType', 'TimeoutType', 'CreationTime', 'NumberOfElements']
-            return [tableToMarkdown("reference set {0} was updated".format(reference_name), ref,
-                                    headers=ref_set_headers) + tableToMarkdown("Indicators list", indicators_data_list,
-                                                                               headers=indicator_headers), raw_response]
+            return_outputs(tableToMarkdown("reference set {0} was updated".format(reference_name), ref,
+                                           headers=ref_set_headers) + tableToMarkdown("Indicators list",
+                                                                                      indicators_data_list,
+                                                                                      headers=indicator_headers),
+                           raw_response)
 
-# Gets an error if the user tried to add indicators that dont match to the reference set type
+    # Gets an error if the user tried to add indicators that dont match to the reference set type
     except Exception as e:
         if '1005' in str(e):
             return "You tried to add indicators that dont match to reference set type"
@@ -1209,7 +1219,7 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
     elif demisto.command() == 'qradar-upload-indicators':
-        return_outputs(*upload_indicators_command())
+        return_outputs(upload_indicators_command())
 except Exception as e:
     message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)

@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: QRadar
+  id: QRadar-test
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -47,8 +47,8 @@ configuration:
   required: false
   type: 8
 description: Fetch offenses as incidents and search QRadar
-display: IBM QRadar
-name: QRadar
+display: IBM QRadar-test
+name: QRadar-test
 script:
   commands:
   - arguments:
@@ -1235,7 +1235,7 @@ script:
         will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g.
         ''2018-11-06T08:56:41.000000Z'') to epoch.'
       isArray: true
-      name: value
+      name: values
       required: true
       secret: false
     - default: false
