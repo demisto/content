@@ -1,21 +1,20 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Bambenek Consulting Feed
+  id: SSLBL Feed
   version: -1
 configuration:
 - display: Sub-Feeds
   name: url
   options:
-  - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
-  - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt
-  - http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt
-  - http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt
+  - https://sslbl.abuse.ch/blacklist/sslipblacklist.csv
+  - https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv
   required: true
   type: 16
 - display: Fetch indicators
   name: feed
   required: false
   type: 8
+  defaultvalue: true
 - defaultvalue: '360'
   display: Fetch Interval
   name: feedFetchInterval
@@ -54,6 +53,12 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
+- additionalinfo: Time in seconds before http requests timeout.
+  defaultvalue: '20'
+  display: Request Timeout
+  name: polling_timeout
+  required: true
+  type: 0
 - additionalinfo: When selected, the exclusion list will be ignored for this feed.
   display: Bypass exclusion list
   name: feedBypassExclusionList
@@ -67,16 +72,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Time in seconds before http requests timeout.
-  defaultvalue: '20'
-  display: Request Timeout
-  name: polling_timeout
-  required: true
-  type: 0
-description: Use the Bambenek Consulting feed integration to fetch indicators from
-  the feed.
-display: Bambenek Consulting Feed
-name: Bambenek Consulting Feed
+description: Use the SSLBL feed integration to fetch indicators from the feed.
+display: SSLBL Feed
+name: SSLBL Feed
 script:
   commands:
   - arguments:
@@ -96,7 +94,7 @@ script:
     deprecated: false
     description: Gets the feed indicators.
     execution: false
-    name: bambenek-get-indicators
+    name: sslbl-get-indicators
     outputs:
     - contextPath: BambenekConsultingFeed.Indicator.Value
       description: The indicator value.
@@ -104,9 +102,6 @@ script:
     - contextPath: BambenekConsultingFeed.Indicator.Type
       description: The indicator type.
       type: String
-    - contextPath: BambenekConsultingFeed.Indicator.Rawjson
-      description: Indicator rawJSON value.
-      type: Unknown
   dockerimage: demisto/python3:3.8.1.5734
   feed: true
   isfetch: false
@@ -116,6 +111,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- BambenekConsultingFeed_Test
 fromversion: 5.5.0
