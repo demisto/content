@@ -85,16 +85,6 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: alienvault-get-indicators
-    outputs:
-    - contextPath: AlienVaultReputationFeed.Indicator.Value
-      description: The indicator value.
-      type: String
-    - contextPath: AlienVaultReputationFeed.Indicator.Type
-      description: The indicator type.
-      type: String
-    - contextPath: AlienVaultReputationFeed.Indicator.Rawjson
-      description: Indicator rawJSON value.
-      type: Unknown
   dockerimage: demisto/python3:3.8.1.5734
   feed: true
   isfetch: false
