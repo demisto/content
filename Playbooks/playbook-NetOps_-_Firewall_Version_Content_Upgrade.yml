@@ -2,7 +2,8 @@ id: NetOps - Firewall Version and Content Upgrade
 version: -1
 fromversion: 5.0.0
 name: NetOps - Firewall Version and Content Upgrade
-description: "Network operation playbook that updates the version and the content of the firewall."
+description: Network operation playbook that updates the version and the content of
+  the firewall.
 starttaskid: "0"
 tasks:
   "0":
@@ -62,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: a7882af4-ef83-4011-816b-7644c061b489
+    taskid: dac55564-0c88-4e85-80e0-74af6b9b4990
     type: regular
     task:
-      id: a7882af4-ef83-4011-816b-7644c061b489
+      id: dac55564-0c88-4e85-80e0-74af6b9b4990
       version: -1
       name: Check on the content download status
       description: Check content update download status
@@ -78,7 +79,9 @@ tasks:
       - "11"
     scriptarguments:
       job_id:
-        simple: ${Panorama.Content.Download.JobID}
+        complex:
+          root: Panorama
+          accessor: Content.Download.JobID
       target: {}
     reputationcalc: 2
     separatecontext: false
@@ -124,10 +127,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 7a4d5036-7cbd-44ba-8894-04588f78b7c1
+    taskid: c342a8fd-a87d-4057-8edb-35ecc623ff88
     type: regular
     task:
-      id: 7a4d5036-7cbd-44ba-8894-04588f78b7c1
+      id: c342a8fd-a87d-4057-8edb-35ecc623ff88
       version: -1
       name: Check on the content installation status
       description: Content update install status
@@ -140,7 +143,9 @@ tasks:
       - "13"
     scriptarguments:
       job_id:
-        simple: ${Panorama.Content.Install.JobID}
+        complex:
+          root: Panorama
+          accessor: Content.Install.JobID
       target: {}
     reputationcalc: 2
     separatecontext: false
@@ -185,10 +190,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: fc6b051f-8eda-47a0-8b5f-7084c5a75647
+    taskid: 90d3c358-46d3-4ea6-8508-2cddf6e962e5
     type: regular
     task:
-      id: fc6b051f-8eda-47a0-8b5f-7084c5a75647
+      id: 90d3c358-46d3-4ea6-8508-2cddf6e962e5
       version: -1
       name: Download the latest PAN-OS software update
       description: Download target PAN-OS version to be installed
@@ -200,9 +205,10 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      target_version:
-        simple: ${incident.targetfirewallversion}
       target: {}
+      target_version:
+        complex:
+          root: inputs.target_version
     separatecontext: false
     view: |-
       {
@@ -216,10 +222,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: d2b61817-1acc-42db-8e71-b83c84398162
+    taskid: 4f33c545-4fd5-485e-8b92-cc3e4689412e
     type: regular
     task:
-      id: d2b61817-1acc-42db-8e71-b83c84398162
+      id: 4f33c545-4fd5-485e-8b92-cc3e4689412e
       version: -1
       name: Install the latest PAN-OS software update
       description: Install target PAN-OS version
@@ -231,9 +237,10 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      target_version:
-        simple: ${incident.targetfirewallversion}
       target: {}
+      target_version:
+        complex:
+          root: inputs.target_version
     separatecontext: false
     view: |-
       {
@@ -247,10 +254,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: a93efddd-9732-43d4-8360-b5a4f0c9b61e
+    taskid: 28a4fb31-0ae2-40e4-804d-692bd0aca523
     type: regular
     task:
-      id: a93efddd-9732-43d4-8360-b5a4f0c9b61e
+      id: 28a4fb31-0ae2-40e4-804d-692bd0aca523
       version: -1
       name: Check on the PAN-OS software installation status
       description: PAN-OS install status
@@ -263,7 +270,9 @@ tasks:
       - "16"
     scriptarguments:
       job_id:
-        simple: ${Panorama.PANOS.Install.JobID}
+        complex:
+          root: Panorama
+          accessor: PANOS.Install.JobID
       target: {}
     separatecontext: false
     view: |-
@@ -396,7 +405,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: Panorama.Content.Install(val.Status !== 'Completed' && val.Status != ‘Failed’).JobID
+        simple: Panorama.Content.Install(val.Status !== 'Completed' && val.Status
+          != ‘Failed’).JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -414,10 +424,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 759690e3-78c2-433f-85ab-b3262b07cdeb
+    taskid: 33afd485-aeef-49c6-83fb-23250779f58e
     type: regular
     task:
-      id: 759690e3-78c2-433f-85ab-b3262b07cdeb
+      id: 33afd485-aeef-49c6-83fb-23250779f58e
       version: -1
       name: Download PAN-OS Status
       description: PAN-OS download status
@@ -430,7 +440,9 @@ tasks:
       - "15"
     scriptarguments:
       job_id:
-        simple: ${Panorama.PANOS.Download.JobID}
+        complex:
+          root: Panorama
+          accessor: PANOS.Download.JobID
       target: {}
     separatecontext: false
     view: |-
@@ -482,7 +494,8 @@ tasks:
       Timeout:
         simple: "20"
       dt:
-        simple: Panorama.PANOS.Download(val.Status !== 'Completed' && val.Status != ‘Failed’).JobID
+        simple: Panorama.PANOS.Download(val.Status !== 'Completed' && val.Status !=
+          ‘Failed’).JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -500,10 +513,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 3bcad225-f223-462b-855c-db621f53a3d7
+    taskid: cafe7cfd-7bb9-4caf-8cd5-dd6aaab69dd5
     type: playbook
     task:
-      id: 3bcad225-f223-462b-855c-db621f53a3d7
+      id: cafe7cfd-7bb9-4caf-8cd5-dd6aaab69dd5
       version: -1
       name: GenericPolling
       description: |-
@@ -537,7 +550,8 @@ tasks:
       Timeout:
         simple: "20"
       dt:
-        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status != ‘Failed’).JobID
+        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !=
+          ‘Failed’).JobID
     separatecontext: true
     loop:
       iscommand: false
@@ -565,7 +579,14 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: target_version
+  value:
+    complex:
+      root: incident
+      accessor: targetfirewallversion
+  required: false
+  description: Target PAN-OS version to upgrade
 outputs: []
 tests:
   - No Tests
