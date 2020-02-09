@@ -4833,11 +4833,11 @@ def panorama_check_latest_panos_software_command():
 @logger
 def panorama_download_panos_version(target: str, target_version: str):
     params = {
-       'type': 'op',
-       'cmd': f'<request><system><software><download><version>{target_version}'
-              f'</version></download></software></system></request>',
-       'target': target,
-       'key': API_KEY
+        'type': 'op',
+        'cmd': f'<request><system><software><download><version>{target_version}'
+               f'</version></download></software></system></request>',
+        'target': target,
+        'key': API_KEY
     }
     result = http_request(
         URL,
