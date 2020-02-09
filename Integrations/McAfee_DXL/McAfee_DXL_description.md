@@ -3,7 +3,7 @@
 - open a new directory.
 - download the sh script https://github.com/demisto/content/raw/master/Integrations/McAfee_DXL/create_keys.sh.zip and move to the directory.
 - unzip the file and double click it to run.
-- fill out the required fields except the challenge password (leave it empty).
+- fill out the required fields except the challenge password and the optional company name (leave it empty).
 - upload the public key as shown in
     - https://opendxl.github.io/opendxl-client-python/pydoc/epocaimport.html
 - download the brokers certificate as shown in
