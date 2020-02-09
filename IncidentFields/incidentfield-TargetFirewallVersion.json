@@ -25,7 +25,7 @@
 	"useAsKpi": true,
 	"locked": false,
 	"system": false,
-	"content": false,
+	"content": true,
 	"group": 0,
 	"hidden": false,
 	"associatedTypes": null,
@@ -39,5 +39,6 @@
 	"sla": 0,
 	"threshold": 72,
 	"breachScript": "",
-	"validatedError": ""
+	"validatedError": "",
+	"fromVersion": "5.0.0"
 }

@@ -1,4 +1,15 @@
 ## [Unreleased]
+  - Added 7 new commands:
+    - ***panorama-download-latest-content-update***
+    - ***panorama-content-update-download-status***
+    - ***panorama-install-latest-content-update***
+    - ***panorama-content-update-install-status***
+    - ***panorama-check-latest-panos-software***
+    - ***panorama-download-panos-version***
+    - ***panorama-download-panos-status***
+    - ***panorama-install-panos-version***
+    - ***panorama-install-panos-status***
+    - ***panorama-device-reboot***
 
 
 ## [20.1.2] - 2020-01-22
