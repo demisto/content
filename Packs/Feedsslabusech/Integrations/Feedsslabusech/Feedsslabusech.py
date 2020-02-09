@@ -20,7 +20,7 @@ def main():
 
     # Main execution of the CSV API Module.
     # This function allows to add to or override this execution.
-    feed_main('SSLBL Feed', params, 'sslbl')
+    feed_main('SSL Blacklist Feed', params, 'sslbl')
 
 
 from CSVFeedApiModule import *  # noqa: E402
