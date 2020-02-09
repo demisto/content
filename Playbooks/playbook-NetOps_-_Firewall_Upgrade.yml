@@ -2,7 +2,8 @@ id: NetOps - Upgrade PAN-OS Firewall Device
 version: -1
 fromversion: 5.0.0
 name: NetOps - Upgrade PAN-OS Firewall Device
-description: "Network operation playbook that upgrades the firewall."
+description: Network operation playbook that upgrades the firewall.
+  Superuser is requiered in order to update PAN-OS version.
 starttaskid: "0"
 tasks:
   "0":

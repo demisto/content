@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.0.0
 name: NetOps - Firewall Version and Content Upgrade
 description: Network operation playbook that updates the version and the content of
-  the firewall.
+  the firewall. Superuser is requiered in order to update PAN-OS version.
 starttaskid: "0"
 tasks:
   "0":
