@@ -1,5 +1,8 @@
 ## [Unreleased]
-Added support for fetch-incidents without providing Date Format.  
+Added support for fetch-incidents without providing Date Format.
+
+## [20.2.0] - 2020-02-04
+-
 
 ## [19.12.0] - 2019-12-10
 -
