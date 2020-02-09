@@ -275,8 +275,8 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                    prints_manager, thread_index=0, is_mock_run=False):
-    status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, test_options, is_mock_run,
-                                      thread_index=thread_index)
+    status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                      is_mock_run, thread_index=thread_index)
     # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
         prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
@@ -329,8 +329,8 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         prints_manager.add_print_job(start_mock_message, print, thread_index)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, test_options, is_mock_run=True,
-                                          thread_index=thread_index)
+        status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                          is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
@@ -630,7 +630,7 @@ def get_and_print_server_numeric_version(tests_settings):
         image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
         if len(image_data) != 1:
             print('Did not get one image data for server version, got {}'.format(image_data))
-            return '0.0.0'
+            return '99.99.98'  # latest
         else:
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
             if server_numeric_version:
@@ -835,12 +835,13 @@ def manage_tests(tests_settings):
                     current_instance = ami_instance_ip
                     tests_allocation_for_instance = test_allocation[current_thread_index]
 
-                    unmockable_tests = [test for test in all_unmockable_tests_list if test in tests_allocation_for_instance]
+                    unmockable_tests = [test for test in all_unmockable_tests_list
+                                        if test in tests_allocation_for_instance]
                     mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
                     print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                     print("Starts tests with server url - https://{}".format(ami_instance_ip))
 
-                    if not is_nightly or number_of_instances == 1:
+                    if number_of_instances == 1:
                         execute_testing(tests_settings, current_instance, mockable_tests, unmockable_tests,
                                         tests_data_keeper, prints_manager, thread_index=0, is_ami=True)
                     else:
@@ -908,10 +909,8 @@ def main():
     # should be removed after solving: https://github.com/demisto/etc/issues/21383
     # -------------
     if 'master' in tests_settings.serverVersion.lower():
-        sleep(100)
-        print('slept for 100 secs')
-        sleep(100)
-        print('slept for 100 secs')
+        print('[{}] sleeping for 30 secs'.format(datetime.now()))
+        sleep(30)
     # -------------
     manage_tests(tests_settings)
 

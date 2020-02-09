@@ -2,9 +2,33 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+        {
+            "integrations": "Blocklist_de Feed",
+            "playbookID": "Blocklist_de - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AzureFeed",
+            "playbookID": "AzureFeed - Test",
+            "fromversion": "5.5.0"
+        },
+         {
+            "playbookID": "CreateIndicatorFromSTIXTest",
+             "fromversion": "5.0.0"
+         },
          {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Bambenek Consulting Feed",
+            "playbookID": "BambenekConsultingFeed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AWS Feed",
+            "playbookID": "AWS Feed Test",
             "fromversion": "5.5.0"
         },
         {
@@ -18,6 +42,11 @@
         {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ProofpointFeed",
+            "playbookID": "TestProofpointFeed",
             "fromversion": "5.5.0"
         },
         {
@@ -499,6 +528,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Test_export_indicators_service",
+            "integrations": "ExportIndicators",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
@@ -640,8 +674,8 @@
             "playbookID": "BigFixTest"
         },
         {
-            "integrations": "Lastline",
-            "playbookID": "Lastline - testplaybook",
+            "integrations": "Lastline v2",
+            "playbookID": "Lastline v2 - Test",
             "nightly": true
         },
         {
@@ -1426,7 +1460,7 @@
         },
         {
             "integrations": [
-                "Lastline",
+                "Lastline v2",
                 "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
@@ -1450,7 +1484,7 @@
             "integrations": [
                 "McAfee Advanced Threat Defense",
                 "VxStream",
-                "Lastline"
+                "Lastline v2"
             ]
         },
         {
@@ -1746,6 +1780,10 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
+        },
+        {
+            "playbookID": "Wait Until Datetime - Test",
+            "fromversion": "4.5.0"
         },
         {
             "playbookID": "PAN OS EDL Management - Test",
@@ -2059,6 +2097,12 @@
         },
         {
             "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_Fetch_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
         },
@@ -2111,7 +2155,7 @@
             "playbookID": "Tanium v2 - Test"
         },
         {
-          "integrations": "FeedOffice365",
+          "integrations": "Office365 Feed",
           "playbookID": "Office365_Feed_Test",
           "fromversion": "5.5.0"
         },
@@ -2137,13 +2181,43 @@
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "SplunkPy",
+            "playbookID": "Splunk Indicator Hunting Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Sixgill",
+            "playbookID": "Sixgill - Darkfeed - Indicators-Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AutoFocus Feed",
+            "playbookID": "playbook-FeedAutofocus_test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
+        },
+        {
+            "playbookID": "Indicator Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Recorded Future Feed",
+            "playbookID": "RecordedFutureFeed - Test",
+            "timeout": 1000,
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -2174,6 +2248,7 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
+        "ssdeepreputationtest": "Issue #20953",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633"
     },
@@ -2238,6 +2313,7 @@
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
+        "LogRhythm": "Issue 21672",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2249,6 +2325,7 @@
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
+        "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
@@ -2261,7 +2338,7 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nightly_integrations": [
-        "Lastline",
+        "Lastline v2",
         "TruSTAR",
         "SlackV2"
     ],
@@ -2310,7 +2387,7 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
-        "FeedOffice365": "SSl Issues. issue: 21181",
+        "Feed Office365": "SSl Issues. issue: 21181",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
