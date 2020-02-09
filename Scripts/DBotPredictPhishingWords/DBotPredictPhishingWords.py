@@ -75,6 +75,8 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         res = res[0]
         if not is_error(res):
             highlighted_text_markdown = res['Contents']
+        else:
+            highlighted_text_markdown = tokenized_text_result['originalText'].strip()
     else:
         highlighted_text_markdown = tokenized_text_result['originalText'].strip()
 
