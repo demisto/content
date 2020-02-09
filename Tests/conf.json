@@ -8,7 +8,7 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "Cloudflare feed",
+            "integrations": "Cloudflare Feed",
             "playbookID": "cloudflare - Test",
             "fromversion": "5.5.0"
         },
