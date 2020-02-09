@@ -419,7 +419,7 @@ tasks:
     task:
       id: 759690e3-78c2-433f-85ab-b3262b07cdeb
       version: -1
-      name: Download PSN-OS Status
+      name: Download PAN-OS Status
       description: PAN-OS download status
       script: Panorama|||panorama-download-panos-status
       type: regular
