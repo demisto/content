@@ -1,10 +1,11 @@
-RESPOSNE_DATA = [
+RESPONSE_DATA = [
     {
         "id": 31,
         "serviceArea": "SharePoint",
         "serviceAreaDisplayName": "SharePoint Online and OneDrive for Business",
         "urls": [
-            "*.sharepoint.com"
+            "*.sharepoint.com",
+            "www.sharepoint.com"
         ],
         "ips": [
             "7.7.7.7",
