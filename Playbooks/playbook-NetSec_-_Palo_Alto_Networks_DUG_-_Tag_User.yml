@@ -1,5 +1,6 @@
 id: NetSec - Palo Alto Networks DUG - Tag User
 version: -1
+fromversion: 5.0.0
 name: NetSec - Palo Alto Networks DUG - Tag User
 description: 'Block a user by tagging it  in the Palo Alto Networks NGFW. This requires
   PAN-OS 9.1+. If the user is in the Demisto List with the name stated in playbook
@@ -15,6 +16,7 @@ tasks:
       id: e075a102-f806-43e4-85ce-a1aca534406e
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -39,6 +41,7 @@ tasks:
       id: 2b0f9a00-495e-45d1-8a07-df0818217a83
       version: -1
       name: Panorama - Tag User
+      description: ""
       script: '|||panorama-register-user-tag'
       type: regular
       iscommand: true
@@ -153,6 +156,7 @@ tasks:
       id: 5d58bd45-6dc5-489a-84e5-bfe0d642343f
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
