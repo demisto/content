@@ -1,9 +1,9 @@
 from collections import defaultdict
 
 import pytest
-from DBotPredictPhishingWords import get_model_data, predict_phishing_words, main
 
 from CommonServerPython import *
+from DBotPredictPhishingWords import get_model_data, predict_phishing_words, main
 
 TOKENIZATION_RESULT = None
 
@@ -242,3 +242,30 @@ def test_main(mocker):
                            }
     main()
     assert res['Contents'] == correct_res
+
+
+def test_no_positive_words(mocker):
+    # make sure that if no positive words were found, TextTokensHighlighted output is equivalent to original text
+    global TOKENIZATION_RESULT
+    args = {'modelName': 'modelName', 'modelStoreType': 'list', 'emailSubject': 'word1', 'emailBody': 'word2 word3',
+            'minTextLength': '0', 'labelProbabilityThreshold': '0', 'wordThreshold': '0', 'topWordsLimit': '10',
+            'returnError': 'true'}
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch('demisto_ml.decode_model', return_value="Model", create=True)
+    mocker.patch('demisto_ml.filter_model_words', return_value=("text", 2), create=True)
+    mocker.patch('demisto_ml.explain_model_words', return_value={"Label": 'Valid',
+                                                                 'Probability': 0.7,
+                                                                 'PositiveWords': [],
+                                                                 'NegativeWords': ['word2']},
+                 create=True)
+
+    TOKENIZATION_RESULT = {'originalText': '%s %s' % (args['emailSubject'], args['emailBody']),
+                           'tokenizedText': '%s %s' % (args['emailSubject'], args['emailBody']),
+                           'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
+                           }
+
+    res = main()
+    assert res['Contents']['TextTokensHighlighted'] == TOKENIZATION_RESULT['originalText']
+
+
