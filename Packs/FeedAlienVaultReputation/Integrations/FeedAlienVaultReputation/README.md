@@ -15,7 +15,7 @@ Use the AlienVault Reputation feed integration to fetch indicators from the feed
     * __Indicator Reputation__: Indicators from this integration instance will be marked with this
     reputation.
     * __Source Reliability__: Reliability of the feed.
-    * __Indicator Expiration Method__: TODO
+    * __Indicator Expiration Method__: The method by which to expire indicators from this feed for this integration instance.
     * __Fetch Interval__: Interval of the fetches.
     * __Bypass Exclusion List__: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
