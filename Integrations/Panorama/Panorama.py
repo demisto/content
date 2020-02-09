@@ -20,6 +20,9 @@ URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port
 API_KEY = str(demisto.params().get('key'))
 USE_SSL = not demisto.params().get('insecure')
 
+# target device
+TARGET = str(demisto.args()['target']) if 'target' in demisto.args() else None
+
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
 if demisto.args() and demisto.args().get('device-group', None):
@@ -350,6 +353,433 @@ def get_pan_os_major_version() -> int:
     """
     major_version = int(get_pan_os_version().split('.')[0])
     return major_version
+
+
+def panorama_show_device_version_command():
+    params = {
+        'type': 'op',
+        'cmd': '<show><system><info/></system></show>',
+        'key': API_KEY
+    }
+    if 'TARGET':
+        params['target'] = TARGET
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    entry = result['response']['result']['system']
+    info_data = {
+        'devicename': entry['devicename'],
+        'model': entry['model'],
+        'serial': entry['serial'],
+        'version': entry['sw-version']
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Result:', info_data, ['devicename', 'model', 'serial',
+                                                                'version'], removeNull=True),
+        'EntryContext': {
+            "Device.Info(val.devicename == obj.devicename, val.model == obj.model, "
+            "val.serial == obj.serial, val.version == obj.version)": info_data
+        }
+    })
+
+
+@logger
+def panorama_download_latest_content_update_content():
+    params = {
+        'type': 'op',
+        'target': TARGET,
+        'cmd': '<request><content><upgrade><download><latest/></download></upgrade></content></request>',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'POST',
+        params=params
+    )
+
+    return result
+
+
+def panorama_download_latest_content_update_command():
+    """
+    Download and show message in war room
+    """
+    result = panorama_download_latest_content_update_content()
+
+    if 'result' in result['response']:
+        # download has been given a jobid
+        download_status_output = {
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Result:', download_status_output, ['JobID', 'Status'], removeNull=True),
+            'EntryContext': {
+                "Content.Download(val.JobID == obj.JobID)": download_status_output
+            }
+        })
+    else:
+        # no download took place
+        demisto.results(result['response']['msg'])
+
+
+@logger
+def panorama_content_update_download_status():
+    params = {
+        'type': 'op',
+        'cmd': '<show><jobs><id>' + demisto.args()['JobID'] + '</id></jobs></show>',
+        'target': TARGET,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_content_update_download_status_command():
+    """
+    Check jobID of content update download status
+    """
+    result = panorama_content_update_download_status()
+
+    content_download_status = {
+        'JobID': result['response']['result']['job']['id']
+    }
+    if result['response']['result']['job']['status'] == 'FIN':
+        if result['response']['result']['job']['result'] == 'OK':
+            content_download_status['Status'] = 'Completed'
+        else:
+            # result['response']['job']['result'] == 'FAIL'
+            content_download_status['Status'] = 'Failed'
+        content_download_status['Details'] = result['response']['result']['job']
+
+    if result['response']['result']['job']['status'] == 'PEND':
+        content_download_status['Status'] = 'Pending'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Content download status:', content_download_status,
+                                         ['JobID', 'Status', 'Details'], removeNull=True),
+        'EntryContext': {"Content.Download(val.JobID == obj.JobID)": content_download_status}
+    })
+
+
+@logger
+def panorama_install_latest_content_update():
+    params = {
+        'type': 'op',
+        'cmd': '<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>',
+        'target': TARGET,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_install_latest_content_update_command():
+    """
+        Check jobID of content content install status
+    """
+    result = panorama_install_latest_content_update()
+
+    if 'result' in result['response']:
+        # download has been given a jobid
+        content_install_info = {
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True),
+            'EntryContext': {
+                "Content.Install(val.JobID == obj.JobID)": content_install_info
+            }
+        })
+    else:
+        # no content install took place
+        demisto.results(result['response']['msg'])
+
+
+@logger
+def panorama_content_update_install_status():
+    params = {
+        'type': 'op',
+        'cmd': '<show><jobs><id>' + demisto.args()['JobID'] + '</id></jobs></show>',
+        'target': TARGET,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_content_update_install_status_command():
+    """
+    Check jobID of content update install status
+    """
+    result = panorama_content_update_install_status()
+
+    content_install_status = {
+        'JobID': result['response']['result']['job']['id']
+    }
+    if result['response']['result']['job']['status'] == 'FIN':
+        if result['response']['result']['job']['result'] == 'OK':
+            content_install_status['Status'] = 'Completed'
+        else:
+            # result['response']['job']['result'] == 'FAIL'
+            content_install_status['Status'] = 'Failed'
+        content_install_status['Details'] = result['response']['result']['job']
+
+    if result['response']['result']['job']['status'] == 'PEND':
+        content_install_status['Status'] = 'Pending'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Content install status:', content_install_status,
+                                         ['JobID', 'Status', 'Details'], removeNull=True),
+        'EntryContext': {"Content.Install(val.JobID == obj.JobID)": content_install_status}
+    })
+
+
+def panorama_check_latest_panos_software_command():
+    params = {
+        'type': 'op',
+        'cmd': '<request><system><software><check></check></software></system></request>',
+        'target': TARGET,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    demisto.results(result['response']['result'])
+
+
+@logger
+def panorama_download_panos_version():
+    params = {
+       'type': 'op',
+       'cmd': '<request><system><software><download><version>' + demisto.args()['TargetVersion'] +
+               '</version></download></software></system></request>',
+       'target': TARGET,
+       'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_download_panos_version_command():
+    """
+    Check jobID of panos version download
+    """
+    result = panorama_download_panos_version()
+
+    if 'result' in result['response']:
+        # download has been given a jobid
+        panos_version_download = {
+            'JobID': result['response']['result']['job']
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Result:', panos_version_download, ['JobID', 'Status'], removeNull=True),
+            'EntryContext': {
+                "Panos.Download(val.JobID == obj.JobID)": panos_version_download
+            }
+        })
+    else:
+        # no panos download took place
+        demisto.results(result['response']['msg'])
+
+
+@logger
+def panorama_download_panos_status():
+    params = {
+        'type': 'op',
+        'cmd': '<show><jobs><id>' + demisto.args()['JobID'] + '</id></jobs></show>',
+        'target': TARGET,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_download_panos_status_command():
+    """
+    Check jobID of panos download status
+    """
+    result = panorama_download_panos_status()
+    panos_download_status = {
+        'JobID': result['response']['result']['job']['id']
+    }
+    if result['response']['result']['job']['status'] == 'FIN':
+        if result['response']['result']['job']['result'] == 'OK':
+            panos_download_status['Status'] = 'Completed'
+        else:
+            # result['response']['job']['result'] == 'FAIL'
+            panos_download_status['Status'] = 'Failed'
+        panos_download_status['Details'] = result['response']['result']['job']
+
+    if result['response']['result']['job']['status'] == 'PEND':
+        panos_download_status['Status'] = 'Pending'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('PAN-OS download status:', panos_download_status,
+                                         ['JobID', 'Status', 'Details'], removeNull=True),
+        'EntryContext': {"Panos.Download(val.JobID == obj.JobID)": panos_download_status}
+    })
+
+
+@logger
+def panorama_install_panos_version():
+    params = {
+        'type': 'op',
+        'cmd': '<request><system><software><install><version>' + demisto.args()['TargetVersion'] +
+               '</version></install></software></system></request>',
+        'target': TARGET,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_install_panos_version_command():
+    """
+    Check jobID of panos install
+    """
+    result = panorama_install_panos_version()
+
+    if 'result' in result['response']:
+        # panos install has been given a jobid
+        panos_install = {
+            'JobID': result['response']['result']['job']
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Result:', panos_install, ['JobID', 'Status'], removeNull=True),
+            'EntryContext': {
+                "Panos.Install(val.JobID == obj.JobID)": panos_install
+            }
+        })
+    else:
+        # no panos install took place
+        demisto.results(result['response']['msg'])
+
+
+@logger
+def panorama_install_panos_status():
+    params = {
+        'type': 'op',
+        'cmd': '<show><jobs><id>' + demisto.args()['JobID'] + '</id></jobs></show>',
+        'target': TARGET,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_install_panos_status_command():
+    """
+    Check jobID of panos install status
+    """
+    result = panorama_install_panos_status()
+    panos_install_status = {
+        'JobID': result['response']['result']['job']['id']
+    }
+    if result['response']['result']['job']['status'] == 'FIN':
+        if result['response']['result']['job']['result'] == 'OK':
+            panos_install_status['Status'] = 'Completed'
+        else:
+            # result['response']['job']['result'] == 'FAIL'
+            panos_install_status['Status'] = 'Failed'
+        panos_install_status['Details'] = result['response']['result']['job']
+
+    if result['response']['result']['job']['status'] == 'PEND':
+        panos_install_status['Status'] = 'Pending'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('PAN-OS install status:', panos_install_status,
+                                         ['JobID', 'Status', 'Details'], removeNull=True),
+        'EntryContext': {"Panos.Install(val.JobID == obj.JobID)": panos_install_status}
+    })
+
+
+def panorama_device_reboot_command():
+    params = {
+        'type': 'op',
+        'cmd': '<request><restart><system></system></restart></request>',
+        'target': TARGET,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    demisto.results(result['response']['result'])
 
 
 ''' FUNCTIONS'''
@@ -4773,6 +5203,51 @@ def main():
 
         elif demisto.command() == 'panorama-delete-static-route':
             panorama_delete_static_route_command()
+
+        # Firewall Upgrade
+        # Check device software version
+        elif demisto.command() == 'panorama-show-device-version':
+            panorama_show_device_version_command()
+
+        # Download the latest content update
+        elif demisto.command() == 'panorama-download-latest-content-update':
+            panorama_download_latest_content_update_command()
+
+        # Download the latest content update
+        elif demisto.command() == 'panorama-content-update-download-status':
+            panorama_content_update_download_status_command()
+
+        # Install the latest content update
+        elif demisto.command() == 'panorama-install-latest-content-update':
+            panorama_install_latest_content_update_command()
+
+        # Content update install status
+        elif demisto.command() == 'panorama-content-update-install-status':
+            panorama_content_update_install_status_command()
+
+        # Check panos latest software update
+        elif demisto.command() == 'panorama-check-latest-panos-software':
+            panorama_check_latest_panos_software_command()
+
+        # Download target panos version
+        elif demisto.command() == 'panorama-download-panos-version':
+            panorama_download_panos_version_command()
+
+        # Panos download status
+        elif demisto.command() == 'panorama-download-panos-status':
+            panorama_download_panos_status_command()
+
+        # Panos software install
+        elif demisto.command() == 'panorama-install-panos-version':
+            panorama_install_panos_version_command()
+
+        # Panos install status
+        elif demisto.command() == 'panorama-install-panos-status':
+            panorama_install_panos_status_command()
+
+        # Reboot Panorama Device
+        elif demisto.command() == 'panorama-device-reboot':
+            panorama_device_reboot_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

@@ -3264,7 +3264,233 @@ script:
     - contextPath: Panorama.StaticRoutes.Deleted
       description: Whether the static route was deleted.
       type: Boolean
+  - arguments:
+    - default: false
+      description: Serial number of target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    deprecated: false
+    description: Show firewall device software version
+    execution: false
+    name: panorama-show-device-version
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    deprecated: false
+    description: Download the latest content update
+    execution: false
+    name: panorama-download-latest-content-update
+    outputs:
+    - contextPath: Content.Download.JobID
+      description: JobID from download command
+      type: number
+    - contextPath: Content.Download.Status
+      description: Download Status
+      type: string
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: JobID to check
+      isArray: false
+      name: JobID
+      required: true
+      secret: false
+    deprecated: false
+    description: Check content update download status
+    execution: false
+    name: panorama-content-update-download-status
+    outputs:
+    - contextPath: Content.Download.JobID
+      description: JobID to be monitored
+      type: number
+    - contextPath: Content.Download.Status
+      description: Status progress
+      type: string
+    - contextPath: Content.Download.Details
+      description: JobID Details
+      type: string
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    deprecated: false
+    description: Install the latest content update
+    execution: false
+    name: panorama-install-latest-content-update
+    outputs:
+    - contextPath: Content.Install.JobID
+      description: JobID from install command
+      type: number
+    - contextPath: Content.Install.Status
+      description: Install status
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: JobID for content install
+      isArray: false
+      name: JobID
+      required: true
+      secret: false
+    deprecated: false
+    description: Content update install status
+    execution: false
+    name: panorama-content-update-install-status
+    outputs:
+    - contextPath: Content.Install.JobID
+      description: JobID to be monitored
+      type: Unknown
+    - contextPath: Content.Install.Status
+      description: Content install status
+      type: string
+    - contextPath: Content.Install.Details
+      description: Content install status details
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    deprecated: false
+    description: Check/refresh PAN-OS software version from repository
+    execution: false
+    name: panorama-check-latest-panos-software
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: 'The target version number  to install '
+      isArray: false
+      name: TargetVersion
+      required: false
+      secret: false
+    deprecated: false
+    description: Download target PAN-OS version to be installed
+    execution: false
+    name: panorama-download-panos-version
+    outputs:
+    - contextPath: Panos.Download.JobID
+      description: JobID from PAN-OS download command
+      type: number
+    - contextPath: Panos.Download.Status
+      description: Status of PAN-OS download command
+      type: string
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: JobID to check
+      isArray: false
+      name: JobID
+      required: true
+      secret: false
+    deprecated: false
+    description: PAN-OS download status
+    execution: false
+    name: panorama-download-panos-status
+    outputs:
+    - contextPath: Panos.Download.JobID
+      description: JobID of PAN-OS download
+      type: string
+    - contextPath: Panos.Download.Status
+      description: PAN-OS download status
+      type: string
+    - contextPath: Panos.Download.Details
+      description: PAN-OS download details
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: Target PAN-OS version to install
+      isArray: false
+      name: TargetVersion
+      required: true
+      secret: false
+    deprecated: false
+    description: Install target PAN-OS version
+    execution: false
+    name: panorama-install-panos-version
+    outputs:
+    - contextPath: Panos.Install.JobID
+      description: JobID from PAN-OS install
+      type: string
+    - contextPath: Panos.Install.Status
+      description: Status of PAN-OS install
+      type: string
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: JobID to check
+      isArray: false
+      name: JobID
+      required: false
+      secret: false
+    deprecated: false
+    description: PAN-OS install status
+    execution: false
+    name: panorama-install-panos-status
+    outputs:
+    - contextPath: Panos.Install.JobID
+      description: JobID of PAN-OS install
+      type: number
+    - contextPath: Panos.Install.Status
+      description: PAN-OS install status
+      type: string
+    - contextPath: Panos.Install.Details
+      description: PAN-OS install details
+      type: String
+  - arguments:
+    - default: false
+      description: Target device
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    deprecated: false
+    description: Reboot Firewall device
+    execution: false
+    name: panorama-device-reboot
   dockerimage: demisto/python3:3.7.3.221
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
