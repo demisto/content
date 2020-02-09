@@ -1,7 +1,4 @@
-## Overview
----
-
-AutoFocus contextual threat intelligence brings speed, consistency, and precision to threat investigation.
+Use the AutoFocus v2 integration to contextualize threat intelligence and bring speed, consistency, and precision to threat investigation.
 
 ## Use Cases
 * Query samples / sessions
@@ -29,78 +26,76 @@ For more information on activating the license see [Activating AutoFocus License
 ## Configure AutoFocus V2 on Demisto
 ---
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations**** > **Servers & Services**.
 2. Search for AutoFocus V2.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __API Key__
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-    * __Additional malicious verdicts__
-4. Click __Test__ to validate the URLs, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
+
+   | **Parameter** | **Description** | **Example** |
+   | ---------             | -----------           | -------            |
+   | Name | A meaningful name for the integration instance. | AutoFocus V2_instance_2 |
+   |  API Key | Account's private token. | N/A  |
+   | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
+   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span>/proxyserver.com |
+   | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |
+
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. autofocus-search-samples
-2. autofocus-search-sessions
-3. autofocus-samples-search-results
-4. autofocus-sessions-search-results
-5. autofocus-get-session-details
-6. autofocus-sample-analysis
-7. autofocus-tag-details
-8. autofocus-top-tags-search
-9. autofocus-top-tags-results
-10. ip
-11. url
-12. file
-13. domain
-### 1. Search for samples
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### Search for samples
 ---
-Search for samples. To view results run the autofocus-samples-search-results command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. You can use the query that you created in AutoFocus within playbooks "as-is". If you want to run the command with the query in Demisto, you need to wrap the query in backticks ``. For example:
-```!autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending```
+Searches for samples. To view results run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Demisto, wrap the query in backticks ``. For example:
+```
+!autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
+```
 
 ##### Base Command
 
 `autofocus-search-samples`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description section. | Optional | 
+| query | The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description. | Optional | 
 | max_results | The number of results to return. | Optional | 
 | sort | The field by which to sort the results. | Optional | 
 | order | The order of the results. Can be "Ascending" or "Descending". | Optional | 
-| scope |  The scope of the search. Can be "Private", "Public", or "Global". | Required | 
+| scope | The scope of the search. Can be "Private", "Public", or "Global". | Required | 
 | file_hash | The MD5, SHA1 or SHA256 hash of the file. | Optional | 
 | domain | The domain to search. | Optional | 
 | ip | The IP address to search. | Optional | 
 | url | The URL to search. | Optional | 
-| wildfire_verdict | The Wildfire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing". | Optional | 
+| wildfire_verdict | The WildFire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing". | Optional | 
 | first_seen | The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 | last_updated | The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 
 ### How to Build a Query
 1. Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global) search screen.
-2. Select the ```Advanced...``` button on the top right.
-3. Build a query by selecting fields operators and relevant values. To add another condition, click the + button. For more information on how to use the search editor, see [Work with the Search Editor](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
-5. To get the query you built, open the API syntax, and click the **>_API** button.
-Copy the query value from the opening curly bracket ```{``` until the ```,"scope"``` parameter, and paste it as the value for the ```query``` argument for both search commands. For example:
-```{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}```
-
+2. Click the **Advanced...** button on the top right.
+3. Build a query by selecting the fields operators and relevant values. To add another condition, click the **+** button. For more information on how to use the search editor, see [Work with the Search Editor](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
+5. To get the query, open the API syntax, and click the **>_API** button.
+Copy the query value from the opening curly bracket `{` until the `,"scope"` parameter, and paste it as the value for the `query` argument for both search commands. For example:
+```
+{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}
+```
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.SamplesSearch.AFCookie | String | The AutoFocus search ID. Use this ID to retrieve search results. The AF Cookie expires 120 seconds after the search completes. | 
+| AutoFocus.SamplesSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
 | AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
 
 
 ##### Command Example
-```!autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending```
+```
+!autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
+```
 
 ##### Context Example
 ```
@@ -113,25 +108,26 @@ Copy the query value from the opening curly bracket ```{``` until the ```,"scope
 ```
 
 ##### Human Readable Output
-### Search Samples Info:
+##### Search Samples Info:
 |AFCookie|Status|
 |---|---|
 | 2-78049b80-9c18-47e7-835e-d31ca8bd48aa+0 | in progress |
 
 
-### 2. Search for sessions
+### Search for sessions
 ---
-Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
+Searches for sessions. To view the results, run the `autofocus-sessions-search-results` command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
 
 ##### Base Command
 
 `autofocus-search-sessions`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description section. | Optional | 
-| max_results | The maximum number of results to return. Default is 30. | Optional | 
+| max_results | The maximum number of results to return. The default is 30. | Optional | 
 | sort | The field by which to sort the results. | Optional | 
 | order | The order of the results. Can be "Ascending" or "Descending". | Optional | 
 | file_hash | The MD5, SHA1 or SHA256 hash of the file. | Optional | 
@@ -144,22 +140,26 @@ Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-
 
 ### How to Build a Query
 1. Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global) search screen.
-2. Select the ```Advanced...``` button on the top right.
-3. Build a query by selecting fields operators and relevant values. To add another condition, click the + button. For more information on how to use the search editor, see [Work with the Search Editor](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
-5. To get the query you built, open the API syntax, and click the **>_API** button.
-Copy the query value from the opening curly bracket ```{``` until the ```,"scope"``` parameter, and paste it as the value for the ```query``` argument for both search commands. For example:
-```{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}```
+2. Select the **Advanced...** button on the top right.
+3. Build a query by selecting fields operators and relevant values. To add another condition, click the **+** button. For more information on how to use the search editor, see [Work with the Search Editor](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
+4. To get the query you built, open the API syntax, and click the **>_API** button.
+5. Copy the query value from the opening curly bracket `{` until the `,"scope"` parameter, and paste it as the value for the `query` argument for both search commands. For example:
+```
+{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}
+```
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.SessionsSearch.AFCookie | String | The AutoFocus search ID. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
-| AutoFocus.SessionsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| AutoFocus.SessionsSearch.AFCookie | String | The ID of the search. Use the ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
+| AutoFocus.SessionsSearch.Status | String | The status of the search. Can be "in progress" or "complete". | 
 
 
 ##### Command Example
-```!autofocus-search-sessions query={"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]} max_results="30" sort="Application" order="Ascending"```
+```
+!autofocus-search-sessions query={"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]} max_results="30" sort="Application" order="Ascending"
+```
 
 ##### Context Example
 ```
@@ -172,15 +172,15 @@ Copy the query value from the opening curly bracket ```{``` until the ```,"scope
 ```
 
 ##### Human Readable Output
-### Search Sessions Info:
+##### Search Sessions Info:
 |AFCookie|Status|
 |---|---|
 | 2-2d70539d-26af-40d2-b80b-16be60dabbaf+0 | in progress |
 
 
-### 3. Get results of a samples search
+### Get results of a samples search
 ---
-Returns results of a previous samples search.
+Returns the results of a previous samples search.
 
 ##### Base Command
 
@@ -200,22 +200,24 @@ Returns results of a previous samples search.
 | AutoFocus.SamplesResults.SHA1 | String | The SHA1 hash of the file. | 
 | AutoFocus.SamplesResults.SHA256 | String | The SHA256 hash of the file. | 
 | AutoFocus.SamplesResults.Created | Date | The date that the file was created. | 
-| AutoFocus.SamplesResults.Finished | Date | Date finished. | 
-| AutoFocus.SamplesResults.Region | String | Region of the sample. | 
+| AutoFocus.SamplesResults.Finished | Date | The date the file was finished. | 
+| AutoFocus.SamplesResults.Region | String | The region of the sample. | 
 | AutoFocus.SamplesResults.FileType | String | The file type. | 
 | AutoFocus.SamplesResults.Tags | String | The tags attached to the sample. | 
 | AutoFocus.SamplesResults.Verdict | Number | The verdict of the sample. | 
-| AutoFocus.SamplesResults.TagGroups | String | Groups of relevant tags. | 
+| AutoFocus.SamplesResults.TagGroups | String | The groups of relevant tags. | 
 | AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
 | File.Size | Number | The size of the file in bytes. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
-| File.Tags | String | Tags of the file. | 
+| File.Tags | String | The tags of the file. | 
 
 
 ##### Command Example
-```!autofocus-samples-search-results af_cookie=2-c0a49ebb-2fee-4423-9bd3-76004d5878ba+1```
+```
+!autofocus-samples-search-results af_cookie=2-c0a49ebb-2fee-4423-9bd3-76004d5878ba+1
+```
 
 ##### Context Example
 ```
@@ -253,7 +255,7 @@ Returns results of a previous samples search.
 ```
 
 ##### Human Readable Output
-### Search Samples Results is complete
+##### Search Samples Results is complete
 |Created|FileType|Finished|ID|MD5|Region|SHA256|Size|Verdict|ispublic|tag_groups|update_date|
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 2011-07-14T19:37:28 | PE | 2013-12-04T16:37:03 | 55f66d613414b35d46e48b952541403a5b2a5d1a1e3c0bef2bd76607b41400b9 | 6d34c561e20e76e6b62568d83f39ef1c | us | 55f66d613414b35d46e48b952541403a5b2a5d1a1e3c0bef2bd76607b41400b9 | 28832 | 1 | 2 |  | 2013-12-04T16:37:03 |
@@ -287,15 +289,14 @@ Returns results of a previous samples search.
 | 2011-07-14T23:22:40 | PE |  | 268bb4eedaf5a726d07033bb363fdd7961e7a499ea39f44f3b8fd90086a47cd3 | 14909eba6a9f49f87d86993f13b301fa | us | 268bb4eedaf5a726d07033bb363fdd7961e7a499ea39f44f3b8fd90086a47cd3 | 290816 | 1 | 1 |  |  |
 | 2011-07-14T23:23:05 | PE |  | 2cd2995e3b567e0c78e687802e8..........f2b98157a7d7ca944422302e758 | bbc0971f93e..........ba03275c4b8 | us | 2cd2995e3b567e0c78e687802e8..........f2b98157a7d7ca944422302e758 | 3072 | 1 |  |  |  |
 
-
-
-### 4. Get results of a sessions search
+### Get results of a sessions search
 ---
-Returns results of a previous sessions search.
+Returns the results of a previous session's search.
 
 ##### Base Command
 
 `autofocus-sessions-search-results`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -308,22 +309,24 @@ Returns results of a previous sessions search.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AutoFocus.SessionsResults.FileName | String | The name of the file.. | 
-| AutoFocus.SessionsResults.ID | String | The session ID. Used to get session details. | 
+| AutoFocus.SessionsResults.ID | String | The ID of the session. Used to get session details. | 
 | AutoFocus.SessionsResults.Industry | String | The related industry. | 
 | AutoFocus.SessionsResults.Region | String | The regions of the sessions. | 
 | AutoFocus.SessionsResults.SHA256 | String | The SHA256 hash of the file. | 
-| AutoFocus.SessionsResults.Seen | Date | Seen date. | 
+| AutoFocus.SessionsResults.Seen | Date | The seen date. | 
 | AutoFocus.SessionsResults.UploadSource | String | The source of the uploaded sample. | 
 | AutoFocus.SessionsResults.FileURL | String | The URL of the file. | 
-| AutoFocus.SessionsResults.Tags | String | Relevant tags. | 
+| AutoFocus.SessionsResults.Tags | String | The relevant tags. | 
 | AutoFocus.SessionsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Tags | String | Tags of the file. | 
+| File.Tags | String | The tags of the file. | 
 
 
 ##### Command Example
-```!autofocus-sessions-search-results af_cookie=2-f2c742b6-a363-4eb9-a313-63a99c376081+0```
+```
+!autofocus-sessions-search-results af_cookie=2-f2c742b6-a363-4eb9-a313-63a99c376081+0
+```
 
 ##### Context Example
 ```
@@ -367,7 +370,7 @@ Returns results of a previous sessions search.
 ```
 
 ##### Human Readable Output
-### Search Sessions Results is complete
+##### Search Sessions Results is complete
 |FileName|ID|Industry|Region|SHA256|Seen|Tags|UploadSource|tag_groups|
 |---|---|---|---|---|---|---|---|---|
 | wildfire-test-pe-file.exe | u_56095401643 | High Tech | us | 2eb355b54855c7531a811d435b2ff4dc74d377bfed98fd1ad03caa591f5555bd | 2019-12-11T08:52:16 | Commodity.WildFireTest | Manual API |  |
@@ -388,23 +391,23 @@ Returns results of a previous sessions search.
 | wildfire-test-pe-file.exe | u_47541182333 | High Tech | us | 51a93620c2c1456081f91bad64e537724a0d93dcf55face4f1d33df9a91486f1 | 2019-09-17T06:05:21 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file.exe | u_47518135653 | High Tech | us | b39a6bf99de8dd7e55d22ee0732ea3582536a0615dab86e3d36010fe0d4ecf2a | 2019-09-17T02:04:56 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file.exe | u_47516600663 | High Tech | us | 7078f4e2c5d8038bd875e3a6dfd09c9014573c5d3c155f27c3acd1073c05d16f | 2019-09-17T01:46:01 | Commodity.WildFireTest | Manual API |  |
-| wildfire-test-pe-file.exe | u_47561050553 | High Tech | us | c14646114c390027d373cbd5af7d31d952ab6acd86d5157bb174b19792e557f2 | 2019-09-17T08:14:56 | 41453.TestElena,<br>Commodity.WildFireTest | Manual API |  |
+| wildfire-test-pe-file.exe | u_47561050553 | High Tech | us | c14646114c390027d373cbd5af7d31d952ab6acd86d5157bb174b19792e557f2 | 2019-09-17T08:14:56 | 41453.TestElena,Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file.exe | u_47517909453 | High Tech | us | 2499501bebcc6ff59d3f0028f760e0433ee3a9415e916d1278a70c474690869d | 2019-09-17T02:02:46 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file.exe | u_47559447933 | High Tech | us | 12f198c65cbdf49972b7432291dad4d2fae7cbb77a35cda1cc28ab2b83d1e2b5 | 2019-09-17T08:08:39 | Commodity.WildFireTest | Manual API |  |
-| https://wildfire.paloaltonetworks.com/publicapi/test/pe | u_46060032683 | High Tech | us | 2e40edcf77d95173463ca4bfaf833a6a1860ffa4e7b03c3fded8de08ee2be27f | 2019-09-01T04:34:48 | Commodity.WildFireTest | Manual API |  |
+| https:/<span>/wildfire.paloaltonetworks.com/publicapi/test/pe | u_46060032683 | High Tech | us | 2e40edcf77d95173463ca4bfaf833a6a1860ffa4e7b03c3fded8de08ee2be27f | 2019-09-01T04:34:48 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (2).exe | u_45811064553 | High Tech | us | f27069e200ed14c56b1b91285ea3c061aa0e4ca53d9056fed9cc0c9c3e98e961 | 2019-08-28T21:17:33 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (2).exe | u_45810946733 | High Tech | us | f27069e200ed14c56b1b91285ea3c061aa0e4ca53d9056fed9cc0c9c3e98e961 | 2019-08-28T21:14:17 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (2).exe | u_45810992703 | High Tech | us | f27069e200ed14c56b1b91285ea3c061aa0e4ca53d9056fed9cc0c9c3e98e961 | 2019-08-28T21:15:31 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (2).exe | u_45811012343 | High Tech | us | f27069e200ed14c56b1b91285ea3c061aa0e4ca53d9056fed9cc0c9c3e98e961 | 2019-08-28T21:16:06 | Commodity.WildFireTest | Manual API |  |
-| https://wildfire.paloaltonetworks.com/publicapi/test/pe | u_45835887733 | High Tech | us | bfdc97ecc0d1e19d17cffe856b33c41883520d7b38daa77af03bb42ef83bc680 | 2019-08-29T05:19:21 | Commodity.WildFireTest | Manual API |  |
+| https:/<span>/wildfire.paloaltonetworks.com/publicapi/test/pe | u_45835887733 | High Tech | us | bfdc97ecc0d1e19d17cffe856b33c41883520d7b38daa77af03bb42ef83bc680 | 2019-08-29T05:19:21 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (3).exe | u_45811604063 | High Tech | us | 409eb2fa745b4bd804bb3ebdd48f0107bd9c6471a9447a61f68c1a32c480f0f9 | 2019-08-28T21:32:05 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (3).exe | u_45811375593 | High Tech | us | 409eb2fa745b4bd804bb3ebdd48f0107bd9c6471a9447a61f68c1a32c480f0f9 | 2019-08-28T21:25:36 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (3).exe | u_45811208463 | High Tech | us | 409eb2fa745b4bd804bb3ebdd48f0107bd9c6471a9447a61f68c1a32c480f0f9 | 2019-08-28T21:20:56 | Commodity.WildFireTest | Manual API |  |
 
 
-### 5. Get session details
+### Get session details
 ---
-Returns session details by session ID
+Returns session details by session ID.
 
 ##### Base Command
 
@@ -413,26 +416,28 @@ Returns session details by session ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| session_id | The session ID. | Required | 
+| session_id | The ID of the session. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.Sessions.FileName | String | The file name. | 
-| AutoFocus.Sessions.ID | String | The session ID. | 
+| AutoFocus.Sessions.FileName | String | The name of the file. | 
+| AutoFocus.Sessions.ID | String | The ID of the session. | 
 | AutoFocus.Sessions.Industry | String | The related industry. | 
-| AutoFocus.Sessions.Region | String | Session regions. | 
-| AutoFocus.Sessions.SHA256 | String | TheSHA256 hash of the file. | 
-| AutoFocus.Sessions.Seen | Date | Seen date. | 
+| AutoFocus.Sessions.Region | String | The session's regions. | 
+| AutoFocus.Sessions.SHA256 | String | The SHA256 hash of the file. | 
+| AutoFocus.Sessions.Seen | Date | The seen date. | 
 | AutoFocus.Sessions.UploadSource | String | The source that uploaded the sample. | 
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 
 
 ##### Command Example
-```!autofocus-get-session-details session_id="u_39605858263"```
+```
+!autofocus-get-session-details session_id="u_39605858263"
+```
 
 ##### Context Example
 ```
@@ -458,45 +463,48 @@ Returns session details by session ID
 ```
 
 ##### Human Readable Output
-### Session u_39605858263:
+##### Session u_39605858263:
 |FileName|ID|Industry|Region|SHA256|Seen|UploadSource|
 |---|---|---|---|---|---|---|
 | wildfire-test-apk-file.apk | u_39605858263 | High Tech | us | 8d4241654449c63f70dabd83483f8ca8bd8e8e6a8d0679639eb061b3b6dbcfec | 2019-05-29T15:25:26 | Manual API |
 
 
-### 6. Get analysis details
+### Get analysis details
 ---
-Returns properties, behaviors, and activities observed for a sample. Run the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
+Returns properties, behaviors, and activities observed for a sample. Runs the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
 
 ##### Base Command
 
 `autofocus-sample-analysis`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sample_id | The SHA256 hash of the sample to analyze. | Required | 
 | os | The analysis environment. Can be "win7", "winxp", "android", "static_analyzer", "mac", or "bare_metal". | Optional | 
-| filter_data | Whether to smartly filter the data. If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance. We recommend setting this to "True". | Optional | 
+| filter_data | Whether to smartly filter the data. If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance. The recommended setting is "True". | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.SampleAnalysis.Analysis.Http | Unknown | HTTP requests made when the sample was executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Coverage | Unknown | WildFire signatures that matched to the sample. | 
-| AutoFocus.SampleAnalysis.Analysis.Behavior | Unknown | Sample behavior: created or modified files, started a process, spawned new processes, modified the registry, or installed browser help objects. | 
-| AutoFocus.SampleAnalysis.Analysis.Registry | Unknown | Registry settings and options that showed activity when the sample was executed in the analysis environment. | 
-| AutoFocus.SampleAnalysis.Analysis.Files | Unknown | Files that showed activity as a result of the sample being executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Processes | Unknown | Processes that showed activity when the sample was executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Connections | Unknown | Connections to other hosts on the network when the sample was executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Dns | Unknown | DNS activity observed when the sample was executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Mutex | Unknown | The mutex created when the programs start is listed with the parent process if the sample generates other program threads when executed in the analysis environment. | 
+| AutoFocus.SampleAnalysis.Analysis.Http | Unknown | The HTTP requests made when the sample was executed. | 
+| AutoFocus.SampleAnalysis.Analysis.Coverage | Unknown | The WildFire signatures that matched the sample. | 
+| AutoFocus.SampleAnalysis.Analysis.Behavior | Unknown | The sample behavior: created or modified files, started a process, spawned new processes, modified the registry, or installed browser help objects. | 
+| AutoFocus.SampleAnalysis.Analysis.Registry | Unknown | The registry settings and options that showed activity when the sample was executed in the analysis environment. | 
+| AutoFocus.SampleAnalysis.Analysis.Files | Unknown | The files that showed activity as a result of the sample being executed. | 
+| AutoFocus.SampleAnalysis.Analysis.Processes | Unknown | The processes that showed activity when the sample was executed. | 
+| AutoFocus.SampleAnalysis.Analysis.Connections | Unknown | The connections to other hosts on the network when the sample was executed. | 
+| AutoFocus.SampleAnalysis.Analysis.Dns | Unknown | The DNS activity observed when the sample was executed. | 
+| AutoFocus.SampleAnalysis.Analysis.Mutex | Unknown | The mutex created when the program's start is listed with the parent process if the sample generates other program threads when executed in the analysis environment. | 
 
 
 ##### Command Example
-```!autofocus-sample-analysis sample_id=dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993```
+```
+!autofocus-sample-analysis sample_id=dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993
+```
 
 ##### Context Example
 ```
@@ -730,9 +738,9 @@ Returns properties, behaviors, and activities observed for a sample. Run the com
 ```
 
 ##### Human Readable Output
-### Sample Analysis results for dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993:### Behavior Static Analyzer:
+##### Sample Analysis results for dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993:### Behavior Static Analyzer:
 No entries
-### Behavior Win7:
+##### Behavior Win7:
 |Behavior|Risk|
 |---|---|
 |  Connected to a non-standard HTTP port | high  |
@@ -753,12 +761,12 @@ No entries
 |  Attempted to determine public IP address via IP-checking website | high  |
 |  Connected to a malicious IP | high  |
 |  Connected to a malicious URL | high  |
-### Behavior Winxp:
+##### Behavior Winxp:
 |Behavior|Risk|
 |---|---|
 |  Created or modified a file in the Windows system folder | medium  |
 |  Started a process from a user folder | low  |
-### Processes Win7:
+##### Processes Win7:
 |Action|Parent Process|
 |---|---|
 |  created  | svchost.exe  |
@@ -769,13 +777,14 @@ No entries
 |  created  | services.exe  |
 |  created  | svchost.exe  |
 |  created  | services.exe  |
-### Processes Winxp:
+##### Processes Winxp:
 |Action|Parent Process|
 |---|---|
 |  created  | explorer.exe  |
 |  created  | svchost.exe  |
 |  created  | winlogon.exe  |
-### Files Win7:
+##### Files Win7:
+
 |Action|Parent Process|
 |---|---|
 |  Create  | svchost.exe  |
@@ -786,9 +795,11 @@ No entries
 |  Create  | na.exe  |
 |  Create  | users\administrator\sample.dll:DllInstall  |
 |  Create  | users\administrator\sample.dll:DllInstall  |
-### Files Winxp:
+##### Files Winxp:
 No entries
-### Registry Win7:
+###
+33 Registry Win7:
+
 |Action|Parameters|
 |---|---|
 |  CreateKey  |  HKLM\System\CurrentControlSet\Services\Tcpip\Parameters |
@@ -801,34 +812,35 @@ No entries
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall  |
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{5129CAA8-E24B-2AEE-652F-C652FBF1E9BB}  |
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\$(brand_name)  |
-### Registry Winxp:
+##### Registry Winxp:
 |Action|Parameters|
 |---|---|
 |  SetValueKey  |  HKCU\SessionInformation\ProgramCount  |
 |  SetValueKey  |  HKLM\SOFTWARE\Microsoft\WBEM\CIMOM\List of event-active namespaces  |
 |  SetValueKey  |  HKCU\SessionInformation\ProgramCount  |
 |  SetValueKey  |  HKLM\SOFTWARE\Microsoft\WZCSVC\Parameters\Interfaces\ActiveSettings  |
-### Mutex Win7:
+##### Mutex Win7:
 |Action|Parameters|Process|
 |---|---|---|
 |  CreateMutexW  |  Global\_MSIExecute | msiexec.exe  |
-### Http Win7:
+##### Http Win7:
 |Host|Method|Url|
 |---|---|---|
 | sp1.eventincoandhar.info  |  POST  |  /  |
 | ip-api.com  |  GET  |  /json  |
 | knsemis.com  |  POST  |  /tickets  |
-| www.cnn.com  |  HEAD  |  /  |
-| www.bbc.com  |  HEAD  |  /  |
+| www.<span>cnn.com  |  HEAD  |  /  |
+| www.<span>bbc.com  |  HEAD  |  /  |
 
 
-### 7. autofocus-tag-details
+### Get tag details
 ---
 Returns details about the given tag.
 
 ##### Base Command
 
 `autofocus-tag-details`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -844,17 +856,19 @@ Returns details about the given tag.
 | AutoFocus.Tag.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
 | AutoFocus.Tag.Count | Number | The number of samples that matched this tag. | 
 | AutoFocus.Tag.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.Tag.TagDefinitionScope | String | The scope of the tag ("public", "private", or "Unit42"). | 
+| AutoFocus.Tag.TagDefinitionScope | String | The scope of the tag. Can be "public", "private", or "Unit42". | 
 | AutoFocus.Tag.CustomerName | String | The organization that created the tag. | 
 | AutoFocus.Tag.Source | String | The organization or individual that discovered the threat that is defined in the tag. | 
 | AutoFocus.Tag.TagClass | String | The classification of the tag. | 
-| AutoFocus.Tag.TagDefinitionStatus | String | The status of the tag definition ("enabled", "disabled", "removing", or "rescoping"). | 
+| AutoFocus.Tag.TagDefinitionStatus | String | The status of the tag definition. Can be "enabled", "disabled", "removing", or "rescoping". | 
 | AutoFocus.Tag.TagGroup | String | The tag group of the tag. | 
-| AutoFocus.Tag.Description | String | Tag description. | 
+| AutoFocus.Tag.Description | String | The tag description. | 
 
 
 ##### Command Example
-```!autofocus-tag-details tag_name=490082.Pastebin_Raw```
+```
+!autofocus-tag-details tag_name=490082.Pastebin_Raw
+```
 
 ##### Context Example
 ```
@@ -875,41 +889,50 @@ Returns details about the given tag.
 ```
 
 ##### Human Readable Output
-### Tag 490082.Pastebin_Raw details:
+##### Tag 490082.Pastebin_Raw details:
 |Count|Customer Name|Description|Lasthit|Public Tag Name|Source|Tag Class|Tag Definition Scope|Tag Definition Status|Tag Name|
 |---|---|---|---|---|---|---|---|---|---|
 | 84674 | Squadra Solutions | Malicious actors may post raw code to Pastebin which can then be downloaded for further use or as a C2 channel. Some code are also encoded in base64 for further obfuscation | 2020-01-02 05:22:18 | 490082.Pastebin_Raw | Squadra Solutions | malicious_behavior | public | enabled | Pastebin_Raw |
 
 
-### 8. autofocus-top-tags-search
+### Search for the most popular tags
 ---
 Performs a search to identify the most popular tags.
 
 ##### Base Command
 
 `autofocus-top-tags-search`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scope | Scope of the search. Can be "industry", "organization", "all", or "global". | Required | 
-| class | Tag class. - Malware Family: group of malware that have shared properties or common functions. - Campaign:  targeted attack, which might include several incidents or sets of activities. - Actor: individual or group that initiates a campaign using malware families. - Exploit: an attack, which takes advantage of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system. - Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised. | Required | 
-| private | Whether the tag scope is "private". If "True", the tag scope is private. Default is "False". | Optional | 
-| public | Whether the tag scope is "public". If "True", the tag scope is public. Default is "False". | Optional | 
-| commodity | Whether the tag scope is "commodity". If "True", the tag scope is commodity. Default is "False". | Optional | 
-| unit42 | Whether the tag scope is "Unit42". If "True", the tag scope is unit42. Default is "False". | Optional | 
+| scope | The scope of the search. Can be "industry", "organization", "all", or "global". | Required | 
+| class | The tag class. Can be "Malware Family", "Campaign", "Actor", "Exploit", or Malicious Behavior". See **Tag Classes** below for more information.  | Required | 
+| private | Whether the tag scope is "private". If "True", the tag scope is private. The default is "False". | Optional | 
+| public | Whether the tag scope is "public". If "True", the tag scope is public. The default is "False". | Optional | 
+| commodity | Whether the tag scope is "commodity". If "True", the tag scope is commodity. The default is "False". | Optional | 
+| unit42 | Whether the tag scope is "Unit42". If "True", the tag scope is unit42. The default is "False". | Optional | 
 
+##### Tag Classes
+- Malware Family: group of malware that have shared properties or common functions. 
+- Campaign:  targeted attack, which might include several incidents or sets of activities. 
+- Actor: individual or group that initiates a campaign using malware families. 
+- Exploit: an attack, which takes advantage of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system. 
+- Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised.
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.TopTagsSearch.AFCookie | String | AutoFocus search ID. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
-| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| AutoFocus.TopTagsSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
+| AutoFocus.TopTagsSearch.Status | String | The status of the search. Can be "in progress" or "complete". | 
 
 
 ##### Command Example
-```!autofocus-top-tags-search scope="all" class="Malicious Behavior" private="True" public="True" commodity="False" unit42="False"```
+```
+!autofocus-top-tags-search scope="all" class="Malicious Behavior" private="True" public="True" commodity="False" unit42="False"
+```
 
 ##### Context Example
 ```
@@ -922,13 +945,13 @@ Performs a search to identify the most popular tags.
 ```
 
 ##### Human Readable Output
-### Top tags search Info:
+##### Top tags search Info:
 |AFCookie|Status|
 |---|---|
 | 2-1caadf19-2e94-4742-b9cf-da8b2d90988c+0 | in progress |
 
 
-### 9. autofocus-top-tags-results
+### Get results of a top tags search
 ---
 Returns the results of a previous top tags search.
 
@@ -939,7 +962,7 @@ Returns the results of a previous top tags search.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| af_cookie | The AF Cookie for retrieving results of previous search. Note: The AF Cookie expires 120 seconds after the search completes. | Required | 
+| af_cookie | The AF Cookie for retrieving results of the previous search. The AF Cookie expires 120 seconds after the search completes. | Required | 
 
 
 ##### Context Output
@@ -954,7 +977,9 @@ Returns the results of a previous top tags search.
 
 
 ##### Command Example
-```!autofocus-top-tags-results af_cookie=2-2190f844-7c0a-42e7-b4be-5f7d83c9b05c+0```
+```
+!autofocus-top-tags-results af_cookie=2-2190f844-7c0a-42e7-b4be-5f7d83c9b05c+0
+```
 
 ##### Context Example
 ```
@@ -1089,7 +1114,7 @@ Returns the results of a previous top tags search.
 ```
 
 ##### Human Readable Output
-### Search Top Tags Results is in progress:
+##### Search Top Tags Results is in progress:
 |Count|Lasthit|Public Tag Name|Tag Name|
 |---|---|---|---|
 | 84674 | 2020-01-02 05:22:18 | 490082.Pastebin_Raw | Pastebin_Raw |
@@ -1114,9 +1139,9 @@ Returns the results of a previous top tags search.
 | 2578 | 2020-01-01 21:28:20 | 46640.MSIEXEC_Web_Install | MSIEXEC_Web_Install |
 
 
-### 10. Get the reputation for an IP address
+### Get the reputation for an IP address
 ---
-Checks the reputation of an IP address in AutoFocus.
+Returns the reputation of an IP address.
 
 ##### Base Command
 
@@ -1125,7 +1150,7 @@ Checks the reputation of an IP address in AutoFocus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to check. | Required | 
+| ip | The IP address to check. | Required | 
 
 
 ##### Context Output
@@ -1137,11 +1162,11 @@ Checks the reputation of an IP address in AutoFocus.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | IP.Address | String | The IP address. | 
-| AutoFocus.IP.IndicatorValue | String | The IP address. | 
+| AutoFocus.IP.IndicatorValue | String | The IP address value. | 
 | AutoFocus.IP.IndicatorType | String | The indicator type. | 
-| AutoFocus.IP.LatestPanVerdicts | Unknown | Latest verdicts from Palo Alto Networks products. Can be either PAN_DB or WF_SAMPLE(WildFire). | 
-| IP.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
-| AutoFocus.IP.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
+| AutoFocus.IP.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
+| IP.Malicious.Vendor | String | The vendor that decided the file is malicious. | 
+| AutoFocus.IP.Tags.PublicTagName | String | The public name of the tag. This is used as the tag ID. | 
 | AutoFocus.IP.Tags.TagName | String | The simple name of the tag. | 
 | AutoFocus.IP.Tags.CustomerName | String | The organization that created the tag. | 
 | AutoFocus.IP.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. | 
@@ -1150,11 +1175,13 @@ Checks the reputation of an IP address in AutoFocus.
 | AutoFocus.IP.Tags.TagClassID | Number | The classification ID of the tag. | 
 | AutoFocus.IP.Tags.Count | Number | The number of samples that matched this tag. | 
 | AutoFocus.IP.Tags.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.IP.Tags.Description | String | The tag description. | 
+| AutoFocus.IP.Tags.Description | String | The description of the tag. | 
 
 
 ##### Command Example
-```!ip ip=127.0.0.1 using-brand="AutoFocus V2"```
+```
+!ip ip=127.0.0.1 using-brand="AutoFocus V2"
+```
 
 ##### Context Example
 ```
@@ -1187,15 +1214,15 @@ Checks the reputation of an IP address in AutoFocus.
 ```
 
 ##### Human Readable Output
-### AutoFocus V2 IP reputation for: 127.0.0.1
+##### AutoFocus V2 IP reputation for: 127.0.0.1
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|
 | IPV4_ADDRESS | 127.0.0.1 | PAN_DB: BENIGN |  |  |
 
 
-### 11. Get the reputation of a URL
+### Get the reputation of a URL
 ---
-Checks the reputation of a URL in AutoFocus.
+Returns the reputation of a URL.
 
 ##### Base Command
 
@@ -1204,7 +1231,7 @@ Checks the reputation of a URL in AutoFocus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to check. | Required | 
+| url | The URL to check. | Required | 
 
 
 ##### Context Output
@@ -1218,8 +1245,8 @@ Checks the reputation of a URL in AutoFocus.
 | URL.Data | String | The URL address. | 
 | AutoFocus.URL.IndicatorValue | String | The URL value. | 
 | AutoFocus.URL.IndicatorType | String | The indicator type. | 
-| AutoFocus.URL.LatestPanVerdicts | Unknown | Latest verdicts from Palo Alto Networks products. Can be either PAN_DB or WF_SAMPLE(WildFire). | 
-| URL.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
+| AutoFocus.URL.LatestPanVerdicts | Unknown |The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
+| URL.Malicious.Vendor | String | The vendor that decided the file is malicious. | 
 | AutoFocus.URL.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
 | AutoFocus.URL.Tags.TagName | String | The simple name of the tag. | 
 | AutoFocus.URL.Tags.CustomerName | String | The organization that created the tag. | 
@@ -1229,11 +1256,13 @@ Checks the reputation of a URL in AutoFocus.
 | AutoFocus.URL.Tags.TagClassID | Number | The classification ID of the tag. | 
 | AutoFocus.URL.Tags.Count | Number | The number of samples that matched this tag. | 
 | AutoFocus.URL.Tags.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.URL.Tags.Description | String | The tag description. | 
+| AutoFocus.URL.Tags.Description | String | The description of the tag. | 
 
 
 ##### Command Example
-```!url url=www.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ using-brand="AutoFocus V2"```
+```
+!url url=www.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ using-brand="AutoFocus V2"
+```
 
 ##### Context Example
 ```
@@ -1269,15 +1298,15 @@ Checks the reputation of a URL in AutoFocus.
 ```
 
 ##### Human Readable Output
-### AutoFocus V2 URL reputation for: www.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/
+##### AutoFocus V2 URL reputation for: www<span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|
-| URL | www.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ | PAN_DB: MALWARE |  |  |
+| URL | www<span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ | PAN_DB: MALWARE |  |  |
 
 
-### 12. Get the reputation of a file
+### Get the reputation of a file
 ---
-Checks the reputation of a file in AutoFocus.
+Returns the reputation of a file.
 
 ##### Base Command
 
@@ -1297,11 +1326,11 @@ Checks the reputation of a file in AutoFocus.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
-| File.SHA256 | String | SHA256 hash of the file. | 
-| AutoFocus.File.IndicatorValue | String | SHA256 of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| AutoFocus.File.IndicatorValue | String | The SHA256 hash value of the file. | 
 | AutoFocus.File.IndicatorType | String | The indicator type. | 
-| AutoFocus.File.LatestPanVerdicts | Unknown | Latest verdicts from Palo Alto Networks products. Can be either PAN_DB or WF_SAMPLE(WildFire). | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
+| AutoFocus.File.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
+| File.Malicious.Vendor | String | The vendor that decided the file is malicious. | 
 | AutoFocus.File.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
 | AutoFocus.File.Tags.TagName | String | The simple name of the tag. | 
 | AutoFocus.File.Tags.CustomerName | String | The organization that created the tag. | 
@@ -1311,11 +1340,13 @@ Checks the reputation of a file in AutoFocus.
 | AutoFocus.File.Tags.TagClassID | Number | The classification ID of the tag. | 
 | AutoFocus.File.Tags.Count | Number | The number of samples that matched this tag. | 
 | AutoFocus.File.Tags.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.File.Tags.Description | String | The tag description. | 
+| AutoFocus.File.Tags.Description | String | The description of the tag. | 
 
 
 ##### Command Example
-```!file file=9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac using-brand="AutoFocus V2"```
+```
+!file file=9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac using-brand="AutoFocus V2"
+```
 
 ##### Context Example
 ```
@@ -1355,15 +1386,17 @@ Checks the reputation of a file in AutoFocus.
 ```
 
 ##### Human Readable Output
-### AutoFocus V2 File reputation for: 9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac
+
+##### AutoFocus V2 File reputation for: 9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac
+
 |Firstseen|Indicatortype|Indicatorvalue|Lastseen|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|---|---|
 | 2019-09-24T06:46:21.000Z | FILEHASH | 9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac | 2019-12-29T08:52:27.000Z | WF_SAMPLE: MALWARE | WF_SAMPLE |  |
 
 
-### 13. Get the reputation of a domain name
+### Get the reputation of a domain name
 ---
-Checks the reputation of a domain in AutoFocus.
+Returns the reputation of a domain.
 
 ##### Base Command
 
@@ -1383,11 +1416,11 @@ Checks the reputation of a domain in AutoFocus.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
-| Domain.Name | String | The domain name. | 
-| AutoFocus.Domain.IndicatorValue | String | The domain. | 
+| Domain.Name | String | The name of the domain. | 
+| AutoFocus.Domain.IndicatorValue | String | The value of the domain. | 
 | AutoFocus.Domain.IndicatorType | String | The indicator type. | 
-| AutoFocus.Domain.LatestPanVerdicts | Unknown | Latest verdicts from Palo Alto Networks products. Can be either PAN_DB or WF_SAMPLE(WildFire). | 
-| Domain.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
+| AutoFocus.Domain.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
+| Domain.Malicious.Vendor | String | The vendor that decided the file is malicious. | 
 | AutoFocus.Domain.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
 | AutoFocus.Domain.Tags.TagName | String | The simple name of the tag. | 
 | AutoFocus.Domain.Tags.CustomerName | String | The organization that created the tag. | 
@@ -1397,7 +1430,7 @@ Checks the reputation of a domain in AutoFocus.
 | AutoFocus.Domain.Tags.TagClassID | Number | The classification ID of the tag. | 
 | AutoFocus.Domain.Tags.Count | Number | The number of samples that matched this tag. | 
 | AutoFocus.Domain.Tags.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.Domain.Tags.Description | String | The tag description. | 
+| AutoFocus.Domain.Tags.Description | String | The description of the tag. | 
 | AutoFocus.Domain.WhoisAdminCountry | String | The country of the domain administrator. | 
 | AutoFocus.Domain.WhoisAdminEmail | String | The email address of the domain administrator. | 
 | AutoFocus.Domain.WhoisAdminName | String | The name of the domain administrator. | 
@@ -1410,7 +1443,9 @@ Checks the reputation of a domain in AutoFocus.
 
 
 ##### Command Example
-```!domain domain=google.com using-brand="AutoFocus V2"```
+```
+!domain domain=google.com using-brand="AutoFocus V2"
+```
 
 ##### Context Example
 ```
@@ -1467,10 +1502,7 @@ Checks the reputation of a domain in AutoFocus.
 ```
 
 ##### Human Readable Output
-### AutoFocus V2 Domain reputation for: google.com
+##### AutoFocus V2 Domain reputation for: google.com
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Whoisadmincountry|Whoisadminemail|Whoisadminname|Whoisdomaincreationdate|Whoisdomainexpiredate|Whoisdomainupdatedate|Whoisregistrant|Whoisregistrar|Whoisregistrarurl|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | MarkMonitor Inc. | http://www.markmonitor.com |  |
-
-
-
+| DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | MarkMonitor Inc. | http:/<span>/ww<span>w.<span>markmonitor.com |  |
