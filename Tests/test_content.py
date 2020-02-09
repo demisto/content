@@ -934,7 +934,7 @@ def add_pr_comment(comment):
             raise Exception('There is more then one open pull request for branch {}.'.format(branch_name))
 
     except Exception as e:
-            print_error('Add pull request comment failed: {}'.format(e))
+        print_error('Add pull request comment failed: {}'.format(e))
 
 
 def handle_github_errors(response):
