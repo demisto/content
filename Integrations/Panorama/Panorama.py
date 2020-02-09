@@ -4630,7 +4630,7 @@ def panorama_download_latest_content_update_command():
     """
     if DEVICE_GROUP:
         raise Exception('Download latest content is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     result = panorama_download_latest_content_update_content(target)
 
     if 'result' in result['response']:
@@ -4679,7 +4679,7 @@ def panorama_content_update_download_status_command():
     """
     if DEVICE_GROUP:
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     job_id = demisto.args()['job_id']
     result = panorama_content_update_download_status(target, job_id)
 
@@ -4733,7 +4733,7 @@ def panorama_install_latest_content_update_command():
     """
     if DEVICE_GROUP:
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     result = panorama_install_latest_content_update(target)
 
     if 'result' in result['response']:
@@ -4781,7 +4781,7 @@ def panorama_content_update_install_status_command():
     """
     if DEVICE_GROUP:
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     job_id = demisto.args()['JobID']
     result = panorama_content_update_install_status(target, job_id)
 
@@ -4815,7 +4815,7 @@ def panorama_content_update_install_status_command():
 def panorama_check_latest_panos_software_command():
     if DEVICE_GROUP:
         raise Exception('Checking latest PAN-OS version is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     params = {
         'type': 'op',
         'cmd': '<request><system><software><check></check></software></system></request>',
@@ -4853,7 +4853,7 @@ def panorama_download_panos_version_command():
     """
     if DEVICE_GROUP:
         raise Exception('Downloading PAN-OS version is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     target_version = str(demisto.args()['target_version'])
     result = panorama_download_panos_version(target, target_version)
 
@@ -4900,7 +4900,7 @@ def panorama_download_panos_status_command():
     """
     if DEVICE_GROUP:
         raise Exception('PAN-OS version download status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     job_id = demisto.args()['JobID']
     result = panorama_download_panos_status(target, job_id)
     panos_download_status = {
@@ -4954,7 +4954,7 @@ def panorama_install_panos_version_command():
     """
     if DEVICE_GROUP:
         raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     target_version = str(demisto.args()['target_version'])
     result = panorama_install_panos_version(target, target_version)
 
@@ -5001,7 +5001,7 @@ def panorama_install_panos_status_command():
     """
     if DEVICE_GROUP:
         raise Exception('PAN-OS installation status status is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     job_id = demisto.args()['job_id']
     result = panorama_install_panos_status(target, job_id)
 
@@ -5035,7 +5035,7 @@ def panorama_install_panos_status_command():
 def panorama_device_reboot_command():
     if DEVICE_GROUP:
         raise Exception('Device reboot is only supported on Firewall (not Panorama).')
-    target = str(demisto.args()['target'])
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
     params = {
         'type': 'op',
         'cmd': '<request><restart><system></system></restart></request>',
