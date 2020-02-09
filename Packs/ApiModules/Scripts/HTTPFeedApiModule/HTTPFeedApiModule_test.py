@@ -100,3 +100,27 @@ def test_get_indicators_json_params():
             assert ind_type == itype
             assert ind_rawjson['value'] == ind_val
             assert ind_rawjson['type'] == ind_type
+
+
+def test_custom_fields_creator():
+    custom_fields_mapping = {
+        "old_field1": "new_field1",
+        "old_field2": "new_field2"
+    }
+    client = Client(
+        url="https://www.spamhaus.org/drop/asndrop.txt",
+        feed_url_to_config="some_stuff",
+        custom_fields_mapping=custom_fields_mapping
+    )
+
+    attributes = {
+        'old_field1': "value1",
+        'old_field2': "value2"
+    }
+
+    custom_fields = client.custom_fields_creator(attributes)
+
+    assert custom_fields.get('new_field1') == "value1"
+    assert custom_fields.get('new_field2') == "value2"
+    assert "old_field1" not in custom_fields.keys()
+    assert "old_filed2" not in custom_fields.keys()
