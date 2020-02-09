@@ -20,6 +20,10 @@ def main():
     })
     params['fields'] = fields
 
+    params['custom_fields_mapping'] = {
+        "updatedate": "updatedate"
+    }
+
     # Call the main execution of the HTTP API module.
     feed_main('BruteForceBlocker Feed', params, 'bruteforceblocker-')
 
