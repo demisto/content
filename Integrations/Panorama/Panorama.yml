@@ -2377,6 +2377,47 @@ script:
     name: panorama-unregister-ip-tag
   - arguments:
     - default: false
+      description: Tag for which to register Users.
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: Users to register.
+      isArray: true
+      name: Users
+      required: true
+      secret: false
+    deprecated: false
+    description: Registers Users to a tag.
+    execution: false
+    name: panorama-register-user-tag
+    outputs:
+    - contextPath: Panorama.DynamicTags.Tag
+      description: Name of the tag.
+      type: string
+    - contextPath: Panorama.DynamicTags.Users
+      description: Registered Users.
+      type: string
+  - arguments:
+    - default: false
+      description: Tag for which to unregister Users.
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: Users to unregister.
+      isArray: true
+      name: Users
+      required: true
+      secret: false
+    deprecated: false
+    description: Unregisters Users from a tag.
+    execution: false
+    name: panorama-unregister-user-tag    
+  - arguments:
+    - default: false
       description: Specifies the match criteria for the logs. This is similar to the
         query provided in the web interface under the Monitor tab, when viewing the
         logs.
