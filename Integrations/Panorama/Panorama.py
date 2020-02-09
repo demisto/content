@@ -4696,7 +4696,7 @@ def panorama_content_update_download_status_command():
     if result['response']['result']['job']['status'] == 'PEND':
         content_download_status['Status'] = 'Pending'
 
-    entry_context = {"PanoramaContent.Download(val.JobID == obj.JobID)": content_download_status}
+    entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": content_download_status}
     human_readable = tableToMarkdown('Content download status:', content_download_status,
                                      ['JobID', 'Status', 'Details'], removeNull=True)
 
