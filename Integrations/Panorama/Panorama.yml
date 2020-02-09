@@ -3301,7 +3301,7 @@ script:
       description: Target device.
       isArray: false
       name: target
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Download the latest content update.
@@ -3346,7 +3346,7 @@ script:
       description: Target device.
       isArray: false
       name: target
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Install the latest content update.
@@ -3391,7 +3391,7 @@ script:
       description: Target device.
       isArray: false
       name: target
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Check PAN-OS software version from repository.
@@ -3402,7 +3402,7 @@ script:
       description: Target device.
       isArray: false
       name: target
-      required: true
+      required: false
       secret: false
     - default: false
       description: The target version number to install.
@@ -3426,7 +3426,7 @@ script:
       description: Target device.
       isArray: false
       name: target
-      required: true
+      required: false
       secret: false
     - default: false
       description: JobID to check.
@@ -3453,7 +3453,7 @@ script:
       description: Target device.
       isArray: false
       name: target
-      required: true
+      required: false
       secret: false
     - default: false
       description: Target PAN-OS version to install.
@@ -3477,7 +3477,7 @@ script:
       description: Target device.
       isArray: false
       name: target
-      required: true
+      required: false
       secret: false
     - default: false
       description: JobID to check.
@@ -3501,7 +3501,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Target device
+      description: Target device.
       isArray: false
       name: target
       required: false
