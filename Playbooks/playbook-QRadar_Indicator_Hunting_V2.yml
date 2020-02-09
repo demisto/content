@@ -1537,6 +1537,7 @@ tasks:
     task:
       id: 00e1d579-b406-4db4-8af2-27369eee70f3
       version: -1
+      description: ''
       name: Are there detected IP addresses?
       type: condition
       iscommand: false
