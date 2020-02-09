@@ -10,11 +10,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "7"
+    taskid: 15ae4517-3f52-4ed4-a903-deec4860cd4f
     type: start
     task:
       elasticcommonfields: {}
-      id: "7"
+      id: 15ae4517-3f52-4ed4-a903-deec4860cd4f
       version: -1
       name: ""
       iscommand: false
@@ -37,11 +37,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: "8"
+    taskid: 15ae4517-3f52-4ed4-8a03-deec4860dc4f
     type: regular
     task:
       elasticcommonfields: {}
-      id: "8"
+      id: 15ae4517-3f52-4ed4-8a03-deec4860dc4f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -110,11 +110,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: "10"
+    taskid: 15ae4517-3f52-4ed4-8a03-deec4860cdf4
     type: condition
     task:
       elasticcommonfields: {}
-      id: "10"
+      id: 15ae4517-3f52-4ed4-8a03-deec4860cdf4
       version: -1
       name: Verify Outputs
       type: condition
@@ -156,11 +156,11 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: "11"
+    taskid: 15ae4517-3f52-4ed4-8a02-deec4860cd4f
     type: title
     task:
       elasticcommonfields: {}
-      id: "11"
+      id: 15ae4517-3f52-4ed4-8a02-deec4860cd4f
       version: -1
       name: Done
       type: title

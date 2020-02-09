@@ -1,24 +1,23 @@
-from SearchIncidents import *
+from SearchIncidentsV2 import *
 import pytest
 
 data_test_check_if_found_incident = [
     ([], 'failed to get incidents from demisto.\nGot: []'),
     (None, 'failed to get incidents from demisto.\nGot: None'),
     ('', 'failed to get incidents from demisto.\nGot: '),
-    ([{'Contents': {'data': None}}], 'Incidents not found.'),
-    ([{'Contents': {'data': 'test'}}], None),
-    ([{'Contents': {'test': 'test'}}], {'test': 'test'}),
+    ([{'Contents': {'data': None}}], False),
+    ([{'Contents': {'data': 'test'}}], True),
+    ([{'Contents': {'test': 'test'}}], "{'test': 'test'}"),
 ]
 
 
 @pytest.mark.parametrize('_input, expected_output', data_test_check_if_found_incident)
 def test_check_if_found_incident(_input, expected_output):
-    output = str(None)
     try:
-        check_if_found_incident(_input)
+        output = check_if_found_incident(_input)
     except DemistoException as error:
         output = str(error)
-    assert output == str(expected_output), f'check_if_found_incident({_input}) returns: {output}. expected: {expected_output}'
+    assert output == expected_output, f'check_if_found_incident({_input}) returns: {output}. expected: {expected_output}'
 
 
 data_test_is_valid_args = [
