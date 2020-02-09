@@ -65,6 +65,7 @@ tasks:
       id: 0b958771-7e06-4239-899f-f7d133be6938
       version: -1
       name: Block accounts
+      description: ""
       type: title
       iscommand: false
       brand: ""

@@ -3504,6 +3504,9 @@ def panorama_register_ip_tag_command():
     """
     Register IPs to a Tag
     """
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:
+        raise Exception('The type and categories arguments are only relevant for PAN-OS 9.X and above versions.')
     tag = demisto.args()['tag']
     ips = argToList(demisto.args()['IPs'])
 
@@ -3565,6 +3568,9 @@ def panorama_unregister_ip_tag_command():
     """
     Register IPs to a Tag
     """
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:
+        raise Exception('The type and categories arguments are only relevant for PAN-OS 9.X and above versions.')
     tag = demisto.args()['tag']
     ips = argToList(demisto.args()['IPs'])
 
@@ -3590,8 +3596,8 @@ def panorama_register_user_tag(tag: str, users: List):
 
     params = {
         'type': 'user-id',
-        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register-user>' + entry
-               + '</register-user></payload></uid-message>',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register-user>{entry}'
+               f'</register-user></payload></uid-message>',
         'key': API_KEY
     }
 
@@ -3612,8 +3618,6 @@ def panorama_register_user_tag_command():
     users = argToList(demisto.args()['Users'])
 
     result = panorama_register_user_tag(tag, users)
-
-    registered_user: Dict[str, str] = {}
 
     # get existing Users for this tag
     context_users = demisto.dt(demisto.context(), 'Panorama.DynamicTags(val.Tag ==\"' + tag + '\").Users')
@@ -3644,12 +3648,12 @@ def panorama_register_user_tag_command():
 def panorama_unregister_user_tag(tag: str, users: list):
     entry = ''
     for user in users:
-        entry += '<entry user=\"' + user + '\"><tag><member>' + tag + '</member></tag></entry>'
+        entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
 
     params = {
         'type': 'user-id',
-        'cmd': '<uid-message><version>2.0</version><type>update</type><payload><unregister-user>' + entry
-               + '</unregister-user></payload></uid-message>',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><unregister-user>{entry}'
+               f'</unregister-user></payload></uid-message>',
         'key': API_KEY
     }
     result = http_request(

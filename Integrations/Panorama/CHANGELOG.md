@@ -1,5 +1,7 @@
 ## [Unreleased]
-
+  - Added 2 new commands:
+    - ***panorama-register-user-tag***
+    -***panorama-unregister-user-tag***
 
 ## [20.1.2] - 2020-01-22
 Fixed an issue where trying to download a filter-pcap with the necessary arguments did not return the correct results.
