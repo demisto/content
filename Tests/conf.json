@@ -196,8 +196,9 @@
             "playbookID": "Minerva Test playbook"
         },
         {
-            "integrations": "SSLBL Feed",
-            "playbookID": "sslbl test"
+            "integrations": "SSL Blacklist Feed",
+            "playbookID": "SSL Blacklist test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "CheckPhish",
