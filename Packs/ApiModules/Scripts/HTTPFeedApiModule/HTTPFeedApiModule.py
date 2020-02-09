@@ -224,11 +224,7 @@ class Client(BaseClient):
             if attribute in self.custom_fields_mapping.keys():
                 created_custom_fields[self.custom_fields_mapping[attribute]] = attributes[attribute]
 
-        if len(created_custom_fields.keys()) > 0:
-            return None
-
-        else:
-            return created_custom_fields
+        return created_custom_fields
 
 
 def get_indicator_fields(line, url, client: Client):
