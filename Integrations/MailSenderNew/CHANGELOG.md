@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Fixed an issue where attachments would sometime appear empty.
+Fixed an issue where in some cases, attachments display empty.
 
 ## [19.11.0] - 2019-11-12
  - Added support for versions of *smtplib* that use stderr from sys.
