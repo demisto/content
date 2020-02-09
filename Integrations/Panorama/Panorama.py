@@ -4782,7 +4782,7 @@ def panorama_content_update_install_status_command():
     if DEVICE_GROUP:
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
     target = str(demisto.args()['target']) if 'target' in demisto.args() else None
-    job_id = demisto.args()['JobID']
+    job_id = demisto.args()['job_id']
     result = panorama_content_update_install_status(target, job_id)
 
     content_install_status = {
