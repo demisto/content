@@ -204,12 +204,10 @@ def fetch_indicators_from_file(args):
         if is_error(res[0]):
             errors.append("Error creating indicator - {}".format(res[0]["Contents"]))
 
-        if errors:
-            return_error(json.dumps(errors, indent=4))
+    if errors:
+        return_error(json.dumps(errors, indent=4))
 
-    return human_readable, {
-        "Indicator(val.Value == obj.Value && val.Type == obj.Type)": hr_indicators_list
-    }, indicator_list
+    return human_readable, None, indicator_list
 
 
 def main():
