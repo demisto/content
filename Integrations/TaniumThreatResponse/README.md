@@ -329,7 +329,7 @@ Update the state of a single alert.
     "Tanium": {
         "Alert": {
             "AlertedAt": "2019-09-22T14:01:31.000Z",
-            "ComputerIpAddress": "172.31.38.159",
+            "ComputerIpAddress": "172.0.0.0",
             "ComputerName": "EC2AMAZ-KGMRO60",
             "CreatedAt": "2019-09-22T14:01:59.768Z",
             "GUID": "a33e3482-556e-4e9d-bbbd-2fdbe330d492",
@@ -349,7 +349,7 @@ Update the state of a single alert.
 ### Alert state updated to Unresolved
 |ID|Name|Type|Severity|Priority|AlertedAt|CreatedAt|UpdatedAt|ComputerIpAddress|ComputerName|GUID|State|IntelDocId|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 |  | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2020-02-05T14:55:41.440Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
+| 1 |  | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2020-02-05T14:55:41.440Z | 172.0.0.0 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
 
 
 ### tanium-tr-list-snapshots
