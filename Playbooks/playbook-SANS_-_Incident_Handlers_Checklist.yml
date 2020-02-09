@@ -1205,8 +1205,8 @@ tasks:
     task:
       id: 719492f3-eb85-4255-8a6f-bd2f52644244
       version: -1
-      name: SANS - Lessons Leraned
-      playbookName: SANS - Lessons Leraned
+      name: SANS - Lessons Learned
+      playbookName: SANS - Lessons Learned
       description: ""
       type: playbook
       iscommand: false
