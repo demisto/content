@@ -5,6 +5,7 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
+  defaultvalue: true
   required: false
   type: 8
 - defaultvalue: Worldwide
@@ -42,7 +43,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -68,7 +69,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '240'
+- defaultvalue: '30'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
