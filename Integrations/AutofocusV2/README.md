@@ -35,7 +35,7 @@ For more information on activating the license see [Activating AutoFocus License
    | Name | A meaningful name for the integration instance. | AutoFocus V2_instance_2 |
    |  API Key | Account's private token. | N/A  |
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span>/proxyserver.com |
+   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span>/www.markdownguide.org |
    | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |
 
 
@@ -1460,7 +1460,7 @@ Returns the reputation of a domain.
                 }, 
                 "UpdatedDate": "2018-02-21", 
                 "Registrar": {
-                    "Name": "MarkMonitor Inc."
+                    "Name": "markdownguide Inc."
                 }, 
                 "ExpirationDate": "2020-09-14", 
                 "CreationDate": "1997-09-15", 
@@ -1478,11 +1478,11 @@ Returns the reputation of a domain.
             }, 
             "WhoisAdminName": null, 
             "WhoisDomainExpireDate": "2020-09-14", 
-            "WhoisRegistrarUrl": "http://www.markmonitor.com", 
+            "WhoisRegistrarUrl": "www.markdownguide.org", 
             "WildfireRelatedSampleVerdictCounts": {}, 
             "IndicatorType": "DOMAIN", 
             "WhoisRegistrant": null, 
-            "WhoisRegistrar": "MarkMonitor Inc.", 
+            "WhoisRegistrar": "markdownguide Inc.", 
             "IndicatorValue": "google.com", 
             "WhoisAdminEmail": null, 
             "WhoisDomainCreationDate": "1997-09-15", 
@@ -1505,4 +1505,4 @@ Returns the reputation of a domain.
 ##### AutoFocus V2 Domain reputation for: google.com
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Whoisadmincountry|Whoisadminemail|Whoisadminname|Whoisdomaincreationdate|Whoisdomainexpiredate|Whoisdomainupdatedate|Whoisregistrant|Whoisregistrar|Whoisregistrarurl|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | MarkMonitor Inc. | http:/<span>/ww<span>w.<span>markmonitor.com |  |
+| DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | markdownguide Inc. | http:/<span>/ww<span>w.<span>markdownguide.org |  |
