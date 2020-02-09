@@ -196,6 +196,10 @@
             "playbookID": "Minerva Test playbook"
         },
         {
+            "integrations": "SSLBL Feed",
+            "playbookID": "sslbl test"
+        },
+        {
             "integrations": "CheckPhish",
             "playbookID": "CheckPhish-Test"
         },
