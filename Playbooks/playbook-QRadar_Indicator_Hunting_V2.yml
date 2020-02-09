@@ -50,7 +50,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -250,
+          "x": -200,
           "y": 200
         }
       }
@@ -76,7 +76,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
+          "x": 1430,
           "y": 200
         }
       }
@@ -138,7 +138,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
+          "x": 1430,
           "y": 320
         }
       }
@@ -186,8 +186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -250,
-          "y": 310
+          "x": -200,
+          "y": 340
         }
       }
     note: false
@@ -265,110 +265,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '17':
-    id: '17'
-    taskid: 18c3a3b4-bcbd-485b-8073-6fc06cc46d7c
-    type: playbook
-    task:
-      id: 18c3a3b4-bcbd-485b-8073-6fc06cc46d7c
-      version: -1
-      name: QRadarFullSearch
-      description: ''
-      playbookName: QRadarFullSearch
-      type: playbook
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '164'
-    scriptarguments:
-      headers: {}
-      interval:
-        simple: '1'
-      query_expression:
-        complex:
-          root: DomainURL
-          transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) ILIKE  '%$1%'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
-      range: {}
-      timeout:
-        simple: '600'
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 3340,
-          "y": 1440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '21':
     id: '21'
     taskid: e7203955-98bc-4bf7-8bfa-cf02c075fece
@@ -418,6 +314,8 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '164'
       'yes':
       - '21'
     separatecontext: false
@@ -504,6 +402,8 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '164'
       'yes':
       - '31'
     separatecontext: false
@@ -581,8 +481,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -250,
-          "y": 650
+          "x": -200,
+          "y": 680
         }
       }
     note: false
@@ -601,6 +501,8 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '164'
       'yes':
       - '41'
     separatecontext: false
@@ -615,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -250,
-          "y": 765
+          "x": -200,
+          "y": 800
         }
       }
     note: false
@@ -689,7 +591,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1440,
+          "x": 1430,
           "y": 910
         }
       }
@@ -1019,10 +921,10 @@ tasks:
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
-      description: ''
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '164'
@@ -1455,6 +1357,110 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '17':
+    id: '17'
+    taskid: 18c3a3b4-bcbd-485b-8073-6fc06cc46d7c
+    type: playbook
+    task:
+      id: 18c3a3b4-bcbd-485b-8073-6fc06cc46d7c
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '164'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: DomainURL
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: UTF8(payload) ILIKE  '%$1%'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 3340,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   '120':
     id: '120'
     taskid: c9dc2f71-ce91-4420-8a59-0fe74f3a9790
@@ -1657,10 +1663,10 @@ tasks:
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
-      description: ''
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '164'
@@ -1774,10 +1780,10 @@ tasks:
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
-      description: ''
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '164'
@@ -1877,10 +1883,10 @@ tasks:
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
-      description: ''
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '164'
@@ -1994,10 +2000,10 @@ tasks:
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
-      description: ''
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '164'
@@ -2111,10 +2117,10 @@ tasks:
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
-      description: ''
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '164'
@@ -2213,10 +2219,10 @@ tasks:
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
-      description: ''
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '164'
@@ -2316,10 +2322,10 @@ tasks:
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
-      description: ''
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '164'
