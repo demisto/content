@@ -9,11 +9,11 @@ tasks:
     id: "0"
     taskid: ad1b6cae-2f83-4d07-8dba-6fb036ac4ae9
     type: start
-    description: ""
     task:
       id: ad1b6cae-2f83-4d07-8dba-6fb036ac4ae9
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -146,3 +146,5 @@ inputs:
   required: true
   description: Name of the PAN-OS Integration instance for the firewall to upgrade
 outputs: []
+tests:
+  - No Tests
