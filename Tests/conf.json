@@ -2220,6 +2220,7 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0"
         }
