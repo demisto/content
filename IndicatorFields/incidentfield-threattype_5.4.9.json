@@ -42,5 +42,5 @@
     "threshold": 72,
     "breachScript": "",
     "validatedError": "",
-    "fromVersion": "5.4.9"
+    "toVersion": "5.4.9"
 }
