@@ -11,8 +11,10 @@ urllib3.disable_warnings()
 
 DEFAULT_LIMIT = 50
 MAX_LOGZIO_DOCS = 1000
+ONE_MINUTE = 60
+ONE_HOUR = ONE_MINUTE * 60
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-TRIGGERED_ALERTS_ENDPOINT_SUFFIX = "v1/alerts/triggered-alerts"
+TRIGGERED_ALERTS_ENDPOINT_SUFFIX = "v2/security/rules/events/search"  # "v1/alerts/triggered-alerts"
 SEARCH_API_SUFFIX = "v1/search"
 
 
@@ -25,26 +27,40 @@ class Client:
         self.verify = verify
         self.proxies = proxies
 
-
-    def fetch_triggered_rules(self, search=None, severities=None, tags=None):
+    def fetch_triggered_rules(self, search=None, severities=None, tags=None, start_time=time.time()):
         url = self.get_triggered_alerts_api()
         payload = {
-            "size": 50,
-            "sortBy": "DATE",
-            "sortOrder": "DESC",
-            "search": search,
-            "severities": severities,
-            "tags": tags
+            "pagination": {
+                "pageNumber": 1,
+                "pageSize": 50
+            },
+            "sort": [
+                {
+                    "field": "DATE",
+                    "descending": False
+                }
+            ],
+            "tags": tags,
+            "filter": {
+                "searchTerm": search,
+                "severities": severities,
+                "timeRange": {
+                    "fromDate": start_time,
+                    "toDate": time.time() - (ONE_MINUTE * 3)
+                }
+            }
         }
+        remove_nulls_from_dictionary(payload["filter"])
         remove_nulls_from_dictionary(payload)
         payload_string = json.dumps(payload)
-
+        print(payload_string)
         headers = {
             'X-API-TOKEN': self.security_api_token,
             'Content-Type': "application/json",
         }
 
-        response = requests.request("POST", url, data=payload_string, headers=headers, verify=self.verify, proxies=self.proxies)
+        response = requests.request("POST", url, data=payload_string, headers=headers, verify=self.verify,
+                                    proxies=self.proxies)
         if response.status_code != 200:
             return_error('Error in API call [%d] - %s' % (response.status_code, response.reason))
 
@@ -63,7 +79,7 @@ class Client:
             },
             "size": size
         }
-        print (json.dumps(payload))
+        print(json.dumps(payload))
         if from_time != "" or to_time != "":
             time_filter = {}
             if from_time != "":
@@ -158,11 +174,14 @@ def search_logs_by_fields_command(client, args):
 
 def fetch_incidents(client, last_run, search, severities, tags, first_fetch_time):
     incidents = []
-
+    next_run = last_run
     start_query_time = last_run.get("last_fetch")
     if not start_query_time:
-        start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    raw_events = client.fetch_triggered_rules(search=search, severities=severities, tags=tags)
+        start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=False, to_timestamp=True)
+        start_query_time = start_query_time / 1000
+        next_run["last_fetch"] = max(start_query_time, time.time() - ONE_HOUR)
+    raw_events = client.fetch_triggered_rules(search=search, severities=severities, tags=tags,
+                                              start_time=start_query_time)
     for event in raw_events['results']:
         event_date = datetime.fromtimestamp(event["eventDate"])
         event_date_string = event_date.strftime(DATE_FORMAT)
@@ -172,7 +191,10 @@ def fetch_incidents(client, last_run, search, severities, tags, first_fetch_time
             "occurred": event_date_string
         }
         incidents.append(incident)
-    return incidents
+    if incidents:
+        latest_event_timestamp = raw_events['results'][-1]["eventDate"]
+        next_run["last_fetch"] = latest_event_timestamp + 0.1
+    return incidents, next_run
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -209,7 +231,7 @@ def main():
             result = test_module(client)
             demisto.results(result)
         elif demisto.command() == 'fetch-incidents':
-            incidents = fetch_incidents(
+            incidents, next_run = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
@@ -217,11 +239,10 @@ def main():
                 severities=severities,
                 tags=tags
             )
-            # demisto.setLastRun({'start_time': datetime.now()})
+            demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
     except Exception as e:
-        # demisto.log(str(e))
         return_error('Failed to execute command. Error: {}'.format(str(e)))
 
 
