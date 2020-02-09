@@ -14,6 +14,14 @@ def main():
     })
 
     fields = json.dumps({
+        "numberofattacks": {
+            "regex": "^.*\\t.*\\t[0-9]+\\t([0-9]+)",
+            "transform": "\\1"
+        },
+        "networkneame": {
+            "regex": "^.*\\t.*\\t[0-9]+\\t[0-9]+\\t([^\\t]+)",
+            "transform": "\\1"
+        },
         "geocountry": {
             "regex": "^.*\\t.*\\t[0-9]+\\t[0-9]+\\t[^\\t]+\\t([A-Z]+)",
             "transform": "\\1"
@@ -24,6 +32,11 @@ def main():
         }
     })
     params['fields'] = fields
+
+    params['custom_fields_mapping'] = {
+        "geocountry": "geocountry",
+        "registrarabuseemail": "registrarabuseemail"
+    }
 
     # Call the main execution of the HTTP API module.
     feed_main('Dshield Feed', params, 'dshield-')
