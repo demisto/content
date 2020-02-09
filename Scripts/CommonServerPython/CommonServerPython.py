@@ -1950,6 +1950,13 @@ class CVE(Indicator):
         self.modified = modified
         self.description = description
 
+        self.dbot_score = None
+
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
+
+        self.dbot_score = dbot_score
+
     def to_context(self):
         cve_context = {
             'ID': self.id
@@ -2006,9 +2013,6 @@ class URL(Indicator):
 
         if self.positive_detections:
             url_context['PositiveDetections'] = self.positive_detections
-
-        if self.dns:
-            url_context['DNS'] = self.dns
 
         if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
             url_context['Malicious'] = {
@@ -2149,6 +2153,15 @@ class Domain(Indicator):
 
         if self.domain_status:
             domain_context['DomainStatus'] = self.domain_status
+
+        if self.creation_date:
+            domain_context['CreationDate'] = self.creation_date
+
+        if self.update_date:
+            domain_context['UpdateDate'] = self.update_date
+
+        if self.expiration_date:
+            domain_context['ExpirationDate'] = self.expiration_date
 
         if self.name_servers:
             domain_context['NameServers'] = self.name_servers

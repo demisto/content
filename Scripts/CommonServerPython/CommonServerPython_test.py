@@ -932,15 +932,23 @@ class TestCommandResults:
         assert ip is not None
 
     def test_create_domain(self):
-        from CommonServerPython import CommandResults, Domain, WHOIS, EntryType, EntryFormat
+        from CommonServerPython import CommandResults, Domain, WHOIS, EntryType, EntryFormat, DBotScoreType, DBotScore
 
         domain = Domain(
             domain='somedomain.com',
             dns='dns.somedomain',
             detection_engines=10,
             positive_detections=5,
-            organazation='Some Organization',
+            organization='Some Organization',
             whois=None,
+            creation_date='2019-01-01T00:00:00',
+            update_date='2019-01-02T00:00:00',
+            expiration_date=None,
+            domain_status='ACTIVE',
+            name_servers=[
+                'PNS31.CLOUDNS.NET',
+                'PNS32.CLOUDNS.NET'
+            ],
             sub_domains=[
                 'sub-domain1.somedomain.com',
                 'sub-domain2.somedomain.com',
@@ -973,9 +981,16 @@ class TestCommandResults:
                     'Name': 'somedomain.com',
                     'DNS': 'dns.somedomain',
                     'DetectionEngines': 10,
-                    'PositiveEngines': 5,
+                    'PositiveDetections': 5,
                     'Organization': 'Some Organization',
-                    'SubDomains': [
+                    'CreationDate': '2019-01-01T00:00:00',
+                    'UpdateDate': '2019-01-02T00:00:00',
+                    'DomainStatus': 'ACTIVE',
+                    'NameServers': [
+                        'PNS31.CLOUDNS.NET',
+                        'PNS32.CLOUDNS.NET'
+                    ],
+                    'Subdomains': [
                         'sub-domain1.somedomain.com',
                         'sub-domain2.somedomain.com',
                         'sub-domain3.somedomain.com'
