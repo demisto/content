@@ -997,17 +997,13 @@ def update_reference_set_value_command():
         The function creates or updates values in QRadar reference set
     """
     args = demisto.args()
-    indicators_list = argToList(args.get('values'))
-    indicators_values_list = []
-    for indicator in indicators_list:
-        indicators_values_list.append(indicator['value'])
+    values = argToList(args.get('values'))
     if args.get('date_value') == 'True':
-        indicators_list = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
-                           for value in indicators_list]
-    if len(indicators_list) > 1:
-        raw_ref = upload_indicators_list_request(args.get('ref_name'), indicators_values_list)
-    elif len(indicators_list) == 1:
-        raw_ref = update_reference_set_value(args.get('ref_name'), indicators_list[0], args.get('source'))
+        values = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for value in values]
+    if len(values) > 1:
+        raw_ref = upload_indicators_list_request(args.get('ref_name'), values)
+    elif len(values) == 1:
+        raw_ref = update_reference_set_value(args.get('ref_name'), values[0], args.get('source'))
     else:
         raise DemistoException('Expected at least a single value, cant create or update an empty value')
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
