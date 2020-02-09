@@ -2,7 +2,6 @@ commonfields:
   id: SearchIncidents
   version: -1
 name: SearchIncidents
-toversion: 4.9.9
 script: |-
   function invalideEscape(str) {
       var i;
@@ -56,7 +55,7 @@ script: |-
 type: javascript
 tags:
 - Utility
-comment: Deprecated. use SearchIncidents instead.
+comment: Deprecated. use SearchIncidentsV2 instead.
 enabled: true
 args:
 - name: id
@@ -132,3 +131,6 @@ outputs:
 - contextPath: foundIncidents.phase
   description: Phases of the found incidents
 scripttarget: 0
+deprecated: true
+tests:
+  - No test
