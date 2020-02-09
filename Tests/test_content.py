@@ -758,17 +758,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
         prints_manager.execute_thread_prints(thread_index)
 
-    prints_manager.add_print_job('=================== playbook_skipped_integration\n{}'.
-                                 format(playbook_skipped_integration), print_color, thread_index,
-                                 message_color=LOG_COLORS.GREEN)
-
-    prints_manager.execute_thread_prints(thread_index)
-
-    comment = 'This integrations are skipped and critical for the test: {}'.\
-        format('\n'.join(playbook_skipped_integration))
-
-    add_pr_comment(comment)
-
     tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
                                      skipped_integration, unmockable_integrations)
     if not tests_settings.is_local_run:
@@ -778,6 +767,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
         prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
         ami.upload_mock_files(build_name, build_number)
+
+    if playbook_skipped_integration:
+        comment = 'The following integrations are skipped and critical for the test:\n {}'.\
+            format('\n- '.join(playbook_skipped_integration))
+        add_pr_comment(comment)
 
 
 def get_unmockable_tests(tests_settings):
