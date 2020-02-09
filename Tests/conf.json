@@ -674,8 +674,8 @@
             "playbookID": "BigFixTest"
         },
         {
-            "integrations": "Lastline",
-            "playbookID": "Lastline - testplaybook",
+            "integrations": "Lastline v2",
+            "playbookID": "Lastline v2 - Test",
             "nightly": true
         },
         {
@@ -1460,7 +1460,7 @@
         },
         {
             "integrations": [
-                "Lastline",
+                "Lastline v2",
                 "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
@@ -1484,7 +1484,7 @@
             "integrations": [
                 "McAfee Advanced Threat Defense",
                 "VxStream",
-                "Lastline"
+                "Lastline v2"
             ]
         },
         {
@@ -2155,7 +2155,7 @@
             "playbookID": "Tanium v2 - Test"
         },
         {
-          "integrations": "FeedOffice365",
+          "integrations": "Office365 Feed",
           "playbookID": "Office365_Feed_Test",
           "fromversion": "5.5.0"
         },
@@ -2326,6 +2326,7 @@
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
+        "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
@@ -2338,7 +2339,7 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nightly_integrations": [
-        "Lastline",
+        "Lastline v2",
         "TruSTAR",
         "SlackV2"
     ],
@@ -2387,7 +2388,7 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
-        "FeedOffice365": "SSl Issues. issue: 21181",
+        "Feed Office365": "SSl Issues. issue: 21181",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
