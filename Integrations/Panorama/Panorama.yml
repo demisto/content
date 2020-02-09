@@ -1803,7 +1803,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma separated list of URL categories
+      description: A comma-separated list of URL categories.
       isArray: false
       name: category
       required: false
