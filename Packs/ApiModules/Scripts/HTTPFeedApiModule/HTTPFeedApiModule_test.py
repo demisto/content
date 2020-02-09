@@ -42,9 +42,7 @@ def test_get_indicators():
             feed_url_to_config=feed_type
         )
         args['indicator_type'] = 'ASN'
-        hr, indicators_ec, raw_json = get_indicators_command(client, args)
-        indicators_ec = indicators_ec.get('HTTP.Indicator')
-        assert len(indicators_ec) == 35
+        hr, _, raw_json = get_indicators_command(client, args)
         for ind_json in raw_json:
             ind_val = ind_json.get('value')
             ind_type = ind_json.get('type')
@@ -93,9 +91,7 @@ def test_get_indicators_json_params():
             indicator_type='ASN'
         )
         args['indicator_type'] = 'ASN'
-        hr, indicators_ec, raw_json = get_indicators_command(client, args)
-        indicators_ec = indicators_ec.get('HTTP.Indicator')
-        assert len(indicators_ec) == 35
+        hr, _, raw_json = get_indicators_command(client, args)
         for ind_json in raw_json:
             ind_val = ind_json.get('value')
             ind_type = ind_json.get('type')

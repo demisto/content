@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
+import traceback
 from typing import Optional, Pattern, List
 
 # disable insecure warnings
@@ -321,11 +322,10 @@ def fetch_indicators_command(client, itype, **kwargs):
 def get_indicators_command(client: Client, args):
     itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
-    indicators_list = fetch_indicators_command(client, itype)
-    entry_result = camelize(indicators_list[:limit])
+    indicators_list = fetch_indicators_command(client, itype)[:limit]
+    entry_result = camelize(indicators_list)
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
-    feed_name = args.get('feed_name', 'HTTP').replace(' ', '')
-    return hr, {f'{feed_name}.Indicator': entry_result}, indicators_list
+    return hr, {}, indicators_list
 
 
 def test_module(client, args):
@@ -358,5 +358,5 @@ def feed_main(feed_name, params, prefix=''):
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} integration [{e}]'
+        err_msg = f'Error in {feed_name} integration [{e}]\nTrace\n:{traceback.format_exc()}'
         return_error(err_msg)
