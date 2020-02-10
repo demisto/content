@@ -1,4 +1,4 @@
-from CommonServerPython import *
+from CommonServerPython import *  # lgtm [py/polluting-import]
 
 
 def main():
@@ -28,7 +28,7 @@ def main():
     feed_main('BruteForceBlocker Feed', params, 'bruteforceblocker-')
 
 
-from HTTPFeedApiModule import *  # noqa: E402
+from HTTPFeedApiModule import *  # noqa: E402 lgtm [py/polluting-import]
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':
