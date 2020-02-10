@@ -997,7 +997,7 @@ def update_reference_set_value_command():
         The function creates or updates values in QRadar reference set
     """
     args = demisto.args()
-    values = argToList(args.get('values'))
+    values = argToList(args.get('value'))
     if args.get('date_value') == 'True':
         values = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for value in values]
     if len(values) > 1:
@@ -1107,13 +1107,13 @@ def upload_indicators_command():
         query = args.get('query')
         indicators_values_list, indicators_data_list = get_indicators_list(query, limit, page)
         if len(indicators_values_list) == 0:
-            return ["No indicators found, Reference set {0} didn't change".format(reference_name), {}]
+            return_outputs("No indicators found, Reference set {0} didn't change".format(reference_name))
         else:
             raw_response = upload_indicators_list_request(reference_name, indicators_values_list)
             ref_set_data = unicode_to_str_recur(get_ref_set(reference_name))
             ref = replace_keys(ref_set_data, REFERENCE_NAMES_MAP)
             enrich_reference_set_result(ref)
-            indicator_headers = ['value', 'indicator_type']
+            indicator_headers = ['Value', 'Type']
             ref_set_headers = ['Name', 'ElementType', 'TimeoutType', 'CreationTime', 'NumberOfElements']
             return_outputs(tableToMarkdown("reference set {0} was updated".format(reference_name), ref,
                                            headers=ref_set_headers) + tableToMarkdown("Indicators list",
@@ -1165,8 +1165,8 @@ def get_indicators_list(indicator_query, limit, page):
     for indicator in fetched_iocs:
         indicators_values_list.append(indicator['value'])
         indicators_data_list.append({
-            'value': indicator['value'],
-            'indicator_type': indicator['indicator_type']
+            'Value': indicator['value'],
+            'Type': indicator['indicator_type']
         })
     return indicators_values_list, indicators_data_list
 
@@ -1215,7 +1215,7 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
     elif demisto.command() == 'qradar-upload-indicators':
-        return_outputs(upload_indicators_command())
+        upload_indicators_command()
 except Exception as e:
     message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
