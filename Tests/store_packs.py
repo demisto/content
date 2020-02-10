@@ -10,7 +10,7 @@ from distutils.util import strtobool
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS, \
-    collect_content_items_data
+    collect_content_items_data, input_to_list
 
 STORAGE_BASE_PATH = "content/packs"
 
@@ -85,15 +85,12 @@ class Pack:
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
-
         pack_metadata['supportDetails'] = {}
-        # pack_metadata['supportDetails']['author'] = user_metadata.get('author', '')
         support_url = user_metadata.get('url')
-
         if support_url:
             pack_metadata['supportDetails']['url'] = support_url
-        support_email = user_metadata.get('email')
 
+        support_email = user_metadata.get('email')
         if support_email:
             pack_metadata['supportDetails']['email'] = support_email
 
@@ -101,21 +98,17 @@ class Pack:
         # todo get vendor image and upload to storage
         pack_metadata['authorImage'] = ''
         # todo check if this field is necessary
-        pack_metadata['general'] = user_metadata.get('general', [])
-        pack_metadata['tags'] = user_metadata.get('tags', [])
-        categories = user_metadata.get('categories', [])
-        pack_metadata['categories'] = categories if isinstance(categories, list) else [s for s in categories.split(',')
-                                                                                       if s]
+        pack_metadata['general'] = input_to_list(user_metadata.get('general'))
+        pack_metadata['tags'] = input_to_list(user_metadata.get('tags'))
+        pack_metadata['categories'] = input_to_list(user_metadata.get('categories'))
         content_items_data = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in
                               collect_content_items_data(self._pack_path).items() if k in DIR_NAME_TO_CONTENT_TYPE}
         pack_metadata['contentItems'] = content_items_data
         pack_metadata["contentItemTypes"] = list(content_items_data.keys())
         # todo collect all integrations display name
         pack_metadata["integrations"] = []
-        use_cases = user_metadata.get('useCases', [])
-        pack_metadata["useCases"] = use_cases if isinstance(use_cases, list) else [s for s in use_cases.split(',') if s]
-        keywords = user_metadata.get('keywords', [])
-        pack_metadata["keywords"] = keywords if isinstance(keywords, list) else [s for s in keywords.split(',') if s]
+        pack_metadata["useCases"] = input_to_list(user_metadata.get('useCases'))
+        pack_metadata["keywords"] = input_to_list(user_metadata.get('keywords'))
         pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
 
         return pack_metadata
