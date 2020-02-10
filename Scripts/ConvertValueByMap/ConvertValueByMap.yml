@@ -2,7 +2,7 @@ args:
 - description: Value. Must be simple type (string, int)
   name: value
   required: true
-- description: 'Example: {"key1":"value1","key2":"value2"}'
+- description: 'Must be a valid JSON dictionary. Example: {"key1":"value1","key2":"value2"}'
   name: map
   required: true
 - description: Default value if key not found
@@ -12,13 +12,8 @@ comment: "Convert value to other value by map.\nProvide Key=>Value map and value
   \ will return None. \nIf \"default\" argument passed then if key not found, \"default\"\
   \ value will be returned"
 commonfields:
-  elasticcommonfields: {}
-  id: 7bf5a52f-4fd6-49e4-8391-6c50474c3134
+  id: ConvertValueByMap
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 dockerimage: demisto/python3:3.7.5.4583
 enabled: true
 name: ConvertValueByMap
