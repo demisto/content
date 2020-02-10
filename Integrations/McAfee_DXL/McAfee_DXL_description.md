@@ -1,5 +1,5 @@
   ### Prerequisites:
-   1.  [Create certificates & configure dxl](https://opendxl.github.io/opendxl-client-python/pydoc/index.html). 
+   1.  [Create certificates & configure dxl](https://github.com/demisto/content/blob/dxl_exemple/Integrations/McAfee_DXL/McAfee_DXL_description.md). 
    2.  You must have the following files:
        * Broker CA certificates (`brokercerts.crt` file)
        * Client certificate (`client.crt` file)
