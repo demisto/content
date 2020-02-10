@@ -2255,7 +2255,6 @@
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
         "AWS - IAM": "Issue 21401",
-        "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
         "VMware": "no License, and probably not going to get it",
