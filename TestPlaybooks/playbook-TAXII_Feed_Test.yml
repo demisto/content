@@ -50,7 +50,7 @@ tasks:
       limit:
         simple: "10"
       initial_interval:
-        simple: "5 days"
+        simple: "4 days"
     separatecontext: false
     view: |-
       {
