@@ -106,9 +106,10 @@ class Pack:
         pack_metadata["contentItemTypes"] = list(content_items_data.keys())
         # todo collect all integrations display name
         # pack_metadata["integrations"] = collect_integration_display_names(self._pack_path)
+        pack_metadata["integrations"] = []
         pack_metadata["useCases"] = user_metadata.get('useCases', [])
         pack_metadata["keywords"] = user_metadata.get('keywords', [])
-        # pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
+        pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
 
         return pack_metadata
 
