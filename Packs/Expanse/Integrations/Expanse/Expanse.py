@@ -172,8 +172,7 @@ def get_ip_context(data):
     ''' provide custom context information about ip address with data from Expanse API '''
     return {
         "Address": data['search'],
-        # "ASN" : None,
-        # "Hostname": None,
+
         "Geo": {
             "Location": "{0}:{1}".format(
                 data['locationInformation'][0]['geolocation']['latitude'],
@@ -182,8 +181,6 @@ def get_ip_context(data):
             "Country": data['locationInformation'][0]['geolocation']['countryCode'],
             "Description": data['locationInformation'][0]['geolocation']['city']
         },
-        # "DetectionEngines": 0,
-        # "PositiveDetections": 0
     }
 
 
@@ -432,7 +429,6 @@ def ip_command():
     try:
         ip = results['data'][0]
     except Exception:
-        # no results, exit gracefully
         demisto.results("No data found")
         return
 
