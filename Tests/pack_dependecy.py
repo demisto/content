@@ -1,5 +1,7 @@
 import json
 import networkx as nx
+import matplotlib.pyplot as plt
+from networkx.drawing.nx_pydot import graphviz_layout
 
 
 def search_for_pack_items(pack_name, items_list):
@@ -105,7 +107,27 @@ def find_pack_dependencies(pack_name, id_set):
 
 
 def build_dependency_graph(pack_name, id_set):
-    return []
+    graph = nx.DiGraph()
+    graph.add_node(pack_name)
+    found_new_dependencies = True
+
+    while found_new_dependencies:
+        current_number_of_nodes = graph.number_of_nodes()
+        leaf_nodes = [n for n in graph.nodes() if graph.out_degree(n) == 0]
+
+        for leaf in leaf_nodes:
+            leaf_dependencies = find_pack_dependencies(leaf, id_set)
+
+            if leaf_dependencies:
+                for dependency in leaf_dependencies:
+                    if dependency not in graph.nodes():
+                        graph.add_edge(leaf, dependency)
+                    elif not nx.has_path(graph, dependency, leaf):
+                        graph.add_edge(leaf, dependency)
+
+        found_new_dependencies = graph.number_of_nodes() > current_number_of_nodes
+
+    return graph
 
 
 def main():
@@ -116,6 +138,16 @@ def main():
         id_set = json.load(id_set_file)
 
     dependency_graph = build_dependency_graph(pack_name, id_set)
+
+    # pos = nx.spring_layout(dependency_graph)
+    # nx.draw_networkx_nodes(dependency_graph, pos, node_color="#2003fc")
+    # nx.draw_networkx_labels(dependency_graph, pos)
+    # nx.draw_networkx_edges(dependency_graph, pos, edge_color='r', arrows=True)
+    # nx.draw_networkx_edges(dependency_graph, pos, arrows=False)
+    # plt.show()
+    pos = graphviz_layout(dependency_graph, prog="dot")
+    nx.draw(dependency_graph, pos, with_labels=True, node_color="#46FF33", edge_color="#FE0000")
+    plt.show()
 
 
 if __name__ == "__main__":
