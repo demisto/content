@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+ - Fixed an issue where the listing emails were not comparing the mail ID.
 
 ## [20.2.0] - 2020-02-04
 Fixed an issue where the listing emails were not comparing the mail ID.
