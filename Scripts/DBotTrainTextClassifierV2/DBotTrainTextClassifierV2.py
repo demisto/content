@@ -165,8 +165,6 @@ def set_tag_field(data, tag_fields):
 def get_predictions_for_test_set(train_text_data, train_tag_data):
     X = pd.Series(train_text_data)
     y = pd.Series(train_tag_data)
-    demisto.results(Counter(y))
-    demisto.results('1')
     train_set_ratio = float(demisto.args()['trainSetRatio'])
     n_splits = int(1.0 / (1 - train_set_ratio))
     skf = StratifiedKFold(n_splits=n_splits, shuffle=False, random_state=None)
@@ -286,7 +284,6 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
 
 
 def main():
-    demisto.results(os.path.expanduser('~/downloads/1_bow_tfidf.ipynb'))
     input = demisto.args()['input']
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
