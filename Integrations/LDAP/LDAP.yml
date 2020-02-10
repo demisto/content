@@ -1,0 +1,198 @@
+commonfields:
+  id: LDAP
+  version: -1
+name: LDAP
+display: LDAP
+category: Database
+description: LDAP integration for use with the Lightweight Directory Access Protocol.
+configuration:
+- display: Host
+  name: host
+  defaultvalue: 192.168.10.188
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "389"
+  type: 0
+  required: true
+- display: Use SSL
+  name: secure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Domain
+  name: domain
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ldap-object-search
+    arguments:
+    - name: search_base
+      required: true
+      description: Base DN to begin search from
+    - name: search_filter
+      required: true
+      description: Filter to use for teh search
+    - name: attributes
+      description: CSV of attributes to return
+    outputs:
+    - contextPath: LDAP.Object.Search
+    description: Search LDAP for objects
+  - name: ldap-object-create
+    arguments:
+    - name: dn
+      required: true
+      description: Full DN to create
+    - name: objectClass
+      required: true
+      description: Object Class to create the new entry as
+    - name: attributes
+      description: 'JSON string of attributes to set. Example: {''givenName'': ''Beatrix'',
+        ''sn'': ''Potter''}'
+    outputs:
+    - contextPath: LDAP.Object.Create.result
+    - contextPath: LDAP.Object.Create.description
+    - contextPath: LDAP.Object.Create.dn
+    - contextPath: LDAP.Object.Create.message
+    - contextPath: LDAP.Object.Create.referrals
+    - contextPath: LDAP.Object.Create.type
+    description: Creates an object in the LDAP DIT
+    execution: true
+  - name: ldap-object-rename
+    arguments:
+    - name: oldDN
+      required: true
+      description: The DN to modify
+    - name: newDN
+      required: true
+      description: The new DN
+    outputs:
+    - contextPath: LDAP.Object.Rename.result
+    - contextPath: LDAP.Object.Rename.description
+    - contextPath: LDAP.Object.Rename.dn
+    - contextPath: LDAP.Object.Rename.message
+    - contextPath: LDAP.Object.Rename.referrals
+    - contextPath: LDAP.Object.Rename.type
+    description: Renames an LDAP object (does not modify the attributes)
+    execution: true
+  - name: ldap-object-move
+    arguments:
+    - name: dn
+      required: true
+      description: The DN to move
+    - name: location
+      required: true
+      description: The new location to move the object to
+    outputs:
+    - contextPath: LDAP.Object.Move.result
+    - contextPath: LDAP.Object.Move.description
+    - contextPath: LDAP.Object.Move.dn
+    - contextPath: LDAP.Object.Move.message
+    - contextPath: LDAP.Object.Move.referrals
+    - contextPath: LDAP.Object.Move.type
+    description: Moves an LDAP object to another location
+    execution: true
+  - name: ldap-attribute-add
+    arguments:
+    - name: dn
+      required: true
+      description: The DN to add to
+    - name: attributes
+      required: true
+      description: 'A dictionary of attributes and values, example: {"sn": "smyth"}.
+        There can be multiples of the same attributes, for example: {"sn": ["smyth",
+        "jones"]}'
+    outputs:
+    - contextPath: LDAP.Attribute.Add.result
+    - contextPath: LDAP.Attribute.Add.description
+    - contextPath: LDAP.Attribute.Add.dn
+    - contextPath: LDAP.Attribute.Add.message
+    - contextPath: LDAP.Attribute.Add.referrals
+    - contextPath: LDAP.Attribute.Add.type
+    - contextPath: LDAP.Attribute.Add.attribute
+    - contextPath: LDAP.Attribute.Add.value
+    description: Adds an attribute to an object
+    execution: true
+  - name: ldap-attribute-replace
+    arguments:
+    - name: dn
+      required: true
+      description: The DN to modify
+    - name: attributes
+      required: true
+      description: 'A dictionary of attributes and values, example: {"sn": "smyth"}.
+        There can be multiples of the same attributes, for example: {"sn": ["smyth",
+        "jones"]}'
+    outputs:
+    - contextPath: LDAP.Attribute.Replace.result
+    - contextPath: LDAP.Attribute.Replace.description
+    - contextPath: LDAP.Attribute.Replace.dn
+    - contextPath: LDAP.Attribute.Replace.message
+    - contextPath: LDAP.Attribute.Replace.referrals
+    - contextPath: LDAP.Attribute.Replace.attribute
+    - contextPath: LDAP.Attribute.Replace.value
+    description: Replaces an attribute of an object
+    execution: true
+  - name: ldap-attribute-delete
+    arguments:
+    - name: dn
+      required: true
+      description: The DN to modify
+    - name: attributes
+      required: true
+      description: A CSV of attributes to delete
+    outputs:
+    - contextPath: LDAP.Attribute.Delete.result
+    - contextPath: LDAP.Attribute.Delete.description
+    - contextPath: LDAP.Attribute.Delete.dn
+    - contextPath: LDAP.Attribute.Delete.message
+    - contextPath: LDAP.Attribute.Delete.referrals
+    - contextPath: LDAP.Attribute.Delete.attribute
+    description: Deletes an attribute of an object
+  - name: ldap-attribute-check
+    arguments:
+    - name: dn
+      required: true
+      description: The DN to check against
+    - name: attribute
+      required: true
+      description: The attribute to check
+    - name: value
+      required: true
+      description: The value to check against
+    outputs:
+    - contextPath: LDAP.Attribute.Match.IsMatch
+    description: Checks an attribute value against the one specified
+  - name: ldap-get-info
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - NONE
+      - DSA
+      - SCHEMA
+      - ALL
+      - OFFLINE_EDIR_8_8_8
+      - OFFLINE_EDIR_9_1_4
+      - OFFLINE_AD_2012_R2
+      - OFFLINE_SLAPD_2_4
+      - OFFLINE_DS389_1_3_3
+      defaultValue: ALL
+    outputs:
+    - contextPath: LDAP.Server.Schema
+    - contextPath: LDAP.Server.Info
+    description: Retrieves information about the LDAP server
+  dockerimage: demisto/ldap:1.0.0.75
+  runonce: false
+  subtype: python3
