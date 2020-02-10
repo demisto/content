@@ -1695,7 +1695,7 @@
                 "Rasterize"
             ],
             "fromversion": "4.5.0",
-            "timeout": 1700
+            "timeout": 2000
         },
         {
             "integrations": "McAfee Active Response",
