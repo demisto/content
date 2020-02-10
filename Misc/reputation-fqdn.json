@@ -1,7 +1,7 @@
 {
   "id": "fqdnRep",
   "version": -1,
-  "fromVersion": "5.0.0",
+  "fromVersion": "5.5.0",
   "sortValues": null,
   "commitMessage": "",
   "shouldPublish": false,
@@ -24,6 +24,7 @@
   "contextPath": "Domain(val.Name \u0026\u0026 val.Name === obj.Name)",
   "contextValue": "Name",
   "excludedBrands": [],
+  "expiration": 20160,
   "defaultMapping": {
     "admincountry": {
       "simple": "",

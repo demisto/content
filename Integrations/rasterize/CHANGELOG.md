@@ -1,6 +1,13 @@
 ## [Unreleased]
 
 
+## [20.2.0] - 2020-02-04
+  - Added support for specifying advanced Chrome options.
+  - Improved rendering of large HTML files.
+
+## [20.1.0] - 2020-01-07
+-
+
 ## [19.12.1] - 2019-12-25
 Fixed an issue with the ***rasterize*** command in which child processes were defunct.
 

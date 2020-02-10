@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 
+## [20.1.2] - 2020-01-22
+Added the ability to mention users in the ***send-notification*** command.
+Added 2 commands.
+  - ***add-user-to-channel***
+  - ***create-channel***
+
 ## [19.10.0] - 2019-10-03
   - Added support for single port mapping.
   - Added the ***microsoft-teams-integration-health*** command.

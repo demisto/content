@@ -1,0 +1,625 @@
+id: IT - Employee Offboarding - Manual
+version: -1
+fromversion: 5.0.0
+name: IT - Employee Offboarding - Manual
+description: This playbook provides a manual alternative to the IT - Employee Offboarding
+  playbook. The playbook guides the user in the process of manually offboarding an
+  employee.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0b0f08ec-4006-49c8-8d0a-22dd2bcd7347
+    type: start
+    task:
+      id: 0b0f08ec-4006-49c8-8d0a-22dd2bcd7347
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: fff60c22-bcc4-484c-8366-c45423b8dc07
+    type: regular
+    task:
+      id: fff60c22-bcc4-484c-8366-c45423b8dc07
+      version: -1
+      name: Gather user information & property
+      description: |-
+        Gather user information that will be needed for the offboarding process.
+        Important information may be:
+        - Full name of the employee
+        - Email address of the employee
+        - Employee's phone number(s)
+        - Username(s) of the employee
+        - Employee's Password(s)
+        - Employee's manager's phone number and email address
+        - Company property in employee's possession
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 0678f806-9b12-46f7-83b0-a5d05df44b5c
+    type: title
+    task:
+      id: 0678f806-9b12-46f7-83b0-a5d05df44b5c
+      version: -1
+      name: Security - Revoke Permissions
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 776a1525-531d-4d3c-8169-8a9c92b77582
+    type: regular
+    task:
+      id: 776a1525-531d-4d3c-8169-8a9c92b77582
+      version: -1
+      name: Disable company mobile device & company login data
+      description: If the employee has a mobile device from the company, disassociate
+        the user's mobile device from the user account. If possible, wipe any company-related
+        information from the device (such as G-Suite account data which is tied to
+        the company).
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: c4c34292-b44a-43a5-87b2-85d2eb0bb7fc
+    type: regular
+    task:
+      id: c4c34292-b44a-43a5-87b2-85d2eb0bb7fc
+      version: -1
+      name: Deactivate user in MFA applications
+      description: Deactivate the user in multi-factor authentication applications,
+        such as Okta.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 0bf14e3e-fd58-4a0a-8a31-276f00e966bb
+    type: regular
+    task:
+      id: 0bf14e3e-fd58-4a0a-8a31-276f00e966bb
+      version: -1
+      name: Revoke administrative user roles
+      description: If the user has any admin roles in any application, make sure to
+        revoke those permissions. For example, the user may have a "help desk admin"
+        role in Google, or a domain-admin in Active Directory.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: fa2b7f9b-ff3b-4232-8adc-488d82724ea4
+    type: regular
+    task:
+      id: fa2b7f9b-ff3b-4232-8adc-488d82724ea4
+      version: -1
+      name: Set new passwords for the user
+      description: Set new passwords for the user to prevent unauthorized access.
+        Store the new password somewhere safe.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: f18315e9-3c06-44df-8017-1f005dac422c
+    type: regular
+    task:
+      id: f18315e9-3c06-44df-8017-1f005dac422c
+      version: -1
+      name: Confirm retrieval of company property
+      description: |-
+        Make sure that the user returned all company-property that was in their possession, such as company cell-phones, laptops, notebooks containing sensitive data, etc.
+        Do not proceed until all property was returned.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 3d4b032b-8c7e-4058-859c-6eb13394d1fd
+    type: title
+    task:
+      id: 3d4b032b-8c7e-4058-859c-6eb13394d1fd
+      version: -1
+      name: Delegation
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+      - '10'
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: e8ce2f3b-b0fd-459e-8d24-13f9bd4710d5
+    type: regular
+    task:
+      id: e8ce2f3b-b0fd-459e-8d24-13f9bd4710d5
+      version: -1
+      name: Set auto-reply message for the user
+      description: Set an auto-reply message for the user in your preferred email
+        client. State that the user will not be able to reply anymore and is leaving
+        the company.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: f9ca9caf-9e7f-4000-801d-361b7cb102ad
+    type: regular
+    task:
+      id: f9ca9caf-9e7f-4000-801d-361b7cb102ad
+      version: -1
+      name: Delegate access to manager
+      description: Delegate access of the user's mailbox, calendar, file-sharing apps,
+        and so on to their manager.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+      - '13'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 0d3a7c86-221d-4d29-84b8-1a17739c9b57
+    type: regular
+    task:
+      id: 0d3a7c86-221d-4d29-84b8-1a17739c9b57
+      version: -1
+      name: Forward emails to manager
+      description: Forward future emails from the user's mailbox to their manager's
+        email.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: a21d9e65-ae5d-4977-8e63-a03873ea836f
+    type: regular
+    task:
+      id: a21d9e65-ae5d-4977-8e63-a03873ea836f
+      version: -1
+      name: Update manager about delegation and mail forwarding
+      description: Update the user's manager that the user's mailbox has been delegated
+        to them, and that future incoming emails for the user will be redirected to
+        them.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 4f0c0479-82a9-4840-8060-d6fce3a7ed6a
+    type: title
+    task:
+      id: 4f0c0479-82a9-4840-8060-d6fce3a7ed6a
+      version: -1
+      name: Retention & Deletion
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: adcb5120-adab-4734-80a3-6bc4783dbbb6
+    type: regular
+    task:
+      id: adcb5120-adab-4734-80a3-6bc4783dbbb6
+      version: -1
+      name: Copy, backup or download crucial user data
+      description: Backup important user emails, files and documents. Google Vault
+        is one service that can be used for that.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 8f167fcb-bb27-4ce3-84a4-007f30e85620
+    type: regular
+    task:
+      id: 8f167fcb-bb27-4ce3-84a4-007f30e85620
+      version: -1
+      name: Disable user in all applications
+      description: Disable the user in chat, management or other work applications.
+        Most importantly, you should disable the user in your Single Source of Truth
+        (SSOT) application, such as Active Directory.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: d3557332-714b-43e5-831a-a4fdd4ec409b
+    type: regular
+    task:
+      id: d3557332-714b-43e5-831a-a4fdd4ec409b
+      version: -1
+      name: Wait for 30 days
+      description: Wait for a period of time, say 30 days, before proceeding to final
+        removal of the user from the system.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+      - '18'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: 81882f9f-24f9-4644-81d4-5e0e8b7ffabd
+    type: regular
+    task:
+      id: 81882f9f-24f9-4644-81d4-5e0e8b7ffabd
+      version: -1
+      name: Delete old user data
+      description: Permanently delete previously-retained user information and files
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: 837a5d78-321a-4aae-8e78-06c135ec6379
+    type: regular
+    task:
+      id: 837a5d78-321a-4aae-8e78-06c135ec6379
+      version: -1
+      name: Delete the user
+      description: |-
+        Delete the user from all applications used in your organization.
+        Alternatively, you can move the user to an "old employees" group where you keep employees that left and apply certain restrictions to that group.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '19':
+    id: '19'
+    taskid: d601d031-c78a-4d50-88f2-65da8f1676a8
+    type: regular
+    task:
+      id: d601d031-c78a-4d50-88f2-65da8f1676a8
+      version: -1
+      name: Close offboarding incident
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '20':
+    id: '20'
+    taskid: ccb80848-f4b8-4e87-8642-bea56ae8a7d7
+    type: playbook
+    task:
+      id: ccb80848-f4b8-4e87-8642-bea56ae8a7d7
+      version: -1
+      name: Wait Until Datetime
+      playbookName: Wait Until Datetime
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      DatetimeToWaitUntil:
+        complex:
+          root: incident
+          accessor: offboardingdate
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2765,
+        "width": 1860,
+        "x": -290,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - no test
