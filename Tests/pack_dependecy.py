@@ -130,6 +130,18 @@ def build_dependency_graph(pack_name, id_set):
     return graph
 
 
+def draw_graph(graph):
+    # pos = nx.spring_layout(dependency_graph)
+    # nx.draw_networkx_nodes(dependency_graph, pos, node_color="#2003fc")
+    # nx.draw_networkx_labels(dependency_graph, pos)
+    # nx.draw_networkx_edges(dependency_graph, pos, edge_color='r', arrows=True)
+    # nx.draw_networkx_edges(dependency_graph, pos, arrows=False)
+    # plt.show()
+    pos = graphviz_layout(graph, prog="dot")
+    nx.draw(graph, pos, with_labels=True, node_color="#46FF33", edge_color="#FE0000")
+    plt.show()
+
+
 def main():
     id_set_path = "/Users/igabashvili/Downloads/id_set.json"
     pack_name = "CortexXDR"
@@ -138,16 +150,7 @@ def main():
         id_set = json.load(id_set_file)
 
     dependency_graph = build_dependency_graph(pack_name, id_set)
-
-    # pos = nx.spring_layout(dependency_graph)
-    # nx.draw_networkx_nodes(dependency_graph, pos, node_color="#2003fc")
-    # nx.draw_networkx_labels(dependency_graph, pos)
-    # nx.draw_networkx_edges(dependency_graph, pos, edge_color='r', arrows=True)
-    # nx.draw_networkx_edges(dependency_graph, pos, arrows=False)
-    # plt.show()
-    pos = graphviz_layout(dependency_graph, prog="dot")
-    nx.draw(dependency_graph, pos, with_labels=True, node_color="#46FF33", edge_color="#FE0000")
-    plt.show()
+    draw_graph(dependency_graph)
 
 
 if __name__ == "__main__":
