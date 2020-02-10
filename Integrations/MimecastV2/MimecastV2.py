@@ -2224,6 +2224,107 @@ def search_file_hash_api_response_to_context(api_response):
     return None
 
 
+def find_held_messages():
+    api_endpoint = '/api/gateway/get-hold-message-list'
+
+    data = {}
+
+    for arg in demisto.args():
+        if demisto.args().get(arg):
+            data[arg] = demisto.args().get(arg)
+        else:
+            continue
+
+    payload = {
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def get_message_hold_summary():
+    api_endpoint = '/api/gateway/get-hold-summary-list'
+
+    payload = {
+        'data': []
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def find_processing_messages():
+    api_endpoint = '/api/gateway/find-processing-messages'
+
+    data = {}
+
+    for arg in demisto.args():
+        if demisto.args().get(arg):
+            data[arg] = demisto.args().get(arg)
+        else:
+            continue
+
+    payload = {
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def reject_message():
+    api_endpoint = '/api/gateway/hold-reject'
+
+    data = {}
+
+    for arg in demisto.args():
+        if arg == 'ids':
+            data[arg] = argToList(demisto.args().get(arg))
+        elif demisto.args().get(arg):
+            data[arg] = demisto.args().get(arg)
+        else:
+            continue
+
+    payload = {
+        'data': [data]
+    }
+
+    payload = json.dumps(payload)
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
+def release_message():
+    api_endpoint = '/api/gateway/hold-release'
+
+    message_id = demisto.args().get('id')
+
+    data = {
+        'id': message_id
+    }
+
+    payload = {
+        'data': [data]
+    }
+
+    payload = json.dumps(payload)
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response
+
+
 def main():
     ''' COMMANDS MANAGER / SWITCH PANEL '''
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
@@ -2294,6 +2395,16 @@ def main():
             get_mimecast_incident()
         elif demisto.command() == 'mimecast-search-file-hash':
             search_file_hash()
+        elif demisto.command() == 'mimecast-find-held-messages':
+            demisto.results(find_held_messages())
+        elif demisto.command() == 'mimecast-get-message-hold-summary':
+            demisto.results(get_message_hold_summary())
+        elif demisto.command() == 'mimecast-find-processing-messages':
+            demisto.results(find_processing_messages())
+        elif demisto.command() == 'mimecast-reject-message':
+            demisto.results(reject_message())
+        elif demisto.command() == 'mimecast-release-message':
+            demisto.results(release_message())
 
     except Exception as e:
         LOG(e.message)
