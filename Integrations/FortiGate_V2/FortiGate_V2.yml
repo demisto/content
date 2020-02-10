@@ -692,7 +692,6 @@ script:
       description: Address Deleted
       type: Unknown
   dockerimage: demisto/python3:3.8.1.5734
-  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
