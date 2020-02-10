@@ -2220,6 +2220,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "DShield Feed",
+            "playbookID": "playbook-DshieldFeed_test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0"
