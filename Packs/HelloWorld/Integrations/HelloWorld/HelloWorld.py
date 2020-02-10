@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
+from typing import Any, Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,13 +15,14 @@ requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
 
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
 
-    def get_ip_reputation(ip: str):
+    def get_ip_reputation(self, ip: str):
         return self._http_request(
             method='GET',
             url_suffix=f'/ip',
@@ -29,7 +31,7 @@ class Client(BaseClient):
             }
         )
 
-    def get_domain_reputation(domain: str):
+    def get_domain_reputation(self, domain: str):
         return self._http_request(
             method='GET',
             url_suffix=f'/domain',
@@ -38,8 +40,8 @@ class Client(BaseClient):
             }
         )
 
-    def search_alerts(alert_status: str, severity: int, alert_type: str, max_results: int, start_time: int):
-        request_params = {}
+    def search_alerts(self, alert_status: str, severity: int, alert_type: str, max_results: int, start_time: int):
+        request_params: Dict[str, Any] = {}
 
         if alert_status:
             request_params['alert_status'] = alert_status
@@ -62,7 +64,7 @@ class Client(BaseClient):
             params=request_params
         )
 
-    def get_alert(alert_id: str):
+    def get_alert(self, alert_id: str):
         return self._http_request(
             method='GET',
             url_suffix=f'/get_alert_details',
@@ -71,7 +73,7 @@ class Client(BaseClient):
             }
         )
 
-    def update_alert_status(alert_id: str, alert_status: str):
+    def update_alert_status(self, alert_id: str, alert_status: str):
         # TODO: this should be POST
         self._http_request(
             method='GET',
@@ -82,7 +84,7 @@ class Client(BaseClient):
             }
         )
 
-    def scan_start(hostname):
+    def scan_start(self, hostname):
         # TODO: this should be POST
         return self._http_request(
             method='GET',
@@ -92,7 +94,7 @@ class Client(BaseClient):
             }
         )
 
-    def scan_status(scan_id):
+    def scan_status(self, scan_id):
         return self._http_request(
             method='GET',
             url_suffix='/check_scan/',
@@ -101,7 +103,7 @@ class Client(BaseClient):
             }
         )
 
-    def scan_results(scan_id):
+    def scan_results(self, scan_id):
         # TODO: do multi-form data request
         return self._http_request(
             method='GET',
@@ -125,9 +127,10 @@ def test_module(client, first_fetch_time):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    
+
     client.search_alerts(max_results=1, start_time=first_fetch_time)
     return 'ok'
+
 
 def say_hello_command(client, args):
     """
@@ -215,17 +218,21 @@ def ip_reputation_command(client, args, threshold):
     ips = argToList(args.get('ip'))
     threshold = int(args.get('threshold', threshold))
 
+    dbot_score_list = []
+    ip_standard_list = []
+    ip_data_list = []
+
     for ip in ips:
         ip_data = client.get_ip_reputation(ip)
 
         score = 0
         reputation = ip_data.get('reputation')
-        if reputation => threshold:
-            score = 3 # bad
-        elif reputation >= threshold/2:
-            score = 2 # suspicious
+        if reputation >= threshold:
+            score = 3  # bad
+        elif reputation >= threshold / 2:
+            score = 2  # suspicious
         else:
-            score = 1 # good
+            score = 1  # good
 
         dbot_score = {
             'Indicator': ip,
@@ -245,13 +252,23 @@ def ip_reputation_command(client, args, threshold):
                 'Desciption': f'Hello World returned repuration {reputation}'
             }
 
-        outputs = {
-            'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score,
-            outputPaths['ip']: ip_standard_context,
-            'HelloWorld.IP(val.ip == obj.ip)': ip_data
-        }
+        ip_standard_list.append(ip_standard_context)
+        dbot_score_list.append(dbot_score)
+        ip_data_list.append(ip_data)
 
-        readable_output = tableToMarkdown('IP List', ip)
+    outputs = {
+        'DBotScore(val.Vendor == obj.Vendor && val.Indicator == obj.Indicator)': dbot_score_list,
+        outputPaths['ip']: ip_standard_list,
+        'HelloWorld.IP(val.ip == obj.ip)': ip_data_list
+    }
+
+    readable_output = tableToMarkdown('IP List', ip_standard_list)
+
+    return (
+        readable_output,
+        outputs,
+        ip_data_list
+    )
 
 
 def domain_reputation_command(client, args):
@@ -317,19 +334,19 @@ def search_alerts_command(client, args):
         max_results=max_results
     )
 
-    readable_output = tableToMarkdown('HelloWorld Alerts', alerts, headers=['id', 
-                                                                            'name', 
-                                                                            'description', 
-                                                                            'severity', 
+    readable_output = tableToMarkdown('HelloWorld Alerts', alerts, headers=['id',
+                                                                            'name',
+                                                                            'description',
+                                                                            'severity',
                                                                             'alert_status',
-                                                                            'created'
+                                                                            'created',
                                                                             'alert_type']),
     outputs = {
         'HelloWorld.Alert(val.id == obj.id)': alerts
     }
-    
+
     return (
-        readable_output
+        readable_output,
         outputs,
         alerts
     )
@@ -340,21 +357,21 @@ def get_alert_command(client, args):
 
     alert = client.get_alert(alert_id=alert_id)
 
-    readable_output = tableToMarkdown(f'HelloWorld Alert {alert_id}', alert, headers=['id', 
-                                                                                      'name', 
-                                                                                      'description', 
-                                                                                      'severity', 
-                                                                                      'alert_status', 
-                                                                                      'created'
+    readable_output = tableToMarkdown(f'HelloWorld Alert {alert_id}', alert, headers=['id',
+                                                                                      'name',
+                                                                                      'description',
+                                                                                      'severity',
+                                                                                      'alert_status',
+                                                                                      'created',
                                                                                       'alert_type']),
     outputs = {
-        'HelloWorld.Alert(val.id == obj.id)': alerts
+        'HelloWorld.Alert(val.id == obj.id)': alert
     }
-    
+
     return (
-        readable_output
+        readable_output,
         outputs,
-        alerts
+        alert
     )
 
 
@@ -362,8 +379,9 @@ def scan_start_command(client, args):
     hostname = args.get('hostname')
 
     scan = client.scan_start(hostname=hostname)
+    scan_id = scan.get('scan_id')
 
-    readable_output = f'Started scan {scan.get('scan_id')}'
+    readable_output = f'Started scan {scan_id}'
     outputs = {
         'HelloWorld.Scan(val.scan_id == obj.scan_id)': scan
     }
@@ -402,8 +420,8 @@ def scan_results_command(client, args):
     results = client.scan_results(scan_id=scan_id)
     if scan_format == 'file':
         demisto.results(
-            fileResults(
-                filename=f'{scan_id}.json', 
+            fileResult(
+                filename=f'{scan_id}.json',
                 data=results,
                 file_type=entryTypes['entryInfoFile']
             )
