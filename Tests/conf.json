@@ -2232,7 +2232,7 @@
         },
         {
             "integrations": "AlienVault Reputation Feed",
-            "playbookID": "playbook-AlienVaultReputationFeed_Test",
+            "playbookID": "AlienVaultReputationFeed_Test",
             "fromversion": "5.5.0"
         }
     ],
