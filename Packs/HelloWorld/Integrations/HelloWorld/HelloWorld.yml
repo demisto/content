@@ -33,6 +33,20 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: Fetch alerts with status (OPEN, CLOSED)
+  name: alert_status
+  defaultvalue: OPEN
+  type: 0
+  required: false
+- display: Fetch alerts with type
+  name: alert_type
+  type: 0
+  required: false
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
@@ -61,16 +75,29 @@ script:
     - name: severity
       auto: PREDEFINED
       predefined:
-      - low
-      - medium
-      - high
-      - critical
-      description: Filter alerts by severity
+      - 1
+      - 2
+      - 3
+      - 4
+      description: Filter by alert severity (0 to 4). 0-low, 1-medium, 2-high, 3-critical
     - name: status
       auto: PREDEFINED
+      description: Filter by alert status
       predefined:
-      - open
-      - closed
+      - OPEN
+      - CLOSED
+    - name: alert_type
+      description: Filter by alert type
+    - name: max_results
+      description: Maximum results to return
+    - name: start_time
+      description: |-
+        Filter by start time. 
+        Examples:
+          "3 days ago"
+          "1 month"
+          "2019-10-10T12:22:00"
+          "2019-10-10"
     outputs:
     - contextPath: HelloWorld.Alert.id
       description: Alert id
