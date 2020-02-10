@@ -1,7 +1,7 @@
 elasticcommonfields: {}
-id: AlienVaultReputationFeed_Test
+id: playbook-AlienVaultReputationFeed_Test
 version: -1
-name: AlienVaultReputationFeed_Test
+name: playbook-AlienVaultReputationFeed_Test
 starttaskid: "0"
 tasks:
   "0":
@@ -199,5 +199,5 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: AlienVaultReputationFeed_Test
+sourceplaybookid: playbook-AlienVaultReputationFeed_Test
 fromversion: 5.5.0
