@@ -340,14 +340,14 @@ def main():
     for pack in packs_list:
         pack.format_metadata()
         # todo finish implementation of release notes
-        # pack.parse_release_notes()
+        pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
-        # pack.upload_to_storage(zip_pack_path, pack.latest_version)
+        pack.upload_to_storage(zip_pack_path, pack.latest_version)
         pack.prepare_for_index_upload()
         update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
-        # pack.cleanup()
+        pack.cleanup()
 
-    # upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
+    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
 
 
 if __name__ == '__main__':
