@@ -2,8 +2,6 @@
 ---
 
 Use the Office365 feed integration to get indicators from the feed.
-This integration was integrated and tested with version xx of Office365 Feed
-
 
 ## Configure Office365 Feed on Demisto
 ---
