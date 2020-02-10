@@ -1,0 +1,76 @@
+id: Handle Hello World Alert
+fromversion: 5.0.0
+inputs: []
+name: Handle Hello World Alert
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quiet: false
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: "1"
+      iscommand: false
+      description: ''
+      name: ""
+      version: -1
+    taskid: "1"
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quiet: false
+    scriptarguments:
+      alert_id:
+        simple: ${incident.helloworldid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieve alert by id
+      id: "2"
+      iscommand: true
+      name: Get alert details
+      script: '|||helloworld-get-alert'
+      type: regular
+      version: -1
+    taskid: "2"
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

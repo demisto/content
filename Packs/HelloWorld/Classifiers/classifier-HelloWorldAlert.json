@@ -1,0 +1,77 @@
+{
+	"brandName": "HelloWorld",
+	"fromVersion": "5.0.0",
+	"custom": true,
+	"defaultIncidentType": "",
+	"feed": false,
+	"id": "33a5277d-9db1-4239-8a4a-fe05ea4688ea",
+	"incidentSamples": [
+		{
+			"name": "Test Alert 6",
+			"description": "This is a Hello World 6",
+			"severity": 4,
+			"alert_type": "Something",
+			"alert_status": "CLOSED",
+			"created": 1581022640,
+			"alert_id": "7f570231-4854-4b03-917b-272c6723bd84"
+		}
+	],
+	"indicatorSamples": null,
+	"isDefault": false,
+	"keyTypeMap": {
+		"HelloWorld": "Hello World Alert"
+	},
+	"mapping": {
+		"Hello World Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Hello World ID": {
+					"complex": null,
+					"simple": "alert_id"
+				},
+				"Hello World Status": {
+					"complex": null,
+					"simple": "alert_status"
+				},
+				"Hello World Type": {
+					"complex": null,
+					"simple": "alert_type"
+				},
+				"severity": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"default": {
+										"isContext": false,
+										"value": null
+									},
+									"map": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "{\"1\":\"low\",\"2\":\"medium\",\"3\":\"high\",\"4\":\"high\"}"
+										}
+									}
+								},
+								"operator": "7bf5a52f-4fd6-49e4-8391-6c50474c3134"
+							}
+						]
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"propagationLabels": null,
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": ".='HelloWorld'"
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}

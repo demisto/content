@@ -198,8 +198,10 @@ def fetch_incidents(client, last_run, first_fetch_time, alert_type, alert_status
     )
     for alert in alerts:
         incident_created_time = int(alert['created'])
+        incident_name = '#{} - {}'.format(alert['id'], alert['name'])
         incident = {
-            'name': alert['description'],
+            'name': incident_name,
+            'details': alert['description'],
             'occurred': timestamp_to_datestring(incident_created_time),
             'rawJSON': json.dumps(alert)
         }
