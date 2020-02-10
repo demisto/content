@@ -267,5 +267,3 @@ def test_no_positive_words(mocker):
 
     res = main()
     assert res['Contents']['TextTokensHighlighted'] == TOKENIZATION_RESULT['originalText']
-
-
