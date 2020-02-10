@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from CommonServerPython import *  # lgtm [py/polluting-import]
+from CommonServerUserPython import *  # lgtm [py/polluting-import]
 
 import re
 import xlrd
