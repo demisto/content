@@ -4,14 +4,7 @@ commonfields:
 name: HelloWorld
 display: HelloWorld
 category: Authentication
-image: ''
 description: This is the Hello World integration for getting started.
-detaileddescription: |
-  ## Hello World
-  - This text is markdown
-  - Here you should explain how to configure the instance in Demisto, where to get/generate the API_KEY
-
-  For Hello World example the API KEY is **asdomarff0123**
 configuration:
 - display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
@@ -58,7 +51,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: ""
+  script: ''
   type: python
   commands:
   - name: helloworld-say-hello
