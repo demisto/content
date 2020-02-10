@@ -74,7 +74,7 @@ class Pack:
         pack_metadata['id'] = self._pack_name
         pack_metadata['name'] = user_metadata.get('displayName', '')
         pack_metadata['description'] = user_metadata.get('description', '')
-        pack_metadata['created'] = user_metadata.get('created', '')
+        pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
         pack_metadata['support'] = user_metadata.get('support', '')
         is_beta = user_metadata.get('beta', False)
@@ -87,7 +87,7 @@ class Pack:
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
 
         pack_metadata['supportDetails'] = {}
-        pack_metadata['supportDetails']['author'] = user_metadata.get('author', '')
+        # pack_metadata['supportDetails']['author'] = user_metadata.get('author', '')
         support_url = user_metadata.get('url')
 
         if support_url:
@@ -97,18 +97,25 @@ class Pack:
         if support_email:
             pack_metadata['supportDetails']['email'] = support_email
 
+        pack_metadata['author'] = user_metadata.get('author', '')
+        # todo get vendor image and upload to storage
+        pack_metadata['authorImage'] = ''
         # todo check if this field is necessary
         pack_metadata['general'] = user_metadata.get('general', [])
         pack_metadata['tags'] = user_metadata.get('tags', [])
-        pack_metadata['categories'] = user_metadata.get('categories', [])
+        categories = user_metadata.get('categories', [])
+        pack_metadata['categories'] = categories if isinstance(categories, list) else [s for s in categories.split(',')
+                                                                                       if s]
         content_items_data = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in
                               collect_content_items_data(self._pack_path).items() if k in DIR_NAME_TO_CONTENT_TYPE}
         pack_metadata['contentItems'] = content_items_data
         pack_metadata["contentItemTypes"] = list(content_items_data.keys())
         # todo collect all integrations display name
         pack_metadata["integrations"] = []
-        pack_metadata["useCases"] = user_metadata.get('useCases', [])
-        pack_metadata["keywords"] = user_metadata.get('keywords', [])
+        use_cases = user_metadata.get('useCases', [])
+        pack_metadata["useCases"] = use_cases if isinstance(use_cases, list) else [s for s in use_cases.split(',') if s]
+        keywords = user_metadata.get('keywords', [])
+        pack_metadata["keywords"] = keywords if isinstance(keywords, list) else [s for s in keywords.split(',') if s]
         pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
 
         return pack_metadata
