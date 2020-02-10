@@ -71,20 +71,12 @@ class Pack:
     def _parse_pack_metadata(self, user_metadata):
         pack_metadata = {}
         user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-        pack_metadata['id'] = self._pack_name
         pack_metadata['name'] = user_metadata.get('displayName', '')
+        pack_metadata['id'] = self._pack_name
         pack_metadata['description'] = user_metadata.get('description', '')
         pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
         pack_metadata['support'] = user_metadata.get('support', '')
-        is_beta = user_metadata.get('beta', False)
-        pack_metadata['beta'] = bool(strtobool(is_beta)) if isinstance(is_beta, str) else is_beta
-        pack_metadata['certification'] = user_metadata.get('certification', '')
-        is_deprecated = user_metadata.get('deprecated', False)
-        pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
-        pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
-        pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
-        pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         pack_metadata['supportDetails'] = {}
         support_url = user_metadata.get('url')
         if support_url:
@@ -93,10 +85,17 @@ class Pack:
         support_email = user_metadata.get('email')
         if support_email:
             pack_metadata['supportDetails']['email'] = support_email
-
         pack_metadata['author'] = user_metadata.get('author', '')
         # todo get vendor image and upload to storage
         pack_metadata['authorImage'] = ''
+        is_beta = user_metadata.get('beta', False)
+        pack_metadata['beta'] = bool(strtobool(is_beta)) if isinstance(is_beta, str) else is_beta
+        is_deprecated = user_metadata.get('deprecated', False)
+        pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
+        pack_metadata['certification'] = user_metadata.get('certification', '')
+        pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
+        pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
+        pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
         # todo check if this field is necessary
         pack_metadata['general'] = input_to_list(user_metadata.get('general'))
         pack_metadata['tags'] = input_to_list(user_metadata.get('tags'))
@@ -343,12 +342,12 @@ def main():
         # todo finish implementation of release notes
         # pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
-        pack.upload_to_storage(zip_pack_path, pack.latest_version)
+        # pack.upload_to_storage(zip_pack_path, pack.latest_version)
         pack.prepare_for_index_upload()
         update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
-        pack.cleanup()
+        # pack.cleanup()
 
-    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
+    # upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
 
 
 if __name__ == '__main__':
