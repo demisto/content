@@ -168,7 +168,7 @@ Searches for and fetches the behavior that matches the query.
                 "ProcessID": "197949010450449117", 
                 "Scenario": "known_malware", 
                 "CommandLine": "/Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn", 
-                "UserName": "shaiyaakovi@shais-MacBook-Pro-2.local", 
+                "UserName": "user@u-MacBook-Pro-2.local", 
                 "FileName": "spokeshave.jn", 
                 "SHA256": "df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266", 
                 "ID": "3206", 
@@ -181,7 +181,7 @@ Searches for and fetches the behavior that matches the query.
                 "Scenario": "known_malware", 
                 "ParentProcessID": "197949014644753130", 
                 "CommandLine": "./xSf", 
-                "UserName": "root@shais-MacBook-Pro-2.local", 
+                "UserName": "root@u-MacBook-Pro-2.local", 
                 "FileName": "xSf", 
                 "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
                 "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
@@ -198,8 +198,8 @@ Searches for and fetches the behavior that matches the query.
 
 | ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID | 
 | ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
-| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | shaiyaakovi@shais-MacBook-Pro-2.local |   df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | b41d753a4b61c9fe4486190c3b78e124|   197949010450449117|
-|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b|   root@shais-MacBook-Pro-2.local|          791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b   |06dc9ff1857dcd4cdcd125b277955134   |197949016741905142|
+| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | user@u-MacBook-Pro-2.local |   df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | b41d753a4b61c9fe4486190c3b78e124|   197949010450449117|
+|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b|   root@u-MacBook-Pro-2.local|          791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b   |06dc9ff1857dcd4cdcd125b277955134   |197949016741905142|
 
  
 
@@ -304,7 +304,7 @@ or by providing the IDs of the detections.
                         "Scenario": "known_malware", 
                         "ParentProcessID": "201917902773103685", 
                         "CommandLine": "./xSf", 
-                        "UserName": "shaiyaakovi@shais-MacBook-Pro-2.local", 
+                        "UserName": "user@u-MacBook-Pro-2.local", 
                         "FileName": "xSf", 
                         "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
                         "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
@@ -318,7 +318,7 @@ or by providing the IDs of the detections.
                         "Scenario": "known_malware", 
                         "ParentProcessID": "201917902773103685", 
                         "CommandLine": "./xSf", 
-                        "UserName": "shaiyaakovi@shais-MacBook-Pro-2.local", 
+                        "UserName": "user@u-MacBook-Pro-2.local", 
                         "FileName": "xSf", 
                         "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
                         "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
@@ -328,7 +328,7 @@ or by providing the IDs of the detections.
                     }
                 ], 
                 "MaxSeverity": 30, 
-                "System": "shais-MacBook-Pro-2.local", 
+                "System": "u-MacBook-Pro-2.local", 
                 "ID": "ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902", 
                 "MachineDomain": "", 
                 "ShowInUi": true, 
@@ -344,7 +344,7 @@ or by providing the IDs of the detections.
   |ID                                                         |Status|            System                 |     Process Start Time     |          Customer ID                       | Max Severity|
   |----------------------------------------------------------| ----------------- |--------------------------- |-------------------------------- |---------------------------------- |--------------|
   |ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | ed33ec93d2444d38abd3925803938a75  | 70|
-  |ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902|   new             |  shais-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | ed33ec93d2444d38abd3925803938a75  | 30|
+  |ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | ed33ec93d2444d38abd3925803938a75  | 30|
 
  
 
