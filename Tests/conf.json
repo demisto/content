@@ -674,8 +674,8 @@
             "playbookID": "BigFixTest"
         },
         {
-            "integrations": "Lastline",
-            "playbookID": "Lastline - testplaybook",
+            "integrations": "Lastline v2",
+            "playbookID": "Lastline v2 - Test",
             "nightly": true
         },
         {
@@ -1460,7 +1460,7 @@
         },
         {
             "integrations": [
-                "Lastline",
+                "Lastline v2",
                 "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
@@ -1484,7 +1484,7 @@
             "integrations": [
                 "McAfee Advanced Threat Defense",
                 "VxStream",
-                "Lastline"
+                "Lastline v2"
             ]
         },
         {
@@ -2253,7 +2253,6 @@
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
-        "Elasticsearch_v2_test-v6": "Issue #21510",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633"
     },
@@ -2343,7 +2342,7 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nightly_integrations": [
-        "Lastline",
+        "Lastline v2",
         "TruSTAR",
         "SlackV2"
     ],
