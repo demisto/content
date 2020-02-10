@@ -422,3 +422,8 @@ def collect_content_items_data(pack_path):
         data[directory] = dir_data
 
     return data
+
+
+def input_to_list(input_data):
+    input_data = input_data if input_data else []
+    return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
