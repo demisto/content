@@ -340,7 +340,7 @@ def main():
     for pack in packs_list:
         pack.format_metadata()
         # todo finish implementation of release notes
-        pack.parse_release_notes()
+        # pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
         pack.upload_to_storage(zip_pack_path, pack.latest_version)
         pack.prepare_for_index_upload()
