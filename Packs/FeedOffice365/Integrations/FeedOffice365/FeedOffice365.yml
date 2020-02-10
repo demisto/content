@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Office365 Feed_k
+  id: Office365 Feed
   version: -1
 configuration:
 - display: Fetch indicators
@@ -92,8 +92,8 @@ configuration:
   required: false
   type: 8
 description: Use the Office365 feed integration to get indicators from the feed.
-display: Office365 Feed (k)
-name: Office365 Feed_k
+display: Office365 Feed
+name: Office365 Feed
 script:
   commands:
   - arguments:
