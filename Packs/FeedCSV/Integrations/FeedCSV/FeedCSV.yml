@@ -44,6 +44,7 @@ configuration:
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
+  display: ""
   required: false
   type: 1
 - defaultvalue: '240'
