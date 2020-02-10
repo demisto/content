@@ -45,12 +45,12 @@ class Client(BaseClient):
             'indicator': { (Regex to extract the indicator by, if empty - the whole line is extracted)
                 'regex': r'^AS[0-9]+',
             },
-            'fields': { (See Extraction dictionary below)
+            'fields': [{ (See Extraction dictionary below)
                 'asndrop_country': {
                     'regex': '^.*;\\W([a-zA-Z]+)\\W+',
                     'transform: r'\1'
                 }
-            }
+            }]
         }
         :param: proxy: Use proxy in requests.
         **Extraction dictionary**
@@ -252,15 +252,16 @@ def get_indicator_fields(line, url, client: Client):
 
     if 'fields' in feed_config:
         fields = feed_config['fields']
-        for f, fattrs in fields.items():
-            field = {f: {}}
-            if 'regex' in fattrs:
-                field[f]['regex'] = re.compile(fattrs['regex'])
-            if 'transform' not in fattrs:
-                field[f]['transform'] = r'\g<0>'
-            else:
-                field[f]['transform'] = fattrs['transform']
-            fields_to_extract.append(field)
+        for field in fields:
+            for f, fattrs in field.items():
+                field = {f: {}}
+                if 'regex' in fattrs:
+                    field[f]['regex'] = re.compile(fattrs['regex'])
+                if 'transform' not in fattrs:
+                    field[f]['transform'] = r'\g<0>'
+                else:
+                    field[f]['transform'] = fattrs['transform']
+                fields_to_extract.append(field)
 
     line = line.strip()
     if line:
