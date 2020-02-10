@@ -1,160 +1,2557 @@
-category: Email Gateway
 commonfields:
   id: MimecastV2
   version: -1
-configuration:
-- defaultvalue: https://api.mimecast.com
-  display: BaseUrl - API url including region, For example https://eu-api.mimecast.com
-  name: baseUrl
-  required: true
-  type: 0
-- display: App ID
-  name: appId
-  required: true
-  type: 0
-- display: User Email Address (Use for auto token refresh)
-  name: email
-  required: false
-  type: 0
-- display: Password
-  name: password
-  required: false
-  type: 4
-- display: App key
-  name: appKey
-  required: false
-  type: 4
-- display: AccessKey
-  name: accessKey
-  required: false
-  type: 0
-- display: SecretKey
-  name: secretKey
-  required: false
-  type: 4
-- display: Trust any certificate (not secure)
-  name: new_insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Fetch URL incidents
-  name: fetchURL
-  required: false
-  type: 8
-- display: Fetch attachment incidents
-  name: fetchAttachments
-  required: false
-  type: 8
-- display: Fetch impersonation incidents
-  name: fetchImpersonations
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue: '24'
-  display: Hours before first fetch to retrieve incidents
-  name: fetchDelta
-  required: false
-  type: 0
+name: MimecastV2_Updated_Message_Queue
+display: MimecastV2_Updated_Message_Queue
+category: Email Gateway
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAQCAYAAADdw7vlAAAL9ElEQVR42u1ZeViU1RrHkm5Fdnuq+5gtakop2FWzoHJFUzPKSg2XTNmRRWWRfScYkAEZGGAY1gFm2JkZEIZl2B0EFWRRQbPU65LJVW5eNSq5+d3fOc43zzAi4X18uv/4Pc/7nOF7z/ue9zu/824HvYf9XPzx2kSvSBF36Ze+rdvdeBx5zaGn9B49D+2pbete5BMv7vRNkPTlK1S7/3QD6lt7psw2c2ReMbFiXn53O2O9J8FF79Hz0J4wYXGQbYiAsQ5OYvz5kt4/3YBSRasBvLftVVOr228sdRhy8E221Hv0PLQnWFDoueMbIWMflsIEJuW3/1+MEEqq9Ret956+zTVuit6j56E+kRmyBIDLAtxX196jrzunoEr1Fk9SYXL+8tWJerFp8q+2ucXl23gn5Nt48u+SFxlHJ3vfxPx1dhzJis0BfDsv/hZpVfuzugtkFdVteP9zT+niDT6lYlnTGvb9hcv/fGZncGqcuWWo/DObcNl4aL1DpOzj7aESUAwnucRsrI+X17Q/6xIstPjCLlJg4RRdstZaowc6QmQBMeKQc5cGHh9NtrC69YPY7PLIEEGhOFokl3LSS2WEItJL5THZ5YlnLv74HDv30sCgPr+gKuib1GI5nZehISoTmSEtDk8r5ecpVCvvZ2ue4oBJeFpJTFSmrADzITdCB0j3t1QanlpSsysq47ZjuJBxjEhlnEABifkdhL83Sy44e+nKX+vaj23hpEtVsFlZ3ngkSG+Zhe/pv83fyrxiaoW8aclMQd6c8g4I46umliArDb1sQnh4/54VM32hLTPtAxtm8Xqf/qrGo7O1jV+4zqvutfesKd9wiYNYc7LKW1YT+alqHubQdV4GsfOnguj4vjWxBzxL+ns6ef++DePknyK6eWvonlPrszfbbKmF70nYhflqvSbUfnybJVmD6v3o6+DntOUGBq8/k5CnyHZA2LMLFVDPsA1JJkTznFVQImOD0S9BsoKVUbb3vOYUkcZsD+BTPkgzzwZyIKqH6ATQkguXrz6hvWZzxwlbgHObrGernm8bSkddYvka2gFwIUsJIKtlBXT9wprWL9Ok9VH8fIUsNmd/dYasPkbPbKNfvxoIkD3z9seuV975xP3cgo9dryGHMizNXGzPzPnQ5d/vmLudf2uly82Zi+0YQ7x/acE2ZpMzt+6HK4MT2A+Ad+9/HRsNOQBjK2LfZ5c0fAKQyFpU3+zljr+S9Zdv8u+bvcLpF/LOUL3eDPzGQfmeEObfmYH1ZsI+AlRkYrGz9obVqXqMjT90vkkOyeuL7CjBhrPQ3WK61qMakURhunZPlUd4ZviZ8z9qPPjW0C+PJRVWyywDExl4BQC5G/p2RqX/4h4jukRCIDykH4VN9dH+M5p0c/HKNX1BcW0wPEoODyReTkiKueV79mU37I7OHIQuCgDRLa07FMLKdpz47nno/hfApXyXyPTfXLlZrZCp8eblKjzjchQYKfnwxApUzJrRKy63FrYNOYbfBdeJk8oEJRc0Ya2s6Cx5FCLLc2Qtfn5VLk9SmZVaWpeqRzaX9ZivXfeVhvEKXtjkwn06hJf/ktlG/z54BN0wbPQFn705b2xxiTGI4BdOW7klsJ7wZoA3f83uG8oD3ZPZj/jcNkI2FUACKMLPYt/nlDaYYy0KlCEoPKFwU3qBUj85R6EfGCtZY7TcaZjwyJzNLlxhUo7iqdD4gidjhDIzk0/dr0EXtRPhukwb4K2790mIlxI+DuANlwDhhqjkEgA59tN4+Njn8ACyWRRcbPyV5KIaT4TPmXHiikmKA0f1lW3d+g+aJ+GhL8JzD9uF3Y0IPvGSk82dJybSLuNQ71wnThrxROrhsvpD2x5E977c/VHQSe31T8zrh40TtPlXf7rxbFZZo6OwpNa5q//MSxRghD8K4lqbcA/tybPMHJUAiYJhvMJZqc0DOF8RIIhnwaP/E5Mqn8PykPPGApjKoJW6U1nfYczy4tLLJ/999c6b4FGAkatHtFewU4loQHXiEDSy7/PLWp5fYO56ldhP+J9ahTWvs4+cPmOJ/ZtvLtthhEhgBBuMEFGMCsoPjAjPe7NkJSQEkqrUNTrzZs+3595+kM2uVnVNRCicAZDmdvZ/P//w8dPzj5z4bl5777dzkFfzATAFwisu50JlS6cBkVF19c9CeCUAU168pDI7r0q1sKT2oEmJ8qBpRUvn3NK69hfvt2ZqiXKnPfSOt4pmPZie/lVbg3y1eQiNDWyIBsgN2jz0t0sRUiFHAR7mpsiMtQGGTir3+n0AngWAZdXt81ledIp06lurXG6xADv6Cdy01/tqV2wmvJfqRBjX2GK+PXQWgLwNW1k7hyE/jJES5lJCtBnG93UIcqvoxUvXyTOPh6YUddM8CEKoVY4X2J+HfpsgrW938Y4XH3OOTBty5qT9DmJYoh6qDqNqgM/LGw9TgAev39BHdKi1DOQzO8CjoRpzWTnQHTdu1kBsTrmoreeUse7aKcW1bizAQcn5hx8IYBQgIwDGhjWwORGkDTDCMGcRNvYuwKsAsHD8AM8kHvxHAAeMBBjpgUeKJkMdW5AejPH3MIj1boZGJJpaQBgJkYgyd/Wuq1/v3jeJyLX1npyI/NXPthyoRCXjBbiiudPdOjiRYUMlm0/Zyhahl/KctAAubzpiwMqf+2FgEnJ/DFLCZXI4ME8jj2iCA0eLKwL2rYM9Jy1GAZjqRV7ueCCAV+sAbDgGwOsdohaPCfA4QrSsZvwAe0dlawCGt2psEcubJ8/7aNd1rIODQ1PJkHNQioc/N3f7Hk6WtUdEJqVdIanWEfyiBdo6uaKyalt1xevPzzs+XoDh+e0AgYKBTb4Un1dpj9ZkSamyzRTh1QQhezlaoA4AoQG4oqXD4N5WSfVCWVPHPEFRzUIcsMXQsQjF0ipudpkUchRkP77k3LHT5zStKOa6a/Tyck8hpD82prG0kNL2YN0QPRbAS/9HD37wEE0BRss0qi0oyGpQXVPvRboYEuQqPhgPUDn7mx3R2iBEUq+7I65s8VYd7ZswlgxaqgluMaITAJe2KKhUBaPNQ17lkDZLA3AzAB7nU6XqWolDR/M0quzhKlXnNJaH1sfNDofLEbydkelDKLLm/SHAGg/eqguwPevB8BodgO0jiQc/tBy8V1A6AuAdugBHUg8e1Zbalq7VyM8kFFMvNlrh9OsyC7+incFCLi43ovyic6P2RGRGhSUUbhy4dl0DIC49DHBZ0QsgNEUPrgLb0RalwaMFgYn5Kb7xYiFADRy8fvNpVi6xoLoI7Q+VIfkyXVYf58fPC4WeUBsQZKPQ5lwGXwNwmToHX/vpxgT0q5+hGo6LE+/nUZJU8FBs8bBOHC4skjC/n8jahQhIIXWq/8zFJ9m1u0+eXYqUQKIH1Y21zkImQlTWZPHTjZ//cg/AS770PYsNpXkLvWOwNg+FSSs2nFbR+N02MgdHLAN4FCxsKAMPnqNV+CgABt1w/NMhT+uG61Pyfqa6py1THtKEzNhU+TT0xVjHhva69t5JXtrreXJEyZNxSaJuow7e41lZFS6IKEMEaJZweUN1YU16QQN7f8c9+YhK+vjp80YIs+piK5kBQHTE5qlJSEMletzlrMwPA4NTcAiayaU/5OiFBypmCjiIvrNX/028zSM2+yo8jQIsKm+aRHpZHJBRLjaS6EiLKPUlCCp1a91vLalt83IIS7mDddjLEGpztKhs8z0Aox3Zi9uePnhhd1GF6sMRCV1cZYNc2QuvOOEWlu6jzVMd6X91xaaAFtw29Zlbhu0/1HVKkyc4icXuC8zdTr/7ifsp/xixg6ataDo65aNtIUpsft+abSGVtc1dL2i86eKVJzc6RYtgR++SDT5t+K/UiDDrzxWvm73cqReH7XjQvjzP0aJRfEb5/C/sODzUFY3om7vh7X2GasIB7dvszC2QVbU9oSuH6z2DnIpmS3hCHoBsBSA9KHj6CAHkPlxfNvd++4/XdHrdJzLkDbaBSQVS8NtwwdHtESsCYWQpRtSNQqoLHs/DJQTNlce/Oz8RlyRCtGUj5u7RlsP60NuAfH7fHrlE2bYMlys58OCDWKMHBWMLWrQ5uvP+C43Zu2S9pik3AAAAAElFTkSuQmCC
 description: Mimecast unified email management offers cloud email services for email
   security, continuity and archiving emails. Please read detailed instructions in
-  order to understand how to set the integration's parameters.
-display: Mimecast
-name: MimecastV2
+  order to understand how to set the integration's parameters. Manually added in integration
+  with message queue endpoints for customer
+detaileddescription: "1. In order to refresh token / discover auth types of the account
+  / create new access & secret keys, \nyou are required to provide: App ID, Account
+  email address & password.\nThese parameters support the following integration commands:
+  \nmimecast-login -> fetches new access key & secret key\nmimecast-discover -> lists
+  supported auth types of user\nmimecast-refresh-token -> refreshes the validity duration
+  of access key & secret key (3 days)\n\n2. In order to use the rest of the commands,
+  you are required to provide: App ID, App Key, Access Key & Secret Key.\n\n3. Fetch
+  Incidents - the integration has the ability to fetch 3 types of incidents: url,
+  attachment & impersonation.\nIn order to activate them first tick \"fetch incidents\"
+  box, then tick the relevant boxes for each fetch type you want.\n"
+configuration:
+- display: BaseUrl - API url including region, For example https://eu-api.mimecast.com
+  name: baseUrl
+  defaultvalue: https://api.mimecast.com
+  type: 0
+  required: true
+- display: App ID
+  name: appId
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: User Email Address (Use for auto token refresh)
+  name: email
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: App key
+  name: appKey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: AccessKey
+  name: accessKey
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: SecretKey
+  name: secretKey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Trust any certificate (not secure)
+  name: new_insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch URL incidents
+  name: fetchURL
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch attachment incidents
+  name: fetchAttachments
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch impersonation incidents
+  name: fetchImpersonations
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Hours before first fetch to retrieve incidents
+  name: fetchDelta
+  defaultvalue: "24"
+  type: 0
+  required: false
 script:
+  script: |
+    import demistomock as demisto
+    from CommonServerPython import *
+    from CommonServerUserPython import *
+
+    ''' IMPORTS '''
+
+    import hmac
+    import uuid
+    import json
+    import base64
+    import hashlib
+    import requests
+
+    from datetime import timedelta
+    from urllib2 import HTTPError
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    BASE_URL = demisto.params().get('baseUrl')
+    ACCESS_KEY = demisto.params().get('accessKey')
+    SECRET_KEY = demisto.params().get('secretKey')
+    APP_ID = demisto.params().get('appId')
+    APP_KEY = demisto.params().get('appKey')
+    USE_SSL = None  # assigned in determine_ssl_usage
+    PROXY = True if demisto.params().get('proxy') else False
+    # Flags to control which type of incidents are being fetched
+    FETCH_URL = demisto.params().get('fetchURL')
+    FETCH_ATTACHMENTS = demisto.params().get('fetchAttachments')
+    FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
+    # Used to refresh token / discover available auth types / login
+    EMAIL_ADDRESS = demisto.params().get('email')
+    PASSWORD = demisto.params().get('password')
+    FETCH_DELTA = (demisto.params().get('fetchDelta', 24))
+
+    LOG("command is {}".format(demisto.command()))
+
+    # default query xml template for test module
+    default_query_xml = "<?xml version=\"1.0\"?> \n\
+        <xmlquery trace=\"iql,muse\">\n\
+        <metadata query-type=\"emailarchive\" archive=\"true\" active=\"false\" page-size=\"25\" startrow=\"0\">\n\
+            <smartfolders/>\n\
+            <return-fields>\n\
+                <return-field>attachmentcount</return-field>\n\
+                <return-field>status</return-field>\n\
+                <return-field>subject</return-field>\n\
+                <return-field>size</return-field>\n\
+                <return-field>receiveddate</return-field>\n\
+                <return-field>displayfrom</return-field>\n\
+                <return-field>id</return-field>\n\
+                <return-field>displayto</return-field>\n\
+                <return-field>smash</return-field>\n\
+            </return-fields>\n\
+        </metadata>\n\
+        <muse>\n\
+            <text></text>\n\
+            <date select=\"last_year\"/>\n\
+            <sent></sent>\n\
+            <docs select=\"optional\"></docs>\n\
+            <route/>\n\
+        </muse>\n\
+    </xmlquery>"
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def determine_ssl_usage():
+        global USE_SSL
+
+        old_insecure = demisto.params().get('insecure', None)
+        if old_insecure:
+            USE_SSL = True if old_insecure else False
+            return
+
+        USE_SSL = False if demisto.params().get('new_insecure') else True
+
+
+    def epoch_seconds(d=None):
+        """
+        Return the number of seconds for given date. If no date, return current.
+        """
+        if not d:
+            d = datetime.utcnow()
+        return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+    def auto_refresh_token():
+        """
+        Check if we have a valid token, if not automatically renew validation time for 3 days when necessary params are provided
+        """
+        if APP_ID and EMAIL_ADDRESS and PASSWORD:
+            integration_context = demisto.getIntegrationContext()
+            last_update_ts = integration_context.get('token_last_update')
+            current_ts = epoch_seconds()
+            if (last_update_ts and current_ts - last_update_ts > 60 * 60 * 24 * 3 - 1800) or last_update_ts is None:
+                refresh_token_request()
+                current_ts = epoch_seconds()
+                demisto.setIntegrationContext({'token_last_update': current_ts})
+
+
+    def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False):
+        is_user_auth = True
+        url = BASE_URL + api_endpoint
+        # 2 types of auth, user and non user, mostly user is needed
+        if user_auth:
+            # Generate request header values
+            request_id = str(uuid.uuid4())
+            hdr_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
+
+            # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
+            hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),  # type: ignore
+                                 digestmod=hashlib.sha1).digest()
+
+            # Use the HMAC SHA1 value to sign the hdrDate + ":" requestId + ":" + URI + ":" + appkey
+            signature = base64.encodestring(hmac_sha1).rstrip()
+
+            # Create request headers
+            headers = {
+                'Authorization': 'MC ' + ACCESS_KEY + ':' + signature,
+                'x-mc-app-id': APP_ID,
+                'x-mc-date': hdr_date,
+                'x-mc-req-id': request_id,
+                'Content-Type': 'application/json'
+            }
+
+        else:
+            # This type of auth is only supported for basic commands: login/discover/refresh-token
+            is_user_auth = False
+            auth = base64.b64encode(EMAIL_ADDRESS + ':' + PASSWORD)
+            auth_type = 'Basic-Cloud'
+            auth_header = auth_type + ' ' + auth
+            headers = {
+                'x-mc-app-id': APP_ID,
+                'Content-Type': 'application/json',
+                'Authorization': auth_header
+            }
+
+        LOG('running %s request with url=%s\tparams=%s\tdata=%s\tis user auth=%s' % (
+            method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+        try:
+            res = requests.request(
+                method,
+                url,
+                verify=USE_SSL,
+                params=params,
+                headers=headers,
+                data=payload
+            )
+
+            res.raise_for_status()
+            if is_file:
+                return res
+            return res.json()
+
+        except HTTPError as e:
+            LOG(e)
+            if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
+                if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
+                    return_error(
+                        'Credentials provided are expired, could not automatically refresh tokens.'
+                        ' App ID + Email Address '
+                        '+ Password are required.')
+            else:
+                raise
+
+        except Exception as e:
+            LOG(e)
+            raise
+
+
+    def parse_query_args(args):
+        query_xml = default_query_xml
+        if args.get('pageSize'):
+            query_xml = query_xml.replace('page-size=\"25\"', 'page-size=\"' + args.get('pageSize') + '\"')
+        if args.get('startRow'):
+            query_xml = query_xml.replace('startrow=\"0\"', 'startrow=\"' + args.get('startRow') + '\"')
+        if args.get('active') == 'true':
+            query_xml = query_xml.replace('active=\"false\"', 'active=\"true\"')
+        if args.get('body'):
+            query_xml = query_xml.replace('<text></text>', '<text>(body: ' + args.get('body') + ')</text>')
+        if args.get('subject'):
+            query_xml = query_xml.replace('<text></text>', '<text>(subject: ' + args.get('subject') + ')</text>')
+        if args.get('text'):
+            query_xml = query_xml.replace('<text></text>', '<text>' + args.get('text') + '</text>')
+        if args.get('date'):
+            query_xml = query_xml.replace('<date select=\"last_year\"/>', '<date select=\"' + args.get('date') + '\"/>')
+
+            if args.get('dateTo') or args.get('dateFrom'):
+                return_error('Cannot use both date and dateFrom/dateTo arguments')
+
+        date_to = ""
+        date_from = ""
+
+        if args.get('dateTo'):
+            date_to = args.get('dateTo')
+        if args.get('dateFrom'):
+            date_from = args.get('dateFrom')
+        if date_to and date_from:
+            query_xml = query_xml.replace('<date select=\"last_year\"/>',
+                                          '<date select=\"between\" from=\"' + date_from + '\" to=\"' + date_to + '\" />')
+        elif date_from:
+            query_xml = query_xml.replace('<date select=\"last_year\"/>',
+                                          '<date select=\"between\" from=\"' + date_from + '\" />')
+        elif date_to:
+            query_xml = query_xml.replace('<date select=\"last_year\"/>',
+                                          '<date select=\"between\" to=\"' + date_to + '\" />')
+
+        if args.get('sentFrom'):
+            query_xml = query_xml.replace('<sent></sent>', '<sent select=\"from\" >' + args.get('sentFrom') + '</sent>')
+        if args.get('sentTo'):
+            query_xml = query_xml.replace('<sent></sent>', '<sent select=\"to\" >' + args.get('sentTo') + '</sent>')
+        query_xml = query_xml.replace('<sent></sent>', '')  # no empty tag
+        if args.get('attachmentText'):
+            query_xml = query_xml.replace('</docs>', args.get('attachmentText') + '</docs>')
+        if args.get('attachmentType'):
+            query_xml = query_xml.replace('<docs select=\"optional\">',
+                                          '<docs select=\"' + args.get('attachmentType') + '\">')
+
+        return query_xml
+
+
+    '''COMMANDS '''
+
+
+    def test_module():
+        if not ACCESS_KEY:
+            return_error('Cannot test valid connection without the Access Key parameter.')
+        list_managed_url()
+
+
+    def query():
+        headers = ['Subject', 'Display From', 'Display To', 'Received Date', 'Size', 'Attachment Count', 'Status', 'ID']
+        contents = []
+        context = {}
+        messages_context = []
+        query_xml = ''
+
+        if demisto.args().get('queryXml'):
+            query_xml = demisto.args().get('queryXml')
+        else:
+            query_xml = parse_query_args(demisto.args())
+        if demisto.args().get('dryRun') == 'true':
+            return query_xml
+
+        messages = query_request(query_xml)
+        for message in messages:
+            contents.append({
+                'Subject': message.get('subject'),
+                'From': message.get('displayfrom'),
+                'To': message.get('displayto'),
+                'Received Date': message.get('receiveddate'),
+                'Size': message.get('size'),
+                'Attachment Count': message.get('attachmentcount'),
+                'Status': message.get('status'),
+                'ID': message.get('id')
+            })
+            messages_context.append({
+                'Subject': message.get('subject'),
+                'Sender': message.get('displayfrom'),
+                'Recipient': message.get('displayto'),
+                'ReceivedDate': message.get('receiveddate'),
+                'Size': message.get('size'),
+                'AttachmentCount': message.get('attachmentcount'),
+                'Status': message.get('status'),
+                'ID': message.get('id')
+            })
+
+        context['Mimecast.Message(val.ID && val.ID == obj.ID)'] = messages_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast archived emails', contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def query_request(query_xml):
+        api_endpoint = '/api/archive/search'
+        # API request demands admin boolean, since we don't have any other support but admin we simply pass true.
+        data = [{
+            'admin': True,
+            'query': query_xml
+        }]
+        payload = {
+            'data': data
+        }
+        response = http_request('POST', api_endpoint, json.dumps(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0].get('items')
+
+
+    def url_decode():
+        headers = []  # type: List[str]
+        contents = {}
+        context = {}
+        protected_url = demisto.args().get('url').encode('utf-8')
+        decoded_url = url_decode_request(protected_url)
+        contents['Decoded URL'] = decoded_url
+        context[outputPaths['url']] = {
+            'Data': protected_url,
+            'Mimecast': {
+                'DecodedURL': decoded_url
+            }
+        }
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast Decoded URL:', contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def url_decode_request(url):
+        # Setup required variables
+        api_endpoint = '/api/ttp/url/decode-url'
+        payload = {
+            'data': [
+                {
+                    'url': url
+                }
+            ]
+        }
+        response = http_request('POST', api_endpoint, str(payload))
+        if not response.get('data')[0].get('url'):
+            return_error('No URL has been returned from the service')
+        return response.get('data')[0].get('url')
+
+
+    def get_policy():
+        headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
+        contents = []
+        context = {}
+        title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
+        policy_id = demisto.args().get('policyID')
+        if policy_id:
+            policy_id = policy_id.encode('utf-8')
+            title = 'Mimecast Get Policy'
+
+        policies_list = get_policy_request(policy_id)
+        policies_context = []
+        for policy_list in policies_list:
+            policy = policy_list.get('policy')
+            sender = policy.get('from')
+            reciever = policy.get('to')
+            contents.append({
+                'Policy ID': policy_list['id'],
+                'Sender': {
+                    'Group': sender.get('groupId'),
+                    'Email Address': sender.get('emailAddress'),
+                    'Domain': sender.get('emailDomain'),
+                    'Type': sender.get('type')
+                },
+                'Reciever': {
+                    'Group': reciever.get('groupId'),
+                    'Email Address': reciever.get('emailAddress'),
+                    'Domain': reciever.get('emailDomain'),
+                    'Type': reciever.get('type')
+                },
+                'Bidirectional': policy.get('bidirectional'),
+                'Start': policy.get('fromDate'),
+                'End': policy.get('toDate')
+            })
+            policies_context.append({
+                'ID': policy_list['id'],
+                'Sender': {
+                    'Group': sender.get('groupId'),
+                    'Address': sender.get('emailAddress'),
+                    'Domain': sender.get('emailDomain'),
+                    'Type': sender.get('type')
+                },
+                'Reciever': {
+                    'Group': reciever.get('groupId'),
+                    'Address': reciever.get('emailAddress'),
+                    'Domain': reciever.get('emailDomain'),
+                    'Type': reciever.get('type')
+                },
+                'Bidirectional': policy.get('bidirectional'),
+                'FromDate': policy.get('fromDate'),
+                'ToDate': policy.get('toDate')
+            })
+
+        context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = policies_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def get_policy_request(policy_id=None):
+        # Setup required variables
+        api_endpoint = '/api/policy/blockedsenders/get-policy'
+        data = []
+        if policy_id:
+            data.append({
+                'id': policy_id
+            })
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')
+
+
+    def get_arguments_for_policy_command(args):
+        # type: (dict) -> Tuple[dict, str]
+        """
+          Args:
+              args: Demisto arguments
+
+          Returns:
+              tuple. policy arguments, and option to choose from the policy configuration.
+         """
+
+        description = args.get('description', '').encode('utf-8')
+        from_part = args.get('fromPart', '').encode('utf-8')
+        from_type = args.get('fromType', '').encode('utf-8')
+        from_value = args.get('fromValue', '').encode('utf-8')
+        to_type = args.get('toType', '').encode('utf-8')
+        to_value = args.get('toValue', '').encode('utf-8')
+        option = str(args.get('option', '').encode('utf-8'))
+        policy_obj = {
+            'description': description,
+            'fromPart': from_part,
+            'fromType': from_type,
+            'fromValue': from_value,
+            'toType': to_type,
+            'toValue': to_value
+        }
+
+        return policy_obj, option
+
+
+    def create_policy():
+        headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
+        context = {}
+        policy_args = demisto.args()
+        policy_obj, option = get_arguments_for_policy_command(policy_args)
+        policy_list = create_or_update_policy_request(policy_obj, option)
+        policy = policy_list.get('policy')
+        policy_id = policy_list.get('id')
+        title = 'Mimecast Create Policy: \n Policy Was Created Successfully!'
+        sender = policy.get('from')
+        receiver = policy.get('to')
+        description = policy.get('description')
+        content = {
+            'Policy ID': policy_id,
+            'Description': description,
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Email Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Receiver': {
+                'Group': receiver.get('groupId'),
+                'Email Address': receiver.get('emailAddress'),
+                'Domain': receiver.get('emailDomain'),
+                'Type': receiver.get('type')
+            },
+            'Reciever': {
+                'Group': receiver.get('groupId'),
+                'Email Address': receiver.get('emailAddress'),
+                'Domain': receiver.get('emailDomain'),
+                'Type': receiver.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'Start': policy.get('fromDate'),
+            'End': policy.get('toDate')
+        }  # type: Dict[Any, Any]
+        policies_context = {
+            'ID': policy_id,
+            'Description': description,
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Receiver': {
+                'Group': receiver.get('groupId'),
+                'Address': receiver.get('emailAddress'),
+                'Domain': receiver.get('emailDomain'),
+                'Type': receiver.get('type')
+            },
+            'Reciever': {
+                'Group': receiver.get('groupId'),
+                'Email Address': receiver.get('emailAddress'),
+                'Domain': receiver.get('emailDomain'),
+                'Type': receiver.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'FromDate': policy.get('fromDate'),
+            'ToDate': policy.get('toDate')
+        }  # type: Dict[Any, Any]
+
+        context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = policies_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': policy_list,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, content, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def set_empty_value_args_policy_update(policy_obj, option, policy_id):
+        """
+        The function use the get policy request function to fill the empty arguments in the policy
+
+        Args:
+            policy_obj (Dict): Dict of policy details
+            option: (str) Policy option
+            policy_id: (str) Policy ID
+
+        Returns:
+              Tuple. Policy object, the option to configure on the policy, policy id.
+         """
+        empty_args_list = []
+        # Add the empty arguments to empty args list
+        for arg, value in policy_obj.items():
+            if value == '':
+                empty_args_list.append(arg)
+        if option == '':
+            empty_args_list.append("option")
+        # Check if there are any empty arguments
+        if len(empty_args_list) > 0:
+            # Fill the empty arguments with the current data using get policy request function
+            policy_details = get_policy_request(policy_id)[0]
+            for arg in empty_args_list:
+                if arg == "option":
+                    option = policy_details["option"].encode("utf-8")
+                else:
+                    policy_obj[arg] = policy_details["policy"][arg].encode("utf-8")
+
+        return policy_obj, option, policy_id
+
+
+    def update_policy():
+        """
+              Update policy according to policy ID
+         """
+        headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
+        context = {}
+        policy_args = demisto.args()
+        policy_obj, option = get_arguments_for_policy_command(policy_args)
+        policy_id = str(policy_args.get('policy_id', '').encode('utf-8'))
+        if not policy_id:
+            return_error("You need to enter policy ID")
+        policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
+        response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
+        policy = response.get('policy')
+        title = 'Mimecast Update Policy: \n Policy Was Updated Successfully!'
+        sender = policy.get('from')
+        receiver = policy.get('to')
+        description = policy.get('description')
+        contents = {
+            'Policy ID': policy_id,
+            'Description': description,
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Email Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Receiver': {
+                'Group': receiver.get('groupId'),
+                'Email Address': receiver.get('emailAddress'),
+                'Domain': receiver.get('emailDomain'),
+                'Type': receiver.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'Start': policy.get('fromDate'),
+            'End': policy.get('toDate')
+        }  # type: Dict[Any, Any]
+        policies_context = {
+            'ID': policy_id,
+            'Description': description,
+            'Sender': {
+                'Group': sender.get('groupId'),
+                'Address': sender.get('emailAddress'),
+                'Domain': sender.get('emailDomain'),
+                'Type': sender.get('type')
+            },
+            'Receiver': {
+                'Group': receiver.get('groupId'),
+                'Address': receiver.get('emailAddress'),
+                'Domain': receiver.get('emailDomain'),
+                'Type': receiver.get('type')
+            },
+            'Bidirectional': policy.get('bidirectional'),
+            'FromDate': policy.get('fromDate'),
+            'ToDate': policy.get('toDate')
+        }  # type: Dict[Any, Any]
+
+        context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = policies_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def create_or_update_policy_request(policy, option, policy_id=None):
+        # Setup required variables
+        api_endpoint = '/api/policy/blockedsenders/create-policy'
+        payload = {
+            'data': [{
+                'policy': policy,
+                'option': option
+            }]
+        }
+        # Policy ID isnt None if it is an update policy request cause its required to
+        # write a policy ID on update policy command
+        if policy_id:
+            payload['data'][0]['id'] = policy_id
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0]
+
+
+    def delete_policy():
+        contents = []  # type: List[Any]
+        context = {}
+        policy_id = demisto.args().get('policyID').encode('utf-8')
+
+        delete_policy_request(policy_id)
+
+        context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = {
+            'ID': policy_id,
+            'Deleted': True
+        }
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Mimecast Policy {} deleted successfully!'.format(policy_id),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def delete_policy_request(policy_id=None):
+        # Setup required variables
+        api_endpoint = '/api/policy/blockedsenders/delete-policy'
+        data = [{
+            'id': policy_id
+        }]
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        if response.get('data')[0].get('id') != policy_id:
+            return_error('Policy was not deleted.')
+        return response.get('data')[0]
+
+
+    def manage_sender():
+        headers = []  # type: List[str]
+        context = {}
+        sender = demisto.args().get('sender').encode('utf-8')
+        recipient = demisto.args().get('recipient').encode('utf-8')
+        action = demisto.args().get('action').encode('utf-8')
+        title_action = 'permitted' if action == 'permit' else 'blocked'
+        title = 'Mimecast messages from {} to {} will now be {}!'.format(sender, recipient, title_action)
+
+        req_obj = {
+            'sender': sender,
+            'to': recipient,
+            'action': action
+        }
+
+        managed_sender = manage_sender_request(req_obj)
+
+        contents = {
+            'Sender': managed_sender.get('sender'),
+            'Recipient': managed_sender.get('to'),
+            'Action': managed_sender.get('type'),
+            'ID': managed_sender.get('id')
+        }
+
+        context['Mimecast.Managed(val.ID && val.ID == obj.ID)'] = {
+            'Sender': managed_sender.get('sender'),
+            'Recipient': managed_sender.get('to'),
+            'Action': managed_sender.get('type'),
+            'ID': managed_sender.get('id')
+        }
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def manage_sender_request(req_obj):
+        # Setup required variables
+        api_endpoint = '/api/managedsender/permit-or-block-sender'
+        data = []
+        data.append(req_obj)
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0]
+
+
+    def list_managed_url():
+        headers = ['URL', 'Action', 'Match Type', 'User Awareness', 'URL Rewriting', 'Comment']
+        contents = []
+        context = {}
+        managed_urls_context = []
+        full_url_response = ''
+        url = demisto.args().get('url')
+        if url:
+            url = url.encode('utf-8')
+
+        managed_urls = list_managed_url_request()
+        for managed_url in managed_urls:
+            query_string = ''
+            scheme = ''
+            if managed_url.get('queryString'):
+                query_string = '?' + managed_url.get('queryString')
+            if managed_url.get('scheme'):
+                scheme = managed_url.get('scheme') + '://'
+            full_url_response = scheme + managed_url.get('domain', '') + managed_url.get('path', '') + query_string
+            if (url and url in full_url_response) or not url:
+                contents.append({
+                    'URL': full_url_response,
+                    'Match Type': managed_url.get('matchType'),
+                    'Comment': managed_url.get('comment'),
+                    'Action': managed_url.get('action'),
+                    'URL Rewriting': managed_url.get('disableRewrite'),
+                    'User Awareness': managed_url.get('disableUserAwareness')
+                })
+                managed_urls_context.append({
+                    'Domain': managed_url.get('domain'),
+                    'disableLogClick': managed_url.get('disableLogClick'),
+                    'Action': managed_url.get('action'),
+                    'Path': managed_url.get('path'),
+                    'matchType': managed_url.get('matchType'),
+                    'ID': managed_url.get('id'),
+                    'disableRewrite': managed_url.get('disableRewrite')
+                })
+
+        context['Mimecast.URL(val.ID && val.ID == obj.ID)'] = managed_urls_context
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast Managed URLs: ', contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def list_managed_url_request():
+        # Setup required variables
+        api_endpoint = '/api/ttp/url/get-all-managed-urls'
+        data = []  # type: List[Any]
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')
+
+
+    def create_managed_url():
+        context = {}
+        contents = {}  # type: Dict[Any, Any]
+        managed_urls_context = []
+        url = demisto.args().get('url').encode('utf-8')
+        action = demisto.args().get('action').encode('utf-8')
+        match_type = demisto.args().get('matchType').encode('utf-8')
+        disable_rewrite = demisto.args().get('disableRewrite').encode('utf-8')
+        disable_user_awareness = demisto.args().get('disableUserAwareness').encode('utf-8')
+        disable_log_click = demisto.args().get('disableLogClick').encode('utf-8')
+        comment = demisto.args().get('comment')
+        if comment:
+            comment = comment.encode('utf-8')
+
+        url_req_obj = {
+            'comment': comment,
+            'disableRewrite': disable_rewrite,
+            'url': url,
+            'disableUserAwareness': disable_user_awareness,
+            'disableLogClick': disable_log_click,
+            'action': action,
+            'matchType': match_type
+        }
+
+        managed_url = create_managed_url_request(url_req_obj)
+        managed_urls_context.append({
+            'Domain': managed_url.get('domain'),
+            'disableLogClick': managed_url.get('disableLogClick'),
+            'Action': managed_url.get('action'),
+            'Path': managed_url.get('path'),
+            'matchType': managed_url.get('matchType'),
+            'ID': managed_url.get('id'),
+            'disableRewrite': managed_url.get('disableRewrite')
+        })
+
+        context['Mimecast.URL(val.ID && val.ID == obj.ID)'] = managed_urls_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Managed URL {} created successfully!'.format(url),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def create_managed_url_request(url_obj):
+        # Setup required variables
+        api_endpoint = '/api/ttp/url/create-managed-url'
+        data = []
+        data.append(url_obj)
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0]
+
+
+    def list_messages():
+        headers = ['Subject', 'Size', 'Recieved Date', 'From', 'Attachment Count', 'Message ID']
+        context = {}
+        contents = []
+        messages_context = []
+        search_params = {}
+
+        # can't send null values for keys, so if optional value not sent by user, do not add to request.
+        mailbox = demisto.args().get('mailbox', '').encode('utf-8')
+        if mailbox:
+            search_params['mailbox'] = mailbox
+        view = demisto.args().get('view', '').encode('utf-8')
+        if view:
+            search_params['view'] = view
+        end_time = demisto.args().get('endTime', '').encode('utf-8')
+        if end_time:
+            search_params['end'] = end_time
+        start_time = demisto.args().get('startTime', '').encode('utf-8')
+        if start_time:
+            search_params['start'] = start_time
+        subject = demisto.args().get('subject')
+
+        messages_list = list_messages_request(search_params)
+
+        for message in messages_list:
+            if subject == message.get('subject') or not subject:
+                contents.append({
+                    'Message ID': message.get('id'),
+                    'Subject': message.get('subject'),
+                    'Size': message.get('size'),
+                    'Recieved Date': message.get('received'),
+                    'From': message.get('from').get('emailAddress'),
+                    'Attachment Count': message.get('attachmentCount')
+                })
+                messages_context.append({
+                    'Subject': message.get('subject'),
+                    'ID': message.get('id'),
+                    'Size': message.get('size'),
+                    'RecievedDate': message.get('received'),
+                    'From': message.get('from').get('emailAddress'),
+                    'AttachmentCount': message.get('attachmentCount')
+                })
+
+        context['Mimecast.Message(val.ID && val.ID == obj.ID)'] = messages_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast messages list', contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def list_messages_request(search_params):
+        # Setup required variables
+        api_endpoint = '/api/archive/get-message-list'
+        data = []
+        data.append(search_params)
+        payload = {
+            'meta': {
+                'pagination': {
+                }
+            },
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')
+
+
+    def get_url_logs():
+        headers = []  # type: List[Any]
+        contents = []
+        context = {}
+        url_logs_context = []
+        search_params = {}
+        result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
+        from_date = demisto.args().get('fromDate', '').encode('utf-8')
+        to_date = demisto.args().get('toDate', '').encode('utf-8')
+        scan_result = demisto.args().get('resultType', '').encode('utf-8')
+        limit = int(demisto.args().get('limit', 100))
+
+        if from_date:
+            search_params['from'] = from_date
+        if to_date:
+            search_params['to'] = to_date
+        if scan_result:
+            search_params['scanResult'] = scan_result
+
+        url_logs = get_url_logs_request(search_params, result_number)
+        if limit:
+            url_logs = url_logs[:limit]
+        for url_log in url_logs:
+            contents.append({
+                'Action': url_log.get('action'),
+                'Admin Override': url_log.get('adminOverride'),
+                'Category': url_log.get('category'),
+                'Date': url_log.get('date'),
+                'Route': url_log.get('route'),
+                'Scan Result': url_log.get('scanResult'),
+                'URL': url_log.get('url'),
+                'User Awareness Action': url_log.get('userAwarenessAction'),
+                'User Email Address': url_log.get('userEmailAddress'),
+                'User Override': url_log.get('userOverride')
+            })
+            url_logs_context.append({
+                'Action': url_log.get('action'),
+                'AdminOverride': url_log.get('adminOverride'),
+                'Category': url_log.get('category'),
+                'Date': url_log.get('date'),
+                'Route': url_log.get('route'),
+                'Result': url_log.get('scanResult'),
+                'URL': url_log.get('url'),
+                'Awareness': url_log.get('userAwarenessAction'),
+                'Address': url_log.get('userEmailAddress'),
+                'UserOverride': url_log.get('userOverride')
+            })
+
+        context['Mimecast.UrlLog'] = url_logs_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast URL logs: ', contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def get_url_logs_request(search_params, result_number=None):
+        # Setup required variables
+        api_endpoint = '/api/ttp/url/get-logs'
+        pagination = {}  # type: Dict[Any, Any]
+        if result_number:
+            pagination = {'page_size': result_number}
+        payload = {
+            'meta': {
+                'pagination': pagination
+            },
+            'data': [search_params]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0].get('clickLogs')
+
+
+    def get_attachment_logs():
+        headers = []  # type: List[Any]
+        contents = []
+        context = {}
+        attachment_logs_context = []
+        search_params = {}
+        result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
+        from_date = demisto.args().get('fromDate', '').encode('utf-8')
+        to_date = demisto.args().get('toDate', '').encode('utf-8')
+        result = demisto.args().get('resultType', '').encode('utf-8')
+        limit = int(demisto.args().get('limit', 100))
+
+        if from_date:
+            search_params['from'] = from_date
+        if to_date:
+            search_params['to'] = to_date
+        if result:
+            search_params['result'] = result
+
+        attachment_logs = get_attachment_logs_request(search_params, result_number)
+        if limit:
+            attachment_logs = attachment_logs[:limit]
+        for attachment_log in attachment_logs:
+            contents.append({
+                'Result': attachment_log.get('result'),
+                'Date': attachment_log.get('date'),
+                'Sender Address': attachment_log.get('senderAddress'),
+                'File Name': attachment_log.get('fileName'),
+                'Action': attachment_log.get('actionTriggered'),
+                'Route': attachment_log.get('route'),
+                'Details': attachment_log.get('details'),
+                'Recipient Address': attachment_log.get('recipientAddress'),
+                'File Type': attachment_log.get('fileType')
+            })
+            attachment_logs_context.append({
+                'Result': attachment_log.get('result'),
+                'Date': attachment_log.get('date'),
+                'Sender': attachment_log.get('senderAddress'),
+                'FileName': attachment_log.get('fileName'),
+                'Action': attachment_log.get('actionTriggered'),
+                'Route': attachment_log.get('route'),
+                'Details': attachment_log.get('details'),
+                'Recipient': attachment_log.get('recipientAddress'),
+                'FileType': attachment_log.get('fileType')
+            })
+
+        context['Mimecast.AttachmentLog'] = attachment_logs_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast attachment logs: ', contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def get_attachment_logs_request(search_params, result_number=None):
+        # Setup required variables
+        api_endpoint = '/api/ttp/attachment/get-logs'
+        pagination = {}  # type: Dict[Any, Any]
+        if result_number:
+            pagination = {'page_size': result_number}
+        payload = {
+            'meta': {
+                'pagination': pagination
+            },
+            'data': [search_params]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0].get('attachmentLogs')
+
+
+    def get_impersonation_logs():
+        headers = []  # type: List[Any]
+        contents = []
+        context = {}
+        impersonation_logs_context = []
+        search_params = {}
+        result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
+        from_date = demisto.args().get('fromDate', '').encode('utf-8')
+        to_date = demisto.args().get('toDate', '').encode('utf-8')
+        tagged_malicious = demisto.args().get('taggedMalicious', '').encode('utf-8')
+        search_field = demisto.args().get('searchField', '').encode('utf-8')
+        query = demisto.args().get('query', '').encode('utf-8')
+        identifiers = argToList(demisto.args().get('identifiers', '').encode('utf-8'))
+        actions = argToList(demisto.args().get('actions', '').encode('utf-8'))
+        limit = int(demisto.args().get('limit', 100))
+
+        if from_date:
+            search_params['from'] = from_date
+        if to_date:
+            search_params['to'] = to_date
+        if tagged_malicious:
+            search_params['taggedMalicious'] = tagged_malicious
+        if search_field:
+            search_params['searchField'] = search_field
+        if query:
+            search_params['query'] = query
+        if identifiers:
+            search_params['identifiers'] = identifiers
+        if actions:
+            search_params['actions'] = actions
+
+        impersonation_logs, result_count = get_impersonation_logs_request(search_params, result_number)
+        if limit:
+            impersonation_logs = impersonation_logs[:limit]
+        for impersonation_log in impersonation_logs:
+            contents.append({
+                'Result Count': result_count,
+                'Hits': impersonation_log.get('hits'),
+                'Malicious': impersonation_log.get('taggedMalicious'),
+                'Sender IP': impersonation_log.get('senderIpAddress'),
+                'Sender Address': impersonation_log.get('senderAddress'),
+                'Subject': impersonation_log.get('subject'),
+                'Identifiers': impersonation_log.get('identifiers'),
+                'Date': impersonation_log.get('eventTime'),
+                'Action': impersonation_log.get('action'),
+                'Policy': impersonation_log.get('definition'),
+                'ID': impersonation_log.get('id'),
+                'Recipient Address': impersonation_log.get('recipientAddress'),
+                'External': impersonation_log.get('taggedExternal')
+            })
+            impersonation_logs_context.append({
+                'ResultCount': result_count,
+                'Hits': impersonation_log.get('hits'),
+                'Malicious': impersonation_log.get('taggedMalicious'),
+                'SenderIP': impersonation_log.get('senderIpAddress'),
+                'SenderAddress': impersonation_log.get('senderAddress'),
+                'Subject': impersonation_log.get('subject'),
+                'Identifiers': impersonation_log.get('identifiers'),
+                'Date': impersonation_log.get('eventTime'),
+                'Action': impersonation_log.get('action'),
+                'Policy': impersonation_log.get('definition'),
+                'ID': impersonation_log.get('id'),
+                'RecipientAddress': impersonation_log.get('recipientAddress'),
+                'External': impersonation_log.get('taggedExternal')
+            })
+
+        context['Mimecast.Impersonation'] = impersonation_logs_context
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast impersonation logs: ', contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def get_impersonation_logs_request(search_params, result_number=None):
+        # Setup required variables
+        api_endpoint = '/api/ttp/impersonation/get-logs'
+        pagination = {}  # type: Dict[Any, Any]
+        if result_number:
+            pagination = {'page_size': result_number}
+        payload = {
+            'meta': {
+                'pagination': pagination
+            },
+            'data': [search_params]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0].get('impersonationLogs'), response.get('data')[0].get('resultCount')
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        last_fetch = last_run.get('time')
+
+        # handle first time fetch
+        if last_fetch is None:
+            last_fetch = datetime.now() - timedelta(hours=FETCH_DELTA)
+            last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+        else:
+            last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+            last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+        current_fetch = last_fetch
+
+        incidents = []  # type: List[Any]
+        if FETCH_URL:
+            search_params = {
+                'from': last_fetch_date_time,
+                'scanResult': 'malicious'
+            }
+            url_logs = get_url_logs_request(search_params)
+            for url_log in url_logs:
+                incident = url_to_incident(url_log)
+                temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+                # update last run
+                if temp_date > last_fetch:
+                    last_fetch = temp_date + timedelta(seconds=1)
+
+                # avoid duplication due to weak time query
+                if temp_date > current_fetch:
+                    incidents.append(incident)
+
+        if FETCH_ATTACHMENTS:
+            search_params = {
+                'from': last_fetch_date_time,
+                'result': 'malicious'
+            }
+            attachment_logs = get_attachment_logs_request(search_params)
+            for attachment_log in attachment_logs:
+                incident = attachment_to_incident(attachment_log)
+                temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+
+                # update last run
+                if temp_date > last_fetch:
+                    last_fetch = temp_date + timedelta(seconds=1)
+
+                # avoid duplication due to weak time query
+                if temp_date > current_fetch:
+                    incidents.append(incident)
+
+        if FETCH_IMPERSONATIONS:
+            search_params = {
+                'from': last_fetch_date_time,
+                'taggedMalicious': True
+            }
+            impersonation_logs, _ = get_impersonation_logs_request(search_params)
+            for impersonation_log in impersonation_logs:
+                incident = impersonation_to_incident(impersonation_log)
+                temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+
+                # update last run
+                if temp_date > last_fetch:
+                    last_fetch = temp_date + timedelta(seconds=1)
+
+                # avoid duplication due to weak time query
+                if temp_date > current_fetch:
+                    incidents.append(incident)
+
+        demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
+        demisto.incidents(incidents)
+
+
+    def url_to_incident(url_log):
+        incident = {}
+        incident['name'] = 'Mimecast malicious URL: ' + url_log.get('url')
+        incident['occurred'] = url_log.get('date').replace('+0000', 'Z')
+        incident['rawJSON'] = json.dumps(url_log)
+        return incident
+
+
+    def attachment_to_incident(attachment_log):
+        incident = {}
+        incident['name'] = 'Mimecast malicious attachment: ' + attachment_log.get('fileName')
+        incident['occurred'] = attachment_log.get('date').replace('+0000', 'Z')
+        incident['rawJSON'] = json.dumps(attachment_log)
+        return incident
+
+
+    def impersonation_to_incident(impersonation_log):
+        incident = {}
+        incident['name'] = 'Mimecast malicious impersonation: ' + impersonation_log.get('subject')
+        incident['occurred'] = impersonation_log.get('eventTime').replace('+0000', 'Z')
+        incident['rawJSON'] = json.dumps(impersonation_log)
+        return incident
+
+
+    def discover():
+        headers = []  # type: List[Any]
+        context = {}
+        context_obj = {}  # type: Dict[Any, Any]
+        contents = []
+
+        response = discover_request()
+
+        contents.append({
+            'Authentication Types': response.get('authenticate'),
+            'Email Address': response.get('emailAddress'),
+            'Email Token': response.get('emailToken')
+        })
+
+        context_obj = {
+            'AuthenticationTypes': response.get('authenticate'),
+            'EmailAddress': response.get('emailAddress'),
+            'EmailToken': response.get('emailToken')
+        }
+
+        context['Mimecast.Authentication(val.EmailAddress && val.EmailAddress === obj.EmailAddress)'] = context_obj
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast Authentication Information', contents, headers),
+            'EntryContext': context
+        }
+
+        return results
+
+
+    def discover_request():
+        if not EMAIL_ADDRESS:
+            return_error('In order to discover account\'s auth types, account\'s email is required.')
+        email = EMAIL_ADDRESS.encode('utf-8')
+        # Setup required variables
+        api_endpoint = '/api/login/discover-authentication'
+        payload = {
+            'data': [{
+                'emailAddress': email
+            }]
+        }
+        response = http_request('POST', api_endpoint, str(payload), {}, user_auth=False)
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0]
+
+
+    def refresh_token():
+        contents = refresh_token_request()
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': 'Token has been refreshed succesfully and is valid for the next 3 days'
+        }
+
+        return results
+
+
+    def refresh_token_request():
+        if not EMAIL_ADDRESS:
+            return_error('In order to refresh a token validty duration, account\'s email is required.')
+        if not ACCESS_KEY:
+            return_error('In order to refresh a token validty duration, account\'s access key is required.')
+        email = EMAIL_ADDRESS.encode('utf-8')
+        access_key = ACCESS_KEY.encode('utf-8')
+        # Setup required variables
+        api_endpoint = '/api/login/login'
+        payload = {
+            'data': [{
+                'userName': email,
+                'accessKey': access_key
+            }]
+        }
+        response = http_request('POST', api_endpoint, str(payload), {}, user_auth=False)
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0]
+
+
+    def login():
+        headers = ['Access Key', 'Secret Key']
+        contents = []
+
+        response = login_request()
+
+        contents.append({
+            'Access Key': response.get('accessKey'),
+            'Secret Key': response.get('secretKey')
+        })
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Mimecast authentication details \n Tokens are valid for 3 days', contents,
+                                             headers)
+        }
+
+        return results
+
+
+    def login_request():
+        if not EMAIL_ADDRESS:
+            return_error('In order to refresh a token validty duration, account\'s email is required.')
+        email = EMAIL_ADDRESS.encode('utf-8')
+        # Setup required variables
+        api_endpoint = '/api/login/login'
+        payload = {
+            'data': [{
+                'userName': email
+            }]
+        }
+        response = http_request('POST', api_endpoint, str(payload), {}, user_auth=False)
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0]
+
+
+    def get_message():
+        context = {}
+        contents = {}  # type: Dict[Any, Any]
+        metadata_context = {}  # type: Dict[Any, Any]
+        results = []
+        message_id = demisto.args().get('messageID').encode('utf-8')
+        message_context = demisto.args().get('context').encode('utf-8')
+        message_type = demisto.args().get('type').encode('utf-8')
+        message_part = demisto.args().get('part')
+
+        if message_part == 'all' or message_part == 'metadata':
+            contents, metadata_context = get_message_metadata(message_id)
+
+            context['Mimecast.Message(val.ID && val.ID === obj.ID)'] = metadata_context
+
+            results.append({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': contents,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Mimecast message details', contents, removeNull=True),
+                'EntryContext': context
+            })
+
+        if message_part == 'all' or message_part == 'message':
+            email_file = get_message_body_content_request(message_id, message_context, message_type)
+            results.append(fileResult(message_id, email_file))
+
+        return results
+
+
+    def get_message_body_content_request(message_id, message_context, message_type):
+        # Setup required variables
+        api_endpoint = '/api/archive/get-message-part'
+
+        data = [{
+            'id': message_id,
+            'type': message_type,
+            'context': message_context
+        }]
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload), is_file=True)
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response.content
+
+
+    def get_message_metadata(message_id):
+        contents = {}  # type: Dict[Any, Any]
+        context = {}  # type: Dict[Any, Any]
+        message = get_message_metadata_request(message_id)
+
+        receivers = message.get('to', [])
+        to_context = []
+        to_contents = []
+        for receiver in receivers:
+            to_context.append({
+                'EmailAddress': receiver.get('emailAddress')
+            })
+            to_contents.append(
+                receiver.get('emailAddress')
+            )
+
+        copies = message.get('cc', [])
+        cc_context = []
+        cc_contents = []
+        for copy in copies:
+            cc_context.append({
+                'EmailAddress': copy.get('emailAddress')
+            })
+            cc_contents.append(
+                copy.get('emailAddress')
+            )
+
+        response_headers = message.get('headers', [])
+        headers_contents = []
+        headers_context = []
+        for header in response_headers:
+            values = header.get('values')
+            values = [value.encode('utf-8') for value in values]
+            headers_context.append({
+                'Name': header.get('name'),
+                'Values': values
+            })
+            headers_contents.append(
+                'Name: {}, Values: {}'.format(str(header.get('name')), str(values))
+            )
+
+        attachments = message.get('attachments', [])
+        attachments_context = []
+        attachments_contents = []
+        for attachment in attachments:
+            attachments_context.append({
+                'FileName': attachment.get('filename'),
+                'SHA256': attachment.get('sha256'),
+                'ID': attachment.get('id'),
+                'Size': attachment.get('size')
+            })
+            attachments_contents.append(
+                'FileName: {}, SHA256: {}, ID: {}, Size: {}'.format(str(attachment.get('filename')),
+                                                                    str(attachment.get('sha256')),
+                                                                    str(attachment.get('id')), str(attachment.get('size')))
+            )
+
+        contents = {
+            'Subject': message.get('subject'),
+            'Header Date': message.get('headerDate'),
+            'Size': message.get('size'),
+            'From': message.get('from', {}).get('emailAddress'),
+            'To': to_contents,
+            'Reply To': message.get('replyTo', {}).get('emailAddress'),
+            'CC': cc_contents,
+            'Envelope From': message.get('envelopeFrom', {}).get('emailAddress'),
+            'Headers': headers_contents,
+            'Attachments': attachments_contents,
+            'Processed': message.get('processed'),
+            'Has Html Body': message.get('hasHtmlBody'),
+            'ID': message.get('id')
+        }
+
+        context = {
+            'Subject': message.get('subject'),
+            'HeaderDate': message.get('headerDate'),
+            'Size': message.get('size'),
+            'From': message.get('from', {}).get('emailAddress'),
+            'To': to_context,
+            'ReplyTo': message.get('replyTo', {}).get('emailAddress'),
+            'CC': cc_context,
+            'EnvelopeFrom': message.get('envelopeFrom', {}).get('emailAddress'),
+            'Headers': headers_context,
+            'Attachments': attachments_context,
+            'Processed': message.get('processed'),
+            'HasHtmlBody': message.get('hasHtmlBody'),
+            'ID': message.get('id')
+        }
+
+        return contents, context
+
+
+    def get_message_metadata_request(message_id):
+        # Setup required variables
+        api_endpoint = '/api/archive/get-message-detail'
+        data = [{
+            'id': message_id
+        }]
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if response.get('fail'):
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return response.get('data')[0]
+
+
+    def download_attachment():
+        attachment_id = demisto.args().get('attachmentID').encode('utf-8')
+        attachment_file = download_attachment_request(attachment_id)
+        return fileResult(attachment_id, attachment_file)
+
+
+    def download_attachment_request(attachment_id):
+        # Setup required variables
+        api_endpoint = '/api/archive/get-file'
+
+        data = [{
+            'id': attachment_id
+        }]
+        payload = {
+            'data': data
+        }
+
+        response = http_request('POST', api_endpoint, str(payload), is_file=True)
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response.content
+
+
+    def find_groups():
+        api_response = create_find_groups_request()
+
+        markdown_output = find_groups_api_response_to_markdown(api_response)
+        entry_context = find_groups_api_response_to_context(api_response)
+
+        return_outputs(markdown_output, entry_context, api_response)
+
+
+    def create_find_groups_request():
+        api_endpoint = '/api/directory/find-groups'
+        query_string = demisto.args().get('query_string', '').encode('utf-8')
+        query_source = demisto.args().get('query_source', '').encode('utf-8')
+        limit = demisto.args().get('limit')
+
+        meta = dict()  # type: Dict[str, Dict[str, int]]
+        data = dict()  # type: Dict[str, Dict[str, str]]
+
+        if limit:
+            meta['pagination'] = {
+                'pageSize': int(limit)
+            }
+
+        if query_string:
+            data['query'] = query_string
+        if query_source:
+            data['source'] = query_source
+
+        payload = {
+            'meta': meta,
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def find_groups_api_response_to_markdown(api_response):
+        num_groups_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
+        query_string = demisto.args().get('query_string', '')
+        query_source = demisto.args().get('query_source', '')
+
+        if not num_groups_found:
+            md = '### Found 0 groups'
+
+            if query_string:
+                md += '\n#### query: ' + query_string
+
+            if query_source:
+                md += '\n#### source: ' + query_source
+
+            return md
+
+        md = 'Found ' + str(num_groups_found) + ' groups:'
+        md_metadata = ''
+
+        if query_string:
+            md_metadata += '#### query: ' + query_string
+
+        if query_source:
+            if md_metadata:
+                md_metadata += '\n'
+            md_metadata += '#### source: ' + query_source
+
+        groups_list = list()
+        for group in api_response.get('data', [])[0]['folders']:
+            group_entry = {
+                'Name': group['description'],
+                'Source': group['source'],
+                'Group ID': group['id'],
+                'Number of users': group['userCount'],
+                'Parent ID': group['parentId'],
+                'Number of child groups': group['folderCount']
+            }
+
+            groups_list.append(group_entry)
+
+        md = tableToMarkdown(md, groups_list,
+                             ['Name', 'Source', 'Group ID', 'Number of users', 'Parent ID', 'Number of child groups'],
+                             metadata=md_metadata)
+
+        return md
+
+
+    def find_groups_api_response_to_context(api_response):
+        groups_list = list()
+        for group in api_response['data'][0]['folders']:
+            group_entry = {
+                'Name': group['description'],
+                'Source': group['source'],
+                'ID': group['id'],
+                'NumberOfUsers': group['userCount'],
+                'ParentID': group['parentId'],
+                'NumberOfChildGroups': group['folderCount']
+            }
+
+            groups_list.append(group_entry)
+
+        return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_list}
+
+
+    def get_group_members():
+        api_response = create_get_group_members_request()
+
+        markdown_output = group_members_api_response_to_markdown(api_response)
+        entry_context = group_members_api_response_to_context(api_response)
+
+        return_outputs(markdown_output, entry_context, api_response)
+
+
+    def create_get_group_members_request(group_id=-1, limit=100):
+        api_endpoint = '/api/directory/get-group-members'
+        group_id = demisto.args().get('group_id', group_id).encode('utf-8')
+        limit = demisto.args().get('limit', limit)
+
+        meta = dict()  # type: Dict[str, Dict[str, int]]
+        data = dict()  # type: Dict[str, Dict[str, str]]
+
+        if limit:
+            meta['pagination'] = {
+                'pageSize': int(limit)
+            }
+
+        data['id'] = group_id
+
+        payload = {
+            'meta': meta,
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def group_members_api_response_to_markdown(api_response):
+        num_users_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
+        group_id = demisto.args().get('group_id', '')
+
+        if not num_users_found:
+            md = 'Found 0 users for group ID: ' + group_id + ''
+            return md
+
+        md = 'Found ' + str(num_users_found) + ' users for group ID: ' + group_id
+
+        users_list = list()
+        for user in api_response['data'][0]['groupMembers']:
+            user_entry = {
+                'Name': user['name'],
+                'Email address': user['emailAddress'],
+                'Domain': user['domain'],
+                'Type': user['type'],
+                'Internal user': user['internal']
+            }
+
+            users_list.append(user_entry)
+
+        md = tableToMarkdown(md, users_list,
+                             ['Name', 'Email address', 'Domain', 'Type', 'Internal user'])
+
+        return md
+
+
+    def add_users_under_group_in_context_dict(users_list, group_id):
+        demisto_context = demisto.context()
+
+        if demisto_context and 'Mimecast' in demisto_context:
+            if 'Group' in demisto_context['Mimecast']:
+                groups_entry_in_context = demisto_context['Mimecast']['Group']
+                for group in groups_entry_in_context:
+                    if group['ID'] == group_id:
+                        group['Users'] = users_list
+                        return groups_entry_in_context
+
+        return [
+            {
+                'ID': group_id,
+                'Users': users_list
+            }
+        ]
+
+
+    def group_members_api_response_to_context(api_response, group_id=-1):
+        group_id = demisto.args().get('group_id', group_id)
+
+        users_list = list()
+        for user in api_response['data'][0]['groupMembers']:
+            user_entry = {
+                'Name': user['name'],
+                'EmailAddress': user['emailAddress'],
+                'Domain': user['domain'],
+                'Type': user['type'],
+                'InternalUser': user['internal'],
+                'IsRemoved': False
+            }
+
+            users_list.append(user_entry)
+
+        groups_after_update = add_users_under_group_in_context_dict(users_list, group_id)
+
+        return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_after_update}
+
+
+    def add_remove_member_to_group(action_type):
+        if action_type == 'add':
+            api_endpoint = '/api/directory/add-group-member'
+        else:
+            api_endpoint = '/api/directory/remove-group-member'
+
+        api_response = create_add_remove_group_member_request(api_endpoint)
+
+        markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
+        entry_context = add_remove_api_response_to_context(api_response, action_type)
+
+        return_outputs(markdown_output, entry_context, api_response)
+
+
+    def create_add_remove_group_member_request(api_endpoint):
+        group_id = demisto.args().get('group_id', '').encode('utf-8')
+        email = demisto.args().get('email_address', '').encode('utf-8')
+        domain = demisto.args().get('domain_address', '').encode('utf-8')
+
+        data = {
+            'id': group_id,
+        }
+
+        if email:
+            data['emailAddress'] = email
+
+        if domain:
+            data['domain'] = domain
+
+        payload = {
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def add_remove_api_response_to_markdown(api_response, action_type):
+        address_modified = api_response['data'][0]['emailAddress']
+        group_id = api_response['data'][0]['folderId']
+
+        if action_type == 'add':
+            return address_modified + ' had been added to group ID ' + group_id
+        return address_modified + ' has been removed from group ID ' + group_id
+
+
+    def change_user_status_removed_in_context(user_info, group_id):
+        demisto_context = demisto.context()
+
+        if demisto_context and 'Mimecast' in demisto_context:
+            if 'Group' in demisto_context['Mimecast']:
+                groups_entry_in_context = demisto_context['Mimecast']['Group']
+                for group in groups_entry_in_context:
+                    if group['ID'] == group_id:
+                        for user in group['Users']:
+                            if user['EmailAddress'] == user_info['EmailAddress']:
+                                user['IsRemoved'] = True
+                        return groups_entry_in_context
+
+        return [
+            {
+                'ID': group_id,
+                'Users': [user_info]
+            }
+        ]
+
+
+    def add_remove_api_response_to_context(api_response, action_type):
+        group_id = api_response['data'][0]['folderId']
+
+        if action_type == 'add':
+            # Run get group members again, to get all relevant data, the response from add user
+            # does not match the get group members.
+            api_response = create_get_group_members_request(group_id=group_id)
+            return group_members_api_response_to_context(api_response, group_id=group_id)
+        else:
+            address_removed = api_response['data'][0]['emailAddress']
+
+            removed_user = {
+                'EmailAddress': address_removed,
+                'IsRemoved': True
+            }
+
+            groups_after_update = change_user_status_removed_in_context(removed_user, group_id)
+
+            return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_after_update}
+
+
+    def create_group():
+        api_response = create_group_request()
+
+        markdown_output = create_group_api_response_to_markdown(api_response)
+        entry_context = create_group_api_response_to_context(api_response)
+
+        return_outputs(markdown_output, entry_context, api_response)
+
+
+    def create_group_request():
+        api_endpoint = '/api/directory/create-group'
+        group_name = demisto.args().get('group_name', '').encode('utf-8')
+        parent_id = demisto.args().get('parent_id', '-1').encode('utf-8')
+
+        data = {
+            'description': group_name,
+        }
+
+        if parent_id != '-1'.encode('utf-8'):
+            data['parentId'] = parent_id
+
+        payload = {
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def create_group_api_response_to_markdown(api_response):
+        group_name = api_response['data'][0]['description']
+        group_source = api_response['data'][0]['source']
+        group_id = api_response['data'][0]['id']
+
+        md = group_name + ' has been created'
+
+        group_info = {
+            'Group Source': group_source,
+            'Group ID': group_id
+        }
+
+        return tableToMarkdown(md, group_info, ['Group Source', 'Group ID'])
+
+
+    def create_group_api_response_to_context(api_response):
+        group_created = {
+            'Name': api_response['data'][0]['description'],
+            'Source': api_response['data'][0]['source'],
+            'ID': api_response['data'][0]['id'],
+            'NumberOfUsers': 0,
+            'ParentID': api_response['data'][0]['parentId'],
+            'NumberOfChildGroups': 0
+        }
+
+        return {'Mimecast.Group(val.Name && val.Name == obj.Name)': group_created}
+
+
+    def update_group():
+        api_response = create_update_group_request()
+
+        markdown_output = update_group_api_response_to_markdown(api_response)
+        entry_context = update_group_api_response_to_context(api_response)
+
+        return_outputs(markdown_output, entry_context, api_response)
+
+
+    def create_update_group_request():
+        api_endpoint = '/api/directory/update-group'
+        group_name = demisto.args().get('group_name', '').encode('utf-8')
+        group_id = demisto.args().get('group_id', '').encode('utf-8')
+        parent_id = demisto.args().get('parent_id', '').encode('utf-8')
+
+        data = {
+            'id': group_id
+        }
+
+        if group_name:
+            data['description'] = group_name
+
+        if parent_id:
+            data['parentId'] = parent_id
+
+        payload = {
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def update_group_api_response_to_markdown(api_response):
+        group_name = api_response['data'][0]['description']
+
+        return group_name + ' has been updated'
+
+
+    def update_group_api_response_to_context(api_response):
+        group_updated = {
+            'ID': api_response['data'][0]['id'],
+            'Name': api_response['data'][0]['description'],
+            'ParentID': api_response['data'][0]['parentId']
+        }
+
+        return {'Mimecast.Group(val.ID && val.ID == obj.ID)': group_updated}
+
+
+    def create_mimecast_incident():
+        api_response = create_mimecast_incident_request()
+
+        markdown_output = mimecast_incident_api_response_to_markdown(api_response, 'create')
+        entry_context = mimecast_incident_api_response_to_context(api_response)
+
+        return_outputs(markdown_output, entry_context, api_response)
+
+
+    def create_mimecast_incident_request():
+        api_endpoint = '/api/ttp/remediation/create'
+        reason = demisto.args().get('reason', '').encode('utf-8')
+        start_date = demisto.args().get('start_date', '').encode('utf-8')
+        end_date = demisto.args().get('end_date', '').encode('utf-8')
+        search_by = demisto.args().get('search_by', 'hash').encode('utf-8')
+        hash_or_message_id = demisto.args().get('hash_message_id', '').encode('utf-8')
+
+        data = {
+            'reason': reason,
+            'hashOrMessageId': hash_or_message_id,
+            'searchBy': search_by
+        }
+
+        if start_date:
+            data['start'] = start_date
+
+        if end_date:
+            data['end'] = end_date
+
+        payload = {
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def get_mimecast_incident():
+        api_response = get_mimecast_incident_request()
+
+        markdown_output = mimecast_incident_api_response_to_markdown(api_response, 'get')
+        entry_context = mimecast_incident_api_response_to_context(api_response)
+
+        return_outputs(markdown_output, entry_context, api_response)
+
+
+    def get_mimecast_incident_request():
+        api_endpoint = '/api/ttp/remediation/get-incident'
+        incident_id = demisto.args().get('incident_id', '').encode('utf-8')
+
+        data = {
+            'id': incident_id
+        }
+
+        payload = {
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def mimecast_incident_api_response_to_markdown(api_response, action_type):
+        incident_code = api_response['data'][0]['code']
+        incident_type = api_response['data'][0]['type']
+        incident_reason = api_response['data'][0]['reason']
+        incident_identified_messages_amount = api_response['data'][0]['Identified']
+        incident_successful_messages_amount = api_response['data'][0]['Successful']
+        incident_failed_messages_amount = api_response['data'][0]['Failed']
+        incident_restored_messages_amount = api_response['data'][0]['Restored']
+        incident_id = api_response['data'][0]['id']
+
+        if action_type == 'create':
+            md = 'Incident ' + incident_id + ' has been created\n'
+        else:
+            md = 'Incident ' + incident_id + ' has been found\n'
+
+        md_metadata = '####Code: ' + incident_code
+        md_metadata += '\n####Type: ' + incident_type
+        md_metadata += '\n####Reason: ' + incident_reason
+        md_metadata += '\n####The number of messages identified based on the search criteria: ' + incident_identified_messages_amount
+        md_metadata += '\n####The number successfully remediated messages: ' + incident_successful_messages_amount
+        md_metadata += '\n####The number of messages that failed to remediate: ' + incident_failed_messages_amount
+        md_metadata += '\n####The number of messages that were restored from the incident: ' + incident_restored_messages_amount
+
+        messages_table_list = list()
+        for message in api_response['data'][0]['searchCriteria']:
+            message_entry = {
+                'From': message['from'],
+                'To': message['to'],
+                'Start date': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
+                'End date': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ'),
+                'Message ID': message['messageId'],
+                'File hash': message['fileHash']
+            }
+
+            messages_table_list.append(message_entry)
+
+        md = tableToMarkdown(md, messages_table_list,
+                             ['From', 'To', 'Start', 'End date', 'Message ID', 'File hash'], metadata=md_metadata)
+
+        return md
+
+
+    def mimecast_incident_api_response_to_context(api_response):
+        messages_table_list = list()
+        for message in api_response['data'][0]['searchCriteria']:
+            message_entry = {
+                'From': message['from'],
+                'To': message['to'],
+                'MessageID': message['messageId'],
+                'FileHash': message['fileHash'],
+                'StartDate': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
+                'EndDate': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ')
+            }
+        messages_table_list.append(message_entry)
+
+        incident_created = {
+            'ID': api_response['data'][0]['id'],
+            'Code': api_response['data'][0]['code'],
+            'Type': api_response['data'][0]['type'],
+            'Reason': api_response['data'][0]['reason'],
+            'IdentifiedMessages': api_response['data'][0]['identified'],
+            'SuccessfullyRemediatedMessages': api_response['data'][0]['successful'],
+            'FailedRemediatedMessages': api_response['data'][0]['failed'],
+            'MessagesRestored': api_response['data'][0]['restored'],
+            'LastModified': datetime.strptime(api_response['data'][0]['modified'], '%Y-%m-%dT%H:%M:%SZ'),
+            'SearchCriteria': messages_table_list
+        }
+
+        return {'Mimecast.Incident(val.ID && val.ID == obj.ID)': incident_created}
+
+
+    def search_file_hash():
+        api_response = create_search_file_hash_request()
+
+        markdown_output = search_file_hash_api_response_to_markdown(api_response)
+        entry_context = search_file_hash_api_response_to_context(api_response)
+
+        return_outputs(markdown_output, entry_context, api_response)
+
+
+    def create_search_file_hash_request():
+        api_endpoint = '/api/ttp/remediation/search-hash'
+        hashes_to_search = argToList(demisto.args().get('hashes_to_search').encode('utf-8'))
+
+        data = {
+            'hashes': hashes_to_search
+        }
+
+        payload = {
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def search_file_hash_api_response_to_markdown(api_response):
+        md = 'Hashes detected:\n'
+        detected_hashes_list = list()
+        for detected_hash in api_response['data'][0]['hashStatus']:
+            detected_hash_entry = {
+                'Hash': detected_hash['hash'],
+                'Found within the account': detected_hash['detected']
+            }
+
+            detected_hashes_list.append(detected_hash_entry)
+
+        md = tableToMarkdown(md, detected_hashes_list, ['Hash', 'Found within the account'])
+
+        md += '### Hashes that failed verification:\n'
+
+        failed_hash_list = [str(failed_hash) for failed_hash in api_response['data'][0]['failedHashes']]
+        md += str(failed_hash_list)[1:-1] + '\n'
+
+        return md
+
+
+    def search_file_hash_api_response_to_context(api_response):
+        detected_hashes_list = list()
+        for detected_hash in api_response['data'][0]['hashStatus']:
+            detected_hash_entry = {
+                'HashValue': detected_hash['hash'],
+                'Detected': detected_hash['detected']
+            }
+
+            detected_hashes_list.append(detected_hash_entry)
+
+        if detected_hashes_list:
+            return {'Mimecast.Hash(val.HashValue && val.HashValue == obj.HashValue)': detected_hashes_list}
+        return None
+
+
+    def find_held_messages():
+        api_endpoint = '/api/gateway/get-hold-message-list'
+
+        data = {}
+
+        for arg in demisto.args():
+            if demisto.args().get(arg):
+                data[arg] = demisto.args().get(arg)
+            else:
+                continue
+
+        payload = {
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def get_message_hold_summary():
+        api_endpoint = '/api/gateway/get-hold-summary-list'
+
+        payload = {
+            'data': []
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def find_processing_messages():
+        api_endpoint = '/api/gateway/find-processing-messages'
+
+        data = {}
+
+        for arg in demisto.args():
+            if demisto.args().get(arg):
+                data[arg] = demisto.args().get(arg)
+            else:
+                continue
+
+        payload = {
+            'data': [data]
+        }
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def reject_message():
+        api_endpoint = '/api/gateway/hold-reject'
+
+        data = {}
+
+        for arg in demisto.args():
+            if arg == 'ids':
+                data[arg] = argToList(demisto.args().get(arg))
+            elif demisto.args().get(arg):
+                data[arg] = demisto.args().get(arg)
+            else:
+                continue
+
+        payload = {
+            'data': [data]
+        }
+
+        payload = json.dumps(payload)
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def release_message():
+        api_endpoint = '/api/gateway/hold-release'
+
+        message_id = demisto.args().get('id')
+
+        data = {
+            'id': message_id
+        }
+
+        payload = {
+            'data': [data]
+        }
+
+        payload = json.dumps(payload)
+
+        response = http_request('POST', api_endpoint, str(payload))
+        if isinstance(response, dict) and response.get('fail'):
+            return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+        return response
+
+
+    def main():
+        ''' COMMANDS MANAGER / SWITCH PANEL '''
+        # Check if token needs to be refresh, if it does and relevant params are set, refresh.
+        if ACCESS_KEY:
+            auto_refresh_token()
+        try:
+            handle_proxy()
+            determine_ssl_usage()
+            if demisto.command() == 'test-module':
+                # This is the call made when pressing the integration test button.
+                test_module()
+                demisto.results('ok')
+            elif demisto.command() == 'fetch-incidents':
+                fetch_incidents()
+            elif demisto.command() == 'mimecast-query':
+                demisto.results(query())
+            elif demisto.command() == 'mimecast-list-blocked-sender-policies':
+                demisto.results(get_policy())
+            elif demisto.command() == 'mimecast-get-policy':
+                demisto.results(get_policy())
+            elif demisto.command() == 'mimecast-create-policy':
+                demisto.results(create_policy())
+            elif demisto.command() == 'mimecast-update-policy':
+                demisto.results(update_policy())
+            elif demisto.command() == 'mimecast-delete-policy':
+                demisto.results(delete_policy())
+            elif demisto.command() == 'mimecast-manage-sender':
+                demisto.results(manage_sender())
+            elif demisto.command() == 'mimecast-list-managed-url':
+                demisto.results(list_managed_url())
+            elif demisto.command() == 'mimecast-create-managed-url':
+                demisto.results(create_managed_url())
+            elif demisto.command() == 'mimecast-list-messages':
+                demisto.results(list_messages())
+            elif demisto.command() == 'mimecast-get-attachment-logs':
+                demisto.results(get_attachment_logs())
+            elif demisto.command() == 'mimecast-get-url-logs':
+                demisto.results(get_url_logs())
+            elif demisto.command() == 'mimecast-get-impersonation-logs':
+                demisto.results(get_impersonation_logs())
+            elif demisto.command() == 'mimecast-url-decode':
+                demisto.results(url_decode())
+            elif demisto.command() == 'mimecast-discover':
+                demisto.results(discover())
+            elif demisto.command() == 'mimecast-login':
+                demisto.results(login())
+            elif demisto.command() == 'mimecast-refresh-token':
+                demisto.results(refresh_token())
+            elif demisto.command() == 'mimecast-get-message':
+                demisto.results(get_message())
+            elif demisto.command() == 'mimecast-download-attachments':
+                demisto.results(download_attachment())
+            elif demisto.command() == 'mimecast-find-groups':
+                find_groups()
+            elif demisto.command() == 'mimecast-get-group-members':
+                get_group_members()
+            elif demisto.command() == 'mimecast-add-group-member':
+                add_remove_member_to_group('add')
+            elif demisto.command() == 'mimecast-remove-group-member':
+                add_remove_member_to_group('remove')
+            elif demisto.command() == 'mimecast-create-group':
+                create_group()
+            elif demisto.command() == 'mimecast-update-group':
+                update_group()
+            elif demisto.command() == 'mimecast-create-remediation-incident':
+                create_mimecast_incident()
+            elif demisto.command() == 'mimecast-get-remediation-incident':
+                get_mimecast_incident()
+            elif demisto.command() == 'mimecast-search-file-hash':
+                search_file_hash()
+            elif demisto.command() == 'mimecast-find-held-messages':
+                demisto.results(find_held_messages())
+            elif demisto.command() == 'mimecast-get-message-hold-summary':
+                demisto.results(get_message_hold_summary())
+            elif demisto.command() == 'mimecast-find-processing-messages':
+                demisto.results(find_processing_messages())
+            elif demisto.command() == 'mimecast-reject-message':
+                demisto.results(reject_message())
+            elif demisto.command() == 'mimecast-release-message':
+                demisto.results(release_message())
+
+        except Exception as e:
+            LOG(e.message)
+            LOG.print_log()
+            return_error(e.message)
+
+
+    if __name__ in ('__builtin__', 'builtins'):
+        main()
+  type: python
   commands:
-  - arguments:
-    - default: true
+  - name: mimecast-query
+    arguments:
+    - name: queryXml
+      default: true
       description: The query string xml for the search using Mimecast Unified Search
         Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262,
         using this will override other query arguments
-      isArray: false
-      name: queryXml
-      required: false
-      secret: false
-    - default: false
+    - name: text
       description: Search for this text in messages
-      isArray: false
-      name: text
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Will not execute the query, but just return the query string built
-      isArray: false
-      name: dryRun
+    - name: dryRun
+      auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Search in specific dates only (default is all mails fomr)
-      isArray: false
-      name: date
+      - "true"
+      - "false"
+      description: Will not execute the query, but just return the query string built
+      defaultValue: "false"
+    - name: date
+      auto: PREDEFINED
       predefined:
       - today
       - yesterday
       - last_week
       - last_month
       - last_year
-      required: false
-      secret: false
-    - default: false
+      description: Search in specific dates only (default is all mails fomr)
+    - name: dateFrom
       description: Search emails from date, format YYYY-MM-DDTHH:MM:SZ (e.g. 2015-09-21T23:00:00Z)
-      isArray: false
-      name: dateFrom
-      required: false
-      secret: false
-    - default: false
+    - name: dateTo
       description: Search emails to date, format YYYY-MM-DDTHH:MM:SZ (e.g. 2015-09-21T23:00:00Z)
-      isArray: false
-      name: dateTo
-      required: false
-      secret: false
-    - default: false
+    - name: sentTo
       description: Filter on messages to a specific address
-      isArray: false
-      name: sentTo
-      required: false
-      secret: false
-    - default: false
+    - name: sentFrom
       description: Filter on messages from a specific address
-      isArray: false
-      name: sentFrom
-      required: false
-      secret: false
-    - default: false
+    - name: subject
       description: Search email by subject, will override the text argument
-      isArray: false
-      name: subject
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'These are the attachment types available: optional - messages
-        with and without attachments any - messages with any attachment documents
-        - messages with doc, dot, docx, docm, dotx, dotm, pdf, rtf, html attachments
-        spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam,
-        csv attachments presentations - messages with ppt, pptx, pptm, potx, potm,
-        ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages with txt,
-        text, html, log attachments images - messages with jpg, jpeg, png, bmp, gif,
-        psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg,
-        avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz,
-        gzip, 7z attachments none - No attachments are to be present in the results'
-      isArray: false
-      name: attachmentType
+    - name: attachmentType
+      auto: PREDEFINED
       predefined:
       - optional
       - any
@@ -166,50 +2563,34 @@ script:
       - media
       - zips
       - none
-      required: false
-      secret: false
-    - default: false
+      description: 'These are the attachment types available: optional - messages
+        with and without attachments any - messages with any attachment documents
+        - messages with doc, dot, docx, docm, dotx, dotm, pdf, rtf, html attachments
+        spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam,
+        csv attachments presentations - messages with ppt, pptx, pptm, potx, potm,
+        ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages with txt,
+        text, html, log attachments images - messages with jpg, jpeg, png, bmp, gif,
+        psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg,
+        avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz,
+        gzip, 7z attachments none - No attachments are to be present in the results'
+    - name: attachmentText
       description: Search for text in attachments
-      isArray: false
-      name: attachmentText
-      required: false
-      secret: false
-    - default: false
+    - name: body
       description: Search email by text in body, will override the text and subject
         arguments
-      isArray: false
-      name: body
-      required: false
-      secret: false
-    - default: false
+    - name: pageSize
       description: Sets the number of results to return per page (default 25)
-      isArray: false
-      name: pageSize
-      required: false
-      secret: false
-    - default: false
+    - name: startRow
       description: Sets the result to start returning results (default 0)
-      isArray: false
-      name: startRow
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: Defines if the search should query recently received messages that
         are not fully processed yet (default false). You can search by mailbox and
         date time across active messages
-      isArray: false
-      name: active
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Query mimecast emails
-    execution: false
-    name: mimecast-query
+      defaultValue: "false"
     outputs:
     - contextPath: Mimecast.Message.ID
       description: Message ID
@@ -235,10 +2616,9 @@ script:
     - contextPath: Mimecast.Message.Status
       description: Message status
       type: string
-  - deprecated: false
-    description: List all existing mimecast blocked sender policies
-    execution: false
-    name: mimecast-list-blocked-sender-policies
+    description: Query mimecast emails
+  - name: mimecast-list-blocked-sender-policies
+    arguments: []
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID
@@ -276,17 +2656,12 @@ script:
     - contextPath: Mimecast.Policy.Receiver.Type
       description: Block emails to Receiver type
       type: string
-  - arguments:
-    - default: false
-      description: Filter by policy ID
-      isArray: false
-      name: policyID
+    description: List all existing mimecast blocked sender policies
+  - name: mimecast-get-policy
+    arguments:
+    - name: policyID
       required: true
-      secret: false
-    deprecated: false
-    description: Get a blocked sender policy by ID
-    execution: false
-    name: mimecast-get-policy
+      description: Filter by policy ID
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID
@@ -318,30 +2693,23 @@ script:
     - contextPath: Mimecast.Policy.Todate
       description: Policy expiration date
       type: date
-  - arguments:
-    - default: false
-      description: Policy description
-      isArray: false
-      name: description
+    description: Get a blocked sender policy by ID
+  - name: mimecast-create-policy
+    arguments:
+    - name: description
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: envelope_from
-      description: Addresses based on
-      isArray: false
-      name: fromPart
+      description: Policy description
+    - name: fromPart
+      auto: PREDEFINED
       predefined:
       - envelope_from
       - header_from
       - both
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Blocked Sender type
-      isArray: false
-      name: fromType
+      description: Addresses based on
+      defaultValue: envelope_from
+    - name: fromType
+      required: true
+      auto: PREDEFINED
       predefined:
       - everyone
       - internal_addresses
@@ -349,22 +2717,15 @@ script:
       - email_domain
       - profile_group
       - individual_email_address
-      required: true
-      secret: false
-    - default: false
+      description: Blocked Sender type
+    - name: fromValue
       description: 'Required if fromType is one of email domain, profile group, individual
         email address. Expected values: If fromType is email_domain, a domain name
         without the @ symbol. If fromType is profile_group, the ID of the profile
         group. If fromType is individual_email_address, an email address.'
-      isArray: false
-      name: fromValue
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Receiver type
-      isArray: false
-      name: toType
+    - name: toType
+      required: true
+      auto: PREDEFINED
       predefined:
       - everyone
       - internal_addresses
@@ -375,31 +2736,19 @@ script:
       - individual_email_address
       - free_mail_domains
       - header_display_name
-      required: true
-      secret: false
-    - default: false
+      description: Receiver type
+    - name: toValue
       description: 'Required if fromType is one of email domain, profile group, individual
         email address. Expected values: If toType is email_domain, a domain name without
         the @ symbol. If toType is profile_group, the ID of the profile group. If
         toType is individual_email_address, an email address.'
-      isArray: false
-      name: toValue
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The block option, must be one of: no_action, block_sender.'
-      isArray: false
-      name: option
+    - name: option
+      required: true
+      auto: PREDEFINED
       predefined:
       - no_action
       - block_sender
-      required: true
-      secret: false
-    deprecated: false
-    description: Create a Blocked Sender Policy
-    execution: false
-    name: mimecast-create-policy
+      description: 'The block option, must be one of: no_action, block_sender.'
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID
@@ -437,49 +2786,33 @@ script:
     - contextPath: Mimecast.Policy.Receiver.Type
       description: The receiver type
       type: String
-  - arguments:
-    - default: false
-      description: Policy ID
-      isArray: false
-      name: policyID
+    description: Create a Blocked Sender Policy
+  - name: mimecast-delete-policy
+    arguments:
+    - name: policyID
       required: true
-      secret: false
-    deprecated: false
-    description: Delete a Blocked Sender Policy
-    execution: false
-    name: mimecast-delete-policy
+      description: Policy ID
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID
       type: string
-  - arguments:
-    - default: false
+    description: Delete a Blocked Sender Policy
+  - name: mimecast-manage-sender
+    arguments:
+    - name: sender
+      required: true
       description: The email address of sender to permit or block
-      isArray: false
-      name: sender
+    - name: recipient
       required: true
-      secret: false
-    - default: false
       description: The email address of recipient to permit or block
-      isArray: false
-      name: recipient
+    - name: action
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Choose to either "permit" (to bypass spam checks) or "block" (to
-        reject the email)
-      isArray: false
-      name: action
+      auto: PREDEFINED
       predefined:
       - permit
       - block
-      required: true
-      secret: false
-    deprecated: false
-    description: Permit or block a specific sender
-    execution: false
-    name: mimecast-manage-sender
+      description: Choose to either "permit" (to bypass spam checks) or "block" (to
+        reject the email)
     outputs:
     - contextPath: Mimecast.Managed.Sender
       description: The email address of the sender
@@ -493,17 +2826,11 @@ script:
     - contextPath: Mimecast.Managed.ID
       description: The Mimecast secure ID of the managed sender object.
       type: string
-  - arguments:
-    - default: false
+    description: Permit or block a specific sender
+  - name: mimecast-list-managed-url
+    arguments:
+    - name: url
       description: Filter results by specific URL
-      isArray: false
-      name: url
-      required: false
-      secret: false
-    deprecated: false
-    description: Get a list of all managed URLs
-    execution: false
-    name: mimecast-list-managed-url
     outputs:
     - contextPath: Mimecast.URL.Domain
       description: The managed domain
@@ -527,80 +2854,52 @@ script:
     - contextPath: Mimecast.URL.disableRewrite
       description: If rewriting of this URL in emails is disabled
       type: boolean
-  - arguments:
-    - default: false
-      description: The URL to block or permit. Do not include a fragment (#).
-      isArray: false
-      name: url
+    description: Get a list of all managed URLs
+  - name: mimecast-create-managed-url
+    arguments:
+    - name: url
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Set to "block" to blacklist the URL, "permit" to whitelist it
-      isArray: false
-      name: action
+      description: The URL to block or permit. Do not include a fragment (#).
+    - name: action
+      required: true
+      auto: PREDEFINED
       predefined:
       - block
       - permit
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: explicit
-      description: Set to "explicit" to block or permit only instances of the full
-        URL. Set to "domain" to block or permit any URL with the same domain
-      isArray: false
-      name: matchType
+      description: Set to "block" to blacklist the URL, "permit" to whitelist it
+    - name: matchType
+      auto: PREDEFINED
       predefined:
       - explicit
       - domain
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
+      description: Set to "explicit" to block or permit only instances of the full
+        URL. Set to "domain" to block or permit any URL with the same domain
+      defaultValue: explicit
+    - name: disableRewrite
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: Disable rewriting of this URL in emails. Applies only if action
         = "permit". Default false
-      isArray: false
-      name: disableRewrite
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
+      defaultValue: "false"
+    - name: comment
       description: Add a comment about the managed URL
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
+    - name: disableUserAwareness
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: Disable User Awareness challenges for this URL. Applies only if
         action = "permit". Default false
-      isArray: false
-      name: disableUserAwareness
+      defaultValue: "false"
+    - name: disableLogClick
+      auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
+      - "true"
+      - "false"
       description: Disable logging of user clicks on the URL. Default is false
-      isArray: false
-      name: disableLogClick
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a managed URL on Mimecast
-    execution: false
-    name: mimecast-create-managed-url
+      defaultValue: "false"
     outputs:
     - contextPath: Mimecast.URL.Domain
       description: The managed domain
@@ -621,49 +2920,27 @@ script:
     - contextPath: Mimecast.URL.disableRewrite
       description: If rewriting of this URL in emails is disabled
       type: boolean
-  - arguments:
-    - default: false
+    description: Create a managed URL on Mimecast
+  - name: mimecast-list-messages
+    arguments:
+    - name: mailbox
       description: The email address to return the message list for
-      isArray: false
-      name: mailbox
-      required: false
-      secret: false
-    - default: false
+    - name: startTime
       description: The start date of messages to return, in the following format,
         2015-11-16T14:49:18+0000. Default is the last calendar month
-      isArray: false
-      name: startTime
-      required: false
-      secret: false
-    - default: false
+    - name: endTime
       description: The end date of messages to return, in the following format, 2015-11-16T14:49:18+0000.
         Default is the end of the current day
-      isArray: false
-      name: endTime
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: INBOX
-      description: 'The message list type, must be one of: inbox or sent, default
-        is inbox'
-      isArray: false
-      name: view
+    - name: view
+      auto: PREDEFINED
       predefined:
       - INBOX
       - SENT
-      required: false
-      secret: false
-    - default: false
+      description: 'The message list type, must be one of: inbox or sent, default
+        is inbox'
+      defaultValue: INBOX
+    - name: subject
       description: Filter by message subject
-      isArray: false
-      name: subject
-      required: false
-      secret: false
-    deprecated: false
-    description: Get a list of messages for a given user
-    execution: false
-    name: mimecast-list-messages
     outputs:
     - contextPath: Mimecast.Message.Subject
       description: Message Subject
@@ -683,33 +2960,19 @@ script:
     - contextPath: Mimecast.Message.AttachmentCount
       description: The number of attachments on the message
       type: string
-  - arguments:
-    - default: false
+    description: Get a list of messages for a given user
+  - name: mimecast-get-attachment-logs
+    arguments:
+    - name: resultsNumber
       description: The number of results to request. Default is all
-      isArray: false
-      name: resultsNumber
-      required: false
-      secret: false
-    - default: false
+    - name: fromDate
       description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000.
         Default is the start of the current day
-      isArray: false
-      name: fromDate
-      required: false
-      secret: false
-    - default: false
+    - name: toDate
       description: End date of logs to return in the following format 2015-11-16T14:49:18+0000.
         Default is time of request
-      isArray: false
-      name: toDate
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: malicious
-      description: Filters logs by scan result, default is malicious
-      isArray: false
-      name: resultType
+    - name: resultType
+      auto: PREDEFINED
       predefined:
       - safe
       - malicious
@@ -717,19 +2980,11 @@ script:
       - error
       - unsafe
       - all
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+      description: Filters logs by scan result, default is malicious
+      defaultValue: malicious
+    - name: limit
       description: The maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns Attachment Protect logs for a Mimecast customer account
-    execution: false
-    name: mimecast-get-attachment-logs
+      defaultValue: "100"
     outputs:
     - contextPath: Mimecast.AttachmentLog.Result
       description: 'The result of the attachment analysis: clean, malicious, unknown,
@@ -757,50 +3012,28 @@ script:
       description: 'The route of the original email containing the attachment, either:
         inbound, outbound, internal, or external'
       type: string
-  - arguments:
-    - default: false
+    description: Returns Attachment Protect logs for a Mimecast customer account
+  - name: mimecast-get-url-logs
+    arguments:
+    - name: resultsNumber
       description: The number of results to request. Default is all
-      isArray: false
-      name: resultsNumber
-      required: false
-      secret: false
-    - default: false
+    - name: fromDate
       description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000.
         Default is the start of the current day
-      isArray: false
-      name: fromDate
-      required: false
-      secret: false
-    - default: false
+    - name: toDate
       description: End date of logs to return in the following format 2015-11-16T14:49:18+0000.
         Default is time of request
-      isArray: false
-      name: toDate
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: malicious
-      description: Filters logs by scan result, default is all
-      isArray: false
-      name: resultType
+    - name: resultType
+      auto: PREDEFINED
       predefined:
       - clean
       - malicious
       - all
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+      description: Filters logs by scan result, default is all
+      defaultValue: malicious
+    - name: limit
       description: The maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns URL protect logs for a Mimecast customer account
-    execution: false
-    name: mimecast-get-url-logs
+      defaultValue: "100"
     outputs:
     - contextPath: Mimecast.UrlLog.Category
       description: The category of the URL clicked
@@ -833,80 +3066,51 @@ script:
     - contextPath: Mimecast.UrlLog. userOverride
       description: The action requested by the user.
       type: string
-  - arguments:
-    - default: false
+    description: Returns URL protect logs for a Mimecast customer account
+  - name: mimecast-get-impersonation-logs
+    arguments:
+    - name: resultsNumber
       description: The number of results to request. Default is all
-      isArray: false
-      name: resultsNumber
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
+    - name: taggedMalicious
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
       description: ' Filters for messages tagged malicious (true) or not tagged malicious
         (false). Omit for no tag filtering. default is true'
-      isArray: false
-      name: taggedMalicious
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The field to search,Defaults to all (meaning all of the preceding
-        fields)
-      isArray: false
-      name: searchField
+      defaultValue: "true"
+    - name: searchField
+      auto: PREDEFINED
       predefined:
       - senderAddress
       - recipientAddress
       - subject
       - policy
       - all
-      required: false
-      secret: false
-    - default: false
+      description: The field to search,Defaults to all (meaning all of the preceding
+        fields)
+    - name: query
       description: Required if searchField exists. A character string to search for
         in the logs.
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Filters logs by identifiers, can include any of newly_observed_domain,
-        internal_user_name, repy_address_mismatch, and targeted_threat_dictionary.
-        you can choose more then one identifier separated by comma.
-      isArray: true
-      name: identifiers
+    - name: identifiers
+      auto: PREDEFINED
       predefined:
       - newly_observed_domain
       - internal_user_name
       - repy_address_mismatch
       - targeted_threat_dictionary
-      required: false
-      secret: false
-    - default: false
+      description: Filters logs by identifiers, can include any of newly_observed_domain,
+        internal_user_name, repy_address_mismatch, and targeted_threat_dictionary.
+        you can choose more then one identifier separated by comma.
+      isArray: true
+    - name: fromDate
       description: Start date of logs to return in the following format 2015-11-16T14:49:18+0000.
         Default is the start of the current day
-      isArray: false
-      name: fromDate
-      required: false
-      secret: false
-    - default: false
+    - name: toDate
       description: End date of logs to return in the following format 2015-11-16T14:49:18+0000.
         Default is time of request
-      isArray: false
-      name: toDate
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Filters logs by action, you can choose more then one action separated
-        by comma.
-      isArray: true
-      name: actions
+    - name: actions
+      auto: PREDEFINED
       predefined:
       - delete
       - hold
@@ -923,19 +3127,12 @@ script:
       - disable_document_policy
       - attach_set_policy
       - remove_email
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+      description: Filters logs by action, you can choose more then one action separated
+        by comma.
+      isArray: true
+    - name: limit
       description: The maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns Impersonation Protect logs for a Mimecast customer account
-    execution: false
-    name: mimecast-get-impersonation-logs
+      defaultValue: "100"
     outputs:
     - contextPath: Mimecast.Impersonation.ResultCount
       description: The total number of IMPERSONATION log lines found for the request
@@ -978,17 +3175,12 @@ script:
     - contextPath: Mimecast.Impersonation.External
       description: Whether the message was tagged as coming from an external address
       type: boolean
-  - arguments:
-    - default: false
-      description: URL to decode
-      isArray: false
-      name: url
+    description: Returns Impersonation Protect logs for a Mimecast customer account
+  - name: mimecast-url-decode
+    arguments:
+    - name: url
       required: true
-      secret: false
-    deprecated: false
-    description: Decodes a given url from mimecast
-    execution: false
-    name: mimecast-url-decode
+      description: URL to decode
     outputs:
     - contextPath: URL.Data
       description: The encoded url to parse
@@ -996,11 +3188,9 @@ script:
     - contextPath: URL.Mimecast.DecodedURL
       description: Parsed url
       type: string
-  - deprecated: false
-    description: discover authentication types that are supported for your account
-      and which base URL to use for the requesting user.
-    execution: false
-    name: mimecast-discover
+    description: Decodes a given url from mimecast
+  - name: mimecast-discover
+    arguments: []
     outputs:
     - contextPath: Mimecast.Authentication.AuthenticationTypes
       description: List of authentication types available to the user
@@ -1011,66 +3201,49 @@ script:
     - contextPath: Mimecast.Authentication.EmailToken
       description: Email token of the request sender
       type: string
-  - deprecated: false
+    description: discover authentication types that are supported for your account
+      and which base URL to use for the requesting user.
+  - name: mimecast-refresh-token
+    arguments: []
     description: Refresh access key validity
-    execution: false
-    name: mimecast-refresh-token
-  - deprecated: false
+  - name: mimecast-login
+    arguments: []
     description: Login to generate Access Key and  Secret Key
-    execution: false
-    name: mimecast-login
-  - arguments:
-    - default: false
-      description: Message ID
-      isArray: false
-      name: messageID
+  - name: mimecast-get-message
+    arguments:
+    - name: messageID
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
+      description: Message ID
+    - name: context
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DELIVERED
+      - RECEIVED
       description: 'Defines which copy of the message part to return, must be one
         of: "delievered" the copy that has been processed by the Mimecast MTA with
         policies such as URL rewriting applied, OR "received" - the copy of the message
         that Mimecast originally received. (Only relevant for part argument = message
         or all)'
-      isArray: false
-      name: context
-      predefined:
-      - DELIVERED
-      - RECEIVED
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: PLAIN
-      description: The message type to return. (Only relevant for part argument =
-        message or all)
-      isArray: false
-      name: type
+    - name: type
+      auto: PREDEFINED
       predefined:
       - HTML
       - PLAIN
       - RFC822
       - TRANSMISSION_MESSAGE_BODY
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: all
-      description: Define what message part to return - download message, get metadata
-        or both.
-      isArray: false
-      name: part
+      description: The message type to return. (Only relevant for part argument =
+        message or all)
+      defaultValue: PLAIN
+    - name: part
+      auto: PREDEFINED
       predefined:
       - message
       - metadata
       - all
-      required: false
-      secret: false
-    deprecated: false
-    description: Get the contents or metadata of a given message
-    execution: false
-    name: mimecast-get-message
+      description: Define what message part to return - download message, get metadata
+        or both.
+      defaultValue: all
     outputs:
     - contextPath: Mimecast.Message.ID
       description: Message ID
@@ -1150,18 +3323,13 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file
       type: string
-  - arguments:
-    - default: false
+    description: Get the contents or metadata of a given message
+  - name: mimecast-download-attachments
+    arguments:
+    - name: attachmentID
+      required: true
       description: The Mimecast ID of the message attachment to return. (Can be retrieved
         from mimecast-get-message)
-      isArray: false
-      name: attachmentID
-      required: true
-      secret: false
-    deprecated: false
-    description: Download attachments from a specified message
-    execution: false
-    name: mimecast-download-attachments
     outputs:
     - contextPath: File.Size
       description: File Size
@@ -1190,33 +3358,19 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file
       type: string
-  - arguments:
-    - default: false
+    description: Download attachments from a specified message
+  - name: mimecast-find-groups
+    arguments:
+    - name: query_string
       description: The string to query.
-      isArray: false
-      name: query_string
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The group source by which to filter. Can be "cloud" or "ldap".
-      isArray: false
-      name: query_source
+    - name: query_source
+      auto: PREDEFINED
       predefined:
       - cloud
       - ldap
-      required: false
-      secret: false
-    - default: false
+      description: The group source by which to filter. Can be "cloud" or "ldap".
+    - name: limit
       description: The maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns the list of groups according to the specified query.
-    execution: false
-    name: mimecast-find-groups
     outputs:
     - contextPath: Mimecast.Group.Name
       description: The name of the group.
@@ -1236,23 +3390,14 @@ script:
     - contextPath: Mimecast.Group.NumberOfChildGroups
       description: The number of child groups.
       type: Number
-  - arguments:
-    - default: false
-      description: The Mimecast ID of the group to return.
-      isArray: false
-      name: group_id
+    description: Returns the list of groups according to the specified query.
+  - name: mimecast-get-group-members
+    arguments:
+    - name: group_id
       required: true
-      secret: false
-    - default: false
+      description: The Mimecast ID of the group to return.
+    - name: limit
       description: The maximum number of results to return.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns the members list for the specified group.
-    execution: false
-    name: mimecast-get-group-members
     outputs:
     - contextPath: Mimecast.Group.Users.Name
       description: The user's display name.
@@ -1272,30 +3417,16 @@ script:
     - contextPath: Mimecast.Group.Users.IsRemoved
       description: Whether the user is part of the group.
       type: Boolean
-  - arguments:
-    - default: false
-      description: The Mimecast ID of the group to add the user to.
-      isArray: false
-      name: group_id
+    description: Returns the members list for the specified group.
+  - name: mimecast-add-group-member
+    arguments:
+    - name: group_id
       required: true
-      secret: false
-    - default: false
+      description: The Mimecast ID of the group to add the user to.
+    - name: email_address
       description: The email address of the user to add to a group.
-      isArray: false
-      name: email_address
-      required: false
-      secret: false
-    - default: false
+    - name: domain_address
       description: A domain to add to a group.
-      isArray: false
-      name: domain_address
-      required: false
-      secret: false
-    deprecated: false
-    description: Adds a user to a group. The email_address and domain_adddress arguments
-      are optional, but one of them must be supplied.
-    execution: false
-    name: mimecast-add-group-member
     outputs:
     - contextPath: Mimecast.Group.Users.EmailAddress
       description: The user's email address.
@@ -1303,30 +3434,17 @@ script:
     - contextPath: Mimecast.Group.Users.IsRemoved
       description: Whether the user is part of the group.
       type: Boolean
-  - arguments:
-    - default: false
-      description: The Mimecast ID of the group from which to remove the user.
-      isArray: false
-      name: group_id
+    description: Adds a user to a group. The email_address and domain_adddress arguments
+      are optional, but one of them must be supplied.
+  - name: mimecast-remove-group-member
+    arguments:
+    - name: group_id
       required: true
-      secret: false
-    - default: false
+      description: The Mimecast ID of the group from which to remove the user.
+    - name: email_address
       description: The email address of the user to remove from the group.
-      isArray: false
-      name: email_address
-      required: false
-      secret: false
-    - default: false
+    - name: domain_address
       description: A domain of the user to remove from a group.
-      isArray: false
-      name: domain_address
-      required: false
-      secret: false
-    deprecated: false
-    description: Removes a user from a group. The email_address and domain_adddress
-      arguments are optional, but one of them must be supplied.
-    execution: false
-    name: mimecast-remove-group-member
     outputs:
     - contextPath: Mimecast.Group.Users.EmailAddress
       description: The user's email address.
@@ -1334,24 +3452,16 @@ script:
     - contextPath: Mimecast.Group.Users.IsRemoved
       description: Whether the user part of the group.
       type: Boolean
-  - arguments:
-    - default: false
-      description: The name of the new group.
-      isArray: false
-      name: group_name
+    description: Removes a user from a group. The email_address and domain_adddress
+      arguments are optional, but one of them must be supplied.
+  - name: mimecast-create-group
+    arguments:
+    - name: group_name
       required: true
-      secret: false
-    - default: false
+      description: The name of the new group.
+    - name: parent_id
       description: The Mimecast ID of the new group's parent. Default will be root
         level.
-      isArray: false
-      name: parent_id
-      required: false
-      secret: false
-    deprecated: false
-    description: Creates a new Mimecast group.
-    execution: false
-    name: mimecast-create-group
     outputs:
     - contextPath: Mimecast.Group.Name
       description: The name of the group.
@@ -1371,29 +3481,16 @@ script:
     - contextPath: Mimecast.Group.NumberOfChildGroups
       description: The number of child groups.
       type: Number
-  - arguments:
-    - default: false
+    description: Creates a new Mimecast group.
+  - name: mimecast-update-group
+    arguments:
+    - name: group_name
       description: The new name for the group.
-      isArray: false
-      name: group_name
-      required: false
-      secret: false
-    - default: false
-      description: The Mimecast ID of the group to update.
-      isArray: false
-      name: group_id
+    - name: group_id
       required: true
-      secret: false
-    - default: false
+      description: The Mimecast ID of the group to update.
+    - name: parent_id
       description: The new parent group.
-      isArray: false
-      name: parent_id
-      required: false
-      secret: false
-    deprecated: false
-    description: Updates an existing Mimecast group.
-    execution: false
-    name: mimecast-update-group
     outputs:
     - contextPath: Mimecast.Group.Name
       description: The name of the group.
@@ -1404,48 +3501,28 @@ script:
     - contextPath: Mimecast.Group.ParentID
       description: The Mimecast ID of the group's parent.
       type: String
-  - arguments:
-    - default: false
+    description: Updates an existing Mimecast group.
+  - name: mimecast-create-remediation-incident
+    arguments:
+    - name: hash_message_id
+      required: true
       description: The file hash or messageId value.
-      isArray: false
-      name: hash_message_id
+    - name: reason
       required: true
-      secret: false
-    - default: false
       description: The reason for creating the remediation incident.
-      isArray: false
-      name: reason
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The message component by which to search. Can be "hash" or "messagId".
-        Default is "hash".
-      isArray: false
-      name: search_by
+    - name: search_by
+      auto: PREDEFINED
       predefined:
       - hash
       - messageId
-      required: false
-      secret: false
-    - default: false
+      description: The message component by which to search. Can be "hash" or "messagId".
+        Default is "hash".
+    - name: start_date
       description: 'The startt date of messages to remediate. Default value is the
         previous month. (Format: yyyy-mm-ddThh:mm:ss+0000)'
-      isArray: false
-      name: start_date
-      required: false
-      secret: false
-    - default: false
+    - name: end_date
       description: 'Theend date of messages to remediate. Default value is the end
         of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
-      isArray: false
-      name: end_date
-      required: false
-      secret: false
-    deprecated: false
-    description: Creates a new Mimecast remediation incident.
-    execution: false
-    name: mimecast-create-remediation-incident
     outputs:
     - contextPath: Mimecast.Incident.ID
       description: The secure Mimecast remediation ID.
@@ -1492,17 +3569,12 @@ script:
     - contextPath: Mimecast.Incident.SearchCriteria.EndDate
       description: The end date of included messages.
       type: String
-  - arguments:
-    - default: false
-      description: The Mimecast ID for a remediation incident.
-      isArray: false
-      name: incident_id
+    description: Creates a new Mimecast remediation incident.
+  - name: mimecast-get-remediation-incident
+    arguments:
+    - name: incident_id
       required: true
-      secret: false
-    deprecated: false
-    description: Returns a Mimecast remediation incident.
-    execution: false
-    name: mimecast-get-remediation-incident
+      description: The Mimecast ID for a remediation incident.
     outputs:
     - contextPath: Mimecast.Incident.ID
       description: The secure Mimecast remediation ID.
@@ -1549,17 +3621,13 @@ script:
     - contextPath: Mimecast.Incident.SearchCriteria.EndDate
       description: The end date of included messages.
       type: String
-  - arguments:
-    - default: false
+    description: Returns a Mimecast remediation incident.
+  - name: mimecast-search-file-hash
+    arguments:
+    - name: hashes_to_search
+      required: true
       description: List of file hashes to check if they were seen in an account.
       isArray: true
-      name: hashes_to_search
-      required: true
-      secret: false
-    deprecated: false
-    description: Searches for one or more file hashes in the account. Maximum is 100.
-    execution: false
-    name: mimecast-search-file-hash
     outputs:
     - contextPath: Mimecast.Hash.HashValue
       description: The file hash value.
@@ -1567,24 +3635,16 @@ script:
     - contextPath: Mimecast.Hash.Detected
       description: Whether the hash was found in the account.
       type: Boolean
-  - arguments:
-    - default: false
-      description: The ID of the policy to update.
-      isArray: false
-      name: policy_id
+    description: Searches for one or more file hashes in the account. Maximum is 100.
+  - name: mimecast-update-policy
+    arguments:
+    - name: policy_id
       required: true
-      secret: false
-    - default: false
+      description: The ID of the policy to update.
+    - name: description
       description: A new description for the policy.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain.
-      isArray: false
-      name: fromType
+    - name: fromType
+      auto: PREDEFINED
       predefined:
       - everyone
       - internal_addresses
@@ -1595,13 +3655,11 @@ script:
       - individual_email_address
       - free_mail_domains
       - header_display_name
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain.
-      isArray: false
-      name: toType
+      description: The sender type by which to block senders in the policy. This argument
+        must match the fromValue argument. For example, if you specify email_domain,
+        the fromValue must be an email domain.
+    - name: toType
+      auto: PREDEFINED
       predefined:
       - everyone
       - internal_addresses
@@ -1609,45 +3667,29 @@ script:
       - email_domain
       - profile_group
       - individual_email_address
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The block action. Can be "no_action" or "block_sender".'
-      isArray: false
-      name: option
+      description: The blocked receiver type by which to block receivers in the policy.
+        This argument must match the toValue argument. For example, if you specify
+        email_domain, the fromType must be an email domain.
+    - name: option
+      auto: PREDEFINED
       predefined:
       - no_action
       - block_sender
-      required: false
-      secret: false
-    - default: false
-      description: The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain.
-      isArray: false
-      name: fromValue
-      required: false
-      secret: false
-    - default: false
-      description: The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain.
-      isArray: false
-      name: toValue
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The part from where addresses are pulled. Can be "envelope_from", "header_from", or "both".
-      isArray: false
-      name: fromPart
+      description: The block action. Can be "no_action" or "block_sender".
+    - name: fromValue
+      description: The value of the fromType argument. For example, if you specify
+        email_domain for fromType, the fromValue must be an email domain.
+    - name: toValue
+      description: The value of the toType argument. For example, if you specify email_domain
+        for toType, the toValue must be an email domain.
+    - name: fromPart
+      auto: PREDEFINED
       predefined:
       - envelope_from
       - header_from
       - both
-      required: false
-      secret: false
-    deprecated: false
-    description: Updates the specified policy.
-    execution: false
-    name: mimecast-update-policy
+      description: The part from where addresses are pulled. Can be "envelope_from",
+        "header_from", or "both".
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID.
@@ -1685,13 +3727,86 @@ script:
     - contextPath: Mimecast.Policy.Receiver.Type
       description: The receiver type.
       type: String
-  feed: false
+    description: Updates the specified policy.
+  - name: mimecast-find-held-messages
+    arguments:
+    - name: admin
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Search as current user, or as admin
+      defaultValue: "False"
+    - name: searchBy
+      description: Search filter
+      isArray: true
+    - name: start
+      description: Start date to search
+    - name: end
+      description: Last date to search
+    - name: filterBy
+      description: Filter results with query
+      isArray: true
+    description: Get information about held messages, including the reason, hold level,
+      sender and recipients. The ID can be used to act on a message using the Release
+      Message or Reject Message API endpoints
+  - name: mimecast-get-message-hold-summary
+    arguments: []
+    description: Can be used to get counts of currenlty held messages for each hold
+      reason. Hold reasons can reference policy actions or definition names
+  - name: mimecast-find-processing-messages
+    arguments:
+    - name: sortOrder
+      description: Sort reesults in order according to date. Possible values are ascending
+        or descending, with descending being the default value
+    - name: start
+      description: The start date of results to return in ISO 8601 format. Default
+        value is 7 days prior to current date.
+    - name: searchBy
+      description: Accepts search filter field and value to apply when searching
+    - name: end
+      description: "\tThe end date of results to return in ISO 8601 format. Default
+        value is the current date"
+    - name: type
+      description: The message queue type to return. Possible values are processing,
+        bulk_processing with the default value being processing.
+    - name: filterBy
+      description: Filters by route and attachment to apply to results
+    description: will return messages currently being processed by Mimecast. Given
+      the speed at which messages are processed, it is not uncommon for this endpoint
+      to return no results, as the platform may not be processing a messasge at the
+      moment or request.
+  - name: mimecast-reject-message
+    arguments:
+    - name: ids
+      required: true
+      description: An array of Mimecast secure ids for messages to be rejected
+      isArray: true
+    - name: message
+    - name: reasonType
+      auto: PREDEFINED
+      predefined:
+      - MESSAGE CONTAINS UNDESIRABLE CONTENT
+      - MESSAGE CONTAINS CONFIDENTIAL INFORMATION
+      - REVIEWER DISAPPROVES OF CONTENT
+      - INAPPROPRIATE COMMUNICATION
+      - MESSAGE GOES AGAINST EMAIL POLICIES
+    - name: notify
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+    description: Used to reject a currently held message based on the Find Held Messages
+      API endpoint
+  - name: mimecast-release-message
+    arguments:
+    - name: id
+      required: true
+      description: "\tThe Mimecast secure id of a message, which can be found using
+        the Find Held Messages API endpoint"
+    description: Used to release a currently held message based on the Find Held Messages
+      API endpoint
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
   subtype: python2
-  type: python
-tests:
-- Mimecast test
+sourcemoduleid: MimecastV2
