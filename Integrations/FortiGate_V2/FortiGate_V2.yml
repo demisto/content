@@ -691,7 +691,7 @@ script:
     - contextPath: Fortigate.Address.Deleted
       description: Address Deleted
       type: Unknown
-  dockerimage: demisto/python3:3.7.4.2728
+  dockerimage: demisto/python3:3.8.1.5734
   feed: false
   isfetch: false
   longRunning: false
