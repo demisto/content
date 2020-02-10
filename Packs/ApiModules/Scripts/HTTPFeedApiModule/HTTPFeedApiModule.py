@@ -252,16 +252,15 @@ def get_indicator_fields(line, url, client: Client):
 
     if 'fields' in feed_config:
         fields = feed_config['fields']
-        for field in fields:
-            for f, fattrs in field.items():
-                field = {f: {}}
-                if 'regex' in fattrs:
-                    field[f]['regex'] = re.compile(fattrs['regex'])
-                if 'transform' not in fattrs:
-                    field[f]['transform'] = r'\g<0>'
-                else:
-                    field[f]['transform'] = fattrs['transform']
-                fields_to_extract.append(field)
+        for f, fattrs in fields.items():
+            field = {f: {}}
+            if 'regex' in fattrs:
+                field[f]['regex'] = re.compile(fattrs['regex'])
+            if 'transform' not in fattrs:
+                field[f]['transform'] = r'\g<0>'
+            else:
+                field[f]['transform'] = fattrs['transform']
+            fields_to_extract.append(field)
 
     line = line.strip()
     if line:
