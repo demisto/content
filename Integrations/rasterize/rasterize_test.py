@@ -101,10 +101,10 @@ def test_merge_options():
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
     
 
-# def test_rasterize_large_html():
-#     path = os.path.realpath('test_data/large.html')
-#     res = rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
-#     assert res
+def test_rasterize_large_html():
+    path = os.path.realpath('test_data/large.html')
+    res = rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
+    assert res
 
 
 @pytest.fixture
@@ -141,11 +141,6 @@ def http_wait_server():
         server.shutdown()
         server_thread.join()
 
-# def test_rasterize_url_long_load(caplog):
-#     caplog.set_level(logging.DEBUG)
-#     res = rasterize(path='http://www.grainger.com/',
-#               width=250, height=250, r_type='png', page_load_timeout=30)
-#     assert res
     
 # Some web servers can block the connection after the http is sent
 # In this case chromium will hang. An example for this is:
