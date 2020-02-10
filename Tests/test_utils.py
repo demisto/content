@@ -400,8 +400,12 @@ def collect_content_items_data(pack_path):
                     else:
                         new_data = json.load(file_data)
 
-                    file_info['name'] = new_data.get('TypeName', '') if directory == "Layouts" \
-                        else new_data.get('name', '')
+                    if directory == 'Layouts':
+                        file_info['name'] = new_data.get('TypeName', '')
+                    elif directory == 'Integrations':
+                        file_info['name'] = new_data.get('display', '')
+                    else:
+                        file_info['name'] = new_data.get('name', '')
 
                     if new_data.get('description', ''):
                         file_info['description'] = new_data.get('description', '')
