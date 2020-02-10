@@ -91,8 +91,6 @@ def do_auth():
     stores token and stored timestamp in integration context,
     retrieves new token when expired '''
     auth = demisto.getIntegrationContext()
-    LOG("Integration context")
-    LOG(auth)
     now_epoch = int(datetime.today().strftime('%s'))
 
     try:
@@ -103,7 +101,6 @@ def do_auth():
 
     except Exception:
         # fetch new token
-        LOG('fetching new JWT')
         r = http_request('GET', 'IdToken', token=API_KEY)
         if not r['token']:
             return_error("Authorization failed")
@@ -283,11 +280,6 @@ def get_domain_context(data):
                 "Phone": data['whois'][0]['admin']['phoneNumber']
             }
         },
-        # "WHOIS/History": None,
-        # "DetectionEngines": None,
-        # "PositiveDetections": 0,
-        # "Subdomains": None,
-        # "UpdatedDate" : None,
     }
 
 
@@ -363,7 +355,6 @@ def fetch_incidents_command():
     today = datetime.strftime(now, "%Y-%m-%d")
     yesterday = datetime.strftime(now - timedelta(days=1), "%Y-%m-%d")
     last_run = demisto.getLastRun()
-    LOG(last_run)
     start_date = yesterday
     end_date = yesterday
 
@@ -382,7 +373,6 @@ def fetch_incidents_command():
 
     if last_run.get('complete_for_today') is True and last_run.get('start_time') == today:
         # wait until tomorrow to try again
-        LOG('Waiting for tomorrow')
         demisto.incidents([])
         return
 
@@ -413,7 +403,6 @@ def fetch_incidents_command():
         if events['pagination']['next']:
             # will retrieve more data with pageToken next run
             next = get_page_token(events['pagination']['next'])
-            LOG("More data available")
             next_run['complete_for_today'] = False
             next_run['next'] = next
 
