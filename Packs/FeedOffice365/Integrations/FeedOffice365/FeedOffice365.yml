@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Office365 Feed
+  id: Office365 Feed_k
   version: -1
 configuration:
 - display: Fetch indicators
@@ -66,7 +66,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ""
+  display: "feedExpirationInterval"
   name: feedExpirationInterval
   required: false
   type: 1
@@ -92,8 +92,8 @@ configuration:
   required: false
   type: 8
 description: Use the Office365 feed integration to get indicators from the feed.
-display: Office365 Feed
-name: Office365 Feed
+display: Office365 Feed (k)
+name: Office365 Feed_k
 script:
   commands:
   - arguments:
