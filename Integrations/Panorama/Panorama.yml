@@ -1762,6 +1762,7 @@ script:
       name: application
       required: false
       secret: false
+      defaultValue: any
     - default: false
       defaultValue: any
       description: Source user for the rule to create.
@@ -1802,6 +1803,12 @@ script:
       description: Rule tags to create.
       isArray: true
       name: tags
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of URL categories.
+      isArray: false
+      name: category
       required: false
       secret: false
     deprecated: false
