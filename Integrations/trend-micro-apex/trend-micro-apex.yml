@@ -1,0 +1,193 @@
+category: End Point
+commonfields:
+  id: trend-micro-apex
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Application ID
+  name: application_id
+  required: false
+  type: 0
+description: Beta Integration to Trend Micro Apex
+display: Trend Micro Apex
+name: trend-micro-apex
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The suspicious object type to query
+      isArray: false
+      name: type
+      predefined:
+      - ip
+      - url
+      - file_sha1
+      - domain
+      - file
+      required: false
+      secret: false
+    - default: false
+      description: Filters the list to suspicious objects that match the specified
+        string
+      isArray: false
+      name: ContentFilter
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: trendmicro-apex-usdo-list
+    outputs:
+    - contextPath: TrendMicro.Apex.USDO.type
+      type: Unknown
+    - contextPath: TrendMicro.Apex.USDO.content
+      type: Unknown
+    - contextPath: TrendMicro.Apex.USDO.notes
+      type: Unknown
+    - contextPath: TrendMicro.Apex.USDO.scan_action
+      type: Unknown
+    - contextPath: TrendMicro.Apex.USDO.expiration_utc_date
+      type: Date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: type
+      predefined:
+      - ip
+      - url
+      - file_sha1
+      - domain
+      - file
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: scan_action
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: notes
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: expiration
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: trendmicro-apex-usdo-add
+  - arguments:
+    - default: false
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: content
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: trendmicro-apex-usdo-delete
+  - arguments:
+    - default: false
+      isArray: false
+      name: multi_match
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: entity_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ip_address
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: mac_address
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: host_name
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: product
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: trendmicro-prodagent-isolate
+  - arguments:
+    - default: false
+      isArray: false
+      name: multi_match
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: entity_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: ip_address
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: mac_address
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: host_name
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: product
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: trendmicro-prodagent-restore
+  dockerimage: demisto/trendapex
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+beta: true
