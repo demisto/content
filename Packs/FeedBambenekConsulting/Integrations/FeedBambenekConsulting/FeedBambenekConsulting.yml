@@ -15,6 +15,7 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
+  defaultvalue: true
   type: 8
 - defaultvalue: '360'
   display: Feed Fetch Interval
@@ -33,8 +34,9 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  additionalinfo: Reliability of the source providing the intelligence data
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+    reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
