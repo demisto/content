@@ -208,6 +208,9 @@ def http_request(uri: str, method: str, headers: Dict = {},
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
+        if isinstance(arg, str):
+            arg = [arg]
+
         for item in arg:
             member_stringify_list += '<member>' + item + '</member>'
         if field_name == 'member':
@@ -288,10 +291,14 @@ def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
 def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: Any = None,
                                  destination: Any = None, negate_source: str = None,
                                  negate_destination: str = None, action: str = None, service: List[str] = None,
-                                 disable: str = None, application: str = None, source_user: str = None,
+                                 disable: str = None, application: List[str] = None, source_user: str = None,
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None) -> Dict:
+    if application is None or len(application) == 0:
+        # application always must be specified and the default should be any
+        application = ['any']
+
     rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
     params = {
         'type': 'config',
@@ -2651,6 +2658,7 @@ def panorama_create_rule_command():
     action = demisto.args().get('action')
     service = demisto.args().get('service')
     disable = demisto.args().get('disable')
+    categories = argToList(demisto.args().get('category'))
     application = argToList(demisto.args().get('application'))
     source_user = demisto.args().get('source_user')
     disable_server_response_inspection = demisto.args().get('disable_server_response_inspection')
@@ -2671,7 +2679,7 @@ def panorama_create_rule_command():
                                           disable=disable, application=application, source_user=source_user,
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
-                                          log_forwarding=log_forwarding, tags=tags)
+                                          log_forwarding=log_forwarding, tags=tags, category=categories)
     result = http_request(
         URL,
         'POST',
@@ -2915,12 +2923,12 @@ def panorama_custom_block_rule_command():
     if object_type == 'ip':
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
-                                                  destination='any', rulename=rulename + '-from', target=target,
+                                                  destination=['any'], rulename=rulename + '-from', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', params=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
-                                                  source='any', rulename=rulename + '-to', target=target,
+                                                  source=['any'], rulename=rulename + '-to', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
@@ -2928,25 +2936,25 @@ def panorama_custom_block_rule_command():
     elif object_type in ['address-group', 'edl']:
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
-                                                  destination='any', rulename=rulename + '-from', target=target,
+                                                  destination=['any'], rulename=rulename + '-from', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', params=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
-                                                  source='any', rulename=rulename + '-to', target=target,
+                                                  source=['any'], rulename=rulename + '-to', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', params=params)
         custom_block_output['AddressGroup'] = object_value
 
     elif object_type == 'url-category':
-        params = prepare_security_rule_params(api_action='set', action='drop', source='any', destination='any',
+        params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               category=object_value, rulename=rulename, target=target,
                                               log_forwarding=log_forwarding, tags=tags)
         result = http_request(URL, 'POST', params=params)
         custom_block_output['CustomURLCategory'] = object_value
 
     elif object_type == 'application':
-        params = prepare_security_rule_params(api_action='set', action='drop', source='any', destination='any',
+        params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               application=object_value, rulename=rulename, target=target,
                                               log_forwarding=log_forwarding, tags=tags)
         result = http_request(URL, 'POST', params=params)
