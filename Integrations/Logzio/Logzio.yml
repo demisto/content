@@ -77,23 +77,6 @@ script:
   script: ''
   type: python
   commands:
-  - name: logzio-fetch-triggered-rules
-    arguments:
-    - name: search
-      description: Part of the alert name to filter by name (case insensitive)
-    - name: severities
-      auto: PREDEFINED
-      predefined:
-      - SEVERE
-      - HIGH
-      - MEDIUM
-      - LOW
-      - INFO
-      description: Filter by triggered severities (SEVERE/HIGH/MEDIUM/LOW/INFO) of
-        alerts
-    - name: tags
-      description: List of tags the alert is related to
-    description: Fetch triggered rules from Logz.io
   - name: logzio-search-logs
     arguments:
     - name: query

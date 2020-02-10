@@ -14,8 +14,8 @@ MAX_LOGZIO_DOCS = 1000
 ONE_MINUTE = 60
 ONE_HOUR = ONE_MINUTE * 60
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-TRIGGERED_ALERTS_ENDPOINT_SUFFIX = "v2/security/rules/events/search"  # "v1/alerts/triggered-alerts"
-SEARCH_API_SUFFIX = "v1/search"
+TRIGGERED_RULES_API_SUFFIX = "v2/security/rules/events/search"  # "v1/alerts/triggered-alerts"
+SEARCH_LOGS_API_SUFFIX = "v1/search"
 
 
 class Client:
@@ -46,14 +46,13 @@ class Client:
                 "severities": severities,
                 "timeRange": {
                     "fromDate": start_time,
-                    "toDate": time.time() - (ONE_MINUTE * 3)
+                    "toDate": time.time() - (ONE_MINUTE * 3)  # 3 Minutes delay for missing/incomplete indexing
                 }
             }
         }
         remove_nulls_from_dictionary(payload["filter"])
         remove_nulls_from_dictionary(payload)
         payload_string = json.dumps(payload)
-        print(payload_string)
         headers = {
             'X-API-TOKEN': self.security_api_token,
             'Content-Type': "application/json",
@@ -63,8 +62,12 @@ class Client:
                                     proxies=self.proxies)
         if response.status_code != 200:
             return_error('Error in API call [%d] - %s' % (response.status_code, response.reason))
-
-        return response.json()
+        result = None
+        try:
+            result = response.json()
+        except ex:
+            return_error('Could not parse response to json: %s' % response.text, ex)
+        return result
 
     def search_logs(self, query, size, from_time, to_time):
         payload = {
@@ -102,13 +105,17 @@ class Client:
         response = requests.request("POST", self.get_search_api(), headers=headers, data=json.dumps(payload))
         if response.status_code != 200:
             return_error('Error in API call [%d] - %s' % (response.status_code, response.reason))
-        return response.json()["hits"]["hits"]
+
+        try:
+            return response.json()["hits"]["hits"]
+        except ex:
+            return_error('Could not parse response to json: %s' % response.text, ex)
 
     def get_triggered_alerts_api(self):
-        return "{}{}".format(self.get_base_api_url(), TRIGGERED_ALERTS_ENDPOINT_SUFFIX)
+        return "{}{}".format(self.get_base_api_url(), TRIGGERED_RULES_API_SUFFIX)
 
     def get_search_api(self):
-        return "{}{}".format(self.get_base_api_url(), SEARCH_API_SUFFIX)
+        return "{}{}".format(self.get_base_api_url(), SEARCH_LOGS_API_SUFFIX)
 
     def get_base_api_url(self):
         return self.base_url.replace("api.", "api{}.".format(self.get_region_code()))
@@ -130,29 +137,24 @@ def test_module(client):
         return 'Test failed: {}'.format(e)
 
 
-def fetch_triggered_rules_command(client, args):
-    search = args.get('search')
-    severities = args.get('severities')
-    tags = args.get('tags')
-    resp = client.fetch_triggered_rules(search, severities, tags)
-    outputs = {
-        'rules': resp
-    }
-    readable = "##{}".format(resp)
-    return readable, outputs, resp
-
-
 def search_logs_command(client, args):
     query = args.get('query')
     size = args.get('size', 1000)
     from_time = args.get('from_time')
     to_time = args.get('to_time')
     resp = client.search_logs(query, size, from_time, to_time)
-    outputs = {
-        'logs': resp
+    content = [res["_source"] for res in resp]
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': content,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown("Logs", content),
+        'EntryContext': {
+            'Logzio.Logs.Count': len(content),
+            'Logzio.Logs.Results': content
+        }
     }
-    readable = "##{}".format(resp)
-    return readable, outputs, resp
 
 
 def search_logs_by_fields_command(client, args):
@@ -165,11 +167,18 @@ def search_logs_by_fields_command(client, args):
     remove_nulls_from_dictionary(params)
     query = " AND ".join(["{}:{}".format(key, params[key]) for key in params])
     resp = client.search_logs(query, size, from_time, to_time)
-    outputs = {
-        'logs': resp
+    content = [res["_source"] for res in resp]
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': content,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown("Logs", content),
+        'EntryContext': {
+            'Logzio.Logs.Count': len(content),
+            'Logzio.Logs.Results': content
+        }
     }
-    readable = "##{}".format(resp)
-    return readable, outputs, resp
 
 
 def fetch_incidents(client, last_run, search, severities, tags, first_fetch_time):
@@ -217,15 +226,12 @@ def main():
         command = demisto.command()
         # demisto.log('Command being called is {}'.format(command))
         # Run the commands
-        if command == 'logzio-fetch-triggered-rules':
-            readable, outputs, resp = fetch_triggered_rules_command(client, demisto.args())
-            return_outputs(readable, outputs, resp)
-        elif command == 'logzio-search-logs':
-            readable, outputs, resp = search_logs_command(client, demisto.args())
-            return_outputs(readable, outputs, resp)
+        if command == 'logzio-search-logs':
+            # readable, outputs, resp =
+            demisto.results(search_logs_command(client, demisto.args()))
+            # return_outputs(readable, outputs, resp)
         elif command == 'logzio-search-logs-by-fields':
-            readable, outputs, resp = search_logs_by_fields_command(client, demisto.args())
-            return_outputs(readable, outputs, resp)
+            demisto.results(search_logs_by_fields_command(client, demisto.args()))
         elif demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
