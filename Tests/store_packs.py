@@ -97,7 +97,8 @@ class Pack:
         if support_email:
             pack_metadata['supportDetails']['email'] = support_email
 
-        # pack_metadata['general'] = user_metadata.get('general', [])
+        # todo check if this field is necessary
+        pack_metadata['general'] = user_metadata.get('general', [])
         pack_metadata['tags'] = user_metadata.get('tags', [])
         pack_metadata['categories'] = user_metadata.get('categories', [])
         content_items_data = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in
@@ -105,7 +106,6 @@ class Pack:
         pack_metadata['contentItems'] = content_items_data
         pack_metadata["contentItemTypes"] = list(content_items_data.keys())
         # todo collect all integrations display name
-        # pack_metadata["integrations"] = collect_integration_display_names(self._pack_path)
         pack_metadata["integrations"] = []
         pack_metadata["useCases"] = user_metadata.get('useCases', [])
         pack_metadata["keywords"] = user_metadata.get('keywords', [])
