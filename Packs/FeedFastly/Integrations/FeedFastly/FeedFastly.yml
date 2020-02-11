@@ -1,4 +1,4 @@
-category: Authentication
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Fastly Feed
   version: -1
