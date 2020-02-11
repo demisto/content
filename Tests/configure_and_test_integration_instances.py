@@ -10,13 +10,12 @@ import sys
 import demisto_client
 from time import sleep
 from threading import Thread
-from distutils.util import strtobool
 
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS, run_threads_list
 from Tests.test_content import load_conf_files, extract_filtered_tests, ParallelPrintsManager
-from Tests.test_utils import run_command, get_last_release_version, checked_type, get_yaml
+from Tests.test_utils import run_command, get_last_release_version, checked_type, get_yaml, str2bool
 from Tests.scripts.validate_files import FilesValidator
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX
 from Tests.scripts.constants import PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
@@ -34,6 +33,7 @@ def options_handler():
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
+    parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
 
     options = parser.parse_args()
 
@@ -604,8 +604,7 @@ def main():
     skipped_integrations_conf = conf['skipped_integrations']
     all_module_instances = []
 
-    is_nightly = bool(strtobool(os.environ.get('IS_NIGHTLY', 'false')))
-    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
+    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=options.is_nightly)
     tests_for_iteration = tests
     if run_all_tests:
         # Use all tests for testing, leave 'tests_for_iteration' as is
