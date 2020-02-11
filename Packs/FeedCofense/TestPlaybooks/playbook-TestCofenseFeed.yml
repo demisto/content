@@ -1,16 +1,20 @@
+elasticcommonfields: {}
 id: TestCofenseFeed
 version: -1
-contentitemfields:
-  propagationLabels: []
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 name: TestCofenseFeed
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ce8e21a4-f8a4-4347-8ae7-efc7cae88a5b
+    taskid: "63"
     type: start
     task:
-      id: ce8e21a4-f8a4-4347-8ae7-efc7cae88a5b
+      elasticcommonfields: {}
+      id: "63"
       version: -1
       name: ""
       iscommand: false
@@ -30,13 +34,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: d73683d4-fa80-4c32-8d8d-313ad9bc6c56
+    taskid: "64"
     type: regular
     task:
-      id: d73683d4-fa80-4c32-8d8d-313ad9bc6c56
+      elasticcommonfields: {}
+      id: "64"
       version: -1
       name: get-indicators
       description: Get indicators
@@ -46,10 +51,10 @@ tasks:
       brand: Cofense Feed
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
       from_time:
-        simple: 18 months
+        simple: 3 days
       limit: {}
     separatecontext: false
     view: |-
@@ -63,34 +68,20 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "2":
-    id: "2"
-    taskid: bb4a7b8a-58a2-4fe4-8f0d-cb9edc079d36
-    type: condition
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: "66"
+    type: title
     task:
-      id: bb4a7b8a-58a2-4fe4-8f0d-cb9edc079d36
+      elasticcommonfields: {}
+      id: "66"
       version: -1
-      name: Validate there's something inside.
-      type: condition
+      name: Done
+      type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "3"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Cofense
-                accessor: Indicator
-            iscontext: true
     view: |-
       {
         "position": {
@@ -102,69 +93,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
-  "3":
-    id: "3"
-    taskid: 76bac657-5af2-40a1-888c-d80aee2e6152
-    type: title
-    task:
-      id: 76bac657-5af2-40a1-888c-d80aee2e6152
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "4":
-    id: "4"
-    taskid: 07a4814e-6525-4c9d-88eb-4913f0fb24aa
-    type: regular
-    task:
-      id: 07a4814e-6525-4c9d-88eb-4913f0fb24aa
-      version: -1
-      name: Raise error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      message:
-        simple: Got nothing from the feed. Maybe we need to expand the years of pulling.
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: cda984b7-3eab-4001-8e91-841734972635
+    taskid: "62"
     type: regular
     task:
-      id: cda984b7-3eab-4001-8e91-841734972635
+      elasticcommonfields: {}
+      id: "62"
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -194,14 +130,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 492.5,
+        "height": 560,
+        "width": 380,
         "x": 50,
         "y": 50
       }
@@ -209,3 +145,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0
