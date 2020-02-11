@@ -609,7 +609,7 @@ def main():
     tests_for_iteration = tests
     if run_all_tests:
         # Use all tests for testing, leave 'tests_for_iteration' as is
-        print_warning(f'Not running instance tests when {RUN_ALL_TESTS_FORMAT} is turned on')
+        print_warning('Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT))
         tests_for_iteration = []
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
