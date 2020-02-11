@@ -3,8 +3,8 @@ from CommonServerPython import *
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.client import DxlClient
 from dxlclient.broker import Broker
-from dxlmarclient import MarClient, ResultConstants, ProjectionConstants, ConditionConstants, SortConstants, OperatorConstants
-import json
+from dxlmarclient import MarClient, ProjectionConstants, ConditionConstants, OperatorConstants
+
 
 broker_ca_bundle = './brokercerts.crt'
 with open(broker_ca_bundle, "w") as text_file:
@@ -36,32 +36,40 @@ FILTER_OPERATORS = {
 
 MAR_COLLECTORS = {
     'CommandLineHistory': ['user', 'id'],  # according to docs also includes 'CommandLine'
-    'CurrentFlow': ['local_ip', 'local_port', 'remote_ip', 'remote_port', 'status', 'process_id', 'user', 'user_id', 'proto', 'md5', 'sha1'],
+    'CurrentFlow': ['local_ip', 'local_port', 'remote_ip', 'remote_port', 'status', 'process_id', 'user', 'user_id',
+                    'proto', 'md5', 'sha1'],
     'DNSCache': ['hostname', 'ipaddress'],
     'EnvironmentVariables': ['username', 'process_id', 'name', 'value'],
     'Files': ['name', 'dir', 'full_name', 'size', 'last_write', 'md5', 'sha1', 'created_at', 'deleted_at', ],
     'HostEntries': ['hostname', 'ipaddress'],
     'HostInfo': ['hostname', 'ip_address', 'os'],
-    'InstalledCertificates': ['issued_to', 'issued_by', 'expiration_date', 'purposes', 'purposes_extended', 'friendly_name'],
-    'InstalledDrivers': ['displayname', 'description', 'last_modified_date', 'name', 'servicetype', 'startmode', 'state', 'path'],
+    'InstalledCertificates': ['issued_to', 'issued_by', 'expiration_date', 'purposes', 'purposes_extended',
+                              'friendly_name'],
+    'InstalledDrivers': ['displayname', 'description', 'last_modified_date', 'name', 'servicetype', 'startmode',
+                         'state', 'path'],
     'InstalledUpdates': ['description', 'hotfix_id', 'install_date', 'installed_by'],
     'InteractiveSessions': ['userid', 'name'],
     'LocalGroups': ['groupname', 'groupdomain', 'groupdescription', 'islocal', 'sid'],
     'LoggedInUsers': ['id', 'userdomain', 'username'],
     # according to docs also includes 'flags'
-    'NetworkFlow': ['src_ip', 'src_port', 'dst_ip', 'dst_port', 'time', 'status', 'process', 'process_id', 'user', 'user_id', 'proto', 'direction', 'ip_class', 'seq_number', 'src_mac', 'dst_mac', 'md5', 'sha1'],
-    'NetworkInterfaces': ['bssid', 'displayname', 'gwipaddress', 'gwmacaddress', 'ipaddress', 'ipprefix', 'macaddress', 'name', 'ssid', 'type', 'wifisecurity'],
+    'NetworkFlow': ['src_ip', 'src_port', 'dst_ip', 'dst_port', 'time', 'status', 'process', 'process_id', 'user',
+                    'user_id', 'proto', 'direction', 'ip_class', 'seq_number', 'src_mac', 'dst_mac', 'md5', 'sha1'],
+    'NetworkInterfaces': ['bssid', 'displayname', 'gwipaddress', 'gwmacaddress', 'ipaddress', 'ipprefix', 'macaddress',
+                          'name', 'ssid', 'type', 'wifisecurity'],
     'NetworkSessions': ['computer', 'user', 'client', 'file', 'idletime'],
     'NetworkShares': ['name', 'description', 'path'],
     # according to docs also includes 'thread_count', 'parentId'
-    'Processes': ['name', 'id', 'parentname', 'size', 'md5', 'sha1', 'cmdline', 'imagepath', 'kerneltime', 'usertime', 'uptime', 'user', 'user_id'],
+    'Processes': ['name', 'id', 'parentname', 'size', 'md5', 'sha1', 'cmdline', 'imagepath', 'kerneltime', 'usertime',
+                  'uptime', 'user', 'user_id'],
     # according to docs also includes 'nextruntime', 'task_run', 'log_on_type'
     'ScheduledTasks': ['folder', 'taskname', 'status', 'last_run', 'username', 'schedule_on'],
     'Services': ['description', 'name', 'startuptype', 'status', 'user'],
     'Software': ['displayname', 'installdate', 'publisher', 'version'],
     'Startup': ['caption', 'command', 'description', 'name', 'user'],
-    'UsbConnectedStorageDevices': ['vendor_id', 'product_id', 'serial_number', 'device_type', 'guid', 'last_connection_time', 'user_name', 'last_time_used_by_user'],
-    'UserProfiles': ['accountdisabled', 'domain', 'fullname', 'installdate', 'localaccount', 'lockedout', 'accountname', 'sid', 'passwordexpires'],
+    'UsbConnectedStorageDevices': ['vendor_id', 'product_id', 'serial_number', 'device_type', 'guid',
+                                   'last_connection_time', 'user_name', 'last_time_used_by_user'],
+    'UserProfiles': ['accountdisabled', 'domain', 'fullname', 'installdate', 'localaccount', 'lockedout', 'accountname',
+                     'sid', 'passwordexpires'],
     'WinRegistry': ['keypath', 'keyvalue', 'valuedata', 'valuetype']
 }
 
@@ -122,7 +130,7 @@ def test():
         demisto.info('######## client connected ########')
         client.disconnect()
         demisto.info('######## client disconnected ########')
-        mar_client = MarClient(client)
+        MarClient(client)
         demisto.info('######## client MAR client created ########')
 
 
@@ -207,7 +215,8 @@ def search_multiple(collectors, filter_collector, filter_by, filter_operator, fi
             )
         else:
             if (not filter_by or not filter_operator or not filter_value):
-                raise Exception('you must specify filter-by, filter-operator & filter-value when you provide filter_collector argument')
+                raise Exception('you must specify filter-by, filter-operator & filter-value '
+                                'when you provide filter_collector argument')
             else:
                 result_context = mar_client.search(
                     projections=[get_projection(c, None) for c in collectors],
@@ -227,7 +236,8 @@ def search_multiple(collectors, filter_collector, filter_by, filter_operator, fi
         return None
 
 
-def search_wrapper(collector, projection_collector, outputs_str, filter_by, filter_operator, filter_value, capitalize=False):
+def search_wrapper(collector, projection_collector, outputs_str, filter_by,
+                   filter_operator, filter_value, capitalize=False):
     demisto.info('######## executing ' + demisto.command() + ' ########')
     try:
         if outputs_str:
