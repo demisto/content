@@ -5,6 +5,7 @@
     - download the sh script https://github.com/demisto/content/raw/master/Integrations/McAfee_DXL/create_keys.sh.zip and move to the directory.
     - unzip the file run.
     - fill out the required fields except the challenge password and the optional company name (leave it empty).
+    - the certificate (`client.crt`) will be valid for 365 days (you can change the value in the script).
     - after the script will finish to run you should have the flowing files
         - `client.key` (private key).
         - `client.crt` (public key).
