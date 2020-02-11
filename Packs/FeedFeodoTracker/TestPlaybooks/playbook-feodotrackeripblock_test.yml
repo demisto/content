@@ -75,8 +75,8 @@ tasks:
       elasticcommonfields: {}
       id: fce6dade-4763-4e4d-895c-07ac01235ed2
       version: -1
-      name: feodotrackeripblocklist-get-indicators
-      script: '|||feodotrackeripblocklist-get-indicators'
+      name: feodotracker-ipblocklist-get-indicators
+      script: '|||feodotracker-ipblocklist-get-indicators'
       type: regular
       iscommand: true
       brand: ""

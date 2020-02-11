@@ -2,29 +2,6 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Feodo Tracker Hashes Feed
   version: -1
-script:
-  commands:
-  - arguments:
-    - default: false
-      defaultValue: '50'
-      description: The maximum number of results to return. The default value is 50.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets the feed indicators.
-    execution: false
-    name: feodotrackerhashes-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
-  feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
-  script: ''
-  subtype: python3
-  type: python
 configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
@@ -56,7 +33,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: suddenDeath
+- defaultvalue: indicatorType
   name: feedExpirationPolicy
   options:
   - never
@@ -89,8 +66,31 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Feodo Tracker publishes a list of hashes (MD5) associated with Dridex and Emotet/Heodo malware samples.
+description: Feodo Tracker publishes a list of hashes (MD5) associated with Dridex
+  and Emotet/Heodo malware samples.
 display: Feodo Tracker Hashes Feed
 name: Feodo Tracker Hashes Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the feed indicators.
+    execution: false
+    name: feodotracker-hashes-get-indicators
+  dockerimage: demisto/python3:3.8.1.5734
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
 fromversion: 5.5.0
-

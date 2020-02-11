@@ -2,29 +2,6 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Feodo Tracker IP Blocklist Feed
   version: -1
-script:
-  commands:
-  - arguments:
-    - default: false
-      defaultValue: '50'
-      description: The maximum number of results to return. The default value is 50.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets the feed indicators.
-    execution: false
-    name: feodotrackeripblocklist-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
-  feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
-  script: ''
-  subtype: python3
-  type: python
 configuration:
 - display: Feed Source
   hidden: false
@@ -100,5 +77,27 @@ configuration:
 description: Gets a list of bad IPs from Feodo Tracker.
 display: Feodo Tracker IP Blocklist Feed
 name: Feodo Tracker IP Blocklist Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the feed indicators.
+    execution: false
+    name: feodotracker-ipblocklist-get-indicators
+  dockerimage: demisto/python3:3.8.1.5734
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
 fromversion: 5.5.0
-
