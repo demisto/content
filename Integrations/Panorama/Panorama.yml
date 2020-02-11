@@ -699,7 +699,7 @@ script:
       description: Service name.
       isArray: false
       name: name
-      required: false
+      required: true
       secret: false
     - default: false
       description: The device group for which to return addresses (Panorama instances).
@@ -1703,13 +1703,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of address object names, address group object names, or EDL object names.
+      description: A comma-separated list of address object names, address group object
+        names, or EDL object names.
       isArray: true
       name: source
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of address object names, address group object names, or EDL object names.
+      description: A comma-separated list of address object names, address group object
+        names, or EDL object names.
       isArray: true
       name: destination
       required: false
@@ -1754,12 +1756,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of application object namesfor the rule to create.
+      defaultValue: any
+      description: A comma-separated list of application object namesfor the rule
+        to create.
       isArray: true
       name: application
       required: false
       secret: false
-      defaultValue: any
     - default: false
       defaultValue: any
       description: Source user for the rule to create.
@@ -2252,8 +2255,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The Search time for the request. For example: "2019/12/26 00:00:00", "2020/01/10".
-        For more information, see the Panorama XML API documentation.'
+      description: 'The Search time for the request. For example: "2019/12/26 00:00:00",
+        "2020/01/10". For more information, see the Panorama XML API documentation.'
       isArray: false
       name: searchTime
       required: false
@@ -3063,8 +3066,8 @@ script:
       description: The metric (port) of the static route.
       type: Number
     - contextPath: ' Panorama.StaticRoutes.NextHop'
-      description: The next hop of the static route. Can be an IP address, FQDN,
-        or a virtual router.
+      description: The next hop of the static route. Can be an IP address, FQDN, or
+        a virtual router.
       type: String
     - contextPath: ' Panorama.StaticRoutes.RouteTable'
       description: The route table of a static route.
@@ -3073,7 +3076,8 @@ script:
       description: The virtual router to which the static router belongs.
       type: String
     - contextPath: ' Panorama.StaticRoutes.Template'
-      description: The template in which the static route is defined (Panorama instances only).
+      description: The template in which the static route is defined (Panorama instances
+        only).
       type: String
     - contextPath: Panorama.StaticRoutes.Uncommitted
       description: Whether the static route is committed.
@@ -3116,8 +3120,8 @@ script:
       description: The metric (port) of the static route.
       type: Number
     - contextPath: ' Panorama.StaticRoutes.NextHop'
-      description: The next hop of the static route. Can be an IP address, FQDN,
-        or a virtual router.
+      description: The next hop of the static route. Can be an IP address, FQDN, or
+        a virtual router.
       type: String
     - contextPath: ' Panorama.StaticRoutes.RouteTable'
       description: The route table of the static route.
@@ -3126,7 +3130,8 @@ script:
       description: The virtual router to which the static router belongs.
       type: String
     - contextPath: ' Panorama.StaticRoutes.Template'
-      description: The template in which the static route is defined (Panorama instances only).
+      description: The template in which the static route is defined (Panorama instances
+        only).
       type: String
   - arguments:
     - default: false
@@ -3136,8 +3141,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the static route. The argument is limited to a maximum of 31 characters, it's case-sensitive,
-        and supports letters, numbers, spaces, hyphens, and underscores.
+      description: The name of the static route. The argument is limited to a maximum
+        of 31 characters, it's case-sensitive, and supports letters, numbers, spaces,
+        hyphens, and underscores.
       isArray: false
       name: static_route
       required: true
@@ -3206,8 +3212,8 @@ script:
       description: The metric (port) of the static route.
       type: Number
     - contextPath: ' Panorama.StaticRoutes.NextHop'
-      description: The next hop of the static route. Can be an IP address, FQDN,
-        or a virtual router.
+      description: The next hop of the static route. Can be an IP address, FQDN, or
+        a virtual router.
       type: String
     - contextPath: ' Panorama.StaticRoutes.RouteTable'
       description: The route table of the static route.
@@ -3216,7 +3222,8 @@ script:
       description: The virtual router to which the static router belongs.
       type: String
     - contextPath: ' Panorama.StaticRoutes.Template'
-      description: The template in which the static route is defined (Panorama instances only).
+      description: The template in which the static route is defined (Panorama instances
+        only).
       type: String
   - arguments:
     - default: false
@@ -3256,8 +3263,8 @@ script:
       description: The metric (port) of the static route.
       type: Number
     - contextPath: ' Panorama.StaticRoutes.NextHop'
-      description: The next hop of the static route. Can be an IP address, FQDN,
-        or a virtual router.
+      description: The next hop of the static route. Can be an IP address, FQDN, or
+        a virtual router.
       type: String
     - contextPath: ' Panorama.StaticRoutes.RouteTable'
       description: The route table of the static route.
@@ -3266,12 +3273,14 @@ script:
       description: The virtual router to which the static router belongs.
       type: String
     - contextPath: ' Panorama.StaticRoutes.Template'
-      description: The template in which the static route is defined (Panorama instances only).
+      description: The template in which the static route is defined (Panorama instances
+        only).
       type: String
     - contextPath: Panorama.StaticRoutes.Deleted
       description: Whether the static route was deleted.
       type: Boolean
   dockerimage: demisto/python3:3.7.3.221
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
