@@ -711,7 +711,6 @@ def fetch_incidents():
             max_update_time = last_alert_timestamp.split('-')[0]
         # add 1 second to last alert timestamp, in order to prevent duplicated alerts
         max_update_time = (datetime.strptime(max_update_time, date_format) + timedelta(seconds=1)).isoformat()
-        max_update_time = last_update_time
         demisto.setLastRun({'last_fetched_event_timestamp': max_update_time})
     demisto.incidents(incidents)
 
