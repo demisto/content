@@ -15,14 +15,17 @@ from Tests.test_utils import run_command, print_error, print_warning, print_colo
 STORAGE_BASE_PATH = "content/packs"
 
 DIR_NAME_TO_CONTENT_TYPE = {
-    "Scripts": "Automations",
+    "Classifiers": "Classifiers",
+    "Dashboards": "Dashboards",
     "IncidentFields": "Incident Fields",
-    "Playbooks": "Playbooks",
-    "Integrations": "Integrations",
     "IncidentTypes": "Incident Types",
+    "IndicatorFields": "Indicator Fields",
+    "Integrations": "Integrations",
     "Layouts": "Incident Layouts",
+    "Playbooks": "Playbooks",
     "Reports": "Reports",
-    "Dashboards": "Dashboards"
+    "Scripts": "Automations",
+    "Widgets": "Widgets"
 }
 
 
