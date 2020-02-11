@@ -22,6 +22,10 @@ def main():
     })
 
     params['ignore_regex'] = '#'
+    params['custom_fields_mapping'] = {
+        "creationdate": "creationdate",
+        "malwarefamily": "malwarefamily"
+    }
     params['url'] = "https://feodotracker.abuse.ch/downloads/malware_hashes.csv"
     # Call the main execution of the HTTP API module.
     feed_main('Feodo Tracker Hashes Feed', params, 'feodotrackerhashes-')
