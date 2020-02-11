@@ -47,6 +47,14 @@ def main():
 
     params['ignore_regex'] = '#'
     params['url'] = chosen_urls
+    params['custom_fields_mapping'] = {
+        "creationdate": "creationdate",
+        "port": "port",
+        "updatedate": "updatedate",
+        "malwarefamily": "malwarefamily"
+
+
+    }
     # Call the main execution of the HTTP API module.
     feed_main('Feodo Tracker IP Blocklist Feed', params, 'feodotrackeripblocklist-')
 
