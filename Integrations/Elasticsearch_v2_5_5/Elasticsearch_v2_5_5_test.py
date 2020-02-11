@@ -534,10 +534,41 @@ def test_extract_indicators_from_insight_hit(mocker):
     ioc_lst, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
     # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
     assert len(ioc_lst) == 1
-    assert len(ioc_enrch_lst) == 2
+    assert len(ioc_enrch_lst[0]) == 2
     assert ioc_lst[0].get('value')
     # moduleToFeedMap with isEnrichment: False should be added to ioc_lst
     assert ioc_lst[0].get('moduleToFeedMap').get('Demisto.Demisto')
     assert ioc_lst[0].get('moduleToFeedMap').get('VirusTotal.VirusTotal') is None
-    set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0])
-    set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[1])
+    set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0][0])
+    set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0][1])
+
+
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Timestamp-Seconds')
+@patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
+@patch("Elasticsearch_v2_5_5.FETCH_INDEX", "customer")
+def test_create_enrichment_batches_one_indicator(mocker):
+    import Elasticsearch_v2_5_5 as es2
+    mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
+    _, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    ioc_enrch_lst_of_lsts = es2.create_enrichment_batches(ioc_enrch_lst)
+    assert len(ioc_enrch_lst_of_lsts) == 2
+    assert ioc_enrch_lst_of_lsts[0][0] == ioc_enrch_lst[0][0]
+    assert ioc_enrch_lst_of_lsts[1][0] == ioc_enrch_lst[0][1]
+
+
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Timestamp-Seconds')
+@patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
+@patch("Elasticsearch_v2_5_5.FETCH_INDEX", "customer")
+def test_create_enrichment_batches_mult_indicators(mocker):
+    import Elasticsearch_v2_5_5 as es2
+    ioc_enrch_lst = [
+        [1, 2, 3],
+        [4, 5],
+        [6, 7, 8, 9]
+    ]
+    ioc_enrch_lst_of_lsts = es2.create_enrichment_batches(ioc_enrch_lst)
+    assert len(ioc_enrch_lst_of_lsts) == 4
+    assert ioc_enrch_lst_of_lsts[0] == [1, 4, 6]
+    assert ioc_enrch_lst_of_lsts[1] == [2, 5, 7]
+    assert ioc_enrch_lst_of_lsts[2] == [3, 8]
+    assert ioc_enrch_lst_of_lsts[3] == [9]

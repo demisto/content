@@ -526,7 +526,8 @@ def get_indicators_command():
         if len(indicators_list) >= limit:
             break
     hr = tableToMarkdown('Indicators', indicators_list, ['name'])
-    hr += tableToMarkdown('Enrichments', ioc_enrch_lst, ['value', 'sourceBrand', 'score'])
+    for ioc_enrch_obj in ioc_enrch_lst:
+        hr += tableToMarkdown('Enrichments', ioc_enrch_obj, ['value', 'sourceBrand', 'score'])
     ec = {'ElasticsearchFeed.SharedIndicators': {'Indicators': indicators_list, 'Enrichments': ioc_enrch_lst}}
     return_outputs(hr, ec, indicators_list)
 
@@ -543,8 +544,11 @@ def fetch_indicators_command():
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
     if ioc_enrch_lst:
-        for b in batch(ioc_enrch_lst, batch_size=2000):
-            demisto.createIndicators(b)
+        ioc_enrch_lst_of_lsts = create_enrichment_batches(ioc_enrch_lst)
+        for enrch_batch in ioc_enrch_lst_of_lsts:
+            # ensure batch sizes don't exceed 2000
+            for b in batch(enrch_batch, batch_size=2000):
+                demisto.createIndicators(b)
     demisto.setLastRun({'time': now})
 
 
@@ -572,11 +576,13 @@ def extract_indicators_from_insight_hit(hit):
         module_to_feedmap = ioc.get(MODULE_TO_FEEDMAP_KEY)
         updated_module_to_feedmap = {}
         if module_to_feedmap:
+            ioc_enirhcment_obj = []
             for key, val in module_to_feedmap.items():
                 if val.get('isEnrichment'):
-                    ioc_enirhcment_list.append(val)
+                    ioc_enirhcment_obj.append(val)
                 else:
                     updated_module_to_feedmap[key] = val
+            ioc_enirhcment_list.append(ioc_enirhcment_obj)
             ioc[MODULE_TO_FEEDMAP_KEY] = updated_module_to_feedmap
     return ioc_lst, ioc_enirhcment_list
 
@@ -586,6 +592,20 @@ def results_to_indicator(hit):
     ioc_dict['value'] = ioc_dict.get('name')
     ioc_dict['rawJSON'] = dict(ioc_dict)
     return ioc_dict
+
+
+def create_enrichment_batches(ioc_enrch_lst):
+    max_enrch_len = 0
+    for ioc_enrch_obj in ioc_enrch_lst:
+        max_enrch_len = max(max_enrch_len, len(ioc_enrch_obj))
+    enrch_batch_lst = []
+    for i in range(max_enrch_len):
+        enrch_batch_obj = []
+        for ioc_enrch_obj in ioc_enrch_lst:
+            if i < len(ioc_enrch_obj):
+                enrch_batch_obj.append(ioc_enrch_obj[i])
+        enrch_batch_lst.append(enrch_batch_obj)
+    return enrch_batch_lst
 
 
 def get_last_fetch_time():
