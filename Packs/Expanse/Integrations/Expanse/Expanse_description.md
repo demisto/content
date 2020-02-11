@@ -1,3 +1,1 @@
-## Hello World
-- This text is markdown
-- Here you should explain how to configure the instance in Demisto
+API Key can be retrieved by contacting your technical account manager. 

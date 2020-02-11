@@ -162,6 +162,10 @@ def parse_events(events):
             ),
             'occurred': event['eventTime'],
             'rawJSON': json.dumps(event),
+            'type': 'Expanse Appearance',
+            'CustomFields': {
+                'expanse_raw_json_event': json.dumps(event)
+            },
             'severity': EXPOSURE_SEVERITY_MAPPING[event['payload']['severity']]
         }
         incidents.append(incident)
@@ -405,12 +409,12 @@ def fetch_incidents_command():
 
         else:
             # end of data, wait for tomorrow
+            incidents = parse_events(events)
+            demisto.incidents(incidents)
             next_run['complete_for_today'] = True
             next_run['start_time'] = today
-            next_run['next'] = False
-
-        incidents = parse_events(events)
-        demisto.incidents(incidents)
+    else:
+        demisto.incidents([])
 
     demisto.setLastRun(next_run)
 
@@ -489,7 +493,20 @@ def domain_command():
 
 
 def test_module():
-    do_auth()
+    token = do_auth()
+    now = datetime.today()
+    yesterday = datetime.strftime(now - timedelta(days=1), "%Y-%m-%d")
+
+    params = {
+        'startDateUtc': yesterday,
+        'endDateUtc': yesterday,
+        'eventType': EXPOSURE_EVENT_TYPES,
+        'limit': 1
+    }
+    token = do_auth()
+    events = http_request('GET', 'events', params=params, token=token)
+
+    parse_events(events)
     return True
 
 
@@ -497,6 +514,8 @@ def main():
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     try:
+        handle_proxy()
+
         active_command = demisto.command()
 
         if active_command == 'test-module':
@@ -516,9 +535,6 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        LOG('FATAL ERROR')
-        LOG(e)
-        LOG.print_log()
         return_error(str(e))
 
 

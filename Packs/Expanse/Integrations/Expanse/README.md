@@ -3,11 +3,10 @@
 
 The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.  This application also allows for IP and Domain enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
 This integration was integrated and tested with version xx of Expanse
-## Expanse Playbook
----
 
 ## Use Cases
 ---
+
 
 ## Configure Expanse on Demisto
 ---
@@ -25,6 +24,72 @@ This integration was integrated and tested with version xx of Expanse
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
+```
+{
+    'eventType': 'ON_PREM_EXPOSURE_APPEARANCE',
+    'eventTime': '2020-02-05T00:00:00Z',
+    'businessUnit': {
+        'id': 'a1f0f39b-f358-3c8c-947b-926887871b88',
+        'name': 'VanDelay Import-Export'
+    },
+    'payload': {
+        '_type': 'ExposurePayload',
+        'id': 'b0acfbc5-4d55-3fdb-9155-4927eab91218',
+        'exposureType': 'NTP_SERVER',
+        'ip': '203.215.173.113',
+        'port': 123,
+        'portProtocol': 'UDP',
+        'exposureId': '6bedf636-5b6a-3b47-82a5-92b511c0649b',
+        'domainName': None,
+        'scanned': '2020-02-05T00:00:00Z',
+        'geolocation': {
+            'latitude': 33.7,
+            'longitude': 73.17,
+            'city': 'ISLAMABAD',
+            'regionCode': '',
+            'countryCode':
+                'PK'
+        },
+        'configuration': {
+            '_type': 'NtpServerConfiguration',
+            'response': {
+                'ntp': {
+                    'leapIndicator': 0,
+                    'mode': 4,
+                    'poll': 4,
+                    'precision': -19,
+                    'stratum': 5,
+                    'delay': 0,
+                    'dispersion': 22,
+                    'version': 4,
+                    'originateTime': '2004-11-24T15:12:11.444Z',
+                    'receiveTime': '2020-02-05T14:25:08.963Z',
+                    'updateTime': '2020-02-05T14:25:01.597Z',
+                    'transmitTime': '2020-02-05T14:25:08.963Z',
+                    'reference': {
+                        'ref_ip': {
+                            'reference': {
+                                'ipv4': '127.127.1.1'
+                            }
+                        }
+                    },
+                    'extentionData': None,
+                    'keyIdentifier': None,
+                    'messageDigest': None
+                }
+            }
+        },
+        'severity': 'ROUTINE',
+        'tags': {
+            'ipRange': ['untagged']
+        },
+        'providers': ['InternallyHosted'],
+        'certificatePem': None,
+        'remediationStatuses': []
+    },
+    'id': 'b4a1e2e6-165a-31a5-9e6a-af286adc3dcd'
+}
+```
 
 ## Commands
 ---
@@ -157,7 +222,7 @@ domain command
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | domain to searh | Required | 
+| domain | domain to search | Required | 
 
 
 ##### Context Output
@@ -393,5 +458,5 @@ domain command
 ## Troubleshooting
 ---
 
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
+## Contact Details
+---

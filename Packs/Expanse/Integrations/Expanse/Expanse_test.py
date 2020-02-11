@@ -4,7 +4,7 @@ import json
 
 TEST_IP = "74.142.119.130"
 TEST_API_KEY = "123456789123456789"
-TEST_DOMAIN = "atlas.enron.com"
+TEST_DOMAIN = "base2.pets.com"
 
 
 def http_request_mock(method, endpoint, params=None, token=False):
@@ -285,7 +285,7 @@ MOCK_DOMAIN_RESPONSE = {
         {
             'id': '74384207-e542-3c52-895f-68a1539defdd',
             'dateAdded': '2020-01-04T04:57:48.580Z',
-            'domain': 'atlas.enron.com',
+            'domain': 'base2.pets.com',
             'tenant': {
                 'id': '04b5140e-bbe2-3e9c-9318-a39a3b547ed5',
                 'name': 'VanDelay Industries',

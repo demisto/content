@@ -6,7 +6,7 @@ configuration:
 - display: API Key
   name: api_key
   required: true
-  type: 0
+  type: 4
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -31,10 +31,10 @@ configuration:
   name: first_run
   required: false
   type: 0
-description: "The Expanse App for Demisto leverages the Expander API to retrieve network\
-  \ exposures and create incidents in Demisto.  This application also allows for IP\
-  \ and Domain enrichment, retrieving assets and exposures information drawn from\
-  \ Expanse\u2019s unparalleled view of the Internet."
+description: The Expanse App for Demisto leverages the Expander API to retrieve network
+  exposures and create incidents in Demisto.  This application also allows for IP
+  and Domain enrichment, retrieving assets and exposures information drawn from Expanse’s
+  unparalleled view of the Internet.
 display: Expanse
 name: Expanse
 script:
