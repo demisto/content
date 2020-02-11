@@ -1,5 +1,5 @@
 ## Prerequisites - Connect to McAfee Threat Intelligence Exchange (TIE) using the DXL TIE Client
-To connect the McAfee TIE using the DXL TIE client, you need to create certificates and configure DXL. Fore mor information, see the [OpenDXL documentation](https://opendxl.github.io/opendxl-client-python/pydoc/index.html). After you complete this configuration, you will have the following files:
+To connect the McAfee TIE using the DXL TIE client, you need to create certificates and configure DXL. Fore mor information, see the [Create certificates & configure dxl](https://github.com/demisto/content/blob/master/Integrations/McAfee_DXL/create_keys/create_and_upload_RSA_keys_for_DXL.md). After you complete this configuration, you will have the following files:
    * Broker CA certificates ('brokercerts.crt' file)
    * Client certificate ('client.crt' file)
    * Client private key ('client.key' file)
