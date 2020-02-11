@@ -5,11 +5,19 @@ def main():
     feed_url_to_config = {
         'https://sslbl.abuse.ch/blacklist/sslipblacklist.csv': {
             'fieldnames': ['date_created', 'value', 'port'],
-            'indicator_type': FeedIndicatorType.IP
+            'indicator_type': FeedIndicatorType.IP,
+            'mapping': {
+                'date': 'creationdate',
+                'port': 'port'
+            }
         },
         'https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csv': {
             'fieldnames': ['date_created', 'value', 'port'],
-            'indicator_type': FeedIndicatorType.IP
+            'indicator_type': FeedIndicatorType.IP,
+            'mapping': {
+                'date': 'creationdate',
+                'port': 'port'
+            }
         }
     }
 
