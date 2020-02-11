@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: SSL Blacklist Feed
+  id: abuse.ch SSL Blacklist Feed
   version: -1
 configuration:
 - display: Sub-Feeds
@@ -15,7 +15,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: true
-- defaultvalue: '360'
+- defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -82,9 +82,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the SSLBL feed integration to fetch indicators from the SSL Abuse Blacklist feeds.
-display: SSL Blacklist Feed
-name: SSL Blacklist Feed
+description: The SSL IP Blacklist contains all hosts (IP addresses) that SSLBL has seen in the past 30 days and
+  identified as being associated with a malicious SSL certificate.
+display: abuse.ch SSL Blacklist Feed
+name: abuse.ch SSL Blacklist Feed
 script:
   commands:
   - arguments:

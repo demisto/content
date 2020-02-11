@@ -196,7 +196,7 @@
             "playbookID": "Minerva Test playbook"
         },
         {
-            "integrations": "SSL Blacklist Feed",
+            "integrations": "abuse.ch SSL Blacklist Feed",
             "playbookID": "SSL Blacklist test",
             "fromversion": "5.5.0"
         },
