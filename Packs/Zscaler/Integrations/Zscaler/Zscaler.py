@@ -54,7 +54,6 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
         headers = DEFAULT_HEADERS
     data = {} if data is None else data
     url = BASE_URL + url_suffix
-    LOG('running request with url=%s\theaders=%s' % (url, headers))
     try:
         res = requests.request(method,
                                url,
@@ -71,7 +70,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
             else:
                 raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
     except Exception as e:
-        LOG('Zscaler request failed with url={url}\theaders={hdrs}\tdata={data}'.format(url=url, hdrs=headers, data=data))
+        LOG('Zscaler request failed with url={url}\tdata={data}'.format(url=url, data=data))
         LOG(e)
         raise
     return res
@@ -114,162 +113,169 @@ def login():
     return result.headers['Set-Cookie']
 
 
+def activate_changes():
+    cmd_url = '/status/activate'
+    http_request('POST', cmd_url, None, DEFAULT_HEADERS)
+
+
 def logout():
     cmd_url = '/authenticatedSession'
     http_request('DELETE', cmd_url, None, DEFAULT_HEADERS)
 
 
 def blacklist_url(url):
-    blacklist_urls = url.split(',')
-    validate_urls(blacklist_urls)
+    urls_to_blacklist = argToList(url)
+    validate_urls(urls_to_blacklist)
     cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
     data = {
-        'blacklistUrls': blacklist_urls
+        'blacklistUrls': urls_to_blacklist
     }
     json_data = json.dumps(data)
     http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     list_of_urls = ''
-    for url in blacklist_urls:
+    for url in urls_to_blacklist:
         list_of_urls += '- ' + url + '\n'
     return 'Added the following URLs to the blacklist successfully:\n' + list_of_urls
 
 
 def unblacklist_url(url):
-    # blacklist_urls = url.split(',')
-    cmd_url = '/security/advanced/blacklist_urls?action=REMOVE_FROM_LIST'
+    urls_to_unblacklist = argToList(url)
+    cmd_url = '/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST'
+
     # Check if given URLs is blacklisted
-    blacklist_urls = get_blacklist()['blacklistUrls']
-    if len(blacklist_urls) == 1:  # Given only one URL to blacklist
-        if blacklist_urls[0] not in blacklist_urls:
-            raise Exception('Given URL is not blacklisted')
-    # elif blacklist_urls not in blacklist_urls:  # Given more than one URL to blacklist
-    #     raise Exception('Given URL is not blacklisted')
+    blacklisted_urls = get_blacklist()['blacklistUrls']
+    if len(urls_to_unblacklist) == 1:  # Given only one URL to unblacklist
+        if urls_to_unblacklist[0] not in blacklisted_urls:
+            raise Exception('Given URL is not blacklisted.')
+    elif not any(url in urls_to_unblacklist for url in blacklisted_urls):  # Given more than one URL to blacklist
+        raise Exception('Given URLs are not blacklisted.')
+
     data = {
-        'blacklist_urls': blacklist_urls
+        'blacklistUrls': urls_to_unblacklist
     }
     json_data = json.dumps(data)
     http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     list_of_urls = ''
-    for url in blacklist_urls:
+    for url in urls_to_unblacklist:
         list_of_urls += '- ' + url + '\n'
     return 'Removed the following URLs from the blacklist successfully:\n' + list_of_urls
 
 
 def blacklist_ip(ip):
-    blacklist_ips = ip.split(',')
+    ips_to_blacklist = argToList(ip)
     cmd_url = '/security/advanced/blacklistUrls?action=ADD_TO_LIST'
     data = {
-        'blacklistUrls': blacklist_ips
+        'blacklistUrls': ips_to_blacklist
     }
     json_data = json.dumps(data)
     http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     list_of_ips = ''
-    for ip in blacklist_ips:
+    for ip in ips_to_blacklist:
         list_of_ips += '- ' + ip + '\n'
     return 'Added the following IP addresses to the blacklist successfully:\n' + list_of_ips
 
 
 def unblacklist_ip(ip):
-    # blacklist_ips = ip.split(',')
+    ips_to_unblacklist = argToList(ip)
     cmd_url = '/security/advanced/blacklistUrls?action=REMOVE_FROM_LIST'
     # Check if given IPs is blacklisted
-    blacklist_ips = get_blacklist()['blacklistUrls']
-    if len(blacklist_ips) == 1:  # Given only one IP address to blacklist
-        if blacklist_ips[0] not in blacklist_ips:
-            raise Exception('Given IP address is not blacklisted')
-    # elif blacklist_ips not in blacklist_ips:  # Given more than one IP address to blacklist
-    #     raise Exception('Given IP address is not blacklisted')
+    blacklisted_ips = get_blacklist()['blacklistUrls']
+    if len(ips_to_unblacklist) == 1:  # Given only one IP address to blacklist
+        if ips_to_unblacklist[0] not in blacklisted_ips:
+            raise Exception('Given IP address is not blacklisted.')
+    elif ips_to_unblacklist not in blacklisted_ips:  # Given more than one IP address to blacklist
+        raise Exception('Given IP address is not blacklisted.')
     data = {
-        'blacklistUrls': blacklist_ips
+        'blacklistUrls': ips_to_unblacklist
     }
     json_data = json.dumps(data)
     http_request('POST', cmd_url, json_data, DEFAULT_HEADERS)
     list_of_ips = ''
-    for ip in blacklist_ips:
+    for ip in ips_to_unblacklist:
         list_of_ips += '- ' + ip + '\n'
     return 'Removed the following IP addresses from the blacklist successfully:\n' + list_of_ips
 
 
 def whitelist_url(url):
     cmd_url = '/security'
-    # whitelist_urls = url.split(',')
+    urls_to_whitelist = argToList(url)
     # Get the current whitelist
     whitelist_urls = get_whitelist()
     if not whitelist_urls:
         whitelist_urls['whitelistUrls'] = []
 
-    whitelist_urls['whitelistUrls'] += whitelist_urls
+    whitelist_urls['whitelistUrls'] += urls_to_whitelist
     json_data = json.dumps(whitelist_urls)
     http_request('PUT', cmd_url, json_data, DEFAULT_HEADERS)
     list_of_urls = ''
-    for url in whitelist_urls:
+    for url in urls_to_whitelist:
         list_of_urls += '- ' + url + '\n'
     return 'Added the following URLs to the whitelist successfully:\n' + list_of_urls
 
 
 def unwhitelist_url(url):
     cmd_url = '/security'
-    # whitelist_urls = url.split(',')
+    urls_to_unwhitelist = argToList(url)
     # Get the current whitelist
     whitelist_urls = get_whitelist()
     if not whitelist_urls:
         whitelist_urls['whitelistUrls'] = []
 
     # Check if given URL is whitelisted
-    if len(whitelist_urls) == 1:  # Given only one URL to whitelist
-        if whitelist_urls[0] not in whitelist_urls['whitelistUrls']:
-            raise Exception('Given host address is not whitelisted')
-    elif whitelist_urls not in whitelist_urls['whitelistUrls']:  # Given more than one URL to whitelist
-        raise Exception('Given host address is not whitelisted')
+    if len(urls_to_unwhitelist) == 1:  # Given only one URL to whitelist
+        if urls_to_unwhitelist[0] not in whitelist_urls['whitelistUrls']:
+            raise Exception('Given host address is not whitelisted.')
+    elif urls_to_unwhitelist not in whitelist_urls['whitelistUrls']:  # Given more than one URL to whitelist
+        raise Exception('Given host address is not whitelisted.')
     # List comprehension to remove requested URLs from the whitelist
-    whitelist_urls['whitelistUrls'] = [x for x in whitelist_urls['whitelistUrls'] if x not in whitelist_urls]
+    whitelist_urls['whitelistUrls'] = [x for x in whitelist_urls['whitelistUrls'] if x not in urls_to_unwhitelist]
     json_data = json.dumps(whitelist_urls)
     http_request('PUT', cmd_url, json_data, DEFAULT_HEADERS)
-    listOfUrls = ''
+    list_of_urls = ''
     for url in whitelist_urls:
-        listOfUrls += '- ' + url + '\n'
-    return 'Removed the following URLs from the whitelist successfully:\n' + listOfUrls
+        list_of_urls += '- ' + url + '\n'
+    return 'Removed the following URLs from the whitelist successfully:\n' + list_of_urls
 
 
 def whitelist_ip(ip):
     cmd_url = '/security'
-    # whitelist_ips = ip.split(',')
+    ips_to_whitelist = argToList(ip)
     # Get the current whitelist
     whitelist_ips = get_whitelist()
     if not whitelist_ips:
         whitelist_ips['whitelistUrls'] = []
 
-    whitelist_ips['whitelistUrls'] += whitelist_ips
+    whitelist_ips['whitelistUrls'] += ips_to_whitelist
     json_data = json.dumps(whitelist_ips)
     http_request('PUT', cmd_url, json_data, DEFAULT_HEADERS)
-    listOfIps = ''
-    for ip in whitelist_ips:
-        listOfIps += '- ' + ip + '\n'
-    return 'Added the following URLs to the whitelist successfully:\n' + listOfIps
+    list_of_ips = ''
+    for ip in ips_to_whitelist:
+        list_of_ips += '- ' + ip + '\n'
+    return 'Added the following URLs to the whitelist successfully:\n' + list_of_ips
 
 
 def unwhitelist_ip(ip):
     cmd_url = '/security'
-    whitelistIps = ip.split(',')
+    ips_to_unwhitelist = argToList(ip)
     # Get the current whitelist
     whitelist_ips = get_whitelist()
     if not whitelist_ips:
         whitelist_ips['whitelistUrls'] = []
 
     # Check if given IP is whitelisted
-    if len(whitelistIps) == 1:  # Given only one IP to whitelist
-        if whitelistIps[0] not in whitelist_ips['whitelistUrls']:
-            raise Exception('Given IP address is not whitelisted')
-    elif whitelistIps not in whitelist_ips['whitelistUrls']:  # Given more than one IP to whitelist
-        raise Exception('Given IP address is not whitelisted')
+    if len(ips_to_unwhitelist) == 1:  # Given only one IP to whitelist
+        if ips_to_unwhitelist[0] not in whitelist_ips['whitelistUrls']:
+            raise Exception('Given IP address is not whitelisted.')
+    elif ips_to_unwhitelist not in whitelist_ips['whitelistUrls']:  # Given more than one IP to whitelist
+        raise Exception('Given IP address is not whitelisted.')
     # List comprehension to remove requested IPs from the whitelist
-    whitelist_ips['whitelistUrls'] = [x for x in whitelist_ips['whitelistUrls'] if x not in whitelistIps]
+    whitelist_ips['whitelistUrls'] = [x for x in whitelist_ips['whitelistUrls'] if x not in ips_to_unwhitelist]
     json_data = json.dumps(whitelist_ips)
     http_request('PUT', cmd_url, json_data, DEFAULT_HEADERS)
-    listOfIps = ''
-    for ip in whitelistIps:
-        listOfIps += '- ' + ip + '\n'
-    return 'Removed the following IP addresses from the whitelist successfully:\n' + listOfIps
+    list_of_ips = ''
+    for ip in ips_to_unwhitelist:
+        list_of_ips += '- ' + ip + '\n'
+    return 'Removed the following IP addresses from the whitelist successfully:\n' + list_of_ips
 
 
 def get_blacklist_command():
@@ -368,10 +374,10 @@ def url_lookup(url):
 
         ioc_context = createContext(data=ioc_context, removeNull=True)
         ec = {
-            'URL': ioc_context
+            outputPaths['url']: ioc_context,
+            'DBotScore': dbot_score_array
         }
         title = 'Zscaler URL Lookup'
-        ec['DBotScore'] = dbot_score_array
         entry = {
             'Type': entryTypes['note'],
             'Contents': hr,
@@ -424,10 +430,10 @@ def ip_lookup(ip):
 
         ioc_context = createContext(data=ioc_context, removeNull=True)
         ec = {
-            'IP': ioc_context
+            outputPaths['ip']: ioc_context,
+            'DBotScore': dbot_score_array
         }
         title = 'Zscaler IP Lookup'
-        ec['DBotScore'] = dbot_score_array
         entry = {
             'Type': entryTypes['note'],
             'Contents': hr,
@@ -540,7 +546,7 @@ def category_remove_url(category_id, url):
             found_category = True
             break
     if found_category:
-        url_list = url.split(',')
+        url_list = argToList(url)
         updated_urls = [url for url in category_data['urls'] if url not in url_list]  # noqa
         if updated_urls == category_data['urls']:
             return return_error('Could not find given URL in the category.')
@@ -774,4 +780,8 @@ except Exception as e:
     LOG.print_log()
     raise
 finally:
-    logout()
+    try:
+        activate_changes()
+        logout()
+    except Exception as err:
+        demisto.info("Zscaler error: " + str(err))
