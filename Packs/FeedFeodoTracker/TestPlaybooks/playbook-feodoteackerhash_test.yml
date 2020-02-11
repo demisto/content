@@ -75,8 +75,8 @@ tasks:
       elasticcommonfields: {}
       id: a32eb52e-09c8-4a84-8aaa-1e9ca8842ae7
       version: -1
-      name: feodotrackerhashes-get-indicators
-      script: '|||feodotrackerhashes-get-indicators'
+      name: feodotracker-hashes-get-indicators
+      script: '|||feodotracker-hashes-get-indicators'
       type: regular
       iscommand: true
       brand: ""

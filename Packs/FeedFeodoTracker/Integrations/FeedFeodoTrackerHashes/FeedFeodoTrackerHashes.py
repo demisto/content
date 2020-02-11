@@ -28,7 +28,7 @@ def main():
     }
     params['url'] = "https://feodotracker.abuse.ch/downloads/malware_hashes.csv"
     # Call the main execution of the HTTP API module.
-    feed_main('Feodo Tracker Hashes Feed', params, 'feodotrackerhashes-')
+    feed_main('Feodo Tracker Hashes Feed', params, 'feodotracker-hashes-')
 
 
 from HTTPFeedApiModule import *  # noqa: E402
