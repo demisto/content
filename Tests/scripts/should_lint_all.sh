@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Simple script to check if build should run all lint
+# Simple script to check if build should run all lint. Will return empty result if no need or a string explaining why yes.
 
 if [ -n "$NIGHTLY" ]; then
     echo "NIGHTLY env var is set: $NIGHTLY"
@@ -36,5 +36,5 @@ if [[ -n "$DIFF_RES" ]]; then
     exit 0
 fi
 
-# all tests passed return 1
-exit 1
+# all tests passed return 0
+exit 0
