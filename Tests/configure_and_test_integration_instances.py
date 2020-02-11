@@ -607,7 +607,7 @@ def main():
     filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=options.is_nightly)
     tests_for_iteration = tests
     if run_all_tests:
-        # Use all tests for testing, leave 'tests_for_iteration' as is
+        # skip test button testing
         print_warning('Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT))
         tests_for_iteration = []
     elif filter_configured and filtered_tests:
@@ -631,8 +631,9 @@ def main():
     # of an integration that we want to configure with different configuration values. Look at
     # [conf.json](../conf.json) for examples
     brand_new_integrations = []
+    testing_server = servers[0]  # test integration instances only on a single server
     for test in tests_for_iteration:
-        testing_client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+        testing_client = demisto_client.configure(base_url=testing_server, username=username, password=password,
                                                   verify_ssl=False)
         integrations = get_integrations_for_test(test, skipped_integrations_conf)
         instance_names_conf = test.get('instance_names', [])
