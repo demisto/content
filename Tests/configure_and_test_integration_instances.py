@@ -33,7 +33,7 @@ def options_handler():
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
-    parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
+    parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
 
     options = parser.parse_args()
 
