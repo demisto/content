@@ -47,7 +47,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- display: ""
+- display: " "
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
@@ -57,7 +57,7 @@ configuration:
     - interval
     - indicatorType
     - suddenDeath
-- display: ""
+- display: " "
   name: feedExpirationInterval
   required: false
   defaultvalue: "20160"
