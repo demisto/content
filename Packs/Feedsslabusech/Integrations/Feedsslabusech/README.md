@@ -1,26 +1,22 @@
 ## Overview
 ---
 
-Use the AWS feed integration to fetch indicators from the feed.
+Use the abuse.ch SSL Blacklist feed integration to fetch indicators from the feed.
 
 
 ## Configure AWS Feed on Demisto
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for SpamhausFeed.
+2. Search for abuse.ch SSL Blacklist Feed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Sub-Feeds__: Sub-Feeds of AWS to fetch indicators from: 
-        * AMAZON - All AMAZON ranges.
-        * EC2 - EC2 ranges.
-        * ROUTE53 - ROUTE53 ranges. 
-        * ROUTE53_HEALTHCHECKS - ROUTE53_HEALTHCHECKS ranges.
-        * CLOUDFRONT - CLOUDFRONT ranges.
-        * S3 - S3 ranges.
+    * __Sub-Feeds__: Sub-Feeds of abuse.ch SSL Blacklist to fetch indicators from: 
+        * https://sslbl.abuse.ch/blacklist/sslipblacklist.csv.
+        * https://sslbl.abuse.ch/blacklist/sslipblacklist_aggressive.csvs.
     * __Fetch indicators__: boolean flag. If set to true will fetch indicators.
     * __Fetch Interval__: Interval of the fetches.
-    * __Reliability__: Reliability of the feed.  
+    * __Source Reliability__: Reliability of the feed.  
     * __Skip Exclusion List__: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system. 
