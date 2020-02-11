@@ -12,13 +12,13 @@
 - upload the public key.
     - In ePO server go to Menu -> Server Settings.
     ![go to menu](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/go_to_menu.png)
-    ![go to serevr settings](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/go_to_serevr_settings.png)
+    ![go to server settings](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/go_to_serevr_settings.png)
     - under DXL certificates (Third Party) click edit.
     ![click edit](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/click_edit.png)
     - download the brokers certificate.
     ![export Broker certificates](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/export_Broker_certificates.png)
     - download the brokers list.
-    ![export Brocker list](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/export_Brocker_list.png)
+    ![export Broker list](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/export_Brocker_list.png)
     - click import and select `client.crt` file click ok and upload it.
     ![click import](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/click_import.png)
     ![select client.crt file](https://github.com/demisto/content/raw/dxl_exemple/Integrations/McAfee_DXL/create_keys/img/select_client.crt_file.png)
