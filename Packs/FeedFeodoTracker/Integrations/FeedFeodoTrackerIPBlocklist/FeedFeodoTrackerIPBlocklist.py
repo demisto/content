@@ -52,11 +52,10 @@ def main():
         "port": "port",
         "updatedate": "updatedate",
         "malwarefamily": "malwarefamily"
-
-
     }
+
     # Call the main execution of the HTTP API module.
-    feed_main('Feodo Tracker IP Blocklist Feed', params, 'feodotrackeripblocklist-')
+    feed_main('Feodo Tracker IP Blocklist Feed', params, 'feodotracker-ipblocklist-')
 
 
 from HTTPFeedApiModule import *  # noqa: E402
