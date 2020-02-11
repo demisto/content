@@ -1,4 +1,4 @@
-category: Network Security
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Expanse
   version: -1
@@ -106,7 +106,7 @@ script:
       description: Geo coordinates Region Code for this IP address
       type: String
     - contextPath: Expanse.IP.Geo.CountryCode
-      description: Geo coordinates Contry Code for this IP address
+      description: Geo coordinates Country Code for this IP address
       type: String
     - contextPath: Expanse.IP.Annotations.Tags
       description: Customer defined Tags from Expanse related to this IP Range
@@ -135,7 +135,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: domain to searh
+      description: domain to search
       isArray: true
       name: domain
       required: true
@@ -251,10 +251,10 @@ script:
       description: Top level domain
       type: String
     - contextPath: Expanse.Domain.Tenant
-      description: Customer defined Tenant from Exapnse
+      description: Customer defined Tenant from Expanse
       type: String
     - contextPath: Expanse.Domain.BusinessUnits
-      description: Customer defined Busines Units from Exapnse
+      description: Customer defined Business Units from Expanse
       type: String
     - contextPath: Expanse.Domain.DNSSEC
       description: DNSSEC info
@@ -272,7 +272,7 @@ script:
       description: Service Status Expanse sees for this domain
       type: String
     - contextPath: Expanse.Domain.LastSampledIP
-      description: Last seen IP address fdor this domain
+      description: Last seen IP address for this domain
       type: String
     - contextPath: Expanse.Domain.DNS
       description: A list of IP objects resolved by DNS

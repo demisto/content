@@ -3,7 +3,7 @@ version: -1
 name: Expanse Incident Playbook
 description: Parses incident from Expanse in raw json to readable output
 starttaskid: "0"
-fromversion: 4.5.0
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"

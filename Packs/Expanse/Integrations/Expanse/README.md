@@ -133,7 +133,7 @@ ip command
 | Expanse.IP.Geo.Longitude | String | Geo coordinates: Longitude of IP address | 
 | Expanse.IP.Geo.City | String | Geo coordinates city for this IP address | 
 | Expanse.IP.Geo.RegionCode | String | Geo coordinates Region Code for this IP address | 
-| Expanse.IP.Geo.CountryCode | String | Geo coordinates Contry Code for this IP address | 
+| Expanse.IP.Geo.CountryCode | String | Geo coordinates Country Code for this IP address | 
 | Expanse.IP.Annotations.Tags | String | Customer defined Tags from Expanse related to this IP Range | 
 | Expanse.IP.Annotations.AdditionalNotes | String | Customer defined Notes from Expanse related to this IP Range | 
 | Expanse.IP.Annotations.PointsOfContact | String | Customer defined Points of Contact from Expanse related to this IP Range | 
@@ -264,14 +264,14 @@ domain command
 | Expanse.Domain.LastObserved | Date | Date Expanse last observed the domain | 
 | Expanse.Domain.HasLinkedCloudResources | Boolean | Does this domain have linked cloud resources ? | 
 | Expanse.Domain.SourceDomain | String | Top level domain | 
-| Expanse.Domain.Tenant | String | Customer defined Tenant from Exapnse | 
-| Expanse.Domain.BusinessUnits | String | Customer defined Busines Units from Exapnse | 
+| Expanse.Domain.Tenant | String | Customer defined Tenant from Expanse | 
+| Expanse.Domain.BusinessUnits | String | Customer defined Business Units from Expanse | 
 | Expanse.Domain.DNSSEC | String | DNSSEC info | 
 | Expanse.Domain.RecentIPs | String | Any recent IP addresses Expanse has seen for this domain | 
 | Expanse.Domain.CloudResources | String | Any Cloud Resources Expanse has seen for this domain | 
 | Expanse.Domain.LastSubdomainMetadata | String | Any recent subdomain metadata Expanse has seen for this domain | 
 | Expanse.Domain.ServiceStatus | String | Service Status Expanse sees for this domain | 
-| Expanse.Domain.LastSampledIP | String | Last seen IP address fdor this domain | 
+| Expanse.Domain.LastSampledIP | String | Last seen IP address for this domain | 
 | Expanse.Domain.DNS | String | A list of IP objects resolved by DNS | 
 | Expanse.Domain.CreationDate | Date | The date that the domain was created | 
 | Expanse.Domain.DomainStatus | String | The status of the domain | 
@@ -460,3 +460,5 @@ domain command
 
 ## Contact Details
 ---
+For Product Support, please contact your Technical Account Manager or email help@expanseinc.com
+

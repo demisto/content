@@ -164,7 +164,7 @@ def parse_events(events):
             'rawJSON': json.dumps(event),
             'type': 'Expanse Appearance',
             'CustomFields': {
-                'expanse_raw_json_event': json.dumps(event)
+                'expanserawjsonevent': json.dumps(event)
             },
             'severity': EXPOSURE_SEVERITY_MAPPING[event['payload']['severity']]
         }
