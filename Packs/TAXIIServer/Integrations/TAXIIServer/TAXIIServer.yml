@@ -89,7 +89,7 @@ script:
     description: Updates values stored in the EDL (only avaialable On-Demand).
     execution: false
     name: edl-update
-  dockerimage: devdemisto/taxii-server:1.0.0.5852
+  dockerimage: devdemisto/taxii-server:1.0.0.5853
   feed: false
   isfetch: false
   longRunning: true

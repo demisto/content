@@ -43,11 +43,10 @@ def get_params_port(params: dict = demisto.params()) -> int:
     err_msg: str
     port: int
     if port_mapping:
-        err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
         if ':' in port_mapping:
-            port = try_parse_integer(port_mapping.split(':')[1], err_msg)
+            port = int(port_mapping.split(':')[1])
         else:
-            port = try_parse_integer(port_mapping, err_msg)
+            port = int(port_mapping)
     else:
         raise ValueError('Please provide a Listen Port.')
     return port
@@ -179,7 +178,7 @@ def update_edl_command(args, params):
     if not on_demand:
         raise DemistoException(
             '"Update EDL On Demand" is off. If you want to update the EDL manually please toggle it on.')
-    limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
+    limit = int(args.get('edl_size', params.get('edl_size')))
     print_indicators = args.get('print_indicators')
     query = args.get('query')
     indicators = refresh_edl_context(query, limit=limit)
