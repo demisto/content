@@ -4,9 +4,9 @@ from CommonServerPython import *
 import urllib3
 import requests
 import json
-
 # Disable insecure warnings
 urllib3.disable_warnings()
+
 ''' CLIENT CLASS'''
 
 DEFAULT_LIMIT = 50
@@ -27,7 +27,7 @@ class Client:
         self.verify = verify
         self.proxies = proxies
 
-    def fetch_triggered_rules(self, search=None, severities=None, tags=None, start_time=time.time()):
+    def fetch_triggered_rules(self, search=None, severities=None, start_time=time.time()):
         url = self.get_triggered_alerts_api()
         payload = {
             "pagination": {
@@ -40,7 +40,6 @@ class Client:
                     "descending": False
                 }
             ],
-            "tags": tags,
             "filter": {
                 "searchTerm": search,
                 "severities": severities,
@@ -82,7 +81,6 @@ class Client:
             },
             "size": size
         }
-        print(json.dumps(payload))
         if from_time != "" or to_time != "":
             time_filter = {}
             if from_time != "":
@@ -96,6 +94,7 @@ class Client:
                     "range": {"@timestamp": time_filter}
                 }
             )
+        print(json.dumps(payload))
 
         headers = {
             'Content-Type': 'application/json',
@@ -104,7 +103,7 @@ class Client:
 
         response = requests.request("POST", self.get_search_api(), headers=headers, data=json.dumps(payload))
         if response.status_code != 200:
-            return_error('Error in API call [%d] - %s' % (response.status_code, response.reason))
+            return_error('Error in API call [%d] - %s: %s' % (response.status_code, response.reason, response.content))
 
         try:
             return response.json()["hits"]["hits"]
@@ -159,13 +158,13 @@ def search_logs_command(client, args):
 
 def search_logs_by_fields_command(client, args):
     size = args.get('size', 1000)
-    from_time = args.get('from_time')
-    to_time = args.get('to_time')
+    from_time = args.get('from_time', "")
+    to_time = args.get('to_time', "")
     params = {}
     for i in range(1, 3):
         params[args.get('key%s' % i)] = args.get('value%s' % i)
     remove_nulls_from_dictionary(params)
-    query = " AND ".join(["{}:{}".format(key, params[key]) for key in params])
+    query = " AND ".join(["{}:\"{}\"".format(key, params[key]) for key in params])
     resp = client.search_logs(query, size, from_time, to_time)
     content = [res["_source"] for res in resp]
     return {
@@ -181,7 +180,7 @@ def search_logs_by_fields_command(client, args):
     }
 
 
-def fetch_incidents(client, last_run, search, severities, tags, first_fetch_time):
+def fetch_incidents(client, last_run, search, severities, first_fetch_time):
     incidents = []
     next_run = last_run
     start_query_time = last_run.get("last_fetch")
@@ -189,7 +188,7 @@ def fetch_incidents(client, last_run, search, severities, tags, first_fetch_time
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=False, to_timestamp=True)
         start_query_time = start_query_time / 1000
         next_run["last_fetch"] = max(start_query_time, time.time() - ONE_HOUR)
-    raw_events = client.fetch_triggered_rules(search=search, severities=severities, tags=tags,
+    raw_events = client.fetch_triggered_rules(search=search, severities=severities,
                                               start_time=start_query_time)
     for event in raw_events['results']:
         event_date = datetime.fromtimestamp(event["eventDate"])
@@ -218,7 +217,6 @@ def main():
         first_fetch_time = demisto.params().get('fetch_time', '1 hours')
         severities = demisto.params().get('severities')
         search = demisto.params().get('search')
-        tags = demisto.params().get('tags')
         verify = not demisto.params().get('insecure', False)
         proxies = handle_proxy()
 
@@ -243,7 +241,6 @@ def main():
                 first_fetch_time=first_fetch_time,
                 search=search,
                 severities=severities,
-                tags=tags
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

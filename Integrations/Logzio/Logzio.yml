@@ -53,11 +53,6 @@ configuration:
   - MEDIUM
   - LOW
   - INFO
-- display: Array of Rule Tags
-  name: tags
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
   defaultvalue: 1 hours
@@ -113,6 +108,12 @@ script:
       description: Start time range of logs
     - name: to_time
       description: End time range of logs
+    outputs:
+      - contextPath: Logzio.Logs.Count
+        description: Number of logs found
+        type: number
+      - contextPath: Logzio.Logs.Results
+        description: Logs found content
     description: Search raw logs from your Logz.io account by up to 3 fields
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: true
