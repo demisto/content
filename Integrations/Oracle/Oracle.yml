@@ -1,0 +1,57 @@
+category: Database
+commonfields:
+  id: Oracle
+  version: -1
+configuration:
+- display: Database Address
+  name: server
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Service Name
+  hidden: false
+  name: service
+  required: false
+  type: 0
+- display: Port Number
+  hidden: false
+  name: port
+  required: false
+  type: 0
+- display: DBA Privilege
+  hidden: false
+  name: privilege
+  required: false
+  type: 0
+description: An integration to run Oracle Database Queries
+display: Oracle
+name: Oracle
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The SQL Query
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Oracle Query
+    execution: false
+    name: oracle-query
+    outputs:
+    - contextPath: Oracle.Results
+      description: Oracle Results
+      type: String
+  dockerimage: aymanam/oracle-cx:7.3.1
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
