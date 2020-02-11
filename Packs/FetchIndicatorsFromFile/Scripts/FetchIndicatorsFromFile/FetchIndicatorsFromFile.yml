@@ -42,7 +42,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Limit how many indicators are fetched.
+  description: Limit how many indicators are fetched. When not adding this argument - will parse the entire file
   isArray: false
   name: limit
   required: false
