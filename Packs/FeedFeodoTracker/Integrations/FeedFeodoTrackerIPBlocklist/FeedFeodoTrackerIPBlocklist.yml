@@ -3,6 +3,11 @@ commonfields:
   id: Feodo Tracker IP Blocklist Feed
   version: -1
 configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
 - display: Feed Source
   hidden: false
   name: feed_source
@@ -11,11 +16,6 @@ configuration:
   - Currently Active
   required: true
   type: 16
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
