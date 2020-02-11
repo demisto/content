@@ -10,6 +10,7 @@ import sys
 import demisto_client
 from time import sleep
 from threading import Thread
+from distutils.util import strtobool
 
 from Tests.test_integration import __get_integration_config, __test_integration_instance, \
     __disable_integrations_instances
@@ -599,18 +600,12 @@ def main():
     username = secret_conf.get('username') if not username else username
     password = secret_conf.get('userPassword') if not password else password
 
-    clients = []
-    for server_url in servers:
-        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
-        clients.append(client)
-
-    testing_client = clients[0]
-
     tests = conf['tests']
     skipped_integrations_conf = conf['skipped_integrations']
     all_module_instances = []
 
-    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=False)
+    is_nightly = bool(strtobool(os.environ.get('IS_NIGHTLY', 'false')))
+    filtered_tests, filter_configured, run_all_tests = extract_filtered_tests(is_nightly=is_nightly)
     tests_for_iteration = tests
     if run_all_tests:
         # Use all tests for testing, leave 'tests_for_iteration' as is
@@ -637,6 +632,8 @@ def main():
     # [conf.json](../conf.json) for examples
     brand_new_integrations = []
     for test in tests_for_iteration:
+        testing_client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+                                                  verify_ssl=False)
         integrations = get_integrations_for_test(test, skipped_integrations_conf)
         instance_names_conf = test.get('instance_names', [])
         if not isinstance(instance_names_conf, list):
@@ -684,6 +681,7 @@ def main():
         print_warning('Start of Instance Testing ("Test" button) prior to Content Update:')
     else:
         print_warning('No integrations to configure for the chosen tests. (Pre-update)')
+
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
@@ -695,10 +693,12 @@ def main():
         prints_manager.execute_thread_prints(0)
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
+
     threads_list = []
-    threads_prints_manager = ParallelPrintsManager(len(clients))
+    threads_prints_manager = ParallelPrintsManager(len(servers))
     # For each server url we install content
-    for thread_index, (client, server_url) in enumerate(zip(clients, servers)):
+    for thread_index, server_url in enumerate(servers):
+        client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
         t = Thread(target=update_content_on_demisto_instance,
                    kwargs={'client': client, 'server': server_url, 'prints_manager': threads_prints_manager,
                            'thread_index': thread_index})
