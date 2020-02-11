@@ -8,7 +8,6 @@ import xlrd
 
 def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type):
     indicator_list = []
-    hr_indicators_list = []
 
     xl_woorkbook = xlrd.open_workbook(file_path)
     if sheet_name and sheet_name != 'None':
@@ -26,22 +25,16 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
             else:
                 indicator_type = default_type
 
-            hr_indicators_list.append({
-                "Type": indicator_type,
-                "Value": indicator
-            })
-
             indicator_list.append({
                 'type': indicator_type,
                 'value': indicator
             })
 
-    return indicator_list, hr_indicators_list
+    return indicator_list
 
 
 def xls_file_to_parsed_indicators(file_path, sheet_name, indicator_col, type_col, starting_row):
     indicator_list = []
-    hr_indicators_list = []
 
     xl_woorkbook = xlrd.open_workbook(file_path)
     if sheet_name and sheet_name != 'None':
@@ -55,17 +48,12 @@ def xls_file_to_parsed_indicators(file_path, sheet_name, indicator_col, type_col
             indicator = xl_sheet.cell(row_index, indicator_col).value
             indicator_type = xl_sheet.cell(row_index, type_col).value
 
-            hr_indicators_list.append({
-                "Type": indicator_type,
-                "Value": indicator
-            })
-
             indicator_list.append({
                 'type': indicator_type,
                 'value': indicator
             })
 
-    return indicator_list, hr_indicators_list
+    return indicator_list
 
 
 def txt_file_to_indicator_list(file_path, auto_detect, default_type):
@@ -73,7 +61,6 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
         file_data = fp.read()
 
     indicator_list = []
-    hr_indicators_list = []
 
     only_indicator_list = re.split('\n|,|, ', file_data)
 
@@ -84,17 +71,12 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
         else:
             indicator_type = default_type
 
-        hr_indicators_list.append({
-            "Type": indicator_type,
-            "Value": indicator
-        })
-
         indicator_list.append({
             'type': indicator_type,
             'value': indicator
         })
 
-    return indicator_list, hr_indicators_list
+    return indicator_list
 
 
 def detect_type(indicator):
@@ -141,7 +123,7 @@ def fetch_indicators_from_file(args):
     file_name = file['name']
     auto_detect = True if args.get('auto_detect') == 'True' else False
     default_type = args.get('default_type')
-    limit = args.get("limit", 100)
+    limit = args.get("limit")
 
     # offset - refers to the indicator list itself -
     # lets say you have a list of 500 and you put a limit of 100 on your output -
@@ -160,29 +142,24 @@ def fetch_indicators_from_file(args):
     if file_name.endswith('xls') or file_name.endswith('csv') or file_name.endswith('xlsx'):
 
         if not indicator_type_col_num:
-            indicator_list, hr_indicators_list = xls_file_to_indicator_list(file_path, sheet_name,
-                                                                            int(indicator_col_num) - 1,
-                                                                            int(starting_row) - 1,
-                                                                            auto_detect, default_type)
+            indicator_list = xls_file_to_indicator_list(file_path, sheet_name, int(indicator_col_num) - 1,
+                                                        int(starting_row) - 1, auto_detect, default_type)
 
         else:
-            indicator_list, hr_indicators_list = xls_file_to_parsed_indicators(file_path, sheet_name,
-                                                                               int(indicator_col_num) - 1,
-                                                                               int(indicator_type_col_num) - 1,
-                                                                               int(starting_row) - 1)
+            indicator_list = xls_file_to_parsed_indicators(file_path, sheet_name, int(indicator_col_num) - 1,
+                                                           int(indicator_type_col_num) - 1, int(starting_row) - 1)
 
     else:
-        indicator_list, hr_indicators_list = txt_file_to_indicator_list(file_path, auto_detect, default_type)
+        indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type)
 
     indicator_list_len = len(indicator_list)
 
     if limit:
         limit = int(str(limit))
         indicator_list = indicator_list[offset: limit + offset]
-        hr_indicators_list = hr_indicators_list[offset: offset + limit]
 
-    human_readable = tableToMarkdown("Indicators from {}:".format(file_path), hr_indicators_list,
-                                     headers=['Value', 'Type'], removeNull=True)
+    human_readable = tableToMarkdown("Indicators from {}:".format(file_path), indicator_list,
+                                     headers=['value', 'type'], removeNull=True)
 
     if limit and indicator_list_len > limit:
         human_readable = human_readable + "\nTo bring the next batch of indicators run:\n!FetchIndicatorsFromFile " \

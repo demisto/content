@@ -18,7 +18,6 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: ''
   description: Set a default indicator type.
   isArray: false
   name: default_type
@@ -57,30 +56,31 @@ args:
   secret: false
 - default: false
   defaultValue: '1'
-  description: Only for spreadsheet files. The column number in spreadsheet which contains the indicators. The
-    first column number is 1. If non given will look at the first column.
+  description: Only for spreadsheet files. The column number in spreadsheet which
+    contains the indicators. The first column number is 1. If non given will look
+    at the first column.
   isArray: false
   name: indicator_column_number
   required: false
   secret: false
 - default: false
-  description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators from. If non given,
-    will fetch from the first sheet of the workbook.
+  description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators
+    from. If non given, will fetch from the first sheet of the workbook.
   isArray: false
   name: sheet_name
   required: false
   secret: false
 - default: false
-  description: Only for spreadsheet files. The column number in spreadsheet which contains the indicator's types.
-    The first column number is 1.
+  description: Only for spreadsheet files. The column number in spreadsheet which
+    contains the indicator's types. The first column number is 1.
   isArray: false
   name: indicator_type_column_number
   required: false
   secret: false
 - default: false
   defaultValue: '1'
-  description: Only for spreadsheet files. The starting row of the spreadsheet to fetch from. The first row is
-    1.
+  description: Only for spreadsheet files. The starting row of the spreadsheet to
+    fetch from. The first row is 1.
   isArray: false
   name: starting_row
   required: false
@@ -92,10 +92,10 @@ commonfields:
 enabled: false
 name: FetchIndicatorsFromFile
 outputs:
-- contextPath: Indicator.Value
+- contextPath: Indicator.value
   description: The value of the indicator.
   type: String
-- contextPath: Indicator.Type
+- contextPath: Indicator.type
   description: The type of the indicator.
   type: String
 script: '-'
