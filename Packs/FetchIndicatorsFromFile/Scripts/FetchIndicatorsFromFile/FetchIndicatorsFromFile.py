@@ -9,7 +9,7 @@ import csv
 
 def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col):
     indicator_list = []
-    line_index = 1
+    line_index = 0
     with open(file_path) as csv_file:
         file_reader = csv.reader(csv_file)
         for row in file_reader:
