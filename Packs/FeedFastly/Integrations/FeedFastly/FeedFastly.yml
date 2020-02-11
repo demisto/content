@@ -10,7 +10,7 @@ configuration:
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: Bad
+  defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: C - Fairly reliable
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -46,7 +46,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '360'
+- defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -73,19 +73,16 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The name of whom you want to say hello to.
+      defaultValue: '50'
+      description: limits the number of context indicators to output
       isArray: false
-      name: name
+      name: limit
       required: false
       secret: false
     deprecated: false
-    description: Hello command - prints hello to anyone
+    description: Fetches indicators from the feed.
     execution: false
-    name: helloworld-say-hello
-    outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
+    name: fastly-get-indicators
   isfetch: true
   runonce: false
   script: '-'
