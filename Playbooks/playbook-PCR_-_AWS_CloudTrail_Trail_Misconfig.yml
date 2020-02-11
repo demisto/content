@@ -205,6 +205,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "3"
       allRegions:
       - "9"
       logValid:
@@ -323,6 +325,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "8_3_#default#": 0.26,
       "8_7_logValid": 0.48,
       "8_9_allRegions": 0.55
     },
