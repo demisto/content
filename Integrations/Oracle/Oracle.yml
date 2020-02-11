@@ -3,7 +3,7 @@ commonfields:
   id: Oracle
   version: -1
 configuration:
-- display: Database Address
+- display: Database Server
   name: server
   required: true
   type: 0
@@ -26,6 +26,12 @@ configuration:
   name: privilege
   required: false
   type: 0
+- defaultvalue: '18'
+  display: DB Version
+  hidden: false
+  name: version
+  required: false
+  type: 0
 description: An integration to run Oracle Database Queries
 display: Oracle
 name: Oracle
@@ -33,20 +39,47 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The SQL Query
+      description: The SQL Query with the JSON_OBJECT Oracle Function, Example "select
+        JSON_OBJECT('ID' is EMPLOYEE_ID , 'FirstName' is FIRST_NAME,'LastName' is
+        LAST_NAME) from HR.EMPLOYEES"
       isArray: false
       name: query
       required: true
       secret: false
+    - default: true
+      defaultValue: '10'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
-    description: Oracle Query
+    description: Query the oracle while specifying the field names
+    execution: false
+    name: oracle-query-json
+    outputs:
+    - contextPath: Oracle.Query
+      description: Oracle Query Results
+      type: String
+  - arguments:
+    - default: false
+      description: 'The SQL Query , Example: "select  EMPLOYEE_ID ,FIRST_NAME,LAST_NAME
+        from HR.EMPLOYEES"'
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '10'
+      description: A limit for the returned number of rows
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Query the Oracle Using a Basic SQL Query
     execution: false
     name: oracle-query
-    outputs:
-    - contextPath: Oracle.Results
-      description: Oracle Results
-      type: String
-  dockerimage: aymanam/oracle-cx:7.3.1
+  dockerimage: aymanam/oracle-cx:7.3.2
   feed: false
   isfetch: false
   longRunning: false

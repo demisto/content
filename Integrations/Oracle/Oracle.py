@@ -7,6 +7,10 @@ import cx_Oracle
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+INTEGRATION_NAME = "Oracle DB"
+
+
+''' Client Class '''
 
 
 class Client:
@@ -22,35 +26,67 @@ class Client:
 
     def connection_request(self):
         try:
-            easy_connect=self.db_server+":"+self.port+"//"+self.service
+            easy_connect = self.db_server+":"+self.port+"/"+self.service
             connect = cx_Oracle.connect(self.username, self.password, easy_connect)
             return connect
         except Exception as e:
-            raise ValueError(f" Error while connecting to the database: \n{e}")
-
+            raise ValueError("Error while connecting to the database: %s " % e)
 
     def get_db_version(self):
-        connection=self.connection_request()
+        connection = self.connection_request()
         return connection.version
 
+    def run_query(self, query, limit):
+        columns = []
+        limit = int(limit) + 1
+        query = query + " where ROWNUM < " + str(limit)
+        connection = self.connection_request()
+        cursor = connection.cursor()
+        rows = cursor.execute(query).fetchall()
+        for description in cursor.description:
+            columns.append(description[0])
+        return rows, columns
+
+    def run_query_json(self, query, limit):
+        limit = int(limit) + 1
+        query = query + " where ROWNUM < " + str(limit)
+        connection = self.connection_request()
+        cursor = connection.cursor()
+        result = cursor.execute(query).fetchall()
+        return result
 
 def test_module(client):
-    result = client.connection_request()
-    if result:
+    results = client.connection_request().username
+    if results == client.username:
         return 'ok'
     else:
-        return 'Test failed because ......'
+        return 'Test failed, review the connection settings'
 
 
-def get_db_verion_command(client, args):
-    name = args.get('name')
+def db_query_json(client, args):
+    query = args.get('query')
+    limit = args.get('limit')
+    result = []
 
-    result = client.say_hello(name)
+    try:
+        limit = int(limit)
+    except ValueError:
+        return_error("Please specify an integer for the limit")
 
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {result}'
+    if limit > 15:
+        return_error("Too much data to store, please decrease the limit to 15 rows or less")
+
+    title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
+
+    results = client.run_query_json(query=query,limit=limit)
+
+    for each_row in results:
+        result.append(json.loads(each_row[0]))
+
+    readable_output = tableToMarkdown(t=result, name=title)
+
     outputs = {
-        'hello': result
+        'Oracle.Query': result
     }
 
     return (
@@ -61,14 +97,33 @@ def get_db_verion_command(client, args):
 
 
 def db_query(client, args):
-    name = args.get('name')
+    query = args.get('query')
+    limit = args.get('limit')
+    result = []
 
-    result = client.say_hello_http_request(name)
+    try:
+        limit = int(limit)
+    except ValueError:
+        return_error("Please specify an integer for the limit")
 
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {result}'
+    if limit > 15:
+        return_error("Too much data to store, please decrease the limit to 15 rows or less")
+
+    title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
+
+    results = client.run_query(query=query,limit=limit)
+    rows = results[0]
+    colums = results[1]
+
+    print (colums)
+
+    for each_row in rows:
+        result.append(json.loads(each_row[0]))
+
+    readable_output = tableToMarkdown(t=result, name=title)
+
     outputs = {
-        'hello': result
+        'Oracle.Query': result
     }
 
     return (
@@ -77,44 +132,43 @@ def db_query(client, args):
         result  # raw response - the original response
     )
 
-
-
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    db_server = demisto.params().get('server')
+    db_version = demisto.params().get('version')
+    service = demisto.params().get('service')
+    port = demisto.params().get('port')
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
+    privilege = demisto.params().get('privilege')
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1/suffix')
+    LOG('Command being called is %s' % demisto.command())
 
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
-
-    proxy = demisto.params().get('proxy', False)
-
-    LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            auth=(username, password),
-            proxy=proxy)
+            db_server=db_server,
+            db_version=db_version,
+            service=service,
+            port=port,
+            username=username,
+            password=password,
+            privilege=privilege
+        )
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
 
+        elif demisto.command() == 'oracle-query-json':
+            return_outputs(*db_query_json(client, demisto.args()))
+
         elif demisto.command() == 'oracle-query':
             return_outputs(*db_query(client, demisto.args()))
-
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error("Failed to execute the command with Error: %s " % str(e))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
