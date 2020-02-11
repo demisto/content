@@ -95,5 +95,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - AlienVaultReputationFeed_Test
+  - playbook-AlienVaultReputationFeed_Test
 fromversion: 5.5.0
