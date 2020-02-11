@@ -14,7 +14,6 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
-
 def test_rasterize_email_image(caplog):
     with NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -99,7 +98,7 @@ def test_merge_options():
     assert '--user-agent=test,comma' in res
     res = merge_options(DEFAULT_CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
-    
+
 
 def test_rasterize_large_html():
     path = os.path.realpath('test_data/large.html')
@@ -111,12 +110,12 @@ def test_rasterize_large_html():
 def http_wait_server():
     # Simple http handler which waits 10 seconds before responding
     class WaitHanlder(http.server.BaseHTTPRequestHandler):
-        
+
         def do_HEAD(self):
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-        
+
         def do_GET(self):
             time.sleep(10)
             try:
@@ -124,31 +123,31 @@ def http_wait_server():
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
                 self.wfile.write(bytes("<html><head><title>Test wait handler</title></head>"
-                                    "<body><p>Test Wait</p></body></html>", 'utf-8'))
+                                       "<body><p>Test Wait</p></body></html>", 'utf-8'))
                 self.flush_headers()
-            except BrokenPipeError: # ignore broken pipe as socket might have been closed
+            except BrokenPipeError:  # ignore broken pipe as socket might have been closed
                 pass
-            
-        
+
         # disable logging
+
         def log_message(self, format, *args):
             pass
-    
+
     with http.server.ThreadingHTTPServer(('', 10888), WaitHanlder) as server:
         server_thread = threading.Thread(target=server.serve_forever)
-        server_thread.start()        
+        server_thread.start()
         yield
         server.shutdown()
         server_thread.join()
 
-    
+
 # Some web servers can block the connection after the http is sent
 # In this case chromium will hang. An example for this is:
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 def test_rasterize_url_long_load(mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    time.sleep(1) # give time to the servrer to start
+    time.sleep(1)  # give time to the servrer to start
     rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=5)
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs

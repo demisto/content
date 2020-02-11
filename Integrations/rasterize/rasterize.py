@@ -25,7 +25,7 @@ if PROXY:
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
-DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 120))
+DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 DEFAULT_STDOUT = sys.stdout
 
 URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for one of several reasons. " \
@@ -33,7 +33,7 @@ URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for
 EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when there is a refused connection." \
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
-CHROME_USER_AGENT='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'  # noqa
+CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'  # noqa
 DEFAULT_CHROME_OPTIONS = [
     '--no-sandbox',
     '--headless',
@@ -58,11 +58,11 @@ def opt_name(opt):
 
 def merge_options(default_options, user_options):
     """merge the defualt options and user options
-    
+
     Arguments:
         default_options {list} -- list of options to use
-        user_options {string} -- user configured options comma seperated (comma value can be escaped with \)
-    
+        user_options {string} -- user configured options comma seperated (comma value can be escaped with \\)
+
     Returns:
         list -- merged options
     """
@@ -155,7 +155,7 @@ def quit_driver_and_reap_children(driver):
 
 
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0,
-              offline_mode: bool = False, max_page_load_time: int = 120):
+              offline_mode: bool = False, max_page_load_time: int = 180):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -168,8 +168,8 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
     driver = init_driver(offline_mode)
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
     try:
-        demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}. page load: {page_load_time}')        
-        driver.set_page_load_timeout(page_load_time)        
+        demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}. page load: {page_load_time}')
+        driver.set_page_load_timeout(page_load_time)
         driver.get(path)
         driver.implicitly_wait(5)
         if wait_time > 0 or DEFAULT_WAIT_TIME > 0:
