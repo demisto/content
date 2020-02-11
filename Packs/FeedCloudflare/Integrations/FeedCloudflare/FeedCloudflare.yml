@@ -16,14 +16,14 @@ configuration:
   type: 8
   defaultvalue: true
 - defaultvalue: '5'
-  display: Fetch Interval
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+    reputation
   defaultvalue: Good
-  display: Indicator reputation
+  display: Indicator Reputation
   name: feedReputation
   options:
   - None
@@ -33,7 +33,7 @@ configuration:
   required: false
   type: 18
 - defaultvalue: A - Completely reliable
-  display: Reliability
+  display: Source Reliability
   name: feedReliability
   options:
   - A - Completely reliable
@@ -44,6 +44,7 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  additionalinfo: Reliability of the source providing the intelligence data
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
