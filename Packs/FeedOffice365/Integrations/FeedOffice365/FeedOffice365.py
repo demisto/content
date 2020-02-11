@@ -90,7 +90,7 @@ class Client(BaseClient):
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n)'
+                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
