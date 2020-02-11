@@ -13,11 +13,11 @@ def main():
     indicator_types = [
         {
             'indicator_type': FeedIndicatorType.CIDR,
-            'extractor': 'addresses'
+            'extractor': 'addresses[].{ip:@}'
         },
         {
             'indicator_type': FeedIndicatorType.IPv6CIDR,
-            'extractor': 'ipv6_addresses'
+            'extractor': 'ipv6_addresses[].{ip:@}'
         }
     ]
 
