@@ -1715,7 +1715,8 @@
         {
             "integrations": "TAXIIFeed",
             "playbookID": "TAXII_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 600
         },
         {
             "integrations": "Traps",
@@ -2223,6 +2224,16 @@
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "DShield Feed",
+            "playbookID": "playbook-DshieldFeed_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "BruteForceBlocker Feed",
+            "playbookID": "playbook-BruteForceBlocker_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -2254,7 +2265,6 @@
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
-        "Elasticsearch_v2_test-v6": "Issue #21510",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633"
     },
@@ -2338,6 +2348,7 @@
         "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
+        "AlphaSOC Wisdom": "API key has expired",
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",

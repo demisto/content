@@ -16,12 +16,14 @@ class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
                  indicator: str = '', fields: str = '{}', feed_url_to_config: dict = None, polling_timeout: int = 20,
-                 headers: list = None, proxy: bool = False, **kwargs):
+                 headers: list = None, proxy: bool = False, custom_fields_mapping: dict = {}, **kwargs):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
         :param: polling_timeout: timeout of the polling request in seconds.
             Default: 20
+        :param: custom_fields_mapping: Dict, the CustomFields to be used in the indicator - where the keys
+        are the *current* keys of the fields returned feed data and the *values* are the *indicator fields in Demisto*.
         :param: headers: list, Optional list of headers to send in the request.
         :param: ignore_regex: Python regular expression for lines that should be
             ignored. Default: *null*
@@ -106,6 +108,7 @@ class Client(BaseClient):
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
+        self.custom_fields_mapping = custom_fields_mapping
 
     def get_feed_config(self, fields_json: str = '', indicator_json: str = ''):
         """
@@ -215,6 +218,14 @@ class Client(BaseClient):
                 results.append({url: result})
         return results
 
+    def custom_fields_creator(self, attributes: dict):
+        created_custom_fields = {}
+        for attribute in attributes.keys():
+            if attribute in self.custom_fields_mapping.keys():
+                created_custom_fields[self.custom_fields_mapping[attribute]] = attributes[attribute]
+
+        return created_custom_fields
+
 
 def get_indicator_fields(line, url, client: Client):
     """
@@ -290,11 +301,17 @@ def fetch_indicators_command(client, itype, **kwargs):
             for line in lines:
                 attributes, value = get_indicator_fields(line, url, client)
                 if value:
-                    indicators.append({
+                    indicator_data = {
                         "value": value,
                         "type": client.feed_url_to_config.get(url, {}).get('indicator_type', itype),
                         "rawJSON": attributes,
-                    })
+                    }
+
+                    if len(client.custom_fields_mapping.keys()) > 0:
+                        custom_fields = client.custom_fields_creator(attributes)
+                        indicator_data["CustomFields"] = custom_fields
+
+                    indicators.append(indicator_data)
     return indicators
 
 
