@@ -47,7 +47,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- display: " "
+- display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
