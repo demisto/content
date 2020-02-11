@@ -630,7 +630,7 @@ def get_and_print_server_numeric_version(tests_settings):
         image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
         if len(image_data) != 1:
             print('Did not get one image data for server version, got {}'.format(image_data))
-            return '0.0.0'
+            return '99.99.98'  # latest
         else:
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
             if server_numeric_version:
