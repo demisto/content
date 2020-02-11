@@ -3,7 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from flask import Flask, request, make_response, Response
 from gevent.pywsgi import WSGIServer
-import re
+import functools
+from urllib.parse import urlparse, ParseResult
 
 import libtaxii
 import libtaxii.messages_11
@@ -16,6 +17,7 @@ from typing import Callable, List, Any
 INTEGRATION_NAME: str = 'TAXII Server'
 PAGE_SIZE = 100
 APP: Flask = Flask('demisto-taxii')
+PORT: int
 
 SERVICE_INSTANCES = [
     {
@@ -35,7 +37,32 @@ SERVICE_INSTANCES = [
 ''' HELPER FUNCTIONS '''
 
 
-def get_params_port(params: dict = demisto.params()) -> int:
+def taxii_check(f):
+    @functools.wraps(f)
+    def check(*args, **kwargs):
+        tct = request.headers.get('X-TAXII-Content-Type', None)
+        if tct not in [
+            'urn:taxii.mitre.org:message:xml:1.1',
+            'urn:taxii.mitre.org:message:xml:1.0'
+        ]:
+            return 'Invalid TAXII Headers', 400
+        tct = request.headers.get('X-TAXII-Protocol', None)
+        if tct not in [
+            'urn:taxii.mitre.org:protocol:http:1.0',
+            'urn:taxii.mitre.org:protocol:https:1.0'
+        ]:
+            return 'Invalid TAXII Headers', 400
+        tct = request.headers.get('X-TAXII-Services', None)
+        if tct not in [
+            'urn:taxii.mitre.org:services:1.1',
+            'urn:taxii.mitre.org:services:1.0'
+        ]:
+            return 'Invalid TAXII Headers', 400
+        return f(*args, **kwargs)
+    return check
+
+
+def init_params_port(params: dict = demisto.params()):
     """
     Gets port from the integration parameters
     """
@@ -49,7 +76,9 @@ def get_params_port(params: dict = demisto.params()) -> int:
             port = int(port_mapping)
     else:
         raise ValueError('Please provide a Listen Port.')
-    return port
+
+    global PORT
+    PORT = port
 
 
 def find_indicators_to_limit(indicator_query: str, limit: int) -> list:
@@ -92,10 +121,15 @@ def taxii_make_response(m11):
 
 
 @APP.route('/taxii-discovery-service', methods=['POST'])
+@taxii_check
 def taxii_discovery_service() -> Response:
     """
     Route for discovery service
     """
+    server_links = demisto.demistoUrls()
+    server_link_parts: ParseResult = urlparse(server_links.get('server'))
+    discovery_service_url = f'{server_link_parts.scheme}://{server_link_parts.hostname}:{PORT}'
+
     tm = libtaxii.messages_11.get_message_from_xml(request.data)
     if tm.message_type != libtaxii.constants.MSG_DISCOVERY_REQUEST:
         return make_response(('Invalid message, invalid Message Type', 400))
@@ -110,7 +144,7 @@ def taxii_discovery_service() -> Response:
             si['type'],
             'urn:taxii.mitre.org:services:1.1',
             'urn:taxii.mitre.org:protocol:http:1.0',
-            "{}/{}".format('', si['path']),
+            "{}/{}".format(discovery_service_url, si['path']),
             ['urn:taxii.mitre.org:message:xml:1.1'],
             available=True
         )
@@ -123,7 +157,7 @@ def taxii_discovery_service() -> Response:
 
 
 def test_module(args, params):
-    get_params_port(params)
+    init_params_port(params)
 
     return 'ok', {}, {}
 
@@ -140,7 +174,6 @@ def run_long_running(params):
     private_key_path = str()
 
     try:
-        port = get_params_port(params)
         ssl_args = dict()
 
         if certificate and private_key and not http_server:
@@ -159,7 +192,7 @@ def run_long_running(params):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args)
+        server = WSGIServer(('', PORT), APP, **ssl_args)
         server.serve_forever()
     except Exception as e:
         if certificate_path:
@@ -193,6 +226,7 @@ def main():
     """
     params = demisto.params()
     command = demisto.command()
+    init_params_port(params)
     demisto.debug('Command being called is {}'.format(command))
     commands = {
         'test-module': test_module,
