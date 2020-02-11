@@ -86,7 +86,7 @@ class Client(BaseClient):
                                 f'Check your not secure parameter.\n\n{err}')
             except requests.ConnectionError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to Office 365.\n'
+                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
                 demisto.debug(str(err))
