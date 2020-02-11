@@ -30,6 +30,8 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
                     "value": indicator
                 })
 
+            line_index = line_index + 1
+
     return indicator_list
 
 
