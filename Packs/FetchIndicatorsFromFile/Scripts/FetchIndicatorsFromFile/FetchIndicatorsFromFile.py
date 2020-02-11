@@ -4,9 +4,36 @@ from CommonServerUserPython import *
 
 import re
 import xlrd
+import csv
 
 
-def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type):
+def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col):
+    indicator_list = []
+    line_index = 1
+    with open(file_path) as csv_file:
+        file_reader = csv.reader(csv_file)
+        for row in file_reader:
+            if line_index >= starting_row:
+                indicator = row[col_num]
+
+                if type_col:
+                    indicator_type = row[type_col]
+
+                elif auto_detect:
+                    indicator_type = detect_type(indicator)
+
+                else:
+                    indicator_type = default_type
+
+                indicator_list.append({
+                    "type": indicator_type,
+                    "value": indicator
+                })
+
+    return indicator_list
+
+
+def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type, type_col):
     indicator_list = []
 
     xl_woorkbook = xlrd.open_workbook(file_path)
@@ -19,34 +46,14 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
     for row_index in range(0, xl_sheet.nrows):
         if row_index >= starting_row:
             indicator = xl_sheet.cell(row_index, col_num).value
-            if auto_detect:
+            if type_col:
+                indicator_type = xl_sheet.cell(row_index, type_col).value
+
+            elif auto_detect:
                 indicator_type = detect_type(indicator)
 
             else:
                 indicator_type = default_type
-
-            indicator_list.append({
-                'type': indicator_type,
-                'value': indicator
-            })
-
-    return indicator_list
-
-
-def xls_file_to_parsed_indicators(file_path, sheet_name, indicator_col, type_col, starting_row):
-    indicator_list = []
-
-    xl_woorkbook = xlrd.open_workbook(file_path)
-    if sheet_name and sheet_name != 'None':
-        xl_sheet = xl_woorkbook.sheet_by_name(sheet_name)
-
-    else:
-        xl_sheet = xl_woorkbook.sheet_by_index(0)
-
-    for row_index in range(0, xl_sheet.nrows):
-        if row_index >= starting_row:
-            indicator = xl_sheet.cell(row_index, indicator_col).value
-            indicator_type = xl_sheet.cell(row_index, type_col).value
 
             indicator_list.append({
                 'type': indicator_type,
@@ -139,15 +146,14 @@ def fetch_indicators_from_file(args):
     # from which row should I start reading the indicators, it is used to avoid table headers.
     starting_row = args.get('starting_row')
 
-    if file_name.endswith('xls') or file_name.endswith('csv') or file_name.endswith('xlsx'):
+    if file_name.endswith('xls') or file_name.endswith('xlsx'):
+        indicator_list = xls_file_to_indicator_list(file_path, sheet_name, int(indicator_col_num) - 1,
+                                                    int(starting_row) - 1, auto_detect, default_type,
+                                                    indicator_type_col_num)
 
-        if not indicator_type_col_num:
-            indicator_list = xls_file_to_indicator_list(file_path, sheet_name, int(indicator_col_num) - 1,
-                                                        int(starting_row) - 1, auto_detect, default_type)
-
-        else:
-            indicator_list = xls_file_to_parsed_indicators(file_path, sheet_name, int(indicator_col_num) - 1,
-                                                           int(indicator_type_col_num) - 1, int(starting_row) - 1)
+    elif file_name.endswith('csv'):
+        indicator_list = csv_file_to_indicator_list(file_path, int(indicator_col_num) - 1, int(starting_row) - 1,
+                                                    auto_detect, default_type, indicator_type_col_num)
 
     else:
         indicator_list = txt_file_to_indicator_list(file_path, auto_detect, default_type)
