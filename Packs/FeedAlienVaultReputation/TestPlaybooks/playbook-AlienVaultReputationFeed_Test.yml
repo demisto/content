@@ -1,5 +1,5 @@
 elasticcommonfields: {}
-id: AlienVaultReputationFeed_Test
+id: BambenekConsultingFeed_Test
 version: -1
 name: AlienVaultReputationFeed_Test
 starttaskid: "0"
@@ -33,11 +33,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 8b43f5fc-5379-4893-85d2-02077f61bf23
+    taskid: 4a51a852-0721-46ae-84f8-716a34f88a45
     type: regular
     task:
       elasticcommonfields: {}
-      id: 8b43f5fc-5379-4893-85d2-02077f61bf23
+      id: 4a51a852-0721-46ae-84f8-716a34f88a45
       version: -1
       name: Get Indicators
       description: Gets the feed indicators.
@@ -47,8 +47,10 @@ tasks:
       brand: AlienVault Reputation Feed
     nexttasks:
       '#none#':
-      - "2"
+      - "5"
     scriptarguments:
+      extend-context:
+        simple: AlienVaultFeed.value=value::AlienVaultFeed.type=type
       indicator_type:
         simple: IP
       limit:
@@ -59,62 +61,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "2":
-    id: "2"
-    taskid: bf52c495-214f-4b9d-87b6-a66e63f1a954
-    type: condition
-    task:
-      elasticcommonfields: {}
-      id: bf52c495-214f-4b9d-87b6-a66e63f1a954
-      version: -1
-      name: Assert Output
-      description: Asserts output.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: AlienVaultReputationFeed
-                accessor: Indicator.Value
-            iscontext: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: AlienVaultReputationFeed
-                accessor: Indicator.Type
-            iscontext: true
-          right:
-            value:
-              simple: IP
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: AlienVaultReputationFeed
-                accessor: Indicator.Rawjson
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
         }
       }
     note: false
@@ -185,6 +131,47 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "5":
+    id: "5"
+    taskid: e3ef64ee-d2da-42b7-820a-15805a5519a0
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: e3ef64ee-d2da-42b7-820a-15805a5519a0
+      version: -1
+      name: Assert Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultFeed.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultFeed.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -199,5 +186,5 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: AlienVaultReputationFeed_Test
+sourceplaybookid: BambenekConsultingFeed_Test
 fromversion: 5.5.0

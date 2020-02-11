@@ -220,8 +220,7 @@ def get_indicators_command(client, args):
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type'])
-    feed_name_context = args.get('feed_name', 'CSV').replace(' ', '')
-    return hr, {f'{feed_name_context}.Indicator': entry_result}, indicators_list
+    return hr, {}, indicators_list
 
 
 def feed_main(feed_name, params=None, prefix=''):
