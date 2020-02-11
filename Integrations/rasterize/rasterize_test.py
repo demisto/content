@@ -143,7 +143,7 @@ def http_wait_server():
 
 # Some web servers can block the connection after the http is sent
 # In this case chromium will hang. An example for this is:
-# curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"
+# curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 def test_rasterize_url_long_load(mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
