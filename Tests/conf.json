@@ -1710,7 +1710,8 @@
         {
             "integrations": "TAXIIFeed",
             "playbookID": "TAXII_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 600
         },
         {
             "integrations": "Traps",
@@ -2222,6 +2223,11 @@
         {
             "integrations": "DShield Feed",
             "playbookID": "playbook-DshieldFeed_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "BruteForceBlocker Feed",
+            "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0"
         }
     ],
