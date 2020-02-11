@@ -25,7 +25,7 @@ if PROXY:
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
-DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
+DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 120))
 DEFAULT_STDOUT = sys.stdout
 
 URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for one of several reasons. " \
@@ -155,7 +155,7 @@ def quit_driver_and_reap_children(driver):
 
 
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0,
-              offline_mode: bool = False, max_page_load_time: int = 180):
+              offline_mode: bool = False, max_page_load_time: int = 120):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
