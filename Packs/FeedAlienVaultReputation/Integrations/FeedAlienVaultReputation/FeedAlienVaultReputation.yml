@@ -33,7 +33,7 @@ configuration:
     - E - Unreliable
     - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
-- display: ""
+- display: " "
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
@@ -43,7 +43,7 @@ configuration:
     - interval
     - indicatorType
     - suddenDeath
-- display: ""
+- display: " "
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
