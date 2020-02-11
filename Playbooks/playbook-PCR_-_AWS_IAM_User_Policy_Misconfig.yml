@@ -223,6 +223,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "7"
       twoKeys:
       - "16"
     separatecontext: false
@@ -251,7 +253,8 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "17_16_twoKeys": 0.52
+      "17_16_twoKeys": 0.52,
+      "17_7_#default#": 0.29
     },
     "paper": {
       "dimensions": {
