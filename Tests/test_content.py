@@ -768,7 +768,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
         ami.upload_mock_files(build_name, build_number)
 
-    if playbook_skipped_integration:
+    if playbook_skipped_integration and build_name == 'master':
         comment = 'The following integrations are skipped and critical for the test:\n {}'.\
             format('\n- '.join(playbook_skipped_integration))
         add_pr_comment(comment)
@@ -922,26 +922,26 @@ def add_pr_comment(comment):
     headers = {'Authorization': 'Bearer ' + token}
     try:
         res = requests.get(url + query, headers=headers, verify=False)
-        handle_github_errors(res)
+        res = handle_github_response(res)
 
-        res = res.json()
         if res and res.get('total_count', 0) == 1:
             issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
             if issue_url:
                 res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
-                handle_github_errors(res)
+                handle_github_response(res)
         else:
-            raise Exception('There is more then one open pull request for branch {}.'.format(branch_name))
-
+            print_warning('Add pull request comment failed: There is more then one open pull request for branch {}.'
+                          .format(branch_name))
     except Exception as e:
-        print_error('Add pull request comment failed: {}'.format(e))
+        print_warning('Add pull request comment failed: {}'.format(e))
 
 
-def handle_github_errors(response):
+def handle_github_response(response):
     res_dict = response.json()
-    if response.ok:
-        return res_dict
-    raise Exception(res_dict.get('message'))
+    if not res_dict.ok:
+        print_warning('Add pull request comment failed: {}'.
+                      format(res_dict.get('message')))
+    return res_dict
 
 
 def main():
