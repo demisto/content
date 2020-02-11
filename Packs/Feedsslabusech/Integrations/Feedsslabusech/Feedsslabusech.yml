@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 19
 - defaultvalue: B - Usually reliable
-  display: Reliability
+  display: Source Reliability
   name: feedReliability
   options:
   - A - Completely reliable
