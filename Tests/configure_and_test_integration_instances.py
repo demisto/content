@@ -19,7 +19,7 @@ from Tests.test_content import load_conf_files, extract_filtered_tests, Parallel
 from Tests.test_utils import run_command, get_last_release_version, checked_type, get_yaml
 from Tests.scripts.validate_files import FilesValidator
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX
-from Tests.scripts.constants import PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX
+from Tests.scripts.constants import PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, RUN_ALL_TESTS_FORMAT
 from Tests.test_content import server_version_compare
 from Tests.update_content_data import update_content
 
@@ -609,7 +609,8 @@ def main():
     tests_for_iteration = tests
     if run_all_tests:
         # Use all tests for testing, leave 'tests_for_iteration' as is
-        pass
+        print_warning(f'Not running instance tests when {RUN_ALL_TESTS_FORMAT} is turned on')
+        tests_for_iteration = []
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
     tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version,
@@ -683,6 +684,8 @@ def main():
         print_warning('No integrations to configure for the chosen tests. (Pre-update)')
 
     for instance in all_module_instances:
+        testing_client = demisto_client.configure(base_url=servers[0], username=username, password=password,
+                                                  verify_ssl=False)
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
         msg = 'Testing ("Test" button) for instance "{}" of integration "{}".'.format(instance_name,
