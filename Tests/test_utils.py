@@ -404,6 +404,8 @@ def collect_content_items_data(pack_path):
                         file_info['name'] = new_data.get('TypeName', '')
                     elif directory == 'Integrations':
                         file_info['name'] = new_data.get('display', '')
+                    elif directory == "Classifiers":
+                        file_info['name'] = new_data.get('id', '')
                     else:
                         file_info['name'] = new_data.get('name', '')
 
