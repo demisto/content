@@ -3,7 +3,7 @@ version: -1
 contentitemfields:
   propagationLabels:
   - all
-name: Akamai WAF Network list activate generic polling
+name: Akamai WAF - Activate Network Lists
 description: Activates network lists in Staging or Production on Akamai
   WAF. The playbook finishes running when the network list is active on the requested
   enviorment.
