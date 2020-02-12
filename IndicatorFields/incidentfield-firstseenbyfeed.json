@@ -10,7 +10,7 @@
     "prevName": "First Seen By Feed",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "The first time the indicator was seen by the feed.",
+    "description": "The first time the indicator was seen by the feed vendor.",
     "cliName": "firstseenbyfeed",
     "type": "date",
     "closeForm": false,
