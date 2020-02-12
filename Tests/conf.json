@@ -22,6 +22,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Cofense Feed",
+            "playbookID": "TestCofenseFeed",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
             "fromversion": "5.5.0"
