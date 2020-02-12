@@ -32,7 +32,7 @@
         "FirewallUpgrade"
     ],
 	"systemAssociatedTypes": null,
-	"associatedToAll": true,
+	"associatedToAll": false,
 	"unmapped": false,
 	"unsearchable": false,
 	"caseInsensitive": true,
