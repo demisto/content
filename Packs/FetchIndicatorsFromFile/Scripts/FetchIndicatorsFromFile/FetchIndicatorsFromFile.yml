@@ -8,7 +8,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'True'
-  description: Whether to auto detect the indicator type from the file.
+  description: Whether to auto-detect the indicator type from the file.
   isArray: false
   name: auto_detect
   predefined:
@@ -18,7 +18,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Set a default indicator type.
+  description: Sets a default indicator type.
   isArray: false
   name: default_type
   predefined:
@@ -42,7 +42,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Limit how many indicators are fetched. When not adding this argument - will parse the entire file
+  description: The maximum number of indicators to fetch. If this argument is not specified, will parse the entire file.
   isArray: false
   name: limit
   required: false
@@ -56,8 +56,8 @@ args:
   secret: false
 - default: false
   defaultValue: '1'
-  description: Only for spreadsheet files. The column number in spreadsheet which
-    contains the indicators. The first column number is 1. If non given will look
+  description: Only for spreadsheet files. The column number in the spreadsheet that
+    contains the indicators. The first column number is 1. If this argument is not specified, will use
     at the first column.
   isArray: false
   name: indicator_column_number
@@ -65,14 +65,14 @@ args:
   secret: false
 - default: false
   description: Only for spreadsheet files. The name of the Excel sheet to fetch indicators
-    from. If non given, will fetch from the first sheet of the workbook.
+    from. If this argument is not specified, will fetch from the first sheet of the workbook.
   isArray: false
   name: sheet_name
   required: false
   secret: false
 - default: false
-  description: Only for spreadsheet files. The column number in spreadsheet which
-    contains the indicator's types. The first column number is 1.
+  description: Only for spreadsheet files. The column number in the spreadsheet that
+    contains the indicator types. The first column number is 1.
   isArray: false
   name: indicator_type_column_number
   required: false
@@ -85,7 +85,7 @@ args:
   name: starting_row
   required: false
   secret: false
-comment: Fetch indicators from a file.
+comment: Fetches indicators from a file.
 commonfields:
   id: FetchIndicatorsFromFile
   version: -1
@@ -96,7 +96,7 @@ outputs:
   description: The value of the indicator.
   type: String
 - contextPath: Indicator.type
-  description: The type of the indicator.
+  description: The indicator type.
   type: String
 script: '-'
 subtype: python3
