@@ -10,7 +10,7 @@
     "prevName": "Threat Types",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "Category of threat associated to this indicator by the feed. For example, Phishing, Command \\u0026 Control, TOR, etc.",
+    "description": "Category of threat associated to this indicator by the feed vendor. For example, Phishing, Command \\u0026 Control, TOR, etc.",
     "cliName": "threattypes",
     "type": "grid",
     "closeForm": false,
