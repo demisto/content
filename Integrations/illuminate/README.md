@@ -1,10 +1,20 @@
-Overview
+## Overview
 ---
 
-Enriches Demisto indicators with illuminate REST API indicator data.
-This integration was integrated and tested with version 1.8.7 of illuminate
+Illuminate is an indicator, countermeasure and sensor management tool that enables analysts to collect and analyze evidence of malicious activity. Illuminate’s web based interface provides a single location to collect and analyze evidence of malicious activity and manage indicators then author, test, task and track rules to detect malicious cyber activity. Maintaing traceability between evidence, indicators, rules and sensors, analysts can identify why a rule was created, the type of activity it detects and what sensors are tasked.
 
-Configure illuminate on Demisto
+This integration allows enriching indicator data with additional information and metadata from illuminate such as the associated threat actors, the dates of activity, whether or not the indicator is still active, and much more.
+
+## illuminate Playbook
+---
+illuminate Basic Indicator Enrichment: This is a simple playbook that can apply on top of an incident created from an indicator that will determine the indicator type and then properly enrich it with the associated illuminate integration command.
+
+## Use Cases
+---
+* When you wish to have more information on a given indicator
+* When you use both Demisto and illuminate and wish to have easy linking between the two
+
+## Configure illuminate on Demisto
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -17,7 +27,7 @@ Configure illuminate on Demisto
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
 
-Commands
+## Commands
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -30,11 +40,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 7. illuminate-enrich-mutex
 8. illuminate-enrich-http-request
 9. url
-
 ### 1. domain
 ---
 Queries the illuminate REST API and enriches the given domain with illuminate Indicator data
-
 ##### Base Command
 
 `domain`
@@ -49,6 +57,7 @@ Queries the illuminate REST API and enriches the given domain with illuminate In
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Domain.Name | string | The domain name, for example, "google.com". | 
 | Illuminate.Domain.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.Domain.EvidenceCount | number | Number of evidence reports of the given Indicator in illuminate | 
 | Illuminate.Domain.Active | boolean | Whether or not the given indicator is noted as Active in illuminate | 
@@ -67,7 +76,49 @@ Queries the illuminate REST API and enriches the given domain with illuminate In
 
 
 ##### Command Example
-```!domain domain=domain```
+```!domain domain=abc.com```
+
+##### Context Example
+```
+{
+    "Illuminate.Domain": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2018-06-12"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [], 
+        "EvidenceCount": 1, 
+        "Actors": {}, 
+        "ConfidenceLevel": null, 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/2043650", 
+        "ID": 2043650
+    }, 
+    "Domain": {
+        "Malicious": {
+            "Vendor": "illuminate", 
+            "Description": "illuminate has determined that this indicator is malicious via internal analysis."
+        }, 
+        "Name": "abc.com"
+    }, 
+    "DBotScore": {
+        "Vendor": "illuminate", 
+        "Indicator": "abc.com", 
+        "Score": 3, 
+        "Type": "domain"
+    }
+}
+```
+
+##### Human Readable Output
+### illuminate Domain Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true |  |  |  | 1 |  |  | 2043650 | https://partner.analystplatform.com/indicators/2043650 |  |  | 2018-06-12 |
+
 
 ### 2. email
 ---
@@ -86,6 +137,7 @@ Queries the illuminate REST API and enriches the given email with illuminate Ind
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Email.From | string | The sender of the email | 
 | Illuminate.Email.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.Email.EvidenceCount | number | Number of evidence reports of the given Indicator in illuminate | 
 | Illuminate.Email.Active | boolean | Whether or not the given indicator is noted as Active in illuminate | 
@@ -103,7 +155,54 @@ Queries the illuminate REST API and enriches the given email with illuminate Ind
 
 
 ##### Command Example
-```!email email=email```
+```!email email=001toxic@gmail.com```
+
+##### Context Example
+```
+{
+    "DBotScore": {
+        "Vendor": "illuminate", 
+        "Indicator": "001toxic@gmail.com", 
+        "Score": 3, 
+        "Type": "email"
+    }, 
+    "Illuminate.Email": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2018-02-05"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [], 
+        "EvidenceCount": 1, 
+        "Actors": [
+            {
+                "id": -2, 
+                "name": "Unknown"
+            }
+        ], 
+        "ConfidenceLevel": null, 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/1637756", 
+        "ID": 1637756
+    }, 
+    "Email": {
+        "Malicious": {
+            "Vendor": "illuminate", 
+            "Description": "illuminate has determined that this indicator is malicious via internal analysis."
+        }, 
+        "From": "001toxic@gmail.com"
+    }
+}
+```
+
+##### Human Readable Output
+### illuminate Email Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true |  | {'id': -2, 'name': 'Unknown'} |  | 1 |  |  | 1637756 | https://partner.analystplatform.com/indicators/1637756 |  |  | 2018-02-05 |
+
 
 ### 3. ip
 ---
@@ -122,6 +221,7 @@ Queries the illuminate REST API and enriches the given IP with illuminate Indica
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| IP.Address | string | IP address | 
 | Illuminate.Ip.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.Ip.EvidenceCount | number | Number of evidence reports of the given Indicator in illuminate | 
 | Illuminate.Ip.Active | boolean | Whether or not the given indicator is noted as Active in illuminate | 
@@ -139,9 +239,48 @@ Queries the illuminate REST API and enriches the given IP with illuminate Indica
 
 
 ##### Command Example
-```!ip ip=ip```
+```!ip ip=0.154.17.105```
+
+##### Context Example
+```
+{
+    "IP": {
+        "Malicious": {
+            "Vendor": "illuminate", 
+            "Description": "illuminate has determined that this indicator is malicious via internal analysis."
+        }, 
+        "Address": "0.154.17.105"
+    }, 
+    "Illuminate.Ip": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2014-01-04"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [], 
+        "EvidenceCount": 1, 
+        "Actors": {}, 
+        "ConfidenceLevel": null, 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/51469", 
+        "ID": 51469
+    }, 
+    "DBotScore": {
+        "Vendor": "illuminate", 
+        "Indicator": "0.154.17.105", 
+        "Score": 3, 
+        "Type": "ip"
+    }
+}
+```
 
 ##### Human Readable Output
+### illuminate Ip Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true |  |  |  | 1 |  |  | 51469 | https://partner.analystplatform.com/indicators/51469 |  |  | 2014-01-04 |
 
 
 ### 4. file
@@ -161,6 +300,9 @@ Queries the illuminate REST API and enriches the given file with illuminate Indi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
 | Illuminate.File.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.File.EvidenceCount | number | Number of evidence reports of the given Indicator in illuminate | 
 | Illuminate.File.Active | boolean | Whether or not the given indicator is noted as Active in illuminate | 
@@ -178,7 +320,62 @@ Queries the illuminate REST API and enriches the given file with illuminate Indi
 
 
 ##### Command Example
-```!file file=file```
+```!file file=00000000000000000000000000000000```
+
+##### Context Example
+```
+{
+    "Illuminate.File": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2019-06-25", 
+            "2020-01-09"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [
+            "2018-08-02", 
+            "2019-09-01"
+        ], 
+        "EvidenceCount": 2, 
+        "Actors": [
+            {
+                "id": -4, 
+                "name": "Multiple Actors Extracted"
+            }, 
+            {
+                "id": 150, 
+                "name": "FIN8"
+            }
+        ], 
+        "ConfidenceLevel": null, 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/1527155", 
+        "ID": 1527155
+    }, 
+    "DBotScore": {
+        "Vendor": "illuminate", 
+        "Indicator": "00000000000000000000000000000000", 
+        "Score": 3, 
+        "Type": "file"
+    }, 
+    "File": {
+        "Malicious": {
+            "Vendor": "illuminate", 
+            "Description": "illuminate has determined that this indicator is malicious via internal analysis."
+        }, 
+        "MD5": "00000000000000000000000000000000"
+    }
+}
+```
+
+##### Human Readable Output
+### illuminate File Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true | 2018-08-02,<br>2019-09-01 | {'id': -4, 'name': 'Multiple Actors Extracted'},<br>{'id': 150, 'name': 'FIN8'} |  | 2 |  |  | 1527155 | https://partner.analystplatform.com/indicators/1527155 |  |  | 2019-06-25,<br>2020-01-09 |
+
 
 ### 5. illuminate-enrich-string
 ---
@@ -214,7 +411,49 @@ Queries the illuminate REST API and enriches the given string with illuminate In
 
 
 ##### Command Example
-```!illuminate-enrich-string string=string```
+```!illuminate-enrich-string string=??```
+
+##### Context Example
+```
+{
+    "Illuminate.String": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2014-12-12", 
+            "2014-12-14", 
+            "2014-12-19", 
+            "2014-12-20"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [
+            "2014-12-11", 
+            "2014-12-14", 
+            "2014-12-19", 
+            "2014-12-20"
+        ], 
+        "EvidenceCount": 15, 
+        "Actors": [
+            {
+                "id": -2, 
+                "name": "Unknown"
+            }
+        ], 
+        "ConfidenceLevel": null, 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/90548", 
+        "ID": 90548
+    }
+}
+```
+
+##### Human Readable Output
+### illuminate String Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true | 2014-12-11,<br>2014-12-14,<br>2014-12-19,<br>2014-12-20 | {'id': -2, 'name': 'Unknown'} |  | 15 |  |  | 90548 | https://partner.analystplatform.com/indicators/90548 |  |  | 2014-12-12,<br>2014-12-14,<br>2014-12-19,<br>2014-12-20 |
+
 
 ### 6. illuminate-enrich-ipv6
 ---
@@ -250,7 +489,38 @@ Queries the illuminate REST API and enriches the given IP with illuminate Indica
 
 
 ##### Command Example
-```!illuminate-enrich-ipv6 ip=ip```
+```!illuminate-enrich-ipv6 ip=16::```
+
+##### Context Example
+```
+{
+    "Illuminate.Ipv6": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2015-05-13"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [
+            "2018-09-08"
+        ], 
+        "EvidenceCount": 1, 
+        "Actors": {}, 
+        "ConfidenceLevel": null, 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/2623838", 
+        "ID": 2623838
+    }
+}
+```
+
+##### Human Readable Output
+### illuminate Ipv6 Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true | 2018-09-08 |  |  | 1 |  |  | 2623838 | https://partner.analystplatform.com/indicators/2623838 |  |  | 2015-05-13 |
+
 
 ### 7. illuminate-enrich-mutex
 ---
@@ -286,7 +556,52 @@ Queries the illuminate REST API and enriches the given mutex with illuminate Ind
 
 
 ##### Command Example
-```!illuminate-enrich-mutex mutex=mutex```
+```!illuminate-enrich-mutex mutex=??```
+
+##### Context Example
+```
+{
+    "Illuminate.Mutex": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2015-01-07", 
+            "2015-01-14", 
+            "2015-02-23", 
+            "2017-08-05", 
+            "2017-08-06"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [
+            "2015-01-06", 
+            "2015-01-07", 
+            "2015-01-14", 
+            "2015-02-23", 
+            "2017-08-05", 
+            "2017-08-06"
+        ], 
+        "EvidenceCount": 6, 
+        "Actors": [
+            {
+                "id": -2, 
+                "name": "Unknown"
+            }
+        ], 
+        "ConfidenceLevel": null, 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/95267", 
+        "ID": 95267
+    }
+}
+```
+
+##### Human Readable Output
+### illuminate Mutex Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true | 2015-01-06,<br>2015-01-07,<br>2015-01-14,<br>2015-02-23,<br>2017-08-05,<br>2017-08-06 | {'id': -2, 'name': 'Unknown'} |  | 6 |  |  | 95267 | https://partner.analystplatform.com/indicators/95267 |  |  | 2015-01-07,<br>2015-01-14,<br>2015-02-23,<br>2017-08-05,<br>2017-08-06 |
+
 
 ### 8. illuminate-enrich-http-request
 ---
@@ -322,7 +637,36 @@ Queries the illuminate REST API and enriches the given HTTP request with illumin
 
 
 ##### Command Example
-```!illuminate-enrich-http-request http-request=http-request```
+```!illuminate-enrich-http-request http-request=/~```
+
+##### Context Example
+```
+{
+    "Illuminate.Httprequest": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2020-01-06"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [], 
+        "EvidenceCount": 1, 
+        "Actors": {}, 
+        "ConfidenceLevel": "high", 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/2885382", 
+        "ID": 2885382
+    }
+}
+```
+
+##### Human Readable Output
+### illuminate Httprequest Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true |  |  | high | 1 |  |  | 2885382 | https://partner.analystplatform.com/indicators/2885382 |  |  | 2020-01-06 |
+
 
 ### 9. url
 ---
@@ -341,6 +685,7 @@ Queries the illuminate REST API and enriches the given URL with illuminate Indic
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| URL.Data | String | The URL. | 
 | Illuminate.Url.ID | number | The unique identifier of the given Indicator in illuminate | 
 | Illuminate.Url.EvidenceCount | number | Number of evidence reports of the given Indicator in illuminate | 
 | Illuminate.Url.Active | boolean | Whether or not the given indicator is noted as Active in illuminate | 
@@ -358,4 +703,52 @@ Queries the illuminate REST API and enriches the given URL with illuminate Indic
 
 
 ##### Command Example
-```!url url=url```
+```!url url=104.218.120.128/check.aspx```
+
+##### Context Example
+```
+{
+    "URL": {
+        "Malicious": {
+            "Vendor": "illuminate", 
+            "Description": "illuminate has determined that this indicator is malicious via internal analysis."
+        }, 
+        "Data": "104.218.120.128/check.aspx"
+    }, 
+    "Illuminate.Url": {
+        "LastHit": null, 
+        "ReportedDates": [
+            "2019-07-04"
+        ], 
+        "Malwares": {}, 
+        "FirstHit": null, 
+        "ActivityDates": [
+            "2018-12-08"
+        ], 
+        "EvidenceCount": 1, 
+        "Actors": [
+            {
+                "id": 178, 
+                "name": "APT33"
+            }
+        ], 
+        "ConfidenceLevel": null, 
+        "Active": true, 
+        "HitCount": null, 
+        "IlluminateLink": "https://partner.analystplatform.com/indicators/2699554", 
+        "ID": 2699554
+    }, 
+    "DBotScore": {
+        "Vendor": "illuminate", 
+        "Indicator": "104.218.120.128/check.aspx", 
+        "Score": 3, 
+        "Type": "url"
+    }
+}
+```
+
+##### Human Readable Output
+### illuminate Url Information
+|Active|ActivityDates|Actors|ConfidenceLevel|EvidenceCount|FirstHit|HitCount|ID|IlluminateLink|LastHit|Malwares|ReportedDates|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| true | 2018-12-08 | {'id': 178, 'name': 'APT33'} |  | 1 |  |  | 2699554 | https://partner.analystplatform.com/indicators/2699554 |  |  | 2019-07-04 |
