@@ -349,31 +349,6 @@ def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
 
 
-def extract_tags_from_script(script_path):
-    script_yml_path = glob.glob(os.path.join(script_path, '*.yml'))[0]
-    with open(script_yml_path, 'r') as file_data:
-        new_data = yaml.safe_load(file_data)
-
-    return set(new_data.get('tags'))
-
-
-def collect_pack_script_tags(pack_path):
-    if 'Scripts' not in os.listdir(pack_path):
-        return []
-
-    script_tags = set([])
-    scripts_dir_path = os.path.join(pack_path, 'Scripts')
-    for script_name in os.listdir(scripts_dir_path):
-        if script_name.endswith('.yml'):
-            script_path = os.path.join(scripts_dir_path, script_name)
-            with open(script_path, 'r') as yaml_file:
-                yaml_data = yaml.safe_load(yaml_file)
-                tags = yaml_data.get('tags', [])
-                script_tags.update(tags)
-
-    return list(script_tags)
-
-
 def collect_content_items_data(pack_path):
     YML_SUPPORTED_DIRS = [
         "Scripts",

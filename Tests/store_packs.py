@@ -29,7 +29,7 @@ DIR_NAME_TO_CONTENT_TYPE = {
 }
 
 
-class Pack:
+class Pack(object):
     PACK_INITIAL_VERSION = "1.0.0"
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     CHANGELOG_JSON = "changelog.json"
@@ -39,10 +39,9 @@ class Pack:
     INDEX_NAME = "index"
     EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
 
-    def __init__(self, pack_name, pack_path, storage_bucket):
+    def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
         self._pack_path = pack_path
-        self._storage_bucket = storage_bucket
 
     @property
     def name(self):
@@ -57,10 +56,10 @@ class Pack:
         return self._get_latest_version()
 
     def _get_latest_version(self):
-        if Pack.CHANGELOG_JSON not in os.listdir(self._pack_path):
-            return self.PACK_INITIAL_VERSION
-
         changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
+
+        if not os.path.exists(changelog_path):
+            return self.PACK_INITIAL_VERSION
 
         with open(changelog_path, "r") as changelog:
             changelog_json = json.load(changelog)
@@ -131,17 +130,17 @@ class Pack:
 
         return zip_pack_path
 
-    def upload_to_storage(self, zip_pack_path, latest_version):
+    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket):
         version_pack_path = os.path.join(STORAGE_BASE_PATH, self._pack_name, latest_version)
-        existing_files = [f.name for f in self._storage_bucket.list_blobs(prefix=version_pack_path)]
+        existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
-        if len(existing_files) > 0:
+        if existing_files:
             print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
             print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             sys.exit(0)
 
         pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
-        blob = self._storage_bucket.blob(pack_full_path)
+        blob = storage_bucket.blob(pack_full_path)
 
         with open(zip_pack_path, "rb") as pack_zip:
             blob.upload_from_file(pack_zip)
@@ -150,11 +149,11 @@ class Pack:
         print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
     def format_metadata(self):
-        if Pack.METADATA not in os.listdir(self._pack_path):
+        metadata_path = os.path.join(self._pack_path, Pack.METADATA)
+
+        if not os.path.exists(metadata_path):
             print_error(f"{self._pack_name} pack is missing {Pack.METADATA} file.")
             sys.exit(1)
-
-        metadata_path = os.path.join(self._pack_path, Pack.METADATA)
 
         with open(metadata_path, "r+") as metadata_file:
             user_metadata = json.load(metadata_file)
@@ -166,16 +165,17 @@ class Pack:
                     LOG_COLORS.GREEN)
 
     def parse_release_notes(self):
-        if Pack.CHANGELOG_MD not in os.listdir(self._pack_path):
+        changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
+
+        if not os.path.exists(changelog_md_path):
             print_error(f"The pack {self._pack_name} is missing {Pack.CHANGELOG_MD} file.")
             sys.exit(1)
 
-        changelog_md_path = os.path.join(self._pack_path, Pack.CHANGELOG_MD)
+        # with open(changelog_md_path, 'r') as release_notes_file:
+        #     release_notes = release_notes_file.read()
+        # todo implement release notes logic and create changelog.json
 
-        with open(changelog_md_path, 'r') as release_notes_file:
-            release_notes = release_notes_file.read
-            # todo implement release notes logic and create changelog.json
-            pass
+        return {}
 
     def prepare_for_index_upload(self):
         files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
@@ -330,14 +330,12 @@ def main():
     specific_packs = option.pack_names
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
 
-    storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.get_bucket(storage_bucket_name)
-
     modified_packs = get_modified_packs(specific_packs)
     extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), storage_bucket)
-                  for pack_name in modified_packs]
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs]
 
+    storage_client = init_storage_client(service_account)
+    storage_bucket = storage_client.get_bucket(storage_bucket_name)
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
 
     for pack in packs_list:
@@ -345,7 +343,7 @@ def main():
         # todo finish implementation of release notes
         # pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
-        pack.upload_to_storage(zip_pack_path, pack.latest_version)
+        pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket)
         pack.prepare_for_index_upload()
         update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
         pack.cleanup()
