@@ -10,7 +10,7 @@
     "prevName": "Last Seen By Feed",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "The last time the indicator was seen by the feed.",
+    "description": "The last time the indicator was seen by the feed vendor.",
     "cliName": "lastseenbyfeed",
     "type": "date",
     "closeForm": false,
