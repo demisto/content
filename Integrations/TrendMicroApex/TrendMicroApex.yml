@@ -11,6 +11,10 @@ configuration:
   name: token
   required: true
   type: 4
+- display: Application ID
+  name: application_id
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -19,10 +23,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Application ID
-  name: application_id
-  required: false
-  type: 0
 description: Trend Micro Apex central automation to manage agents and User-Defined
   Suspicious Objects
 display: Trend Micro Apex
@@ -47,7 +47,7 @@ script:
       description: Filters the list to suspicious objects that match the specified
         string
       isArray: false
-      name: ContentFilter
+      name: content_filter
       required: false
       secret: false
     deprecated: false

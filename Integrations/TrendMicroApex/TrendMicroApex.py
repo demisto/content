@@ -49,7 +49,6 @@ class Client(BaseClient):
                                                                  headers='', request_body='')}
         response = (
             self._http_request("GET", USDOAPIPATH, full_url=self.url_base + USDOAPIPATH + querystring, headers=headers))
-        # demisto.log(str(response))
         return response
 
     def usdo_delete(self, list_type="", content=""):
@@ -127,30 +126,22 @@ def test_module(client: Client, *_) -> str:
 
 
 def usdo_list_command(client: Client, args):
-    list_type = args.get('type')
-    filter = args.get('ContentFilter')
+    list_type = args.get('type', '')
+    content_filter = args.get('content_filter', '')
 
-    if list_type is None:
-        list_type = ""
-    if filter is None:
-        filter = ""
+    response = client.usdo_list(list_type, content_filter)
 
-    response = client.usdo_list(list_type, filter)
+    data = response.get('Data')
 
-    return (tableToMarkdown("Apex USDO List", response["Data"]),
-            {"TrendMicro.Apex.USDO": response["Data"]}, response)
+    return (tableToMarkdown("Apex USDO List", data),
+            {"TrendMicro.Apex.USDO": data}, response)
 
 
 def usdo_delete_command(client: Client, args):
-    list_type = args.get('type')
-    filter = args.get('content')
+    list_type = args.get('type', '')
+    content = args.get('content', '')
 
-    if list_type is None:
-        list_type = ""
-    if filter is None:
-        filter = ""
-
-    response = client.usdo_delete(list_type, filter)
+    response = client.usdo_delete(list_type, content)
 
     return "OK - Deleted", None, response
 
@@ -209,7 +200,7 @@ def main():
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
     # Should we use system proxy settings
-    use_proxy = params.get('proxy') == 'true'
+    use_proxy = params.get('proxy', False)
 
     # Headers to be sent in requests
 
@@ -232,7 +223,7 @@ def main():
 
     # Log exceptions
     except ValueError as e:
-        return_error(f'Error from Example Integration', e)
+        return_error(f'Error from TrendMicro Apex integration', e)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
