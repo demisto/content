@@ -10,7 +10,7 @@
     "prevName": "Feed Original Severity",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "The original score/severity provided by the feed without dbot translation.",
+    "description": "The original score/severity provided by the feed without DBot translation.",
     "cliName": "feedoriginalseverity",
     "type": "shortText",
     "closeForm": false,
