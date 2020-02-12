@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added the `domain` command to enable domain enrichment.
+Added the ***domain*** command to enable domain enrichment.
 
 ## [19.9.1] - 2019-09-18
   - Updated documentation to reflect capabilities of the Whois integration.
