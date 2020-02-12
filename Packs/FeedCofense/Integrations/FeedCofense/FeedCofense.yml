@@ -9,11 +9,14 @@ configuration:
   type: 9
 - display: Fetch indicators
   name: feed
+  defaultvalue: true
   required: false
   type: 8
-- defaultvalue: A - Completely reliable
-  display: Reliability
+- display: Source Reliability
   name: feedReliability
+  defaultvalue: A - Completely reliable
+  type: 15
+  required: true
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -21,8 +24,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data
 - additionalinfo: To fetch malware and phishing indicators select "all".
   defaultvalue: all
   display: The threat type for which to fetch indicators
@@ -33,19 +35,26 @@ configuration:
   - phish
   required: false
   type: 15
-- defaultvalue: indicatorType
-  hidden: true
+- display: ""
   name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
   required: false
-  type: 0
-- hidden: true
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
   name: feedExpirationInterval
-  required: false
+  defaultvalue: "20160"
+  hidden: true
   type: 1
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+    reputation
   defaultvalue: feedInstanceReputationNotSet
-  display: Indicator reputation
+  display: Indicator Reputation
   name: feedReputation
   options:
   - None
@@ -64,7 +73,7 @@ configuration:
   type: 0
 - additionalinfo: The frequency for fetching indicators from this feed (in minutes).
   defaultvalue: '60'
-  display: Fetch Interval
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
