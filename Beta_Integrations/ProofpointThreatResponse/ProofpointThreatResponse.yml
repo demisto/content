@@ -4,7 +4,7 @@ commonfields:
 name: Proofpoint Threat Response
 display: Proofpoint Threat Response (Beta)
 category: Email Gateway
-description: 'Threat management platform to orchestrate and automate incident response.'
+description: 'Use the Proofpoitn Threat Response integration to orchestrate and automate incident response.'
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url
@@ -35,12 +35,12 @@ script:
     - name: list-id
       required: true
       description: ID of the list
-    description: Get list items
+    description: Gets items for the specified list.
   - name: proofpoint-tr-add-to-list
     arguments:
     - name: list-id
       required: true
-      description: ''
+      description: 'The list to add a member to'
     - name: indicator
       required: true
       description: 'Could be ip,url,domain,hash. For example: "192.168.1.1,192.168.1.2"'
@@ -48,22 +48,22 @@ script:
     - name: comment
       description: Comment regarding the member
     - name: expiration
-      description: Expiration of the  member
-    description: Add member to list
+      description: Expiration of the member.
+    description: Adds a member to the specified list.
     execution: true
   - name: proofpoint-tr-block-ip
     arguments:
     - name: ip
       required: true
-      description: List of IPs
+      description: A comma-separated list of IP addresses to blacklist.
       isArray: true
     - name: expiration
-      description: 'Expiration of the IP in format YYYY-MM-DDTHH:MM:SSZ. For example:
+      description: 'When the supplied IP addresses should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example:
         2020-02-02T19:00:00Z'
     - name: blacklist_ip
       required: true
-      description: 'The ID of the IP blacklist '
-    description: Block IP
+      description: 'The ID of the IP blacklist. '
+    description: Adds the supplied IP addresses to the specified IP blacklist.
     execution: true
   - name: proofpoint-tr-block-domain
     arguments:
@@ -72,57 +72,57 @@ script:
       description: List of domains
       isArray: true
     - name: expiration
-      description: 'Expiration of the Domain in format YYYY-MM-DDTHH:MM:SSZ. For example:
+      description: 'When the supplied domains should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example:
         2020-02-02T19:00:00Z'
     - name: blacklist_domain
       required: true
-      description: The ID of the domain blacklist
-    description: Block Domain
+      description: The ID of the domain blacklist.
+    description: Adds the supplied domains to the specified blacklist.
   - name: proofpoint-tr-search-indicator
     arguments:
     - name: list-id
       required: true
-      description: ID of the list
+      description: ID of the list.
     - name: filter
       required: true
-      description: Filter for the search. For example, "1.1" will return [1.1.1.1,
+      description: The filter for the indicator search. For example, "1.1" will return [1.1.1.1,
         22.22.1.1,1.1.22.22]
-    description: Return a list of indicators
+    description: Returns indicators for the specified list, according to the defined filter.
   - name: proofpoint-tr-delete-indicator
     arguments:
     - name: list-id
       required: true
-      description: ID of the list
+      description: ID of the list 
     - name: indicator
       required: true
-      description: 'Could be ip,url,domain,hash. For example: "demisto.com"'
-    description: Delete an indicator from a list
+      description: 'The indicator to delete from the list. Supported indicators are: IP, URL, domain, or file hash. For example: "demisto.com".'
+    description: Deletes an indicator from the specified list.
   - name: proofpoint-tr-block-url
     arguments:
     - name: url
       required: true
-      description: List of URLs
+      description: A comma-separated list of URLs to add to the URL blacklist.
       isArray: true
     - name: expiration
       description: 'Expiration of the URLs in format YYYY-MM-DDTHH:MM:SSZ. For example:
         2020-02-02T19:00:00Z'
     - name: blacklist_url
       required: true
-      description: The ID of the URL blacklist
-    description: Block URL
+      description: The ID of the URL blacklist.
+    description: Adds the supplied URLs to the specified URL blacklist.
   - name: proofpoint-tr-block-hash
     arguments:
     - name: hash
       required: true
-      description: List of hashes
+      description: A comma-separated list of file hashes to add to the file hash blacklist.
       isArray: true
     - name: expiration
-      description: 'Expiration of the hash in format YYYY-MM-DDTHH:MM:SSZ. For example:
+      description: 'When the specified file hashes should be unblocked, in format YYYY-MM-DDTHH:MM:SSZ. For example:
         2020-02-02T19:00:00Z'
     - name: blacklist_hash
       required: true
       description: The ID of the hash blacklist
-    description: Block hash
+    description: Adds the supplied file hashes to the specified file hash blacklist.
   runonce: false
   subtype: python3
 beta: true
