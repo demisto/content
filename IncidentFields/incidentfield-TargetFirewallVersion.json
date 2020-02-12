@@ -15,7 +15,7 @@
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
-	"required": false,
+	"required": true,
 	"script": "",
 	"fieldCalcScript": "",
 	"neverSetAsRequired": false,
