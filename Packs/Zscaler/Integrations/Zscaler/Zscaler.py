@@ -72,7 +72,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
     except Exception as e:
         LOG('Zscaler request failed with url={url}\tdata={data}'.format(url=url, data=data))
         LOG(e)
-        raise
+        raise e
     return res
 
 
@@ -637,8 +637,8 @@ def category_ioc_update(category_data):
     return response
 
 
-def get_categories_command():
-    display_urls = True if demisto.args()['displayURL'] == 'true' else False
+def get_categories_command(display_url):
+    display_urls = True if display_url == 'true' else False
     raw_categories = get_categories()
     categories = []
     for raw_category in raw_categories:
@@ -729,59 +729,67 @@ def sandbox_report(md5, details):
 
 
 ''' EXECUTION CODE '''
-auth = login()
-jsession_id = auth[:auth.index(';')]
-DEFAULT_HEADERS['cookie'] = jsession_id
 
-LOG('command is %s' % (demisto.command(),))
-try:
-    if demisto.command() == 'test-module':
-        # Checks if there is an authenticated session
-        result = http_request('GET', '/authenticatedSession', None, DEFAULT_HEADERS)
-        demisto.results('ok')
-    elif demisto.command() == 'url':
-        demisto.results(url_lookup(demisto.args()['url']))
-    elif demisto.command() == 'ip':
-        demisto.results(ip_lookup(demisto.args()['ip']))
-    elif demisto.command() == 'zscaler-blacklist-url':
-        demisto.results(blacklist_url(demisto.args()['url']))
-    elif demisto.command() == 'zscaler-undo-blacklist-url':
-        demisto.results(unblacklist_url(demisto.args()['url']))
-    elif demisto.command() == 'zscaler-whitelist-url':
-        demisto.results(whitelist_url(demisto.args()['url']))
-    elif demisto.command() == 'zscaler-undo-whitelist-url':
-        demisto.results(unwhitelist_url(demisto.args()['url']))
-    elif demisto.command() == 'zscaler-blacklist-ip':
-        demisto.results(blacklist_ip(demisto.args()['ip']))
-    elif demisto.command() == 'zscaler-undo-blacklist-ip':
-        demisto.results(unblacklist_ip(demisto.args()['ip']))
-    elif demisto.command() == 'zscaler-whitelist-ip':
-        demisto.results(whitelist_ip(demisto.args()['ip']))
-    elif demisto.command() == 'zscaler-undo-whitelist-ip':
-        demisto.results(unwhitelist_ip(demisto.args()['ip']))
-    elif demisto.command() == 'zscaler-category-add-url':
-        demisto.results(category_add_url(demisto.args()['category-id'], demisto.args()['url']))
-    elif demisto.command() == 'zscaler-category-add-ip':
-        demisto.results(category_add_ip(demisto.args()['category-id'], demisto.args()['ip']))
-    elif demisto.command() == 'zscaler-category-remove-url':
-        demisto.results(category_remove_url(demisto.args()['category-id'], demisto.args()['url']))
-    elif demisto.command() == 'zscaler-category-remove-ip':
-        demisto.results(category_remove_ip(demisto.args()['category-id'], demisto.args()['ip']))
-    elif demisto.command() == 'zscaler-get-categories':
-        demisto.results(get_categories_command())
-    elif demisto.command() == 'zscaler-get-blacklist':
-        demisto.results(get_blacklist_command())
-    elif demisto.command() == 'zscaler-get-whitelist':
-        demisto.results(get_whitelist_command())
-    elif demisto.command() == 'zscaler-sandbox-report':
-        demisto.results(sandbox_report_command())
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    raise
-finally:
+
+def main():
+    auth = login()
+    jsession_id = auth[:auth.index(';')]
+    DEFAULT_HEADERS['cookie'] = jsession_id
+
+    LOG('command is %s' % (demisto.command(),))
     try:
-        activate_changes()
-        logout()
-    except Exception as err:
-        demisto.info("Zscaler error: " + str(err))
+        if demisto.command() == 'test-module':
+            # Checks if there is an authenticated session
+            http_request('GET', '/authenticatedSession', None, DEFAULT_HEADERS)
+            demisto.results('ok')
+        elif demisto.command() == 'url':
+            demisto.results(url_lookup(demisto.args()['url']))
+        elif demisto.command() == 'ip':
+            demisto.results(ip_lookup(demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-blacklist-url':
+            demisto.results(blacklist_url(demisto.args()['url']))
+        elif demisto.command() == 'zscaler-undo-blacklist-url':
+            demisto.results(unblacklist_url(demisto.args()['url']))
+        elif demisto.command() == 'zscaler-whitelist-url':
+            demisto.results(whitelist_url(demisto.args()['url']))
+        elif demisto.command() == 'zscaler-undo-whitelist-url':
+            demisto.results(unwhitelist_url(demisto.args()['url']))
+        elif demisto.command() == 'zscaler-blacklist-ip':
+            demisto.results(blacklist_ip(demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-undo-blacklist-ip':
+            demisto.results(unblacklist_ip(demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-whitelist-ip':
+            demisto.results(whitelist_ip(demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-undo-whitelist-ip':
+            demisto.results(unwhitelist_ip(demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-category-add-url':
+            demisto.results(category_add_url(demisto.args()['category-id'], demisto.args()['url']))
+        elif demisto.command() == 'zscaler-category-add-ip':
+            demisto.results(category_add_ip(demisto.args()['category-id'], demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-category-remove-url':
+            demisto.results(category_remove_url(demisto.args()['category-id'], demisto.args()['url']))
+        elif demisto.command() == 'zscaler-category-remove-ip':
+            demisto.results(category_remove_ip(demisto.args()['category-id'], demisto.args()['ip']))
+        elif demisto.command() == 'zscaler-get-categories':
+            demisto.results(get_categories_command(demisto.args()['displayURL']))
+        elif demisto.command() == 'zscaler-get-blacklist':
+            demisto.results(get_blacklist_command())
+        elif demisto.command() == 'zscaler-get-whitelist':
+            demisto.results(get_whitelist_command())
+        elif demisto.command() == 'zscaler-sandbox-report':
+            demisto.results(sandbox_report_command())
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        raise
+    finally:
+        try:
+            activate_changes()
+            logout()
+        except Exception as err:
+            demisto.info("Zscaler error: " + str(err))
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
