@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added the *app* argument to ***splunk-job-create*** and ***splunk-search*** commands.
+Added the *app* argument to the ***splunk-job-create*** and ***splunk-search*** commands.
 
 ## [20.2.0] - 2020-02-04
 - The Test button now tests the fetch incidents function when the *Fetch incidents* option is selected.
