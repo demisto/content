@@ -13,7 +13,7 @@ configuration:
   defaultvalue: "0"
   type: 0
   required: false
-- display: 'Max time to wait for a page to load (in seconds)'
+- display: 'Maximum time to wait for a page to load (in seconds)'
   name: max_page_load_time
   defaultvalue: "180"
   type: 0
@@ -42,7 +42,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Max time to wait for a page to load (in seconds)
+      description: Maximum time to wait for a page to load (in seconds)
       isArray: false
       name: max_page_load_time
       required: false
