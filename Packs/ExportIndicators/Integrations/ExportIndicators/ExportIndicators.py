@@ -2,10 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import json
-from flask import Flask, Response
+from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any
+from typing import Callable, List, Any, cast, Dict
+from base64 import b64decode
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'Export Indicators Service'
@@ -170,6 +171,21 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     return res
 
 
+def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
+    credentials: str = headers.get('Authorization', '')
+    if not credentials or 'Basic ' not in credentials:
+        return False
+    encoded_credentials: str = credentials.split('Basic ')[1]
+    credentials: str = b64decode(encoded_credentials).decode('utf-8')
+    if ':' not in credentials:
+        return False
+    credentials_list = credentials.split(':')
+    if len(credentials_list) != 2:
+        return False
+    user, pwd = credentials_list
+    return user == username and pwd == password
+
+
 ''' ROUTE FUNCTIONS '''
 
 
@@ -179,6 +195,18 @@ def route_list_values() -> Response:
     Main handler for values saved in the integration context
     """
     params = demisto.params()
+
+    username: str = params.get('username')
+    password: str = params.get('password')
+    if username and password:
+        headers: dict = cast(Dict[Any, Any], request.headers)
+        if not validate_basic_authentication(headers, username, password):
+            demisto.info('Basic authentication failed. Please make sure you are using the right credentials.')
+            raise DemistoException('Basic authentication failed. Please make sure you are using the right credentials.')
+    if (username and not password) or (password and not username):
+        demisto.info('If using credentials, both username and password should be provided.')
+        raise DemistoException('If using credentials, both username and password should be provided.')
+
     values = get_outbound_ioc_values(
         out_format=params.get('format'),
         on_demand=params.get('on_demand'),
