@@ -2229,6 +2229,26 @@
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "GoogleChronicle",
+            "playbookID": "Playbook-GoogleChronicle_asset-Test"
+        },
+        {
+            "integrations": "GoogleChronicle",
+            "playbookID": "Playbook-GoogleChronicle_ioc_details-Test"
+        },
+        {
+            "integrations": "GoogleChronicle",
+            "playbookID": "Playbook-GoogleChronicle_list_alerts-Test"
+        },
+        {
+            "integrations": "GoogleChronicle",
+            "playbookID": "Playbook-GoogleChronicle_list_iocs-Test"
+        },
+        {
+            "integrations": "GoogleChronicle",
+            "playbookID": "Playbook-GoogleChronicle_reputation-Test"
         }
     ],
     "skipped_tests": {
