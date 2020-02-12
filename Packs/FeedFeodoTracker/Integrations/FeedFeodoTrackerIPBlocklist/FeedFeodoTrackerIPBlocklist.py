@@ -14,7 +14,7 @@ def main():
                 "transform": "\\1"
             },
             "fields": [{
-                'creationdate': {
+                'firstseenbyfeed': {
                     "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
                     "transform": "\\1"
                 },
@@ -48,9 +48,9 @@ def main():
     params['ignore_regex'] = '#'
     params['url'] = chosen_urls
     params['custom_fields_mapping'] = {
-        "creationdate": "creationdate",
+        "firstseenbyfeed": "firstseenbyfeed",
         "port": "port",
-        "updatedate": "updatedate",
+        "lastseenbyfeed": "lastseenbyfeed",
         "malwarefamily": "malwarefamily"
     }
 
