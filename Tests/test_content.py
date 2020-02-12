@@ -518,7 +518,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 def extract_filtered_tests(is_nightly):
     if is_nightly:
         # TODO: verify this response
-        return [], False, False
+        return [], False, True
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
