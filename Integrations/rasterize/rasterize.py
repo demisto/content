@@ -292,7 +292,7 @@ def rasterize_command():
     h = demisto.args().get('height', DEFAULT_H).rstrip('px')
     r_type = demisto.args().get('type', 'png')
     wait_time = int(demisto.args().get('wait_time', 0))
-    page_load = int(demisto.args().get('max_page_load_time', 0))
+    page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
     if not (url.startswith('http')):
         url = f'http://{url}'
