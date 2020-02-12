@@ -1,6 +1,6 @@
-category: End Point
+category: Endpoint
 commonfields:
-  id: trend-micro-apex
+  id: Trend Micro Apex
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -11,8 +11,7 @@ configuration:
   name: token
   required: true
   type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -24,9 +23,10 @@ configuration:
   name: application_id
   required: false
   type: 0
-description: Beta Integration to Trend Micro Apex
+description: Trend Micro Apex central automation to manage agents and User-Defined
+  Suspicious Objects
 display: Trend Micro Apex
-name: trend-micro-apex
+name: Trend Micro Apex
 script:
   commands:
   - arguments:
@@ -51,22 +51,31 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Retrieve a list of User-Defined Suspicious Objects from the Apex
+      Central server.
     execution: false
     name: trendmicro-apex-usdo-list
     outputs:
     - contextPath: TrendMicro.Apex.USDO.type
-      type: Unknown
+      description: 'Indicator type of the USDO object, for example: ip, file, file_sha1,
+        url, domain.'
+      type: String
     - contextPath: TrendMicro.Apex.USDO.content
-      type: Unknown
+      description: Indicator content of the USDO object.
+      type: String
     - contextPath: TrendMicro.Apex.USDO.notes
-      type: Unknown
+      description: Indicator notes of the USDO object.
+      type: String
     - contextPath: TrendMicro.Apex.USDO.scan_action
-      type: Unknown
+      description: 'Scan action of the USDO object, for example: log, block, quarantine.'
+      type: String
     - contextPath: TrendMicro.Apex.USDO.expiration_utc_date
+      description: Expiration date of the USDO object in UTC.
       type: Date
   - arguments:
     - auto: PREDEFINED
       default: false
+      description: The suspicious object type
       isArray: false
       name: type
       predefined:
@@ -78,116 +87,152 @@ script:
       required: true
       secret: false
     - default: false
+      description: The suspicious object content for the specified type, for example
+        8.8.8.8
       isArray: false
       name: content
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      description: The scan action to perform on the suspicious object
       isArray: false
       name: scan_action
+      predefined:
+      - log
+      - block
+      - quarantine
       required: true
       secret: false
     - default: false
+      description: Description of the object.
       isArray: false
       name: notes
       required: false
       secret: false
     - default: false
+      description: 'The UTC expiration date and time of the suspicious object, for
+        example: 2020-01-25T09:00:00Z'
       isArray: false
       name: expiration
       required: false
       secret: false
     deprecated: false
+    description: Add suspicious file, file SHA-1, IP address, domain, or URL objects
+      to the User-Defined Suspicious Object list.
     execution: false
     name: trendmicro-apex-usdo-add
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      description: The suspicious object type
       isArray: false
       name: type
+      predefined:
+      - ip
+      - url
+      - file_sha1
+      - domain
       required: false
       secret: false
     - default: false
+      description: The suspicious object content for the specified type
       isArray: false
       name: content
       required: false
       secret: false
     deprecated: false
+    description: Delete suspicious file SHA-1, IP address, domain, or URL objects
+      from the User-Defined Suspicious Object list.
     execution: false
     name: trendmicro-apex-usdo-delete
   - arguments:
     - default: false
+      description: Whether to allow multiple matches or not.
       isArray: false
       name: multi_match
       required: true
       secret: false
     - default: false
+      description: The GUID of the managed product agent
       isArray: false
       name: entity_id
       required: false
       secret: false
     - default: false
+      description: The IP address of the managed product agent
       isArray: false
       name: ip_address
       required: false
       secret: false
     - default: false
+      description: The MAC address of the managed product agent
       isArray: false
       name: mac_address
       required: false
       secret: false
     - default: false
+      description: The endpoint name of the managed product agent
       isArray: false
       name: host_name
       required: false
       secret: false
     - default: false
+      description: The Trend Micro product on the server instance
       isArray: false
       name: product
       required: false
       secret: false
     deprecated: false
+    description: Isolate an agent from the network
     execution: false
     name: trendmicro-prodagent-isolate
   - arguments:
     - default: false
+      description: Whether to allow multiple matches or not.
       isArray: false
       name: multi_match
-      required: false
+      required: true
       secret: false
     - default: false
+      description: The GUID of the managed product agent
       isArray: false
       name: entity_id
       required: false
       secret: false
     - default: false
+      description: The IP address of the managed product agent
       isArray: false
       name: ip_address
       required: false
       secret: false
     - default: false
+      description: The MAC address of the managed product agent
       isArray: false
       name: mac_address
       required: false
       secret: false
     - default: false
+      description: The endpoint name of the managed product agent
       isArray: false
       name: host_name
       required: false
       secret: false
     - default: false
+      description: The Trend Micro product on the server instance
       isArray: false
       name: product
       required: false
       secret: false
     deprecated: false
+    description: Restore an isolated agent connection to the network
     execution: false
     name: trendmicro-prodagent-restore
-  dockerimage: demisto/trendapex
+  dockerimage: demisto/pyjwt3:1.0.0.4946
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python
 beta: true

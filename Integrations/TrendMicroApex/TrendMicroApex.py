@@ -3,16 +3,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Optional
 import urllib3
 import jwt
 import base64
 import hashlib
-import requests
-# from Crypto.PublicKey import RSA
 import time
 import json
-from distutils.util import strtobool
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -67,7 +63,7 @@ class Client(BaseClient):
         return response
 
     def usdo_add(self, add_type=None, content=None, scan_action=None, notes='', expiration=''):
-        if (add_type and content and scan_action):
+        if add_type and content and scan_action:
             req_body = {
                 "param": {
                     "type": add_type,
@@ -77,7 +73,6 @@ class Client(BaseClient):
                     "expiration_utc_date": expiration
                 }
             }
-            # demisto.log(json.dumps(req_body))
 
             headers = {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -85,11 +80,10 @@ class Client(BaseClient):
                                                                      headers='', request_body=json.dumps(req_body))}
             response = (self._http_request("PUT", USDOAPIPATH + '/', full_url=self.url_base + USDOAPIPATH + '/',
                                            headers=headers, data=json.dumps(req_body)))
-            # response = requests.put(self.url_base + USDOAPIPATH+'/', headers=headers, data=json.dumps(req_body),verify=False)
 
             return response
 
-    def _prodagent_command(self,action, multi_match=False, entity_id="", ip_add="", mac_add="", host="", prod=""):
+    def _prodagent_command(self, action, multi_match=False, entity_id="", ip_add="", mac_add="", host="", prod=""):
         act = action
 
         req_body = {
@@ -101,7 +95,6 @@ class Client(BaseClient):
             "host_name": host,
             "product": prod
         }
-        # demisto.log(json.dumps(req_body))
 
         headers = {
             'Content-Type': 'application/json;charset=utf-8',
@@ -113,16 +106,13 @@ class Client(BaseClient):
                                data=json.dumps(req_body)))
         return response
 
-    def prodagent_isolate(self,multi_match=False, entity_id="", ip_add="", mac_add="", host="", prod=""):
-        action="cmd_isolate_agent"
-        return self._prodagent_command(action,multi_match,entity_id,ip_add,mac_add,host,prod)
+    def prodagent_isolate(self, multi_match=False, entity_id="", ip_add="", mac_add="", host="", prod=""):
+        action = "cmd_isolate_agent"
+        return self._prodagent_command(action, multi_match, entity_id, ip_add, mac_add, host, prod)
 
-    def prodagent_restore(self,multi_match=False, entity_id="", ip_add="", mac_add="", host="", prod=""):
-        action="cmd_restore_isolated_agent"
-        return self._prodagent_command(action,multi_match,entity_id,ip_add,mac_add,host,prod)
-
-
-
+    def prodagent_restore(self, multi_match=False, entity_id="", ip_add="", mac_add="", host="", prod=""):
+        action = "cmd_restore_isolated_agent"
+        return self._prodagent_command(action, multi_match, entity_id, ip_add, mac_add, host, prod)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -140,30 +130,29 @@ def usdo_list_command(client: Client, args):
     list_type = args.get('type')
     filter = args.get('ContentFilter')
 
-    if list_type == None:
+    if list_type is None:
         list_type = ""
-    if filter == None:
+    if filter is None:
         filter = ""
 
     response = client.usdo_list(list_type, filter)
 
     return (tableToMarkdown("Apex USDO List", response["Data"]),
-            {"TrendMicro.Apex.USDO": response["Data"]}
-            , response)
+            {"TrendMicro.Apex.USDO": response["Data"]}, response)
 
 
 def usdo_delete_command(client: Client, args):
     list_type = args.get('type')
     filter = args.get('content')
 
-    if list_type == None:
+    if list_type is None:
         list_type = ""
-    if filter == None:
+    if filter is None:
         filter = ""
 
     response = client.usdo_delete(list_type, filter)
 
-    return ("OK - Deleted", None, None)
+    return "OK - Deleted", None, response
 
 
 def usdo_add_command(client: Client, args):
@@ -171,9 +160,9 @@ def usdo_add_command(client: Client, args):
     content = args.get('content')
     scan_action = args.get('scan_action')
 
-    response = client.usdo_add(type=add_type, content=content, scan_action=scan_action)
+    response = client.usdo_add(add_type=add_type, content=content, scan_action=scan_action)
 
-    return ("OK - Added: " + add_type + ": " + content + " - " + scan_action, None, None)
+    return "OK - Added: " + add_type + ": " + content + " - " + scan_action, None, response
 
 
 def prodagent_isolate_command(client: Client, args):
@@ -187,8 +176,8 @@ def prodagent_isolate_command(client: Client, args):
     response = client.prodagent_isolate(multi_match=multi_match, entity_id=entity_id, ip_add=ip, mac_add=mac, host=host,
                                         prod=product)
     return (tableToMarkdown("Apex ProductAgent Isolate", response["result_content"]),
-            {"TrendMicro.Apex.ProductAgent": response["result_content"]}
-            , response)
+            {"TrendMicro.Apex.ProductAgent": response["result_content"]}, response)
+
 
 def prodagent_restore_command(client: Client, args):
     multi_match = args.get('multi_match')
@@ -201,8 +190,7 @@ def prodagent_restore_command(client: Client, args):
     response = client.prodagent_restore(multi_match=multi_match, entity_id=entity_id, ip_add=ip, mac_add=mac, host=host,
                                         prod=product)
     return (tableToMarkdown("Apex ProductAgent Restore", response["result_content"]),
-            {"TrendMicro.Apex.ProductAgent": response["result_content"]}
-            , response)
+            {"TrendMicro.Apex.ProductAgent": response["result_content"]}, response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -235,14 +223,12 @@ def main():
         'trendmicro-apex-usdo-add': usdo_add_command,
         'trendmicro-apex-usdo-delete': usdo_delete_command,
         'trendmicro-prodagent-isolate': prodagent_isolate_command,
-        'trendmicro-prodagent-restore' : prodagent_restore_command
+        'trendmicro-prodagent-restore': prodagent_restore_command
     }
     # Run the commands
     try:
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
-
-
 
     # Log exceptions
     except ValueError as e:
