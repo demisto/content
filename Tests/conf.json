@@ -845,7 +845,7 @@
         {
             "integrations": [
                 "Mail Sender (New)",
-                "google"
+                "Gmail"
             ],
             "playbookID": "Mail Sender (New) Test"
         },
@@ -2226,12 +2226,14 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "BruteForceBlocker Feed",
-            "playbookID": "playbook-BruteForceBlocker_test",
-            "fromversion": "5.5.0"
+            "integrations": "AlienVault Reputation Feed",
+            "playbookID": "AlienVaultReputationFeed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 9000
         },
         {
-            "playbookID": "FetchIndicatorsFromFile-test",
+            "integrations": "BruteForceBlocker Feed",
+            "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0"
         }
     ],
