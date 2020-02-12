@@ -1,6 +1,4 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 ''' IMPORTS '''
 import cx_Oracle
 
@@ -15,26 +13,20 @@ INTEGRATION_NAME = "Oracle DB"
 
 class Client:
 
-    def __init__(self, db_server, service, username, password, privilege, db_version="18", port="1521"):
+    def __init__(self, db_server, service, username, password, port="1521"):
         self.db_server = db_server
-        self.db_version = db_version
         self.service = service
         self.port = port
         self.username = username
         self.password = password
-        self.privilege = privilege
 
     def connection_request(self):
         try:
-            easy_connect = self.db_server+":"+self.port+"/"+self.service
+            easy_connect = self.db_server + ":" + self.port + "/" + self.service
             connect = cx_Oracle.connect(self.username, self.password, easy_connect)
             return connect
         except Exception as e:
             raise ValueError("Error while connecting to the database: %s " % e)
-
-    def get_db_version(self):
-        connection = self.connection_request()
-        return connection.version
 
     def run_query(self, query, limit):
         columns = []
@@ -54,6 +46,7 @@ class Client:
         cursor = connection.cursor()
         result = cursor.execute(query).fetchall()
         return result
+
 
 def test_module(client):
     results = client.connection_request().username
@@ -78,7 +71,7 @@ def db_query_json(client, args):
 
     title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
 
-    results = client.run_query_json(query=query,limit=limit)
+    results = client.run_query_json(query=query, limit=limit)
 
     for each_row in results:
         result.append(json.loads(each_row[0]))
@@ -92,7 +85,7 @@ def db_query_json(client, args):
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        result
     )
 
 
@@ -111,14 +104,18 @@ def db_query(client, args):
 
     title = ("%s - Results for the Search Query" % INTEGRATION_NAME)
 
-    results = client.run_query(query=query,limit=limit)
+    results = client.run_query(query=query, limit=limit)
     rows = results[0]
-    colums = results[1]
-
-    print (colums)
+    column_names = results[1]
 
     for each_row in rows:
-        result.append(json.loads(each_row[0]))
+        counter = 0
+        row = {}
+        for column_name in column_names:
+            cell = {column_name: str(each_row[counter])}
+            row.update(cell)
+            counter += 1
+        result.append(row)
 
     readable_output = tableToMarkdown(t=result, name=title)
 
@@ -129,32 +126,29 @@ def db_query(client, args):
     return (
         readable_output,
         outputs,
-        result  # raw response - the original response
+        result
     )
+
 
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     db_server = demisto.params().get('server')
-    db_version = demisto.params().get('version')
     service = demisto.params().get('service')
     port = demisto.params().get('port')
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
-    privilege = demisto.params().get('privilege')
 
     LOG('Command being called is %s' % demisto.command())
 
     try:
         client = Client(
             db_server=db_server,
-            db_version=db_version,
             service=service,
             port=port,
             username=username,
             password=password,
-            privilege=privilege
         )
 
         if demisto.command() == 'test-module':

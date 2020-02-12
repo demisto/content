@@ -21,17 +21,6 @@ configuration:
   name: port
   required: false
   type: 0
-- display: DBA Privilege
-  hidden: false
-  name: privilege
-  required: false
-  type: 0
-- defaultvalue: '18'
-  display: DB Version
-  hidden: false
-  name: version
-  required: false
-  type: 0
 description: An integration to run Oracle Database Queries
 display: Oracle
 name: Oracle
@@ -48,6 +37,7 @@ script:
       secret: false
     - default: true
       defaultValue: '10'
+      description: The maximum number of rows to return (max is 15)
       isArray: false
       name: limit
       required: false
@@ -62,8 +52,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The SQL Query , Example: "select  EMPLOYEE_ID ,FIRST_NAME,LAST_NAME
-        from HR.EMPLOYEES"'
+      description: 'The SQL Query , Example: "select *  from HR.EMPLOYEES"'
       isArray: false
       name: query
       required: true
@@ -79,6 +68,10 @@ script:
     description: Query the Oracle Using a Basic SQL Query
     execution: false
     name: oracle-query
+    outputs:
+    - contextPath: Oracle.Query
+      description: Oracle Query Results
+      type: String
   dockerimage: aymanam/oracle-cx:7.3.2
   feed: false
   isfetch: false
