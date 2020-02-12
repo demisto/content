@@ -10,7 +10,7 @@
     "prevName": "Sub Feed",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "The specific sub service in the feed that provided the indicator.",
+    "description": "The specific sub-service of a feed integration from which an indicator was ingested.",
     "cliName": "subfeed",
     "type": "shortText",
     "closeForm": false,
