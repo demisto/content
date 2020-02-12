@@ -845,7 +845,7 @@
         {
             "integrations": [
                 "Mail Sender (New)",
-                "google"
+                "Gmail"
             ],
             "playbookID": "Mail Sender (New) Test"
         },
@@ -1710,7 +1710,8 @@
         {
             "integrations": "TAXIIFeed",
             "playbookID": "TAXII_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 600
         },
         {
             "integrations": "Traps",
@@ -2218,6 +2219,22 @@
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "DShield Feed",
+            "playbookID": "playbook-DshieldFeed_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AlienVault Reputation Feed",
+            "playbookID": "AlienVaultReputationFeed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 9000
+        },
+        {
+            "integrations": "BruteForceBlocker Feed",
+            "playbookID": "playbook-BruteForceBlocker_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -2332,6 +2349,7 @@
         "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
+        "AlphaSOC Wisdom": "API key has expired",
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
