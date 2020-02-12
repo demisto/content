@@ -4,30 +4,69 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
-from typing import Dict, Optional, List, Any, Callable, Collection
+from typing import Optional, List, Any, Callable, Collection
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 # Integration information
-INTEGRATION_NAME = 'Illuminate'
+INTEGRATION_NAME = 'illuminate'
 INTEGRATION_CONTEXT_BRAND = 'Illuminate'
+MALICIOUS_DATA = {
+    'Vendor': 'illuminate',
+    'Description': 'illuminate has determined that this indicator is malicious via internal analysis.'
+}
 
 ''' HELPER FUNCTIONS '''
 
 
 class EnrichmentOutput(object):
-    def __init__(self, context_data: Dict, raw_data: Dict, indicator_type: str) -> None:
-        self.context_data = context_data
+    def __init__(self, illuminate_context_data: dict, raw_data: dict, indicator_type: str) -> None:
+        self.illuminate_context_data = illuminate_context_data
         self.raw_data = raw_data
         self.indicator_type = indicator_type
+        self.reputation_context = {}
 
     def get_human_readable_output(self) -> str:
-        return tableToMarkdown(t=self.context_data, name=f'{INTEGRATION_NAME} {self.indicator_type.capitalize()} Information')
+        return tableToMarkdown(t=self.illuminate_context_data, name=f'{INTEGRATION_NAME} {self.indicator_type.capitalize()} Information')
 
-    def get_demisto_context(self) -> Dict:
-        return {f'{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}(val.ID && val.ID === obj.ID)': self.context_data}
+    def build_illuminate_context(self) -> dict:
+        return {f'{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}(val.ID && val.ID === obj.ID)': self.illuminate_context_data}
+
+    def generate_reputation_context(
+            self,
+            primary_key: str,
+            indicator_value: str,
+            indicator_type: str,
+            reputation_key: str,
+            extra_context: Optional[dict] = None
+    ):
+        if self.has_context_data():
+            reputation_context = {primary_key: indicator_value}
+
+            if extra_context is not None:
+                reputation_context.update(extra_context)
+
+            malicious = Client.is_indicator_malicious(self.raw_data)
+            if malicious:
+                reputation_context['Malicious'] = MALICIOUS_DATA
+
+            self.add_reputation_context(f'{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})', reputation_context)
+            self.add_reputation_context('DBotScore', {
+                'Indicator': indicator_value,
+                'Score': 3 if malicious else 1,
+                'Type': indicator_type,
+                'Vendor': INTEGRATION_NAME
+            })
+
+    def build_all_context(self) -> dict:
+        all_context = {}
+        all_context.update(self.build_illuminate_context())
+        if len(self.reputation_context) > 0:
+            all_context.update(self.reputation_context)
+
+        return all_context
 
     def return_outputs(self):
         # We need to use the underlying demisto.results function call rather than using return_outputs because
@@ -37,17 +76,20 @@ class EnrichmentOutput(object):
             "HumanReadable": self.get_human_readable_output(),
             "ContentsFormat": formats["json"],
             "Contents": self.raw_data,
-            "EntryContext": self.get_demisto_context(),
+            "EntryContext": self.build_all_context(),
             "IgnoreAutoExtract": True
         }
 
         demisto.results(entry)
 
-    def add_context(self, key: str, data: Any):
-        self.context_data[key] = data
+    def add_illuminate_context(self, key: str, data: Any):
+        self.illuminate_context_data[key] = data
+
+    def add_reputation_context(self, key: str, context: dict):
+        self.reputation_context[key] = context
 
     def has_context_data(self):
-        return len(self.context_data) > 0
+        return len(self.illuminate_context_data) > 0
 
 
 class Client(BaseClient):
@@ -79,36 +121,40 @@ class Client(BaseClient):
         return EnrichmentOutput(context_data, raw_data, indicator_type)
 
     @staticmethod
-    def get_data_key(data: Dict, key: str) -> Optional[Any]:
+    def get_data_key(data: dict, key: str) -> Optional[Any]:
         return None if key not in data else data[key]
 
     @staticmethod
-    def get_nested_data_key(data: Dict, key: str, nested_key: str) -> Optional[Any]:
+    def get_nested_data_key(data: dict, key: str, nested_key: str) -> Optional[Any]:
         top_level = Client.get_data_key(data, key)
         return None if top_level is None or nested_key not in top_level else top_level[nested_key]
 
     @staticmethod
-    def get_data_key_as_date(data: Dict, key: str, fmt: str) -> Optional[str]:
+    def get_data_key_as_date(data: dict, key: str, fmt: str) -> Optional[str]:
         value = Client.get_data_key(data, key)
         return None if value is None else datetime.fromtimestamp(value / 1000.0).strftime(fmt)
 
     @staticmethod
-    def get_data_key_as_list(data: Dict, key: str) -> List[Any]:
+    def get_data_key_as_list(data: dict, key: str) -> List[Any]:
         data_list = Client.get_data_key(data, key)
         return [] if data_list is None or not isinstance(data[key], (list,)) else data_list
 
     @staticmethod
-    def get_data_key_as_list_of_values(data: Dict, key: str, value_key: str) -> List[Any]:
+    def get_data_key_as_list_of_values(data: dict, key: str, value_key: str) -> List[Any]:
         data_list = Client.get_data_key_as_list(data, key)
         return [value_data[value_key] for value_data in data_list]
 
     @staticmethod
-    def get_data_key_as_list_of_dicts(data: Dict, key: str, dict_creator: Callable) -> Collection[Any]:
+    def get_data_key_as_list_of_dicts(data: dict, key: str, dict_creator: Callable) -> Collection[Any]:
         data_list = Client.get_data_key_as_list(data, key)
         return {} if len(data_list) == 0 else [dict_creator(value_data) for value_data in data_list]
 
     @staticmethod
-    def get_context_from_response(data: Dict) -> Dict:
+    def is_indicator_malicious(data: dict) -> bool:
+        return not Client.get_nested_data_key(data, 'benign', 'value')
+
+    @staticmethod
+    def get_context_from_response(data: dict) -> dict:
         result_dict = {
             'ID': Client.get_data_key(data, 'id'),
             'EvidenceCount': Client.get_data_key(data, 'reportCount'),
@@ -138,7 +184,7 @@ def build_client(demisto_params: dict) -> Client:
     server: str = str(demisto_params.get('server'))
     proxy: bool = demisto_params.get('proxy') == 'true'
     insecure: bool = demisto_params.get('insecure') == 'true'
-    credentials: Dict = demisto_params.get('credentials', {})
+    credentials: dict = demisto_params.get('credentials', {})
     username: str = str(credentials.get('identifier'))
     password: str = str(credentials.get('password'))
 
@@ -156,24 +202,48 @@ def domain_command(client: Client, args: dict) -> EnrichmentOutput:
     domain: str = str(args.get('domain'))
     enrichment_data: EnrichmentOutput = client.enrich_indicator(domain, 'domain')
     if enrichment_data.has_context_data():
-        enrichment_data.add_context('IpResolution', Client.get_nested_data_key(enrichment_data.raw_data, 'ipResolution', 'name'))
+        extra_context = {}
+
+        ip_resolution = Client.get_nested_data_key(enrichment_data.raw_data, 'ipResolution', 'name')
+        if ip_resolution is not None:
+            enrichment_data.add_illuminate_context('IpResolution', ip_resolution)
+            extra_context['DNS'] = ip_resolution
+
+        enrichment_data.generate_reputation_context('Name', domain, 'domain', 'Domain', extra_context)
 
     return enrichment_data
 
 
 def email_command(client: Client, args: dict) -> EnrichmentOutput:
     email: str = str(args.get('email'))
-    return client.enrich_indicator(email, 'email')
+    enrichment_data: EnrichmentOutput = client.enrich_indicator(email, 'email')
+
+    if enrichment_data.has_context_data():
+        enrichment_data.generate_reputation_context('From', email, 'email', 'Email')
+
+    return enrichment_data
 
 
 def ip_command(client: Client, args: dict) -> EnrichmentOutput:
     ip: str = str(args.get('ip'))
-    return client.enrich_indicator(ip, 'ip')
+    enrichment_data: EnrichmentOutput = client.enrich_indicator(ip, 'ip')
+
+    if enrichment_data.has_context_data():
+        enrichment_data.generate_reputation_context('Address', ip, 'ip', 'IP')
+
+    return enrichment_data
 
 
 def file_command(client: Client, args: dict) -> EnrichmentOutput:
     file: str = str(args.get('file'))
-    return client.enrich_indicator(file, 'file')
+    enrichment_data: EnrichmentOutput = client.enrich_indicator(file, 'file')
+
+    if enrichment_data.has_context_data():
+        hash_type = get_hash_type(file)
+        if hash_type != 'Unknown':
+            enrichment_data.generate_reputation_context(hash_type.upper(), file, 'file', 'File')
+
+    return enrichment_data
 
 
 def illuminate_enrich_string_command(client: Client, args: dict) -> EnrichmentOutput:
@@ -198,7 +268,12 @@ def illuminate_enrich_http_request_command(client: Client, args: dict) -> Enrich
 
 def url_command(client: Client, args: dict) -> EnrichmentOutput:
     url: str = str(args.get('url'))
-    return client.enrich_indicator(url, 'url')
+    enrichment_data: EnrichmentOutput = client.enrich_indicator(url, 'url')
+
+    if enrichment_data.has_context_data():
+        enrichment_data.generate_reputation_context('Data', url, 'url', 'URL')
+
+    return enrichment_data
 
 
 ''' EXECUTION '''

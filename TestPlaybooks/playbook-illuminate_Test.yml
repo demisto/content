@@ -1,21 +1,22 @@
 id: illuminate Integration Test
 version: -1
 name: illuminate Integration Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: dbb96c84-e0f0-4ec6-8914-0796203f389b
     type: start
     task:
       id: dbb96c84-e0f0-4ec6-8914-0796203f389b
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -27,8 +28,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 0dc1e0d0-5d5e-423d-8cfe-9e9455858fa1
     type: regular
     task:
@@ -38,13 +39,14 @@ tasks:
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
     separatecontext: false
     view: |-
       {
@@ -56,8 +58,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 73744c8a-0154-460f-8e45-354e182e2694
     type: regular
     task:
@@ -67,10 +69,11 @@ tasks:
       script: '|||domain'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       domain:
         simple: abc.com
@@ -85,8 +88,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 374956c8-5caa-4968-826a-f032ce5fb07d
     type: condition
     task:
@@ -95,13 +98,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "4"
+      'yes':
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -110,7 +114,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2043650"
+              simple: '2043650'
     view: |-
       {
         "position": {
@@ -121,8 +125,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: adc8b837-0f76-43b1-868f-89a7dfcbe403
     type: regular
     task:
@@ -132,10 +136,11 @@ tasks:
       script: '|||email'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       email:
         simple: 001toxic@gmail.com
@@ -150,8 +155,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 8376549e-07b6-459b-853b-92372dcad84e
     type: condition
     task:
@@ -160,13 +165,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "6"
+      'yes':
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -175,7 +181,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1637756"
+              simple: '1637756'
     view: |-
       {
         "position": {
@@ -186,8 +192,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: a6e3a086-3ee3-45e2-8da2-0390574f9c23
     type: regular
     task:
@@ -197,10 +203,11 @@ tasks:
       script: '|||ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       ip:
         simple: 0.154.17.105
@@ -215,8 +222,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 6e1c7992-2c20-40df-8f72-28de3c37a74e
     type: condition
     task:
@@ -225,13 +232,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "8"
+      'yes':
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -240,7 +248,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "51469"
+              simple: '51469'
     view: |-
       {
         "position": {
@@ -251,8 +259,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 3271f89b-f0a4-41c1-8601-315c12e010ac
     type: regular
     task:
@@ -262,13 +270,14 @@ tasks:
       script: '|||file'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       file:
-        simple: "00000000000000000000000000000000"
+        simple: '00000000000000000000000000000000'
     separatecontext: false
     view: |-
       {
@@ -280,8 +289,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 89b2d3c5-2baf-4719-89dc-9f9efd820ec0
     type: condition
     task:
@@ -290,13 +299,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "10"
+      'yes':
+      - '10'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -305,7 +315,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1527155"
+              simple: '1527155'
     view: |-
       {
         "position": {
@@ -316,8 +326,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: d9327b78-64e3-41d9-8697-16ad884b8283
     type: regular
     task:
@@ -327,10 +337,11 @@ tasks:
       script: '|||illuminate-enrich-string'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       string:
         simple: ??
@@ -345,8 +356,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: a126bbf4-ebe8-4f4e-8dbe-3cfb8c42beef
     type: condition
     task:
@@ -355,13 +366,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "12"
+      'yes':
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -370,7 +382,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "90548"
+              simple: '90548'
     view: |-
       {
         "position": {
@@ -381,8 +393,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: d442863c-60f9-410e-8359-f0c7c5339c79
     type: regular
     task:
@@ -392,10 +404,11 @@ tasks:
       script: '|||illuminate-enrich-ipv6'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       ip:
         simple: '16::'
@@ -410,8 +423,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 59c6a4b2-8add-42c3-8eb6-991b305c9c9d
     type: condition
     task:
@@ -420,13 +433,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "14"
+      'yes':
+      - '14'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -435,7 +449,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2623838"
+              simple: '2623838'
     view: |-
       {
         "position": {
@@ -446,8 +460,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 46d89ec3-2317-43ee-8ce8-364b6ead0310
     type: regular
     task:
@@ -457,10 +471,11 @@ tasks:
       script: '|||illuminate-enrich-mutex'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       mutex:
         simple: ??
@@ -475,8 +490,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: ad4d067a-c2e9-46df-83d3-e87489f41c50
     type: condition
     task:
@@ -485,13 +500,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "16"
+      'yes':
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -500,7 +516,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "95267"
+              simple: '95267'
     view: |-
       {
         "position": {
@@ -511,8 +527,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 7dacb1e3-205b-47b7-8ac3-8b2f43dc3031
     type: regular
     task:
@@ -522,10 +538,11 @@ tasks:
       script: '|||illuminate-enrich-http-request'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       http-request:
         simple: /~
@@ -540,8 +557,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: d9536545-d430-4fef-8a2a-57683947fce2
     type: condition
     task:
@@ -550,13 +567,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "18"
+      'yes':
+      - '18'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -565,7 +583,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2885382"
+              simple: '2885382'
     view: |-
       {
         "position": {
@@ -576,8 +594,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 571b2372-b82d-4d02-8bbc-69fe2fb44d1e
     type: regular
     task:
@@ -587,10 +605,11 @@ tasks:
       script: '|||url'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       url:
         simple: 104.218.120.128/check.aspx
@@ -605,8 +624,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 301d0c48-c495-432e-8236-58df2af10e89
     type: condition
     task:
@@ -615,13 +634,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "20"
+      'yes':
+      - '20'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -630,7 +650,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2699554"
+              simple: '2699554'
     view: |-
       {
         "position": {
@@ -641,8 +661,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 67460ec1-7dec-4657-84ac-762d17219906
     type: title
     task:
@@ -651,7 +671,8 @@ tasks:
       name: Test Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -677,3 +698,5 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
+fromversion: 1.8.7
