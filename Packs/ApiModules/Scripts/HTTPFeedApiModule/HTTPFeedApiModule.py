@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import urllib3
 import requests
 import traceback
+from dateutil.parser import parse
 from typing import Optional, Pattern, List
 
 # disable insecure warnings
@@ -227,6 +228,11 @@ class Client(BaseClient):
         return created_custom_fields
 
 
+def datestring_to_millisecond_timestamp(datestring):
+    date = parse(str(datestring))
+    return int(date.timestamp() * 1000)
+
+
 def get_indicator_fields(line, url, client: Client):
     """
     Extract indicators according to the feed type
@@ -301,6 +307,13 @@ def fetch_indicators_command(client, itype, **kwargs):
             for line in lines:
                 attributes, value = get_indicator_fields(line, url, client)
                 if value:
+                    if 'lastseenbyfeed' in attributes.keys():
+                        attributes['lastseenbyfeed'] = datestring_to_millisecond_timestamp(attributes['lastseenbyfeed'])
+
+                    if 'firstseenbyfeed' in attributes.keys():
+                        attributes['firstseenbyfeed'] = datestring_to_millisecond_timestamp(
+                            attributes['firstseenbyfeed'])
+
                     indicator_data = {
                         "value": value,
                         "type": client.feed_url_to_config.get(url, {}).get('indicator_type', itype),
