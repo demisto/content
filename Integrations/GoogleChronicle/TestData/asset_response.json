@@ -1,0 +1,21 @@
+{
+  "assets": [
+    {
+      "asset": {
+        "assetIpAddress": "10.0.9.117"
+      },
+      "firstSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-22T07:08:39.930255Z"
+      },
+      "lastSeenArtifactInfo": {
+        "artifactIndicator": {
+          "domainName": "www.google.com"
+        },
+        "seenTime": "2020-01-24T07:51:25.083668Z"
+      }
+    }
+  ]
+}

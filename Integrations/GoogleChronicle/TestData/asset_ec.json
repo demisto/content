@@ -1,0 +1,15 @@
+{
+    "Host": [
+      {
+        "IP": "10.0.9.117"
+      }
+    ],
+    "GoogleChronicleBackstory.Asset(val.IpAddress && val.IpAddress == obj.IpAddress)": [
+    {
+      "IpAddress": "10.0.9.117",
+      "FirstAccessedTime": "2020-01-22T07:08:39.930255Z",
+      "LastAccessedTime": "2020-01-24T07:51:25.083668Z",
+      "AccessedDomain": "www.google.com"
+    }
+  ]
+}
