@@ -25,7 +25,7 @@
     "useAsKpi": false,
     "locked": false,
     "system": false,
-    "content": false,
+    "content": true,
     "group": 2,
     "mergeStrategy": "",
     "hidden": false,
