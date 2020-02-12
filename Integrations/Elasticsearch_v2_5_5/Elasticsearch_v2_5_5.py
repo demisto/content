@@ -544,8 +544,8 @@ def fetch_indicators_command():
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
     if ioc_enrch_lst:
-        ioc_enrch_lst_of_lsts = create_enrichment_batches(ioc_enrch_lst)
-        for enrch_batch in ioc_enrch_lst_of_lsts:
+        ioc_enrch_batches = create_enrichment_batches(ioc_enrch_lst)
+        for enrch_batch in ioc_enrch_batches:
             # ensure batch sizes don't exceed 2000
             for b in batch(enrch_batch, batch_size=2000):
                 demisto.createIndicators(b)
@@ -576,13 +576,13 @@ def extract_indicators_from_insight_hit(hit):
         module_to_feedmap = ioc.get(MODULE_TO_FEEDMAP_KEY)
         updated_module_to_feedmap = {}
         if module_to_feedmap:
-            ioc_enirhcment_obj = []
+            ioc_enrichment_obj = []
             for key, val in module_to_feedmap.items():
                 if val.get('isEnrichment'):
-                    ioc_enirhcment_obj.append(val)
+                    ioc_enrichment_obj.append(val)
                 else:
                     updated_module_to_feedmap[key] = val
-            ioc_enirhcment_list.append(ioc_enirhcment_obj)
+            ioc_enirhcment_list.append(ioc_enrichment_obj)
             ioc[MODULE_TO_FEEDMAP_KEY] = updated_module_to_feedmap
     return ioc_lst, ioc_enirhcment_list
 
