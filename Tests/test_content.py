@@ -910,7 +910,7 @@ def main():
     # -------------
     if 'master' in tests_settings.serverVersion.lower():
         print('[{}] sleeping for 30 secs'.format(datetime.now()))
-        sleep(20)
+        sleep(30)
     # -------------
     manage_tests(tests_settings)
 
