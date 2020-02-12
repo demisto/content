@@ -518,7 +518,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 def extract_filtered_tests(is_nightly):
     if is_nightly:
         # TODO: verify this response
-        return [], False, False
+        return [], False, True
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
@@ -630,7 +630,7 @@ def get_and_print_server_numeric_version(tests_settings):
         image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
         if len(image_data) != 1:
             print('Did not get one image data for server version, got {}'.format(image_data))
-            return '0.0.0'
+            return '99.99.98'  # latest
         else:
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
             if server_numeric_version:
@@ -909,10 +909,8 @@ def main():
     # should be removed after solving: https://github.com/demisto/etc/issues/21383
     # -------------
     if 'master' in tests_settings.serverVersion.lower():
-        sleep(100)
-        print('slept for 100 secs')
-        sleep(100)
-        print('slept for 100 secs')
+        print('[{}] sleeping for 30 secs'.format(datetime.now()))
+        sleep(30)
     # -------------
     manage_tests(tests_settings)
 

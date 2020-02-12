@@ -460,7 +460,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         prints_manager.add_print_job(incident_id_not_found_msg, print_error, thread_index)  # disable-secrets-detection
         return False, -1
 
-    prints_manager.add_print_job('Investigation URL: {}/WorkPlan/{}'.format(server_url, investigation_id), print,
+    prints_manager.add_print_job('Investigation URL: {}/#/WorkPlan/{}'.format(server_url, investigation_id), print,
                                  thread_index)
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
