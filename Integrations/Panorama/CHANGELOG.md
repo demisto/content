@@ -1,8 +1,8 @@
 ## [Unreleased]
-  - Fixed an issue in ***panorama-get-service*** where the *name* argument should be mandatory.
-  - Fixed an issue in ***panorama-create-rule*** and ***panorama-create-block-rule*** commands.
+  - Fixed an issue in the ***panorama-get-service*** where the *name* argument should be mandatory.
+  - Fixed an issue in the ***panorama-create-rule*** and ***panorama-create-block-rule*** commands.
   - Added the *category* argument to the ***panorama-create-rule*** command.
-  - Added 9 new commands:
+  - Added 9 commands.
     - ***panorama-download-latest-content-update***
     - ***panorama-content-update-download-status***
     - ***panorama-install-latest-content-update***
