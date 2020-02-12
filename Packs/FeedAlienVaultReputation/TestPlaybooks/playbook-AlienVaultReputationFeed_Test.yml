@@ -1,16 +1,16 @@
 elasticcommonfields: {}
-id: BambenekConsultingFeed_Test
+id: AlienVaultReputationFeed_Test
 version: -1
-name: BambenekConsultingFeed_Test
+name: AlienVaultReputationFeed_Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a05596ac-e926-4838-817d-0fad7b970d56
+    taskid: 10dd718c-c314-423e-89ca-c0fca06a2e93
     type: start
     task:
       elasticcommonfields: {}
-      id: a05596ac-e926-4838-817d-0fad7b970d56
+      id: 10dd718c-c314-423e-89ca-c0fca06a2e93
       version: -1
       name: ""
       iscommand: false
@@ -33,24 +33,24 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: eb5eed5e-bc62-4059-83ed-143170976b9f
+    taskid: 4a51a852-0721-46ae-84f8-716a34f88a45
     type: regular
     task:
       elasticcommonfields: {}
-      id: eb5eed5e-bc62-4059-83ed-143170976b9f
+      id: 4a51a852-0721-46ae-84f8-716a34f88a45
       version: -1
       name: Get Indicators
       description: Gets the feed indicators.
-      script: Bambenek Consulting Feed|||bambenek-get-indicators
+      script: AlienVault Reputation Feed|||alienvault-get-indicators
       type: regular
       iscommand: true
-      brand: Bambenek Consulting Feed
+      brand: AlienVault Reputation Feed
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
       extend-context:
-        simple: BambenekFeed.value=value::BambenekFeed.type=type
+        simple: AlienVaultFeed.value=value::AlienVaultFeed.type=type
       indicator_type:
         simple: IP
       limit:
@@ -70,11 +70,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 9ab9488a-04c9-4f37-8aff-d0f2ba4a5025
+    taskid: ef01415d-6ac6-4e16-8ab8-4e413645d416
     type: title
     task:
       elasticcommonfields: {}
-      id: 9ab9488a-04c9-4f37-8aff-d0f2ba4a5025
+      id: ef01415d-6ac6-4e16-8ab8-4e413645d416
       version: -1
       name: Done
       description: Done
@@ -96,11 +96,11 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: f8dd1620-511c-49dd-8d32-41d1ebd171b6
+    taskid: 6e57e6a8-83a8-48f1-8136-19044c339538
     type: regular
     task:
       elasticcommonfields: {}
-      id: f8dd1620-511c-49dd-8d32-41d1ebd171b6
+      id: 6e57e6a8-83a8-48f1-8136-19044c339538
       version: -1
       name: Delete Context
       description: Delete field from context.
@@ -133,13 +133,13 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: d0826027-b1d7-48b4-8d70-ef7e15672cb4
+    taskid: e3ef64ee-d2da-42b7-820a-15805a5519a0
     type: condition
     task:
       elasticcommonfields: {}
-      id: d0826027-b1d7-48b4-8d70-ef7e15672cb4
+      id: e3ef64ee-d2da-42b7-820a-15805a5519a0
       version: -1
-      name: Assert Outputs
+      name: Assert Output
       type: condition
       iscommand: false
       brand: ""
@@ -153,12 +153,12 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: BambenekFeed.value
+              simple: AlienVaultFeed.type
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: BambenekFeed.type
+              simple: AlienVaultFeed.value
             iscontext: true
     view: |-
       {
@@ -186,5 +186,5 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: BambenekConsultingFeed_Test
+sourceplaybookid: AlienVaultReputationFeed_Test
 fromversion: 5.5.0
