@@ -1,6 +1,10 @@
 ## [Unreleased]
-- Improved the description of the *expiration* argument
-- *blacklist_ip*, *blacklist_url*, *blacklist_domain* and *blacklist_hash* are now commands arguments rather then integration parameters.
+  - Improved the description of the *expiration* argument
+  - The following were removed as integration parameters and are now command arguments.
+    - *blacklist_ip*
+    - *blacklist_url*
+    - *blacklist_domain*
+    - *blacklist_hash* 
 
 ## [19.12.1] - 2019-12-25
 -
