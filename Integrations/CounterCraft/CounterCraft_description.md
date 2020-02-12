@@ -1,11 +1,13 @@
 ## Prerequisites
 ---
 
-You need to obtain the following Deception Director information.
+To configure an instance of Deception Director, you need to obtain the following information.
 
 * Server URL
 * API Key
 * Secret Key
 
-In order to obtain the API Key and the Secret Key you need to go to the user settings in the Deception Director
-and copy both or generate a new pair if they are not already generated.
+## Get your API Key and Secret Key
+1. In Deception Director, go to user settings.
+2. Either copy or generate a new API Key and Secret Key.
+3. Make note of both keys so you can enter them as parameter values when configuring the integration instance.
