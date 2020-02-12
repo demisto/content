@@ -7,9 +7,7 @@ import urllib3
 from akamai.edgegrid import EdgeGridAuth
 
 # Local imports
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 """GLOBALS/PARAMS
 
