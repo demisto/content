@@ -15,7 +15,7 @@
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
-	"required": false,
+	"required": true,
 	"script": "",
 	"fieldCalcScript": "",
 	"neverSetAsRequired": false,
@@ -28,9 +28,11 @@
 	"content": true,
 	"group": 0,
 	"hidden": false,
-	"associatedTypes": null,
+	"associatedTypes": [
+        "FirewallUpgrade"
+    ],
 	"systemAssociatedTypes": null,
-	"associatedToAll": true,
+	"associatedToAll": false,
 	"unmapped": false,
 	"unsearchable": false,
 	"caseInsensitive": true,
