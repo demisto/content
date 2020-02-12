@@ -11,7 +11,7 @@ def main():
     })
 
     params['fields'] = json.dumps({
-        "creationdate": {
+        "firstseenbyfeed": {
             "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
             "transform": "\\1"
         },
@@ -23,7 +23,7 @@ def main():
 
     params['ignore_regex'] = '#'
     params['custom_fields_mapping'] = {
-        "creationdate": "creationdate",
+        "firstseenbyfeed": "firstseenbyfeed",
         "malwarefamily": "malwarefamily"
     }
     params['url'] = "https://feodotracker.abuse.ch/downloads/malware_hashes.csv"
