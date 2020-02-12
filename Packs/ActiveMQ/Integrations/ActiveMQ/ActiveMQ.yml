@@ -3,7 +3,7 @@ commonfields:
   id: ActiveMQ
   version: -1
 configuration:
-- display: Server IP (e.g. 192.168.0.1)
+- display: Server IP Address (e.g., 192.168.0.1)
   name: hostname
   required: true
   type: 0
@@ -32,7 +32,7 @@ configuration:
   required: false
 - display: |-
     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                           Authenticate via Certificate
+    ‎                                           Certificate Authentication
     Client certificate (.pem)
   name: client_cert
   required: false
@@ -76,53 +76,52 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The message destination (such as a message queue - for example
-        ‘/queue/test’ - or a message topic)
+      description: ' The message destination. For example, a message queue in the format: "/queue/test", or a message topic. '
       isArray: false
       name: destination
       required: true
       secret: false
     - default: false
-      description: The content of the message to be sent
+      description: The content of the message to send.
       isArray: false
       name: body
       required: true
       secret: false
     - default: false
-      description: 'Set custom headers Format {XCorrelationId: uid, nosotros generamos
+      description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos
         XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest,
-        XVersion : "3.0", persitent : True}'
+        XVersion : "3.0", persistent : True}'
       isArray: false
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Send message
+    description: Sends a message to the specified destination.
     execution: false
     name: activemq-send
   - arguments:
     - default: false
       defaultValue: '1'
-      description: The identifier to uniquely identify the subscription
+      description: The subscription unique identifier.
       isArray: false
       name: subscription-id
       required: true
       secret: false
     - default: false
-      description: The topic to subscribe to
+      description: The topic to subscribe to.
       isArray: false
       name: topic-name
       required: false
       secret: false
     - default: false
-      description: The queue to subscribe to
+      description: The queue to subscribe to.
       isArray: false
       name: queue-name
       required: false
       secret: false
     deprecated: false
-    description: Subscribe and read messages from topic or queue. Must provide queue-name
-      or topic-name. Can't provide both.
+    description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name
+      or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
   dockerimage: demisto/stomp:latest
