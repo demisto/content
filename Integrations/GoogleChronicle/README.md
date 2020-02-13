@@ -17,16 +17,16 @@ Use the Google Chronicle Backstory integration to retrieve Asset alerts or IOC D
     * __Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).__
     * __Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.__
     * __Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.__
-    * __Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable for reputation commands only.__
-    * __Specify the "severity" of indicator that should be considered as "suspicious" irrespective of the category. If you wish to consider all indicators with Medium severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable for reputation commands only.__
-    * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable for reputation commands only.__
-    * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable for reputation commands only.__
-    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable for reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
-    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable for reputation commands only. Refer the confidence score level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
+    * __Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.__
+    * __Specify the "severity" of indicator that should be considered as "suspicious" irrespective of the category. If you wish to consider all indicators with Medium severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.__
+    * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.__
+    * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.__
+    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
+    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the confidence score level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
     * __Fetches incidents__: Enable this option to create Incidents in Demisto based on Backstory IOC Domain matches or Asset Alerts.
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __Backstory Alert Type (Select the type of data to consider for fetch incidents)__: Select one of the type of data to be considered for Incidents creation. Available options are 'IOC Domain matches' and 'Assets with Alerts'. To fetch both type of data, make sure to create 2 separate instances with each option selected.
+    * __Backstory Alert Type (Select the type of data to consider for fetch incidents)__: Select one of the types of data to be considered for incidents creation. Available options are 'IOC Domain matches' and 'Assets with Alerts'. To fetch both types of data, make sure to create 2 separate instances with each option selected.
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
@@ -85,7 +85,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| preset_time_range | Fetches IOC Domain matches in specified time interval. If configured,  start_time will not take effect. | Optional | 
+| preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured,  start_time will not take effect. | Optional | 
 | start_time | The value of the start time for your request. The format of date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers UTC time corresponding to 3 days earlier than current time. | Optional | 
 | page_size | Specify the maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
 
@@ -99,9 +99,9 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 | GoogleChronicleBackstory.Iocs.IocIngestTime | Date | Time(UTC) the IOC was first seen by Chronicle. | 
 | GoogleChronicleBackstory.Iocs.FirstAccessedTime | Date | Time(UTC) the artifact was first seen within your enterprise. | 
 | GoogleChronicleBackstory.Iocs.LastAccessedTime | Date | Time(UTC) the artifact was most recently seen within your enterprise. | 
-| GoogleChronicleBackstory.Iocs.Sources.Category | String | Source Category represent behaviour of the artifact. | 
+| GoogleChronicleBackstory.Iocs.Sources.Category | String | Source Category represents behaviour of the artifact. | 
 | GoogleChronicleBackstory.Iocs.Sources.IntRawConfidenceScore | Number | The numeric confidence score of IOC reported by the source. | 
-| GoogleChronicleBackstory.Iocs.Sources.NormalizedConfidenceScore | String | The normalized confidence score reported by the source. | 
+| GoogleChronicleBackstory.Iocs.Sources.NormalizedConfidenceScore | String | The normalized confidence of IOC score reported by the source. | 
 | GoogleChronicleBackstory.Iocs.Sources.RawSeverity | String | The severity of IOC as reported by the source. | 
 | GoogleChronicleBackstory.Iocs.Sources.Source | String | The source which reported the IOC. | 
 
@@ -251,7 +251,7 @@ Checks the reputation of an IP Address.
 | GoogleChronicleBackstory.IP.Sources.Address.IpAddress | String | The IP address of the artifact. | 
 | GoogleChronicleBackstory.IP.Sources.Address.Domain | String | The Domain name of the artifact. | 
 | GoogleChronicleBackstory.IP.Sources.Address.Port | Number | The port number of the artifact. | 
-| GoogleChronicleBackstory.IP.Sources.Category | String | Source Category represent behaviour of the artifact. | 
+| GoogleChronicleBackstory.IP.Sources.Category | String | Source Category represents behaviour of the artifact. | 
 | GoogleChronicleBackstory.IP.Sources.ConfidenceScore | Number | The score indicates more or less reason to believe that the assigned category is accurate and appropriate. | 
 | GoogleChronicleBackstory.IP.Sources.FirstAccessedTime | Date | Time the IOC was first accessed within the enterprise. | 
 | GoogleChronicleBackstory.IP.Sources.LastAccessedTime | Date | Time the IOC was most recently seen within your enterprise. | 
@@ -351,7 +351,7 @@ Checks the reputation of the domain.
 | GoogleChronicleBackstory.Domain.Sources.Address.IpAddress | String | The IP Address of the artifact. | 
 | GoogleChronicleBackstory.Domain.Sources.Address.Domain | String | The Domain name of the artifact. | 
 | GoogleChronicleBackstory.Domain.Sources.Address.Port | Number | The port number of the artifact. | 
-| GoogleChronicleBackstory.Domain.Sources.Category | String | Source Category represent behaviour of the artifact. | 
+| GoogleChronicleBackstory.Domain.Sources.Category | String | Source Category represents behaviour of the artifact. | 
 | GoogleChronicleBackstory.Domain.Sources.ConfidenceScore | Number | The score indicates more or less reason to believe that the assigned category is accurate and appropriate. | 
 | GoogleChronicleBackstory.Domain.Sources.FirstAccessedTime | Date | Time the IOC was first accessed within the enterprise. | 
 | GoogleChronicleBackstory.Domain.Sources.LastAccessedTime | Date | Time the IOC was most recently seen within your enterprise. | 
@@ -415,7 +415,7 @@ Use this command to submit an artifact indicator and return any threat intellige
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| artifact_value | The artifact indicator value. The supported artifact type are IP, domain, MD5, SHA1, SHA256. | Required | 
+| artifact_value | The artifact indicator value. The supported artifact types are IP, domain, MD5, SHA1, SHA256. | Required | 
 
 
 ##### Context Output
@@ -428,7 +428,7 @@ Use this command to submit an artifact indicator and return any threat intellige
 | GoogleChronicleBackstory.IocDetails.Sources.Address.IpAddress | String | The IP address of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Address.Domain | String | The domain name of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Address.Port | Number | The port number of the artifact. | 
-| GoogleChronicleBackstory.IocDetails.Sources.Category | String | Source Category represent behaviour of the artifact. | 
+| GoogleChronicleBackstory.IocDetails.Sources.Category | String | Source Category represents behaviour of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.Sources.ConfidenceScore | Number | The score indicates more or less reason to believe that the assigned category is accurate and appropriate. | 
 | GoogleChronicleBackstory.IocDetails.Sources.FirstAccessedTime | Date | Time the IOC was first accessed within the enterprise. | 
 | GoogleChronicleBackstory.IocDetails.Sources.LastAccessedTime | Date | Time the IOC was most recently seen within your enterprise. | 
@@ -502,9 +502,9 @@ List all the alerts tracked within your enterprise for the specified time range.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| preset_time_range | Fetch alerts for specified time range. If preset_time_range is configured, start_time & end_time will not take effect. | Optional | 
-| start_time | The value of the start time for your request. The format of Date should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers UTC time corresponding to 3 days earlier than current time. | Optional | 
-| end_time | The value of the end time for your request. The format of Date should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers current UTC time. | Optional | 
+| preset_time_range | Fetch alerts for the specified time range. If preset_time_range is configured, start_time & end_time will not take effect. | Optional | 
+| start_time | The value of the start time for your request. The format of the Date should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers UTC time corresponding to 3 days earlier than the current time. | Optional | 
+| end_time | The value of the end time for your request. The format of the Date should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers the current UTC time. | Optional | 
 | page_size | Specify the maximum number of alerts to return. You can specify between 1 and 100,000. The default is 10,000.  | Optional | 
 | severity | Filter the alerts based on severity selected. If not supplied, all alerts are fetched. | Optional | 
 

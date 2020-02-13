@@ -43,7 +43,7 @@ configuration:
 - display: Specify the "severity" of indicator that should be considered as "malicious"
     irrespective of the category.  If you wish to consider all indicators with High
     severity as Malicious, set this parameter to 'High'. Allowed values are 'High',
-    'Medium' and 'Low'. This configuration is applicable for reputation commands only.
+    'Medium' and 'Low'. This configuration is applicable to reputation commands only.
   name: override_severity_malicious
   options:
   - high
@@ -54,7 +54,7 @@ configuration:
 - display: Specify the "severity" of indicator that should be considered as "suspicious"
     irrespective of the category. If you wish to consider all indicators with Medium
     severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High',
-    'Medium' and 'Low'. This configuration is applicable for reputation commands only.
+    'Medium' and 'Low'. This configuration is applicable to reputation commands only.
   name: override_severity_suspicious
   options:
   - high
@@ -65,21 +65,21 @@ configuration:
 - display: Specify the numeric value of "confidence score". If the indicator's confidence
     score is equal or above the configured threshold, it would be considered as "malicious".
     The value provided should be greater than the suspicious threshold. This configuration
-    is applicable for reputation commands only.
+    is applicable to reputation commands only.
   name: override_confidence_score_malicious_threshold
   required: false
   type: 0
 - display: Specify the numeric value of "confidence score". If the indicator's confidence
     score is equal or above the configured threshold, it would be considered as "suspicious".
     The value provided should be smaller than the malicious threshold. This configuration
-    is applicable for reputation commands only.
+    is applicable to reputation commands only.
   name: override_confidence_score_suspicious_threshold
   required: false
   type: 0
 - display: Select the confidence score level. If the indicator's confidence score
     level is equal or above the configured level, it would be considered as "malicious".
     The confidence level configured should have higher precedence than the suspicious
-    level. This configuration is applicable for reputation commands only. Refer the
+    level. This configuration is applicable to reputation commands only. Refer the
     "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM
     < HIGH.
   name: override_confidence_level_malicious
@@ -94,7 +94,7 @@ configuration:
 - display: Select the confidence score level. If the indicator's confidence score
     level is equal or above the configured level, it would be considered as "suspicious".
     The confidence level configured should have lesser precedence than the malicious
-    level. This configuration is applicable for reputation commands only. Refer the
+    level. This configuration is applicable to reputation commands only. Refer the
     "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM
     < HIGH.
   name: override_confidence_level_suspicious
@@ -140,7 +140,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Fetches IOC Domain matches in specified time interval. If configured,  start_time
+      description: Fetches IOC Domain matches in the specified time interval. If configured,  start_time
         will not take effect.
       isArray: false
       name: preset_time_range
@@ -191,13 +191,13 @@ script:
       description: Time(UTC) the artifact was most recently seen within your enterprise.
       type: Date
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.Category
-      description: Source Category represent behaviour of the artifact.
+      description: Source Category represents behaviour of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.IntRawConfidenceScore
       description: The numeric confidence score of IOC reported by the source.
       type: Number
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.NormalizedConfidenceScore
-      description: The normalized confidence score reported by the source.
+      description: The normalized confidence score of IOC reported by the source.
       type: String
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.RawSeverity
       description: The severity of IOC as reported by the source.
@@ -235,7 +235,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request. The format of Date
+      description: The value of the end time for your request. The format of the Date
         should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
         product considers current UTC time.
       isArray: false
@@ -346,7 +346,7 @@ script:
       description: The port number of the artifact.
       type: Number
     - contextPath: GoogleChronicleBackstory.IP.Sources.Category
-      description: Source Category represent behaviour of the artifact.
+      description: Source Category represents behaviour of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.Sources.ConfidenceScore
       description: The score indicates more or less reason to believe that the assigned
@@ -407,7 +407,7 @@ script:
       description: The port number of the artifact.
       type: Number
     - contextPath: GoogleChronicleBackstory.Domain.Sources.Category
-      description: Source Category represent behaviour of the artifact.
+      description: Source Category represents behaviour of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.Sources.ConfidenceScore
       description: The score indicates more or less reason to believe that the assigned
@@ -424,7 +424,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The artifact indicator value. The supported artifact type are IP,
+      description: The artifact indicator value. The supported artifact types are IP,
         domain, MD5, SHA1, SHA256.
       isArray: false
       name: artifact_value
@@ -457,7 +457,7 @@ script:
       description: The port number of the artifact.
       type: Number
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.Category
-      description: Source Category represent behaviour of the artifact.
+      description: Source Category represents behaviour of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.ConfidenceScore
       description: The score indicates more or less reason to believe that the assigned
@@ -475,7 +475,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Fetch alerts for specified time range. If preset_time_range is
+      description: Fetch alerts for the specified time range. If preset_time_range is
         configured, start_time & end_time will not take effect.
       isArray: false
       name: preset_time_range
@@ -487,7 +487,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request. The format of Date
+      description: The value of the start time for your request. The format of the Date
         should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
         product considers UTC time corresponding to 3 days earlier than current time.
       isArray: false
@@ -495,7 +495,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request. The format of Date
+      description: The value of the end time for your request. The format of the Date
         should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
         product considers current UTC time.
       isArray: false
