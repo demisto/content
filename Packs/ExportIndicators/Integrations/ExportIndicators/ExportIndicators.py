@@ -172,6 +172,13 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
 
 
 def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
+    """
+    Checks whether the authentication is valid.
+    :param headers: The headers of the http request
+    :param username: The integration's username
+    :param password: The integration's password
+    :return: Boolean which indicates whether the authentication is valid or not
+    """
     credentials: str = headers.get('Authorization', '')
     if not credentials or 'Basic ' not in credentials:
         return False

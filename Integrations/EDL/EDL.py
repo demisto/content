@@ -144,6 +144,13 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
 
 
 def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
+    """
+    Checks whether the authentication is valid.
+    :param headers: The headers of the http request
+    :param username: The integration's username
+    :param password: The integration's password
+    :return: Boolean which indicates whether the authentication is valid or not
+    """
     credentials: str = headers.get('Authorization', '')
     if not credentials or 'Basic ' not in credentials:
         return False
@@ -173,7 +180,7 @@ def route_edl_values() -> Response:
     if username and password:
         headers: dict = cast(Dict[Any, Any], request.headers)
         if not validate_basic_authentication(headers, username, password):
-            err_msg: str = 'Basic authentication failed. Please make sure you are using the right credentials.'
+            err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
             demisto.debug(err_msg)
             return Response(err_msg, status=401)
 
