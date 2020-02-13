@@ -352,7 +352,7 @@ def parse_indicators_list(iocs_list):
     return iocs_context
 
 
-def build_model_data(model, name, is_public, tlp, tags, intelligence, description):
+def build_model_data(model, name, is_public, tlp, tags, intelligence, description, import_sessions, circles):
     """
         Builds data dictionary that is used in Threat Model creation/update request.
     """
@@ -360,13 +360,21 @@ def build_model_data(model, name, is_public, tlp, tags, intelligence, descriptio
         description_field_name = 'body'
     else:
         description_field_name = 'description'
-    data = {k: v for (k, v) in (('name', name), ('is_public', is_public), ('tlp', tlp),
+    data = {k: v for (k, v) in (('name', name), ('tlp', tlp),
                                 (description_field_name, description)) if v}
+    data['is_public'] = argToBoolean(is_public)
+
     if tags:
         data['tags'] = tags if isinstance(tags, list) else [t.strip() for t in tags.split(',')]
     if intelligence:
         data['intelligence'] = intelligence if isinstance(intelligence, list) else [i.strip() for i in
                                                                                     intelligence.split(',')]
+    if import_sessions:
+        data['import_sessions'] = import_sessions if isinstance(import_sessions, list) else [i.strip() for i in
+                                                                                             import_sessions.split(',')]
+    if circles:
+        data['circles'] = import_sessions if isinstance(circles, list) else [i.strip() for i in
+                                                                             circles.split(',')]
     return data
 
 
@@ -556,7 +564,7 @@ def get_passive_dns(value, type="ip", limit=50):
 
 def import_ioc_with_approval(import_type, import_value, confidence="50", classification="Private",
                              threat_type="exploit", severity="low", ip_mapping=False, domain_mapping=False,
-                             url_mapping=False, email_mapping=False, md5_mapping=False):
+                             url_mapping=False, email_mapping=False, md5_mapping=False, tags=[], trustedcircles=None):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
@@ -567,6 +575,12 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
     url_mapping = demisto.args().get('url_mapping', 'no') == 'yes'
     email_mapping = demisto.args().get('email_mapping', 'no') == 'yes'
     md5_mapping = demisto.args().get('md5_mapping', 'no') == 'yes'
+
+    if isinstance(tags, str):
+        tags = argToList(tags)
+
+    if trustedcircles is not None and len(trustedcircles) == 0:
+        trustedcircles = None
 
     files = None
     uploaded_file = None
@@ -579,7 +593,9 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         'email_mapping': email_mapping,
         'md5_mapping': md5_mapping,
         'threat_type': threat_type,
-        'severity': severity
+        'severity': severity,
+        'tags': tags,
+        'trustedcircles': trustedcircles
     }
 
     if import_type == 'file-id':
@@ -680,11 +696,11 @@ def get_iocs_by_model(model, id, limit="20"):
     return_outputs(human_readable, ec, iocs_list)
 
 
-def create_model(model, name, is_public="false", tlp=None, tags=None, intelligence=None, description=None):
+def create_model(model, name, is_public="false", tlp=None, tags=None, intelligence=None, description=None, import_sessions=None, circles=None):
     """
         Creates Threat Model with basic parameters.
     """
-    data = build_model_data(model, name, is_public, tlp, tags, intelligence, description)
+    data = build_model_data(model, name, is_public, tlp, tags, intelligence, description, import_sessions, circles)
     model_id = http_request("POST", F"v1/{model}/", data=json.dumps(data), params=CREDENTIALS).get('id', None)
 
     if model_id:
@@ -694,12 +710,12 @@ def create_model(model, name, is_public="false", tlp=None, tags=None, intelligen
 
 
 def update_model(model, model_id, name=None, is_public="false", tlp=None, tags=None, intelligence=None,
-                 description=None):
+                 description=None, import_sessions=None, circles=None):
     """
         Updates a ThreatStream model with parameters. In case one or more optional parameters are
         defined, the previous data is overridden.
     """
-    data = build_model_data(model, name, is_public, tlp, tags, intelligence, description)
+    data = build_model_data(model, name, is_public, tlp, tags, intelligence, description, import_sessions, circles)
     http_request("PATCH", F"v1/{model}/{model_id}/", data=json.dumps(data), params=CREDENTIALS)
     get_iocs_by_model(model, model_id, limit="50")
 
@@ -843,6 +859,43 @@ def get_indicators(**kwargs):
     return_outputs(tableToMarkdown("The indicators results", iocs_context), ec, iocs_list)
 
 
+def approve_import(import_id):
+    #
+    # This function will check if an Import Job is Ready For Review
+    #
+    # NOTE: Status will be checked 5 times before giving up, with a 5 second wait between each loop
+
+    #api_url = API_HOST + "/api/v1/importsession/" + str(import_id)
+
+    cur_index = 1
+    max_iters = 5               # the maximum number of tries before giving up
+    wait_seconds = 5            # the number of seconds to wait between loops
+
+    while (cur_index <= max_iters):
+
+        # make the call to the API
+        #res = rest_client.get(url=api_url, params=PARAMS)
+        res = http_request("GET", F"v1/importsession/{import_id}", params=CREDENTIALS)
+
+        # review the results
+
+        if str(res.get('status', '')).lower() == 'done':
+            #print ("Import job is ready for review")
+            res = http_request("PATCH", F"v1/importsession/{import_id}/approve_all", params=CREDENTIALS)
+            print("Import job #" + str(import_id) + " was successfully Approved")
+            return "true"
+
+        else:
+            print("Import job not yet ready for review, waiting " + str(wait_seconds) + " seconds before checking again")
+            time.sleep(wait_seconds)
+
+        # increase the loop counter
+        cur_index = cur_index + 1
+
+    # end of loop, if we didn't return 'true' by now then return 'false'
+    return "false"
+
+
 def main():
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -889,6 +942,8 @@ def main():
             get_indicators(**args)
         elif demisto.command() == 'threatstream-add-tag-to-model':
             add_tag_to_model(**args)
+        elif demisto.command() == 'threatstream-approve-import':
+            approve_import(**args)
 
     except Exception as e:
         if isinstance(e, MissingSchema):

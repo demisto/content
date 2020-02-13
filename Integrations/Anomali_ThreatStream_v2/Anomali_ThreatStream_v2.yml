@@ -605,10 +605,22 @@ script:
       - 'no'
       required: false
       secret: false
+    - default: false
+      description: Tags associated with the import session
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Trusted Circle to publish indicators to
+      isArray: false
+      name: trustedcircles
+      required: false
+      secret: false
     deprecated: false
     description: 'Imports indicators (observables) into ThreatStream. Approval of
-      the imported data is required, usingh the ThreatStream UI. The data can be imported
-      using one of three methods: plain-text, file, or URL. Only one argument can
+      the imported data is required, using the ThreatStream UI or using the command threatstream-approve-import.
+      The data can be imported using one of three methods: plain-text, file, or URL. Only one argument can
       be used.'
     execution: false
     name: threatstream-import-indicator-with-approval
@@ -1278,6 +1290,18 @@ script:
       name: description
       required: false
       secret: false
+    - default: false
+      description: Import Session IDs to associate with threat bulletin
+      isArray: false
+      name: import_sessions
+      required: false
+      secret: false
+    - default: false
+      description: Trusted Circle ID
+      isArray: false
+      name: circles
+      required: false
+      secret: false
     deprecated: false
     description: Creates a threat model with the specified parameters.
     execution: false
@@ -1397,6 +1421,18 @@ script:
       description: The description of the threat model.
       isArray: false
       name: description
+      required: false
+      secret: false
+    - default: false
+      description: Import Session IDs to associate with threat bulletin
+      isArray: false
+      name: import_sessions
+      required: false
+      secret: false
+    - default: false
+      description: Trusted Circle ID
+      isArray: false
+      name: circles
       required: false
       secret: false
     deprecated: false
@@ -1573,6 +1609,17 @@ script:
     - contextPath: ThreatStream.URL.Severity
       description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: import_id
+      required: true
+      description: ThreatStream.Import.ImportID retreived from threatstream-import-indicator-with-approval command
+      secret: false
+    deprecated: false
+    execution: false
+    description: Use this command after executing threatstream-import-indicator-with-approval
+    name: threatstream-approve-import
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   longRunning: false

@@ -1,5 +1,8 @@
 ## [Unreleased]
-
+  - Added command ***threatstream-approve-import***
+  - The ***threatstream-import-indicator-with-approval*** command now receives two new arguments ***tags*** ***trustedcircles***
+  - The ***threatstream-create-model*** command now receives two new arguments ***import_sessions*** ***circles***
+  - The ***threatstream-update-model*** command now receives two new arguments ***import_sessions*** ***circles***
 
 ## [19.12.0] - 2019-12-10
   - The ***threatstream-import-indicator-with-approval*** command now works as expected.
