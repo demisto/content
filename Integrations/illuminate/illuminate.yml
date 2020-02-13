@@ -4,7 +4,6 @@ commonfields:
 name: illuminate
 display: illuminate
 category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,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
 description: Enriches Demisto indicators with illuminate REST API indicator data.
 configuration:
 - display: illuminate API Credentials (username/password)
@@ -37,7 +36,6 @@ script:
       required: true
       description: The domain to query information for
       default: true
-      isArray: true
     outputs:
     - contextPath: Domain.Name
       description: The domain name, for example, "google.com".
@@ -87,6 +85,18 @@ script:
     - contextPath: Illuminate.Domain.IpResolution
       description: The resolved IP for this domain
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
     description: Queries the illuminate REST API and enriches the given domain with
       illuminate Indicator data
   - name: email
@@ -95,7 +105,6 @@ script:
       required: true
       description: The email to query information for
       default: true
-      isArray: true
     outputs:
     - contextPath: Email.From
       description: The sender of the email
@@ -142,6 +151,18 @@ script:
     - contextPath: Illuminate.Email.IlluminateLink
       description: The URL of the matched indicator in illuminate
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
     description: Queries the illuminate REST API and enriches the given email with
       illuminate Indicator data
   - name: ip
@@ -150,7 +171,6 @@ script:
       required: true
       description: The IP to query information for
       default: true
-      isArray: true
     outputs:
     - contextPath: IP.Address
       description: IP address
@@ -197,6 +217,18 @@ script:
     - contextPath: Illuminate.Ip.IlluminateLink
       description: The URL of the matched indicator in illuminate
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
     description: Queries the illuminate REST API and enriches the given IP with illuminate
       Indicator data
   - name: file
@@ -205,7 +237,6 @@ script:
       required: true
       description: The file to query information for
       default: true
-      isArray: true
     outputs:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -258,6 +289,18 @@ script:
     - contextPath: Illuminate.File.IlluminateLink
       description: The URL of the matched indicator in illuminate
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
     description: Queries the illuminate REST API and enriches the given file with
       illuminate Indicator data
   - name: illuminate-enrich-string
@@ -466,7 +509,6 @@ script:
       required: true
       description: The url to query information for
       default: true
-      isArray: true
     outputs:
     - contextPath: URL.Data
       description: The URL.
@@ -513,6 +555,18 @@ script:
     - contextPath: Illuminate.Url.IlluminateLink
       description: The Url of the matched indicator in illuminate
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
     description: Queries the illuminate REST API and enriches the given URL with illuminate
       Indicator data
   dockerimage: demisto/python3:3.7.5.5420

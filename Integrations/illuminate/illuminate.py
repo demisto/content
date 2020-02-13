@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
+import traceback
 from typing import Optional, List, Any, Callable, Collection
 
 # Disable insecure warnings
@@ -305,7 +306,7 @@ def main():
             enrichment_output: EnrichmentOutput = commands[command](client, demisto.args())
             enrichment_output.return_outputs()
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]\nTrace:\n{traceback.format_exc()}'
         return_error(err_msg, error=e)
 
 
