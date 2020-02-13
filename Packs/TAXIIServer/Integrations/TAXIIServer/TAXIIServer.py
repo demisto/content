@@ -101,7 +101,7 @@ class TAXIIServer:
             )
             polling_instance = libtaxii.messages_11.PollingServiceInstance(
                 'urn:taxii.mitre.org:protocol:http:1.0',
-                '{}/taxii-poll-service'.format(self.host),
+                '{}:{}/taxii-poll-service'.format(self.host, self.port),
                 ['urn:taxii.mitre.org:message:xml:1.1']
             )
             collection_info.polling_service_instances.append(polling_instance)
@@ -152,11 +152,11 @@ class TAXIIServer:
             # yield the content blocks
             indicator_query = taxii_feeds[collection_name]
             for indicator in find_indicators_by_time_frame(indicator_query, exclusive_begin_time, inclusive_end_time):
-
-                stix_indicator = stix.core.STIXPackage.from_json()
+                json_stix = get_stix_indicator(indicator)
+                stix_indicator = stix.core.STIXPackage.from_json(json_stix)
                 cb1 = libtaxii.messages_11.ContentBlock(
                     content_binding=libtaxii.constants.CBstix_XML_11,
-                    content=indicator
+                    content=stix_indicator
                 )
                 yield cb1.to_xml() + '\n'
 
@@ -169,6 +169,7 @@ class TAXIIServer:
 SERVER: TAXIIServer
 
 ''' STIX MAPPING '''
+
 
 def stix_ip_observable(namespace, indicator, value):
     category = cybox.objects.address_object.Address.CAT_IPV4
@@ -418,27 +419,38 @@ def get_stix_indicator(indicator):
     return sp.to_json()
 
 
+def access_log(f):
+    @functools.wraps(f)
+    def log(*args, **kwargs):
+        headers = request.headers
+
+        demisto.info('Headers: ' + str(headers))
+
+        return f(*args, **kwargs)
+    return log
+
+
 def taxii_check(f):
     @functools.wraps(f)
     def check(*args, **kwargs):
-        tct = request.headers.get('X-TAXII-Content-Type', None)
-        if tct not in [
+        taxii_content_type = request.headers.get('X-TAXII-Content-Type', None)
+        if taxii_content_type not in [
             'urn:taxii.mitre.org:message:xml:1.1',
             'urn:taxii.mitre.org:message:xml:1.0'
         ]:
-            return 'Invalid TAXII Headers', 400
-        tct = request.headers.get('X-TAXII-Protocol', None)
-        if tct not in [
+            return make_response('Invalid TAXII Headers', 400)
+        taxii_content_type = request.headers.get('X-TAXII-Protocol', None)
+        if taxii_content_type not in [
             'urn:taxii.mitre.org:protocol:http:1.0',
             'urn:taxii.mitre.org:protocol:https:1.0'
         ]:
-            return 'Invalid TAXII Headers', 400
-        tct = request.headers.get('X-TAXII-Services', None)
-        if tct not in [
+            return make_response('Invalid TAXII Headers', 400)
+        taxii_content_type = request.headers.get('X-TAXII-Services', None)
+        if taxii_content_type not in [
             'urn:taxii.mitre.org:services:1.1',
             'urn:taxii.mitre.org:services:1.0'
         ]:
-            return 'Invalid TAXII Headers', 400
+            return make_response('Invalid TAXII Headers', 400)
         return f(*args, **kwargs)
     return check
 
@@ -492,6 +504,7 @@ def find_indicators_by_time_frame(indicator_query: str, begin_time: datetime, en
     if end_time:
         tz_end_time = datetime.strftime(end_time, '%Y-%m-%dT%H:%M:%S %z')
         indicator_query += f'createdTime:>="{tz_end_time}"'
+    demisto.info(f'Querying indicators by: {indicator_query}')
     iocs, _ = find_indicators_loop(indicator_query)
     return iocs
 
@@ -559,9 +572,10 @@ def taxii_collection_management_service() -> Response:
 
 @APP.route('/taxii-poll-service', methods=['POST'])
 @taxii_check
+@access_log
 def taxii_poll_service() -> Response:
     """
-    Route for discovery service
+    Route for poll service
     """
 
     try:
