@@ -354,8 +354,11 @@ script:
     execution: false
     name: get-shared-indicators
     outputs:
-    - contextPath: ElasticsearchFeed.SharedIndicators.Indicators
+    - contextPath: ElasticsearchFeed.SharedIndicators
       description: Indicators shared from other tenants.
+      type: Unknown
+    - contextPath: ElasticsearchFeed.SharedIndicators.Indicators
+      description: Indicators shared from other tenants without enrichments.
       type: Unknown
     - contextPath: ElasticsearchFeed.SharedIndicators.Enrichments
       description: Enrichment indicators shared from other tenants.
