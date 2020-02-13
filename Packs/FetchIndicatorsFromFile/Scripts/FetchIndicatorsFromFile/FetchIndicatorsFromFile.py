@@ -76,7 +76,7 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
 
     indicator_list = []
 
-    only_indicator_list = re.split('\n|,|, |\t', file_data)
+    only_indicator_list = re.split('\n|,|, |\t| |', file_data)
 
     for indicator in only_indicator_list:
         # drop punctuation
