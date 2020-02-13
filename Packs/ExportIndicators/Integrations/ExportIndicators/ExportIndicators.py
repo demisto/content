@@ -8,9 +8,17 @@ from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any, cast, Dict
 from base64 import b64decode
 
+
+class Handler:
+    @staticmethod
+    def write(msg):
+        demisto.info(msg)
+
+
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'Export Indicators Service'
 PAGE_SIZE: int = 200
+DEMISTO_LOGGER: Handler = Handler()
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
 CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
@@ -288,7 +296,7 @@ def run_long_running(params):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args)
+        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
         server.serve_forever()
     except Exception as e:
         if certificate_path:

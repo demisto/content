@@ -7,9 +7,17 @@ from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any, Dict, cast
 from base64 import b64decode
 
+
+class Handler:
+    @staticmethod
+    def write(msg):
+        demisto.info(msg)
+
+
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
 PAGE_SIZE: int = 200
+DEMISTO_LOGGER: Handler = Handler()
 APP: Flask = Flask('demisto-edl')
 EDL_VALUES_KEY: str = 'dmst_edl_values'
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
@@ -258,7 +266,7 @@ def run_long_running(params):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args)
+        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
         server.serve_forever()
     except Exception as e:
         if certificate_path:
