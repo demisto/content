@@ -14,7 +14,9 @@ package_500_error = {
     'import_type': 'url',
     'import_value': 'www.demisto.com',
     'ip_mapping': 'yes',
-    'md5_mapping': 'no'
+    'md5_mapping': 'no',
+    'tags': '',
+    'trustedcircles': ''
 }
 
 expected_output_500 = {
@@ -28,7 +30,9 @@ expected_output_500 = {
             'md5_mapping': False,
             'severity': 'low',
             'threat_type': 'exploit',
-            'url_mapping': False
+            'url_mapping': False,
+            'tags': [],
+            'trustedcircles': None
         },
         'import_session_id': {
             'api_key': None,

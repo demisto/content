@@ -696,7 +696,8 @@ def get_iocs_by_model(model, id, limit="20"):
     return_outputs(human_readable, ec, iocs_list)
 
 
-def create_model(model, name, is_public="false", tlp=None, tags=None, intelligence=None, description=None, import_sessions=None, circles=None):
+def create_model(model, name, is_public="false", tlp=None, tags=None, intelligence=None, description=None,
+                 import_sessions=None, circles=None):
     """
         Creates Threat Model with basic parameters.
     """
@@ -865,40 +866,39 @@ def approve_import(import_id):
     #
     # NOTE: Status will be checked 5 times before giving up, with a 5 second wait between each loop
 
-    #api_url = API_HOST + "/api/v1/importsession/" + str(import_id)
-
     cur_index = 1
     max_iters = 5               # the maximum number of tries before giving up
     wait_seconds = 5            # the number of seconds to wait between loops
+    import_done = False
 
-    while (cur_index <= max_iters):
+    while cur_index <= max_iters:
 
         # make the call to the API
-        #res = rest_client.get(url=api_url, params=PARAMS)
-        res = http_request("GET", F"v1/importsession/{import_id}", params=CREDENTIALS)
+        res = http_request("GET", f"v1/importsession/{import_id}", params=CREDENTIALS)
 
         # review the results
 
         if str(res.get('status', '')).lower() == 'done':
-            #print ("Import job is ready for review")
-            res = http_request("PATCH", F"v1/importsession/{import_id}/approve_all", params=CREDENTIALS)
-            print("Import job #" + str(import_id) + " was successfully Approved")
-            return "true"
+            http_request("PATCH", F"v1/importsession/{import_id}/approve_all", params=CREDENTIALS)
+            demisto.debug("Import job #" + str(import_id) + " was successfully Approved")
+            import_done = True
+            break
 
         else:
-            print("Import job not yet ready for review, waiting " + str(wait_seconds) + " seconds before checking again")
+            demisto.debug(f"Import job not yet ready for review, waiting {str(wait_seconds)} "
+                          f"seconds before checking again")
             time.sleep(wait_seconds)
 
         # increase the loop counter
         cur_index = cur_index + 1
 
-    # end of loop, if we didn't return 'true' by now then return 'false'
-    return "false"
+    if import_done:
+        return_outputs(f'Import {import_id} was approved successfully')
+    else:
+        return_warning(f'Import {import_id} approval was not completed')
 
 
 def main():
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
-
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
