@@ -136,69 +136,69 @@ def test_domain_command(requests_mock, mock_client):
     mock_indicator_search('domain', requests_mock)
     args: dict = {'domain': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = domain_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = domain_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
 
 
 def test_email_command(requests_mock, mock_client):
     mock_indicator_search('email', requests_mock)
     args: dict = {'email': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = email_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = email_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
 
 
 def test_ip_command(requests_mock, mock_client):
     mock_indicator_search('ip', requests_mock)
     args: dict = {'ip': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = ip_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = ip_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
 
 
 def test_file_command(requests_mock, mock_client):
     mock_indicator_search('file', requests_mock)
     args: dict = {'file': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = file_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = file_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
 
 
 def test_url_command(requests_mock, mock_client):
     mock_indicator_search('url', requests_mock)
     args: dict = {'url': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = url_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = url_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
 
 
 def test_illuminate_enrich_string_command(requests_mock, mock_client):
     mock_indicator_search('string', requests_mock)
     args: dict = {'string': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = illuminate_enrich_string_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = illuminate_enrich_string_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
 
 
 def test_illuminate_enrich_ipv6_command(requests_mock, mock_client):
     mock_indicator_search('ipv6', requests_mock)
     args: dict = {'ip': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = illuminate_enrich_ipv6_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = illuminate_enrich_ipv6_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
 
 
 def test_illuminate_enrich_mutex_command(requests_mock, mock_client):
     mock_indicator_search('mutex', requests_mock)
     args: dict = {'mutex': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = illuminate_enrich_mutex_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = illuminate_enrich_mutex_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')
 
 
 def test_illuminate_enrich_http_request_command(requests_mock, mock_client):
     mock_indicator_search('httpRequest', requests_mock)
     args: dict = {'http-request': f'{MOCK_INDICATOR}'}
 
-    enrichment_output: EnrichmentOutput = illuminate_enrich_http_request_command(mock_client, args)
-    assert enrichment_output.context_data.get('ID') == BASE_MOCK_JSON.get('id')
+    enrichment_output: EnrichmentOutput = illuminate_enrich_http_request_command(mock_client, args)[0]
+    assert enrichment_output.illuminate_context_data.get('ID') == BASE_MOCK_JSON.get('id')

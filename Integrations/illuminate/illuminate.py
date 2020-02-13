@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 import traceback
-from typing import Optional, List, Any, Callable, Collection
+from typing import Dict, Optional, List, Any, Callable, Collection
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 # Integration information
 INTEGRATION_NAME = 'illuminate'
 INTEGRATION_CONTEXT_BRAND = 'Illuminate'
-MALICIOUS_DATA = {
+MALICIOUS_DATA: Dict[str, str] = {
     'Vendor': 'illuminate',
     'Description': 'illuminate has determined that this indicator is malicious via internal analysis.'
 }
@@ -22,18 +22,38 @@ MALICIOUS_DATA = {
 ''' HELPER FUNCTIONS '''
 
 
+class IdNamePair(object):
+    def __init__(self, unique_id: int, name: str):
+        self.id = unique_id
+        self.name = name
+
+    def __str__(self):
+        return f'id = {self.id}, name = {self.name}'
+
+
 class EnrichmentOutput(object):
     def __init__(self, illuminate_context_data: dict, raw_data: dict, indicator_type: str) -> None:
         self.illuminate_context_data = illuminate_context_data
         self.raw_data = raw_data
         self.indicator_type = indicator_type
-        self.reputation_context = {}
+        self.reputation_context: dict = {}
 
     def get_human_readable_output(self) -> str:
-        return tableToMarkdown(t=self.illuminate_context_data, name=f'{INTEGRATION_NAME} {self.indicator_type.capitalize()} Information')
+        human_readable_data = self.illuminate_context_data.copy()
+        human_readable_data['Actors'] = [IdNamePair(d['id'], d['name']) for d in human_readable_data['Actors']]
+        human_readable_data['Malwares'] = [IdNamePair(d['id'], d['name']) for d in human_readable_data['Malwares']]
+
+        return tableToMarkdown(
+            t=human_readable_data,
+            name=f'{INTEGRATION_NAME} {self.indicator_type.capitalize()} Information',
+            removeNull=True
+        )
 
     def build_illuminate_context(self) -> dict:
-        return {f'{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}(val.ID && val.ID === obj.ID)': self.illuminate_context_data}
+        return {
+            f'{INTEGRATION_CONTEXT_BRAND}.{self.indicator_type.capitalize()}(val.ID && val.ID === obj.ID)':
+                self.illuminate_context_data
+        }
 
     def generate_reputation_context(
             self,
@@ -44,7 +64,7 @@ class EnrichmentOutput(object):
             extra_context: Optional[dict] = None
     ):
         if self.has_context_data():
-            reputation_context = {primary_key: indicator_value}
+            reputation_context: Dict[str, Any] = {primary_key: indicator_value}
 
             if extra_context is not None:
                 reputation_context.update(extra_context)
@@ -53,7 +73,11 @@ class EnrichmentOutput(object):
             if malicious:
                 reputation_context['Malicious'] = MALICIOUS_DATA
 
-            self.add_reputation_context(f'{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})', reputation_context)
+            self.add_reputation_context(
+                f'{reputation_key}(val.{primary_key} && val.{primary_key} === obj.{primary_key})',
+                reputation_context
+            )
+
             self.add_reputation_context('DBotScore', {
                 'Indicator': indicator_value,
                 'Score': 3 if malicious else 1,
@@ -158,6 +182,7 @@ class Client(BaseClient):
     def get_context_from_response(data: dict) -> dict:
         result_dict = {
             'ID': Client.get_data_key(data, 'id'),
+            'Indicator': Client.get_nested_data_key(data, 'value', 'name'),
             'EvidenceCount': Client.get_data_key(data, 'reportCount'),
             'Active': Client.get_data_key(data, 'active'),
             'HitCount': Client.get_data_key(data, 'hitCount'),
@@ -199,82 +224,127 @@ def perform_test_module(client: Client):
     client.perform_test_request()
 
 
-def domain_command(client: Client, args: dict) -> EnrichmentOutput:
-    domain: str = str(args.get('domain'))
-    enrichment_data: EnrichmentOutput = client.enrich_indicator(domain, 'domain')
-    if enrichment_data.has_context_data():
-        extra_context = {}
+def domain_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    domains: List[str] = argToList(args.get('domain'))
+    enrichment_data_list: List[EnrichmentOutput] = []
 
-        ip_resolution = Client.get_nested_data_key(enrichment_data.raw_data, 'ipResolution', 'name')
-        if ip_resolution is not None:
-            enrichment_data.add_illuminate_context('IpResolution', ip_resolution)
-            extra_context['DNS'] = ip_resolution
+    for domain in domains:
+        enrichment_data: EnrichmentOutput = client.enrich_indicator(domain, 'domain')
+        if enrichment_data.has_context_data():
+            extra_context = {}
 
-        enrichment_data.generate_reputation_context('Name', domain, 'domain', 'Domain', extra_context)
+            ip_resolution = Client.get_nested_data_key(enrichment_data.raw_data, 'ipResolution', 'name')
+            if ip_resolution is not None:
+                enrichment_data.add_illuminate_context('IpResolution', ip_resolution)
+                extra_context['DNS'] = ip_resolution
 
-    return enrichment_data
+            enrichment_data.generate_reputation_context('Name', domain, 'domain', 'Domain', extra_context)
 
+        enrichment_data_list.append(enrichment_data)
 
-def email_command(client: Client, args: dict) -> EnrichmentOutput:
-    email: str = str(args.get('email'))
-    enrichment_data: EnrichmentOutput = client.enrich_indicator(email, 'email')
-
-    if enrichment_data.has_context_data():
-        enrichment_data.generate_reputation_context('From', email, 'email', 'Email')
-
-    return enrichment_data
+    return enrichment_data_list
 
 
-def ip_command(client: Client, args: dict) -> EnrichmentOutput:
-    ip: str = str(args.get('ip'))
-    enrichment_data: EnrichmentOutput = client.enrich_indicator(ip, 'ip')
+def email_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    emails: List[str] = argToList(args.get('email'))
+    enrichment_data_list: List[EnrichmentOutput] = []
 
-    if enrichment_data.has_context_data():
-        enrichment_data.generate_reputation_context('Address', ip, 'ip', 'IP')
+    for email in emails:
+        enrichment_data: EnrichmentOutput = client.enrich_indicator(email, 'email')
 
-    return enrichment_data
+        if enrichment_data.has_context_data():
+            enrichment_data.generate_reputation_context('From', email, 'email', 'Email')
 
+        enrichment_data_list.append(enrichment_data)
 
-def file_command(client: Client, args: dict) -> EnrichmentOutput:
-    file: str = str(args.get('file'))
-    enrichment_data: EnrichmentOutput = client.enrich_indicator(file, 'file')
-
-    if enrichment_data.has_context_data():
-        hash_type = get_hash_type(file)
-        if hash_type != 'Unknown':
-            enrichment_data.generate_reputation_context(hash_type.upper(), file, 'file', 'File')
-
-    return enrichment_data
+    return enrichment_data_list
 
 
-def illuminate_enrich_string_command(client: Client, args: dict) -> EnrichmentOutput:
-    string: str = str(args.get('string'))
-    return client.enrich_indicator(string, 'string')
+def ip_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    ips: List[str] = argToList(args.get('ip'))
+    enrichment_data_list: List[EnrichmentOutput] = []
+
+    for ip in ips:
+        enrichment_data: EnrichmentOutput = client.enrich_indicator(ip, 'ip')
+
+        if enrichment_data.has_context_data():
+            enrichment_data.generate_reputation_context('Address', ip, 'ip', 'IP')
+
+        enrichment_data_list.append(enrichment_data)
+
+    return enrichment_data_list
 
 
-def illuminate_enrich_ipv6_command(client: Client, args: dict) -> EnrichmentOutput:
-    ip: str = str(args.get('ip'))
-    return client.enrich_indicator(ip, 'ipv6')
+def file_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    files: List[str] = argToList(args.get('file'))
+    enrichment_data_list: List[EnrichmentOutput] = []
+
+    for file in files:
+        enrichment_data: EnrichmentOutput = client.enrich_indicator(file, 'file')
+
+        if enrichment_data.has_context_data():
+            hash_type = get_hash_type(file)
+            if hash_type != 'Unknown':
+                enrichment_data.generate_reputation_context(hash_type.upper(), file, 'file', 'File')
+
+        enrichment_data_list.append(enrichment_data)
+
+    return enrichment_data_list
 
 
-def illuminate_enrich_mutex_command(client: Client, args: dict) -> EnrichmentOutput:
-    mutex: str = str(args.get('mutex'))
-    return client.enrich_indicator(mutex, 'mutex')
+def illuminate_enrich_string_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    strings: List[str] = argToList(args.get('string'))
+    enrichment_data_list: List[EnrichmentOutput] = []
+
+    for string in strings:
+        enrichment_data_list.append(client.enrich_indicator(string, 'string'))
+
+    return enrichment_data_list
 
 
-def illuminate_enrich_http_request_command(client: Client, args: dict) -> EnrichmentOutput:
-    http_request: str = str(args.get('http-request'))
-    return client.enrich_indicator(http_request, 'httpRequest')
+def illuminate_enrich_ipv6_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    ips: List[str] = argToList(args.get('ip'))
+    enrichment_data_list: List[EnrichmentOutput] = []
+
+    for ip in ips:
+        enrichment_data_list.append(client.enrich_indicator(ip, 'ipv6'))
+
+    return enrichment_data_list
 
 
-def url_command(client: Client, args: dict) -> EnrichmentOutput:
-    url: str = str(args.get('url'))
-    enrichment_data: EnrichmentOutput = client.enrich_indicator(url, 'url')
+def illuminate_enrich_mutex_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    mutexes: List[str] = argToList(args.get('mutex'))
+    enrichment_data_list: List[EnrichmentOutput] = []
 
-    if enrichment_data.has_context_data():
-        enrichment_data.generate_reputation_context('Data', url, 'url', 'URL')
+    for mutex in mutexes:
+        enrichment_data_list.append(client.enrich_indicator(mutex, 'mutex'))
 
-    return enrichment_data
+    return enrichment_data_list
+
+
+def illuminate_enrich_http_request_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    http_requests: List[str] = argToList(args.get('http-request'))
+    enrichment_data_list: List[EnrichmentOutput] = []
+
+    for http_request in http_requests:
+        enrichment_data_list.append(client.enrich_indicator(http_request, 'httpRequest'))
+
+    return enrichment_data_list
+
+
+def url_command(client: Client, args: dict) -> List[EnrichmentOutput]:
+    urls: List[str] = argToList(args.get('url'))
+    enrichment_data_list: List[EnrichmentOutput] = []
+
+    for url in urls:
+        enrichment_data: EnrichmentOutput = client.enrich_indicator(url, 'url')
+
+        if enrichment_data.has_context_data():
+            enrichment_data.generate_reputation_context('Data', url, 'url', 'URL')
+
+        enrichment_data_list.append(enrichment_data)
+
+    return enrichment_data_list
 
 
 ''' EXECUTION '''
@@ -303,8 +373,8 @@ def main():
             perform_test_module(client)
             demisto.results('ok')
         elif command in commands:
-            enrichment_output: EnrichmentOutput = commands[command](client, demisto.args())
-            enrichment_output.return_outputs()
+            enrichment_outputs: List[EnrichmentOutput] = commands[command](client, demisto.args())
+            [e.return_outputs() for e in enrichment_outputs]
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]\nTrace:\n{traceback.format_exc()}'
         return_error(err_msg, error=e)
