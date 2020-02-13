@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added Office365 Feed Integration - fetches indicators from Office365 known endpoints.
+Added Office 365 Feed Integration - fetches indicators from Office 365 known endpoints.
