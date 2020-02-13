@@ -22,6 +22,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Cofense Feed",
+            "playbookID": "TestCofenseFeed",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
             "fromversion": "5.5.0"
@@ -2224,6 +2229,12 @@
             "integrations": "DShield Feed",
             "playbookID": "playbook-DshieldFeed_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AlienVault Reputation Feed",
+            "playbookID": "AlienVaultReputationFeed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 9000
         },
         {
             "integrations": "BruteForceBlocker Feed",
