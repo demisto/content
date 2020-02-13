@@ -27,6 +27,8 @@ This integration provides an endpoint with a list of indicators as a service for
     * __Private Key (Required for HTTPS)__: HTTPS private key provided by pasting its valuies into this field.
     * __HTTP Server__: Ignores certificate and private key, and will run the export indicators service
     in HTTP
+    * __Username__: The username to authenticate when fetching the indicators.
+    * __Password__: The username to authenticate when fetching the indicators.
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
