@@ -18,7 +18,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-
 SEVERITY_DICT = {
     'Unknown': 0,
     'Low': 1,
