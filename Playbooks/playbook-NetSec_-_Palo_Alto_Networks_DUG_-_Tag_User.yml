@@ -262,3 +262,5 @@ inputs:
   required: false
   description: Name of the list that contains VIP users who can only be blocked after manager approval.
 outputs: []
+tests:
+  - No test
