@@ -19,7 +19,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
                 indicator_type = default_type
 
                 if type_col:
-                    indicator_type = row[type_col]
+                    indicator_type = row[int(type_col) - 1]
 
                 elif auto_detect:
                     indicator_type = detect_type(indicator)
@@ -54,7 +54,7 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
             indicator_type = default_type
 
             if type_col:
-                indicator_type = xl_sheet.cell(row_index, type_col).value
+                indicator_type = xl_sheet.cell(row_index, int(type_col) - 1).value
 
             elif auto_detect:
                 indicator_type = detect_type(indicator)
@@ -76,29 +76,30 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
 
     indicator_list = []
 
-    only_indicator_list = re.split('\n|,|, |\t| |', file_data)
+    only_indicator_list = file_data.split()
 
     for indicator in only_indicator_list:
         # drop punctuation
-        if indicator[-1] in ".,?:;\\)}]/!\n\t":
-            indicator = indicator[:-1]
+        if len(indicator) > 0:
+            if indicator[-1] in ".,?:;\\)}]/!\n\t":
+                indicator = indicator[:-1]
 
-        if indicator[0] in ".,({[":
-            indicator = indicator[0:]
+            if indicator[0] in ".,({[":
+                indicator = indicator[0:]
 
-        indicator_type = default_type
+            indicator_type = default_type
 
-        if auto_detect:
-            indicator_type = detect_type(indicator)
+            if auto_detect:
+                indicator_type = detect_type(indicator)
 
-        # indicator not recognized
-        if indicator_type is None:
-            continue
+            # indicator not recognized
+            if indicator_type is None:
+                continue
 
-        indicator_list.append({
-            'type': indicator_type,
-            'value': indicator
-        })
+            indicator_list.append({
+                'type': indicator_type,
+                'value': indicator
+            })
 
     return indicator_list
 
