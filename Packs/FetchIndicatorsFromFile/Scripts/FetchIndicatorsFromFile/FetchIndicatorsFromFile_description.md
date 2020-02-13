@@ -6,4 +6,4 @@ This script fetches indicators from a file.
 - CSV
 - DOC, DOCX
 
-If an excel file is supplied (xls, xlsx, csv), you need to specify the *column_number* argument, which defines the column to fetch from.
+If an excel file is supplied (XLS, XLSX, CSV), you need to specify the *column_number* argument, which defines the column to fetch from.
