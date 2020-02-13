@@ -1,5 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
+from dateutil.parser import parse
 
 """MOCKED RESPONSES"""
 
@@ -478,28 +479,26 @@ def test_context_creation_es6():
 
 
 @patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2_5_5.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
 @patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
 @patch("Elasticsearch_v2_5_5.FETCH_INDEX", "users")
 def test_incident_creation_e6():
     from Elasticsearch_v2_5_5 import results_to_incidents_datetime
-    last_fetch = datetime.strptime('2019-08-29T14:44:00Z', '%Y-%m-%dT%H:%M:%SZ')
+    last_fetch = parse('2019-08-29T14:44:00Z')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-29 14:46:00'
+    assert str(last_fetch2) == '2019-08-29T14:46:00Z'
     assert str(incidents) == MOCK_ES6_INCIDETNS
 
 
 @patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2_5_5.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
 @patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
 @patch("Elasticsearch_v2_5_5.FETCH_INDEX", "customer")
 def test_incident_creation_e7():
     from Elasticsearch_v2_5_5 import results_to_incidents_datetime
-    last_fetch = datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ')
+    last_fetch = parse('2019-08-27T17:59:00')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-27 18:01:00'
+    assert str(last_fetch2) == '2019-08-27T18:01:00Z'
     assert str(incidents) == MOCK_ES7_INCIDENTS
 
 
@@ -530,7 +529,7 @@ def test_incident_creation_with_timestamp_e7():
 
 def test_extract_indicators_from_insight_hit(mocker):
     import Elasticsearch_v2_5_5 as es2
-    mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
+    mocker.patch.object(es2, 'results_to_indicator', return_value=dict(PARSED_INDICATOR_HIT))
     ioc_lst, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
     # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
     assert len(ioc_lst) == 1
