@@ -1,7 +1,7 @@
 import demistomock as demisto
-from CommonServerPython import tableToMarkdown, BaseClient, LOG, return_outputs, return_error
+from CommonServerPython import *
 
-''' IMPORTS '''
+""" IMPORTS """
 from typing import List
 import json
 import requests
@@ -47,7 +47,10 @@ ASSET_CTD_FIELD_TO_DEMISTO_FIELD = {
     'site_name': "SiteName",
     "project_parsed": "WasParsed",
     "risk_level": "RiskLevel",
-    "firmware": "FirmwareVersion"
+    "firmware": "FirmwareVersion",
+    "resource_id": "ResourceID",
+    "site_id": "SiteID",
+    "insights": "Insights"
 }
 RESOLVE_STRING_TO_TYPE = {
     "resolve": 1,
@@ -57,7 +60,11 @@ DEFAULT_ALERT_FIELD_LIST = ["resource_id", "type", "severity", "network_id", "re
                             "alert_indicators", "actionable_assets"]
 DEFAULT_ASSET_FIELD_LIST = ["id", "name", "insight_names", "vendor", "criticality", "asset_type", "last_seen", "ipv4",
                             "mac", "virtual_zone_name", "class_type", "site_name", "project_parsed", "risk_level",
-                            "firmware"]
+                            "firmware", "resource_id"]
+FULL_MATCH_BASE_URL = "ranger/insight_details/Windows%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
+                      "&per_page=1000&page=1&id__exact="
+WINDOWS_CVE_BASE_URL = "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
+                       "&per_page=1000&page=1&id__exact="
 
 
 class Client(BaseClient):
@@ -76,6 +83,13 @@ class Client(BaseClient):
     def jwt(self):
         # TODO: Get jwt - make as wrapper -
         # try and except the requests we are making. If failed on specific return code then retry after getting token
+
+        # once you get the jwt you can store it for later use using something like:
+        # demisto.setIntegrationContext({'jwt': jwt, 'expiration': 'whatever'})
+
+        # before you try to get a new jtw, you can check if the one you stored is still valid.
+        # to retrieve it, you can do
+        # demisto.getIntegrationContext() that will return the dict that you stored previously
         pass
 
     def get_token(self):
@@ -84,23 +98,21 @@ class Client(BaseClient):
             url_suffix="auth/authenticate",
             data=json.dumps({"username": self._credentials[0], "password": self._credentials[1]}),
         )["token"]
-        # once you get the jwt you can store it for later use using something like:
-        # demisto.setIntegrationContext({'jwt': jwt, 'expiration': 'whatever'})
-
-        # before you try to get a new jtw, you can check if the one you stored is still valid.
-        # to retrieve it, you can do
-        # demisto.getIntegrationContext() that will return the dict that you stored previously
 
     def list_incidents(self, fields: list, fetch_from) -> dict:
         return self.get_alerts(fields=fields, sort={}, filters=[add_filter("timestamp", fetch_from, "gte")])
 
     def get_assets(self, fields: list, sort: dict, filters: list):
         url_suffix = self._add_extra_params_to_url('ranger/assets', fields, sort, filters)
-        return self._http_request('GET', url_suffix=url_suffix + '&ghost__exact=false&special_hint__exact=0,;$9')
+        # return self._http_request('GET', url_suffix=url_suffix + '&ghost__exact=false&special_hint__exact=0,;$9')
+        return self._http_request('GET', url_suffix=url_suffix)
 
     def get_alerts(self, fields: list, sort: dict, filters: list):
         url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort, filters)
         return self._http_request('GET', url_suffix=url_suffix)
+
+    def get_alert(self, rid: str):
+        return self._http_request('GET', url_suffix=f'ranger/alerts/{rid}')
 
     def get_ranger_table_filters(self, table: str):
         if not self._list_to_filters[table]:
@@ -136,13 +148,12 @@ class Client(BaseClient):
         return url_suffix
 
     def enrich_asset_results(self, assets):
-        full_match_base_url = "ranger/insight_details/Full Match CVEs?&format=asset_page&sort=-Score%20(CVSS)&per_page=0&id__exact="
-        windows_cve_base_url = "ranger/insight_details/Windows CVEs?&format=asset_page&sort=-Score%20(CVSS)&per_page=0&id__exact="
-        for asset in assets:
-            full_match_cves = self._http_request('GET', url_suffix=f"{full_match_base_url}={asset['rid']}")
-            windows_cves = self._http_request('GET', url_suffix=f"{windows_cve_base_url}={asset['rid']}")
+        for asset in assets['objects']:
+            full_match_cves = self._http_request('GET', url_suffix=f"{FULL_MATCH_BASE_URL}{asset['resource_id']}")
+            windows_cves = self._http_request('GET', url_suffix=f"{WINDOWS_CVE_BASE_URL}{asset['resource_id']}")
             assets_cves = [*full_match_cves["rows"], *windows_cves["rows"]]
-            asset.insights = [{"CVE-ID": cve.cells[0], "Score": cve.cells[1], "Description": cve.cells[2]} for cve in assets_cves]
+            asset["insights"] = [{"CVE-ID": cve["cells"][0], "Score": cve["cells"][1], "Description": cve["cells"][2]}
+                                 for cve in assets_cves]
         return assets
 
 
@@ -178,13 +189,13 @@ def get_assets_command(client, args):
         filters.append(add_filter("criticality", criticality_int - 1))
 
     # TODO: Add this filter later
-    insight_name = demisto.args().get("insight_name", "").lower()
+    insight_name = demisto.args().get("insight_name")
     if insight_name:
         # asset_filters = client.get_ranger_table_filters('assets')
         # TODO: fix around the way i return values
-        
+
         # insight status 0 is open
-        filters.extend([add_filter("insights_name", insight_name), add_filter("insights_status", 0)])
+        filters.extend([add_filter("insight_name", insight_name), add_filter("insight_status", 0)])
 
         # for filter_type in filters_url_suffix:
         #     filters.append(add_filter(filter_type[0], filter_type[1]))
@@ -193,6 +204,7 @@ def get_assets_command(client, args):
 
     if should_enrich_assets:
         result = client.enrich_asset_results(result)
+        fields.append("insights")
 
     parsed_results = _parse_assets_result(result, fields)
 
@@ -228,7 +240,7 @@ def resolve_alert_command(client, args):
     outputs = {
         "Claroty.Resolve_out": result
     }
-    readable_output = f"###### Resolve success status {result['success']}"
+    readable_output = f"## Resolve alert status - {result['success']}"
 
     return (
         readable_output,
@@ -238,25 +250,30 @@ def resolve_alert_command(client, args):
 
 
 def query_alerts_command(client, args):
-    # TODO: add get single alert by RID
     fields = get_fields("alert")
     sort = get_sort(demisto.args().get("sort_by", "timestamp"))
-
     filters = []
 
-    alert_type = demisto.args().get("type", "").lower()
-    if alert_type:
-        alert_filters = client.get_ranger_table_filters('alerts')
-        # TODO: fix around the way i return values
-        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
-        for filter_type in filters_url_suffix:
-            filters.append(add_filter(filter_type[0], filter_type[1]))
+    alert_rid = demisto.args().get("get_single_alert", None)
+    # Get single alert uses different URL
+    if alert_rid:
+        result = client.get_alert(alert_rid)
+    else:
+        alert_type = demisto.args().get("type", "").lower()
+        if alert_type:
+            alert_filters = client.get_ranger_table_filters('alerts')
+            # TODO: fix around the way i return values
+            filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
+            if filters_url_suffix:
+                for filter_type in filters_url_suffix:
+                    filters.append(add_filter(filter_type[0], filter_type[1]))
 
-    alert_time = demisto.args().get("date_from", None)
-    if alert_time:
-        filters.append(add_filter("timestamp", alert_time, "gte"))
+        alert_time = demisto.args().get("date_from", None)
+        if alert_time:
+            filters.append(add_filter("timestamp", alert_time, "gte"))
 
-    result = client.get_alerts(fields, sort, filters)
+        result = client.get_alerts(fields, sort, filters)
+
     parsed_results = _parse_alerts_result(result, fields)
 
     outputs = {
@@ -324,6 +341,7 @@ def _parse_single_alert(alert_obj: dict, fields: list) -> dict:
 
 
 def _parse_alert_indicators(indicators: list):
+    # TODO: Check if can delete (probably yes)
     parsed_indicators = []
     for indicator_param in indicators:
         indicator_info = indicator_param.get('indicator_info', None)
@@ -357,10 +375,19 @@ def _parse_single_asset(asset_obj: dict, fields: list) -> dict:
             asset_type_value = asset_obj.get("asset_type__")
             parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["asset_type__"]] = asset_type_value[1:] \
                 if asset_type_value else None
+
         elif field == "criticality":
             asset_criticality_value = asset_obj.get("criticality__")
             parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["criticality__"]] = asset_criticality_value[1:]\
                 if asset_criticality_value else None
+
+        elif field == "insights":
+            insight_str_result = ""
+            for insight in asset_obj.get(field, []):
+                insight_str_result += f"CVE ID - {insight['CVE-ID']}\r\n"
+                insight_str_result += f"Description - {insight['Description']}\r\n"
+                insight_str_result += f"Score - {insight['Score']}\r\n\n"
+            parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD[field]] = insight_str_result
         else:
             parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD[field]] = asset_obj.get(field)
 
@@ -378,15 +405,18 @@ def get_sort(field_to_sort_by: str, order_by_desc: bool = False):
 
 def get_fields(obj_name: str) -> list:
     fields = demisto.args().get("fields", "").split(",")
+
     if obj_name == "alert":
         fields.append("resource_id")
         if "all" in fields:
-            fields.append(DEFAULT_ALERT_FIELD_LIST)
+            fields.pop(fields.index("all"))
+            fields.extend(DEFAULT_ALERT_FIELD_LIST)
 
     elif obj_name == "asset":
-        fields.append("id")
+        fields.extend(["id", "resource_id", "site_id"])
         if "all" in fields:
-            fields.append(DEFAULT_ALERT_FIELD_LIST)
+            fields.pop(fields.index("all"))
+            fields.extend(DEFAULT_ASSET_FIELD_LIST)
 
     fields = set(fields)
     return list(fields)
@@ -402,13 +432,16 @@ def add_filter(filter_name: str, filter_value, filter_operation: str = "exact"):
 
 def transform_filters_labels_to_values(table_filters, filter_name: str, filter_val: str):
     chosen_filters = []
-    for table_filter in table_filters:
-        if table_filter['name'].lower() == filter_name:
-            table_filter_value = next(table_filter_value['value'] for table_filter_value in table_filter['values']
-                                      if filter_val == table_filter_value['label'].lower())
-            if table_filter_value:
-                chosen_filters.append((table_filter['name'], table_filter_value))
-
+    try:
+        for table_filter in table_filters:
+            if table_filter['name'].lower() == filter_name:
+                table_filter_value = next(table_filter_value['value'] for table_filter_value in table_filter['values']
+                                          if filter_val == table_filter_value['label'].lower())
+                if table_filter_value:
+                    chosen_filters.append((table_filter['name'], table_filter_value))
+    except Exception:
+        # TODO: Make a real exception....
+        pass
     return chosen_filters
 
 
