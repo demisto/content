@@ -1,0 +1,283 @@
+{
+  "success": 1,
+  "data": {
+    "task_uuid": "e422204c1f9e001016f8eb2efa8b93a5",
+    "report": {
+      "full_archive_analysis": [],
+      "extracted_files": [
+        {
+          "sha1": "908b510dc63770f6932e0d97161c6c065c32732e",
+          "file_name": "sampleconfig.html",
+          "task_uuid": "a40307143d8100101d537f45d5eb01b9",
+          "mime_type": "text/html",
+          "task_score": 0,
+          "md5": "8ecd393c23ded26493b09ae0c2db5d25"
+        },
+        {
+          "sha1": "916bbb0cf17c6b7069673360d28a5c469e0ad8cc",
+          "file_name": "addcertbasedauth1.png",
+          "mime_type": "application/octet-stream",
+          "md5": "afd3f1c6a17e35fa8d00e736baf5a365"
+        },
+        {
+          "sha1": "7a1b74e8edf81fb409b0959a0f1edcc40cb85565",
+          "file_name": "sidebar.js",
+          "task_uuid": "f38e7e7f601200101cf9c8b0c252d7ab",
+          "mime_type": "application/javascript",
+          "task_score": 0,
+          "md5": "65053d2e1dacec21567f85383c26400f"
+        },
+        {
+          "sha1": "e686eef16ea116aceea14d116e4ad320c385240a",
+          "file_name": "down-pressed.png",
+          "mime_type": "application/octet-stream",
+          "md5": "b7476a4885b1414399e86b671db699a2"
+        },
+        {
+          "sha1": "",
+          "file_name": "search_example.py",
+          "task_uuid": "9be7a97153060010199e9bf27f5ee4f8",
+          "mime_type": "text/x-python",
+          "task_score": 0,
+          "md5": "66d487802e8997c9cba739c702e5c297"
+        },
+        {
+          "sha1": "c54d7aa87d6ef6db89b528872246e0948efe15c0",
+          "file_name": "overview.rst.txt",
+          "mime_type": "text/plain",
+          "md5": "0bb076d9be43513a8f21f5670ea0b005"
+        },
+        {
+          "sha1": "d9c45a8f68229504d6f08282e06ce52d5e6b652a",
+          "file_name": "addcertbasedauth8.png",
+          "mime_type": "application/octet-stream",
+          "md5": "e0d0511378b35862f6107285d0f337fc"
+        },
+        {
+          "sha1": "5bce1639a5d39602ca1a2e36e91fbf1d9ee06e7c",
+          "file_name": "provisioningoverview.html",
+          "task_uuid": "70eca50c8864001017e3a5c8014006e1",
+          "mime_type": "text/html",
+          "task_score": 0,
+          "md5": "abc11b123d148a8f4d2892e4e72a8d19"
+        },
+        {
+          "sha1": "9da3b82c9659b3912b08528cef9449a4b44de8d8",
+          "file_name": "dxlclient.client_config.html",
+          "mime_type": "text/html",
+          "md5": "ff042120c6a1a4a7dc4ab84bdbf20ce0"
+        },
+        {
+          "sha1": "ebcc82f09fbe8d656bcaa0a7ad16b4f0105c6eb5",
+          "file_name": "sampleconfig.rst.txt",
+          "mime_type": "text/plain",
+          "md5": "eb8d4eb65dec5695252861f09b3b603a"
+        },
+        {
+          "sha1": "b947365562f1aee0df52a67c53f71153aca82630",
+          "file_name": "dxlclient.message.rst.txt",
+          "mime_type": "text/plain",
+          "md5": "819510d5b5aeaa85ec430fd23033132b"
+        },
+        {
+          "sha1": "7d818038536dfb86f577550ffe879085367f4f95",
+          "file_name": "editdxlcerts.png",
+          "mime_type": "application/octet-stream",
+          "md5": "5f81ef63be997caaf61d4e2a8e354734"
+        },
+        {
+          "sha1": "e730b95f5be65620f19959a5816133d93d4d8a65",
+          "file_name": "searchindex.js",
+          "task_uuid": "364261fc551b0010128dbee205154a83",
+          "mime_type": "application/javascript",
+          "task_score": 0,
+          "md5": "3a661cd2b9f1e1634dba8f4dd3ab4c62"
+        },
+        {
+          "sha1": "d75d07ae4a8502302a784da13d30dbfffd3bc10d",
+          "file_name": "dxlclient.broker.rst.txt",
+          "mime_type": "text/plain",
+          "md5": "2b214cf4f371c45d9d93014789edf3bf"
+        },
+        {
+          "sha1": "930f72a9e526b9e7755a10cda8a50d7bec83231b",
+          "file_name": "addtopicgroup1.png",
+          "mime_type": "application/octet-stream",
+          "md5": "5a772b4d9d6814fe8a10a9495b6015c1"
+        },
+        {
+          "sha1": "5b00b66f3f99b3a9b867d3a0376c0a3a2d661274",
+          "file_name": "epobrokerlistexport.html",
+          "task_uuid": "4a3d5b990f4800101ed32d93d49c2615",
+          "mime_type": "text/html",
+          "task_score": 0,
+          "md5": "c452556328b845181f7d8a27eca01984"
+        },
+        {
+          "sha1": "",
+          "file_name": "dxlclient.callbacks.html",
+          "task_uuid": "7c6537dd20be001017f882f9aa1a6adc",
+          "mime_type": "text/html",
+          "task_score": 0,
+          "md5": "7c132822d1d974bdb3bb3ac0b06bc0bb"
+        },
+        {
+          "sha1": "36683a9ccb3c4535a55be6e5bd82a078c67d7c30",
+          "file_name": "servicewrapperexample.rst.txt",
+          "mime_type": "text/plain",
+          "md5": "574db112104d01be25a5705d4e185d56"
+        },
+        {
+          "sha1": "365abe63de063ef2d97d3caacc43512415b5a835",
+          "file_name": "plus.png",
+          "mime_type": "application/octet-stream",
+          "md5": "0d7849fd4d4148b7f78cab60a087633a"
+        },
+        {
+          "sha1": "",
+          "file_name": "file_rep_sample.py",
+          "task_uuid": "6790c757aa57001015a60e236c74747c",
+          "mime_type": "text/x-python",
+          "task_score": 0,
+          "md5": "33922301a0ee02db856091d5bca3faf1"
+        },
+        {
+          "sha1": "339f6710d3a5afc7ae900df3c48c002546d18061",
+          "file_name": "openweather_service_invoker.py",
+          "task_uuid": "0ad4d423594b00101a1fb6812b57f8c7",
+          "mime_type": "text/x-python",
+          "task_score": 0,
+          "md5": "63c6e4cf4ade3fe22ae06ea06df2189b"
+        },
+        {
+          "sha1": "043b63dd052a19bd06ade9f08b42eaf7fa20791e",
+          "file_name": "addcertbasedauth6.png",
+          "mime_type": "application/octet-stream",
+          "md5": "757ed17f2722dd2877d558c355705265"
+        },
+        {
+          "sha1": "f69a2d69f253e47ad825728cd48b78a37b15559c",
+          "file_name": "dxlclient.broker.html",
+          "task_uuid": "701f7e86fac600101106b9082b230689",
+          "mime_type": "text/html",
+          "task_score": 0,
+          "md5": "955770b669f4a6dd32dad4f5951237ad"
+        },
+        {
+          "sha1": "1de240817fbfd1fe14ed10caec21fbc3f39ea0d4",
+          "file_name": "epocaimport.rst.txt",
+          "mime_type": "text/plain",
+          "md5": "041e4362d7f2d833db37ab9f62a7cec8"
+        },
+        {
+          "sha1": "77bc4fbe3d474d0e6c037751db3d3f1e81e8ade0",
+          "file_name": "epoexternalcertissuance.rst.txt",
+          "mime_type": "text/plain",
+          "md5": "7ca8d0c6615269b92d02c85e1a9d72d9"
+        },
+        {
+          "sha1": "6bc9697f8738d30979e7150dd222c86851b07317",
+          "file_name": "addtopicgroup2.png",
+          "mime_type": "application/octet-stream",
+          "md5": "f59a2181743c8239f3fa325a9c2141ba"
+        }
+      ],
+      "uuid": "",
+      "format": {
+        "build_version": 0,
+        "major_version": 1,
+        "name": "ll-int-archive",
+        "minor_version": 0
+      }
+    },
+    "submission": "2019-12-04 07:16:19",
+    "reports": [
+      {
+        "relevance": 1.0,
+        "report_versions": [
+          "ll-doc"
+        ],
+        "description": "Document analysis",
+        "report_uuid": ""
+      },
+      {
+        "relevance": 1.0,
+        "report_versions": [
+          "ll-int-archive"
+        ],
+        "description": "Archive inflation",
+        "report_uuid": ""
+      }
+    ],
+    "child_tasks": [
+      {
+        "task_uuid": "701f7e86fac600101106b9082b230689",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "4a3d5b990f4800101ed32d93d49c2615",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "9be7a97153060010199e9bf27f5ee4f8",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "70eca50c8864001017e3a5c8014006e1",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "a40307143d8100101d537f45d5eb01b9",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "0ad4d423594b00101a1fb6812b57f8c7",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "364261fc551b0010128dbee205154a83",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "6790c757aa57001015a60e236c74747c",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "f38e7e7f601200101cf9c8b0c252d7ab",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      },
+      {
+        "task_uuid": "7c6537dd20be001017f882f9aa1a6adc",
+        "score": 0,
+        "tag": "file extracted from archive",
+        "parent_report_uuid": ""
+      }
+    ],
+    "score": 0,
+    "analysis_subject": {
+      "sha1": "e18e9ebfc7204712ee6f27903e1e7a4256fccba0",
+      "sha256": "7f3aa0fda6513c9fc6803fbebb0100e3a3d2ded503317d325eb2bccc097cf27b",
+      "mime_type": "application/zip",
+      "md5": "4e492e797ccfc808715c2278484517b1"
+    },
+    "last_submission_timestamp": "2019-12-05 05:58:35"
+  }
+}
