@@ -1,0 +1,249 @@
+category: Authentication
+commonfields:
+  id: Claroty
+  version: -1
+configuration:
+- defaultvalue: https://10.91.17.135:5000
+  display: CTD Server URL (e.g. https://<IP>:5000)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: The initial time to fetch from
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- hidden: false
+  name: severity
+  options:
+  - Low
+  - Medium
+  - '...'
+  required: false
+  type: 16
+description: Integration for Claroty's CTD
+display: Claroty
+name: Claroty
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: List of Fields to return
+      isArray: false
+      name: fields
+      predefined:
+      - all
+      - ' id'
+      - ' name'
+      - ' insight_names'
+      - ' vendor'
+      - ' criticality'
+      - ' asset_type'
+      - ' last_seen'
+      - ' ipv4'
+      - ' mac'
+      - ' virtual_zone_name'
+      - ' class_type'
+      - ' site_name'
+      - ' project_parsed'
+      - ' risk_level'
+      - ' firmware_version'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Get assets by criticality
+      isArray: false
+      name: criticality
+      predefined:
+      - Low
+      - ' Medium'
+      - ' High'
+      required: false
+      secret: false
+    - default: false
+      description: Get asset if it has the given insights
+      isArray: false
+      name: insight_name
+      predefined:
+      - ''
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all assets from CTD
+    execution: false
+    name: claroty-get-assets
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: List of Fields to return
+      isArray: false
+      name: fields
+      predefined:
+      - all
+      - ' resource_id'
+      - ' type'
+      - ' severity'
+      - ' network_id'
+      - ' resolved'
+      - ' description'
+      - ' alert_indicators'
+      - ' actionable_assets'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: timestamp
+      description: Which field to sort by
+      isArray: false
+      name: sort_by
+      predefined:
+      - resource_id
+      - ' type'
+      - ' severity'
+      - ' network_id'
+      - ' resolved'
+      - ' description'
+      - ' alert_indicators'
+      - ' actionable_assets'
+      - ' id'
+      - ' timestamp'
+      required: false
+      secret: false
+    - default: false
+      description: Filter by alert type
+      isArray: false
+      name: type
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Get all alerts from selected date
+      isArray: false
+      name: date_from
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Get a single alert by the ResourceID
+        ResourceID format - <alert_id>-<site_id>
+      isArray: false
+      name: resource_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The number of maximum alerts to query
+      isArray: false
+      name: alert_number
+      required: false
+      secret: false
+    deprecated: false
+    description: Get alerts from CTD
+    execution: false
+    name: claroty-query-alerts
+    outputs:
+    - contextPath: Claroty.Alert.AlertType
+      description: The alert type
+      type: String
+    - contextPath: Claroty.Alert.AlertTypeID
+      description: The alert type int value
+      type: Number
+    - contextPath: Claroty.Alert.Description
+      description: The alert description
+      type: String
+    - contextPath: Claroty.Alert.Indicator
+      description: The alert indicators
+      type: String
+    - contextPath: Claroty.Alert.NetworkID
+      description: The network id
+      type: Number
+    - contextPath: Claroty.Alert.RelatedAssets
+      description: Alert related assets
+      type: String
+    - contextPath: Claroty.Alert.Resolved
+      description: The alert resolve status
+      type: Number
+    - contextPath: Claroty.Alert.ResourceID
+      description: The alert resource id (AlertID-SiteID)
+      type: String
+    - contextPath: Claroty.Alert.Severity
+      description: The alert severity
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Resolve all alerts
+      isArray: false
+      name: select_all
+      predefined:
+      - 'True'
+      - ' False'
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Which alerts to resolve. Format - "<alert_id>-<site_id>,<alert_id>-<site_id>...."
+        For playbook use - ResuorceId is <alert_id>-<site_id>
+      isArray: false
+      name: selected_alerts
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Which alerts to exclude when resolving. Format - "<alert_id>-<site_id>,<alert_id>-<site_id>...."
+        For playbook use - ResuorceId is <alert_id>-<site_id>
+      isArray: false
+      name: excluded_alerts
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: resolve
+      description: How to resolve the alert - archive / resolve
+      isArray: false
+      name: resolve_as
+      predefined:
+      - archive
+      - ' resolve'
+      required: false
+      secret: false
+    deprecated: false
+    description: Resolve alerts
+    execution: true
+    name: claroty-resolve-alert
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
