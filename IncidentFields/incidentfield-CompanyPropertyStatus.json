@@ -1,6 +1,7 @@
 {
 	"id": "incident_companypropertystatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2019-12-24T17:33:31.288546884Z",
 	"name": "Company Property Status",
 	"ownerOnly": false,

@@ -19,94 +19,95 @@ INTEGRATION_CONTEXT_NAME = 'cisco-fp'
 
 
 class Client(BaseClient):
-
     def login(self):
         """update the X-auth-access-token in the client.
         """
-        self._headers['X-auth-access-token'] = self._http_request(
+        new_headers = self._http_request(
             'POST',
             url_suffix='api/fmc_platform/v1/auth/generatetoken',
             resp_type='response'
-        ).headers['X-auth-access-token']
+        ).headers
+        self._headers['X-auth-access-token'] = new_headers.get('X-auth-access-token')
+        self._base_url += f'api/fmc_config/v1/domain/{new_headers.get("DOMAIN_UUID")}/'
         if self._headers['X-auth-access-token'] == '':
             return_error('No valid access token')
         return
 
     def cisco_fp_list_zones(self, limit, offset) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/securityzones' \
+        suffix = f'object/securityzones' \
                  f'?expanded=true&limit={limit}&offset={offset}'
         return self._http_request('GET', suffix)
 
     def cisco_fp_list_ports(self, limit, offset) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/ports' \
+        suffix = f'object/ports' \
                  f'?expanded=true&limit={limit}&offset={offset}'
         return self._http_request('GET', suffix)
 
     def cisco_fp_list_url_categories(self, limit, offset) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/urlcategories' \
+        suffix = f'object/urlcategories' \
                  f'?expanded=true&limit={limit}&offset={offset}'
         return self._http_request('GET', suffix)
 
     def cisco_fp_get_network_objects(self, limit, offset, object_type, object_id) -> Dict:
         end_suffix = '/' + object_id if object_id else '?expanded=true&limit=' + limit + '&offset=' + offset
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/{object_type}{end_suffix}'
+        suffix = f'object/{object_type}{end_suffix}'
         return self._http_request('GET', suffix)
 
     def cisco_fp_create_network_objects(self, data, object_type) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/{object_type}'
+        suffix = f'object/{object_type}'
         return self._http_request('POST', suffix, json_data=data)
 
     def cisco_fp_update_network_objects(self, data, object_type, object_id) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/{object_type}/{object_id}'
+        suffix = f'object/{object_type}/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
     def cisco_fp_delete_network_objects(self, object_type, object_id) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/{object_type}/{object_id}'
+        suffix = f'object/{object_type}/{object_id}'
         return self._http_request('DELETE', suffix)
 
     def cisco_fp_get_network_groups_objects(self, limit, offset, object_id) -> Dict:
         end_suffix = '/' + object_id if object_id else '?expanded=true&limit=' + limit + '&offset=' + offset
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/networkgroups{end_suffix}'
+        suffix = f'object/networkgroups{end_suffix}'
         return self._http_request('GET', suffix)
 
     def cisco_fp_create_network_groups_objects(self, data) -> Dict:
-        suffix = 'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/networkgroups'
+        suffix = 'object/networkgroups'
         return self._http_request('POST', suffix, json_data=data)
 
     def cisco_fp_update_network_groups_objects(self, data) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/networkgroups/{data["id"]}'
+        suffix = f'object/networkgroups/{data["id"]}'
         return self._http_request('PUT', suffix, json_data=data)
 
     def cisco_fp_delete_network_groups_objects(self, object_id) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/networkgroups/{object_id}'
+        suffix = f'object/networkgroups/{object_id}'
         return self._http_request('DELETE', suffix)
 
     def cisco_fp_get_access_policy(self, limit, offset, policy_id) -> Dict:
         end_suffix = '/' + policy_id if policy_id else '?expanded=true&limit=' + limit + '&offset=' + offset
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies{end_suffix}'
+        suffix = f'policy/accesspolicies{end_suffix}'
         return self._http_request('GET', suffix)
 
     def cisco_fp_create_access_policy(self, data) -> Dict:
-        suffix = 'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies'
+        suffix = 'policy/accesspolicies'
         return self._http_request('POST', suffix, json_data=data)
 
     def cisco_fp_update_access_policy(self, data) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies/{data["id"]}'
+        suffix = f'policy/accesspolicies/{data["id"]}'
         return self._http_request('PUT', suffix, json_data=data)
 
     def cisco_fp_delete_access_policy(self, policy_id) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies/{policy_id}'
+        suffix = f'policy/accesspolicies/{policy_id}'
         return self._http_request('DELETE', suffix)
 
     def cisco_fp_get_list(self, suffix) -> Dict:
         return self._http_request('GET', suffix)
 
     def cisco_fp_create_policy_assignments(self, data) -> Dict:
-        suffix = 'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/assignment/policyassignments'
+        suffix = 'assignment/policyassignments'
         return self._http_request('POST', suffix, json_data=data)
 
     def cisco_fp_update_policy_assignments(self, data, pol_id) -> Dict:
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/assignment/policyassignments/{pol_id}'
+        suffix = f'assignment/policyassignments/{pol_id}'
         return self._http_request('POST', suffix, json_data=data)
 
     def cisco_get_access_rules(self, args) -> Dict:
@@ -115,13 +116,13 @@ class Client(BaseClient):
         policy_id = args.get('policy_id')
         rule_id = f'?expanded=true&limit={limit}&offset={offset}' if args.get('rule_id', '') == '' \
             else '/' + args.get('rule_id', '')
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies/' \
+        suffix = f'policy/accesspolicies/' \
                  f'{policy_id}/accessrules{rule_id}'
         return self._http_request('GET', suffix)
 
     def cisco_fp_create_access_rules(self, args) -> Dict:
         policy_id = args.get('policy_id')
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies/' \
+        suffix = f'policy/accesspolicies/' \
                  f'{policy_id}/accessrules'
         del args['policy_id']
         return self._http_request('POST', suffix, json_data=args)
@@ -129,32 +130,16 @@ class Client(BaseClient):
     def cisco_fp_delete_access_rules(self, args) -> Dict:
         policy_id = args.get('policy_id')
         rule_id = args.get('rule_id')
-        suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy/accesspolicies/' \
+        suffix = f'policy/accesspolicies/' \
                  f'{policy_id}/accessrules{rule_id}'
         return self._http_request('DELETE', suffix)
 
     def cisco_fp_deploy_to_devices(self, data) -> Dict:
-        suffix = 'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/deployment/deploymentrequests'
+        suffix = 'deployment/deploymentrequests'
         return self._http_request('POST', suffix, json_data=data)
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def raw_response_to_context(list_key, items):
-    if isinstance(items, list):
-        return [raw_response_to_context(list_key, item) for item in items]
-    list_to_output = {}
-    for key in list_key:
-        if type(list_key[key]) == dict:
-            if key in items:
-                list_to_output[key] = raw_response_to_context(list_key[key], items[key])
-        elif type(list_key[key]) == list:
-            in_list = list_key[key]
-            list_to_output[key] = items[in_list[0]][in_list[1]]
-        else:
-            list_to_output[key] = items.get(list_key[key], '')
-    return list_to_output
 
 
 def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
@@ -188,40 +173,216 @@ def creates_list_of_dictionary(value: str, type_name: str, value_key: str):
     return objects
 
 
-def raw_response_to_context_ruls(items):
-    list_to_output = {
-        'ID': 'id',
-        'Name': 'name',
-        'Action': 'action',
-        'Enabled': 'enabled',
-        'SendEventsToFMC': 'sendEventsToFMC',
-        'RuleIndex': ['metadata', 'ruleIndex'],
-        'Section': ['metadata', 'section'],
-        'Category': ['metadata', 'category'],
-        'urls': {
-            'literals': {'URL': 'url'},
-            'objects': {'Name': 'name', 'ID': 'id'}},
-        'vlanTags': {
-            'objects': {'Name': 'name', 'ID': 'id', 'Type': 'type'},
-            'literals': {'EndTag': 'endTag', 'StartTag': 'startTag'}},
-        'sourceZones': {'objects': {'Name': 'name', 'ID': 'id', 'Type': 'type'}},
-        'applications': {'applications': {'Name': 'name', 'ID': 'id'}},
-        'destinationZones': {'objects': {'Name': 'name', 'ID': 'id', 'Type': 'type'}},
-        'sourceNetworks': {
-            'objects': {'Name': 'name', 'ID': 'id', 'Type': 'type'},
-            'literals': {'Type': 'type', 'Value': 'value'}},
-        'destinationNetworks': {
-            'objects': {'Name': 'name', 'ID': 'id', 'Type': 'type'},
-            'literals': {'Type': 'type', 'Value': 'value'}},
-        'sourcePorts': {
-            'objects': {'Name': 'name', 'ID': 'id', 'Type': 'type', 'Protocol': 'protocol'},
-            'literals': {'Port': 'port', 'Protocol': 'protocol'}},
-        'destinationPorts': {
-            'objects': {'Name': 'name', 'ID': 'id', 'Type': 'type', 'Protocol': 'protocol'},
-            'literals': {'Port': 'port', 'Protocol': 'protocol'}},
-        'sourceSecurityGroupTags': {'objects': {'Name': 'name', 'ID': 'id', 'Type': 'type'}}
+def custom_title(key):
+    if key == 'id':
+        return 'ID'
+    else:
+        return key.capitalize()
+
+
+def raw_response_to_context_list(list_key, items):
+    if isinstance(items, list):
+        return [raw_response_to_context_list(list_key, item) for item in items]
+
+    list_to_output = {}
+    for key in list_key:
+        list_to_output[custom_title(key)] = items.get(key, '')
+    return list_to_output
+
+
+def raw_response_to_context_network_groups(items):
+    if isinstance(items, list):
+        return [raw_response_to_context_network_groups(item) for item in items]
+    return {
+        'Name': items.get('name'),
+        'ID': items.get('id'),
+        'Overridable': items.get('overridable'),
+        'Description': items.get('description'),
+        'Objects': [
+            {
+                'Name': obj.get('name'),
+                'ID': obj.get('id'),
+                'Type': obj.get('type')
+            } for obj in items.get('objects', [])
+        ],
+        'Literals': [
+            {
+                'Name': obj.get('name'),
+                'ID': obj.get('id'),
+                'Type': obj.get('type')
+            } for obj in items.get('literals', [])
+        ]
     }
-    return raw_response_to_context(list_to_output, items)
+
+
+def raw_response_to_context_policy_assignment(items):
+    if isinstance(items, list):
+        return [raw_response_to_context_policy_assignment(item) for item in items]
+    return {
+        'Name': items.get('name'),
+        'ID': items.get('id'),
+        'PolicyName':  items.get('policy', {}).get('name', ''),
+        'PolicyID':  items.get('policy', {}).get('id', ''),
+        'PolicyDescription': items.get('policy', {}).get('description', ''),
+        'Targets': [
+            {
+                'Name': obj.get('name'),
+                'ID': obj.get('id'),
+                'Type': obj.get('type')
+            } for obj in items.get('targets', [])
+        ]
+    }
+
+
+def raw_response_to_context_access_policy(items):
+    if isinstance(items, list):
+        return [raw_response_to_context_access_policy(item) for item in items]
+    return {
+        'Name': items.get('name'),
+        'ID': items.get('id'),
+        'DefaultActionID':  items.get('defaultAction', {}).get('id', ''),
+        'Action':  items.get('defaultAction', {}).get('action', '')
+    }
+
+
+def raw_response_to_context_ruls(items):
+    if isinstance(items, list):
+        return [raw_response_to_context_ruls(item) for item in items]
+    entry = {
+        'ID': items.get('id'),
+        'Name': items.get('name'),
+        'Action': items.get('action'),
+        'Enabled': items.get('enabled'),
+        'SendEventsToFMC': items.get('sendEventsToFMC'),
+        'RuleIndex': items.get('metadata', {}).get('ruleIndex', ''),
+        'Section': items.get('metadata', {}).get('section', ''),
+        'Category': items.get('metadata', {}).get('category', ''),
+    }
+    if 'urls' in items:
+        entry['Urls'] = {}
+        if 'literals' in items.get('urls'):
+            entry['Urls']['Literals'] = [{
+                    'URL': obj.get('url', '')
+                }for obj in items.get('urls', {}).get('literals', [])
+            ]
+        if 'objects' in items.get('urls'):
+            entry['Urls']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', '')
+                } for obj in items.get('urls', {}).get('objects', [])
+            ]
+    if 'vlanTags' in items:
+        entry['VlanTags'] = {}
+        if 'literals' in items.get('vlanTags'):
+            entry['VlanTags']['Literals'] = [{
+                    'EndTag': obj.get('endTag', ''),
+                    'StartTag': obj.get('startTag', '')
+                } for obj in items.get('vlanTags', {}).get('literals', [])
+            ]
+        if 'objects' in items.get('vlanTags'):
+            entry['VlanTags']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', ''),
+                    'Type': obj.get('type', '')
+                } for obj in items.get('vlanTags', {}).get('objects', [])
+            ]
+    if 'sourceZones' in items:
+        entry['SourceZones'] = {}
+        if 'objects' in items.get('sourceZones'):
+            entry['SourceZones']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', ''),
+                    'Type': obj.get('type', '')
+                } for obj in items.get('sourceZones', {}).get('objects', [])
+            ]
+    if 'applications' in items and 'applications' in items.get('applications', {}):
+        entry['Applications'] = [{
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', '')
+            } for obj in items.get('applications', {}).get('applications', [])
+        ]
+    if 'destinationZones' in items:
+        entry['DestinationZones'] = {}
+        if 'objects' in items.get('destinationZones'):
+            entry['DestinationZones']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', ''),
+                    'Type': obj.get('type', '')
+                } for obj in items.get('destinationZones', {}).get('objects', [])
+            ]
+    if 'sourceNetworks' in items:
+        entry['SourceNetworks'] = {}
+        if 'literals' in items.get('sourceNetworks'):
+            entry['SourceNetworks']['Literals'] = [{
+                    'Type': obj.get('type', ''),
+                    'Value': obj.get('value', '')
+                }for obj in items.get('sourceNetworks', {}).get('literals', [])
+            ]
+        if 'objects' in items.get('sourceNetworks'):
+            entry['SourceNetworks']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', ''),
+                    'Type': obj.get('type', '')
+                } for obj in items.get('sourceNetworks', {}).get('objects', [])
+            ]
+    if 'destinationNetworks' in items:
+        entry['DestinationNetworks'] = {}
+        if 'literals' in items.get('destinationNetworks'):
+            entry['DestinationNetworks']['Literals'] = [{
+                    'Type': obj.get('type', ''),
+                    'Value': obj.get('value', '')
+                } for obj in items.get('destinationNetworks', {}).get('literals', [])
+            ],
+        if 'objects' in items.get('destinationNetworks'):
+            entry['DestinationNetworks']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', ''),
+                    'Type': obj.get('type', '')
+                } for obj in items.get('destinationNetworks', {}).get('objects', [])
+            ]
+    if 'sourcePorts' in items:
+        entry['SourcePorts'] = {}
+        if 'literals' in items.get('sourcePorts'):
+            entry['SourcePorts']['Literals'] = [{
+                    'Port': obj.get('port', ''),
+                    'Protocol': obj.get('protocol', '')
+                } for obj in items.get('sourcePorts', {}).get('literals', [])
+            ]
+        if 'objects' in items.get('sourcePorts'):
+            entry['SourcePorts']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', ''),
+                    'Type': obj.get('type', ''),
+                    'Protocol': obj.get('protocol', '')
+                } for obj in items.get('sourcePorts', {}).get('objects', [])
+            ]
+
+    if 'destinationPorts' in items:
+        entry['DestinationPorts'] = {}
+        if 'literals' in items.get('destinationPorts'):
+            entry['DestinationPorts']['Literals'] = [{
+                    'Port': obj.get('port', ''),
+                    'Protocol': obj.get('protocol', '')
+                } for obj in items.get('destinationPorts', {}).get('literals', [])
+            ]
+        if 'objects' in items.get('destinationPorts'):
+            entry['DestinationPorts']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', ''),
+                    'Type': obj.get('type', ''),
+                    'Protocol': obj.get('protocol', '')
+                } for obj in items.get('destinationPorts', {}).get('objects', [])
+            ]
+    if 'sourceSecurityGroupTags' in items:
+        entry['SourceSecurityGroupTags'] = {}
+        if 'objects' in items.get('sourceSecurityGroupTags'):
+            entry['SourceSecurityGroupTags']['Objects'] = [{
+                    'Name': obj.get('name', ''),
+                    'ID': obj.get('id', ''),
+                    'Type': obj.get('type', '')
+                } for obj in items.get('sourceSecurityGroupTags', {}).get('objects', [])
+            ]
+    return entry
 
 
 ''' COMMANDS '''
@@ -238,18 +399,22 @@ def list_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List zones:'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'InterFaceMode': 'interfaceMode',
-            'interfaces': {'Name': 'name', 'ID': 'id'}
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        context_entry = [{
+                'ID': item.get('id', ''),
+                'Name': item.get('name', ''),
+                'InterFaceMode': item.get('interfaceMode', ''),
+                'Interfaces': [{
+                        'Name': obj.get('name', ''),
+                        'ID': obj.get('id' '')
+                    }for obj in item.get('interfaces', {})
+                ]
+            }for item in items
+        ]
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Zone(val.ID && val.ID === obj.ID)': context_entry
         }
         entry_white_list_count = switch_list_to_list_counter(context_entry)
-        presented_output = ['ID', 'Name', 'interfaceMode', 'interfaces']
+        presented_output = ['ID', 'Name', 'InterfaceMode', 'Interfaces']
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
     else:
@@ -263,13 +428,8 @@ def list_ports_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List ports:'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Protocol': 'protocol',
-            'Port': 'port'
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        list_to_output = ['id', 'name', 'protocol', 'port']
+        context_entry = raw_response_to_context_list(list_to_output, items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Port(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -286,11 +446,8 @@ def list_url_categories_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List url categories:'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name'
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        list_to_output = ['id', 'name']
+        context_entry = raw_response_to_context_list(list_to_output, items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Category(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -314,15 +471,8 @@ def get_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, 
         if 'id' in raw_response:
             title = f'{INTEGRATION_NAME} - get {object_type} object {object_id}'
             items = raw_response
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Value': 'value',
-            'Overridable': 'overridable',
-            'Description': 'description'
-        }
-        print('hh')
-        context_entry = raw_response_to_context(list_to_output, items)
+        list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+        context_entry = raw_response_to_context_list(list_to_output, items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.{type_to_output}(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -351,14 +501,8 @@ def create_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
             del data_to_post['type']
         raw_response = client.cisco_fp_create_network_objects(data_to_post, object_type)
         title = f'{INTEGRATION_NAME} - {object_type} object has been created.'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Value': 'value',
-            'Overridable': 'overridable',
-            'Description': 'description'
-        }
-        context_entry = raw_response_to_context(list_to_output, raw_response)
+        list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+        context_entry = raw_response_to_context_list(list_to_output, raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.{type_to_output}(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -388,14 +532,9 @@ def update_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
 
         raw_response = client.cisco_fp_update_network_objects(data_to_post, object_type, object_id)
         title = f'{INTEGRATION_NAME} - {object_type} object has been updated.'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Value': 'value',
-            'Overridable': 'overridable',
-            'Description': 'description'
-        }
-        context_entry = raw_response_to_context(list_to_output, raw_response)
+        list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+
+        context_entry = raw_response_to_context_list(list_to_output, raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.{type_to_output}(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -418,14 +557,9 @@ def delete_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
         type_to_output = 'Networks' if object_type == 'networks' else 'Hosts'
         raw_response = client.cisco_fp_delete_network_objects(object_type, object_id)
         title = f'{INTEGRATION_NAME} - {object_type} object has been deleted.'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Value': 'value',
-            'Overridable': 'overridable',
-            'Description': 'description'
-        }
-        context_entry = raw_response_to_context(list_to_output, raw_response)
+        list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+
+        context_entry = raw_response_to_context_list(list_to_output, raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.{type_to_output}(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -452,20 +586,11 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
         if 'id' in raw_response:
             title = f'{INTEGRATION_NAME} - network group object:'
             items = raw_response
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Overridable': 'overridable',
-            'Description': 'description',
-            'objects': {'Type': 'type', 'Name': 'name', 'ID': 'id'},
-            'literals': {'Type': 'type', 'Value': 'value'}
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        context_entry = raw_response_to_context_network_groups(items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
         }
-
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'literals', 'objects']
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
         entry_white_list_count = switch_list_to_list_counter(context_entry)
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
@@ -485,20 +610,12 @@ def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
 
         raw_response = client.cisco_fp_create_network_groups_objects(data_to_post)
         title = f'{INTEGRATION_NAME} - network group has been created.'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Overridable': 'overridable',
-            'Description': 'description',
-            'objects': {'Type': 'type', 'Name': 'name', 'ID': 'id'},
-            'literals': {'Type': 'type', 'Value': 'value'}
-        }
-        context_entry = raw_response_to_context(list_to_output, raw_response)
+        context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
         }
 
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'literals', 'objects']
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
         entry_white_list_count = switch_list_to_list_counter(context_entry)
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
@@ -518,20 +635,12 @@ def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
 
         raw_response = client.cisco_fp_update_network_groups_objects(data_to_post)
         title = f'{INTEGRATION_NAME} - network group has been updated.'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Overridable': 'overridable',
-            'Description': 'description',
-            'objects': {'Type': 'type', 'Name': 'name', 'ID': 'id'},
-            'literals': {'Type': 'type', 'Value': 'value'}
-        }
-        context_entry = raw_response_to_context(list_to_output, raw_response)
+        context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
         }
 
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'literals', 'objects']
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
         entry_white_list_count = switch_list_to_list_counter(context_entry)
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
@@ -544,20 +653,11 @@ def delete_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
         object_id = args['id']
         raw_response = client.cisco_fp_delete_network_groups_objects(object_id)
         title = f'{INTEGRATION_NAME} - network group - {object_id} - has been delete.'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Overridable': 'overridable',
-            'Description': 'description',
-            'objects': {'Type': 'type', 'Name': 'name', 'ID': 'id'},
-            'literals': {'Type': 'type', 'Value': 'value'}
-        }
-        context_entry = raw_response_to_context(list_to_output, raw_response)
+        context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
         }
-
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'literals', 'objects']
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
         entry_white_list_count = switch_list_to_list_counter(context_entry)
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
@@ -576,13 +676,7 @@ def get_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
         if 'id' in raw_response:
             title = f'{INTEGRATION_NAME} - get access policy'
             items = raw_response
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'DefaultActionID': ['defaultAction', 'id'],
-            'Action': ['defaultAction', 'action']
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        context_entry = raw_response_to_context_access_policy(items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Policy(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -600,13 +694,7 @@ def create_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
         }}
     raw_response = client.cisco_fp_create_access_policy(data_to_post)
     title = f'{INTEGRATION_NAME} - access policy has been created.'
-    list_to_output = {
-        'ID': 'id',
-        'Name': 'name',
-        'DefaultActionID': ['defaultAction', 'id'],
-        'Action': ['defaultAction', 'action']
-    }
-    context_entry = raw_response_to_context(list_to_output, raw_response)
+    context_entry = raw_response_to_context_access_policy(raw_response)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Policy(val.ID && val.ID === obj.ID)': context_entry
     }
@@ -624,13 +712,7 @@ def update_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
         }}
     raw_response = client.cisco_fp_update_access_policy(data_to_post)
     title = f'{INTEGRATION_NAME} - access policy has been updated.'
-    list_to_output = {
-        'ID': 'id',
-        'Name': 'name',
-        'DefaultActionID': ['defaultAction', 'id'],
-        'Action': ['defaultAction', 'action']
-    }
-    context_entry = raw_response_to_context(list_to_output, raw_response)
+    context_entry = raw_response_to_context_access_policy(raw_response)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Policy(val.ID && val.ID === obj.ID)': context_entry
     }
@@ -642,13 +724,7 @@ def delete_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
     policy_id = args.get('id')
     raw_response = client.cisco_fp_delete_access_policy(policy_id)
     title = f'{INTEGRATION_NAME} - access policy deleted.'
-    list_to_output = {
-        'ID': 'id',
-        'Name': 'name',
-        'DefaultActionID': ['defaultAction', 'id'],
-        'Action': ['defaultAction', 'action']
-    }
-    context_entry = raw_response_to_context(list_to_output, raw_response)
+    context_entry = raw_response_to_context_access_policy(raw_response)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Policy(val.ID && val.ID === obj.ID)': context_entry
     }
@@ -660,18 +736,14 @@ def list_security_group_tags_command(client: Client, args: Dict) -> Tuple[str, D
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
     ise = args.get('ise', '')
-    suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/{ise}securitygrouptags' \
+    suffix = f'object/{ise}securitygrouptags' \
              f'?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.cisco_fp_get_list(suffix)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List {ise}security group tags:'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Tag': 'tag'
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        list_to_output = ['id', 'name', 'tag']
+        context_entry = raw_response_to_context_list(list_to_output, items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.{ise}SecurityGroupTags(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -689,21 +761,22 @@ def list_ise_security_group_tags_command(client: Client, args: Dict) -> Tuple[st
 def list_vlan_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/vlantags' \
+    suffix = f'object/vlantags' \
              f'?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.cisco_fp_get_list(suffix)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List vlan tags:'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Overridable': 'overridable',
-            'Description': 'description',
-            'StartTag': ['data', 'startTag'],
-            'EndTag': ['data', 'endTag']
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        context_entry = [
+            {
+                'Name': item.get('name'),
+                'ID': item.get('id'),
+                'Overridable': item.get('overridable'),
+                'Description': item.get('description'),
+                'StartTag': item.get('data', {}).get('startTag'),
+                'EndTag': item.get('data', {}).get('endTag')
+            } for item in items
+        ]
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.VlanTags(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -716,32 +789,35 @@ def list_vlan_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
 def list_vlan_tags_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/vlangrouptags' \
+    suffix = f'object/vlangrouptags' \
              f'?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.cisco_fp_get_list(suffix)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List of vlan tags groups objects:'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'Overridable': 'overridable',
-            'Description': 'description',
-            'objects': {
-                'ID': 'id',
-                'Name': 'name',
-                'Overridable': 'overridable',
-                'Description': 'description',
-                'StartTag': ['data', 'startTag'],
-                'EndTag': ['data', 'endTag']
-            }
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        context_entry = [
+            {
+                'Name': item.get('name'),
+                'ID': item.get('id'),
+                'Overridable': item.get('overridable'),
+                'Description': item.get('description'),
+                'objects': [
+                    {
+                        'Name': obj.get('name'),
+                        'ID': obj.get('id'),
+                        'Overridable': obj.get('overridable'),
+                        'Description': obj.get('description'),
+                        'StartTag': obj.get('data', {}).get('startTag'),
+                        'EndTag': obj.get('data', {}).get('endTag')
+                    } for obj in item.get('object', [])
+                ]
+            } for item in items
+        ]
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.VlanTags_group(val.ID && val.ID === obj.ID)': context_entry
         }
         entry_white_list_count = switch_list_to_list_counter(context_entry)
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'objects']
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Objects']
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
     else:
@@ -751,21 +827,32 @@ def list_vlan_tags_group_command(client: Client, args: Dict) -> Tuple[str, Dict,
 def list_applications_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/object/applications' \
+    suffix = f'object/applications' \
              f'?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.cisco_fp_get_list(suffix)
     items = raw_response.get('items')
     if items:
-        list_to_output = {
-            'applicationTypes': {'applicationTypes': 'name'},
-            'appCategories': {'Name': 'name', 'ID': 'id', 'Count': ['metadata', 'count']},
-            'Name': 'name',
-            'ID': 'id',
-            'Risk': ['risk', 'name'],
-            'AppProductivity': ['appProductivity', 'name']
-        }
+        context_entry = [
+            {
+                'Name': item.get('name'),
+                'ID': item.get('id'),
+                'Risk': item.get('risk', {}).get('name', ''),
+                'AppProductivity': item.get('appProductivity', {}).get('name', ''),
+                'ApplicationTypes': [
+                    {
+                        'Name': obj.get('name')
+                    } for obj in item.get('applicationTypes', [])
+                ],
+                'AppCategories': [
+                    {
+                        'Name': obj.get('name'),
+                        'ID': obj.get('id'),
+                        'Count': obj.get('metadata', {}).get('count', '')
+                    } for obj in item.get('appCategories', [])
+                ]
+            } for item in items
+        ]
         title = f'{INTEGRATION_NAME} - List of applications objects:'
-        context_entry = raw_response_to_context(list_to_output, items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Applications(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -882,25 +969,13 @@ def delete_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 def list_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/assignment/policyassignments' \
+    suffix = f'assignment/policyassignments' \
              f'?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.cisco_fp_get_list(suffix)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List of policy assignments:'
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'PolicyName': ['policy', 'name'],
-            'PolicyID': ['policy', 'id'],
-            'PolicyDescription': ['policy', 'description'],
-            'targets': {
-                'ID': 'id',
-                'Name': 'name',
-                'Type': 'type'
-            }
-        }
-        context_entry = raw_response_to_context(list_to_output, items)
+        context_entry = raw_response_to_context_policy_assignment(items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.PolicyAssignments(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -926,18 +1001,7 @@ def create_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
     print(data_to_post)
     raw_response = client.cisco_fp_create_policy_assignments(data_to_post)
     title = f'{INTEGRATION_NAME} - Policy assignments has been done.'
-    list_to_output = {
-        'ID': 'id',
-        'Name': 'name',
-        'PolicyName': ['policy', 'name'],
-        'PolicyID': ['policy', 'id'],
-        'targets': {
-            'ID': 'id',
-            'Name': 'name',
-            'Type': 'type'
-        }
-    }
-    context_entry = raw_response_to_context(list_to_output, raw_response)
+    context_entry = raw_response_to_context_policy_assignment(raw_response)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.PolicyAssignments(val.ID && val.ID === obj.ID)': context_entry
     }
@@ -962,18 +1026,7 @@ def update_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
     print(data_to_post)
     raw_response = client.cisco_fp_update_policy_assignments(data_to_post, policy_id)
     title = f'{INTEGRATION_NAME} - policy update has been done.'
-    list_to_output = {
-        'ID': 'id',
-        'Name': 'name',
-        'PolicyName': ['policy', 'name'],
-        'PolicyID': ['policy', 'id'],
-        'targets': {
-            'ID': 'id',
-            'Name': 'name',
-            'Type': 'type'
-        }
-    }
-    context_entry = raw_response_to_context(list_to_output, raw_response)
+    context_entry = raw_response_to_context_policy_assignment(raw_response)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.PolicyAssignments(val.ID && val.ID === obj.ID)': context_entry
     }
@@ -985,21 +1038,21 @@ def update_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
 def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/deployment/deployabledevices' \
+    suffix = f'deployment/deployabledevices' \
              f'?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.cisco_fp_get_list(suffix)
     items = raw_response.get('items')
     if items:
-        list_to_output = {
-            'CanBeDeployed': 'canBeDeployed',
-            'UpToDate': 'upToDate',
-            'DeviceId': ['device', 'id'],
-            'DeviceName': ['device', 'name'],
-            'DeviceType': ['device', 'type'],
-            'Version': 'version'
-        }
+        context_entry = [{
+                'CanBeDeployed': item.get('canBeDeployed', ''),
+                'UpToDate': item.get('upToDate', ''),
+                'DeviceId': item.get('device', {}).get('id', ''),
+                'DeviceName': item.get('device', {}).get('name', ''),
+                'DeviceType': item.get('device', {}).get('type', ''),
+                'Version': item.get('version', '')
+            }for item in items
+        ]
         title = f'{INTEGRATION_NAME} - List of deployable devices:'
-        context_entry = raw_response_to_context(list_to_output, items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.DeployableDevices(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -1013,25 +1066,24 @@ def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dic
 def get_device_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/devices/devicerecords' \
+    suffix = f'devices/devicerecords' \
              f'?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.cisco_fp_get_list(suffix)
     items = raw_response.get('items')
     if items:
-        list_to_output = {
-            'ID': 'id',
-            'Name': 'name',
-            'HostName': 'hostName',
-            'Type': 'type',
-            'deviceGroup': {'id': 'id'}
-        }
+        context_entry = [{
+                'ID': item.get('id', ''),
+                'Name': item.get('name', ''),
+                'HostName': item.get('hostName', ''),
+                'Type': item.get('type', ''),
+                'DeviceGroupID': item.get('deviceGroup', {}).get('id', '')
+            } for item in items
+        ]
         title = f'{INTEGRATION_NAME} - List of device records:'
-        context_entry = raw_response_to_context(list_to_output, items)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.DeviceRecords(val.ID && val.ID === obj.ID)': context_entry
         }
-        entry_white_list_count = switch_list_to_list_counter(context_entry)
-        human_readable = tableToMarkdown(title, entry_white_list_count)
+        human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any device records.', {}, {}
@@ -1065,7 +1117,7 @@ def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 
 def get_task_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     task_id = args.get('task_id')
-    suffix = f'api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/job/taskstatuses/{task_id}'
+    suffix = f'job/taskstatuses/{task_id}'
     raw_response = client.cisco_fp_get_list(suffix)
     if 'status' in raw_response:
         context_entry = {
@@ -1145,14 +1197,11 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-device-records': get_device_records_command,
         f'{INTEGRATION_COMMAND_NAME}-deploy-to-devices': deploy_to_devices_command,
         f'{INTEGRATION_COMMAND_NAME}-get-task-status': get_task_status_command
-
     }
     try:
-
         if command in commands:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)
-
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'

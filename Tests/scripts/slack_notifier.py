@@ -6,7 +6,7 @@ import requests
 
 from slackclient import SlackClient
 
-from Tests.test_utils import str2bool, run_command, LOG_COLORS, print_color
+from Tests.test_utils import str2bool, run_command, LOG_COLORS, print_color, print_error
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -32,6 +32,7 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
+    parser.add_argument('-i', '--node_index', help='CircleCI node index (Container number)')
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address',
                         required=True)
     options = parser.parse_args()
@@ -39,20 +40,61 @@ def options_handler():
     return options
 
 
-def get_attachments(build_url, env_results_file_name):
+def get_failing_unit_tests_file_data():
+    try:
+        failing_ut_list = None
+        if os.path.isfile('./artifacts/failed_unittests.txt'):
+            print('Extracting failed_unittests')
+            with open('./artifacts/failed_unittests.txt', 'r') as failed_unittests_file:
+                failing_ut = failed_unittests_file.readlines()
+                failing_ut_list = [line.strip('\n') for line in failing_ut]
+        else:
+            print('Did not find failed_unittests.txt file')
+    except Exception as err:
+        print_error('Error getting failed_unittests.txt file: \n {}'.format(err))
+    return failing_ut_list
+
+
+def get_unittests_fields():
+    failed_unittests = get_failing_unit_tests_file_data()
+    unittests_fields = []
+    if failed_unittests:
+        unittests_fields.append({
+            "title": "Failed unittests - ({})".format(len(failed_unittests)),
+            "value": '\n'.join(failed_unittests),
+            "short": False
+        })
+    return unittests_fields
+
+
+def get_attachments_for_unit_test(build_url):
+    unittests_fields = get_unittests_fields()
+    color = 'good' if not unittests_fields else 'danger'
+    title = 'Content Nightly Unit Tests - Success' if not unittests_fields else 'Content Nightly Unit Tests - Failure'
+    container_one_build_url = build_url + '#queue-placeholder/containers/1'
+    content_team_attachment = [{
+        'fallback': title,
+        'color': color,
+        'title': title,
+        'title_link': container_one_build_url,
+        'fields': unittests_fields
+    }]
+    return content_team_attachment
+
+
+def get_attachments_for_test_playbooks(build_url, env_results_file_name):
     with open(env_results_file_name, 'r') as env_results_file_content:
         env_results = json.load(env_results_file_content)
 
     # TODO: update this code after switching to parallel tests using multiple server for nightly build
     instance_dns = env_results[0]['InstanceDNS']
     role = env_results[0]['Role']
-    build_number = build_url.split('/')[-1]
     success_file_path = "./Tests/is_build_passed_{}.txt".format(role.replace(' ', ''))
 
-    content_team_fields, content_fields, _, failed_unit_tests = get_fields(build_number)
-    is_build_success = os.path.isfile(success_file_path) and not failed_unit_tests
+    content_team_fields, content_fields, _ = get_fields()
+    is_build_success = os.path.isfile(success_file_path)
     color = 'good' if is_build_success else 'danger'
-    title = 'Content Build - Success' if is_build_success else 'Content Build - Failure'
+    title = 'Content Nightly Build - Success' if is_build_success else 'Content Nightly Build - Failure'
 
     content_team_attachment = [{
         'fallback': title,
@@ -79,18 +121,7 @@ def get_attachments(build_url, env_results_file_name):
     return content_team_attachment, content_attachment
 
 
-def get_failing_unit_tests(build_number):
-    try:
-        failing_unit_tests_url = 'https://{0}-60525392-gh.circle-artifacts.com/1/artifacts/failed_unittests.txt'.format(
-            build_number)
-        res = http_request(failing_unit_tests_url, verify=False, text=True)
-        failing_ut_list = res.split('\n')
-    except Exception:
-        failing_ut_list = None
-    return failing_ut_list
-
-
-def get_fields(build_number):
+def get_fields():
     failed_tests = []
     if os.path.isfile('./Tests/failed_tests.txt'):
         print('Extracting failed_tests')
@@ -123,16 +154,6 @@ def get_fields(build_number):
         content_team_fields.append(field_failed_tests)
         content_fields.append(field_failed_tests)
 
-    failed_unittests = get_failing_unit_tests(build_number)
-    if failed_unittests:
-        field_failed_unittests = {
-            "title": "Failed unittests - ({})".format(len(failed_unittests)),
-            "value": '\n'.join(failed_unittests),
-            "short": False
-        }
-        content_team_fields.append(field_failed_unittests)
-        content_fields.append(field_failed_unittests)
-
     if skipped_tests:
         field_skipped_tests = {
             "title": "Skipped tests - ({})".format(len(skipped_tests)),
@@ -149,18 +170,25 @@ def get_fields(build_number):
         }
         content_team_fields.append(field_skipped_integrations)
 
-    return content_team_fields, content_fields, failed_tests, failed_unittests
+    return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, slack_token, env_results_file_name):
+def slack_notifier(build_url, slack_token, env_results_file_name, container):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
     if branch_name == 'master':
-        print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
         print("Extracting build status")
-        content_team_attachments, _ = get_attachments(build_url, env_results_file_name)
+        # container 1: unit tests
+        if int(container):
+            print_color("Starting Slack notifications about nightly build - unit tests", LOG_COLORS.GREEN)
+            content_team_attachments = get_attachments_for_unit_test(build_url)
+
+        # container 0: test playbooks
+        else:
+            print_color("Starting Slack notifications about nightly build - tests playbook", LOG_COLORS.GREEN)
+            content_team_attachments, _ = get_attachments_for_test_playbooks(build_url, env_results_file_name)
 
         print("Sending Slack messages to #content-team")
         slack_client = SlackClient(slack_token)
@@ -176,7 +204,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
 def main():
     options = options_handler()
     if options.nightly:
-        slack_notifier(options.url, options.slack, options.env_results_file_name)
+        slack_notifier(options.url, options.slack, options.env_results_file_name, options.node_index)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
