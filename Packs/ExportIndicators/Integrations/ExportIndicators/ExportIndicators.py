@@ -203,12 +203,13 @@ def route_list_values() -> Response:
     """
     params = demisto.params()
 
-    username: str = params.get('credentials', {}).get('identifier')
-    password: str = params.get('credentials', {}).get('password')
+    credentials = params.get('credentials') if params.get('credentials') else {}
+    username: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
     if username and password:
         headers: dict = cast(Dict[Any, Any], request.headers)
         if not validate_basic_authentication(headers, username, password):
-            err_msg: str = 'Basic authentication failed. Please make sure you are using the right credentials.'
+            err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
             demisto.debug(err_msg)
             return Response(err_msg, status=401)
 
@@ -322,8 +323,9 @@ def main():
     """
     params = demisto.params()
 
-    username: str = params.get('credentials', {}).get('identifier')
-    password: str = params.get('credentials', {}).get('password')
+    credentials = params.get('credentials') if params.get('credentials') else {}
+    username: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
     if (username and not password) or (password and not username):
         err_msg: str = 'If using credentials, both username and password should be provided.'
         demisto.debug(err_msg)
