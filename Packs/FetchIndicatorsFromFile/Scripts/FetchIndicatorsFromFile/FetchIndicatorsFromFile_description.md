@@ -1,5 +1,9 @@
+This script fetches indicators from a file.
 
-## Fetch Indicators From File Script
-This script fetches indicators from a given file.
+## Supported File Types
+- TXT
+- XLS, XLSX
+- CSV
+- DOC, DOCX
 
-If an excel file is given (xls, xlsx, csv) - please specify the column_number from which to fetch the indicators.
+If an excel file is supplied (XLS, XLSX, CSV), you need to specify the *column_number* argument, which defines the column to fetch from.
