@@ -1,40 +1,416 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from flask import Flask, request, make_response, Response
+from flask import Flask, request, make_response, Response, stream_with_context
 from gevent.pywsgi import WSGIServer
-import functools
 from urllib.parse import urlparse, ParseResult
+from tempfile import NamedTemporaryFile
+from typing import Generator, List, Any
 
+import functools
 import libtaxii
 import libtaxii.messages_11
 import libtaxii.constants
+import stix.core
+import cybox
+import mixbox.idgen
+import mixbox.namespaces
+import netaddr
+import uuid
+import werkzeug.urls
 
-from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any
+
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'TAXII Server'
 PAGE_SIZE = 100
 APP: Flask = Flask('demisto-taxii')
-PORT: int
 
-SERVICE_INSTANCES = [
-    {
-        'type': libtaxii.constants.SVC_DISCOVERY,
-        'path': 'taxii-discovery-service'
+
+''' TAXII Server '''
+
+
+class TAXIIServer:
+    def __init__(self, host, port, collections, certificate, private_key, http_server):
+        self.host = host
+        self.port = port
+        self.collections = collections
+        self.certificate = certificate
+        self.private_key = private_key
+        self.http_server = http_server
+
+        self.service_instances = [
+            {
+                'type': libtaxii.constants.SVC_DISCOVERY,
+                'path': 'taxii-discovery-service'
+            },
+            {
+                'type': libtaxii.constants.SVC_COLLECTION_MANAGEMENT,
+                'path': 'taxii-collection-management-service'
+            },
+            {
+                'type': libtaxii.constants.SVC_POLL,
+                'path': 'taxii-poll-service'
+            }
+        ]
+
+    def get_discovery_service(self, taxii_message) -> libtaxii.messages_11.DiscoveryResponse:
+        discovery_service_url = f'{self.host}:{self.port}'
+
+        if taxii_message.message_type != libtaxii.constants.MSG_DISCOVERY_REQUEST:
+            raise ValueError('Invalid message, invalid Message Type')
+
+        discovery_response = libtaxii.messages_11.DiscoveryResponse(
+            libtaxii.messages_11.generate_message_id(),
+            taxii_message.message_id
+        )
+
+        for instance in self.service_instances:
+            taxii_service_instance = libtaxii.messages_11.ServiceInstance(
+                instance['type'],
+                'urn:taxii.mitre.org:services:1.1',
+                'urn:taxii.mitre.org:protocol:http:1.0',
+                "{}/{}".format(discovery_service_url, instance['path']),
+                ['urn:taxii.mitre.org:message:xml:1.1'],
+                available=True
+            )
+            discovery_response.service_instances.append(taxii_service_instance)
+
+        return discovery_response
+
+    def get_collections(self, taxii_message) -> libtaxii.messages_11.CollectionInformationResponse:
+        taxii_feeds = [name for name, query in self.collections.items()]
+
+        if taxii_message.message_type != \
+                libtaxii.constants.MSG_COLLECTION_INFORMATION_REQUEST:
+            raise ValueError('Invalid message, invalid Message Type')
+
+        collection_info_response = libtaxii.messages_11.CollectionInformationResponse(
+            libtaxii.messages_11.generate_message_id(),
+            taxii_message.message_id
+        )
+
+        for feed in taxii_feeds:
+            collection_info = libtaxii.messages_11.CollectionInformation(
+                feed,
+                '{} Data Feed'.format(feed),
+                ['urn:stix.mitre.org:xml:1.1.1'],
+                True
+            )
+            polling_instance = libtaxii.messages_11.PollingServiceInstance(
+                'urn:taxii.mitre.org:protocol:http:1.0',
+                '{}/taxii-poll-service'.format(self.host),
+                ['urn:taxii.mitre.org:message:xml:1.1']
+            )
+            collection_info.polling_service_instances.append(polling_instance)
+            collection_info_response.collection_informations.append(collection_info)
+
+        return collection_info_response
+
+    def get_poll_response(self, taxii_message):
+        if taxii_message.message_type != libtaxii.constants.MSG_POLL_REQUEST:
+            raise ValueError('Invalid message')
+
+        taxii_feeds = [name for name, query in self.collections.items()]
+        collection_name = taxii_message.collection_name
+        exclusive_begin_time = taxii_message.exclusive_begin_timestamp_label
+        inclusive_end_time = taxii_message.inclusive_end_timestamp_label
+
+        return self.get_data_feed(taxii_feeds, taxii_message.message_id, collection_name,
+                                  exclusive_begin_time, inclusive_end_time)
+
+    @staticmethod
+    def get_data_feed(taxii_feeds, message_id, collection_name, exclusive_begin_time, inclusive_end_time) -> Generator:
+        if collection_name not in taxii_feeds:
+            raise ValueError('Invalid message, unknown feed')
+
+        if not inclusive_end_time:
+            inclusive_end_time = datetime.utcnow().replace(tzinfo=pytz.utc)
+
+        def _resp_generator():
+            # yield the opening tag of the Poll Response
+            resp_header = '<taxii_11:Poll_Response xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1"' \
+                          ' xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" ' \
+                          'xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1"' \
+                          f' message_id="{libtaxii.messages_11.generate_message_id()}"' \
+                          f' in_response_to="{message_id}"' \
+                          f' collection_name="{collection_name}" more="false" result_part_number="1"> ' \
+                          f'<taxii_11:Inclusive_End_Timestamp>{inclusive_end_time.isoformat()}' \
+                          '</taxii_11:Inclusive_End_Timestamp>'
+
+            if exclusive_begin_time is not None:
+                resp_header += (
+                        '<taxii_11:Exclusive_Begin_Timestamp>' +
+                        exclusive_begin_time.isoformat() +
+                        '</taxii_11:Exclusive_Begin_Timestamp>'
+                )
+
+            yield resp_header
+
+            # yield the content blocks
+            indicator_query = taxii_feeds[collection_name]
+            for indicator in find_indicators_by_time_frame(indicator_query, exclusive_begin_time, inclusive_end_time):
+
+                stix_indicator = stix.core.STIXPackage.from_json()
+                cb1 = libtaxii.messages_11.ContentBlock(
+                    content_binding=libtaxii.constants.CBstix_XML_11,
+                    content=indicator
+                )
+                yield cb1.to_xml() + '\n'
+
+            # yield the closing tag
+            yield '</taxii_11:Poll_Response>'
+
+        return _resp_generator()
+
+
+SERVER: TAXIIServer
+
+''' STIX MAPPING '''
+
+def stix_ip_observable(namespace, indicator, value):
+    category = cybox.objects.address_object.Address.CAT_IPV4
+    if value['type'] == 'IPv6':
+        category = cybox.objects.address_object.Address.CAT_IPV6
+
+    indicators = [indicator]
+    if '-' in indicator:
+        # looks like an IP Range, let's try to make it a CIDR
+        a1, a2 = indicator.split('-', 1)
+        if a1 == a2:
+            # same IP
+            indicators = [a1]
+        else:
+            # use netaddr builtin algo to summarize range into CIDR
+            iprange = netaddr.IPRange(a1, a2)
+            cidrs = iprange.cidrs()
+            indicators = map(str, cidrs)
+
+    observables = []
+    for i in indicators:
+        id_ = '{}:observable-{}'.format(
+            namespace,
+            uuid.uuid4()
+        )
+
+        ao = cybox.objects.address_object.Address(
+            address_value=i,
+            category=category
+        )
+
+        o = cybox.core.Observable(
+            title='{}: {}'.format(value['type'], i),
+            id_=id_,
+            item=ao
+        )
+
+        observables.append(o)
+
+    return observables
+
+
+def stix_email_addr_observable(namespace, indicator, value):
+    category = cybox.objects.address_object.Address.CAT_EMAIL
+
+    id_ = '{}:observable-{}'.format(
+        namespace,
+        uuid.uuid4()
+    )
+
+    ao = cybox.objects.address_object.Address(
+        address_value=indicator,
+        category=category
+    )
+
+    o = cybox.core.Observable(
+        title='{}: {}'.format(value['type'], indicator),
+        id_=id_,
+        item=ao
+    )
+
+    return [o]
+
+
+def stix_domain_observable(namespace, indicator, value):
+    id_ = '{}:observable-{}'.format(
+        namespace,
+        uuid.uuid4()
+    )
+
+    do = cybox.objects.domain_name_object.DomainName()
+    do.value = indicator
+    do.type_ = 'FQDN'
+
+    o = cybox.core.Observable(
+        title='FQDN: ' + indicator,
+        id_=id_,
+        item=do
+    )
+
+    return [o]
+
+
+def stix_url_observable(namespace, indicator, value):
+    id_ = '{}:observable-{}'.format(
+        namespace,
+        uuid.uuid4()
+    )
+
+    uo = cybox.objects.uri_object.URI(
+        value=indicator,
+        type_=cybox.objects.uri_object.URI.TYPE_URL
+    )
+
+    o = cybox.core.Observable(
+        title='URL: ' + indicator,
+        id_=id_,
+        item=uo
+    )
+
+    return [o]
+
+
+def stix_hash_observable(namespace, indicator, value):
+    id_ = '{}:observable-{}'.format(
+        namespace,
+        uuid.uuid4()
+    )
+
+    uo = cybox.objects.file_object.File()
+    uo.add_hash(indicator)
+
+    o = cybox.core.Observable(
+        title='{}: {}'.format(value['type'], indicator),
+        id_=id_,
+        item=uo
+    )
+
+    return [o]
+
+
+TYPE_MAPPING = {
+    FeedIndicatorType.IP: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
+        'mapper': stix_ip_observable
     },
-    {
-        'type': libtaxii.constants.SVC_COLLECTION_MANAGEMENT,
-        'path': 'taxii-collection-management-service'
+    FeedIndicatorType.CIDR: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
+        'mapper': stix_ip_observable
     },
-    {
-        'type': libtaxii.constants.SVC_POLL,
-        'path': 'taxii-poll-service'
+    FeedIndicatorType.IPv6: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
+        'mapper': stix_ip_observable
+    },
+    FeedIndicatorType.IPv6CIDR: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
+        'mapper': stix_ip_observable
+    },
+    FeedIndicatorType.URL: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_URL_WATCHLIST,
+        'mapper': stix_url_observable
+    },
+    FeedIndicatorType.Domain: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_DOMAIN_WATCHLIST,
+        'mapper': stix_domain_observable
+    },
+    FeedIndicatorType.SHA256: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
+        'mapper': stix_hash_observable
+    },
+    FeedIndicatorType.SHA1: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
+        'mapper': stix_hash_observable
+    },
+    FeedIndicatorType.MD5: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
+        'mapper': stix_hash_observable
+    },
+    FeedIndicatorType.File: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
+        'mapper': stix_hash_observable
+    },
+    FeedIndicatorType.Email: {
+        'indicator_type': stix.common.vocabs.IndicatorType.TERM_MALICIOUS_EMAIL,
+        'mapper': stix_email_addr_observable
     }
-]
+}
 
-''' HELPER FUNCTIONS '''
+
+def set_id_namespace(uri, name):
+    # maec and cybox
+    namespace = mixbox.namespaces.Namespace(uri, name)
+    mixbox.idgen.set_id_namespace(namespace)
+
+
+def get_stix_indicator(indicator):
+    type_ = indicator['indicator_type']
+    type_mapper = TYPE_MAPPING.get(type_, None)
+
+    value = indicator['value']
+    source = indicator['source']
+
+    set_id_namespace(self.namespaceuri, self.namespace)
+
+    title = f'{type_}: {value}'
+    description = f'{type_} indicator from {source}'
+
+    header = None
+    if title is not None or description is not None:
+        header = stix.core.STIXHeader(
+            title=title,
+            description=description
+        )
+
+    spid = '{}:indicator-{}'.format(
+        self.namespace,
+        uuid.uuid4()
+    )
+    sp = stix.core.STIXPackage(id_=spid, stix_header=header)
+
+    observables = type_mapper['mapper'](self.namespace, indicator, value)
+
+    for o in observables:
+        id_ = '{}:indicator-{}'.format(
+            self.namespace,
+            uuid.uuid4()
+        )
+
+        if value['type'] == 'URL':
+            eindicator = werkzeug.urls.iri_to_uri(indicator, safe_conversion=True)
+        else:
+            eindicator = indicator
+
+        sindicator = stix.indicator.indicator.Indicator(
+            id_=id_,
+            title='{}: {}'.format(
+                value['type'],
+                eindicator
+            ),
+            description='{} indicator from {}'.format(
+                value['type'],
+                ', '.join(value['sources'])
+            ),
+            timestamp=datetime.utcnow().replace(tzinfo=pytz.utc)
+        )
+
+        confidence = value.get('confidence', None)
+        if confidence is None:
+            LOG.error('%s - indicator without confidence', self.name)
+            sindicator.confidence = "Unknown"  # We shouldn't be here
+        elif confidence < 50:
+            sindicator.confidence = "Low"
+        elif confidence < 75:
+            sindicator.confidence = "Medium"
+        else:
+            sindicator.confidence = "High"
+
+        sindicator.add_indicator_type(type_mapper['indicator_type'])
+
+        sindicator.add_observable(o)
+
+        sp.add_indicator(sindicator)
+
+    return sp.to_json()
 
 
 def taxii_check(f):
@@ -62,12 +438,11 @@ def taxii_check(f):
     return check
 
 
-def init_params_port(params: dict = demisto.params()):
+def get_port(params: dict = demisto.params()) -> int:
     """
     Gets port from the integration parameters
     """
     port_mapping: str = params.get('longRunningPort', '')
-    err_msg: str
     port: int
     if port_mapping:
         if ':' in port_mapping:
@@ -77,27 +452,54 @@ def init_params_port(params: dict = demisto.params()):
     else:
         raise ValueError('Please provide a Listen Port.')
 
-    global PORT
-    PORT = port
+    return port
 
 
-def find_indicators_to_limit(indicator_query: str, limit: int) -> list:
+def get_collections(params: dict = demisto.params()) -> list:
+    """
+    Gets the indicator query collections from the integration parameters
+    """
+    collections_json: str = params.get('collections', '')
+
+    try:
+        collections = json.loads(collections_json)
+    except Exception:
+        raise ValueError('The collections string must be a valid JSON string.')
+
+    return collections
+
+
+def find_indicators_by_time_frame(indicator_query: str, begin_time: datetime, end_time: datetime) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
-    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit)
-    return iocs[:limit]
+
+    if indicator_query:
+        indicator_query += ' and '
+    else:
+        indicator_query = ''
+
+    if begin_time:
+        tz_begin_time = datetime.strftime(begin_time, '%Y-%m-%dT%H:%M:%S %z')
+        indicator_query += f'createdTime:>"{tz_begin_time}"'
+        if end_time:
+            indicator_query += ' and '
+    if end_time:
+        tz_end_time = datetime.strftime(end_time, '%Y-%m-%dT%H:%M:%S %z')
+        indicator_query += f'createdTime:>="{tz_end_time}"'
+    iocs, _ = find_indicators_loop(indicator_query)
+    return iocs
 
 
-def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
-                                  last_found_len: int = PAGE_SIZE):
+def find_indicators_loop(indicator_query: str, total_fetched: int = 0, next_page: int = 0,
+                         last_found_len: int = PAGE_SIZE):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
     """
     iocs: List[dict] = []
     if not last_found_len:
         last_found_len = total_fetched
-    while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
+    while last_found_len == PAGE_SIZE:
         fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
@@ -106,13 +508,13 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
     return iocs, next_page
 
 
-def taxii_make_response(m11):
+def taxii_make_response(taxii_message):
     h = {
         'Content-Type': "application/xml",
         'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1',
         'X-TAXII-Protocol': 'urn:taxii.mitre.org:protocol:http:1.0'
     }
-    r = make_response((m11.to_xml(pretty_print=True), 200, h))
+    r = make_response((taxii_message.to_xml(pretty_print=True), 200, h))
 
     return r
 
@@ -126,73 +528,92 @@ def taxii_discovery_service() -> Response:
     """
     Route for discovery service
     """
-    server_links = demisto.demistoUrls()
-    server_link_parts: ParseResult = urlparse(server_links.get('server'))
-    discovery_service_url = f'{server_link_parts.scheme}://{server_link_parts.hostname}:{PORT}'
 
-    tm = libtaxii.messages_11.get_message_from_xml(request.data)
-    if tm.message_type != libtaxii.constants.MSG_DISCOVERY_REQUEST:
-        return make_response(('Invalid message, invalid Message Type', 400))
+    try:
+        discovery_response = SERVER.get_discovery_service(libtaxii.messages_11.get_message_from_xml(request.data))
+    except Exception as e:
+        return make_response(str(e), 400)
 
-    dresp = libtaxii.messages_11.DiscoveryResponse(
-        libtaxii.messages_11.generate_message_id(),
-        tm.message_id
+    return taxii_make_response(discovery_response)
+
+
+@APP.route('/taxii-collection-management-service', methods=['POST'])
+@taxii_check
+def taxii_collection_management_service() -> Response:
+    """
+    Route for collection management
+    """
+
+    try:
+        collection_response = SERVER.get_collections(libtaxii.messages_11.get_message_from_xml(request.data))
+    except Exception as e:
+        return make_response(str(e), 400)
+
+    return taxii_make_response(collection_response)
+
+
+@APP.route('/taxii-poll-service', methods=['POST'])
+@taxii_check
+def taxii_poll_service() -> Response:
+    """
+    Route for discovery service
+    """
+
+    try:
+        taxiicontent_type = request.headers['X-TAXII-Content-Type']
+        if taxiicontent_type == 'urn:taxii.mitre.org:message:xml:1.1':
+            taxii_message = libtaxii.messages_11.get_message_from_xml(request.data)
+            poll_response = SERVER.get_poll_response(taxii_message)
+        else:
+            raise ValueError('Invalid message')
+    except Exception as e:
+        return make_response(str(e), 400)
+
+    return Response(
+        response=stream_with_context(poll_response),
+        status=200,
+        headers={
+            'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1',
+            'X-TAXII-Protocol': 'urn:taxii.mitre.org:protocol:http:1.0'
+        },
+        mimetype='application/xml'
     )
-
-    for si in SERVICE_INSTANCES:
-        sii = libtaxii.messages_11.ServiceInstance(
-            si['type'],
-            'urn:taxii.mitre.org:services:1.1',
-            'urn:taxii.mitre.org:protocol:http:1.0',
-            "{}/{}".format(discovery_service_url, si['path']),
-            ['urn:taxii.mitre.org:message:xml:1.1'],
-            available=True
-        )
-        dresp.service_instances.append(sii)
-
-    return taxii_make_response(dresp)
 
 
 ''' COMMAND FUNCTIONS '''
 
 
 def test_module(args, params):
-    init_params_port(params)
+    get_port(params)
 
     return 'ok', {}, {}
 
 
-def run_long_running(params):
+def run_long_running():
     """
     Starts the long running thread.
     """
-    certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
-    http_server: bool = params.get('http_flag', True)
 
     certificate_path = str()
     private_key_path = str()
-
+    ssl_args = dict()
     try:
-        ssl_args = dict()
-
-        if certificate and private_key and not http_server:
+        if SERVER.certificate and SERVER.private_key and not SERVER.http_server:
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
-            certificate_file.write(bytes(certificate, 'utf-8'))
+            certificate_file.write(bytes(SERVER.certificate, 'utf-8'))
             certificate_file.close()
             ssl_args['certfile'] = certificate_path
 
             private_key_file = NamedTemporaryFile(delete=False)
             private_key_path = private_key_file.name
-            private_key_file.write(bytes(private_key, 'utf-8'))
+            private_key_file.write(bytes(SERVER.private_key, 'utf-8'))
             private_key_file.close()
             ssl_args['keyfile'] = private_key_path
             demisto.debug('Starting HTTPS Server')
         else:
             demisto.debug('Starting HTTP Server')
-
-        server = WSGIServer(('', PORT), APP, **ssl_args)
+        server = WSGIServer(('', SERVER.port), APP, **ssl_args)
         server.serve_forever()
     except Exception as e:
         if certificate_path:
@@ -203,39 +624,33 @@ def run_long_running(params):
         raise ValueError(str(e))
 
 
-def update_edl_command(args, params):
-    """
-    Updates the EDL values and format on demand
-    """
-    on_demand = demisto.params().get('on_demand')
-    if not on_demand:
-        raise DemistoException(
-            '"Update EDL On Demand" is off. If you want to update the EDL manually please toggle it on.')
-    limit = int(args.get('edl_size', params.get('edl_size')))
-    print_indicators = args.get('print_indicators')
-    query = args.get('query')
-    indicators = refresh_edl_context(query, limit=limit)
-    hr = tableToMarkdown('EDL was updated successfully with the following values', indicators,
-                         ['Indicators']) if print_indicators == 'true' else 'EDL was updated successfully'
-    return hr, {}, indicators
-
-
 def main():
     """
     Main
     """
     params = demisto.params()
     command = demisto.command()
-    init_params_port(params)
+    port = get_port(params)
+    collections = get_collections(params)
+    server_links = demisto.demistoUrls()
+    server_link_parts: ParseResult = urlparse(server_links.get('server'))
+
+    certificate: str = params.get('certificate', '')
+    private_key: str = params.get('key', '')
+    http_server: bool = params.get('http_flag', True)
+
+    global SERVER
+    SERVER = TAXIIServer(f'{server_link_parts.scheme}://{server_link_parts.hostname}', port, collections,
+                         certificate, private_key, http_server)
+
     demisto.debug('Command being called is {}'.format(command))
     commands = {
-        'test-module': test_module,
-        'edl-update': update_edl_command
+        'test-module': test_module
     }
 
     try:
         if command == 'long-running-execution':
-            run_long_running(params)
+            run_long_running()
         else:
             readable_output, outputs, raw_response = commands[command](demisto.args(), params)
             return_outputs(readable_output, outputs, raw_response)
