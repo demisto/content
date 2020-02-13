@@ -183,8 +183,8 @@ def unblacklist_ip(ip):
     if len(ips_to_unblacklist) == 1:  # Given only one IP address to blacklist
         if ips_to_unblacklist[0] not in blacklisted_ips:
             raise Exception('Given IP address is not blacklisted.')
-    elif ips_to_unblacklist not in blacklisted_ips:  # Given more than one IP address to blacklist
-        raise Exception('Given IP address is not blacklisted.')
+    elif not set(ips_to_unblacklist).issubset(set(blacklisted_ips)):  # Given more than one IP address to blacklist
+        raise Exception('Given IP addresses are not blacklisted.')
     data = {
         'blacklistUrls': ips_to_unblacklist
     }
@@ -225,8 +225,8 @@ def unwhitelist_url(url):
     if len(urls_to_unwhitelist) == 1:  # Given only one URL to whitelist
         if urls_to_unwhitelist[0] not in whitelist_urls['whitelistUrls']:
             raise Exception('Given host address is not whitelisted.')
-    elif urls_to_unwhitelist not in whitelist_urls['whitelistUrls']:  # Given more than one URL to whitelist
-        raise Exception('Given host address is not whitelisted.')
+    elif not set(urls_to_unwhitelist).issubset(set(whitelist_urls['whitelistUrls'])):  # Given more than one URL to whitelist
+        raise Exception('Given host addresses are not whitelisted.')
     # List comprehension to remove requested URLs from the whitelist
     whitelist_urls['whitelistUrls'] = [x for x in whitelist_urls['whitelistUrls'] if x not in urls_to_unwhitelist]
     json_data = json.dumps(whitelist_urls)
@@ -266,7 +266,7 @@ def unwhitelist_ip(ip):
     if len(ips_to_unwhitelist) == 1:  # Given only one IP to whitelist
         if ips_to_unwhitelist[0] not in whitelist_ips['whitelistUrls']:
             raise Exception('Given IP address is not whitelisted.')
-    elif ips_to_unwhitelist not in whitelist_ips['whitelistUrls']:  # Given more than one IP to whitelist
+    elif not set(ips_to_unwhitelist).issubset(set(whitelist_ips['whitelistUrls'])):  # Given more than one IP to whitelist
         raise Exception('Given IP address is not whitelisted.')
     # List comprehension to remove requested IPs from the whitelist
     whitelist_ips['whitelistUrls'] = [x for x in whitelist_ips['whitelistUrls'] if x not in ips_to_unwhitelist]
