@@ -54,6 +54,11 @@ configuration:
   name: http_flag
   required: false
   type: 8
+- display: Username
+  additionalinfo: Set the username which the user should enter when entering the indicators page.
+  name: credentials
+  required: false
+  type: 9
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service

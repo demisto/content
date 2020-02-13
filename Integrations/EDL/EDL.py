@@ -1,10 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from flask import Flask, Response
+from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any
+from typing import Callable, List, Any, Dict, cast
+from base64 import b64decode
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
@@ -142,6 +143,21 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     return res
 
 
+def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
+    credentials: str = headers.get('Authorization', '')
+    if not credentials or 'Basic ' not in credentials:
+        return False
+    encoded_credentials: str = credentials.split('Basic ')[1]
+    credentials: str = b64decode(encoded_credentials).decode('utf-8')
+    if ':' not in credentials:
+        return False
+    credentials_list = credentials.split(':')
+    if len(credentials_list) != 2:
+        return False
+    user, pwd = credentials_list
+    return user == username and pwd == password
+
+
 ''' ROUTE FUNCTIONS '''
 
 
@@ -151,6 +167,16 @@ def route_edl_values() -> Response:
     Main handler for values saved in the integration context
     """
     params = demisto.params()
+
+    username: str = params.get('credentials', {}).get('identifier')
+    password: str = params.get('credentials', {}).get('password')
+    if username and password:
+        headers: dict = cast(Dict[Any, Any], request.headers)
+        if not validate_basic_authentication(headers, username, password):
+            err_msg: str = 'Basic authentication failed. Please make sure you are using the right credentials.'
+            demisto.debug(err_msg)
+            return Response(err_msg, status=401)
+
     values = get_edl_ioc_values(
         on_demand=params.get('on_demand'),
         limit=try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG),
@@ -257,6 +283,14 @@ def main():
     Main
     """
     params = demisto.params()
+
+    username: str = params.get('credentials', {}).get('identifier')
+    password: str = params.get('credentials', {}).get('password')
+    if (username and not password) or (password and not username):
+        err_msg: str = 'If using credentials, both username and password should be provided.'
+        demisto.debug(err_msg)
+        raise DemistoException(err_msg)
+
     command = demisto.command()
     demisto.debug('Command being called is {}'.format(command))
     commands = {

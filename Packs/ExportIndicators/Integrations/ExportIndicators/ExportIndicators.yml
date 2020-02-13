@@ -55,14 +55,9 @@ configuration:
   type: 8
 - display: Username
   additionalinfo: Set the username which the user should enter when entering the indicators page.
-  name: username
+  name: credentials
   required: false
-  type: 0
-- display: Password
-  additionalinfo: Set the password which the user should enter when entering the indicators page.
-  name: password
-  required: false
-  type: 0
+  type: 9
 description: Use the Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
 display: Export Indicators Service

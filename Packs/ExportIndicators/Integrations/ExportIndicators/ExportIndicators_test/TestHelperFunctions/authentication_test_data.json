@@ -1,0 +1,18 @@
+{
+  "empty_auth": {},
+  "basic_missing_auth": {
+    "Authorization": "missing basic"
+  },
+  "colon_missing_auth": {
+    "Authorization": "Basic bWlzc2luZ19jb2xvbg=="
+  },
+  "wrong_length_auth": {
+    "Authorization": "Basic YTpiOmM="
+  },
+  "wrong_credentials_auth": {
+    "Authorization": "Basic YTpi"
+  },
+  "right_credentials_auth": {
+    "Authorization": "Basic dXNlcjpwd2Q="
+  }
+}

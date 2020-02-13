@@ -196,16 +196,14 @@ def route_list_values() -> Response:
     """
     params = demisto.params()
 
-    username: str = params.get('username')
-    password: str = params.get('password')
+    username: str = params.get('credentials', {}).get('identifier')
+    password: str = params.get('credentials', {}).get('password')
     if username and password:
         headers: dict = cast(Dict[Any, Any], request.headers)
         if not validate_basic_authentication(headers, username, password):
-            demisto.info('Basic authentication failed. Please make sure you are using the right credentials.')
-            raise DemistoException('Basic authentication failed. Please make sure you are using the right credentials.')
-    if (username and not password) or (password and not username):
-        demisto.info('If using credentials, both username and password should be provided.')
-        raise DemistoException('If using credentials, both username and password should be provided.')
+            err_msg: str = 'Basic authentication failed. Please make sure you are using the right credentials.'
+            demisto.debug(err_msg)
+            return Response(err_msg, status=401)
 
     values = get_outbound_ioc_values(
         out_format=params.get('format'),
@@ -316,6 +314,14 @@ def main():
     Main
     """
     params = demisto.params()
+
+    username: str = params.get('credentials', {}).get('identifier')
+    password: str = params.get('credentials', {}).get('password')
+    if (username and not password) or (password and not username):
+        err_msg: str = 'If using credentials, both username and password should be provided.'
+        demisto.debug(err_msg)
+        raise DemistoException(err_msg)
+
     command = demisto.command()
     demisto.debug('Command being called is {}'.format(command))
     commands = {
