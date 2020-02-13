@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fixed an issue where ***as-get-entries*** return output in incorrect format for results with a large number of objects.
 
 ## [19.11.1] - 2019-11-26
 Fixed an issue with the response encoding.
