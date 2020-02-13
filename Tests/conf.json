@@ -22,6 +22,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Cofense Feed",
+            "playbookID": "TestCofenseFeed",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
             "fromversion": "5.5.0"
@@ -190,6 +195,10 @@
         {
             "integrations": "Cofense Triage",
             "playbookID": "Cofense Triage Test"
+        },
+        {
+            "integrations": "Akamai WAF",
+            "playbookID": "Akamai_WAF-Test"
         },
         {
             "integrations": "Minerva Labs Anti-Evasion Platform",
@@ -674,8 +683,8 @@
             "playbookID": "BigFixTest"
         },
         {
-            "integrations": "Lastline",
-            "playbookID": "Lastline - testplaybook",
+            "integrations": "Lastline v2",
+            "playbookID": "Lastline v2 - Test",
             "nightly": true
         },
         {
@@ -760,7 +769,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 150
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
@@ -845,7 +855,7 @@
         {
             "integrations": [
                 "Mail Sender (New)",
-                "google"
+                "Gmail"
             ],
             "playbookID": "Mail Sender (New) Test"
         },
@@ -1029,7 +1039,13 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test"
+            "playbookID": "SplunkPy-Test-V2",
+            "memory_threshold": 500
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "Splunk-Test",
+            "memory_threshold": 500
         },
         {
             "integrations": "SplunkPy",
@@ -1118,12 +1134,14 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 150
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewsv2_separate_process"
+            "instance_names": "ewsv2_separate_process",
+            "memory_threshold": 70
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1460,7 +1478,7 @@
         },
         {
             "integrations": [
-                "Lastline",
+                "Lastline v2",
                 "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
@@ -1484,7 +1502,7 @@
             "integrations": [
                 "McAfee Advanced Threat Defense",
                 "VxStream",
-                "Lastline"
+                "Lastline v2"
             ]
         },
         {
@@ -1710,7 +1728,8 @@
         {
             "integrations": "TAXIIFeed",
             "playbookID": "TAXII_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "timeout": 600
         },
         {
             "integrations": "Traps",
@@ -2125,7 +2144,9 @@
         },
         {
             "integrations": "Google Key Management Service",
-            "playbookID": "Google-KMS-test"
+            "playbookID": "Google-KMS-test",
+            "pid_threshold": 6,
+            "memory_threshold": 60
         },
         {
             "integrations": "SecBI",
@@ -2155,7 +2176,7 @@
             "playbookID": "Tanium v2 - Test"
         },
         {
-          "integrations": "Office365 Feed",
+          "integrations": "Office 365 Feed",
           "playbookID": "Office365_Feed_Test",
           "fromversion": "5.5.0"
         },
@@ -2183,7 +2204,8 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk Indicator Hunting Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 500
         },
         {
             "integrations": "BPA",
@@ -2218,6 +2240,39 @@
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "DShield Feed",
+            "playbookID": "playbook-DshieldFeed_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "AlienVault Reputation Feed",
+            "playbookID": "AlienVaultReputationFeed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 9000
+        },
+        {
+            "integrations": "BruteForceBlocker Feed",
+            "playbookID": "playbook-BruteForceBlocker_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Feodo Tracker Hashes Feed",
+            "playbookID": "playbook-feodoteackerhash_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Feodo Tracker IP Blocklist Feed",
+            "instance_names": "feodo_tracker_ip_currently__active",
+            "playbookID": "playbook-feodotrackeripblock_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Feodo Tracker IP Blocklist Feed",
+            "instance_names": "feodo_tracker_ip_30_days",
+            "playbookID": "playbook-feodotrackeripblock_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -2249,7 +2304,6 @@
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
-        "Elasticsearch_v2_test-v6": "Issue #21510",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633"
     },
@@ -2326,19 +2380,21 @@
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
+        "urlscan.io": "Issue 21831",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "Lockpath KeyLight": "Deprecated. No tests.",
         "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
+        "AlphaSOC Wisdom": "API key has expired",
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nightly_integrations": [
-        "Lastline",
+        "Lastline v2",
         "TruSTAR",
         "SlackV2"
     ],

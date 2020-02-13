@@ -37,7 +37,7 @@ tasks:
     task:
       id: d5d22ac6-1f42-497c-860b-6ea2514b7501
       version: -1
-      name: Get Indicators - Office365
+      name: Get Indicators - Office 365
       description: Gets indicators from the feed.
       script: '|||office365-get-indicators'
       type: regular
