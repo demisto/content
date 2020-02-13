@@ -1,21 +1,22 @@
-id: 861c642a-9fe0-475f-846c-52098e4c91dd
-version: 9
+id: Illuminate Integration Demonstration - Test
+version: -1
 name: Illuminate Integration Demonstration - Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 79850193-eacf-4dd6-84cc-9ddcd7a53e59
     type: start
     task:
       id: 79850193-eacf-4dd6-84cc-9ddcd7a53e59
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
     view: |-
       {
@@ -27,8 +28,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 61dc1217-21c1-4094-8bb8-24a94394fef6
     type: playbook
     task:
@@ -38,7 +39,8 @@ tasks:
       playbookName: Illuminate Integration Demonstration
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: true
     view: |-
       {
@@ -50,25 +52,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 03d3dde4-450d-4327-8120-a3fda63c8fc6
     type: regular
     task:
       id: 03d3dde4-450d-4327-8120-a3fda63c8fc6
       version: -1
       name: DeleteContext
-      description: Delete field from context
+      description: ''
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
@@ -84,22 +86,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 8128fa4a-5fc2-46d6-8a76-f0c259410e16
     type: regular
     task:
       id: 8128fa4a-5fc2-46d6-8a76-f0c259410e16
       version: -1
       name: setIncident
-      description: Change the properties of an incident
+      description: ''
       script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       account: {}
       accountid: {}
@@ -326,3 +328,5 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
+fromversion: 1.8.7
