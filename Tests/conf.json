@@ -769,7 +769,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 150
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
@@ -1038,7 +1039,13 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test"
+            "playbookID": "SplunkPy-Test-V2",
+            "memory_threshold": 500
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "Splunk-Test",
+            "memory_threshold": 500
         },
         {
             "integrations": "SplunkPy",
@@ -1127,12 +1134,14 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 150
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewsv2_separate_process"
+            "instance_names": "ewsv2_separate_process",
+            "memory_threshold": 70
         },
         {
             "integrations": "remedy_sr_beta",
@@ -2135,7 +2144,9 @@
         },
         {
             "integrations": "Google Key Management Service",
-            "playbookID": "Google-KMS-test"
+            "playbookID": "Google-KMS-test",
+            "pid_threshold": 6,
+            "memory_threshold": 60
         },
         {
             "integrations": "SecBI",
@@ -2193,7 +2204,8 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk Indicator Hunting Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 500
         },
         {
             "integrations": "BPA",
