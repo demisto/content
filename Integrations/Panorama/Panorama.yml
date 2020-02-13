@@ -699,7 +699,7 @@ script:
       description: Service name.
       isArray: false
       name: name
-      required: false
+      required: true
       secret: false
     - default: false
       description: The device group for which to return addresses (Panorama instances).

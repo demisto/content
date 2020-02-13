@@ -2,6 +2,16 @@ from rasterize import rasterize, find_zombie_processes, merge_options, DEFAULT_C
 from tempfile import NamedTemporaryFile
 import subprocess
 import os
+import logging
+import http.server
+import time
+import threading
+import pytest
+
+# disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
+logging.getLogger("urllib3").setLevel(logging.ERROR)
+
+RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
 def test_rasterize_email_image(caplog):
@@ -76,16 +86,74 @@ def test_find_zombie_processes(mocker):
 
 
 def test_merge_options():
-    res = merge_options(DEFAULT_CHROME_OPTIONS, [])
+    res = merge_options(DEFAULT_CHROME_OPTIONS, '')
     assert res == DEFAULT_CHROME_OPTIONS
-    res = merge_options(DEFAULT_CHROME_OPTIONS, ['[--disable-dev-shm-usage]', '--disable-auto-reload', '--headless'])
+    res = merge_options(DEFAULT_CHROME_OPTIONS, '[--disable-dev-shm-usage],--disable-auto-reload, --headless')
     assert '--disable-dev-shm-usage' not in res
     assert '--no-sandbox' in res  # part of default options
     assert '--disable-auto-reload' in res
     assert len([x for x in res if x == '--headless']) == 1  # should have only one headless option
+    res = merge_options(DEFAULT_CHROME_OPTIONS, r'--user-agent=test\,comma')
+    assert len([x for x in res if x.startswith('--user-agent')]) == 1
+    assert '--user-agent=test,comma' in res
+    res = merge_options(DEFAULT_CHROME_OPTIONS, r'[--user-agent]')  # remove user agent
+    assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
 
-def test_rasterize_large_html(caplog):
+def test_rasterize_large_html():
     path = os.path.realpath('test_data/large.html')
-    rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
-    caplog.clear()
+    res = rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
+    assert res
+
+
+@pytest.fixture
+def http_wait_server():
+    # Simple http handler which waits 10 seconds before responding
+    class WaitHanlder(http.server.BaseHTTPRequestHandler):
+
+        def do_HEAD(self):
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+
+        def do_GET(self):
+            time.sleep(10)
+            try:
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(bytes("<html><head><title>Test wait handler</title></head>"
+                                       "<body><p>Test Wait</p></body></html>", 'utf-8'))
+                self.flush_headers()
+            except BrokenPipeError:  # ignore broken pipe as socket might have been closed
+                pass
+
+        # disable logging
+
+        def log_message(self, format, *args):
+            pass
+
+    with http.server.ThreadingHTTPServer(('', 10888), WaitHanlder) as server:
+        server_thread = threading.Thread(target=server.serve_forever)
+        server_thread.start()
+        yield
+        server.shutdown()
+        server_thread.join()
+
+
+# Some web servers can block the connection after the http is sent
+# In this case chromium will hang. An example for this is:
+# curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
+# This tests access a server which waits for 10 seconds and makes sure we timeout
+def test_rasterize_url_long_load(mocker, http_wait_server):
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    time.sleep(1)  # give time to the servrer to start
+    rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=5)
+    assert return_error_mock.call_count == 1
+    # call_args last call with a tuple of args list and kwargs
+    err_msg = return_error_mock.call_args[0][0]
+    assert 'Timeout exception' in err_msg
+    return_error_mock.reset_mock()
+    # test that with a higher value we get a response
+    assert rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=0)
+    assert not return_error_mock.called
