@@ -15,7 +15,6 @@ from typing import Tuple, Dict, List, Optional
 # disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# Testing
 
 ''' CONSTANTS '''
 
