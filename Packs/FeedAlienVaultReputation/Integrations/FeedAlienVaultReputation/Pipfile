@@ -11,11 +11,8 @@ requests-mock = "*"
 pytest-asyncio = "*"
 
 [packages]
-selenium = "*"
-webdriver-manager = "*"
-pypdf2 = "*"
-pdf2image = "*"
-numpy = "*"
+pytest = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
