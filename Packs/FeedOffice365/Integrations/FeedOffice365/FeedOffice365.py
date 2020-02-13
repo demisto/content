@@ -52,7 +52,7 @@ class Client(BaseClient):
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
-        super().__init__(base_url=urls_list, verify=insecure, proxy=proxy)
+        super().__init__(base_url=urls_list, verify=not insecure, proxy=proxy)
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
