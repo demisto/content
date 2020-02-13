@@ -96,7 +96,7 @@ class Client(BaseClient):
 
     def get_assets(self, fields: list, sort: dict, filters: list):
         url_suffix = self._add_extra_params_to_url('ranger/assets', fields, sort, filters)
-        return self._http_request('GET', url_suffix=url_suffix)
+        return self._http_request('GET', url_suffix=url_suffix + '&ghost__exact=false&special_hint__exact=0,;$9')
 
     def get_alerts(self, fields: list, sort: dict, filters: list):
         url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort, filters)
@@ -136,8 +136,8 @@ class Client(BaseClient):
         return url_suffix
 
     def enrich_asset_results(self, assets):
-        full_match_base_url = "ranger/insight_details/Full Match CVEs?&format=asset_page&sort=-Score%20(CVSS)&page=1&per_page=10&id__exact="
-        windows_cve_base_url = "ranger/insight_details/Windows CVEs?&format=asset_page&sort=-Score%20(CVSS)&page=1&per_page=10&id__exact="
+        full_match_base_url = "ranger/insight_details/Full Match CVEs?&format=asset_page&sort=-Score%20(CVSS)&per_page=0&id__exact="
+        windows_cve_base_url = "ranger/insight_details/Windows CVEs?&format=asset_page&sort=-Score%20(CVSS)&per_page=0&id__exact="
         for asset in assets:
             full_match_cves = self._http_request('GET', url_suffix=f"{full_match_base_url}={asset['rid']}")
             windows_cves = self._http_request('GET', url_suffix=f"{windows_cve_base_url}={asset['rid']}")
@@ -182,8 +182,10 @@ def get_assets_command(client, args):
     if insight_name:
         # asset_filters = client.get_ranger_table_filters('assets')
         # TODO: fix around the way i return values
-        # filters_url_suffix = transform_filters_labels_to_values(asset_filters, "insight_name", insight_name)
-        filters.append(add_filter("insights_name", insight_name))
+        
+        # insight status 0 is open
+        filters.extend([add_filter("insights_name", insight_name), add_filter("insights_status", 0)])
+
         # for filter_type in filters_url_suffix:
         #     filters.append(add_filter(filter_type[0], filter_type[1]))
 
