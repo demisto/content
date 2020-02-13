@@ -18,13 +18,15 @@ import mixbox.namespaces
 import netaddr
 import uuid
 import werkzeug.urls
-
+import pytz
 
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'TAXII Server'
 PAGE_SIZE = 100
 APP: Flask = Flask('demisto-taxii')
+NAMESPACE_URI = 'https://www.paloaltonetworks.com/cortex'
+NAMESPACE = 'cortex'
 
 
 ''' TAXII Server '''
@@ -343,13 +345,13 @@ def set_id_namespace(uri, name):
 
 
 def get_stix_indicator(indicator):
+    set_id_namespace(NAMESPACE_URI, NAMESPACE)
+
     type_ = indicator['indicator_type']
     type_mapper = TYPE_MAPPING.get(type_, None)
 
     value = indicator['value']
     source = indicator['source']
-
-    set_id_namespace(self.namespaceuri, self.namespace)
 
     title = f'{type_}: {value}'
     description = f'{type_} indicator from {source}'
@@ -362,16 +364,16 @@ def get_stix_indicator(indicator):
         )
 
     spid = '{}:indicator-{}'.format(
-        self.namespace,
+        NAMESPACE,
         uuid.uuid4()
     )
     sp = stix.core.STIXPackage(id_=spid, stix_header=header)
 
-    observables = type_mapper['mapper'](self.namespace, indicator, value)
+    observables = type_mapper['mapper'](NAMESPACE, indicator, value)
 
     for o in observables:
         id_ = '{}:indicator-{}'.format(
-            self.namespace,
+            NAMESPACE,
             uuid.uuid4()
         )
 
@@ -393,16 +395,19 @@ def get_stix_indicator(indicator):
             timestamp=datetime.utcnow().replace(tzinfo=pytz.utc)
         )
 
-        confidence = value.get('confidence', None)
-        if confidence is None:
-            LOG.error('%s - indicator without confidence', self.name)
+        score = indicator.get('score')
+        confidence = 'Low'
+        if score is None:
+            LOG.error('%s - indicator without score', value)
             sindicator.confidence = "Unknown"  # We shouldn't be here
-        elif confidence < 50:
-            sindicator.confidence = "Low"
-        elif confidence < 75:
-            sindicator.confidence = "Medium"
+        if score < 2:
+            pass
+        elif score < 3:
+            confidence = 'Medium'
         else:
-            sindicator.confidence = "High"
+            confidence = 'High'
+
+        sindicator.confidence = confidence
 
         sindicator.add_indicator_type(type_mapper['indicator_type'])
 
