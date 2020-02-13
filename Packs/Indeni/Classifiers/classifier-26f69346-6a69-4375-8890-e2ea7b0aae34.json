@@ -1,0 +1,53 @@
+{
+	"brandName": "Indeni",
+	"custom": true,
+	"defaultIncidentType": "Indeni Incidents",
+	"id": "26f69346-6a69-4375-8890-e2ea7b0aae34",
+	"incidentSamples": [],
+	"instanceId": "c766cbce-a2a3-4214-88fb-686a317431ed",
+	"instanceName": "10.11.80.21",
+	"isDefault": false,
+	"keyTypeMap": {
+		"UNAUTOREMEDIATABLE_ISSUE": "Indeni Incidents"
+	},
+	"mapping": {
+		"Indeni Incidents": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Indeni Device ID": {
+					"complex": null,
+					"simple": "device_id"
+				},
+				"Indeni Issue ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"details": {
+					"complex": {
+						"accessor": "body",
+						"filters": [],
+						"root": "alert_blocks",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"name": {
+					"complex": null,
+					"simple": "headline"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": {
+			"accessor": "",
+			"filters": [],
+			"root": "alert_type",
+			"transformers": []
+		},
+		"simple": ""
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}
