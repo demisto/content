@@ -90,7 +90,7 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
+- display: "feedExpirationInterval"
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
