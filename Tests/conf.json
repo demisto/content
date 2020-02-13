@@ -1035,7 +1035,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2",
-            "memory_threshold": 110
+            "memory_threshold": 210
         },
         {
             "integrations": "SplunkPy",
@@ -2195,7 +2195,7 @@
             "integrations": "SplunkPy",
             "playbookID": "Splunk Indicator Hunting Test",
             "fromversion": "5.0.0",
-            "memory_threshold": 110
+            "memory_threshold": 210
         },
         {
             "integrations": "BPA",
