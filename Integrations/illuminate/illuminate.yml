@@ -4,7 +4,7 @@ commonfields:
 name: illuminate
 display: illuminate
 category: Data Enrichment & Threat Intelligence
-description: Enriches Demisto indicators with illuminate REST API indicator data.
+description: This integration utilizes AnalystPlatform's illuminate system to enrich Demisto indicators with data provided by the illuminate REST API, such as Actor and Malware information, activity and reported dates, evidence and hit counts, and more.
 configuration:
 - display: illuminate API Credentials (username/password)
   name: credentials
@@ -36,6 +36,7 @@ script:
       required: true
       description: The domain to query information for
       default: true
+      isArray: true
     outputs:
     - contextPath: Domain.Name
       description: The domain name, for example, "google.com".
@@ -105,6 +106,7 @@ script:
       required: true
       description: The email to query information for
       default: true
+      isArray: true
     outputs:
     - contextPath: Email.From
       description: The sender of the email
@@ -171,6 +173,7 @@ script:
       required: true
       description: The IP to query information for
       default: true
+      isArray: true
     outputs:
     - contextPath: IP.Address
       description: IP address
@@ -237,6 +240,7 @@ script:
       required: true
       description: The file to query information for
       default: true
+      isArray: true
     outputs:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -308,6 +312,7 @@ script:
     - name: string
       required: true
       description: The string to query information for
+      isArray: true
     outputs:
     - contextPath: Illuminate.String.ID
       description: The unique identifier of the given Indicator in illuminate
@@ -358,6 +363,7 @@ script:
     - name: ip
       required: true
       description: The IP to query information for
+      isArray: true
     outputs:
     - contextPath: Illuminate.Ipv6.ID
       description: The unique identifier of the given Indicator in illuminate
@@ -408,6 +414,7 @@ script:
     - name: mutex
       required: true
       description: The mutex to query information for
+      isArray: true
     outputs:
     - contextPath: Illuminate.Mutex.ID
       description: The unique identifier of the given Indicator in illuminate
@@ -458,6 +465,7 @@ script:
     - name: http-request
       required: true
       description: The HTTP request to query information for
+      isArray: true
     outputs:
     - contextPath: Illuminate.Httprequest.ID
       description: The unique identifier of the given Indicator in illuminate
@@ -509,6 +517,7 @@ script:
       required: true
       description: The url to query information for
       default: true
+      isArray: true
     outputs:
     - contextPath: URL.Data
       description: The URL.
