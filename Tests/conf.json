@@ -197,6 +197,10 @@
             "playbookID": "Cofense Triage Test"
         },
         {
+            "integrations": "Akamai WAF",
+            "playbookID": "Akamai_WAF-Test"
+        },
+        {
             "integrations": "Minerva Labs Anti-Evasion Platform",
             "playbookID": "Minerva Test playbook"
         },
