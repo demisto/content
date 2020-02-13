@@ -6,8 +6,9 @@ from typing import Dict, Tuple, Union, Optional, List
 import requests
 import urllib3
 # Local imports
-from CommonServerPython import BaseClient, DemistoException, assign_params, logger, return_error, tableToMarkdown, \
-    argToList, demisto, return_outputs
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 from akamai.edgegrid import EdgeGridAuth
 
 """GLOBALS/PARAMS
