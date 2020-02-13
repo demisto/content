@@ -10,6 +10,7 @@ from StringIO import StringIO
 import requests
 import urllib3
 import io
+import re
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -66,20 +67,24 @@ def get_current_splunk_time(splunk_service):
     raise ValueError('Error: Could not fetch Splunk time')
 
 
+def modify_str(matchobj):
+    any_str = matchobj.group(0)
+    new_str = any_str.replace(r'"', r'\"')
+    return new_str
+
+
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    raw = raw.strip("}")
-    raw = raw.strip("{")
-    key_val_arr = raw.split(",")
-
-    for key_val in key_val_arr:
-        single_key_val = key_val.split("=")
-        if len(single_key_val) > 1:
-            val = single_key_val[1]
+    updated_str = re.sub('\S+="(.*?)"', modify_str, raw, count=len(re.findall('\S+="(.*?)"', raw))-1)
+    final_str = re.sub('(\S+=)"(.*?")', r'\1\"\2', updated_str)
+    if final_str.startswith('{'):
+        new_raw = json.loads(final_str)
+        for element in new_raw.items():
+            val = element[1]
             val = val.strip("\\")
             val = val.strip("\"")
             val = val.strip("\\")
-            key = single_key_val[0].strip()
+            key = element[0].strip()
 
             alreadyThere = False
             for dictkey, dictvalue in result.items():
@@ -90,7 +95,19 @@ def rawToDict(raw):
             if not alreadyThere:
                 result[key] = val
 
-    return result
+        parsed_raw = {}
+        raw_value = result.get('_raw', '')
+        for key_val in re.split('\S,', raw_value):
+            key_val = key_val.strip()
+            if '=' in key_val:
+                key_and_val = key_val.split('=')
+                parsed_raw[key_and_val[0]] = key_and_val[1]
+        result.update(parsed_raw)
+
+        return parsed_raw
+
+    else:
+        return result
 
 
 # Converts to an str
