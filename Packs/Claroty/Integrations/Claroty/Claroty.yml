@@ -3,8 +3,7 @@ commonfields:
   id: Claroty
   version: -1
 configuration:
-- defaultvalue: https://10.91.17.135:5000
-  display: CTD Server URL (e.g. https://<IP>:5000)
+- display: CTD Server URL (e.g. https://<IP>:5000)
   name: url
   required: true
   type: 0

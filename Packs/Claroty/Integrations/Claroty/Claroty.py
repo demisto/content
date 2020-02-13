@@ -209,11 +209,9 @@ def resolve_alert_command(client, args):
                                   demisto.args().get("filters", {}), resolve_type)
 
     outputs = {
-        # 'Claroty.Alert': _parse_single_alert(result)
-        "Resolve_out": result
+        "Claroty.Resolve_out": result
     }
-    # readable_output = tableToMarkdown('Claroty Alert', outputs)
-    readable_output = f"###### {result}"
+    readable_output = f"###### Resolve success status {result['success']}"
 
     return (
         readable_output,
@@ -362,21 +360,18 @@ def get_sort(field_to_sort_by: str, order_by_desc: bool = False):
 
 
 def get_fields(obj_name: str) -> list:
-    fields = demisto.args().get("fields", "")
+    fields = demisto.args().get("fields", "").split(",")
     if obj_name == "alert":
-
+        fields.append("resource_id")
         if "all" in fields:
-            return DEFAULT_ALERT_FIELD_LIST
+            fields.append(DEFAULT_ALERT_FIELD_LIST)
 
     elif obj_name == "asset":
-        pass
-    if "all" in fields:
-        if obj_name == "alert":
-            return DEFAULT_ALERT_FIELD_LIST
-        elif obj_name == "asset":
-            return DEFAULT_ASSET_FIELD_LIST
-    fields = set(fields.split(","))
-    fields.add("resource_id")
+        fields.append("id")
+        if "all" in fields:
+            fields.append(DEFAULT_ALERT_FIELD_LIST)
+
+    fields = set(fields)
     return list(fields)
 
 
