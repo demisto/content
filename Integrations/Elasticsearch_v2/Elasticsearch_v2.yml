@@ -1,4 +1,5 @@
 category: Database
+toversion: 5.4.9
 commonfields:
   id: Elasticsearch v2
   version: -1
@@ -41,11 +42,6 @@ configuration:
   - Timestamp-Milliseconds
   required: false
   type: 15
-- defaultvalue: '%Y-%m-%dT%H:%M:%SZ'
-  display: Time format as kept in Elasticsearch
-  name: fetch_time_format
-  required: false
-  type: 0
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
@@ -77,8 +73,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields of a document to fetch. Leaving the fields
-        empty fetches the entire document.
+      description: A comma-separated list of the fields of a document to fetch. Leaving
+        the fields empty fetches the entire document.
       isArray: true
       name: fields
       required: false
@@ -97,16 +93,15 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to start a search. The default
-        is "0".
+      description: The page number from which to start a search. The default is "0".
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
-        The default is "100".
+      description: The number of documents displayed per page. Can be an integer between
+        "1" and "10,000". The default is "100".
       isArray: false
       name: size
       required: false
@@ -193,7 +188,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields of a document to fetch. If empty, fetches the entire document.
+      description: A comma-separated list of the fields of a document to fetch. If
+        empty, fetches the entire document.
       isArray: true
       name: fields
       required: false
@@ -212,16 +208,15 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to start a search. The default
-        is "0".
+      description: The page number from which to start a search. The default is "0".
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
-        The default is "100".
+      description: The number of documents displayed per page. Can be an integer between
+        "1" and "10,000". The default is "100".
       isArray: false
       name: size
       required: false
@@ -293,10 +288,11 @@ script:
       description: The maximum number of scores that a search can return.
       type: Number
   dockerimage: demisto/elasticsearch:1.0.0.1795
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python

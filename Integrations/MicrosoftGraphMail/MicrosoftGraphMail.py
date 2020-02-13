@@ -48,7 +48,7 @@ class MsGraphClient:
             next_link = response.get('@odata.nextLink')
             if next_link:
                 responses.append(
-                    self.ms_client.http_request('GET', url=next_link)
+                    self.ms_client.http_request('GET', full_url=next_link, url_suffix=None)
                 )
 
             else:
@@ -439,7 +439,7 @@ def list_mails_command(client: MsGraphClient, args):
 
     raw_response = client.list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
     mail_context = build_mail_object(raw_response, user_id)
-    entry_context = {'MSGraphMail(var.ID === obj.ID)': mail_context}
+    entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
 
     # human_readable builder
     human_readable = tableToMarkdown(

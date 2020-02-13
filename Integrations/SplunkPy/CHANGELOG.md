@@ -1,4 +1,11 @@
 ## [Unreleased]
+Added the *app* argument to the ***splunk-job-create*** and ***splunk-search*** commands.
+
+## [20.2.0] - 2020-02-04
+- The Test button now tests the fetch incidents function when the *Fetch incidents* option is selected.
+- Fixed an issue in the *Splunk notable events ES query* parameter where the time parameter was not passed to the table in Splunk.
+
+## [20.1.2] - 2020-01-22
 Added the ***splunk-submit-event-hec*** command.
 
 ## [20.1.0] - 2020-01-07

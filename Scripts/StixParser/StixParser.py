@@ -6,6 +6,12 @@ import tempfile
 from datetime import datetime
 
 from stix.core import STIXPackage
+import warnings
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'VocabList' object.")
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'str' object.")
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'datetime' object.")
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'StructuredTextList' object.")
+
 
 """ GLOBAL PARAMS """
 PATTERNS_DICT = {

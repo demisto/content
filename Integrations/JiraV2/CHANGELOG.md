@@ -1,4 +1,10 @@
 ## [Unreleased]
+
+
+## [20.2.0] - 2020-02-04
+Fixed an issue in ***jira-get-issue*** where trying to get the attachment of the issue would fail.
+
+## [20.1.2] - 2020-01-22
 Fixed the description of the *reporter* argument in the ***jira-create-issue*** command.
 Fixed an issue where trying to fetch incidents when the idOffset was not configured would raise an error.
 
