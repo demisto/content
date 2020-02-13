@@ -47,6 +47,11 @@ configuration:
   name: key
   required: false
   type: 14
+- additionalinfo: JSON string of users in a username - password
+  display: Users JSON
+  name: users
+  required: false
+  type: 14
 - additionalinfo: Ignores certificate and private key, and will run the EDL service
     in HTTP
   display: HTTP Server
@@ -54,6 +59,16 @@ configuration:
   name: http_flag
   required: false
   type: 8
+- additionalinfo: JSON string of indicator query collections.
+  defaultvalue: |-
+    {
+       "Spamhaus": "type:IP and reputation:BAD and source:Spamhaus Feed"
+    }
+  display: Collection JSON
+  hidden: false
+  name: collections
+  required: false
+  type: 12
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: TAXII Server
