@@ -156,11 +156,14 @@ tasks:
                 value:
                   simple: csvFile.csv
           accessor: EntryID}
+      extend-context:
+        simple: Indicator=.[0]
       indicator_column_number: {}
       indicator_type_column_number: {}
       limit: {}
       offset: {}
       sheet_name: {}
+      starting_row: {}
     separatecontext: false
     view: |-
       {
@@ -196,7 +199,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: Indicator.Value
+              simple: Indicator.value
             iscontext: true
           right:
             value:
@@ -204,7 +207,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: Indicator.Type
+              simple: Indicator.type
             iscontext: true
           right:
             value:
@@ -327,11 +330,14 @@ tasks:
                 value:
                   simple: txtFile.txt
           accessor: EntryID}
+      extend-context:
+        simple: Indicator2=.[0]
       indicator_column_number: {}
       indicator_type_column_number: {}
       limit: {}
       offset: {}
       sheet_name: {}
+      starting_row: {}
     separatecontext: false
     view: |-
       {
@@ -367,7 +373,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: Indicator.Value
+              simple: Indicator2.value
             iscontext: true
           right:
             value:
@@ -375,59 +381,11 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: Indicator.Value
-            iscontext: true
-          right:
-            value:
-              simple: 2001:db8:85a3:8d3:1319:8a2e:370:7348
-      - - operator: containsString
-          left:
-            value:
-              simple: Indicator.Type
+              simple: Indicator2.type
             iscontext: true
           right:
             value:
               simple: IP
-      - - operator: containsString
-          left:
-            value:
-              simple: Indicator.Type
-            iscontext: true
-          right:
-            value:
-              simple: IPv6
-      - - operator: containsString
-          left:
-            value:
-              simple: Indicator.Value
-            iscontext: true
-          right:
-            value:
-              simple: google.com
-      - - operator: containsString
-          left:
-            value:
-              simple: Indicator.Type
-            iscontext: true
-          right:
-            value:
-              simple: Domain
-      - - operator: containsString
-          left:
-            value:
-              simple: Indicator.Value
-            iscontext: true
-          right:
-            value:
-              simple: www.google.com
-      - - operator: containsString
-          left:
-            value:
-              simple: Indicator.Type
-            iscontext: true
-          right:
-            value:
-              simple: URL
     view: |-
       {
         "position": {
@@ -460,7 +418,7 @@ tasks:
     scriptarguments:
       body: {}
       filename:
-        simple: xlsFile
+        simple: xlsFile.xlsx
       headers: {}
       insecure: {}
       method:
@@ -521,6 +479,8 @@ tasks:
                 value:
                   simple: xlsFile.xlsx
           accessor: EntryID}
+      extend-context:
+        simple: Indicator3=.[0]
       indicator_column_number:
         simple: "2"
       indicator_type_column_number:
@@ -565,15 +525,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: Indicator.Value
-            iscontext: true
-          right:
-            value:
-              simple: demisto.com
-      - - operator: containsString
-          left:
-            value:
-              simple: Indicator.Value
+              simple: Indicator3.value
             iscontext: true
           right:
             value:
@@ -581,7 +533,7 @@ tasks:
       - - operator: notContainsString
           left:
             value:
-              simple: Indicator.Value
+              simple: Indicator3.value
             iscontext: true
           right:
             value:
