@@ -2240,6 +2240,10 @@
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "FetchIndicatorsFromFile-test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
