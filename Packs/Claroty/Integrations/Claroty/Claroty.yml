@@ -91,6 +91,12 @@ script:
       - ''
       required: false
       secret: false
+    - default: false
+      description: A flag to add to retrieve cves on retrieved assets
+      isArray: false
+      name: should_enrich_assets
+      required: false
+      secret: false
     deprecated: false
     description: Get all assets from CTD
     execution: false

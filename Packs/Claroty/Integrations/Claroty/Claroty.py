@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import tableToMarkdown, BaseClient, LOG, return_outputs, return_error
 
 ''' IMPORTS '''
 from typing import List
@@ -134,6 +135,16 @@ class Client(BaseClient):
             url_suffix += f"&{query_filter['field']}__{query_filter['operator']}={query_filter['value']}"
         return url_suffix
 
+    def enrich_asset_results(self, assets):
+        full_match_base_url = "ranger/insight_details/Full Match CVEs?&format=asset_page&sort=-Score%20(CVSS)&page=1&per_page=10&id__exact="
+        windows_cve_base_url = "ranger/insight_details/Windows CVEs?&format=asset_page&sort=-Score%20(CVSS)&page=1&per_page=10&id__exact="
+        for asset in assets:
+            full_match_cves = self._http_request('GET', url_suffix=f"{full_match_base_url}={asset['rid']}")
+            windows_cves = self._http_request('GET', url_suffix=f"{windows_cve_base_url}={asset['rid']}")
+            assets_cves = [*full_match_cves["rows"], *windows_cves["rows"]]
+            asset.insights = [{"CVE-ID": cve.cells[0], "Score": cve.cells[1], "Description": cve.cells[2]} for cve in assets_cves]
+        return assets
+
 
 def test_module(client):
     """
@@ -157,6 +168,7 @@ def get_assets_command(client, args):
     # TODO: Aesthetics - create def init_get_values(filters) to populate fields, sort, filters
     fields = get_fields("asset")
     sort = get_sort(demisto.args().get("sort_by", "id"))
+    should_enrich_assets = demisto.args().get("should_enrich_assets")
     filters = []
 
     criticality_str = demisto.args().get("criticality", None)
@@ -166,15 +178,20 @@ def get_assets_command(client, args):
         filters.append(add_filter("criticality", criticality_int - 1))
 
     # TODO: Add this filter later
-    # insight_name = demisto.args().get("insight_name", "").lower()
-    # if insight_name:
-    #     asset_filters = client.get_ranger_table_filters('assets')
-    #     # TODO: fix around the way i return values
-    #     filters_url_suffix = transform_filters_labels_to_values(asset_filters, "insight_name", insight_name)
-    #     for filter_type in filters_url_suffix:
-    #         filters.append(add_filter(filter_type[0], filter_type[1]))
+    insight_name = demisto.args().get("insight_name", "").lower()
+    if insight_name:
+        # asset_filters = client.get_ranger_table_filters('assets')
+        # TODO: fix around the way i return values
+        # filters_url_suffix = transform_filters_labels_to_values(asset_filters, "insight_name", insight_name)
+        filters.append(add_filter("insights_name", insight_name))
+        # for filter_type in filters_url_suffix:
+        #     filters.append(add_filter(filter_type[0], filter_type[1]))
 
     result = client.get_assets(fields, sort, filters)
+
+    if should_enrich_assets:
+        result = client.enrich_asset_results(result)
+
     parsed_results = _parse_assets_result(result, fields)
 
     outputs = {
@@ -376,8 +393,8 @@ def get_fields(obj_name: str) -> list:
 def add_filter(filter_name: str, filter_value, filter_operation: str = "exact"):
     return {
         "field": filter_name,
+        "value": filter_value,
         "operator": filter_operation,
-        "value": filter_value
     }
 
 
