@@ -1,156 +1,261 @@
 {
-  "typeId": "urlRep",
-  "kind": "indicatorsDetails",
-  "layout": {
-    "typeId": "urlRep",
-    "kind": "indicatorsDetails",
-    "name": "",
-    "tabs": [
-      {
-        "type": "custom",
-        "sections": [
-          {
-            "name": "Reputation",
-            "i": "reputationSources",
-            "h": 2,
-            "moved": false,
-            "static": false,
-            "w": 1,
-            "y": 0,
-            "x": 1,
-            "type": "reputationSources"
-          },
-          {
-            "name": "Related Incidents",
-            "i": "relatedIncidents",
-            "h": 3,
-            "moved": false,
-            "static": false,
-            "w": 2,
-            "y": 2,
-            "x": 1,
-            "type": "relatedIncidents"
-          },
-          {
-            "name": "Timeline",
-            "i": "indicatorTimeline",
-            "items": [
-              {
-                "index": 1,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "firstseen",
-                "id": "indicator-first-seen"
-              },
-              {
-                "index": 2,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "lastseen",
-                "id": "indicator-last-seen"
-              }
-            ],
-            "moved": false,
-            "displayType": "ROW",
-            "static": false,
-            "w": 1,
-            "h": 2,
-            "y": 3,
-            "x": 0,
-            "type": "indicatorTimeline"
-          },
-          {
-            "name": "URL Info",
-            "i": "e2c8c970-a09d-11e9-8956-390f602b039a",
-            "items": [
-              {
-                "index": 0,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "indicatortype",
-                "id": "indicator-type"
-              },
-              {
-                "index": 1,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "source",
-                "id": "indicator-source"
-              },
-              {
-                "index": 2,
-                "endCol": 2,
-                "height": 48,
-                "startCol": 0,
-                "fieldId": "comment",
-                "id": "indicator-comment"
-              },
-              {
-                "index": 3,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "internal",
-                "id": "81487eb0-ac6f-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 4,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "malwarefamily",
-                "id": "852ce4d0-ac6f-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 5,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "signed",
-                "id": "8b8669a0-ac6f-11e9-8443-17259235cee7"
-              }
-            ],
-            "moved": false,
-            "displayType": "ROW",
-            "static": false,
-            "w": 1,
-            "h": 3,
-            "y": 0,
-            "x": 0
-          },
-          {
-            "minH": 1,
-            "x": 2,
-            "name": "Community Score",
-            "i": "63ce90e0-ac6f-11e9-8443-17259235cee7",
-            "h": 2,
-            "moved": false,
-            "maxW": 3,
-            "static": false,
-            "w": 1,
-            "hideName": false,
-            "y": 0,
-            "query": "PositiveDetectionsVSDetectionEngines",
-            "items": [],
-            "type": "dynamicIndicator",
-            "queryType": "script",
-            "minW": 1
-          }
-        ],
-        "id": "default-main",
-        "name": "Info"
-      }
-    ],
-    "modified": "2019-08-08T12:34:51.96555249Z",
-    "TypeName": "",
-    "version": -1,
-    "id": "urlRep"
-  },
-  "TypeName": "urlRep",
-  "version": -1,
-  "fromVersion": "5.0.0"
+	"TypeName": "urlRep",
+	"kind": "indicatorsDetails",
+	"layout": {
+		"TypeName": "",
+		"commitMessage": "",
+		"id": "urlRep",
+		"kind": "indicatorsDetails",
+		"modified": "2020-02-13T17:28:14.153887+02:00",
+		"name": "",
+		"prevKind": "indicatorsDetails",
+		"prevTypeId": "urlRep",
+		"propagationLabels": [
+			"all"
+		],
+		"shouldCommit": false,
+		"sortValues": null,
+		"system": false,
+		"tabs": [
+			{
+				"id": "default-main",
+				"name": "Info",
+				"sections": [
+					{
+						"h": 2,
+						"i": "default-main-reputationSources",
+						"moved": false,
+						"name": "Reputation",
+						"static": false,
+						"type": "reputationSources",
+						"w": 1,
+						"x": 1,
+						"y": 1
+					},
+					{
+						"h": 2,
+						"i": "default-main-relatedIncidents",
+						"moved": false,
+						"name": "Related Incidents",
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"i": "default-main-indicatorTimeline",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "firstseen",
+								"height": 24,
+								"id": "indicator-first-seen",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lastseen",
+								"height": 24,
+								"id": "indicator-last-seen",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Timeline",
+						"static": false,
+						"type": "indicatorTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "indicatortype",
+								"height": 24,
+								"id": "indicator-type",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "source",
+								"height": 24,
+								"id": "indicator-source",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "comment",
+								"height": 48,
+								"id": "indicator-comment",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "malwarefamily",
+								"height": 24,
+								"id": "852ce4d0-ac6f-11e9-8443-17259235cee7",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "internal",
+								"height": 24,
+								"id": "81487eb0-ac6f-11e9-8443-17259235cee7",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "signed",
+								"height": 24,
+								"id": "8b8669a0-ac6f-11e9-8443-17259235cee7",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "URL Info",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"h": 2,
+						"hideName": false,
+						"i": "default-main-63ce90e0-ac6f-11e9-8443-17259235cee7",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Community Score",
+						"query": "PositiveDetectionsVSDetectionEngines",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamicIndicator",
+						"w": 3,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "default-main-7fd028f0-3d5e-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Reputation Status",
+						"static": false,
+						"type": "reputationStatus",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "default-main-814e8b90-3d5e-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Expiration Status",
+						"static": false,
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "default-main-934711f0-3d5e-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "default-main-58b664f0-4e75-11ea-8bf6-67db400d7da5",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 24,
+								"id": "6435d090-4e75-11ea-8bf6-67db400d7da5",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Tags",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "default-main-6a572e60-4e75-11ea-8bf6-67db400d7da5",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Sources Data",
+						"static": false,
+						"type": "sources",
+						"w": 2,
+						"x": 0,
+						"y": 5
+					}
+				],
+				"type": "custom"
+			}
+		],
+		"typeId": "urlRep",
+		"vcShouldIgnore": false,
+		"version": -1
+	},
+	"typeId": "urlRep",
+	"version": -1,
+    "fromVersion": "5.5.0"
 }

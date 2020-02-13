@@ -1,138 +1,243 @@
 {
-  "typeId": "emailRep",
-  "kind": "indicatorsDetails",
-  "layout": {
-    "typeId": "emailRep",
-    "kind": "indicatorsDetails",
-    "name": "",
-    "tabs": [
-      {
-        "type": "custom",
-        "sections": [
-          {
-            "name": "Reputation",
-            "i": "reputationSources",
-            "h": 2,
-            "moved": false,
-            "static": false,
-            "w": 2,
-            "y": 0,
-            "x": 1,
-            "type": "reputationSources"
-          },
-          {
-            "name": "Related Incidents",
-            "i": "relatedIncidents",
-            "h": 2,
-            "moved": false,
-            "static": false,
-            "w": 2,
-            "y": 2,
-            "x": 1,
-            "type": "relatedIncidents"
-          },
-          {
-            "name": "Timeline",
-            "i": "indicatorTimeline",
-            "items": [
-              {
-                "index": 0,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "firstseen",
-                "id": "indicator-first-seen"
-              },
-              {
-                "index": 1,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "lastseen",
-                "id": "indicator-last-seen"
-              }
-            ],
-            "moved": false,
-            "displayType": "ROW",
-            "static": false,
-            "w": 1,
-            "h": 2,
-            "y": 2,
-            "x": 0,
-            "type": "indicatorTimeline"
-          },
-          {
-            "name": "Email Address Info",
-            "i": "e2c8c970-a09d-11e9-8956-390f602b039a",
-            "items": [
-              {
-                "index": 0,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "indicatortype",
-                "id": "indicator-type"
-              },
-              {
-                "index": 1,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "emailaddress",
-                "id": "4cee05a0-b9d9-11e9-aeb8-096452ab8d25"
-              },
-              {
-                "index": 2,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "source",
-                "id": "indicator-source"
-              },
-              {
-                "index": 3,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "domainname",
-                "id": "49f18e80-b9d9-11e9-aeb8-096452ab8d25"
-              },
-              {
-                "index": 4,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "internal",
-                "id": "50d2b9e0-b9d9-11e9-aeb8-096452ab8d25"
-              },
-              {
-                "index": 5,
-                "endCol": 2,
-                "height": 48,
-                "startCol": 0,
-                "fieldId": "comment",
-                "id": "indicator-comment"
-              }
-            ],
-            "moved": false,
-            "displayType": "ROW",
-            "static": false,
-            "w": 1,
-            "h": 2,
-            "y": 0,
-            "x": 0
-          }
-        ],
-        "id": "default-main",
-        "name": "Info"
-      }
-    ],
-    "modified": "2019-08-08T12:37:59.390987612Z",
-    "TypeName": "",
-    "version": -1,
-    "id": "emailRep"
-  },
-  "TypeName": "emailRep",
-  "version": -1,
-  "fromVersion": "5.0.0"
+	"TypeName": "emailRep",
+	"kind": "indicatorsDetails",
+	"layout": {
+		"TypeName": "",
+		"commitMessage": "",
+		"id": "emailRep",
+		"kind": "indicatorsDetails",
+		"modified": "2020-02-13T16:52:56.773542+02:00",
+		"name": "",
+		"prevKind": "indicatorsDetails",
+		"prevTypeId": "emailRep",
+		"propagationLabels": [
+			"all"
+		],
+		"shouldCommit": false,
+		"sortValues": null,
+		"system": false,
+		"tabs": [
+			{
+				"id": "default-main",
+				"name": "Info",
+				"sections": [
+					{
+						"h": 2,
+						"i": "default-main-reputationSources",
+						"moved": false,
+						"name": "Reputation",
+						"static": false,
+						"type": "reputationSources",
+						"w": 1,
+						"x": 1,
+						"y": 1
+					},
+					{
+						"h": 2,
+						"i": "default-main-relatedIncidents",
+						"moved": false,
+						"name": "Related Incidents",
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"i": "default-main-indicatorTimeline",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "firstseen",
+								"height": 24,
+								"id": "indicator-first-seen",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lastseen",
+								"height": 24,
+								"id": "indicator-last-seen",
+								"index": 1,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Timeline",
+						"static": false,
+						"type": "indicatorTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "indicatortype",
+								"height": 24,
+								"id": "indicator-type",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "emailaddress",
+								"height": 24,
+								"id": "4cee05a0-b9d9-11e9-aeb8-096452ab8d25",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "source",
+								"height": 24,
+								"id": "indicator-source",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domainname",
+								"height": 24,
+								"id": "49f18e80-b9d9-11e9-aeb8-096452ab8d25",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "internal",
+								"height": 24,
+								"id": "50d2b9e0-b9d9-11e9-aeb8-096452ab8d25",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "comment",
+								"height": 48,
+								"id": "indicator-comment",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Email Address Info",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "default-main-96e081d0-3d5d-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Reputation Status",
+						"static": false,
+						"type": "reputationStatus",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "default-main-9822c5d0-3d5d-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Expiration Status",
+						"static": false,
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "default-main-a5d0f850-3d5d-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "default-main-5e49a5d0-4e70-11ea-8bf6-67db400d7da5",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 24,
+								"id": "68b04e70-4e70-11ea-8bf6-67db400d7da5",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Tags",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "default-main-70614cf0-4e70-11ea-8bf6-67db400d7da5",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Sources Data",
+						"static": false,
+						"type": "sources",
+						"w": 2,
+						"x": 0,
+						"y": 5
+					}
+				],
+				"type": "custom"
+			}
+		],
+		"typeId": "emailRep",
+		"vcShouldIgnore": false,
+		"version": -1
+	},
+	"typeId": "emailRep",
+	"version": -1,
+    "fromVersion": "5.5.0"
 }

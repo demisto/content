@@ -1,230 +1,306 @@
 {
-  "typeId": "ipRep",
-  "kind": "indicatorsDetails",
-  "layout": {
-    "typeId": "ipRep",
-    "kind": "indicatorsDetails",
-    "name": "",
-    "tabs": [
-      {
-        "type": "custom",
-        "sections": [
-          {
-            "minH": 1,
-            "name": "Reputation",
-            "i": "b52548e0-a09d-11e9-8956-390f602b039a",
-            "hideName": false,
-            "moved": false,
-            "maxW": 3,
-            "items": [],
-            "displayType": "ROW",
-            "readOnly": true,
-            "static": false,
-            "w": 1,
-            "isVisible": true,
-            "y": 0,
-            "x": 2,
-            "h": 2,
-            "type": "reputationSources",
-            "minW": 1
-          },
-          {
-            "minH": 1,
-            "name": "Related Incidents",
-            "i": "c1f3f0d0-a09d-11e9-8956-390f602b039a",
-            "hideName": false,
-            "moved": false,
-            "maxW": 3,
-            "displayType": "ROW",
-            "readOnly": true,
-            "h": 2,
-            "static": false,
-            "w": 2,
-            "isVisible": true,
-            "y": 2,
-            "x": 1,
-            "items": [],
-            "type": "relatedIncidents",
-            "columns": [
-              {
-                "width": 110,
-                "displayed": true,
-                "key": "id",
-                "isDefault": false
-              },
-              {
-                "width": 300,
-                "displayed": true,
-                "key": "name",
-                "isDefault": true
-              },
-              {
-                "width": 80,
-                "displayed": true,
-                "key": "severity",
-                "isDefault": false
-              },
-              {
-                "width": 200,
-                "displayed": true,
-                "key": "type",
-                "isDefault": true
-              },
-              {
-                "width": 80,
-                "displayed": true,
-                "key": "status",
-                "isDefault": true
-              }
-            ],
-            "minW": 1
-          },
-          {
-            "minH": 1,
-            "name": "Timeline",
-            "i": "d5d02b50-a09d-11e9-8956-390f602b039a",
-            "hideName": false,
-            "moved": false,
-            "maxW": 3,
-            "items": [
-              {
-                "index": 0,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "isVisible": true,
-                "fieldId": "indicator_firstseen",
-                "id": "d5d02b51-a09d-11e9-8956-390f602b039a"
-              },
-              {
-                "index": 1,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "isVisible": true,
-                "fieldId": "indicator_lastseen",
-                "id": "d5d02b52-a09d-11e9-8956-390f602b039a"
-              }
-            ],
-            "displayType": "ROW",
-            "readOnly": true,
-            "static": false,
-            "w": 1,
-            "isVisible": true,
-            "y": 0,
-            "x": 1,
-            "h": 2,
-            "type": "indicatorTimeline",
-            "minW": 1
-          },
-          {
-            "minH": 1,
-            "name": "IP Details",
-            "i": "e2c8c970-a09d-11e9-8956-390f602b039a",
-            "hideName": false,
-            "moved": false,
-            "maxW": 3,
-            "items": [
-              {
-                "index": 0,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "indicatortype",
-                "id": "f6eb5bc0-a09d-11e9-8956-390f602b039a"
-              },
-              {
-                "index": 1,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "asn",
-                "id": "1745f790-ac60-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 2,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "geocountry",
-                "id": "1b89e2d0-ac60-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 3,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "geolocation",
-                "id": "1e590860-ac60-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 4,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "internal",
-                "id": "299ca380-ac60-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 5,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "hostname",
-                "id": "21d0f110-ac60-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 6,
-                "endCol": 2,
-                "dropEffect": "move",
-                "height": 48,
-                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
-                "startCol": 0,
-                "fieldId": "comment",
-                "id": "0b9dd200-a09e-11e9-8956-390f602b039a"
-              }
-            ],
-            "displayType": "ROW",
-            "static": false,
-            "w": 1,
-            "isVisible": true,
-            "y": 0,
-            "x": 0,
-            "h": 2,
-            "minW": 1
-          },
-          {
-            "minH": 1,
-            "name": "Geo Location",
-            "i": "8bd4f460-a875-11e9-8523-e5faf0ec1f6b",
-            "hideName": false,
-            "moved": false,
-            "maxW": 3,
-            "query": "ShowLocationOnMap",
-            "displayType": "ROW",
-            "readOnly": true,
-            "h": 2,
-            "static": false,
-            "w": 1,
-            "isVisible": true,
-            "y": 2,
-            "x": 0,
-            "items": [],
-            "type": "dynamicIndicator",
-            "queryType": "script",
-            "minW": 1
-          }
-        ],
-        "id": "main",
-        "name": "Info"
-      }
-    ],
-    "modified": "2019-07-22T09:08:42.08022857Z",
-    "TypeName": "",
-    "version": -1,
-    "id": "ipRep"
-  },
-  "TypeName": "ipRep",
-  "version": -1,
-  "fromVersion": "5.0.0"
+	"TypeName": "ipRep",
+	"kind": "indicatorsDetails",
+	"layout": {
+		"TypeName": "",
+		"commitMessage": "",
+		"id": "ipRep",
+		"kind": "indicatorsDetails",
+		"modified": "2020-02-13T17:18:47.844005+02:00",
+		"name": "",
+		"prevKind": "indicatorsDetails",
+		"prevTypeId": "ipRep",
+		"propagationLabels": [
+			"all"
+		],
+		"shouldCommit": false,
+		"sortValues": null,
+		"system": false,
+		"tabs": [
+			{
+				"id": "main",
+				"name": "Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "main-b52548e0-a09d-11e9-8956-390f602b039a",
+						"isVisible": true,
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Reputation",
+						"readOnly": true,
+						"static": false,
+						"type": "reputationSources",
+						"w": 1,
+						"x": 1,
+						"y": 1
+					},
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "id",
+								"width": 110
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "severity",
+								"width": 80
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "type",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "status",
+								"width": 80
+							}
+						],
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
+						"isVisible": true,
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Related Incidents",
+						"readOnly": true,
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "indicatortype",
+								"height": 24,
+								"id": "f6eb5bc0-a09d-11e9-8956-390f602b039a",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asn",
+								"height": 24,
+								"id": "1745f790-ac60-11e9-8443-17259235cee7",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "geocountry",
+								"height": 24,
+								"id": "1b89e2d0-ac60-11e9-8443-17259235cee7",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "geolocation",
+								"height": 24,
+								"id": "1e590860-ac60-11e9-8443-17259235cee7",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "internal",
+								"height": 24,
+								"id": "299ca380-ac60-11e9-8443-17259235cee7",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "hostname",
+								"height": 24,
+								"id": "21d0f110-ac60-11e9-8443-17259235cee7",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "comment",
+								"height": 48,
+								"id": "0b9dd200-a09e-11e9-8956-390f602b039a",
+								"index": 6,
+								"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "IP Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "main-8bd4f460-a875-11e9-8523-e5faf0ec1f6b",
+						"isVisible": true,
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Geo Location",
+						"query": "ShowLocationOnMap",
+						"queryType": "script",
+						"readOnly": true,
+						"static": false,
+						"type": "dynamicIndicator",
+						"w": 3,
+						"x": 0,
+						"y": 9
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "main-9cfd13c0-3d54-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Reputation Status",
+						"static": false,
+						"type": "reputationStatus",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "main-a42a8a60-3d54-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Expiration Status",
+						"static": false,
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Timeline",
+						"static": false,
+						"type": "indicatorTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"h": 2,
+						"i": "main-d7576e80-3d54-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Sources",
+						"static": false,
+						"type": "sources",
+						"w": 2,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"h": 4,
+						"i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 24,
+								"id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Tags",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		],
+		"typeId": "ipRep",
+		"vcShouldIgnore": false,
+		"version": -1
+	},
+	"typeId": "ipRep",
+	"version": -1,
+    "fromVersion": "5.5.0"
 }
