@@ -101,6 +101,7 @@ outputs:
 script: '-'
 subtype: python3
 system: false
+fromversion: 5.5.0
 tags:
 - indicators
 timeout: '0'
