@@ -1482,7 +1482,7 @@ try:
     elif active_command == 'autofocus-get-export-list-indicators':
         get_export_list_command(args)
     elif active_command == 'ip':
-        search_ip_command(**args)
+        demisto.results(search_ip_command(**args))
     elif active_command == 'domain':
         search_domain_command(**args)
     elif active_command == 'url':
