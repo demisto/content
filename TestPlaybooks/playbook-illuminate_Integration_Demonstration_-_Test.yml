@@ -1,6 +1,6 @@
-id: Illuminate Integration Demonstration - Test
+id: illuminate Integration Demonstration - Test
 version: -1
-name: Illuminate Integration Demonstration - Test
+name: illuminate Integration Demonstration - Test
 starttaskid: '0'
 tasks:
   '0':
