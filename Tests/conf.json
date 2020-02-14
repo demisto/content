@@ -22,6 +22,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Cofense Feed",
+            "playbookID": "TestCofenseFeed",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConsultingFeed_Test",
             "fromversion": "5.5.0"
@@ -160,7 +165,8 @@
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout" : 2400,
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "pid_threshold": 30
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -190,6 +196,10 @@
         {
             "integrations": "Cofense Triage",
             "playbookID": "Cofense Triage Test"
+        },
+        {
+            "integrations": "Akamai WAF",
+            "playbookID": "Akamai_WAF-Test"
         },
         {
             "integrations": "Minerva Labs Anti-Evasion Platform",
@@ -765,7 +775,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 150
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
@@ -850,7 +861,7 @@
         {
             "integrations": [
                 "Mail Sender (New)",
-                "google"
+                "Gmail"
             ],
             "playbookID": "Mail Sender (New) Test"
         },
@@ -1034,7 +1045,13 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test"
+            "playbookID": "SplunkPy-Test-V2",
+            "memory_threshold": 500
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "Splunk-Test",
+            "memory_threshold": 500
         },
         {
             "integrations": "SplunkPy",
@@ -1123,12 +1140,14 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 150
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewsv2_separate_process"
+            "instance_names": "ewsv2_separate_process",
+            "memory_threshold": 70
         },
         {
             "integrations": "remedy_sr_beta",
@@ -2131,7 +2150,9 @@
         },
         {
             "integrations": "Google Key Management Service",
-            "playbookID": "Google-KMS-test"
+            "playbookID": "Google-KMS-test",
+            "pid_threshold": 6,
+            "memory_threshold": 60
         },
         {
             "integrations": "SecBI",
@@ -2161,7 +2182,7 @@
             "playbookID": "Tanium v2 - Test"
         },
         {
-          "integrations": "Office365 Feed",
+          "integrations": "Office 365 Feed",
           "playbookID": "Office365_Feed_Test",
           "fromversion": "5.5.0"
         },
@@ -2189,7 +2210,8 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk Indicator Hunting Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 500
         },
         {
             "integrations": "BPA",
@@ -2231,8 +2253,31 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "AlienVault Reputation Feed",
+            "playbookID": "AlienVaultReputationFeed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 9000
+        },
+        {
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Feodo Tracker Hashes Feed",
+            "playbookID": "playbook-feodoteackerhash_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Feodo Tracker IP Blocklist Feed",
+            "instance_names": "feodo_tracker_ip_currently__active",
+            "playbookID": "playbook-feodotrackeripblock_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Feodo Tracker IP Blocklist Feed",
+            "instance_names": "feodo_tracker_ip_30_days",
+            "playbookID": "playbook-feodotrackeripblock_test",
             "fromversion": "5.5.0"
         }
     ],
