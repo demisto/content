@@ -7,27 +7,6 @@ configuration:
   name: service_account_credential
   required: true
   type: 4
-- defaultvalue: 3 days
-  display: First fetch time interval. The time range to consider for initial data
-    fetch.(<number> <unit>, e.g., 1 day, 7 days, 3 months, 1 year).
-  name: first_fetch_time_interval_days
-  required: false
-  type: 0
-- defaultvalue: '10'
-  display: How many incidents to fetch each time
-  name: fetch_limit
-  required: false
-  type: 0
-- display: Select the severity of asset alerts to be filtered for Fetch Incidents.
-    Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).
-  name: incident_severity
-  options:
-  - High
-  - Medium
-  - Low
-  - Unspecified
-  required: false
-  type: 15
 - display: Provide comma(',') separated categories (e.g. APT-Activity, Phishing).
     Indicators belonging to these "categories" would be considered as "malicious"
     when executing reputation commands.
@@ -110,14 +89,17 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
+- defaultvalue: 3 days
+  display: First fetch time interval. The time range to consider for initial data
+    fetch.(<number> <unit>, e.g., 1 day, 7 days, 3 months, 1 year).
+  name: first_fetch_time_interval_days
   required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
+  type: 0
+- defaultvalue: '10'
+  display: How many incidents to fetch each time
+  name: fetch_limit
   required: false
-  type: 8
+  type: 0
 - additionalinfo: Select Backstory alert type to create actionable incident. Available
     options are Assets with alerts and IOC Domain matches (Default).
   defaultvalue: IOC Domain matches
@@ -129,6 +111,24 @@ configuration:
   - Assets with alerts
   required: false
   type: 15
+- display: Select the severity of asset alerts to be filtered for Fetch Incidents.
+    Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).
+  name: incident_severity
+  options:
+  - High
+  - Medium
+  - Low
+  - Unspecified
+  required: false
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Use the Google Chronicle Backstory integration to retrieve Asset alerts
   or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based
   on the indicator accessed. This integration also provides reputation and threat
@@ -140,7 +140,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument.
+      description: Fetches IOC Domain matches in the specified time interval. If configured,
+        overrides the start_time argument.
       isArray: false
       name: preset_time_range
       predefined:
@@ -151,25 +152,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the
-        default is the UTC time corresponding to 3 days earlier than current time.
+      description: The value of the start time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time
+        corresponding to 3 days earlier than current time.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
       defaultValue: '10000'
-      description: The maximum number of IOCs to return. You can specify between
-        1 and 10000. The default is 10000.
+      description: The maximum number of IOCs to return. You can specify between 1
+        and 10000. The default is 10000.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
     description: Lists the IOC Domain matches within your enterprise for the specified
-      time interval. The indicator of compromise (IOC) domain matches lists for which the domains
-      that your security infrastructure has flagged as both suspicious and that have
-      been seen recently within your enterprise.
+      time interval. The indicator of compromise (IOC) domain matches lists for which
+      the domains that your security infrastructure has flagged as both suspicious
+      and that have been seen recently within your enterprise.
     execution: false
     name: gcb-list-iocs
     outputs:
@@ -225,29 +227,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the
-        default is the UTC time corresponding to 3 days earlier than current time.
+      description: The value of the start time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time
+        corresponding to 3 days earlier than current time.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
-        default is current UTC time.
+      description: The value of the end time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z). If not supplied,  the default is current UTC
+        time.
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
-      description: The maximum number of IOCs to return. You can specify between
-        1 and 10000. The default is 10000.
+      description: The maximum number of IOCs to return. You can specify between 1
+        and 10000. The default is 10000.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of the assets that accessed
-      the input artifact (IP, domain, MD5, SHA1, SHA256) during the specified time.
+    description: Returns a list of the assets that accessed the input artifact (IP,
+      domain, MD5, SHA1 and SHA256) during the specified time.
     execution: false
     name: gcb-assets
     outputs:
@@ -345,8 +349,8 @@ script:
       description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.Sources.ConfidenceScore
-      description: The confidence score indicating the accuracy and appropriateness of the assigned
-        category.
+      description: The confidence score indicating the accuracy and appropriateness
+        of the assigned category.
       type: Number
     - contextPath: GoogleChronicleBackstory.IP.Sources.FirstAccessedTime
       description: The time the IOC was first accessed within the enterprise.
@@ -406,8 +410,8 @@ script:
       description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.Sources.ConfidenceScore
-      description: The confidence score indicating the accuracy and appropriateness of the assigned
-        category.
+      description: The confidence score indicating the accuracy and appropriateness
+        of the assigned category.
       type: Number
     - contextPath: GoogleChronicleBackstory.Domain.Sources.FirstAccessedTime
       description: The time the IOC was first accessed within the enterprise.
@@ -420,17 +424,17 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The artifact indicator value. The supported artifact types are IP,
-        domain, MD5, SHA1, and SHA256.
+      description: The artifact indicator value. The supported artifact types are
+        IP and domain.
       isArray: false
       name: artifact_value
       required: true
       secret: false
     deprecated: false
-    description: Accepts an artifact indicator and returns any threat
-      intelligence associated with the artifact. The threat intelligence information
-      is drawn from your enterprise security systems and from Chronicle's IoC partners
-      (for example, the DHS threat feed).
+    description: Accepts an artifact indicator and returns any threat intelligence
+      associated with the artifact. The threat intelligence information is drawn from
+      your enterprise security systems and from Chronicle's IoC partners (for example,
+      the DHS threat feed).
     execution: false
     name: gcb-ioc-details
     outputs:
@@ -456,8 +460,8 @@ script:
       description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.ConfidenceScore
-      description: The confidence score indicating the accuracy and appropriateness of the assigned
-        category.
+      description: The confidence score indicating the accuracy and appropriateness
+        of the assigned category.
       type: Number
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.FirstAccessedTime
       description: The time the IOC was first accessed within the enterprise.
@@ -471,8 +475,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Fetch alerts for the specified time range. If preset_time_range is
-        configured, overrides the start_time and end_time arguments.
+      description: Fetch alerts for the specified time range. If preset_time_range
+        is configured, overrides the start_time and end_time arguments.
       isArray: false
       name: preset_time_range
       predefined:
@@ -483,23 +487,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the
-        default is the UTC time corresponding to 3 days earlier than current time.
+      description: The value of the start time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time
+        corresponding to 3 days earlier than current time.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
-        default is current UTC time.
+      description: The value of the end time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z). If not supplied,  the default is current UTC
+        time.
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
       defaultValue: '10000'
-      description: The maximum number of IOCs to return. You can specify between
-        1 and 10000. The default is 10000.
+      description: The maximum number of IOCs to return. You can specify between 1
+        and 10000. The default is 10000.
       isArray: false
       name: page_size
       required: false
@@ -507,7 +513,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: The severity by which to filter the returned alerts. If not supplied,
-        all alerts are fetched. The possible values are "High", "Medium", "Low", or "Unspecified".
+        all alerts are fetched. The possible values are "High", "Medium", "Low", or
+        "Unspecified".
       isArray: false
       name: severity
       predefined:

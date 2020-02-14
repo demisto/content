@@ -3,7 +3,6 @@
 
 Use the Google Chronicle Backstory integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
 
-
 ## Configure Google Chronicle Backstory on Demisto
 ---
 
@@ -12,9 +11,6 @@ Use the Google Chronicle Backstory integration to retrieve Asset alerts or IOC D
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __User's Service Account JSON__
-    * __First fetch time interval. The time range to consider for initial data fetch.(\<number> \<unit>, e.g. 1 day, 7 days, 3 months, 1 year).__
-    * __How many incidents to fetch each time__
-    * __Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).__
     * __Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.__
     * __Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.__
     * __Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.__
@@ -22,11 +18,14 @@ Use the Google Chronicle Backstory integration to retrieve Asset alerts or IOC D
     * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.__
     * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.__
     * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
-    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the confidence score level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
-    * __Fetches incidents__: Enable this option to create Incidents in Demisto based on Backstory IOC Domain matches or Asset Alerts.
+    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
+    * __Fetches incidents__
+    * __First fetch time interval. The time range to consider for initial data fetch.(<number> <unit>, e.g., 1 day, 7 days, 3 months, 1 year).__
+    * __How many incidents to fetch each time__
+    * __Backstory Alert Type (Select the type of data to consider for fetch incidents).__
+    * __Select the severity of asset alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __Backstory Alert Type (Select the type of data to consider for fetch incidents)__: Select one of the types of data to be considered for incidents creation. Available options are 'IOC Domain matches' and 'Assets with Alerts'. To fetch both types of data, make sure to create 2 separate instances with each option selected.
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
@@ -77,7 +76,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 6. gcb-list-alerts
 ### 1. gcb-list-iocs
 ---
-Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
+Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists for which the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
+
 ##### Base Command
 
 `gcb-list-iocs`
@@ -85,9 +85,9 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured,  start_time will not take effect. | Optional | 
-| start_time | The value of the start time for your request. The format of date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers UTC time corresponding to 3 days earlier than current time. | Optional | 
-| page_size | Specify the maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
+| preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. | Optional | 
+| page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
 
 
 ##### Context Output
@@ -99,11 +99,11 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 | GoogleChronicleBackstory.Iocs.IocIngestTime | Date | Time(UTC) the IOC was first seen by Chronicle. | 
 | GoogleChronicleBackstory.Iocs.FirstAccessedTime | Date | Time(UTC) the artifact was first seen within your enterprise. | 
 | GoogleChronicleBackstory.Iocs.LastAccessedTime | Date | Time(UTC) the artifact was most recently seen within your enterprise. | 
-| GoogleChronicleBackstory.Iocs.Sources.Category | String | Source Category represents behaviour of the artifact. | 
-| GoogleChronicleBackstory.Iocs.Sources.IntRawConfidenceScore | Number | The numeric confidence score of IOC reported by the source. | 
-| GoogleChronicleBackstory.Iocs.Sources.NormalizedConfidenceScore | String | The normalized confidence of IOC score reported by the source. | 
-| GoogleChronicleBackstory.Iocs.Sources.RawSeverity | String | The severity of IOC as reported by the source. | 
-| GoogleChronicleBackstory.Iocs.Sources.Source | String | The source which reported the IOC. | 
+| GoogleChronicleBackstory.Iocs.Sources.Category | String | Source Category represents the behavior of the artifact. | 
+| GoogleChronicleBackstory.Iocs.Sources.IntRawConfidenceScore | Number | The numeric confidence score of the IOC reported by the source. | 
+| GoogleChronicleBackstory.Iocs.Sources.NormalizedConfidenceScore | String | The normalized confidence score of the IOC reported by the source. | 
+| GoogleChronicleBackstory.Iocs.Sources.RawSeverity | String | The severity of the IOC as reported by the source. | 
+| GoogleChronicleBackstory.Iocs.Sources.Source | String | The source that reported the IOC. | 
 
 
 ##### Command Example
@@ -124,7 +124,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
                     "Source": "ET Intelligence Rep List"
                 }
             ], 
-            "LastAccessedTime": "2020-02-11T05:39:27Z", 
+            "LastAccessedTime": "2020-02-14T05:59:27Z", 
             "Artifact": "anx.tb.ask.com", 
             "IocIngestTime": "2020-02-06T22:00:00Z"
         }
@@ -138,15 +138,15 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ```
 
 ##### Human Readable Output
-### IOC DOMAIN MATCHES
+### IOC Domain Matches
 |Domain|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
 |---|---|---|---|---|---|---|---|
-| anx.tb.ask.com | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 4 days ago | a year ago | an hour ago |
+| anx.tb.ask.com | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
 
 
 ### 2. gcb-assets
 ---
-This command will respond with a list of the assets which accessed the input artifact (IP, domain, MD5, SHA1, SHA256) during the specified time.
+Returns a list of the assets that accessed the input artifact (IP, domain, MD5, SHA1 and SHA256) during the specified time.
 
 ##### Base Command
 
@@ -155,11 +155,11 @@ This command will respond with a list of the assets which accessed the input art
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| artifact_value | The artifact indicator associated with assets. The artifact type may be one of the IP, Domain, MD5, SHA1 and SHA256. | Required | 
-| preset_time_range | Fetches assets that accessed the artifact during the interval specified. If configured, start_time & end_time will not take effect. | Optional | 
-| start_time | The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers UTC time corresponding to 3 days earlier than current time. | Optional | 
-| end_time | The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers current UTC time. | Optional | 
-| page_size | Specify the maximum number of assets to fetch. You can specify between 1 and 10,000. The default is 10,000. | Optional | 
+| artifact_value |  The artifact indicator associated with assets. The artifact type can be one of the following: IP, Domain, MD5, SHA1, or SHA256.  | Required | 
+| preset_time_range | Fetches assets that accessed the artifact during the interval specified. If configured, overrides the start_time and end_time arguments. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. | Optional | 
+| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied,  the default is current UTC time. | Optional | 
+| page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
 
 
 ##### Context Output
@@ -167,8 +167,8 @@ This command will respond with a list of the assets which accessed the input art
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GoogleChronicleBackstory.Asset.HostName | String | The hostname of the asset that accessed the artifact. | 
-| GoogleChronicleBackstory.Asset.IpAddress | String | The IP Address of the asset that accessed the artifact. | 
-| GoogleChronicleBackstory.Asset.MacAddress | String | The MAC Address of the asset that accessed the artifact. | 
+| GoogleChronicleBackstory.Asset.IpAddress | String | The IP address of the asset that accessed the artifact. | 
+| GoogleChronicleBackstory.Asset.MacAddress | String | The MAC address of the asset that accessed the artifact. | 
 | GoogleChronicleBackstory.Asset.ProductId | String | The Product ID of the asset that accessed the artifact. | 
 | GoogleChronicleBackstory.Asset.AccessedDomain | String | The domain artifact accessed by the asset. | 
 | GoogleChronicleBackstory.Asset.AccessedIP | String | The IP address artifact accessed by the asset. | 
@@ -179,36 +179,36 @@ This command will respond with a list of the assets which accessed the input art
 | GoogleChronicleBackstory.Asset.LastAccessedTime | Date | The time when the asset last accessed the artifact. | 
 | Host.Hostname | String | The hostname of the asset that accessed the artifact. | 
 | Host.ID | String | The Product ID of the asset that accessed the artifact. | 
-| Host.IP | String | The IP Address of the asset that accessed the artifact. | 
-| Host.MACAddress | String | The MAC Address of the asset that accessed the artifact. | 
+| Host.IP | String | The IP address of the asset that accessed the artifact. | 
+| Host.MACAddress | String | The MAC address of the asset that accessed the artifact. | 
 
 
 ##### Command Example
-```!gcb-assets artifact_value=bing.com preset_time_range="Last 1 day" ```
+```!gcb-assets artifact_value=bing.com preset_time_range="Last 1 day"```
 
 ##### Context Example
 ```
 {
     "GoogleChronicleBackstory.Asset": [
         {
-            "FirstAccessedTime": "2018-10-18T01:21:16Z", 
+            "FirstAccessedTime": "2018-10-18T04:38:44Z", 
             "AccessedDomain": "bing.com", 
-            "HostName": "maria-gahan-pc", 
-            "LastAccessedTime": "2020-02-11T04:39:45Z"
+            "HostName": "james-anderson-laptop", 
+            "LastAccessedTime": "2020-02-14T07:13:33Z"
         }, 
         {
-            "FirstAccessedTime": "2018-10-18T08:20:44Z", 
+            "FirstAccessedTime": "2018-10-18T02:01:51Z", 
             "AccessedDomain": "bing.com", 
-            "HostName": "candace-hall-pc", 
-            "LastAccessedTime": "2020-02-11T01:55:34Z"
+            "HostName": "roger-buchmann-pc", 
+            "LastAccessedTime": "2020-02-13T22:25:27Z"
         }
     ], 
     "Host": [
         {
-            "Hostname": "maria-gahan-pc"
+            "Hostname": "james-anderson-laptop"
         }, 
         {
-            "Hostname": "candace-hall-pc"
+            "Hostname": "roger-buchmann-pc"
         }
     ]
 }
@@ -218,13 +218,13 @@ This command will respond with a list of the assets which accessed the input art
 ### Assets related to artifact - bing.com
 |Host Name|Host IP|Host MAC|First Accessed Time|Last Accessed Time|
 |---|---|---|---|---|
-| maria-gahan-pc | - | - | 2018-10-18T01:21:16Z | 2020-02-11T04:39:45Z |
-| candace-hall-pc | - | - | 2018-10-18T08:20:44Z | 2020-02-11T01:55:34Z |
+| james-anderson-laptop | - | - | 2018-10-18T04:38:44Z | 2020-02-14T07:13:33Z |
+| roger-buchmann-pc | - | - | 2018-10-18T02:01:51Z | 2020-02-13T22:25:27Z |
 
 
 ### 3. ip
 ---
-Checks the reputation of an IP Address.
+Checks the reputation of an IP address.
 
 ##### Base Command
 
@@ -233,7 +233,7 @@ Checks the reputation of an IP Address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP Address to check. | Optional | 
+| ip | The IP address to check. | Optional | 
 
 
 ##### Context Output
@@ -244,22 +244,22 @@ Checks the reputation of an IP Address.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad) | 
-| IP.Address | String | The IP Address of the artifact. | 
+| IP.Address | String | The IP address of the artifact. | 
 | IP.Malicious.Vendor | String | For malicious IPs, the vendor that made the decision. | 
 | IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision. | 
-| GoogleChronicleBackstory.IP.IoCQueried | String | The artifact queried. | 
+| GoogleChronicleBackstory.IP.IoCQueried | String | The artifact that was queried. | 
 | GoogleChronicleBackstory.IP.Sources.Address.IpAddress | String | The IP address of the artifact. | 
-| GoogleChronicleBackstory.IP.Sources.Address.Domain | String | The Domain name of the artifact. | 
+| GoogleChronicleBackstory.IP.Sources.Address.Domain | String | The domain name of the artifact. | 
 | GoogleChronicleBackstory.IP.Sources.Address.Port | Number | The port number of the artifact. | 
-| GoogleChronicleBackstory.IP.Sources.Category | String | Source Category represents behaviour of the artifact. | 
-| GoogleChronicleBackstory.IP.Sources.ConfidenceScore | Number | The score indicates more or less reason to believe that the assigned category is accurate and appropriate. | 
-| GoogleChronicleBackstory.IP.Sources.FirstAccessedTime | Date | Time the IOC was first accessed within the enterprise. | 
-| GoogleChronicleBackstory.IP.Sources.LastAccessedTime | Date | Time the IOC was most recently seen within your enterprise. | 
+| GoogleChronicleBackstory.IP.Sources.Category | String | The behavior of the artifact. | 
+| GoogleChronicleBackstory.IP.Sources.ConfidenceScore | Number | The confidence score indicating the accuracy and appropriateness of the assigned category. | 
+| GoogleChronicleBackstory.IP.Sources.FirstAccessedTime | Date | The time the IOC was first accessed within the enterprise. | 
+| GoogleChronicleBackstory.IP.Sources.LastAccessedTime | Date | The time the IOC was most recently seen within your enterprise. | 
 | GoogleChronicleBackstory.IP.Sources.Severity | String | Impact of the artifact on the enterprise. | 
 
 
 ##### Command Example
-```!ip ip=23.20.239.12 ```
+```!ip ip=23.20.239.12```
 
 ##### Context Example
 ```
@@ -268,7 +268,7 @@ Checks the reputation of an IP Address.
         "Address": "23.20.239.12"
     }, 
     "DBotScore": {
-        "Vendor": "GoogleChronicleBackstory", 
+        "Vendor": "Google Chronicle Backstory", 
         "Indicator": "23.20.239.12", 
         "Score": 0, 
         "Type": "ip"
@@ -291,13 +291,13 @@ Checks the reputation of an IP Address.
                 "LastAccessedTime": "2019-04-10T00:00:00Z"
             }, 
             {
-                "Category": "BlockedObject", 
+                "Category": "Blocked", 
                 "FirstAccessedTime": "1970-01-01T00:00:00Z", 
-                "Severity": "n/a", 
-                "ConfidenceScore": "Low", 
+                "Severity": "High", 
+                "ConfidenceScore": "High", 
                 "Address": [
                     {
-                        "Domain": "modlowe.com", 
+                        "Domain": "mytemplatewebsite.com", 
                         "Port": ""
                     }, 
                     {
@@ -305,7 +305,7 @@ Checks the reputation of an IP Address.
                         "Port": ""
                     }
                 ], 
-                "LastAccessedTime": "2020-02-12T20:41:06Z"
+                "LastAccessedTime": "2020-02-16T08:56:06Z"
             }
         ], 
         "IoCQueried": "23.20.239.12"
@@ -314,17 +314,17 @@ Checks the reputation of an IP Address.
 ```
 
 ##### Human Readable Output
-IP: 23.20.239.12 found Unknown
+IP: 23.20.239.12 found with Reputation: Unknown
 ### Reputation Parameters
-Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
-| --- | --- |---|---|---|---|---|
-|-|23.20.239.12| Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
-|modlowe.com|23.20.239.12| BlockedObject | Low | n/a | 1970-01-01T00:00:00Z | 2020-02-12T20:41:06Z |
+|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
+|---|---|---|---|---|---|---|
+| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
+| mytemplatewebsite.com | 23.20.239.12 | Blocked | High | High | 1970-01-01T00:00:00Z | 2020-02-16T08:56:06Z |
 
 
 ### 4. domain
 ---
-Checks the reputation of the domain.
+Checks the reputation of a domain.
 
 ##### Base Command
 
@@ -333,7 +333,7 @@ Checks the reputation of the domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain Name to check. | Optional | 
+| domain | The domain name to check. | Optional | 
 
 
 ##### Context Output
@@ -344,22 +344,22 @@ Checks the reputation of the domain.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad) | 
-| Domain.Name | String | The Domain name of the artifact. | 
+| Domain.Name | String | The domain name of the artifact. | 
 | Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. | 
-| GoogleChronicleBackstory.Domain.IoCQueried | String | The domain queried. | 
-| GoogleChronicleBackstory.Domain.Sources.Address.IpAddress | String | The IP Address of the artifact. | 
-| GoogleChronicleBackstory.Domain.Sources.Address.Domain | String | The Domain name of the artifact. | 
+| GoogleChronicleBackstory.Domain.IoCQueried | String | The domain that queried. | 
+| GoogleChronicleBackstory.Domain.Sources.Address.IpAddress | String | The IP address of the artifact. | 
+| GoogleChronicleBackstory.Domain.Sources.Address.Domain | String | The domain name of the artifact. | 
 | GoogleChronicleBackstory.Domain.Sources.Address.Port | Number | The port number of the artifact. | 
-| GoogleChronicleBackstory.Domain.Sources.Category | String | Source Category represents behaviour of the artifact. | 
-| GoogleChronicleBackstory.Domain.Sources.ConfidenceScore | Number | The score indicates more or less reason to believe that the assigned category is accurate and appropriate. | 
-| GoogleChronicleBackstory.Domain.Sources.FirstAccessedTime | Date | Time the IOC was first accessed within the enterprise. | 
-| GoogleChronicleBackstory.Domain.Sources.LastAccessedTime | Date | Time the IOC was most recently seen within your enterprise. | 
+| GoogleChronicleBackstory.Domain.Sources.Category | String | The behavior of the artifact. | 
+| GoogleChronicleBackstory.Domain.Sources.ConfidenceScore | Number | The confidence score indicating the accuracy and appropriateness of the assigned category. | 
+| GoogleChronicleBackstory.Domain.Sources.FirstAccessedTime | Date | The time the IOC was first accessed within the enterprise. | 
+| GoogleChronicleBackstory.Domain.Sources.LastAccessedTime | Date | The time the IOC was most recently seen within your enterprise. | 
 | GoogleChronicleBackstory.Domain.Sources.Severity | String | Impact of the artifact on the enterprise. | 
 
 
 ##### Command Example
-```!domain domain=bing.com ```
+```!domain domain=bing.com```
 
 ##### Context Example
 ```
@@ -370,7 +370,7 @@ Checks the reputation of the domain.
                 "Category": "Observed serving executables", 
                 "FirstAccessedTime": "2013-08-06T00:00:00Z", 
                 "Severity": "Low", 
-                "ConfidenceScore": 73, 
+                "ConfidenceScore": 67, 
                 "Address": [
                     {
                         "Domain": "bing.com", 
@@ -388,7 +388,7 @@ Checks the reputation of the domain.
         "Name": "bing.com"
     }, 
     "DBotScore": {
-        "Vendor": "GoogleChronicleBackstory", 
+        "Vendor": "Google Chronicle Backstory", 
         "Indicator": "bing.com", 
         "Score": 0, 
         "Type": "domain"
@@ -397,16 +397,16 @@ Checks the reputation of the domain.
 ```
 
 ##### Human Readable Output
-Domain: bing.com found Unknown
+Domain: bing.com found with Reputation: Unknown
 ### Reputation Parameters
 |Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
 |---|---|---|---|---|---|---|
-|bing.com|-| Observed serving executables | 73 | Low | 2013-08-06T00:00:00Z | 2020-01-14T00:00:00Z |
+| bing.com | - | Observed serving executables | 67 | Low | 2013-08-06T00:00:00Z | 2020-01-14T00:00:00Z |
 
 
 ### 5. gcb-ioc-details
 ---
-Use this command to submit an artifact indicator and return any threat intelligence associated with that artifact. The threat intelligence information is drawn from your enterprise security systems and from Chronicle's IoC partners (for example, the DHS threat feed).
+Accepts an artifact indicator and returns any threat intelligence associated with the artifact. The threat intelligence information is drawn from your enterprise security systems and from Chronicle's IoC partners (for example, the DHS threat feed).
 
 ##### Base Command
 
@@ -415,7 +415,7 @@ Use this command to submit an artifact indicator and return any threat intellige
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| artifact_value | The artifact indicator value. The supported artifact types are IP, domain, MD5, SHA1, SHA256. | Required | 
+| artifact_value | The artifact indicator value. The supported artifact types are IP and domain. | Required | 
 
 
 ##### Context Output
@@ -423,21 +423,20 @@ Use this command to submit an artifact indicator and return any threat intellige
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | String | The domain name of the artifact. | 
-| IP.Address | String | The IP Address of the of the artifact. | 
+| IP.Address | String | The IP address of the of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.IoCQueried | String | The artifact entered by the user. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Address.IpAddress | String | The IP address of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Address.Domain | String | The domain name of the artifact. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Address.Port | Number | The port number of the artifact. | 
-| GoogleChronicleBackstory.IocDetails.Sources.Category | String | Source Category represents behaviour of the artifact. | 
-| GoogleChronicleBackstory.IocDetails.Sources.ConfidenceScore | Number | The score indicates more or less reason to believe that the assigned category is accurate and appropriate. | 
-| GoogleChronicleBackstory.IocDetails.Sources.FirstAccessedTime | Date | Time the IOC was first accessed within the enterprise. | 
-| GoogleChronicleBackstory.IocDetails.Sources.LastAccessedTime | Date | Time the IOC was most recently seen within your enterprise. | 
+| GoogleChronicleBackstory.IocDetails.Sources.Category | String | The behavior of the artifact. | 
+| GoogleChronicleBackstory.IocDetails.Sources.ConfidenceScore | Number | The confidence score indicating the accuracy and appropriateness of the assigned category. | 
+| GoogleChronicleBackstory.IocDetails.Sources.FirstAccessedTime | Date | The time the IOC was first accessed within the enterprise. | 
+| GoogleChronicleBackstory.IocDetails.Sources.LastAccessedTime | Date | The time the IOC was most recently seen within your enterprise. | 
 | GoogleChronicleBackstory.IocDetails.Sources.Severity | String | Impact of the artifact on the enterprise. | 
 
 
 ##### Command Example
 ```!gcb-ioc-details artifact_value=23.20.239.12```
-
 ##### Context Example
 ```
 {
@@ -454,7 +453,7 @@ Use this command to submit an artifact indicator and return any threat intellige
                 "Address": [
                     {
                         "IpAddress": "23.20.239.12", 
-                        "Port": [    'Medium' and 'Low'. This configuration is applicable for reputation commands only.
+                        "Port": [
                             80
                         ]
                     }
@@ -462,13 +461,13 @@ Use this command to submit an artifact indicator and return any threat intellige
                 "LastAccessedTime": "2019-04-10T00:00:00Z"
             }, 
             {
-                "Category": "BlockedObject", 
+                "Category": "Blocked", 
                 "FirstAccessedTime": "1970-01-01T00:00:00Z", 
-                "Severity": "n/a", 
-                "ConfidenceScore": "Low", 
+                "Severity": "High", 
+                "ConfidenceScore": "High", 
                 "Address": [
                     {
-                        "Domain": "modlowe.com", 
+                        "Domain": "mytemplatewebsite.com", 
                         "Port": ""
                     }, 
                     {
@@ -476,7 +475,7 @@ Use this command to submit an artifact indicator and return any threat intellige
                         "Port": ""
                     }
                 ], 
-                "LastAccessedTime": "2020-02-12T20:41:06Z"
+                "LastAccessedTime": "2020-02-16T08:56:06Z"
             }
         ], 
         "IoCQueried": "23.20.239.12"
@@ -489,12 +488,13 @@ Use this command to submit an artifact indicator and return any threat intellige
 |Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
 |---|---|---|---|---|---|---|
 | - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
-| modlowe.com | 23.20.239.12 | BlockedObject | Low | n/a | 1970-01-01T00:00:00Z | 2020-02-12T20:41:06Z |
+| mytemplatewebsite.com | 23.20.239.12 | Blocked | High | High | 1970-01-01T00:00:00Z | 2020-02-16T08:56:06Z |
 
 
 ### 6. gcb-list-alerts
 ---
 List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
+
 ##### Base Command
 
 `gcb-list-alerts`
@@ -502,18 +502,18 @@ List all the alerts tracked within your enterprise for the specified time range.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| preset_time_range | Fetch alerts for the specified time range. If preset_time_range is configured, start_time & end_time will not take effect. | Optional | 
-| start_time | The value of the start time for your request. The format of the Date should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers UTC time corresponding to 3 days earlier than the current time. | Optional | 
-| end_time | The value of the end time for your request. The format of the Date should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the product considers the current UTC time. | Optional | 
-| page_size | Specify the maximum number of alerts to return. You can specify between 1 and 100,000. The default is 10,000.  | Optional | 
-| severity | Filter the alerts based on severity selected. If not supplied, all alerts are fetched. | Optional | 
+| preset_time_range | Fetch alerts for the specified time range. If preset_time_range is configured, overrides the start_time and end_time arguments. | Optional | 
+| start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. | Optional | 
+| end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied,  the default is current UTC time. | Optional | 
+| page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. The default is 10000. | Optional | 
+| severity | The severity by which to filter the returned alerts. If not supplied, all alerts are fetched. The possible values are "High", "Medium", "Low", or "Unspecified". | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleChronicleBackstory.Alert.AssetName | String | The asset identifier. It could be IP Address, MAC Address, Hostname or Product ID. | 
+| GoogleChronicleBackstory.Alert.AssetName | String | The asset identifier. It can be IP Address, MAC Address, Hostname or Product ID. | 
 | GoogleChronicleBackstory.Alert.AlertInfo.Name | String | The name of the alert. | 
 | GoogleChronicleBackstory.Alert.AlertInfo.Severity | String | The severity of the alert. | 
 | GoogleChronicleBackstory.Alert.AlertInfo.SourceProduct | String | The source of the alert. | 
@@ -522,7 +522,7 @@ List all the alerts tracked within your enterprise for the specified time range.
 
 
 ##### Command Example
-```!gcb-list-alerts page_size=1 preset_time_range="Last 1 day" ```
+```!gcb-list-alerts page_size=1 preset_time_range="Last 1 day"```
 
 ##### Context Example
 ```
@@ -532,7 +532,7 @@ List all the alerts tracked within your enterprise for the specified time range.
             "AssetName": "rosie-hayes-pc", 
             "AlertInfo": [
                 {
-                    "Timestamp": "2020-02-10T13:01:38Z", 
+                    "Timestamp": "2020-02-14T03:02:36Z", 
                     "SourceProduct": "Internal Alert", 
                     "Name": "Authentication failure [32038]", 
                     "Severity": "Medium"
@@ -548,4 +548,4 @@ List all the alerts tracked within your enterprise for the specified time range.
 ### Security Alert(s)
 |Alerts|Asset|Alert Names|First Seen|Last Seen|Severities|Sources|
 |---|---|---|---|---|---|---|
-| 1 | rosie-hayes-pc | Authentication failure [32038] | 18 hours ago | 18 hours ago | Medium | Internal Alert |
+| 1 | rosie-hayes-pc | Authentication failure [32038] | 6 hours ago | 6 hours ago | Medium | Internal Alert |

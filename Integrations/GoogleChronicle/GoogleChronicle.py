@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
-import json
 from collections import defaultdict
 from typing import Any, Dict
 import httplib2
@@ -33,19 +32,21 @@ ARTIFACT_NAME_DICT = {
     'hash_sha256': 'SHA256',
     'hash_sha1': 'SHA1',
     'hash_md5': 'MD5',
-    'destination_ip_address': 'IP',
+    'destination_ip_address': 'IP'
 }
 
 HOST_CTX_KEY_DICT = {
     'hostname': 'Hostname',
     'assetIpAddress': 'IP',
     'productId': 'ID',
-    'MACAddress': 'MACAddress',
+    'MACAddress': 'MACAddress'
 }
 
 CONTEXT_KEY_DICT = {
     'hostname': 'HostName',
     'assetIpAddress': 'IpAddress',
+    'productId': 'ProductId',
+    'MACAddress': 'MACAddress'
 }
 
 STANDARD_CTX_KEY_MAP = {
@@ -66,7 +67,7 @@ CONFIDENCE_LEVEL_PRIORITY = {
     'informational': 1,
     'low': 2,
     'medium': 3,
-    'high': 4,
+    'high': 4
 }
 
 SEVERITY_MAP = {
@@ -392,16 +393,31 @@ def parse_assets_response(response: Dict[str, Any], artifact_type, artifact_valu
     for data in asset_list:
         # Extract the asset identifier key from response.
         # It could be one of Hostname, IpAddress, Mac
-        asset_identifier_key = list(data['asset'].keys())[0]
-        asset_identifier_value = list(data['asset'].values())[0]
+        asset_dict = data.get('asset', {})
+        if not asset_dict:
+            demisto.debug('Empty asset details found in response. Skipping this record.')
+            continue
 
+        asset_identifier_key = list(asset_dict.keys())[0]
+        asset_identifier_value = list(asset_dict.values())[0]
+
+        # The asset identifier keys for MAC and product ID are not definitive.
+        # Using string match, to ascertain the asset identifier in such case.
+        if asset_identifier_key not in CONTEXT_KEY_DICT:
+            if "mac" in asset_identifier_key.lower():
+                asset_identifier_key = 'MACAddress'
+            elif "product" in asset_identifier_key.lower():
+                asset_identifier_key = 'productId'
+            else:
+                demisto.debug('Unknown asset identifier found - {}. Skipping this asset'.format(asset_identifier_key))
+                continue
         ctx_primary_key = CONTEXT_KEY_DICT[asset_identifier_key]
 
         # Preparing GCB custom context
         gcb_context_data = dict()
         gcb_context_data[ctx_primary_key] = asset_identifier_value
-        gcb_context_data['FirstAccessedTime'] = data['firstSeenArtifactInfo']['seenTime']
-        gcb_context_data['LastAccessedTime'] = data['lastSeenArtifactInfo']['seenTime']
+        gcb_context_data['FirstAccessedTime'] = data.get('firstSeenArtifactInfo', {}).get('seenTime', '')
+        gcb_context_data['LastAccessedTime'] = data.get('lastSeenArtifactInfo', {}).get('seenTime', '')
         gcb_context_data['Accessed' + ARTIFACT_NAME_DICT[artifact_type]] = artifact_value
         context_data[CHRONICLE_OUTPUT_PATHS['Asset'].format(ctx_primary_key)].append(gcb_context_data)
 
@@ -409,9 +425,9 @@ def parse_assets_response(response: Dict[str, Any], artifact_type, artifact_valu
         tabular_data_dict = dict()
         tabular_data_dict['Host Name'] = asset_identifier_value if asset_identifier_key == 'hostname' else '-'
         tabular_data_dict['Host IP'] = asset_identifier_value if asset_identifier_key == 'assetIpAddress' else '-'
-        tabular_data_dict['Host MAC'] = asset_identifier_value if asset_identifier_key == 'assetMACAddress' else '-'
-        tabular_data_dict['First Accessed Time'] = data['firstSeenArtifactInfo']['seenTime']
-        tabular_data_dict['Last Accessed Time'] = data['lastSeenArtifactInfo']['seenTime']
+        tabular_data_dict['Host MAC'] = asset_identifier_value if asset_identifier_key == 'MACAddress' else '-'
+        tabular_data_dict['First Accessed Time'] = data.get('firstSeenArtifactInfo', {}).get('seenTime', '-')
+        tabular_data_dict['Last Accessed Time'] = data.get('lastSeenArtifactInfo', {}).get('seenTime', '-')
         tabular_data_list.append(tabular_data_dict)
 
         # Populating Host context for list of assets
@@ -455,8 +471,14 @@ def parse_error_message(error):
     :return: error message
     :rtype: str
     """
+    try:
+        json_error = json.loads(error)
+    except json.decoder.JSONDecodeError:
+        demisto.debug(
+            'Invalid response received from Backstory Search API. Response not in JSON format. Response - {}'.format(
+                error))
+        raise ValueError('Invalid response received from Backstory Search API. Response not in JSON format.')
 
-    json_error = json.loads(error)
     if json_error['error']['code'] == 403:
         return 'Permission denied'
     return json_error['error']['message']
@@ -478,21 +500,21 @@ def get_informal_time(date):
     total_time = (current_time - previous_time).total_seconds()
 
     if 0 < total_time < 60:
-        return 'a second ago' if int(total_time) == 1 else str(int(total_time)) + ' seconds ago'
+        return 'a second ago' if total_time == 1 else str(total_time) + ' seconds ago'
     total_time = round(total_time / 60)
     if 0 < total_time < 60:
-        return 'a minute ago' if int(total_time) == 1 else str(int(total_time)) + ' minutes ago'
+        return 'a minute ago' if total_time == 1 else str(total_time) + ' minutes ago'
     total_time = round(total_time / 60)
     if 0 < total_time < 24:
-        return 'an hour ago' if int(total_time) == 1 else str(int(total_time)) + ' hours ago'
+        return 'an hour ago' if total_time == 1 else str(total_time) + ' hours ago'
     total_time = round(total_time / 24)
     if 0 < total_time < 31:
-        return 'a day ago' if int(total_time) == 1 else str(int(total_time)) + ' days ago'
+        return 'a day ago' if total_time == 1 else str(total_time) + ' days ago'
     total_time = round(total_time / 31)
     if 0 < total_time < 12:
-        return 'a month ago' if int(total_time) == 1 else str(int(total_time)) + ' months ago'
+        return 'a month ago' if total_time == 1 else str(total_time) + ' months ago'
     total_time = round((total_time * 31) / 365)
-    return 'a year ago' if int(total_time) == 1 else str(int(total_time)) + ' years ago'
+    return 'a year ago' if total_time == 1 else str(total_time) + ' years ago'
 
 
 def parse_list_ioc_response(ioc_matches):
@@ -725,26 +747,26 @@ def get_context_for_ioc_details(sources, artifact_indicator, artifact_type, is_r
         for address in source.get('addresses', []):
             if address.get('domain'):
                 address_data.append({
-                    'Domain': address.get('domain'),
+                    'Domain': address['domain'],
                     'Port': address.get('port', '')
                 })
-                hr_table_row['Domain'] = address.get('domain')
+                hr_table_row['Domain'] = address['domain']
             if address.get('ipAddress'):
                 address_data.append({
-                    'IpAddress': address.get('ipAddress'),
+                    'IpAddress': address['ipAddress'],
                     'Port': address.get('port', '')
                 })
-                hr_table_row['IP Address'] = address.get('ipAddress')
+                hr_table_row['IP Address'] = address['ipAddress']
 
         hr_table_data.append(hr_table_row)
 
         source_data_list.append({
             'Address': address_data,
-            'Category': source.get('category'),
+            'Category': source.get('category', ''),
             'ConfidenceScore': confidence_score,
-            'FirstAccessedTime': source.get('firstActiveTime'),
-            'LastAccessedTime': source.get('lastActiveTime'),
-            'Severity': source.get('rawSeverity')
+            'FirstAccessedTime': source.get('firstActiveTime', ''),
+            'LastAccessedTime': source.get('lastActiveTime', ''),
+            'Severity': source.get('rawSeverity', '')
         })
 
     # Setting standard context
@@ -754,12 +776,12 @@ def get_context_for_ioc_details(sources, artifact_indicator, artifact_type, is_r
         dbot_context = {
             'Indicator': artifact_indicator,
             'Type': artifact_type,
-            'Vendor': 'GoogleChronicleBackstory',
+            'Vendor': 'Google Chronicle Backstory',
             'Score': dbot_score_max
         }
         if dbot_score_max == 3:
             standard_context['Malicious'] = {
-                'Vendor': 'GoogleChronicleBackstory',
+                'Vendor': 'Google Chronicle Backstory',
                 'Description': 'Found in malicious data set'
             }
 
@@ -925,7 +947,7 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
         ioc_matches_resp = parse_list_ioc_response(ioc_matches)
 
         # prepare human readable response
-        hr = tableToMarkdown('IOC DOMAIN MATCHES', ioc_matches_resp['hr_ioc_matches'],
+        hr = tableToMarkdown('IOC Domain Matches', ioc_matches_resp['hr_ioc_matches'],
                              ['Domain', 'Category', 'Source', 'Confidence', 'Severity', 'IOC ingest time',
                               'First seen', 'Last seen'], removeNull=True)
         # prepare entry context response
@@ -963,10 +985,10 @@ def gcb_assets_command(client_obj, args: Dict[str, Any]):
     response = validate_response(client_obj.http_client.request(request_url, 'GET'))
 
     ec = {}  # type: Dict[str, Any]
-    if response:
+    if response and response.get('assets'):
         context_data, tabular_data, host_context = parse_assets_response(response, artifact_type,
                                                                          artifact_value)
-        hr = tableToMarkdown('Assets related to artifact - {0}'.format(artifact_value), tabular_data,
+        hr = tableToMarkdown('Artifact Accessed - {0}'.format(artifact_value), tabular_data,
                              ['Host Name', 'Host IP', 'Host MAC', 'First Accessed Time', 'Last Accessed Time'])
         ec = {
             'Host': host_context,
@@ -1000,7 +1022,7 @@ def gcb_ioc_details_command(client_obj, args: Dict[str, Any]):
 
     ec = {}  # type: Dict[str, Any]
     hr = ''
-    if response:
+    if response and response.get('sources'):
         normal_artifact_type = None
         if artifact_type == 'destination_ip_address':
             normal_artifact_type = 'ip'
@@ -1021,7 +1043,7 @@ def gcb_ioc_details_command(client_obj, args: Dict[str, Any]):
                                   ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
                                    'First Accessed Time', 'Last Accessed Time'])
         else:
-            hr += 'No Threat Intelligence Found.'
+            hr += 'No Records Found'
         return hr, ec, response
 
     else:
@@ -1054,17 +1076,17 @@ def ip_command(client_obj, ip_address: str):
 
     ec = {}  # type: Dict[str, Any]
     hr = ''
-    if response:
+    if response and response.get('sources'):
         context_dict = get_context_for_ioc_details(response.get('sources', []), ip_address, 'ip')
 
         # preparing human readable
-        hr += 'IP: ' + str(ip_address) + ' found ' + str(context_dict['reputation']) + '\n'
+        hr += 'IP: ' + str(ip_address) + ' found with Reputation: ' + str(context_dict['reputation']) + '\n'
         if context_dict['hr_table_data']:
             hr += tableToMarkdown('Reputation Parameters', context_dict['hr_table_data'],
                                   ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
                                    'First Accessed Time', 'Last Accessed Time'])
         else:
-            hr += 'No Threat Intelligence Found.'
+            hr += 'No Records Found'
 
         # preparing entry context
         ec = {
@@ -1073,8 +1095,20 @@ def ip_command(client_obj, ip_address: str):
             CHRONICLE_OUTPUT_PATHS['Ip']: context_dict['context']
         }
     else:
-        hr += '### For IP: {}\n'.format(ip_address)
+        dbot_context = {
+            'Indicator': ip_address,
+            'Type': 'ip',
+            'Vendor': 'Google Chronicle Backstory',
+            'Score': 0
+        }
+
+        hr += '### IP: {} found with Reputation: Unknown\n'.format(ip_address)
         hr += 'No Records Found'
+
+        ec = {
+            'DBotScore': dbot_context
+        }
+
     return hr, ec, response
 
 
@@ -1096,17 +1130,17 @@ def domain_command(client_obj, domain_name: str):
 
     ec = {}  # type: Dict[str, Any]
     hr = ''
-    if response:
+    if response and response.get('sources'):
         context_dict = get_context_for_ioc_details(response.get('sources', []), domain_name, 'domain')
 
         # preparing human readable
-        hr += 'Domain: ' + str(domain_name) + ' found ' + str(context_dict['reputation']) + '\n'
+        hr += 'Domain: ' + str(domain_name) + ' found with Reputation: ' + str(context_dict['reputation']) + '\n'
         if context_dict['hr_table_data']:
             hr += tableToMarkdown('Reputation Parameters', context_dict['hr_table_data'],
                                   ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
                                    'First Accessed Time', 'Last Accessed Time'])
         else:
-            hr += 'No Threat Intelligence Found.'
+            hr += 'No Records Found'
 
         # preparing entry context
         ec = {
@@ -1118,8 +1152,19 @@ def domain_command(client_obj, domain_name: str):
         return hr, ec, response
 
     else:
-        hr += '### For Domain Name: {}\n'.format(domain_name)
+        dbot_context = {
+            'Indicator': domain_name,
+            'Type': 'domain',
+            'Vendor': 'Google Chronicle Backstory',
+            'Score': 0
+        }
+
+        hr += '### Domain: {} found with Reputation: Unknown\n'.format(domain_name)
         hr += 'No Records Found'
+
+        ec = {
+            'DBotScore': dbot_context
+        }
 
         return hr, ec, response
 
@@ -1135,10 +1180,8 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
     fetch_limit = params.get('fetch_limit', 10)  # default page size
     filter_severity = params.get('incident_severity', 'ALL')  # All to get all type of severity
 
-    _, end_time = get_chronicle_default_date_range()
-
     # getting numeric value from string representation
-    start_time = parse_date_range(first_fetch_in_days, date_format=DATE_FORMAT)[0]
+    start_time, end_time = parse_date_range(first_fetch_in_days, date_format=DATE_FORMAT)
 
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1314,11 +1357,8 @@ def main():
         elif command in chronicle_commands:
             return_outputs(*chronicle_commands[command](client_obj, demisto.args()))
 
-    except ValueError as v_err:
-        # Log exceptions
-        return_error(message=str(v_err))
     except Exception as e:
-        return_error('Failed to execute {} command. Error {}'.format(demisto.command(), str(e)))
+        return_error('Failed to execute {} command.\nError: {}'.format(demisto.command(), str(e)))
 
 
 # initial flow of execution

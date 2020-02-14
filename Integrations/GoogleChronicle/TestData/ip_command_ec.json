@@ -2,13 +2,13 @@
   "DBotScore": {
     "Indicator": "0.0.0.0",
     "Type": "ip",
-    "Vendor": "GoogleChronicleBackstory",
+    "Vendor": "Google Chronicle Backstory",
     "Score": 3
   },
   "IP(val.Address && val.Address == obj.Address)": {
     "Address": "0.0.0.0",
     "Malicious": {
-      "Vendor": "GoogleChronicleBackstory",
+      "Vendor": "Google Chronicle Backstory",
       "Description": "Found in malicious data set"
     }
   },

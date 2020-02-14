@@ -2,13 +2,13 @@
   "DBotScore": {
     "Indicator": "test.com",
     "Type": "domain",
-    "Vendor": "GoogleChronicleBackstory",
+    "Vendor": "Google Chronicle Backstory",
     "Score": 3
   },
   "Domain(val.Name && val.Name == obj.Name)": {
     "Name": "test.com",
     "Malicious": {
-      "Vendor": "GoogleChronicleBackstory",
+      "Vendor": "Google Chronicle Backstory",
       "Description": "Found in malicious data set"
     }
   },

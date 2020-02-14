@@ -96,10 +96,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 3bff429f-e10c-4166-852b-761ec7f03426
+    taskid: b8de4270-0440-4f0f-8433-e18550b4ca07
     type: condition
     task:
-      id: 3bff429f-e10c-4166-852b-761ec7f03426
+      id: b8de4270-0440-4f0f-8433-e18550b4ca07
       version: -1
       name: Verify result for IP reputation command
       type: condition
@@ -147,7 +147,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: GoogleChronicleBackstory
+              simple: Google Chronicle Backstory
       - - operator: isExists
           left:
             value:
@@ -289,10 +289,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 22bd0ddf-7cdf-4488-86a3-35ac16b6db4b
+    taskid: 9dc042be-c434-42b0-8132-2cee52b2ac27
     type: condition
     task:
-      id: 22bd0ddf-7cdf-4488-86a3-35ac16b6db4b
+      id: 9dc042be-c434-42b0-8132-2cee52b2ac27
       version: -1
       name: Verify result for Domain reputation command
       type: condition
@@ -340,7 +340,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: GoogleChronicleBackstory
+              simple: Google Chronicle Backstory
       - - operator: isExists
           left:
             value:

@@ -421,6 +421,26 @@ def test_gcb_assets_command_failure(client):
     assert response == {}
 
 
+def test_gcb_assets_command_failure(client):
+    """
+    When Null response come in gcb-assets command it should respond with No Records Found.
+    """
+    from GoogleChronicle import gcb_assets_command
+
+    with open("./TestData/asset_with_no_response.json", encoding='utf-8') as f:
+        expected_response = json.load(f)
+
+    failure_mock_response = (
+        Response(dict(status=200)),
+        json.dumps(expected_response, indent=2).encode('utf-8')
+    )
+    client.http_client.request.return_value = failure_mock_response
+    hr, ec, response = gcb_assets_command(client, {'artifact_value': FAILURE_ASSET_NAME})
+    assert ec == {}
+    assert hr == '### Artifact Accessed: www.xyz.com \n\nNo Records Found'
+    assert response == expected_response
+
+
 def test_gcb_assets_command_invalid_date(client):
     """
     When query for invalid start date in gcb-assets command it should raise ValueError.
@@ -816,6 +836,26 @@ def test_ip_command_success(mocker, client):
     assert ec[key] == dummy_ec[key]
 
 
+def test_ip_command_empty_response(client):
+    from GoogleChronicle import ip_command
+
+    with open("./TestData/empty_list_ioc_details.json", "r") as f:
+        dummy_response = f.read()
+    expected_hr = '### For IP: {}\n'.format(ARGS['ip'])
+    expected_hr += 'No Records Found'
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, response = ip_command(client, ARGS['ip'])
+
+    assert hr == expected_hr
+
+
 def test_ip_command_invalid_ip_address(client):
     """
     When user add invalid IP Address then it should raise ValueError with valid response
@@ -834,7 +874,7 @@ def test_ip_command_empty_response(client):
     When there is an empty response the command should response empty ec and valid text in hr
     """
     from GoogleChronicle import ip_command
-    expected_hr = '### For IP: {}\n'.format(ARGS['ip'])
+    expected_hr = '### IP: {} found with Reputation: Unknown\n'.format(ARGS['ip'])
     expected_hr += 'No Records Found'
 
     dummy_response = '{}'
@@ -924,12 +964,32 @@ def test_domain_command_success(mocker, client):
     assert ec[key] == dummy_ec[key]
 
 
+def test_domain_command_empty_response(client):
+    from GoogleChronicle import domain_command
+
+    with open("./TestData/empty_list_ioc_details.json", "r") as f:
+        dummy_response = f.read()
+    expected_hr = '### Domain: {} found with Reputation: Unknown\n'.format(ARGS['domain'])
+    expected_hr += 'No Records Found'
+
+    mock_response = (
+        Response(dict(status=200)),
+        dummy_response
+    )
+
+    client.http_client.request.return_value = mock_response
+
+    hr, ec, response = domain_command(client, ARGS['domain'])
+
+    assert hr == expected_hr
+
+
 def test_gcb_domain_command_empty_response(client):
     """
     When there is an empty response the command should response empty ec and valid text in hr
     """
     from GoogleChronicle import domain_command
-    expected_hr = '### For Domain Name: {}\n'.format(ARGS['domain'])
+    expected_hr = '### Domain: {} found with Reputation: Unknown\n'.format(ARGS['domain'])
     expected_hr += 'No Records Found'
 
     dummy_response = '{}'
@@ -1975,3 +2035,11 @@ def test_preset_time_range():
 
     assert validate_preset_time_range('Last 1 day') == '1 day'
     assert validate_preset_time_range('Last 15 days') == '15 days'
+
+
+def test_parse_error_message():
+    from GoogleChronicle import parse_error_message
+
+    with pytest.raises(ValueError) as error:
+        parse_error_message('service unavailable')
+    assert str(error.value) == 'Invalid response received from Backstory Search API. Response not in JSON format.'
