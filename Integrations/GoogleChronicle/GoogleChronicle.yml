@@ -140,8 +140,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Fetches IOC Domain matches in the specified time interval. If configured,  start_time
-        will not take effect.
+      description: Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument.
       isArray: false
       name: preset_time_range
       predefined:
@@ -152,16 +151,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request. The format of date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
-        product considers UTC time corresponding to 3 days earlier than current time.
+      description: The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the
+        default is the UTC time corresponding to 3 days earlier than current time.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
       defaultValue: '10000'
-      description: Specify the maximum number of IOCs to return. You can specify between
+      description: The maximum number of IOCs to return. You can specify between
         1 and 10000. The default is 10000.
       isArray: false
       name: page_size
@@ -169,7 +167,7 @@ script:
       secret: false
     deprecated: false
     description: Lists the IOC Domain matches within your enterprise for the specified
-      time interval. The indicator of compromise (IOC) domain matches lists the domains
+      time interval. The indicator of compromise (IOC) domain matches lists for which the domains
       that your security infrastructure has flagged as both suspicious and that have
       been seen recently within your enterprise.
     execution: false
@@ -191,24 +189,24 @@ script:
       description: Time(UTC) the artifact was most recently seen within your enterprise.
       type: Date
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.Category
-      description: Source Category represents behaviour of the artifact.
+      description: Source Category represents the behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.IntRawConfidenceScore
-      description: The numeric confidence score of IOC reported by the source.
+      description: The numeric confidence score of the IOC reported by the source.
       type: Number
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.NormalizedConfidenceScore
-      description: The normalized confidence score of IOC reported by the source.
+      description: The normalized confidence score of the IOC reported by the source.
       type: String
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.RawSeverity
-      description: The severity of IOC as reported by the source.
+      description: The severity of the IOC as reported by the source.
       type: String
     - contextPath: GoogleChronicleBackstory.Iocs.Sources.Source
-      description: The source which reported the IOC.
+      description: The source that reported the IOC.
       type: String
   - arguments:
     - default: true
-      description: The artifact indicator associated with assets. The artifact type
-        may be one of the IP, Domain, MD5, SHA1 and SHA256.
+      description: ' The artifact indicator associated with assets. The artifact type
+        can be one of the following: IP, Domain, MD5, SHA1, or SHA256. '
       isArray: false
       name: artifact_value
       required: true
@@ -216,7 +214,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Fetches assets that accessed the artifact during the interval specified.
-        If configured, start_time & end_time will not take effect.
+        If configured, overrides the start_time and end_time arguments.
       isArray: false
       name: preset_time_range
       predefined:
@@ -227,30 +225,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request. The format of Date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
-        product considers UTC time corresponding to 3 days earlier than current time.
+      description: The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the
+        default is the UTC time corresponding to 3 days earlier than current time.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request. The format of the Date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
-        product considers current UTC time.
+      description: The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
+        default is current UTC time.
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
-      description: Specify the maximum number of assets to fetch. You can specify
-        between 1 and 10,000. The default is 10,000.
+      description: The maximum number of IOCs to return. You can specify between
+        1 and 10000. The default is 10000.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: This command will respond with a list of the assets which accessed
+    description: Returns a list of the assets that accessed
       the input artifact (IP, domain, MD5, SHA1, SHA256) during the specified time.
     execution: false
     name: gcb-assets
@@ -259,10 +255,10 @@ script:
       description: The hostname of the asset that accessed the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Asset.IpAddress
-      description: The IP Address of the asset that accessed the artifact.
+      description: The IP address of the asset that accessed the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Asset.MacAddress
-      description: The MAC Address of the asset that accessed the artifact.
+      description: The MAC address of the asset that accessed the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Asset.ProductId
       description: The Product ID of the asset that accessed the artifact.
@@ -295,20 +291,20 @@ script:
       description: The Product ID of the asset that accessed the artifact.
       type: String
     - contextPath: Host.IP
-      description: The IP Address of the asset that accessed the artifact.
+      description: The IP address of the asset that accessed the artifact.
       type: String
     - contextPath: Host.MACAddress
-      description: The MAC Address of the asset that accessed the artifact.
+      description: The MAC address of the asset that accessed the artifact.
       type: String
   - arguments:
     - default: true
-      description: IP Address to check.
+      description: The IP address to check.
       isArray: true
       name: ip
       required: false
       secret: false
     deprecated: false
-    description: Checks the reputation of an IP Address.
+    description: Checks the reputation of an IP address.
     execution: false
     name: ip
     outputs:
@@ -325,7 +321,7 @@ script:
       description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad)'
       type: Number
     - contextPath: IP.Address
-      description: The IP Address of the artifact.
+      description: The IP address of the artifact.
       type: String
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs, the vendor that made the decision.
@@ -334,42 +330,42 @@ script:
       description: For malicious IPs, the reason that the vendor made the decision.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.IoCQueried
-      description: The artifact queried.
+      description: The artifact that was queried.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.Sources.Address.IpAddress
       description: The IP address of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.Sources.Address.Domain
-      description: The Domain name of the artifact.
+      description: The domain name of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.Sources.Address.Port
       description: The port number of the artifact.
       type: Number
     - contextPath: GoogleChronicleBackstory.IP.Sources.Category
-      description: Source Category represents behaviour of the artifact.
+      description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.Sources.ConfidenceScore
-      description: The score indicates more or less reason to believe that the assigned
-        category is accurate and appropriate.
+      description: The confidence score indicating the accuracy and appropriateness of the assigned
+        category.
       type: Number
     - contextPath: GoogleChronicleBackstory.IP.Sources.FirstAccessedTime
-      description: Time the IOC was first accessed within the enterprise.
+      description: The time the IOC was first accessed within the enterprise.
       type: Date
     - contextPath: GoogleChronicleBackstory.IP.Sources.LastAccessedTime
-      description: Time the IOC was most recently seen within your enterprise.
+      description: The time the IOC was most recently seen within your enterprise.
       type: Date
     - contextPath: GoogleChronicleBackstory.IP.Sources.Severity
       description: Impact of the artifact on the enterprise.
       type: String
   - arguments:
     - default: true
-      description: Domain Name to check.
+      description: The domain name to check.
       isArray: true
       name: domain
       required: false
       secret: false
     deprecated: false
-    description: Checks the reputation of the domain.
+    description: Checks the reputation of a domain.
     execution: false
     name: domain
     outputs:
@@ -386,7 +382,7 @@ script:
       description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad)'
       type: Number
     - contextPath: Domain.Name
-      description: The Domain name of the artifact.
+      description: The domain name of the artifact.
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision.
@@ -395,29 +391,29 @@ script:
       description: For malicious domains, the reason that the vendor made the decision.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.IoCQueried
-      description: The domain queried.
+      description: The domain that queried.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.Sources.Address.IpAddress
-      description: The IP Address of the artifact.
+      description: The IP address of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.Sources.Address.Domain
-      description: The Domain name of the artifact.
+      description: The domain name of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.Sources.Address.Port
       description: The port number of the artifact.
       type: Number
     - contextPath: GoogleChronicleBackstory.Domain.Sources.Category
-      description: Source Category represents behaviour of the artifact.
+      description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.Sources.ConfidenceScore
-      description: The score indicates more or less reason to believe that the assigned
-        category is accurate and appropriate.
+      description: The confidence score indicating the accuracy and appropriateness of the assigned
+        category.
       type: Number
     - contextPath: GoogleChronicleBackstory.Domain.Sources.FirstAccessedTime
-      description: Time the IOC was first accessed within the enterprise.
+      description: The time the IOC was first accessed within the enterprise.
       type: Date
     - contextPath: GoogleChronicleBackstory.Domain.Sources.LastAccessedTime
-      description: Time the IOC was most recently seen within your enterprise.
+      description: The time the IOC was most recently seen within your enterprise.
       type: Date
     - contextPath: GoogleChronicleBackstory.Domain.Sources.Severity
       description: Impact of the artifact on the enterprise.
@@ -425,14 +421,14 @@ script:
   - arguments:
     - default: false
       description: The artifact indicator value. The supported artifact types are IP,
-        domain, MD5, SHA1, SHA256.
+        domain, MD5, SHA1, and SHA256.
       isArray: false
       name: artifact_value
       required: true
       secret: false
     deprecated: false
-    description: Use this command to submit an artifact indicator and return any threat
-      intelligence associated with that artifact. The threat intelligence information
+    description: Accepts an artifact indicator and returns any threat
+      intelligence associated with the artifact. The threat intelligence information
       is drawn from your enterprise security systems and from Chronicle's IoC partners
       (for example, the DHS threat feed).
     execution: false
@@ -442,7 +438,7 @@ script:
       description: The domain name of the artifact.
       type: String
     - contextPath: IP.Address
-      description: The IP Address of the of the artifact.
+      description: The IP address of the of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IocDetails.IoCQueried
       description: The artifact entered by the user.
@@ -457,17 +453,17 @@ script:
       description: The port number of the artifact.
       type: Number
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.Category
-      description: Source Category represents behaviour of the artifact.
+      description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.ConfidenceScore
-      description: The score indicates more or less reason to believe that the assigned
-        category is accurate and appropriate.
+      description: The confidence score indicating the accuracy and appropriateness of the assigned
+        category.
       type: Number
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.FirstAccessedTime
-      description: Time the IOC was first accessed within the enterprise.
+      description: The time the IOC was first accessed within the enterprise.
       type: Date
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.LastAccessedTime
-      description: Time the IOC was most recently seen within your enterprise.
+      description: The time the IOC was most recently seen within your enterprise.
       type: Date
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.Severity
       description: Impact of the artifact on the enterprise.
@@ -476,7 +472,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Fetch alerts for the specified time range. If preset_time_range is
-        configured, start_time & end_time will not take effect.
+        configured, overrides the start_time and end_time arguments.
       isArray: false
       name: preset_time_range
       predefined:
@@ -487,33 +483,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the start time for your request. The format of the Date
-        should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
-        product considers UTC time corresponding to 3 days earlier than current time.
+      description: The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied, the
+        default is the UTC time corresponding to 3 days earlier than current time.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The value of the end time for your request. The format of the Date
-        should comply with RFC 3339. (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
-        product considers current UTC time.
+      description: The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z). If not supplied,  the
+        default is current UTC time.
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
       defaultValue: '10000'
-      description: 'Specify the maximum number of alerts to return. You can specify
-        between 1 and 100,000. The default is 10,000. '
+      description: The maximum number of IOCs to return. You can specify between
+        1 and 10000. The default is 10000.
       isArray: false
       name: page_size
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter the alerts based on severity selected. If not supplied,
-        all alerts are fetched.
+      description: The severity by which to filter the returned alerts. If not supplied,
+        all alerts are fetched. The possible values are "High", "Medium", "Low", or "Unspecified".
       isArray: false
       name: severity
       predefined:
@@ -531,7 +525,7 @@ script:
     name: gcb-list-alerts
     outputs:
     - contextPath: GoogleChronicleBackstory.Alert.AssetName
-      description: The asset identifier. It could be IP Address, MAC Address, Hostname
+      description: The asset identifier. It can be IP Address, MAC Address, Hostname
         or Product ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Alert.AlertInfo.Name
