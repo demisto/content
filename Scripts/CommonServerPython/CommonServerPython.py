@@ -1656,13 +1656,14 @@ class CommandResults:
     """
     This class should contain results of an integration command or a script
     """
-    def __init__(self, output_prefix, key_field, outputs, indicators=None):
+    def __init__(self, output_prefix, key_field, outputs, indicators=None, readable_output=None):
         # type: (str, str, object, list) -> None
         self.indicators = indicators
 
         self.output_prefix = output_prefix
         self.key_field = key_field
         self.outputs = outputs
+        self.readable_output = readable_output
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -1674,7 +1675,11 @@ class CommandResults:
                 outputs.update(indicator.to_context())
 
         if self.outputs:
-            human_readable = tableToMarkdown('Results', self.outputs)
+            if not self.readable_output:
+                human_readable = tableToMarkdown('Results', self.outputs)
+            else:
+                human_readable = self.readable_output
+
             raw_response = self.outputs
 
             outputs_key = '{}(val.{} == obj.{})'.format(self.output_prefix, self.key_field, self.key_field)
@@ -1712,11 +1717,6 @@ class DBotScore(Indicator):
         self.indicator_type = indicator_type
         self.integration_name = integration_name
         self.score = score
-
-        if score == DBotScore.BAD and malicious_description is None:
-            raise ValueError('malicious_description must be provided for BAD(malicious) indicator: {}'
-                             .format(self.indicator))
-
         self.malicious_description = malicious_description
 
     @staticmethod
@@ -1746,7 +1746,7 @@ class IP(Indicator):
     CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
     def __init__(self, ip, asn, hostname, geo_latitude, geo_longitude, geo_country, geo_description,
-                 detection_engines, positive_engines):
+                 detection_engines, positive_engines, dbot_score=None):
 
         self.ip = ip
         self.asn = asn
@@ -1758,7 +1758,12 @@ class IP(Indicator):
         self.detection_engines = detection_engines
         self.positive_engines = positive_engines
 
-        self.dbot_score = None  # type: ignore
+        self.dbot_score = None
+        if dbot_score:
+            if not isinstance(dbot_score, DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
 
     def set_dbot_score(self, dbot_score):
         # type: (DBotScore) -> None
@@ -2105,7 +2110,7 @@ class Domain(Indicator):
     CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
     def __init__(self, domain, dns, detection_engines, positive_detections, whois, organization, sub_domains,
-                 creation_date, update_date, expiration_date, domain_status, name_servers):
+                 creation_date, update_date, expiration_date, domain_status, name_servers, dbot_score=None):
         self.domain = domain
         self.dns = dns
         self.detection_engines = detection_engines
@@ -2121,7 +2126,7 @@ class Domain(Indicator):
         self.name_servers = name_servers
 
         # DBotScore fields
-        self.dbot_score = None  # type: ignore
+        self.dbot_score = dbot_score
 
     def set_dbot_score(self, dbot_score):
         # type: (DBotScore) -> None
