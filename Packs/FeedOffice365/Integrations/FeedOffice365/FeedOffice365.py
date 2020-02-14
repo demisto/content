@@ -7,7 +7,7 @@ from CommonServerPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
-INTEGRATION_NAME = 'Office365'
+INTEGRATION_NAME = 'Office 365'
 
 
 def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[Dict[str, Any]]:
@@ -39,7 +39,7 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[
 
 class Client(BaseClient):
     """
-    Client to use in the Office365 Feed integration. Overrides BaseClient.
+    Client to use in the Office 365 Feed integration. Overrides BaseClient.
     Office 365 IP address and URL web service announcement:
     https://docs.microsoft.com/en-us/office365/enterprise/managing-office-365-endpoints?redirectSourcePath=%252fen-us%252farticle%252fmanaging-office-365-endpoints-99cab9d4-ef59-4207-9f2b-3728eb46bf9a#webservice
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
@@ -47,12 +47,12 @@ class Client(BaseClient):
 
     def __init__(self, urls_list: list, insecure: bool = False, proxy: bool = False):
         """
-        Implements class for Office365 feeds.
+        Implements class for Office 365 feeds.
         :param urls_list: List of url, regions and service of each sub feed.
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
-        super().__init__(base_url=urls_list, verify=insecure, proxy=proxy)
+        super().__init__(base_url=urls_list, verify=not insecure, proxy=proxy)
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -82,15 +82,15 @@ class Client(BaseClient):
                 result.extend(indicators)
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to Office365.\n'
+                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
                                 f'Check your not secure parameter.\n\n{err}')
             except requests.ConnectionError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to Office365.\n'
+                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Error issuing the request call to Office365.\n\n{err}')
+                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
