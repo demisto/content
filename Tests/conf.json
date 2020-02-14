@@ -2246,7 +2246,7 @@
             "playbookID": "illuminate Integration Test"
         },
         {
-            "integrations": "illuminate - Demo",
+            "integrations": "illuminate",
             "playbookID": "illuminate Integration Demonstration - Test"
         }
     ],
