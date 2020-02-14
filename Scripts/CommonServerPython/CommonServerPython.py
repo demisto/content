@@ -1656,12 +1656,12 @@ class CommandResults:
     """
     This class should contain results of an integration command or a script
     """
-    def __init__(self, output_prefix, uniq_field, outputs, indicators=None):
+    def __init__(self, output_prefix, key_field, outputs, indicators=None):
         # type: (str, str, object, list) -> None
         self.indicators = indicators
 
         self.output_prefix = output_prefix
-        self.uniq_field = uniq_field
+        self.key_field = key_field
         self.outputs = outputs
 
     def to_context(self):
@@ -1677,7 +1677,7 @@ class CommandResults:
             human_readable = tableToMarkdown('Results', self.outputs)
             raw_response = self.outputs
 
-            outputs_key = '{}(val.{} == obj.{})'.format(self.output_prefix, self.uniq_field, self.uniq_field)
+            outputs_key = '{}(val.{} == obj.{})'.format(self.output_prefix, self.key_field, self.key_field)
             outputs.update({
                 outputs_key: self.outputs
             })

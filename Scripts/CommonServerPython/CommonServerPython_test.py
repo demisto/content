@@ -813,7 +813,7 @@ class TestCommandResults:
         ip.set_dbot_score(dbot_score)
 
         results = CommandResults(
-            uniq_field=None,
+            key_field=None,
             output_prefix=None,
             outputs=None,
             indicators=[ip]
@@ -850,7 +850,7 @@ class TestCommandResults:
         )
 
         results = CommandResults(
-            uniq_field=None,
+            key_field=None,
             output_prefix=None,
             outputs=None,
             indicators=[dbot_score]
@@ -885,7 +885,7 @@ class TestCommandResults:
         ]
         results = CommandResults(
             output_prefix='Jira.Ticket',
-            uniq_field='ticket_id',
+            key_field='ticket_id',
             outputs=tickets
         )
 
@@ -965,7 +965,7 @@ class TestCommandResults:
         domain.set_dbot_score(dbot_score)
 
         results = CommandResults(
-            uniq_field=None,
+            key_field=None,
             output_prefix=None,
             outputs=None,
             indicators=[domain]

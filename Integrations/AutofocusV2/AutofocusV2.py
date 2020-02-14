@@ -1270,14 +1270,57 @@ def top_tags_results_command():
 def search_ip_command(ip):
     indicator_type = 'IP'
     ip_list = argToList(ip)
-    indicator_details = []
+
+    ip_indicators = []
+    outputs = []
+    raw_response = []
+    human_readable = ''
+
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
-        score = calculate_dbot_score(raw_res, indicator_type)
-        res = parse_indicator_response(raw_res, indicator_type)
-        indicator_details.append({'raw_response': raw_res, 'value': ip_address, 'score': score, 'response': res})
 
-    get_indicator_outputs(indicator_type, indicator_details, 'Address')
+        score = calculate_dbot_score(raw_res, indicator_type)
+        dbot_score = DBotScore(
+            indicator=ip_address,
+            indicator_type=DBotScoreType.IP,
+            integration_name=VENDOR_NAME,
+            score=score
+        )
+
+        ip = IP(
+            ip=ip_address,
+            dbot_score=dbot_score
+        )
+
+        autofocus_ip_output = parse_indicator_response(raw_res, indicator_type)
+
+        # create human readable markdown for ip
+        tags = autofocus_ip_output.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {ip_address}'
+        if tags:
+            indicators_data = autofocus_ip_output.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data)
+            md += tableToMarkdown('Indicator Tags:', tags)
+        else:
+            md = tableToMarkdown(table_name, autofocus_ip_output)
+
+        human_readable += md
+
+        ip_indicators.append(ip)
+        outputs.append(autofocus_ip_output)
+        raw_response.append(raw_response)
+
+    command_results = CommandResults(
+        output_prefix='AutoFocus.IP',
+        key_field='IndicatorValue',
+        readable_output=human_readable,
+        outputs=outputs,
+        raw_response=raw_response,
+        indicators=ip_indicators
+    )
+
+    return command_results
 
 
 def search_domain_command(domain):
