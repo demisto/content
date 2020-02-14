@@ -452,7 +452,7 @@ class Docker:
                       default python2 and python3 images are returned.
 
         """
-        integration_script = integration_config.get('configuration', {}).get('integrationScript', {})
+        integration_script = integration_config.get('configuration', {}).get('integrationScript', {}) or {}
         integration_type = integration_script.get('type')
         docker_image = integration_script.get('dockerImage')
 
