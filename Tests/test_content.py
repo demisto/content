@@ -119,6 +119,7 @@ class ParallelPrintsManager:
             print_job = PrintJob(message_to_print, print_function_to_execute)
         self.threads_print_jobs[thread_index].append(print_job)
         if self.should_update_thread_status(thread_index):
+            self.execute_thread_prints(thread_index)
             print("Thread {} is still running.".format(thread_index))
             self.threads_last_update_times[thread_index] = time.time()
 
