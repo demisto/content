@@ -2,7 +2,7 @@
 ---
 
 Indeni Integration
-This integration was integrated and tested with version 7.1.1 of Indeni
+This integration was integrated and tested with version xx of Indeni
 ## Indeni Playbook
 ---
 
@@ -16,32 +16,18 @@ This integration was integrated and tested with version 7.1.1 of Indeni
 2. Search for Indeni.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Use system proxy settings__
     * __Trust any certificate (not secure)__
-    * __API url__:for example https://10.11.80.21:9443
-    * __API Key__: obtained from Indeni settings -> about
+    * __API url__
+    * __API Key__
     * __Fetch incidents__
     * __Incident type__
-    * __Long running instance__
-    * __Issue Type To Pull__: prefix match for unique_identifier field in the Indeni API response
+    * __Only Pull PAN Vulnerability Issues__
+    * __Use system proxy settings__
+    * __Issue Severities To Pull__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
-```
-{
-    [ 
-        {
-            "occurred": "2019-10-07T19:55:44.236Z", 
-            "updated": "2020-02-13T06:51:41.461Z", 
-            "rawJSON": "{....}",
-            "details": "Palo Alto Networks makes use of a 3rd-party component...",
-            "Indeni Device ID": " 01178b51-b8af-4249-aecf-6e5b8da4a04f",
-            "indeni Issue ID": "2b95a696-e8ff-49fa-a194-c3e908aabcbf",
-            "name": "Denial of Service in PAN-OS Management Web Interface PAN-SA-2018-0008"
-        }
-    ]
-}
-```
+
 ## Commands
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -154,7 +140,7 @@ get detailed alert info
 ### Alert ID 7f0a5ded-571a-4ba0-835d-ba2f76469226
 |acknowledged|alert_blocks|alert_id|alert_type|configuration_set_id|create_at|device_id|evidence|headline|id|notes|resolved|revalidated_at|severity|unique_identifier|updated_at|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-|false|{'header': 'Description', 'body': 'A Remote Code Execution vulnerability exists in the PAN-OS DNS Proxy. This issue affects customers who have DNS Proxy enabled in PAN-OS. This issue affects both the Data and Management planes of the firewall. When DNS Proxy processes a specially crafted fully qualified domain names (FQDN), it is possible to execute code on the firewall. (Ref # PAN-77516 / CVE-2017-8390).\nVendor Severity Rating: Critical', 'type': 'text', 'position': 0},<br>{'header': 'Remediation Steps', 'body': 'Palo Alto Networks recommends disabling DNS Proxy for those customers who are affected and are unable to apply the update.\nFor more information please review: https://securityadvisories.paloaltonetworks.com/Home/Detail/91', 'type': 'text', 'position': 1}|49517|UNAUTOREMEDIATABLE_ISSUE|3409|2019-10-07T19:55:41.344Z|01178b51-b8af-4249-aecf-6e5b8da4a04f|ts: <br>snapshot: |Vulnerability in the PAN-OS DNS Proxy PAN-SA-2017-0021|7f0a5ded-571a-4ba0-835d-ba2f76469226|{'text': 'Issue has been marked as unacknowledged.', 'timestamp': 1581370678025, 'id': 'c2687096-14c0-496c-9cd1-49442cf183ff'},<br>{'text': 'Jira ticket created ["IKP-3864"]', 'timestamp': 1581369933755, 'id': '849f9acc-ffc8-4822-9476-d4babc241cfa'},<br>{'text': 'This issue is currently been handled by Demisto', 'timestamp': 1581369928340, 'id': 'ae3dc4b9-68b0-4ff8-a43f-e7a1bf0afd16'},<br>{'text': 'Issue has been marked as acknowledged.', 'timestamp': 1580851503217, 'id': '4be83182-adc7-4a72-ad02-50ecd3a2b06c'},<br>{'text': 'Jira ticket is resolved. ', 'timestamp': 1580851501985, 'id': 'db88d492-a721-4a5f-a7e4-937db94a029f'},<br>{'text': 'Jira ticket created ["IKP-3849"]', 'timestamp': 1580850843665, 'id': '6b7bd790-5a85-4ae7-953b-e2b3e6da83c4'},<br>{'text': 'This issue is currently been handled by Demisto', 'timestamp': 1580850839545, 'id': 'ae733b78-e697-44f4-ab1a-3c90715698ac'},<br>{'text': 'This issue is currently been handled by Demisto', 'timestamp': 1580501809210, 'id': '9ad4f6bb-0590-45f5-9be6-d1553939de18'},<br>{'text': 'Issue created.', 'timestamp': 1570478141344, 'id': '8d7ef6e3-d5ed-4f6d-b933-d369a8176072'}|false|2020-02-10T21:38:45.891Z|level: 0<br>description: CRITICAL|panos_vulnerability_pansa_20170021_rule|2020-02-10T21:37:58.027Z|
+|false|A Remote Code Execution vulnerability exists in the PAN-OS DNS Proxy. This issue affects customers who have DNS Proxy enabled in PAN-OS. This issue affects both the Data and Management planes of the firewall. When DNS Proxy processes a specially crafted fully qualified domain names (FQDN), it is possible to execute code on the firewall. (Ref # PAN-77516 / CVE-2017-8390).<br>Vendor Severity Rating: Critical<br>Palo Alto Networks recommends disabling DNS Proxy for those customers who are affected and are unable to apply the update.<br>For more information please review: https://securityadvisories.paloaltonetworks.com/Home/Detail/91|49517|UNAUTOREMEDIATABLE_ISSUE|3409|2019-10-07T19:55:41.344Z|01178b51-b8af-4249-aecf-6e5b8da4a04f|ts: <br>snapshot: |Vulnerability in the PAN-OS DNS Proxy PAN-SA-2017-0021|7f0a5ded-571a-4ba0-835d-ba2f76469226|Demisto<br>Demisto<br>Issue has been marked as unacknowledged.<br>Issue has been marked as acknowledged.<br>Demisto<br>Issue has been marked as unacknowledged.<br>Issue has been marked as acknowledged.<br>Demisto<br>Issue has been marked as unacknowledged.<br>Jira ticket created ["IKP-3864"]<br>This issue is currently been handled by Demisto<br>Issue has been marked as acknowledged.<br>Jira ticket is resolved. <br>Jira ticket created ["IKP-3849"]<br>This issue is currently been handled by Demisto<br>This issue is currently been handled by Demisto<br>Issue created.|false|2020-02-14T08:40:45.891Z|level: 0<br>description: CRITICAL|panos_vulnerability_pansa_20170021_rule|2020-02-13T08:38:23.445Z|
 
 
 ### 3. indeni-get-alert-summary
@@ -176,7 +162,9 @@ gets summary of given alert type for all devices
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Indeni.AlertSummary.Devices | string | device name | 
+| Indeni.AffectedDevices.AlertType | String | Alert type that's affecting the devices | 
+| Indeni.AffectedDevices.Device.DeviceName | String | Name of the affected device | 
+| Indeni.AffectedDevices.Device.DeviceId | String | Id of the affected device | 
 
 
 ##### Command Example
@@ -185,20 +173,24 @@ gets summary of given alert type for all devices
 ##### Context Example
 ```
 {
-    "Devices": [
-        {
-            "DeviceName": "kdlab-pa200", 
-            "Items": []
-        }
-    ]
+    "Indeni.AffectedDevices": {
+        "Device": [
+            {
+                "DeviceName": "kdlab-pa200", 
+                "DeviceId": "01178b51-b8af-4249-aecf-6e5b8da4a04f", 
+                "Items": []
+            }
+        ], 
+        "AlertType": "panos_vulnerability_pansa_20170021_rule"
+    }
 }
 ```
 
 ##### Human Readable Output
-### Devices Experiencing Same Issue
-|Devices|
-|---|
-|{'DeviceName': 'kdlab-pa200', 'Items': []}|
+### Devices Experiencing Alert panos_vulnerability_pansa_20170021_rule
+|DeviceId|DeviceName|
+|---|---|
+|01178b51-b8af-4249-aecf-6e5b8da4a04f|kdlab-pa200|
 
 
 ### 4. indeni-post-note
@@ -225,7 +217,7 @@ There is no context output for this command.
 ```!indeni-post-note alert_id=7f0a5ded-571a-4ba0-835d-ba2f76469226 note=Demisto```
 
 ##### Human Readable Output
-
+Done
 
 ### 5. indeni-archive-issue
 ---
@@ -250,7 +242,7 @@ There is no context output for this command.
 ```!indeni-archive-issue alert_id=7f0a5ded-571a-4ba0-835d-ba2f76469226```
 
 ##### Human Readable Output
-
+Done
 
 ### 6. indeni-unarchive-issue
 ---
@@ -275,7 +267,7 @@ There is no context output for this command.
 ```!indeni-unarchive-issue alert_id=7f0a5ded-571a-4ba0-835d-ba2f76469226```
 
 ##### Human Readable Output
-
+Done
 
 ### 7. indeni-get-notes
 ---
@@ -296,7 +288,7 @@ Gets the notes from issue
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Indeni.AlertInfo.Notes | Unknown | The notes of issue | 
+| Indeni.AlertInfo.Note | Unknown | Notes for the given issue | 
 
 
 ##### Command Example
@@ -305,54 +297,86 @@ Gets the notes from issue
 ##### Context Example
 ```
 {
-    "Notes": [
+    "Indeni.AlertInfo": [
         {
             "note": "Issue has been marked as unacknowledged.", 
-            "timestamp": 1581370787322
+            "timestamp": "2020-02-14T08:41:21.000Z"
         }, 
         {
             "note": "Issue has been marked as acknowledged.", 
-            "timestamp": 1581370786316
+            "timestamp": "2020-02-14T08:41:20.000Z"
         }, 
         {
             "note": "Demisto", 
-            "timestamp": 1581370785278
+            "timestamp": "2020-02-14T08:41:19.000Z"
+        }, 
+        {
+            "note": "Demisto", 
+            "timestamp": "2020-02-14T08:31:29.000Z"
+        }, 
+        {
+            "note": "Demisto", 
+            "timestamp": "2020-02-14T08:27:59.000Z"
         }, 
         {
             "note": "Issue has been marked as unacknowledged.", 
-            "timestamp": 1581370678025
-        }, 
-        {
-            "note": "Jira ticket created [\"IKP-3864\"]", 
-            "timestamp": 1581369933755
-        }, 
-        {
-            "note": "This issue is currently been handled by Demisto", 
-            "timestamp": 1581369928340
+            "timestamp": "2020-02-13T08:38:23.000Z"
         }, 
         {
             "note": "Issue has been marked as acknowledged.", 
-            "timestamp": 1580851503217
+            "timestamp": "2020-02-13T08:37:51.000Z"
+        }, 
+        {
+            "note": "Demisto", 
+            "timestamp": "2020-02-13T08:35:33.000Z"
+        }, 
+        {
+            "note": "Issue has been marked as unacknowledged.", 
+            "timestamp": "2020-02-10T21:39:47.000Z"
+        }, 
+        {
+            "note": "Issue has been marked as acknowledged.", 
+            "timestamp": "2020-02-10T21:39:46.000Z"
+        }, 
+        {
+            "note": "Demisto", 
+            "timestamp": "2020-02-10T21:39:45.000Z"
+        }, 
+        {
+            "note": "Issue has been marked as unacknowledged.", 
+            "timestamp": "2020-02-10T21:37:58.000Z"
+        }, 
+        {
+            "note": "Jira ticket created [\"IKP-3864\"]", 
+            "timestamp": "2020-02-10T21:25:33.000Z"
+        }, 
+        {
+            "note": "This issue is currently been handled by Demisto", 
+            "timestamp": "2020-02-10T21:25:28.000Z"
+        }, 
+        {
+            "note": "Issue has been marked as acknowledged.", 
+            "timestamp": "2020-02-04T21:25:03.000Z"
         }, 
         {
             "note": "Jira ticket is resolved. ", 
-            "timestamp": 1580851501985
+            "timestamp": "2020-02-04T21:25:01.000Z"
         }, 
         {
             "note": "Jira ticket created [\"IKP-3849\"]", 
-            "timestamp": 1580850843665
+            "timestamp": "2020-02-04T21:14:03.000Z"
         }, 
         {
             "note": "This issue is currently been handled by Demisto", 
-            "timestamp": 1580850839545
+            "timestamp": "2020-02-04T21:13:59.000Z"
         }, 
         {
             "note": "This issue is currently been handled by Demisto", 
-            "timestamp": 1580501809210
+            "timestamp": "2020-01-31T20:16:49.000Z"
         }, 
         {
             "note": "Issue created.", 
-            "timestamp": 1570478141344
+            "timestamp": "2019-10-07T19:55:41.000Z"
         }
     ]
 }
@@ -360,9 +384,28 @@ Gets the notes from issue
 
 ##### Human Readable Output
 ### Issue Notes
-|Notes|
-|---|
-|{'note': 'Issue has been marked as unacknowledged.', 'timestamp': 1581370787322},<br>{'note': 'Issue has been marked as acknowledged.', 'timestamp': 1581370786316},<br>{'note': 'Demisto', 'timestamp': 1581370785278},<br>{'note': 'Issue has been marked as unacknowledged.', 'timestamp': 1581370678025},<br>{'note': 'Jira ticket created ["IKP-3864"]', 'timestamp': 1581369933755},<br>{'note': 'This issue is currently been handled by Demisto', 'timestamp': 1581369928340},<br>{'note': 'Issue has been marked as acknowledged.', 'timestamp': 1580851503217},<br>{'note': 'Jira ticket is resolved. ', 'timestamp': 1580851501985},<br>{'note': 'Jira ticket created ["IKP-3849"]', 'timestamp': 1580850843665},<br>{'note': 'This issue is currently been handled by Demisto', 'timestamp': 1580850839545},<br>{'note': 'This issue is currently been handled by Demisto', 'timestamp': 1580501809210},<br>{'note': 'Issue created.', 'timestamp': 1570478141344}|
+|note|timestamp|
+|---|---|
+|Issue has been marked as unacknowledged.|2020-02-14T08:41:21.000Z|
+|Issue has been marked as acknowledged.|2020-02-14T08:41:20.000Z|
+|Demisto|2020-02-14T08:41:19.000Z|
+|Demisto|2020-02-14T08:31:29.000Z|
+|Demisto|2020-02-14T08:27:59.000Z|
+|Issue has been marked as unacknowledged.|2020-02-13T08:38:23.000Z|
+|Issue has been marked as acknowledged.|2020-02-13T08:37:51.000Z|
+|Demisto|2020-02-13T08:35:33.000Z|
+|Issue has been marked as unacknowledged.|2020-02-10T21:39:47.000Z|
+|Issue has been marked as acknowledged.|2020-02-10T21:39:46.000Z|
+|Demisto|2020-02-10T21:39:45.000Z|
+|Issue has been marked as unacknowledged.|2020-02-10T21:37:58.000Z|
+|Jira ticket created ["IKP-3864"]|2020-02-10T21:25:33.000Z|
+|This issue is currently been handled by Demisto|2020-02-10T21:25:28.000Z|
+|Issue has been marked as acknowledged.|2020-02-04T21:25:03.000Z|
+|Jira ticket is resolved. |2020-02-04T21:25:01.000Z|
+|Jira ticket created ["IKP-3849"]|2020-02-04T21:14:03.000Z|
+|This issue is currently been handled by Demisto|2020-02-04T21:13:59.000Z|
+|This issue is currently been handled by Demisto|2020-01-31T20:16:49.000Z|
+|Issue created.|2019-10-07T19:55:41.000Z|
 
 
 ## Additional Information
