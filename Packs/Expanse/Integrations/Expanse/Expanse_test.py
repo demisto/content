@@ -1,4 +1,4 @@
-from Expanse import main, parse_response
+from Expanse import main
 import demistomock as demisto
 import json
 
@@ -22,11 +22,14 @@ def http_request_mock(method, endpoint, params=None, token=False):
     elif endpoint == 'events':
         r = MOCK_EVENTS
 
-    return parse_response(r)
+    return r
 
 
-def test_fetch_incidents(mocker, requests_mock):
-    mocker.patch.object(demisto, 'params', return_value={'api_key': TEST_API_KEY})
+def test_fetch_incidents(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'api_key': TEST_API_KEY,
+        'first_run': '7'
+    })
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(demisto, 'results')
@@ -38,7 +41,7 @@ def test_fetch_incidents(mocker, requests_mock):
     assert r[0]['severity'] == 1
 
 
-def test_ip(mocker, requests_mock):
+def test_ip(mocker):
     mocker.patch.object(demisto, 'params', return_value={'api_key': TEST_API_KEY})
     mocker.patch.object(demisto, 'args', return_value={'ip': TEST_IP})
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
@@ -51,7 +54,7 @@ def test_ip(mocker, requests_mock):
     assert results[0]['EntryContext']['IP(val.Address == obj.Address)']['Address'] == TEST_IP
 
 
-def test_domain(mocker, requests_mock):
+def test_domain(mocker):
     mocker.patch.object(demisto, 'args', return_value={'domain': TEST_DOMAIN})
     mocker.patch('Expanse.http_request', side_effect=http_request_mock)
     mocker.patch.object(demisto, 'command', return_value='domain')

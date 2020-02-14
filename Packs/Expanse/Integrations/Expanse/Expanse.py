@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import traceback
 from datetime import datetime, timedelta
 
 # Disable insecure warnings
@@ -14,12 +15,11 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 
-PARAMS = demisto.params()
-API_KEY = PARAMS.get('api_key')
-PAGE_LIMIT = PARAMS.get('page_limit')
-FIRST_RUN = PARAMS.get('first_run')
+API_KEY = demisto.params().get('api_key')
+PAGE_LIMIT = demisto.params().get('page_limit')
+FIRST_RUN = int(demisto.params().get('first_run', '7'))
 SERVER = 'https://expander.expanse.co'
-INSECURE = PARAMS.get('insecure')
+INSECURE = demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
 BASE_URL = SERVER
 EXPOSURE_EVENT_TYPES = "ON_PREM_EXPOSURE_APPEARANCE,ON_PREM_EXPOSURE_REAPPEARANCE"
@@ -54,7 +54,9 @@ EXPOSURE_SEVERITY_MAPPING = {
 
 
 def make_headers(endpoint, token):
-    ''' provides proper headers for differing authentication methods to API '''
+    """
+    provides proper headers for differing authentication methods to API
+    """
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -69,7 +71,9 @@ def make_headers(endpoint, token):
 
 
 def make_url(endpoint):
-    ''' build URL based on endpoint'''
+    """
+    build URL based on endpoint
+    """
     url = "{BASE_URL}/api/v{version}/{endpoint}".format(
         BASE_URL=BASE_URL,
         version=API_ENDPOINTS[endpoint]['version'],
@@ -87,22 +91,21 @@ def get_page_token(url):
 
 
 def do_auth():
-    ''' perform authentication using API_KEY,
+    """
+    perform authentication using API_KEY,
     stores token and stored timestamp in integration context,
-    retrieves new token when expired '''
+    retrieves new token when expired
+    """
     auth = demisto.getIntegrationContext()
     now_epoch = int(datetime.today().strftime('%s'))
 
-    try:
-        "token" in auth
-        "stored" in auth
-        int(auth['stored']) + (60 * 60 * 4) > int(now_epoch)
+    if ("token" in auth or "stored" in auth) and int(auth['stored']) + (60 * 60 * 4) > int(now_epoch):
+        # if integration context contains token and stored and the token is not expired then return token
         return auth['token']
-
-    except Exception:
+    else:
         # fetch new token
         r = http_request('GET', 'IdToken', token=API_KEY)
-        if not r['token']:
+        if r.get('token') is None:
             return_error("Authorization failed")
 
         demisto.setIntegrationContext({
@@ -112,25 +115,10 @@ def do_auth():
         return r['token']
 
 
-def parse_response(resp):
-    ''' parse response from api '''
-    try:
-        res_json = resp.json()
-        resp.raise_for_status()
-        return res_json
-    except requests.exceptions.HTTPError:
-        sys.exit(1)
-    except AttributeError:
-        return resp
-
-    except Exception as err:
-        demisto.info(resp)
-        err_msg = err
-        return return_error(err_msg)
-
-
 def http_request(method, endpoint, params=None, token=False):
-    ''' make api call '''
+    """
+    make api call
+    """
     if not token:
         return_error("No authorization token provided")
     head = make_headers(endpoint, token)
@@ -143,14 +131,20 @@ def http_request(method, endpoint, params=None, token=False):
         verify=INSECURE
     )
     if r.status_code != 200:
-        demisto.info(r.text)
+        demisto.error(r.text)
         return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
 
-    return parse_response(r)
+    try:
+        res_json = r.json()
+        return res_json
+    except json.decoder.JSONDecodeError as err:
+        raise ValueError(f'Failed to parse response as JSON. Original response:\n{r.text}.\nError: {str(err)}')
 
 
 def parse_events(events):
-    ''' build incidents from active exposures '''
+    """
+    build incidents from active exposures
+    """
     incidents = []
     for event in events['data']:
         incident = {
@@ -173,7 +167,9 @@ def parse_events(events):
 
 
 def get_ip_context(data):
-    ''' provide custom context information about ip address with data from Expanse API '''
+    """
+    provide custom context information about ip address with data from Expanse API
+    """
     return {
         "Address": data['search'],
 
@@ -189,7 +185,9 @@ def get_ip_context(data):
 
 
 def get_expanse_ip_context(data):
-    ''' provide custom context information about ip address with data from Expanse API '''
+    """
+    provide custom context information about ip address with data from Expanse API
+    """
     c = {
         "Address": data['search'],
         "Version": data['ipVersion'],
@@ -238,7 +236,9 @@ def get_expanse_ip_context(data):
 
 
 def get_domain_context(data):
-    ''' provide standard context information about domain with data from Expanse API '''
+    """
+    provide standard context information about domain with data from Expanse API
+    """
     return {
         "Name": data['domain'],
         "DNS": data['details']['recentIps'],
@@ -285,7 +285,9 @@ def get_domain_context(data):
 
 
 def get_expanse_domain_context(data):
-    ''' provide custom context information about domain with data from Expanse API '''
+    """
+    provide custom context information about domain with data from Expanse API
+    """
     c = {
         "Name": data['domain'],
         "DNS": data['details']['recentIps'],
@@ -347,11 +349,10 @@ def get_expanse_domain_context(data):
     return c
 
 
-'''MAIN FUNCTIONS'''
-
-
 def fetch_incidents_command():
-    ''' retrieve active exposures from Expanse API and create incidents '''
+    """
+    retrieve active exposures from Expanse API and create incidents
+    """
     now = datetime.today()
     today = datetime.strftime(now, "%Y-%m-%d")
     yesterday = datetime.strftime(now - timedelta(days=1), "%Y-%m-%d")
@@ -359,12 +360,7 @@ def fetch_incidents_command():
     start_date = yesterday
     end_date = yesterday
 
-    try:
-        "start_time" in last_run
-        "complete_for_today" in last_run
-        # integration has ran before
-
-    except Exception:
+    if "start_time" not in last_run or "complete_for_today" not in last_run:
         # first time integration is running
         start_date = datetime.strftime(now - timedelta(days=FIRST_RUN), "%Y-%m-%d")
         demisto.setLastRun({
@@ -422,7 +418,9 @@ def fetch_incidents_command():
 
 
 def ip_command():
-    ''' searches by IP address in Expanse API for asset information'''
+    """
+    searches by IP address in Expanse API for asset information
+    """
     search = demisto.args()['ip']
     params = {
         "include": "annotations,severityCounts,attributionReasons,relatedRegistrationInformation,locationInformation",
@@ -458,7 +456,9 @@ def ip_command():
 
 
 def domain_command():
-    ''' searches Expanse IP for asset information for a domain '''
+    """
+    searches Expanse IP for asset information for a domain
+    """
     search = demisto.args()['domain']
     params = {
         'domainSearch': search
@@ -503,7 +503,6 @@ def test_module():
         'eventType': EXPOSURE_EVENT_TYPES,
         'limit': 1
     }
-    token = do_auth()
     events = http_request('GET', 'events', params=params, token=token)
 
     parse_events(events)
@@ -511,8 +510,6 @@ def test_module():
 
 
 def main():
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
-
     try:
         handle_proxy()
 
@@ -531,10 +528,9 @@ def main():
         elif active_command == 'domain':
             domain_command()
 
-        LOG.print_log(verbose=False)
-
     # Log exceptions
     except Exception as e:
+        demisto.error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
         return_error(str(e))
 
 
