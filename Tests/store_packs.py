@@ -13,6 +13,7 @@ from Tests.test_utils import run_command, print_error, print_warning, print_colo
     collect_content_items_data, input_to_list
 
 STORAGE_BASE_PATH = "content/packs"
+IGNORED_PATHS = ['Packs/__init__.py']
 
 DIR_NAME_TO_CONTENT_TYPE = {
     "Classifiers": "Classifiers",
@@ -144,7 +145,6 @@ class Pack(object):
 
         with open(zip_pack_path, "rb") as pack_zip:
             blob.upload_from_file(pack_zip)
-            os.remove(zip_pack_path)
 
         print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
@@ -199,13 +199,13 @@ class Pack(object):
 
 def get_modified_packs(specific_packs=None):
     if specific_packs:
-        modified_packs = [p.strip() for p in specific_packs.split(',')]
+        modified_packs = {p.strip() for p in specific_packs.split(',')}
         print(f"Number of selected packs is: {len(modified_packs)}")
         return modified_packs
 
     cmd = f"git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
     modified_packs_path = run_command(cmd, use_shell=True).splitlines()
-    modified_packs = {p.split('/')[1] for p in modified_packs_path}
+    modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
     print(f"Number of modified packs is: {len(modified_packs)}")
 
     return modified_packs
@@ -244,7 +244,9 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         with ZipFile(download_index_path, 'r') as index_zip:
             index_zip.extractall(extract_destination_path)
 
-        if Pack.INDEX_NAME not in os.listdir(extract_destination_path):
+        index_folder_path = os.path.join(extract_destination_path, Pack.INDEX_NAME)
+
+        if not os.path.exists(index_folder_path):
             print_error(f"Failed creating {Pack.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
 
@@ -252,7 +254,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         print_color(f"Finished downloading and extracting {Pack.INDEX_NAME} file to {extract_destination_path}",
                     LOG_COLORS.GREEN)
 
-        return os.path.join(extract_destination_path, Pack.INDEX_NAME), index_blob
+        return index_folder_path, index_blob
     else:
         print_error(f"Failed to download {Pack.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
@@ -293,9 +295,8 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_blob.cache_control = "no-cache"
     index_blob.reload()
     index_blob.upload_from_filename(index_zip_path)
-    print_color(f"Finished uploading {Pack.INDEX_NAME}.json to storage.", LOG_COLORS.GREEN)
-    os.remove(index_zip_path)
     shutil.rmtree(index_folder_path)
+    print_color(f"Finished uploading {Pack.INDEX_NAME}.json to storage.", LOG_COLORS.GREEN)
 
 
 def option_handler():
