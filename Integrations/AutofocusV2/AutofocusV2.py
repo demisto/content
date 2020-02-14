@@ -1323,17 +1323,70 @@ def search_ip_command(ip):
     return command_results
 
 
-def search_domain_command(domain):
+def search_domain_command(args):
     indicator_type = 'Domain'
-    domain_list = argToList(domain)
-    indicator_details = []
-    for _domain in domain_list:
-        raw_res = search_indicator('domain', _domain)
-        score = calculate_dbot_score(raw_res, indicator_type)
-        res = parse_indicator_response(raw_res, indicator_type)
-        indicator_details.append({'raw_response': raw_res, 'value': _domain, 'score': score, 'response': res})
+    domain_list = argToList(args.get('domain'))
 
-    get_indicator_outputs(indicator_type, indicator_details, 'Name')
+    domain_indicator_list = []
+    outputs = []
+    raw_response = []
+    human_readable = ''
+
+    for domain_name in domain_list:
+        raw_res = search_indicator('domain', domain_name)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        dbot_score = DBotScore(
+            indicator=domain_name,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name=VENDOR_NAME,
+            score=score
+        )
+
+        domain_object = Domain(
+            domain=domain_name,
+            dbot_score=dbot_score,
+            whois=WHOIS(
+                creation_date=raw_res.get('whoisDomainCreationDate'),
+                expiration_date=raw_res.get('whoisDomainExpireDate'),
+                update_date=raw_res.get('whoisDomainUpdateDate'),
+
+                admin_email=raw_res.get('whoisAdminEmail'),
+                admin_name=raw_res.get('whoisAdminName'),
+
+                registrar_name=raw_res.get('whoisRegistrar'),
+                registrant_name=raw_res.get('whoisRegistrant')
+            )
+        )
+
+        autofocus_domain_output = parse_indicator_response(raw_res, indicator_type)
+
+        # create human readable markdown for ip
+        tags = autofocus_domain_output.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
+        if tags:
+            indicators_data = autofocus_domain_output.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data)
+            md += tableToMarkdown('Indicator Tags:', tags)
+        else:
+            md = tableToMarkdown(table_name, autofocus_domain_output)
+
+        human_readable += md
+
+        domain_indicator_list.append(domain_object)
+        raw_response.append(raw_res)
+        outputs.append(autofocus_domain_output)
+
+    command_results = CommandResults(
+        output_prefix='AutoFocus.Domain',
+        key_field='IndicatorValue',
+        readable_output=human_readable,
+        outputs=outputs,
+        raw_response=raw_response,
+        indicators=domain_indicator_list
+    )
+
+    return command_results
 
 
 def search_url_command(url):
@@ -1447,52 +1500,51 @@ def get_export_list_command(args):
                    results)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def main():
+    demisto.debug('Command being called is %s' % (demisto.command()))
 
-LOG('Command being called is %s' % (demisto.command()))
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
+        active_command = demisto.command()
 
-try:
-    # Remove proxy if not set to true in params
-    handle_proxy()
-    active_command = demisto.command()
+        args = {k: v for (k, v) in demisto.args().items() if v}
+        if active_command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif active_command == 'autofocus-search-samples':
+            search_samples_command()
+        elif active_command == 'autofocus-search-sessions':
+            search_sessions_command()
+        elif active_command == 'autofocus-samples-search-results':
+            samples_search_results_command()
+        elif active_command == 'autofocus-sessions-search-results':
+            sessions_search_results_command()
+        elif active_command == 'autofocus-get-session-details':
+            get_session_details_command()
+        elif active_command == 'autofocus-sample-analysis':
+            sample_analysis_command()
+        elif active_command == 'autofocus-tag-details':
+            tag_details_command()
+        elif active_command == 'autofocus-top-tags-search':
+            top_tags_search_command()
+        elif active_command == 'autofocus-top-tags-results':
+            top_tags_results_command()
+        elif active_command == 'autofocus-get-export-list-indicators':
+            get_export_list_command(args)
+        elif active_command == 'ip':
+            demisto.results(search_ip_command(**args))
+        elif active_command == 'domain':
+            demisto.results(search_domain_command(args))
+        elif active_command == 'url':
+            search_url_command(**args)
+        elif active_command == 'file':
+            search_file_command(**args)
 
-    args = {k: v for (k, v) in demisto.args().items() if v}
-    if active_command == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        demisto.results('ok')
-    elif active_command == 'autofocus-search-samples':
-        search_samples_command()
-    elif active_command == 'autofocus-search-sessions':
-        search_sessions_command()
-    elif active_command == 'autofocus-samples-search-results':
-        samples_search_results_command()
-    elif active_command == 'autofocus-sessions-search-results':
-        sessions_search_results_command()
-    elif active_command == 'autofocus-get-session-details':
-        get_session_details_command()
-    elif active_command == 'autofocus-sample-analysis':
-        sample_analysis_command()
-    elif active_command == 'autofocus-tag-details':
-        tag_details_command()
-    elif active_command == 'autofocus-top-tags-search':
-        top_tags_search_command()
-    elif active_command == 'autofocus-top-tags-results':
-        top_tags_results_command()
-    elif active_command == 'autofocus-get-export-list-indicators':
-        get_export_list_command(args)
-    elif active_command == 'ip':
-        demisto.results(search_ip_command(**args))
-    elif active_command == 'domain':
-        search_domain_command(**args)
-    elif active_command == 'url':
-        search_url_command(**args)
-    elif active_command == 'file':
-        search_file_command(**args)
+    except Exception as e:
+        return_error(f'Unexpected error: {e}')
 
 
-# Log exceptions
-except Exception as e:
-    LOG(e)
-    LOG.print_log()
-    return_error(f'Unexpected error: {e}')
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
