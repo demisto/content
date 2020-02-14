@@ -2245,6 +2245,10 @@
             "integrations": "illuminate",
             "playbookID": "illuminate Integration Test"
         }
+        {
+            "integrations": "illuminate - Demo",
+            "playbookID": "illuminate Integration Demonstration - Test"
+        }
     ],
     "skipped_tests": {
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
