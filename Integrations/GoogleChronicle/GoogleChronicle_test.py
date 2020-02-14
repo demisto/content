@@ -421,7 +421,7 @@ def test_gcb_assets_command_failure(client):
     assert response == {}
 
 
-def test_gcb_assets_command_failure(client):
+def test_gcb_assets_command_failure_with_uri_empty_response(client):
     """
     When Null response come in gcb-assets command it should respond with No Records Found.
     """
@@ -836,12 +836,12 @@ def test_ip_command_success(mocker, client):
     assert ec[key] == dummy_ec[key]
 
 
-def test_ip_command_empty_response(client):
+def test_ip_command_empty_response_when_uri_empty_response(client):
     from GoogleChronicle import ip_command
 
     with open("./TestData/empty_list_ioc_details.json", "r") as f:
         dummy_response = f.read()
-    expected_hr = '### For IP: {}\n'.format(ARGS['ip'])
+    expected_hr = '### IP: {} found with Reputation: Unknown\n'.format(ARGS['ip'])
     expected_hr += 'No Records Found'
 
     mock_response = (
