@@ -49,6 +49,7 @@ def item_to_incident(item):
     # Incident occurrence time, usually item creation date in service
     incident['occurred'] = item.get('create_at')
     incident['updated'] = item.get('updated_at')
+    incident['name'] = item.get('headline')
     incident['rawJSON'] = json.dumps(item)
 
     indeni_severity = item.get('severity').get('level')
@@ -65,6 +66,14 @@ def item_to_incident(item):
     else:
         demisto_severity = 0
     incident['severity'] = demisto_severity
+
+    alert_blocks = item.get('alert_blocks')
+    details = ''
+    for block in alert_blocks:
+        details = details + block.get('header') + '\n'
+        if block.get('body') is not None:
+            details = details + block.get('body') + '\n'
+    incident['details'] = details
 
     return incident
 
@@ -114,7 +123,7 @@ def get_all_active_issues(per_page, sort_by, base_url):
     return issues
 
 
-def get_limited_active_issues(per_page, alert_id_index, size, issue_types, base_url):
+def get_limited_active_issues(per_page, alert_id_index, size, only_Pan_Cve_Issues, issue_severities, base_url):
     issues = []
     issue_count = 0
     # The service endpoint to request from
@@ -136,12 +145,14 @@ def get_limited_active_issues(per_page, alert_id_index, size, issue_types, base_
                 continue
             else:
                 alert_id_index = alert_id
-                if ('All' in issue_types) or ('PANSecurityVulnerabilityChecks' in issue_types
-                                              and item.get('unique_identifier').startswith('panos_vulnerability')):
-                    issues.append(item)
-                    issue_count = issue_count + 1
-                    if issue_count == size:
-                        return issues, alert_id_index
+                if (only_Pan_Cve_Issues is False) or \
+                        (only_Pan_Cve_Issues and item.get('unique_identifier').startswith('panos_vulnerability')):
+                    alert_severity = item.get('severity').get('description')
+                    if alert_severity in issue_severities:
+                        issues.append(item)
+                        issue_count = issue_count + 1
+                        if issue_count == size:
+                            return issues, alert_id_index
         params['page'] = params['page'] + 1
         response = http_request('GET', base_url + endpoint_url, params)
     return issues, alert_id_index
@@ -188,12 +199,21 @@ def get_alert_info(base_url):
             'AlertType': alert_response.get('unique_identifier')
         }
     }
+    # ADD HUMAN READABLE FOR ALERT BLOCKS
+    human_format = alert_response
+    if 'notes' in human_format:
+        n = human_format['notes']
+        human_format['notes'] = '\n'.join([a['text'] for a in n]) if isinstance(n, list) else n
+    if 'alert_blocks' in human_format:
+        n = human_format['alert_blocks']
+        human_format['alert_blocks'] = '\n'.join([a['body'] for a in n]) if isinstance(n, list) else n
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': alert_response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert ID {}'.format(alert_id), alert_response, removeNull=True),
+        'HumanReadable': tableToMarkdown('Alert ID {}'.format(alert_id), human_format, removeNull=True),
         'EntryContext': ec
     })
 
@@ -220,19 +240,24 @@ def get_alert_summary(base_url):
                         )
             devices.append({
                 'DeviceName': device_name,
+                'DeviceId': alert.get('device_id'),
                 'Items': items
             }
             )
 
     content = {
-        'Devices': devices
+        'Indeni.AffectedDevices(val.AlertType == obj.AlertType)': {
+            'AlertType': alert_type,
+            'Device': devices
+        }
     }
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': content,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Devices Experiencing Same Issue', content, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'Devices Experiencing Alert {alert_type}', devices, removeNull=True),
         'EntryContext': content
     })
 
@@ -256,17 +281,17 @@ def get_notes(base_url):
     for note in response:
         notes.append({
             'note': note.get('text'),
-            'timestamp': note.get('timestamp')
+            'timestamp': timestamp_to_datestring(note.get('timestamp'))
         })
     content = {
-        'Notes': notes
+        'Indeni.AlertInfo(val.AlertID == obj.AlertID).Note': notes
     }
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': content,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Issue Notes', content, removeNull=True),
+        'HumanReadable': tableToMarkdown('Issue Notes', notes, removeNull=True),
         'EntryContext': content
     })
 
@@ -293,11 +318,12 @@ def fetch_incidents(base_url):
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
     alert_id_index = last_run.get('alert_id', 0)
-    issue_types = demisto.params().get('issuetype')
+    only_Pan_Cve_Issues = demisto.params().get('onlyPullPanCveIssues', False)
+    issue_severities = demisto.params().get('issueSeverities', [])
     incidents = []
 
     # Handle first time fetch, fetch only currently un-resolved active issues
-    result = get_limited_active_issues(100, alert_id_index, MAX_BATCH_SIZE, issue_types, base_url)
+    result = get_limited_active_issues(100, alert_id_index, MAX_BATCH_SIZE, only_Pan_Cve_Issues, issue_severities, base_url)
     for item in result[0]:
         incident = item_to_incident(item)
         incidents.append(incident)
@@ -325,9 +351,16 @@ def main():
         get_alert_summary(BASE_URL)
     elif demisto.command() == 'indeni-post-note':
         post_note(BASE_URL)
+        demisto.results('Done')
     elif demisto.command() == 'indeni-archive-issue':
         archive_issue(BASE_URL)
+        demisto.results('Done')
     elif demisto.command() == 'indeni-unarchive-issue':
         unarchive_issue(BASE_URL)
+        demisto.results('Done')
     elif demisto.command() == 'indeni-get-notes':
         get_notes(BASE_URL)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
