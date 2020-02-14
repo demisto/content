@@ -258,6 +258,8 @@ def query_alerts_command(client, args):
     # Get single alert uses different URL
     if alert_rid:
         result = client.get_alert(alert_rid)
+        parsed_results = _parse_single_alert(result, fields)
+
     else:
         alert_type = demisto.args().get("type", "").lower()
         if alert_type:
@@ -273,8 +275,7 @@ def query_alerts_command(client, args):
             filters.append(add_filter("timestamp", alert_time, "gte"))
 
         result = client.get_alerts(fields, sort, filters)
-
-    parsed_results = _parse_alerts_result(result, fields)
+        parsed_results = _parse_alerts_result(result, fields)
 
     outputs = {
         'Claroty.Alert(val.ResourceID == obj.ResourceID)': parsed_results
@@ -299,7 +300,7 @@ def _parse_alerts_result(alert_result: dict, fields: list) -> List[dict]:
     return alerts
 
 
-def _parse_single_alert(alert_obj: dict, fields: list) -> dict:
+def _parse_single_alert(alert_obj, fields: list):
     parsed_alert_result = {}
     for field in fields:
         if field == "type":
