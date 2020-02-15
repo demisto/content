@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import argparse
+import warnings
 import shutil
 import uuid
 import google.auth
@@ -227,6 +228,7 @@ def init_storage_client(service_account=None):
     if service_account:
         return storage.Client.from_service_account_json(service_account)
     else:
+        warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
         credentials, project = google.auth.default()
         return storage.Client(credentials=credentials, project=project)
 
