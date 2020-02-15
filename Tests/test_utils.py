@@ -7,8 +7,6 @@ from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 import yaml
 import requests
-import glob
-
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX, PACKS_DIR_REGEX, PACKS_DIR
 
@@ -404,3 +402,204 @@ def collect_content_items_data(pack_path):
 def input_to_list(input_data):
     input_data = input_data if input_data else []
     return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+
+
+class Docker:
+    """ Client for running docker commands on remote machine using ssh connection.
+
+    """
+    PYTHON_INTEGRATION_TYPE = 'python'
+    JAVASCRIPT_INTEGRATION_TYPE = 'javascript'
+    DEFAULT_PYTHON2_IMAGE = 'demisto/python'
+    DEFAULT_PYTHON3_IMAGE = 'demisto/python3'
+    COMMAND_FORMAT = '{{json .}}'
+    MEMORY_USAGE = 'MemUsage'
+    PIDS_USAGE = 'PIDs'
+    CONTAINER_NAME = 'Name'
+    DEFAULT_CONTAINER_MEMORY_USAGE = 50
+    DEFAULT_CONTAINER_PIDS_USAGE = 3
+    REMOTE_MACHINE_USER = 'ec2-user'
+    SSH_OPTIONS = 'ssh -o StrictHostKeyChecking=no'
+
+    @classmethod
+    def _build_stats_cmd(cls, server_ip, docker_images):
+        """ Builds docker stats and grep command string.
+
+        Example of returned value:
+        ssh -o StrictHostKeyChecking=no ec2-user@server_ip
+        'sudo docker stats --no-stream --no-trunc --format "{{json .}}" | grep -Ei "demistopython33.7.2.214--"'
+        Grep is based on docker images names regex.
+
+            Args:
+                server_ip (str): Remote machine ip to connect using ssh.
+                docker_images (set): Set of docker images.
+
+            Returns:
+                str: String command to run later as subprocess.
+
+        """
+        # docker stats command with json output
+        docker_command = 'sudo docker stats --no-stream --no-trunc --format "{}"'.format(cls.COMMAND_FORMAT)
+        # replacing : and / in docker images names in order to grep the stats by container name
+        docker_images_regex = ['{}--'.format(re.sub('[:/]', '', docker_image)) for docker_image in docker_images]
+        pipe = ' | '
+        grep_command = 'grep -Ei "{}"'.format('|'.join(docker_images_regex))
+        remote_command = docker_command + pipe + grep_command
+        remote_server = '{}@{}'.format(cls.REMOTE_MACHINE_USER, server_ip)
+        ssh_prefix = '{} {}'.format(cls.SSH_OPTIONS, remote_server)
+        # escaping the remote command with single quotes
+        cmd = "{} '{}'".format(ssh_prefix, remote_command)
+
+        return cmd
+
+    @classmethod
+    def _build_kill_cmd(cls, server_ip, container_name):
+        """ Constructs docker kll command string to run on remote machine.
+
+            Args:
+                server_ip (str): Remote machine ip to connect using ssh.
+                container_name (str): Docker container name to kill.
+
+            Returns:
+                str: String of docker kill command on remote machine.
+        """
+        remote_command = 'sudo docker kill {}'.format(container_name)
+        remote_server = '{}@{}'.format(cls.REMOTE_MACHINE_USER, server_ip)
+        ssh_prefix = '{} {}'.format(cls.SSH_OPTIONS, remote_server)
+        cmd = "{} '{}'".format(ssh_prefix, remote_command)
+
+        return cmd
+
+    @classmethod
+    def _parse_stats_result(cls, stats_lines):
+        """Parses the docker statics str and converts to Mib.
+
+            Args:
+                stats_lines (str): String that contains docker stats.
+            Returns:
+                list: List of dictionaries with parsed docker container statistics.
+
+        """
+        stats_result = []
+        try:
+            containers_stats = [json.loads(c) for c in stats_lines.splitlines()]
+
+            for container_stat in containers_stats:
+                memory_usage_stats = container_stat.get(cls.MEMORY_USAGE, '').split('/')[0].lower()
+
+                if 'kib' in memory_usage_stats:
+                    mib_usage = float(memory_usage_stats.replace('kib', '').strip()) / 1024
+                elif 'gib' in memory_usage_stats:
+                    mib_usage = float(memory_usage_stats.replace('kib', '').strip()) * 1024
+                else:
+                    mib_usage = float(memory_usage_stats.replace('mib', '').strip())
+
+                pids_number = int(container_stat.get(cls.PIDS_USAGE))
+                container_name = container_stat.get(cls.CONTAINER_NAME)
+                stats_result.append({'memory_usage': mib_usage, 'pids': pids_number, 'container_name': container_name})
+        except Exception as e:
+            print_warning("Failed in parsing docker stats result, returned empty list. Additional info: {}".format(e))
+        finally:
+            return stats_result
+
+    @classmethod
+    def get_integration_image(cls, integration_config):
+        """ Returns docker image of integration that was configured using rest api call via demisto_client
+
+            Args:
+                integration_config (dict): Integration config that included script section.
+            Returns:
+                list: List that includes integration docker image name. If no docker image was found,
+                      default python2 and python3 images are returned.
+
+        """
+        integration_script = integration_config.get('configuration', {}).get('integrationScript', {}) or {}
+        integration_type = integration_script.get('type')
+        docker_image = integration_script.get('dockerImage')
+
+        if integration_type == cls.JAVASCRIPT_INTEGRATION_TYPE:
+            return None
+        elif integration_type == cls.PYTHON_INTEGRATION_TYPE and docker_image:
+            return [docker_image]
+        else:
+            return [cls.DEFAULT_PYTHON2_IMAGE, cls.DEFAULT_PYTHON3_IMAGE]
+
+    @classmethod
+    def docker_stats(cls, server_ip, docker_images):
+        """ Executes docker stats command and greps all containers with prefix of docker images names.
+
+            Args:
+                server_ip (str): Remote machine ip to connect using ssh.
+                docker_images (set): Set of docker images to check their resource usage.
+
+            Returns:
+                list: List of dictionaries with parsed container memory statistics.
+        """
+        cmd = cls._build_stats_cmd(server_ip, docker_images)
+        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
+        stdout, stderr = process.communicate()
+
+        if stderr:
+            print_warning("Failed running docker stats command. Additional information: {}".format(stderr))
+            return []
+
+        return cls._parse_stats_result(stdout)
+
+    @classmethod
+    def kill_container(cls, server_ip, container_name):
+        """ Executes docker kill command on remote machine using ssh.
+
+            Args:
+                server_ip (str): The remote server ip address.
+                container_name (str): The container name to kill
+
+        """
+        cmd = cls._build_kill_cmd(server_ip, container_name)
+
+        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
+        stdout, stderr = process.communicate()
+
+        if stderr:
+            print_warning("Failed killing container: {}\nAdditional information: {}".format(container_name, stderr))
+
+    @classmethod
+    def check_resource_usage(cls, server_url, docker_images, memory_threshold, pids_threshold):
+        """
+        Executes docker stats command on remote machine and returns error message in case of exceeding threshold.
+
+        Args:
+            server_url (str): Target machine full url.
+            docker_images (set): Set of docker images to check their resource usage.
+            memory_threshold (int): Memory threshold of specific docker container, in Mib.
+            pids_threshold (int): PIDs threshold of specific docker container, in Mib.
+
+        Returns:
+            str: The error message. Empty in case that resource check passed.
+
+        """
+        server_ip = server_url.lstrip("https://")
+        containers_stats = cls.docker_stats(server_ip, docker_images)
+        error_message = ""
+
+        for container_stat in containers_stats:
+            failed_memory_test = False
+            container_name = container_stat['container_name']
+            memory_usage = container_stat['memory_usage']
+            pids_usage = container_stat['pids']
+
+            if memory_usage > memory_threshold:
+                error_message += ('Failed docker resource test. Docker container {} exceeded the memory threshold, '
+                                  'configured: {} MiB and actual memory usage is {} MiB.\n'
+                                  .format(container_name, memory_threshold, memory_usage))
+                failed_memory_test = True
+            if pids_usage > pids_threshold:
+                error_message += ('Failed docker resource test. Docker container {} exceeded the pids threshold, '
+                                  'configured: {} and actual pid number is {}.\n'.
+                                  format(container_name, pids_threshold, pids_usage))
+                failed_memory_test = True
+
+            if failed_memory_test:
+                # killing current container in case of memory resource test failure
+                cls.kill_container(server_ip, container_name)
+
+        return error_message
