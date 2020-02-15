@@ -137,15 +137,16 @@ class Pack(object):
         if existing_files:
             print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
             print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-            sys.exit(0)
+            return False
 
         pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
         blob = storage_bucket.blob(pack_full_path)
 
         with open(zip_pack_path, "rb") as pack_zip:
             blob.upload_from_file(pack_zip)
-
         print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
+
+        return True
 
     def format_metadata(self):
         metadata_path = os.path.join(self._pack_path, Pack.METADATA)
@@ -343,7 +344,12 @@ def main():
         # todo finish implementation of release notes
         # pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
-        pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket)
+        uploaded_successfully = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket)
+        # in case that pack already exist at cloud storage path, skipped further steps
+        if not uploaded_successfully:
+            pack.cleanup()
+            continue
+
         pack.prepare_for_index_upload()
         update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
         pack.cleanup()
