@@ -2,12 +2,17 @@
 ---
 
 Indeni Integration
-This integration was integrated and tested with version xx of Indeni
+This integration was integrated and tested with version 7.1.1 of Indeni
 ## Indeni Playbook
 ---
+The playbook periodically pulls vulnerability issues for Palo Alto Network devices and converts them to Demisto incidents. 
+For every incident that's created, it posts a note back to Indeni to let user know that the issue is been handled by 
+Demisto and creates a Jira ticket with all the relevant information pulled from Inden API. One the assigned user marks 
+the Jira ticket as Done, the playbook will automatically acknowledge the issue in Indeni and close the incident. 
 
 ## Use Cases
 ---
+1. Pull in critical Indeni issues and triage the issues 
 
 ## Configure Indeni on Demisto
 ---
@@ -17,17 +22,30 @@ This integration was integrated and tested with version xx of Indeni
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Trust any certificate (not secure)__
-    * __API url__
-    * __API Key__
+    * __API url__: for exampe, https://10.11.80.21:9443
+    * __API Key__: can be obtained from Indeni UI, Settings -> About page
     * __Fetch incidents__
     * __Incident type__
-    * __Only Pull PAN Vulnerability Issues__
+    * __Only Pull Palo Alto Network Vulnerability Issues__: true if only wants Palo Alto Network vulnerability issues, false will pull all issues
     * __Use system proxy settings__
     * __Issue Severities To Pull__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
-
+```
+{
+    [
+        {
+            "occurred": "2019-10-07T19:55:39.424Z", 
+            "updated": "2019-12-11T06:08:50.216Z", 
+            "name": "High disk space utilization", 
+            "rawJSON": {...}, 
+            "severity": 4,
+            "details": "Some disks or file systems are under high usage. Determine the cause for the high disk usage of the listed file systems."
+        }
+    ]
+}
+```
 ## Commands
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -42,8 +60,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. indeni-get-device-info
 ---
 get the device information
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `indeni-get-device-info`
@@ -99,8 +115,7 @@ get the device information
 ### 2. indeni-get-alert-info
 ---
 get detailed alert info
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `indeni-get-alert-info`
@@ -146,8 +161,7 @@ get detailed alert info
 ### 3. indeni-get-alert-summary
 ---
 gets summary of given alert type for all devices
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `indeni-get-alert-summary`
@@ -155,7 +169,7 @@ gets summary of given alert type for all devices
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_type_identifier | identifier for alert type | Optional | 
+| alert_type_identifier | identifier for alert type | Required | 
 
 
 ##### Context Output
@@ -196,8 +210,7 @@ gets summary of given alert type for all devices
 ### 4. indeni-post-note
 ---
 Post a note to a given issue id
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `indeni-post-note`
@@ -222,8 +235,7 @@ Done
 ### 5. indeni-archive-issue
 ---
 Archive an issue for the given alert id
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `indeni-archive-issue`
@@ -247,8 +259,7 @@ Done
 ### 6. indeni-unarchive-issue
 ---
 Unarchive an existing issue
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `indeni-unarchive-issue`
@@ -272,8 +283,7 @@ Done
 ### 7. indeni-get-notes
 ---
 Gets the notes from issue
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `indeni-get-notes`

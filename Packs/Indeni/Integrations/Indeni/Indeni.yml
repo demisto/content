@@ -24,11 +24,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: If true, only PAN Vulnerability issues will be pulled. If false,
-    all issues will be pulled.
-  display: Only Pull PAN Vulnerability Issues
-  name: onlyPullPanCveIssues
+- additionalinfo: If true, only Palo Alto Networks Vulnerability issues will be pulled.
+    If false, all issues will be pulled.
   defaultvalue: 'true'
+  display: Only Pull Palo Alto Networks Vulnerability Issues
+  name: onlyPullPanCveIssues
   required: true
   type: 8
 - display: Use system proxy settings
@@ -119,7 +119,7 @@ script:
       description: identifier for alert type
       isArray: false
       name: alert_type_identifier
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: gets summary of given alert type for all devices
