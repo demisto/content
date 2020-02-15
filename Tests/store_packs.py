@@ -7,6 +7,7 @@ import uuid
 import google.auth
 from google.cloud import storage
 from distutils.util import strtobool
+from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS, \
@@ -62,14 +63,12 @@ class Pack(object):
         if not os.path.exists(changelog_path):
             return self.PACK_INITIAL_VERSION
 
-        with open(changelog_path, "r") as changelog:
-            changelog_json = json.load(changelog)
+        with open(changelog_path, "r") as changelog_file:
+            changelog = json.load(changelog_file)
+            pack_versions = [LooseVersion(v) for v in changelog.keys()]
+            pack_versions.sort()
 
-            pack_versions = list(changelog_json.keys())
-            pack_versions.sort(key=lambda str_version: [int(v) for v in str_version.split(".")],
-                               reverse=True)
-
-            return pack_versions[0]
+            return pack_versions[0].vstring
 
     def _parse_pack_metadata(self, user_metadata):
         pack_metadata = {}
