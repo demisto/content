@@ -28,10 +28,8 @@ configuration:
     all issues will be pulled.
   display: Only Pull PAN Vulnerability Issues
   name: onlyPullPanCveIssues
-  options:
-  - PANSecurityVulnerabilityChecks
-  - ' All'
-  required: false
+  defaultvalue: 'true'
+  required: true
   type: 8
 - display: Use system proxy settings
   hidden: false
