@@ -518,26 +518,6 @@ def get_user_related_machines(user_id):
     return response
 
 
-def stop_and_quarantine_file_command():
-
-    machine_id = demisto.args().get('machine_id')
-    file_sha1 = demisto.args().get('file')
-    comment = demisto.args().get('comment')
-
-    stop_and_quarantine_file(machine_id, file_sha1, comment)
-
-
-def stop_and_quarantine_file(machine_id, file_sha1, comment):
-
-    cmd_url = '/machines/{}/stopAndQuarantineFile'.format(machine_id)
-    json = {
-        'Comment': comment,
-        'Sha1': file_sha1
-    }
-    response = http_request('POST', cmd_url, json=json)
-    return response
-
-
 def run_antivirus_scan_command():
 
     machine_id = demisto.args().get('machine_id')
@@ -657,23 +637,129 @@ def update_alert(alert_id, json):
     return response
 
 
-def get_alert_related_domains(alert_id):
+def get_alert_related_domains_request(alert_id):
+    """
+        Get the alert ID and return all the domains that related to it
+
+        Args:
+              alert_id (str): Alert ID
+        Returns:
+            dict:
+    """
     cmd_url = '/alerts/{}/domains'.format(alert_id)
     response = http_request('GET', cmd_url)
     return response
 
 
-def get_alert_related_files(alert_id):
+def get_alert_related_files_request(alert_id):
+    """
+        Get the alert ID and return all the files that related to it
+
+        Args:
+              alert_id (str): Alert ID
+        Returns:
+            dict:
+    """
     cmd_url = '/alerts/{}/files'.format(alert_id)
-    response = http_request('GET', cmd_url)['value']
+    response = http_request('GET', cmd_url)
     return response
 
 
-def get_alert_related_ips(alert_id):
+def get_alert_related_ips_request(alert_id):
+    """
+        Get the alert ID and return all the ip's that related to it
+        Args:
+              alert_id (str): Alert ID
+        Returns:
+            dict:
+    """
     cmd_url = '/alerts/{}/ips'.format(alert_id)
     response = http_request('GET', cmd_url)
     return response
 
+
+def get_alert_related_user_request(alert_id):
+    """
+        Get the alert ID and return the user related to it
+        Args:
+              alert_id (str): Alert ID
+        Returns:
+            dict:
+    """
+    cmd_url = '/alerts/{}/user'.format(alert_id)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_machine_action_by_id_request(action_id):
+    """
+        Get the action ID and return the action's details
+        Args:
+              action_id (str): Action ID
+        Returns:
+            dict:
+    """
+    cmd_url = '/machineactions/{}'.format(action_id)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_machine_actions_request():
+    """
+        Dict. Returns the machine's actions
+    """
+    cmd_url = '/machineactions'
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_investigation_package_request(machine_id, comment):
+    """
+        Dict. Returns the machine's investigation_package
+    """
+    cmd_url = '/machines/{}/collectInvestigationPackage'.format(machine_id)
+    json = {
+        'Comment': comment
+        }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+def get_investigation_package_sas_uri_request(action_id):
+    """
+        Dict. Returns the link for the package
+    """
+    cmd_url = '/machineactions/{}/getPackageUri'.format(action_id)
+    response = http_request('GET', cmd_url)
+    return response
+
+def restrict_app_execution_request(machine_id, comment):
+    """
+        Dict. Returns the machine's investigation_package
+    """
+    cmd_url = '/machines/{}/restrictCodeExecution'.format(machine_id)
+    json = {
+        'Comment': comment
+        }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+def remove_app_restriction_request(machine_id, comment):
+    """
+        Dict. Returns the machine's investigation_package
+    """
+    cmd_url = '/machines/{}/unrestrictCodeExecution'.format(machine_id)
+    json = {
+        'Comment': comment
+        }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+def stop_and_quarantine_file_request(machine_id, file_sha1, comment):
+
+    cmd_url = '/machines/{}/stopAndQuarantineFile'.format(machine_id)
+    json = {
+        'Comment': comment,
+        'Sha1': file_sha1
+    }
+    response = http_request('POST', cmd_url, json=json)
+    return response
 
 def get_advanced_hunting_command():
     query = demisto.args().get('query')
@@ -770,7 +856,7 @@ def create_alert(machine_id, severity, title, description, event_time, report_id
 
 def get_alert_related_user_command():
     alert_id = demisto.args().get('id')
-    response = get_alert_related_user(alert_id)
+    response = get_alert_related_user_request(alert_id)
     output = {
         'ID': response.get('id'),
         'AlertID': alert_id,
@@ -798,11 +884,205 @@ def get_alert_related_user_command():
 
     demisto.results(entry)
 
+def get_alert_related_files_command():
+    """
+       The function returns the files associated to a specific alert.
+    """
+    alert_id = demisto.args().get('id')
+    limit = int(demisto.args().get('limit'))
+    demisto.results(limit)
+    response_files_list = get_alert_related_files_request(alert_id)
+    files_data_list = []
+    headers = ['FileProductName', 'Issuer', 'FilePublisher', 'FileType', 'Size']
 
-def get_alert_related_user(alert_id):
-    cmd_url = '/alerts/{}/user'.format(alert_id)
-    response = http_request('GET', cmd_url)
-    return response
+    for file_obj in response_files_list['value']:
+        files_data_list.append({
+        'FileProductName': file_obj.get('fileProductName'),
+        'Issuer': file_obj.get('issuer'),
+        'FilePublisher': file_obj.get('filePublisher'),
+        'FileType': file_obj.get('fileType'),
+        'Size': file_obj.get('size')})
+        if len(files_data_list) == limit:
+            break
+    context_output = camelize(response_files_list['value'])
+    ec = camelize({
+        'MicrosoftATP.Files(val.sha1 === obj.sha1)': context_output
+    })
+    hr = tableToMarkdown('Alert {} Related Files:'.format(alert_id), files_data_list, headers=headers)
+    return_outputs(hr, ec, response_files_list)
+
+def get_alert_related_ips_command():
+    """
+       The function returns the ips associated to a specific alert.
+    """
+    alert_id = demisto.args().get('id')
+    response_ips_list = get_alert_related_ips_request(alert_id)
+    ips_list = []
+    headers = ['IP address']
+    for ip in response_ips_list['value']:
+        ips_list.append(ip['id'])
+    context_output = camelize(response_ips_list['value'])
+    ec = camelize({
+        'MicrosoftATP.IPs(val.id === obj.id)': context_output
+    })
+    hr = tableToMarkdown('Alert {} Related IPs:'.format(alert_id), ips_list, headers=headers)
+    return_outputs(hr, ec, response_ips_list)
+
+def get_alert_related_domains_command():
+    """
+       The function returns the Domains associated to a specific alert.
+    """
+    alert_id = demisto.args().get('id')
+    response_domains_list = get_alert_related_domains_request(alert_id)
+    domains_list = []
+    headers = ['Domain']
+    for domain in response_domains_list['value']:
+        domains_list.append(domain['host'])
+    context_output = camelize(response_domains_list['value'])
+    ec = camelize({
+        'MicrosoftATP.Domains(val.host === obj.host)': context_output
+    })
+    hr = tableToMarkdown('Alert {} Related Domains:'.format(alert_id), domains_list, headers=headers)
+    return_outputs(hr, ec, response_domains_list)
+
+def get_machine_action_by_id_command():
+    """
+        Returns machine's actions, if machine ID is None, return all actions
+        Returns:
+            dict: Machine's actions
+    """
+    action_id = demisto.args().get('id', '')
+    headers = ['ID', 'Type', 'Scope', 'Requestor', 'Requestor Comment', 'Status', 'Machine ID', 'Computer Dns Name',
+               'Creation Date Time Utc', 'Last Update Time Utc', 'Related File Info', 'File Identifier',
+               'File Identifier Type']
+    if action_id:
+        response = get_machine_action_by_id_request(action_id)
+        action_data = get_action_data(action_id)
+        hr = tableToMarkdown('Action {} Info:'.format(action_id), action_data, headers=headers)
+        context_output = camelize(response)
+    else:
+        response = get_machine_actions_request()
+        actions_list = []
+        for action in response['value']:
+            actions_list.append(get_action_data(action['id']))
+        hr = tableToMarkdown('Actions Info:', actions_list, headers=headers)
+        context_output = camelize(response['value'])
+    ec = camelize({
+        'MicrosoftATP.Actions(val.id === obj.id)': context_output
+    })
+    return_outputs(hr, ec, response)
+
+def get_action_data(action_id):
+    """
+        Get action ID and returns the action's info
+        Returns:
+            dict: Action's info
+    """
+    response = get_machine_action_by_id_request(action_id)
+    action_data = {
+            "ID": response.get('id'),
+            "Type": response.get('type'),
+            "Scope": response.get('scope'),
+            "Requestor": response.get('requestor'),
+            "Requestor Comment": response.get('requestorComment'),
+            "Status": response.get('status'),
+            "Machine ID": response.get('machineId'),
+            "Computer Dns Name": response.get('computerDnsName'),
+            "Creation Date Time Utc": response.get('creationDateTimeUtc'),
+            "Last Update Time Utc": response.get('lastUpdateTimeUtc'),
+            "Related File Info": {
+                "File Identifier": response.get('fileIdentifier'),
+                "File Identifier Type": response.get('fileIdentifierType')
+            }
+        }
+    return action_data
+
+def get_machine_investigation_package_command():
+    """
+        Collect investigation package from a machine.
+        Returns:
+            dict: Machine's investigation package
+    """
+
+    machine_id = demisto.args().get('machine_id')
+    comment = demisto.args().get('comment')
+    response = get_investigation_package_request(machine_id, comment)
+    action_data = get_action_data(response['id'])
+    hr = tableToMarkdown('Initiating collect investigation package from {} machine :'.format(machine_id), action_data)
+    ec = camelize({
+        'MicrosoftATP.Actions(val.id === obj.id)': response
+    })
+    return_outputs(hr, ec, response)
+
+
+def get_investigation_package_sas_uri_command():
+    """
+        Collect investigation package from a machine.
+        Returns:
+            dict: Machine's investigation package
+    """
+
+    action_id = demisto.args().get('action_id')
+    response = get_investigation_package_sas_uri_request(action_id)
+    link = response['value']
+    hr = tableToMarkdown('success. This link is valid for a very short time and should be used immediately for'
+                         ' downloading the package to a local storage. :', link)
+    ec = camelize({
+        'MicrosoftATP.URI': link
+    })
+    return_outputs(hr, ec, response)
+
+def restrict_app_execution_command():
+    """
+        Restrict execution of all applications on the machine except a predefined set.
+        Returns:
+            dict: Action info
+    """
+    machine_id = demisto.args().get('machine_id')
+    comment = demisto.args().get('comment')
+    response = restrict_app_execution_request(machine_id, comment)
+    action_data = get_action_data(response['id'])
+    hr = tableToMarkdown('Initiating Restrict execution of all applications on the machine {} except a predefined set:'
+                         .format(machine_id), action_data)
+    ec = camelize({
+        'MicrosoftATP.Actions(val.id === obj.id)': response
+    })
+    return_outputs(hr, ec, response)
+
+def remove_app_restriction_command():
+        """
+            Enable execution of any application on the machine.
+            Returns:
+                dict: Machine's action info
+        """
+        machine_id = demisto.args().get('machine_id')
+        comment = demisto.args().get('comment')
+        response = remove_app_restriction_request(machine_id, comment)
+        action_data = get_action_data(response['id'])
+        hr = tableToMarkdown(
+            'Removing applications restriction on the machine {}:'.format(machine_id), action_data)
+        ec = camelize({
+            'MicrosoftATP.Actions(val.id === obj.id)': response
+        })
+        return_outputs(hr, ec, response)
+
+def stop_and_quarantine_file_command():
+    """
+        Stop execution of a file on a machine and delete it.
+        Returns:
+            dict: Machine's action info
+    """
+    machine_id = demisto.args().get('machine_id')
+    file_sha1 = demisto.args().get('sha1')
+    comment = demisto.args().get('comment')
+    response = stop_and_quarantine_file_request(machine_id, file_sha1, comment)
+    action_data = get_action_data(response['id'])
+    hr = tableToMarkdown(
+        'Stopping the execution of a file on {} machine and deleting it:'.format(machine_id), action_data)
+    ec = camelize({
+        'MicrosoftATP.Actions(val.id === obj.id)': response
+    })
+    return_outputs(hr, ec, response)
 
 
 def fetch_incidents():
@@ -902,9 +1182,6 @@ try:
     elif demisto.command() == 'microsoft-atp-block-file':
         block_file_command()
 
-    elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
-        stop_and_quarantine_file_command()
-
     elif demisto.command() == 'microsoft-atp-run-antivirus-scan':
         run_antivirus_scan_command()
 
@@ -920,8 +1197,32 @@ try:
     elif demisto.command() == 'microsoft-atp-create-alert':
         create_alert_command()
 
-    elif demisto.command() == 'microsoft-atp-get-alert-related-user':
-        get_alert_related_user_command()
+    elif demisto.command() == 'microsoft-atp-get-alert-related-files':
+        get_alert_related_files_command()
+
+    elif demisto.command() == 'microsoft-atp-get-alert-related-ips':
+        get_alert_related_ips_command()
+
+    elif demisto.command() == 'microsoft-atp-get-alert-related-domains':
+        get_alert_related_domains_command()
+
+    elif demisto.command() == 'microsoft-atp-list-machine-actions':
+        get_machine_action_by_id_command()
+
+    elif demisto.command() == 'microsoft-atp-collect-investigation-package':
+        get_machine_investigation_package_command()
+
+    elif demisto.command() == 'microsoft-atp-get-investigation-package-sas-uri':
+        get_investigation_package_sas_uri_command()
+
+    elif demisto.command() == 'microsoft-atp-restrict-app-execution':
+        restrict_app_execution_command()
+
+    elif demisto.command() == 'microsoft-atp-remove-app-restriction':
+        remove_app_restriction_command()
+
+    elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
+        stop_and_quarantine_file_command()
 
 except Exception as e:
     return_error(str(e))

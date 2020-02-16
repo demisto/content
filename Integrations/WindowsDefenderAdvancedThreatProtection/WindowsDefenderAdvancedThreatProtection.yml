@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Windows Defender Advanced Threat Protection
+  id: Windows Defender Advanced Threat Protection-test
   version: -1
 configuration:
 - defaultvalue: https://api.securitycenter.windows.com
@@ -53,8 +53,8 @@ configuration:
 description: Windows Defender Advanced Threat Protection (ATP) is a unified platform
   for preventative protection, post-breach detection, automated investigation, and
   response.
-display: Windows Defender Advanced Threat Protection
-name: Windows Defender Advanced Threat Protection
+display: Windows Defender Advanced Threat Protection-test
+name: Windows Defender Advanced Threat Protection-test
 script:
   commands:
   - arguments:
@@ -728,11 +728,152 @@ script:
       description: Flag for network user only - set to true if related user is only
         network user.
       type: boolean
+  - arguments:
+    - default: false
+      description: ID of the alert.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The limit of files to display
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the files associated to a specific alert.
+    execution: false
+    name: microsoft-atp-get-alert-related-files
+  - arguments:
+    - default: false
+      description: ID of the alert.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the ips associated to a specific alert.
+    execution: false
+    name: microsoft-atp-get-alert-related-ips
+  - arguments:
+    - default: false
+      description: ID of the alert.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the domains associated to a specific alert.
+    execution: false
+    name: microsoft-atp-get-alert-related-domains
+  - arguments:
+    - default: false
+      description: ID of the action
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Return the machine's actions. If you set an action id it will return
+      the info on the specific action
+    execution: false
+    name: microsoft-atp-list-machine-actions
+  - arguments:
+    - default: false
+      description: The machine ID
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment to associate with the action
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Collect investigation package from a machine.
+    execution: false
+    name: microsoft-atp-collect-investigation-package
+  - arguments:
+    - default: false
+      description: machine action ID
+      isArray: false
+      name: action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a URI that allows downloading of an Investigation package
+    execution: false
+    name: microsoft-atp-get-investigation-package-sas-uri
+  - arguments:
+    - default: false
+      description: The machine ID
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment to associate with the action
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Restrict execution of all applications on the machine except a predefined
+      set.
+    execution: false
+    name: microsoft-atp-restrict-app-execution
+  - arguments:
+    - default: false
+      description: The machine ID
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment to associate with the action
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Enable execution of any application on the machine.
+    execution: false
+    name: microsoft-atp-remove-app-restriction
+  - arguments:
+    - default: false
+      description: The machine ID
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: Sha1 of the file to stop and quarantine on the machin.
+      isArray: false
+      name: sha1
+      required: true
+      secret: false
+    - default: false
+      description: Comment to associate with the action.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Stop execution of a file on a machine and delete it.
+    execution: false
+    name: microsoft-atp-stop-and-quarantine-file
   dockerimage: demisto/crypto:1.0.0.303
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Test - Windows Defender Advanced Threat Protection
