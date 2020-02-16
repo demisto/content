@@ -270,7 +270,7 @@ def query_alerts_command(client, args):
     fields = get_fields("alert")
     sort_order = get_sort_order(demisto.args().get("sort_order", "asc"))
     sort = get_sort(demisto.args().get("sort_by", "timestamp"), sort_order)
-    limit = get_sort(demisto.args().get("limit", 10))
+    limit = get_sort(demisto.args().get("alert_limit", 10))
     filters = []
 
     alert_type = demisto.args().get("type", "").lower()
