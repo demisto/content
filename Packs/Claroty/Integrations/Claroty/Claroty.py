@@ -1,3 +1,5 @@
+from distutils.util import strtobool
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -193,7 +195,7 @@ def test_module(client):
 
 def get_assets_command(client, args):
     # TODO: Aesthetics - create def init_get_values(filters) to populate fields, sort, filters
-    fields = get_fields("asset")
+    relevant_fields = get_fields("asset", demisto.args().get("fields", "").split(","))
     sort = get_sort(demisto.args().get("sort_by", "id"))
     filters = []
 
@@ -206,14 +208,14 @@ def get_assets_command(client, args):
     if insight_name:
         filters.extend([add_filter("insight_name", insight_name), add_filter("insight_status", 0)])
 
-    result = client.get_assets(fields, sort, filters)
+    result = client.get_assets(relevant_fields, sort, filters)
 
     should_enrich_assets = str_to_bool(demisto.args().get("should_enrich_assets", "False"))
     if should_enrich_assets:
         result = client.enrich_asset_results(result)
-        fields.append("insights")
+        relevant_fields.append("insights")
 
-    parsed_results = _parse_assets_result(result, fields)
+    parsed_results = _parse_assets_result(result, relevant_fields)
 
     outputs = {
         'Claroty.Asset(val.AssetID == obj.AssetID)': parsed_results
@@ -267,7 +269,7 @@ def get_single_alert_command(client, args):
 
 
 def query_alerts_command(client, args):
-    fields = get_fields("alert")
+    relevant_fields = get_fields("alert", demisto.args().get("fields", "").split(","))
     sort_order = get_sort_order(demisto.args().get("sort_order", "asc"))
     sort = get_sort(demisto.args().get("sort_by", "timestamp"), sort_order)
     limit = get_sort(demisto.args().get("alert_limit", 10))
@@ -407,10 +409,6 @@ def _parse_single_asset(asset_obj: dict, fields: list) -> dict:
     return parsed_asset_result
 
 
-def str_to_bool(str_representing_bool: str):
-    return str_representing_bool and str_representing_bool.lower() == 'true'
-
-
 def get_sort(field_to_sort_by: str, order_by_desc: bool = False):
     order_by_direction = "-" if order_by_desc else ""
     return {"field": field_to_sort_by, "order": order_by_direction}
@@ -420,9 +418,7 @@ def get_sort_order(sort_order: str) -> bool:
     return True if sort_order == "asc" else False
 
 
-def get_fields(obj_name: str) -> list:
-    fields = demisto.args().get("fields", "").split(",")
-
+def get_fields(obj_name: str, fields: List[str]) -> list:
     if obj_name == "alert":
         fields.append("resource_id")
         if "all" in fields:
