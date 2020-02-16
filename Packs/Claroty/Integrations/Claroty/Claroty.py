@@ -1,3 +1,5 @@
+from distutils.util import strtobool
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -186,7 +188,7 @@ def test_module(client):
 
 def get_assets_command(client, args):
     # TODO: Aesthetics - create def init_get_values(filters) to populate fields, sort, filters
-    fields = get_fields("asset")
+    relevant_fields = get_fields("asset", demisto.args().get("fields", "").split(","))
     sort = get_sort(demisto.args().get("sort_by", "id"))
     should_enrich_assets = demisto.args().get("should_enrich_assets")
     filters = []
@@ -209,13 +211,13 @@ def get_assets_command(client, args):
         # for filter_type in filters_url_suffix:
         #     filters.append(add_filter(filter_type[0], filter_type[1]))
 
-    result = client.get_assets(fields, sort, filters)
+    result = client.get_assets(relevant_fields, sort, filters)
 
     if should_enrich_assets:
         result = client.enrich_asset_results(result)
-        fields.append("insights")
+        relevant_fields.append("insights")
 
-    parsed_results = _parse_assets_result(result, fields)
+    parsed_results = _parse_assets_result(result, relevant_fields)
 
     outputs = {
         'Claroty.Asset(val.AssetID == obj.AssetID)': parsed_results
@@ -230,7 +232,7 @@ def get_assets_command(client, args):
 
 def resolve_alert_command(client, args):
     # TODO: move select all to be part of the selected alerts arg
-    select_param = str_to_bool(demisto.args().get("select_all")) \
+    select_param = strtobool(demisto.args().get("select_all")) \
         if demisto.args().get("select_all") in ["True", "False"] else True
 
     selected_alerts_arg = demisto.args().get("selected_alerts", [])
@@ -259,7 +261,7 @@ def resolve_alert_command(client, args):
 
 
 def query_alerts_command(client, args):
-    fields = get_fields("alert")
+    relevant_fields = get_fields("alert", demisto.args().get("fields", "").split(","))
     sort = get_sort(demisto.args().get("sort_by", "timestamp"))
     limit = get_sort(demisto.args().get("limit", 10))
     filters = []
@@ -268,7 +270,7 @@ def query_alerts_command(client, args):
     # Get single alert uses different URL
     if alert_rid:
         result = client.get_alert(alert_rid)
-        parsed_results = _parse_single_alert(result, fields)
+        parsed_results = _parse_single_alert(result, relevant_fields)
 
     else:
         alert_type = demisto.args().get("type", "").lower()
@@ -405,18 +407,12 @@ def _parse_single_asset(asset_obj: dict, fields: list) -> dict:
     return parsed_asset_result
 
 
-def str_to_bool(str_representing_bool: str):
-    return str_representing_bool and str_representing_bool.lower() == 'true'
-
-
 def get_sort(field_to_sort_by: str, order_by_desc: bool = False):
     order_by_direction = "-" if order_by_desc else ""
     return {"field": field_to_sort_by, "order": order_by_direction}
 
 
-def get_fields(obj_name: str) -> list:
-    fields = demisto.args().get("fields", "").split(",")
-
+def get_fields(obj_name: str, fields: List[str]) -> list:
     if obj_name == "alert":
         fields.append("resource_id")
         if "all" in fields:
