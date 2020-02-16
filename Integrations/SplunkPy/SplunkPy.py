@@ -557,6 +557,7 @@ def test_module():
 
 
 def main():
+    global proxy, service
     service = None
     proxy = demisto.params().get('proxy')
     if proxy:
