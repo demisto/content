@@ -40,8 +40,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 'true'
-  display: Full Incident Enrichment
+- display: Full Incident Enrichment
+  defaultvalue: 'true'
   hidden: false
   name: full_enrich
   required: false
@@ -1229,12 +1229,12 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The value/s to add or update in the reference set. Note: Date
-        values must be represented in epoch in reference sets (milliseconds since
-        the Unix Epoch January 1st 1970). If ''date_value'' is set to ''True'', then
-        the argument will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z''
-        (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
-      isArray: true
+      description: 'The value to add or update in the reference set. Note: Date values
+        must be represented in epoch in reference sets (milliseconds since the Unix
+        Epoch January 1st 1970). If ''date_value'' is set to ''True'', then the argument
+        will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g.
+        ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      isArray: false
       name: value
       required: true
       secret: false
@@ -1285,10 +1285,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' A comma-separated list of values to add or update in the reference set. Date
-        values must be represented in milliseconds since the Unix Epoch January 1st
-        1970.'
-      isArray: true
+      description: 'The value to add or update in the reference set. Note: Date values
+        must be represented in milliseconds since the Unix Epoch January 1st 1970.'
+      isArray: false
       name: value
       required: true
       secret: false
@@ -1312,7 +1311,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds or updates a value in a reference set.
+    description: Add or update a value in a reference set.
     execution: false
     name: qradar-update-reference-set-value
     outputs:
@@ -1504,76 +1503,6 @@ script:
     - contextPath: QRadar.Domains.TenantID
       description: ID of the Domain tenant.
       type: Number
-  - arguments:
-    - default: false
-      description: The name of the reference set to add or update a value in. To create a new reference set, you need to set the element type.
-      isArray: false
-      name: ref_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The element type for the values premitted in the reference set.
-        Only required when creating a new reference set. The valid values
-        are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address),
-        NUM (numeric), PORT (port number) or DATE. Note that date values need to be
-        represented in milliseconds since the Unix Epoch January 1st 1970.'
-      isArray: false
-      name: element_type
-      predefined:
-      - ALN
-      - ALNIC
-      - IP
-      - NUM
-      - PORT
-      - DATE
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The timeout_type can be "FIRST_SEEN", "LAST_SEEN", or "UNKNOWN". The
-        default value is UNKNOWN. Only required for creating a new refernce
-        set.
-      isArray: false
-      name: timeout_type
-      predefined:
-      - FIRST_SEEN
-      - LAST_SEEN
-      - UNKNOWN
-      required: false
-      secret: false
-    - default: false
-      description: 'The time to live interval, for example: "1 month" or "5 minutes".
-        Only required when creating a new reference set.'
-      isArray: false
-      name: time_to_live
-      required: false
-      secret: false
-    - default: false
-      description: The query for getting indicators.
-      isArray: false
-      name: query
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '1000'
-      description: The maximum number of indicators to return. The default value is 1000.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: The page from which to get the indicators
-      isArray: false
-      name: page
-      required: false
-      secret: false
-    deprecated: false
-    description: Uploads indicators from Demisto to Qradar. This command requires Cortex
-      SOAR v5.5 or later.
-    execution: false
-    name: qradar-upload-indicators
   feed: false
   isfetch: true
   longRunning: false
@@ -1584,4 +1513,4 @@ script:
   type: python
 tests:
 - test_Qradar
-fromversion: 5.5.0
+toversion: 5.4.9
