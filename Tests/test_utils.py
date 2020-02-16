@@ -362,12 +362,13 @@ class Docker:
     SSH_OPTIONS = 'ssh -o StrictHostKeyChecking=no'
 
     @classmethod
-    def _build_ssh_command(cls, server_ip, remote_command):
+    def _build_ssh_command(cls, server_ip, remote_command, force_tty=False):
         """Add and returns ssh prefix and escapes remote command
 
             Args:
-                server_ip (str): Remote machine ip to connect using ssh.
+                server_ip (str): remote machine ip to connect using ssh.
                 remote_command (str): command to execute in remote machine.
+                force_tty (bool): adds -t flag in order to force tty allocation.
 
             Returns:
                 str: full ssh command
@@ -375,6 +376,8 @@ class Docker:
         """
         remote_server = '{}@{}'.format(cls.REMOTE_MACHINE_USER, server_ip)
         ssh_prefix = '{} {}'.format(cls.SSH_OPTIONS, remote_server)
+        if force_tty:
+            ssh_prefix += ' -t'
         # escaping the remote command with single quotes
         cmd = "{} '{}'".format(ssh_prefix, remote_command)
 
@@ -437,7 +440,7 @@ class Docker:
 
         """
         remote_command = 'sudo docker exec -it {} ps -fe'.format(container_id)
-        cmd = cls._build_ssh_command(server_ip, remote_command)
+        cmd = cls._build_ssh_command(server_ip, remote_command, force_tty=True)
 
         return cmd
 
