@@ -19,17 +19,17 @@ STORAGE_BASE_PATH = "content/packs"
 IGNORED_PATHS = ['Packs/__init__.py']
 # the format is defined in issue #19786, may change in the future
 DIR_NAME_TO_CONTENT_TYPE = {
-    "Classifiers": "Classifiers",
-    "Dashboards": "Dashboards",
-    "IncidentFields": "Incident Fields",
-    "IncidentTypes": "Incident Types",
-    "IndicatorFields": "Indicator Fields",
-    "Integrations": "Integrations",
-    "Layouts": "Incident Layouts",
-    "Playbooks": "Playbooks",
-    "Reports": "Reports",
-    "Scripts": "Automations",
-    "Widgets": "Widgets"
+    "Classifiers": "classifiers",
+    "Dashboards": "dashboards",
+    "IncidentFields": "incidentFields",
+    "IncidentTypes": "incidentTypes",
+    "IndicatorFields": "indicatorFields",
+    "Integrations": "integrations",
+    "Layouts": "incidentLayouts",
+    "Playbooks": "playbooks",
+    "Reports": "reports",
+    "Scripts": "automations",
+    "Widgets": "widgets"
 }
 
 
