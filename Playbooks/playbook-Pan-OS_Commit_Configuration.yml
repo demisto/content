@@ -528,6 +528,7 @@ tasks:
       id: ef50509f-bca1-4a43-8abd-5e17c62383f5
       version: -1
       name: Verify successful Panorama commit
+      description: '-'
       type: condition
       iscommand: false
       brand: ""
@@ -566,6 +567,7 @@ tasks:
       id: 6f294e34-cd9e-4d5d-8209-7bec9cadccf8
       version: -1
       name: Verify successful Panorama push
+      description: '-'
       type: condition
       iscommand: false
       brand: ""
