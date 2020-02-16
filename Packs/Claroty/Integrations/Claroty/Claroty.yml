@@ -219,7 +219,7 @@ script:
     - default: false
       description: The maximum number of alerts to query.
       isArray: false
-      name: alert_number
+      name: limit
       required: false
       secret: false
     deprecated: false

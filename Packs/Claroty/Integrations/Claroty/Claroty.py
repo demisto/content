@@ -115,8 +115,8 @@ class Client(BaseClient):
         # return self._http_request('GET', url_suffix=url_suffix + '&ghost__exact=false&special_hint__exact=0,;$9')
         return self._http_request('GET', url_suffix=url_suffix)
 
-    def get_alerts(self, fields: list, sort: dict, filters: list):
-        url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort, filters)
+    def get_alerts(self, fields: list, sort: dict, filters: list, limit: int = 10):
+        url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort, filters, limit)
         return self._http_request('GET', url_suffix=url_suffix)
 
     def get_alert(self, rid: str):
@@ -145,8 +145,9 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def _add_extra_params_to_url(url_suffix: str, fields: list, sort: dict, filters: list):
+    def _add_extra_params_to_url(url_suffix: str, fields: list, sort: dict, filters: list, limit: int = 10):
         url_suffix += "?fields=" + ',;$'.join(fields)
+        url_suffix += f"&per_page={limit}"
 
         if sort:
             url_suffix += f"&sort={sort['order']}{sort['field']}"
@@ -260,6 +261,7 @@ def resolve_alert_command(client, args):
 def query_alerts_command(client, args):
     fields = get_fields("alert")
     sort = get_sort(demisto.args().get("sort_by", "timestamp"))
+    limit = get_sort(demisto.args().get("limit", 10))
     filters = []
 
     alert_rid = demisto.args().get("get_single_alert", None)
@@ -282,7 +284,7 @@ def query_alerts_command(client, args):
         if alert_time:
             filters.append(add_filter("timestamp", alert_time, "gte"))
 
-        result = client.get_alerts(fields, sort, filters)
+        result = client.get_alerts(fields, sort, filters, limit)
         parsed_results = _parse_alerts_result(result, fields)
 
     outputs = {
