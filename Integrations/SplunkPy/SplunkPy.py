@@ -67,52 +67,20 @@ def get_current_splunk_time(splunk_service):
     raise ValueError('Error: Could not fetch Splunk time')
 
 
-def modify_str(matchobj):
-    any_str = matchobj.group(0)
-    new_str = any_str.replace(r'"', r'\"')
-    return new_str
-
-
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    updated_str = re.sub('\S+="(.*?)"', modify_str, raw, count=len(re.findall('\S+="(.*?)"', raw))-1)
-    final_str = re.sub('(\S+=)"(.*?")', r'\1\"\2', updated_str)
-    if final_str.startswith('{'):
-        new_raw = json.loads(final_str)
-        for element in new_raw.items():
-            val = element[1]
-            val = val.strip("\\")
-            val = val.strip("\"")
-            val = val.strip("\\")
-            key = element[0].strip()
+    raw_ = re.split('\S,', raw)
+    for key_val in raw_:
+        key_val = key_val.replace('"', '')
+        key_val = key_val.strip()
+        if '=' in key_val:
+            key_and_val = key_val.split('=')
+            result[key_and_val[0]] = key_and_val[1]
 
-            alreadyThere = False
-            for dictkey, dictvalue in result.items():
-                if dictkey == key:
-                    alreadyThere = True
-                    result[dictkey] = dictvalue + "," + val
-
-            if not alreadyThere:
-                result[key] = val
-
-        parsed_raw = {}
-        raw_value = result.get('_raw', '')
-        for key_val in re.split('\S,', raw_value):
-            key_val = key_val.strip()
-            if '=' in key_val:
-                key_and_val = key_val.split('=')
-                parsed_raw[key_and_val[0]] = key_and_val[1]
-        result.update(parsed_raw)
-
-        return parsed_raw
-
-    else:
-        return result
+    return result
 
 
 # Converts to an str
-
-
 def convert_to_str(obj):
     if isinstance(obj, unicode):
         return obj.encode('utf-8')
@@ -249,36 +217,6 @@ def request(url, message, **kwargs):
         'headers': response.info().dict,  # type: ignore
         'body': StringIO(response.read())  # type: ignore
     }
-
-
-service = None
-proxy = demisto.params()['proxy']
-if proxy:
-    try:
-        service = client.connect(
-            handler=handler(proxy),
-            host=demisto.params()['host'],
-            port=demisto.params()['port'],
-            app=demisto.params().get('app'),
-            username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'],
-            verify=VERIFY_CERTIFICATE)
-    except urllib2.URLError as e:
-        if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
-            pass
-        else:
-            raise
-else:
-    service = client.connect(
-        host=demisto.params()['host'],
-        port=demisto.params()['port'],
-        app=demisto.params().get('app'),
-        username=demisto.params()['authentication']['identifier'],
-        password=demisto.params()['authentication']['password'],
-        verify=VERIFY_CERTIFICATE)
-
-if service is None:
-    demisto.error("Could not connect to SplunkPy")
 
 
 def build_search_kwargs(args):
@@ -618,24 +556,58 @@ def test_module():
         demisto.results('ok')
 
 
-# The command demisto.command() holds the command sent from the user.
-if demisto.command() == 'test-module':
-    test_module()
-if demisto.command() == 'splunk-search':
-    splunk_search_command()
-if demisto.command() == 'splunk-job-create':
-    splunk_job_create_command()
-if demisto.command() == 'splunk-results':
-    splunk_results_command()
-if demisto.command() == 'fetch-incidents':
-    fetch_incidents()
-if demisto.command() == 'splunk-get-indexes':
-    splunk_get_indexes_command()
-if demisto.command() == 'splunk-submit-event':
-    splunk_submit_event_command()
-if demisto.command() == 'splunk-notable-event-edit':
-    splunk_edit_notable_event_command()
-if demisto.command() == 'splunk-parse-raw':
-    splunk_parse_raw_command()
-if demisto.command() == 'splunk-submit-event-hec':
-    splunk_submit_event_hec_command()
+def main():
+    service = None
+    proxy = demisto.params().get('proxy')
+    if proxy:
+        try:
+            service = client.connect(
+                handler=handler(proxy),
+                host=demisto.params()['host'],
+                port=demisto.params()['port'],
+                app=demisto.params().get('app'),
+                username=demisto.params()['authentication']['identifier'],
+                password=demisto.params()['authentication']['password'],
+                verify=VERIFY_CERTIFICATE)
+        except urllib2.URLError as e:
+            if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
+                pass
+            else:
+                raise
+    else:
+        service = client.connect(
+            host=demisto.params()['host'],
+            port=demisto.params()['port'],
+            app=demisto.params().get('app'),
+            username=demisto.params()['authentication']['identifier'],
+            password=demisto.params()['authentication']['password'],
+            verify=VERIFY_CERTIFICATE)
+
+    if service is None:
+        demisto.error("Could not connect to SplunkPy")
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        test_module()
+    if demisto.command() == 'splunk-search':
+        splunk_search_command()
+    if demisto.command() == 'splunk-job-create':
+        splunk_job_create_command()
+    if demisto.command() == 'splunk-results':
+        splunk_results_command()
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents()
+    if demisto.command() == 'splunk-get-indexes':
+        splunk_get_indexes_command()
+    if demisto.command() == 'splunk-submit-event':
+        splunk_submit_event_command()
+    if demisto.command() == 'splunk-notable-event-edit':
+        splunk_edit_notable_event_command()
+    if demisto.command() == 'splunk-parse-raw':
+        splunk_parse_raw_command()
+    if demisto.command() == 'splunk-submit-event-hec':
+        splunk_submit_event_hec_command()
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()
