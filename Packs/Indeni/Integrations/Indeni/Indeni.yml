@@ -29,7 +29,7 @@ configuration:
   defaultvalue: 'true'
   display: Only Pull Palo Alto Networks Vulnerability Issues
   name: onlyPullPanCveIssues
-  required: true
+  required: false
   type: 8
 - display: Use system proxy settings
   hidden: false
