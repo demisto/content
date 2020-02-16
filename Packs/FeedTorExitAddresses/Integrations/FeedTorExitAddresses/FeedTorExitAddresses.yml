@@ -71,7 +71,6 @@ description: Tor is free software and an open network that helps you defend agai
   and privacy, confidential business activities and relationships, and state security.
 display: Tor Exit Addresses Feed
 name: Tor Exit Addresses Feed
-fromversion: 5.5.0
 script:
   commands:
   - arguments:
@@ -85,7 +84,7 @@ script:
     deprecated: false
     description: Gets the feed indicators.
     execution: false
-    name: tor-exit-addresses-get-indicators
+    name: tor-get-indicators
   dockerimage: demisto/python3:3.8.1.5734
   feed: true
   isfetch: false
@@ -95,3 +94,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0

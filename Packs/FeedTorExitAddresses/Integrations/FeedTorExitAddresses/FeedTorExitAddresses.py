@@ -14,7 +14,7 @@ def main():
     })
 
     # Call the main execution of the HTTP API module.
-    feed_main('Tor Exit Addresses Feed', params, 'tor-exit-addresses-')
+    feed_main('Tor Exit Addresses Feed', params, 'tor-')
 
 
 from HTTPFeedApiModule import *  # noqa: E402
