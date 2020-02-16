@@ -2270,6 +2270,14 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Test"
+        },
+        {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Demonstration - Test"
+        },
+        {
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0"
