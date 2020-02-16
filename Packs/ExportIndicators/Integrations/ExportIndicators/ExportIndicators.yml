@@ -54,7 +54,7 @@ configuration:
   required: false
   type: 8
 - display: Username
-  additionalinfo: Set the username which the user should enter when entering the indicators page.
+  additionalinfo: Enable basic authentication for accessing the EDL. If left empty, no authentication is enforced. 
   name: credentials
   required: false
   type: 9

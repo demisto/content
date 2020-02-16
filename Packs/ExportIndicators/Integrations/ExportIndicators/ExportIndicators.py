@@ -7,6 +7,7 @@ from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any, cast, Dict
 from base64 import b64decode
+from multiprocessing import Process
 
 
 class Handler:
@@ -262,12 +263,16 @@ def test_module(args, params):
             raise ValueError(
                 'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
+    run_server(params, is_test=True)
     return 'ok', {}, {}
 
 
-def run_long_running(params):
+def run_server(params, is_test=False):
     """
-    Starts the long running thread.
+    Start the long running server
+    :param params: Demisto params
+    :param is_test: Indicates whether it's test-module run or regular run
+    :return: None
     """
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
@@ -297,7 +302,13 @@ def run_long_running(params):
             demisto.debug('Starting HTTP Server')
 
         server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
-        server.serve_forever()
+        if is_test:
+            server_process = Process(target=server.serve_forever)
+            server_process.start()
+            time.sleep(10)
+            server_process.terminate()
+        else:
+            server.serve_forever()
     except Exception as e:
         if certificate_path:
             os.unlink(certificate_path)
@@ -305,6 +316,13 @@ def run_long_running(params):
             os.unlink(private_key_path)
         demisto.error(f'An error occurred in long running loop: {str(e)}')
         raise ValueError(str(e))
+
+
+def run_long_running(params):
+    """
+    Starts the long running thread.
+    """
+    run_server(params)
 
 
 def update_outbound_command(args, params):
