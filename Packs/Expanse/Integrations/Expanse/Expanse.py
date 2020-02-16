@@ -405,16 +405,15 @@ def fetch_incidents_command():
 
         else:
             # end of data, wait for tomorrow
-            incidents = parse_events(events)
-            demisto.incidents(incidents)
             next_run['complete_for_today'] = True
             next_run['start_time'] = today
+
+        incidents = parse_events(events)
+        demisto.incidents(incidents)
     else:
         demisto.incidents([])
 
     demisto.setLastRun(next_run)
-
-    return True
 
 
 def ip_command():
