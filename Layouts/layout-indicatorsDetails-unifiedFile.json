@@ -3,18 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "unifiedFileRep",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T17:25:25.007679+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "unifiedFileRep",
-        "propagationLabels": [
-            "all"
-        ],
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -464,7 +456,6 @@
             }
         ],
         "typeId": "unifiedFileRep",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "unifiedFileRep",

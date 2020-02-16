@@ -3,18 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "domainRep",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T16:47:17.000415+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "domainRep",
-        "propagationLabels": [
-            "all"
-        ],
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -425,7 +417,6 @@
             }
         ],
         "typeId": "domainRep",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "domainRep",

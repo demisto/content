@@ -3,18 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "urlRep",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T17:28:14.153887+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "urlRep",
-        "propagationLabels": [
-            "all"
-        ],
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -252,7 +244,6 @@
             }
         ],
         "typeId": "urlRep",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "urlRep",

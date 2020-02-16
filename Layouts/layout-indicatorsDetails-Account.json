@@ -3,15 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "accountRep",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T16:20:38.30086+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "accountRep",
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -288,7 +283,6 @@
             }
         ],
         "typeId": "accountRep",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "accountRep",

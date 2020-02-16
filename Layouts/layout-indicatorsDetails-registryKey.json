@@ -3,18 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "registryKey",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T17:22:05.852854+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "registryKey",
-        "propagationLabels": [
-            "all"
-        ],
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -228,7 +220,6 @@
             }
         ],
         "typeId": "registryKey",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "registryKey",

@@ -3,18 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "ipRep",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T17:18:47.844005+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "ipRep",
-        "propagationLabels": [
-            "all"
-        ],
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -297,7 +289,6 @@
             }
         ],
         "typeId": "ipRep",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "ipRep",

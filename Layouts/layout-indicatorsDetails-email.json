@@ -3,18 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "emailRep",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T16:52:56.773542+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "emailRep",
-        "propagationLabels": [
-            "all"
-        ],
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -234,7 +226,6 @@
             }
         ],
         "typeId": "emailRep",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "emailRep",

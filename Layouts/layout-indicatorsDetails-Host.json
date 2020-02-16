@@ -3,18 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "hostRep",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T16:58:07.105868+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "hostRep",
-        "propagationLabels": [
-            "all"
-        ],
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -317,7 +309,6 @@
             }
         ],
         "typeId": "hostRep",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "hostRep",

@@ -3,18 +3,10 @@
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "commitMessage": "",
         "id": "cveRep",
         "kind": "indicatorsDetails",
         "modified": "2020-02-13T16:44:01.227626+02:00",
         "name": "",
-        "prevKind": "indicatorsDetails",
-        "prevTypeId": "cveRep",
-        "propagationLabels": [
-            "all"
-        ],
-        "shouldCommit": false,
-        "sortValues": null,
         "system": false,
         "tabs": [
             {
@@ -243,7 +235,6 @@
             }
         ],
         "typeId": "cveRep",
-        "vcShouldIgnore": false,
         "version": -1
     },
     "typeId": "cveRep",
