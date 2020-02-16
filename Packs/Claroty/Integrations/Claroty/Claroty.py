@@ -1,9 +1,8 @@
-from distutils.util import strtobool
-
 import demistomock as demisto
 from CommonServerPython import *
 
 """ IMPORTS """
+from distutils.util import strtobool
 from typing import List
 import json
 import requests
@@ -210,7 +209,7 @@ def get_assets_command(client, args):
 
     result = client.get_assets(relevant_fields, sort, filters)
 
-    should_enrich_assets = str_to_bool(demisto.args().get("should_enrich_assets", "False"))
+    should_enrich_assets = strtobool(demisto.args().get("should_enrich_assets", "False"))
     if should_enrich_assets:
         result = client.enrich_asset_results(result)
         relevant_fields.append("insights")
@@ -288,8 +287,8 @@ def query_alerts_command(client, args):
     if alert_time:
         filters.append(add_filter("timestamp", alert_time, "gte"))
 
-    result = client.get_alerts(fields, sort, filters, limit)
-    parsed_results = _parse_alerts_result(result, fields)
+    result = client.get_alerts(relevant_fields, sort, filters, limit)
+    parsed_results = _parse_alerts_result(result, relevant_fields)
 
     outputs = {
         'Claroty.Alert(val.ResourceID == obj.ResourceID)': parsed_results
