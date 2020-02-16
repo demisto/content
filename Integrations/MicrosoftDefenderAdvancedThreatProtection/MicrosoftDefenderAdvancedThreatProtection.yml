@@ -866,6 +866,19 @@ script:
     description: Stop execution of a file on a machine and delete it.
     execution: false
     name: microsoft-atp-stop-and-quarantine-file
+  - arguments:
+    - default: false
+      description: ID can be the investigation ID or the investigation triggering
+        alert ID
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of Investigations or retrieves specific Investigation
+      by its ID
+    execution: false
+    name: microsoft-atp-list-investigations
   dockerimage: demisto/crypto:1.0.0.303
   feed: false
   isfetch: true
