@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+fixed a bug when the commit failed but the playbook succeeded. now it will fail on unsuccessful commit or push
 
 ## [19.12.0] - 2019-12-10
 removed PA-VM as the firewall identificator and changed the condition to else

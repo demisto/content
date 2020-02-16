@@ -293,12 +293,12 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 7872718f-5cce-4129-804c-a6307ee51c62
+    taskid: 589fe169-faf7-4986-806f-51eecdb7246c
     type: regular
     task:
-      id: 7872718f-5cce-4129-804c-a6307ee51c62
+      id: 589fe169-faf7-4986-806f-51eecdb7246c
       version: -1
-      name: Check Panorama commit status
+      name: Get Panorama commit status
       description: Get commit status
       script: '|||panorama-commit-status'
       type: regular
@@ -306,7 +306,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "14"
     scriptarguments:
       job_id:
         complex:
@@ -325,12 +325,12 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 3d04bc47-7374-43a7-88d3-07eb59e141c3
+    taskid: f3cb81ed-446f-4a55-87ed-866a5acc3be0
     type: regular
     task:
-      id: 3d04bc47-7374-43a7-88d3-07eb59e141c3
+      id: f3cb81ed-446f-4a55-87ed-866a5acc3be0
       version: -1
-      name: Check Panorama push status
+      name: Get Panorama push status
       description: Get push status
       script: '|||panorama-push-status'
       type: regular
@@ -338,7 +338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "15"
     scriptarguments:
       job_id:
         complex:
@@ -475,7 +475,7 @@ tasks:
       {
         "position": {
           "x": 150,
-          "y": 1710
+          "y": 1810
         }
       }
     note: false
@@ -520,6 +520,142 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "14":
+    id: "14"
+    taskid: ef50509f-bca1-4a43-8abd-5e17c62383f5
+    type: condition
+    task:
+      id: ef50509f-bca1-4a43-8abd-5e17c62383f5
+      version: -1
+      name: Verify successful Panorama commit
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Commit.Status
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 6f294e34-cd9e-4d5d-8209-7bec9cadccf8
+    type: condition
+    task:
+      id: 6f294e34-cd9e-4d5d-8209-7bec9cadccf8
+      version: -1
+      name: Verify successful Panorama push
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Push.Status
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 96da9c49-fdf6-471b-8b5d-e1aaca4ea25a
+    type: regular
+    task:
+      id: 96da9c49-fdf6-471b-8b5d-e1aaca4ea25a
+      version: -1
+      name: Print Commit Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: Panorama Commit Failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: fa9f31a9-c6b6-42ef-86c0-3ad94aa3def2
+    type: regular
+    task:
+      id: fa9f31a9-c6b6-42ef-86c0-3ad94aa3def2
+      version: -1
+      name: Print Push Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: Panorama Commit Failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -528,6 +664,9 @@ view: |-
       "11_5_#default#": 0.1,
       "13_5_#default#": 0.1,
       "13_6_Panorama": 0.73,
+      "14_12_yes": 0.59,
+      "15_17_#default#": 0.2,
+      "15_5_yes": 0.1,
       "1_5_#default#": 0.17
     },
     "paper": {
