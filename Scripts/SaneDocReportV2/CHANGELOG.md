@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Adds the grid type and fix headers in relevant investigation reports.
+Adde the grid type and fix headers in the relevant investigation reports.
