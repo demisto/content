@@ -2,10 +2,8 @@ id: NetSec - Palo Alto Networks DUG - Tag User
 version: -1
 fromversion: 5.0.0
 name: NetSec - Palo Alto Networks DUG - Tag User
-description: 'Block a user by tagging it  in the Palo Alto Networks NGFW. This requires
-  PAN-OS 9.1+. If the user is in the Demisto List with the name stated in playbook
-  inputs, the user will not be auto blocked but will first  require manager approval.
-  The list contents should be comma-separated (example contents: "user1,nam\jsmith")'
+description: 'Block a user by tagging them in the Palo Alto Networks NGFW. This requires
+  PAN-OS 9.1 or higher.'
 starttaskid: "0"
 tasks:
   "0":
@@ -73,8 +71,8 @@ tasks:
       id: 5d60dd32-6e84-48be-8a7a-6e7334530c31
       version: -1
       name: Is user in VIP list excluded from automated containment?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Checks whether an inputted user name appears in the VIP list (in Demisto). If the name appears, the name is passed to the admin user to determine if they should be blocked. 
+      If the name does not appear, the user is blocked automatically.  
       type: condition
       iscommand: false
       brand: ""
@@ -121,7 +119,7 @@ tasks:
       id: 7056a53e-acb5-417c-804b-28def00eb058
       version: -1
       name: Escalate - Manager approves quarantine for VIP user?
-      description: Escalate - Manager approves quarantine for VIP user?
+      description: The admin user manually approves or denies the quarantine request.
       type: condition
       iscommand: false
       brand: ""
@@ -179,7 +177,7 @@ tasks:
       id: a0c6678d-898f-43d8-8aeb-4a8c6fd83122
       version: -1
       name: Is there a VIP username list to check?
-      description: Check if list exist in demisto lists.
+      description: Check if a list of VIP users exists in Demisto. If the list exists, the playbook retrieves the list. If no list exists, the user is automatically blocked.
       scriptName: IsListExist
       type: condition
       iscommand: false
