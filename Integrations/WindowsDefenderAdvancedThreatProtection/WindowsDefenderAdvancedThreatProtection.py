@@ -761,6 +761,43 @@ def stop_and_quarantine_file_request(machine_id, file_sha1, comment):
     response = http_request('POST', cmd_url, json=json)
     return response
 
+def get_investigation_by_id_request(investigation_id):
+    """
+        Get the investigation ID and return the investigation details
+        Args:
+              investigation_id (str): The investigation ID
+        Returns:
+            dict:
+    """
+    cmd_url = '/investigations/{}'.format(investigation_id)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_investigation_list_request():
+    """
+        Dict. Returns the investigations list
+    """
+    cmd_url = '/investigations'
+    response = http_request('GET', cmd_url)
+    return response
+
+def start_investigation_request(machine_id, comment):
+    """
+        Start automated investigation on a machine.
+
+        Args:
+              investigation_id (str): The investigation ID
+        Returns:
+            dict:
+           Dict. Returns the investigations list
+    """
+    cmd_url = '/machines/{}/startInvestigation'.format(machine_id)
+    json = {
+        'Comment': comment,
+    }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
 def get_advanced_hunting_command():
     query = demisto.args().get('query')
     response = get_advanced_hunting(query)
@@ -1084,7 +1121,68 @@ def stop_and_quarantine_file_command():
     })
     return_outputs(hr, ec, response)
 
+def get_investigations_by_id_command():
+    """
+        Returns the investigation info, if investigation ID is None, return all investigations
+        Returns:
+            dict: investigation's data
+    """
+    investigation_id = demisto.args().get('id', '')
+    headers = ['ID', 'Start Time', 'End Time', 'Cancelled By', 'Investigation State', 'Status Details', 'Machine ID',
+               'Computer Dns Name', 'Triggering Alert Id']
+    if investigation_id:
+        response = get_investigation_by_id_request(investigation_id)
+        investigation_data = get_investigation_data(investigation_id)
+        hr = tableToMarkdown('Investigation {} Info:'.format(investigation_id), investigation_data, headers=headers)
+        context_output = camelize(response)
+    else:
+        response = get_investigation_list_request()
+        investigations_list = []
+        for investigation in response['value']:
+            investigations_list.append(get_investigation_data(investigation['id']))
+        hr = tableToMarkdown('Investigation Info:', investigations_list, headers=headers)
+        context_output = camelize(response['value'])
+    ec = camelize({
+        'MicrosoftATP.Investigations(val.id === obj.id)': context_output
+    })
+    return_outputs(hr, ec, response)
 
+def get_investigation_data(investigation_id):
+    """
+        Get investigation ID and returns the investigation info
+        Returns:
+            dict: Investigation's info
+    """
+    response = get_investigation_by_id_request(investigation_id)
+    investigation_data = {
+            "ID": response.get('id'),
+            "Start Time": response.get('startTime'),
+            "End Time": response.get('endTime'),
+            "Cancelled By": response.get('cancelledBy'),
+            "Investigation State": response.get('investigationState'),
+            "Status Details": response.get('ststatusDetailsatus'),
+            "Machine ID": response.get('machineId'),
+            "Computer Dns Name": response.get('computerDnsName'),
+            "Triggering Alert Id": response.get('triggeringAlertId')
+        }
+    return investigation_data
+
+def start_investigation_command():
+    """
+        Start automated investigation on a machine.
+        Returns:
+            dict: Investigation info
+    """
+    machine_id = demisto.args().get('machine_id')
+    comment = demisto.args().get('comment')
+    response = stop_and_quarantine_file_request(machine_id, file_sha1, comment)
+    action_data = get_action_data(response['id'])
+    hr = tableToMarkdown(
+        'Stopping the execution of a file on {} machine and deleting it:'.format(machine_id), action_data)
+    ec = camelize({
+        'MicrosoftATP.Actions(val.id === obj.id)': response
+    })
+    return_outputs(hr, ec, response)
 def fetch_incidents():
     last_run = demisto.getLastRun()
 
@@ -1223,6 +1321,13 @@ try:
 
     elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
         stop_and_quarantine_file_command()
+
+    elif demisto.command() == 'microsoft-atp-list-investigations':
+        get_investigations_by_id_command()
+
+    elif demisto.command() == 'microsoft-atp-start-investigation':
+        get_investigations_by_id_command()
+
 
 except Exception as e:
     return_error(str(e))
