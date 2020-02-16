@@ -120,7 +120,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Mailbox Delegation2
+    - incidentfield: Mailbox Delegation
       output:
         simple: Delegated
   '8':
