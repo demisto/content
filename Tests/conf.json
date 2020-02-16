@@ -2266,23 +2266,23 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "GoogleChronicle",
+            "integrations": "Google Chronicle Backstory",
             "playbookID": "Playbook-GoogleChronicle_asset-Test"
         },
         {
-            "integrations": "GoogleChronicle",
+            "integrations": "Google Chronicle Backstory",
             "playbookID": "Playbook-GoogleChronicle_ioc_details-Test"
         },
         {
-            "integrations": "GoogleChronicle",
+            "integrations": "Google Chronicle Backstory",
             "playbookID": "Playbook-GoogleChronicle_list_alerts-Test"
         },
         {
-            "integrations": "GoogleChronicle",
+            "integrations": "Google Chronicle Backstory",
             "playbookID": "Playbook-GoogleChronicle_list_iocs-Test"
         },
         {
-            "integrations": "GoogleChronicle",
+            "integrations": "Google Chronicle Backstory",
             "playbookID": "Playbook-GoogleChronicle_reputation-Test"
         },
         {
