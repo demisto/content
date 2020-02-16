@@ -334,33 +334,27 @@ def fetch_incidents(base_url):
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
-
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module(BASE_URL)
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        # Set and define the fetch incidents command to run after activated via integration settings.
-        fetch_incidents(BASE_URL)
-    elif demisto.command() == 'indeni-get-device-info':
-        get_device_info(BASE_URL)
-    elif demisto.command() == 'indeni-get-alert-info':
-        get_alert_info(BASE_URL)
-    elif demisto.command() == 'indeni-get-alert-summary':
-        get_alert_summary(BASE_URL)
-    elif demisto.command() == 'indeni-post-note':
-        post_note(BASE_URL)
-        demisto.results('Done')
-    elif demisto.command() == 'indeni-archive-issue':
-        archive_issue(BASE_URL)
-        demisto.results('Done')
-    elif demisto.command() == 'indeni-unarchive-issue':
-        unarchive_issue(BASE_URL)
-        demisto.results('Done')
-    elif demisto.command() == 'indeni-get-notes':
-        get_notes(BASE_URL)
-
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+if demisto.command() == 'test-module':
+    # This is the call made when pressing the integration test button.
+    test_module(BASE_URL)
+    demisto.results('ok')
+elif demisto.command() == 'fetch-incidents':
+    # Set and define the fetch incidents command to run after activated via integration settings.
+    fetch_incidents(BASE_URL)
+elif demisto.command() == 'indeni-get-device-info':
+    get_device_info(BASE_URL)
+elif demisto.command() == 'indeni-get-alert-info':
+    get_alert_info(BASE_URL)
+elif demisto.command() == 'indeni-get-alert-summary':
+    get_alert_summary(BASE_URL)
+elif demisto.command() == 'indeni-post-note':
+    post_note(BASE_URL)
+    demisto.results('Done')
+elif demisto.command() == 'indeni-archive-issue':
+    archive_issue(BASE_URL)
+    demisto.results('Done')
+elif demisto.command() == 'indeni-unarchive-issue':
+    unarchive_issue(BASE_URL)
+    demisto.results('Done')
+elif demisto.command() == 'indeni-get-notes':
+    get_notes(BASE_URL)
