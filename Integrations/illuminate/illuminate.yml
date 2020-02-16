@@ -14,7 +14,7 @@ configuration:
   defaultvalue: ''
   type: 9
   required: true
-- display: Domain of illuminate server to use (format: server.that_you_use.com - No http/https)
+- display: Domain of illuminate server to use (format - server.that_you_use.com - No http/https)
   name: server
   defaultvalue: illuminate.analystplatform.com
   type: 0
