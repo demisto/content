@@ -74,30 +74,38 @@ class Client(BaseClient):
         super().__init__(**kwargs)
         self._headers = DEFAULT_HEADERS
         if not_mock:
-            self._headers['Authorization'] = self.get_token()
+            self._generate_token()
         else:
             self._headers['Authorization'] = "ok"
 
         self._list_to_filters: dict = {'alerts': [], 'assets': []}
 
-    def jwt(self):
-        # TODO: Get jwt - make as wrapper -
-        # try and except the requests we are making. If failed on specific return code then retry after getting token
+    def _request_with_token(self, url_suffix, method="GET"):
+        try:
+            return self._http_request(method, url_suffix=url_suffix)
+        except DemistoException as e:
+            # handling 401 like this since demisto is not returning the status code
+            if "401" not in str(e):
+                raise
 
-        # once you get the jwt you can store it for later use using something like:
-        # demisto.setIntegrationContext({'jwt': jwt, 'expiration': 'whatever'})
+            demisto.setIntegrationContext({'jwt_token': None})
+            self._generate_token()
+            # assuming it was just the token that expired, retrying to send the request with the new token
+            return self._http_request(method, url_suffix=url_suffix)
 
-        # before you try to get a new jtw, you can check if the one you stored is still valid.
-        # to retrieve it, you can do
-        # demisto.getIntegrationContext() that will return the dict that you stored previously
-        pass
+    def _generate_token(self):
+        if not demisto.getIntegrationContext()['jwt_token']:
+            res = self._http_request(
+                'POST',
+                url_suffix="auth/authenticate",
+                data=json.dumps({"username": self._credentials[0], "password": self._credentials[1]}),
+            )
 
-    def get_token(self):
-        return self._http_request(
-            'POST',
-            url_suffix="auth/authenticate",
-            data=json.dumps({"username": self._credentials[0], "password": self._credentials[1]}),
-        )["token"]
+            if res['password_expired']:
+                raise DemistoException("Password expired, please update credentials")
+
+            demisto.setIntegrationContext({'jwt_token': res['jwt']})
+            self._headers['Authorization'] = demisto.getIntegrationContext()['jwt_token']
 
     def list_incidents(self, fields: list, fetch_from) -> dict:
         return self.get_alerts(fields=fields, sort={}, filters=[add_filter("timestamp", fetch_from, "gte")])
