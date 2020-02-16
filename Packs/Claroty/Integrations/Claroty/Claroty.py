@@ -75,30 +75,38 @@ class Client(BaseClient):
         super().__init__(**kwargs)
         self._headers = DEFAULT_HEADERS
         if not_mock:
-            self._headers['Authorization'] = self.get_token()
+            self._generate_token()
         else:
             self._headers['Authorization'] = "ok"
 
         self._list_to_filters: dict = {'alerts': [], 'assets': []}
 
-    def jwt(self):
-        # TODO: Get jwt - make as wrapper -
-        # try and except the requests we are making. If failed on specific return code then retry after getting token
+    def _request_with_token(self, url_suffix, method="GET"):
+        try:
+            return self._http_request(method, url_suffix=url_suffix)
+        except DemistoException as e:
+            # handling 401 like this since demisto is not returning the status code
+            if "401" not in str(e):
+                raise
 
-        # once you get the jwt you can store it for later use using something like:
-        # demisto.setIntegrationContext({'jwt': jwt, 'expiration': 'whatever'})
+            demisto.setIntegrationContext({'jwt_token': None})
+            self._generate_token()
+            # assuming it was just the token that expired, retrying to send the request with the new token
+            return self._http_request(method, url_suffix=url_suffix)
 
-        # before you try to get a new jtw, you can check if the one you stored is still valid.
-        # to retrieve it, you can do
-        # demisto.getIntegrationContext() that will return the dict that you stored previously
-        pass
+    def _generate_token(self):
+        if not demisto.getIntegrationContext()['jwt_token']:
+            res = self._http_request(
+                'POST',
+                url_suffix="auth/authenticate",
+                data=json.dumps({"username": self._credentials[0], "password": self._credentials[1]}),
+            )
 
-    def get_token(self):
-        return self._http_request(
-            'POST',
-            url_suffix="auth/authenticate",
-            data=json.dumps({"username": self._credentials[0], "password": self._credentials[1]}),
-        )["token"]
+            if res['password_expired']:
+                raise DemistoException("Password expired, please update credentials")
+
+            demisto.setIntegrationContext({'jwt_token': res['jwt']})
+            self._headers['Authorization'] = demisto.getIntegrationContext()['jwt_token']
 
     def list_incidents(self, fields: list, fetch_from: datetime, **extra_filters) -> dict:
         extra_filters_list = [add_filter("timestamp", fetch_from, "gte")]
@@ -115,8 +123,8 @@ class Client(BaseClient):
         # return self._http_request('GET', url_suffix=url_suffix + '&ghost__exact=false&special_hint__exact=0,;$9')
         return self._http_request('GET', url_suffix=url_suffix)
 
-    def get_alerts(self, fields: list, sort: dict, filters: list):
-        url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort, filters)
+    def get_alerts(self, fields: list, sort: dict, filters: list, limit: int = 10):
+        url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort, filters, limit)
         return self._http_request('GET', url_suffix=url_suffix)
 
     def get_alert(self, rid: str):
@@ -144,8 +152,9 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def _add_extra_params_to_url(url_suffix: str, fields: list, sort: dict, filters: list):
+    def _add_extra_params_to_url(url_suffix: str, fields: list, sort: dict, filters: list, limit: int = 10):
         url_suffix += "?fields=" + ',;$'.join(fields)
+        url_suffix += f"&per_page={limit}"
 
         if sort:
             url_suffix += f"&sort={sort['order']}{sort['field']}"
@@ -261,6 +270,7 @@ def query_alerts_command(client, args):
     fields = get_fields("alert")
     sort_order = get_sort_order(demisto.args().get("sort_order", "asc"))
     sort = get_sort(demisto.args().get("sort_by", "timestamp"), sort_order)
+    limit = get_sort(demisto.args().get("limit", 10))
     filters = []
 
     alert_type = demisto.args().get("type", "").lower()
@@ -276,7 +286,7 @@ def query_alerts_command(client, args):
     if alert_time:
         filters.append(add_filter("timestamp", alert_time, "gte"))
 
-    result = client.get_alerts(fields, sort, filters)
+    result = client.get_alerts(fields, sort, filters, limit)
     parsed_results = _parse_alerts_result(result, fields)
 
     outputs = {

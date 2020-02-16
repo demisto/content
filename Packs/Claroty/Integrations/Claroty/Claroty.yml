@@ -253,6 +253,12 @@ script:
       - desc
       required: false
       secret: false
+    - default: false
+      description: The maximum number of alerts to query.
+      isArray: false
+      name: alert_limit
+      required: false
+      secret: false
     deprecated: false
     description: Gets alerts from CTD.
     execution: false
