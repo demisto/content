@@ -59,12 +59,13 @@ RESOLVE_STRING_TO_TYPE = {
 DEFAULT_ALERT_FIELD_LIST = ["resource_id", "type", "severity", "network_id", "resolved", "description",
                             "alert_indicators", "actionable_assets"]
 DEFAULT_ASSET_FIELD_LIST = ["id", "name", "insight_names", "vendor", "criticality", "asset_type", "last_seen", "ipv4",
-                            "mac", "virtual_zone_name", "class_type", "site_name", "project_parsed", "risk_level",
-                            "firmware", "resource_id"]
+                            "mac", "virtual_zone_name", "class_type", "site_name", "site_id", "project_parsed",
+                            "risk_level", "firmware", "resource_id"]
 FULL_MATCH_BASE_URL = "ranger/insight_details/Windows%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
                       "&per_page=1000&page=1&id__exact="
 WINDOWS_CVE_BASE_URL = "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
                        "&per_page=1000&page=1&id__exact="
+DEFAULT_RESOLVE_ALERT_COMMENT = "Resolved by Demisto"
 
 
 class Client(BaseClient):
@@ -99,11 +100,18 @@ class Client(BaseClient):
             data=json.dumps({"username": self._credentials[0], "password": self._credentials[1]}),
         )["token"]
 
-    def list_incidents(self, fields: list, fetch_from) -> dict:
-        return self.get_alerts(fields=fields, sort={}, filters=[add_filter("timestamp", fetch_from, "gte")])
+    def list_incidents(self, fields: list, fetch_from: datetime, **extra_filters) -> dict:
+        extra_filters_list = [add_filter("timestamp", fetch_from, "gte")]
+        for extra_filter in extra_filters:
+            if extra_filter == "severity":
+                extra_filters_list.append(add_filter(extra_filter, extra_filters[extra_filter], "gte"))
+            else:
+                extra_filters_list.append(add_filter(extra_filter, extra_filters[extra_filter]))
+        return self.get_alerts(fields=fields, sort={}, filters=extra_filters_list)
 
     def get_assets(self, fields: list, sort: dict, filters: list):
         url_suffix = self._add_extra_params_to_url('ranger/assets', fields, sort, filters)
+        # TODO: check whether we want to add this or not (not urgent)
         # return self._http_request('GET', url_suffix=url_suffix + '&ghost__exact=false&special_hint__exact=0,;$9')
         return self._http_request('GET', url_suffix=url_suffix)
 
@@ -119,20 +127,19 @@ class Client(BaseClient):
             self._list_to_filters[table] = self._http_request('GET', url_suffix=f'ranger/{table}/filters')['filters']
         return self._list_to_filters[table]
 
-    def resolve_alert(self, select_all: bool, selected_alerts: list, excluded_alerts: list, filters: dict,
-                      resolve_type: int):
+    def resolve_alert(self, selected_alerts: list, filters: dict, resolve_type: int, resolve_comment: str):
         return self._http_request(
             'POST',
             url_suffix='ranger/ranger_api/resolve_alerts',
             data=json.dumps({
                 "selection_params": {
-                    "select_all": select_all,
+                    "select_all": False,
                     "selected": selected_alerts,
-                    "excluded": excluded_alerts,
+                    "excluded": [],
                     "filters": filters
                 },
                 "resolved_as": resolve_type,
-                "comment": "Resolved through Demisto"
+                "comment": resolve_comment
             })
         )
 
@@ -179,29 +186,20 @@ def get_assets_command(client, args):
     # TODO: Aesthetics - create def init_get_values(filters) to populate fields, sort, filters
     fields = get_fields("asset")
     sort = get_sort(demisto.args().get("sort_by", "id"))
-    should_enrich_assets = demisto.args().get("should_enrich_assets")
     filters = []
 
     criticality_str = demisto.args().get("criticality", None)
-
     criticality_int = CTD_TO_DEMISTO_SEVERITY[criticality_str]
     if criticality_int:
         filters.append(add_filter("criticality", criticality_int - 1))
 
-    # TODO: Add this filter later
     insight_name = demisto.args().get("insight_name")
     if insight_name:
-        # asset_filters = client.get_ranger_table_filters('assets')
-        # TODO: fix around the way i return values
-
-        # insight status 0 is open
         filters.extend([add_filter("insight_name", insight_name), add_filter("insight_status", 0)])
-
-        # for filter_type in filters_url_suffix:
-        #     filters.append(add_filter(filter_type[0], filter_type[1]))
 
     result = client.get_assets(fields, sort, filters)
 
+    should_enrich_assets = str_to_bool(demisto.args().get("should_enrich_assets", "False"))
     if should_enrich_assets:
         result = client.enrich_asset_results(result)
         fields.append("insights")
@@ -220,22 +218,15 @@ def get_assets_command(client, args):
 
 
 def resolve_alert_command(client, args):
-    # TODO: move select all to be part of the selected alerts arg
-    select_param = str_to_bool(demisto.args().get("select_all")) \
-        if demisto.args().get("select_all") in ["True", "False"] else True
-
     selected_alerts_arg = demisto.args().get("selected_alerts", [])
     selected_alert_list = selected_alerts_arg.split(",") \
         if isinstance(selected_alerts_arg, str) else selected_alerts_arg
 
-    excluded_alerts_arg = demisto.args().get("excluded_alerts", [])
-    excluded_alert_list = excluded_alerts_arg.split(",") \
-        if isinstance(excluded_alerts_arg, str) else excluded_alerts_arg
-
     resolve_type = RESOLVE_STRING_TO_TYPE[demisto.args().get("resolve_as", "resolve")]
 
-    result = client.resolve_alert(select_param, selected_alert_list, excluded_alert_list,
-                                  demisto.args().get("filters", {}), resolve_type)
+    resolve_comment = demisto.args().get("resolve_comment", DEFAULT_RESOLVE_ALERT_COMMENT)
+
+    result = client.resolve_alert(selected_alert_list, demisto.args().get("filters", {}), resolve_type, resolve_comment)
 
     outputs = {
         "Claroty.Resolve_out": result
@@ -249,33 +240,44 @@ def resolve_alert_command(client, args):
     )
 
 
+def get_single_alert_command(client, args):
+    fields = get_fields("alert")
+    alert_rid = demisto.args().get("get_single_alert", None)
+    result = client.get_alert(alert_rid)
+    parsed_results = _parse_single_alert(result, fields)
+
+    outputs = {
+        'Claroty.Alert(val.ResourceID == obj.ResourceID)': parsed_results
+    }
+    readable_output = tableToMarkdown('Claroty Alert List', parsed_results)
+    return (
+        readable_output,
+        outputs,
+        result
+    )
+
+
 def query_alerts_command(client, args):
     fields = get_fields("alert")
-    sort = get_sort(demisto.args().get("sort_by", "timestamp"))
+    sort_order = get_sort_order(demisto.args().get("sort_order", "asc"))
+    sort = get_sort(demisto.args().get("sort_by", "timestamp"), sort_order)
     filters = []
 
-    alert_rid = demisto.args().get("get_single_alert", None)
-    # Get single alert uses different URL
-    if alert_rid:
-        result = client.get_alert(alert_rid)
-        parsed_results = _parse_single_alert(result, fields)
+    alert_type = demisto.args().get("type", "").lower()
+    if alert_type:
+        alert_filters = client.get_ranger_table_filters('alerts')
+        # TODO: fix around the way i return values
+        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
+        if filters_url_suffix:
+            for filter_type in filters_url_suffix:
+                filters.append(add_filter(filter_type[0], filter_type[1]))
 
-    else:
-        alert_type = demisto.args().get("type", "").lower()
-        if alert_type:
-            alert_filters = client.get_ranger_table_filters('alerts')
-            # TODO: fix around the way i return values
-            filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
-            if filters_url_suffix:
-                for filter_type in filters_url_suffix:
-                    filters.append(add_filter(filter_type[0], filter_type[1]))
+    alert_time = demisto.args().get("date_from", None)
+    if alert_time:
+        filters.append(add_filter("timestamp", alert_time, "gte"))
 
-        alert_time = demisto.args().get("date_from", None)
-        if alert_time:
-            filters.append(add_filter("timestamp", alert_time, "gte"))
-
-        result = client.get_alerts(fields, sort, filters)
-        parsed_results = _parse_alerts_result(result, fields)
+    result = client.get_alerts(fields, sort, filters)
+    parsed_results = _parse_alerts_result(result, fields)
 
     outputs = {
         'Claroty.Alert(val.ResourceID == obj.ResourceID)': parsed_results
@@ -404,6 +406,10 @@ def get_sort(field_to_sort_by: str, order_by_desc: bool = False):
     return {"field": field_to_sort_by, "order": order_by_direction}
 
 
+def get_sort_order(sort_order: str) -> bool:
+    return True if sort_order == "asc" else False
+
+
 def get_fields(obj_name: str) -> list:
     fields = demisto.args().get("fields", "").split(",")
 
@@ -468,9 +474,31 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     latest_created_time = last_fetch
     incidents = []
-    # TODO: add parameters for filter types, severity, etc
     field_list = DEFAULT_ALERT_FIELD_LIST + ["timestamp", "severity"]
-    response = client.list_incidents(field_list, latest_created_time.strftime(DATE_FORMAT))
+    extra_filters = {}
+
+    severity = demisto.params().get("severity", None)
+    if severity:
+        severity_filter = ""
+        for severity_key in CTD_TO_DEMISTO_SEVERITY:
+            if CTD_TO_DEMISTO_SEVERITY[severity_key] >= CTD_TO_DEMISTO_SEVERITY[severity]:
+                severity_filter += f"{severity_key},;$"
+        extra_filters["severity"] = severity_filter
+
+    site_id = demisto.params().get("site_id", None)
+    if site_id:
+        extra_filters["site_id"] = site_id
+
+    alert_type = demisto.params().get("alert_type", None)
+    if alert_type:
+        alert_filters = client.get_ranger_table_filters('alerts')
+        # TODO: fix around the way i return values
+        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type.lower())
+        if filters_url_suffix:
+            for filter_type in filters_url_suffix:
+                extra_filters["type"] = filter_type[1]
+
+    response = client.list_incidents(field_list, latest_created_time.strftime(DATE_FORMAT), **extra_filters)
     items = _parse_alerts_result(response, field_list)
 
     for item in items:
@@ -523,6 +551,9 @@ def main():
 
         elif demisto.command() == 'claroty-query-alerts':
             return_outputs(*query_alerts_command(client, demisto.args()))
+
+        elif demisto.command() == 'claroty-get-single-alert':
+            return_outputs(*get_single_alert_command(client, demisto.args()))
 
         elif demisto.command() == 'claroty-resolve-alert':
             return_outputs(*resolve_alert_command(client, demisto.args()))

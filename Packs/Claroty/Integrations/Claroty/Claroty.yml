@@ -33,14 +33,27 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- hidden: false
+- display: Minimal severity to fetch by
+  hidden: false
   name: severity
   options:
   - Low
   - Medium
-  - '...'
+  - High
+  - Critical
   required: false
   type: 16
+- additionalinfo: All sites if none selected
+  display: Site ID to fetch by
+  hidden: false
+  name: site_id
+  required: false
+  type: 0
+- display: Fetch by alert type
+  hidden: false
+  name: alert_type
+  required: false
+  type: 0
 description: Use the Claroty CTD integration to manage assets and alerts.
 display: Claroty
 name: Claroty
@@ -55,46 +68,59 @@ script:
       name: fields
       predefined:
       - all
-      - ' id'
-      - ' name'
-      - ' insight_names'
-      - ' vendor'
-      - ' criticality'
-      - ' asset_type'
-      - ' last_seen'
-      - ' ipv4'
-      - ' mac'
-      - ' virtual_zone_name'
-      - ' class_type'
-      - ' site_name'
-      - ' project_parsed'
-      - ' risk_level'
-      - ' firmware_version'
+      - id
+      - name
+      - insight_names
+      - vendor
+      - criticality
+      - asset_type
+      - last_seen
+      - ipv4
+      - mac
+      - virtual_zone_name
+      - class_type
+      - site_name
+      - project_parsed
+      - risk_level
+      - firmware_version
+      - site_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns assets with this criticality. Can be "Low", "Medium", or "High".
+      description: Returns assets with this criticality. Can be "Low", "Medium", or
+        "High".
       isArray: false
       name: criticality
       predefined:
       - Low
-      - ' Medium'
-      - ' High'
+      - Medium
+      - High
       required: false
       secret: false
     - default: false
-      description: Returns assets that match these insights.
+      description: Get assets with that include the given insight name
       isArray: false
       name: insight_name
       predefined:
       - ''
       required: false
       secret: false
-    - default: false
-      description: A flag to retrieve CVEs on retrieved assets.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Add aditional value for the asset CVEs.
       isArray: false
       name: should_enrich_assets
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Maximal value of assets to query at once.
+      isArray: false
+      name: asset_amount
       required: false
       secret: false
     deprecated: false
@@ -160,38 +186,40 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: Asset fields to return. The default value is "all".
+      description: Alert fields to return. The default value is "all".
       isArray: false
       name: fields
       predefined:
       - all
-      - ' resource_id'
-      - ' type'
-      - ' severity'
-      - ' network_id'
-      - ' resolved'
-      - ' description'
-      - ' alert_indicators'
-      - ' actionable_assets'
+      - resource_id
+      - type
+      - severity
+      - network_id
+      - resolved
+      - description
+      - alert_indicators
+      - actionable_assets
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: timestamp
-      description: The field by which to sort the results. The default value is "timestamp"
+      description: |-
+        The field by which to sort the results. The default value is "timestamp".
+        Default sort order is ascending
       isArray: false
       name: sort_by
       predefined:
       - resource_id
-      - ' type'
-      - ' severity'
-      - ' network_id'
-      - ' resolved'
-      - ' description'
-      - ' alert_indicators'
-      - ' actionable_assets'
-      - ' id'
-      - ' timestamp'
+      - type
+      - severity
+      - network_id
+      - resolved
+      - description
+      - alert_indicators
+      - actionable_assets
+      - id
+      - timestamp
       required: false
       secret: false
     - default: false
@@ -209,17 +237,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Get a single alert by the ResourceID
-        ResourceID format - <alert_id>-<site_id>
-      isArray: false
-      name: get_single_alert
-      required: false
-      secret: false
-    - default: false
       description: The maximum number of alerts to query.
       isArray: false
       name: alert_number
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: The sorting order of the alerts - descending or ascending
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
       required: false
       secret: false
     deprecated: false
@@ -255,17 +286,6 @@ script:
       description: The alert severity.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'True'
-      description: Whether to resolve all alerts. Can be "True" or "False". The default value is "True".
-      isArray: false
-      name: select_all
-      predefined:
-      - 'True'
-      - ' False'
-      required: false
-      secret: false
     - default: false
       description: |-
         The alerts to resolve, in the format "<alert_id>-<site_id>,<alert_id>-<site_id>...."
@@ -274,23 +294,23 @@ script:
       name: selected_alerts
       required: false
       secret: false
-    - default: false
-      description: |-
-        The alerts to exclude when resolving, in the format - "<alert_id>-<site_id>,<alert_id>-<site_id>...."
-        For playbook use - ResuorceId is <alert_id>-<site_id>.
-      isArray: false
-      name: excluded_alerts
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: resolve
-      description: How to resolve the alert. Can be "archive" or "resolve". The default value is "resolve".
+      description: How to resolve the alert. Can be "archive" or "resolve". The default
+        value is "resolve".
       isArray: false
       name: resolve_as
       predefined:
       - archive
-      - ' resolve'
+      - resolve
+      required: false
+      secret: false
+    - default: false
+      defaultValue: Resolved by Demisto
+      description: A comment to add when resolving an alert.
+      isArray: false
+      name: resolve_comment
       required: false
       secret: false
     deprecated: false
@@ -301,6 +321,63 @@ script:
     - contextPath: Claroty.Resolve_out.success
       description: Success output of alert resolving.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: Asset fields to return. The default value is "all".
+      isArray: false
+      name: fields
+      predefined:
+      - all
+      - resource_id
+      - type
+      - severity
+      - network_id
+      - resolved
+      - description
+      - alert_indicators
+      - actionable_assets
+      required: false
+      secret: false
+    - default: false
+      description: Get alert by Resource ID. Expected value - <alert_id>-<site_id>
+      isArray: false
+      name: get_single_alert
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a single alert from CTD.
+    execution: false
+    name: claroty-get-single-alert
+    outputs:
+    - contextPath: Claroty.Alert.AlertType
+      description: The alert type.
+      type: String
+    - contextPath: Claroty.Alert.AlertTypeID
+      description: The alert type int value
+      type: Number
+    - contextPath: Claroty.Alert.Description
+      description: The alert description.
+      type: String
+    - contextPath: Claroty.Alert.Indicator
+      description: The alert indicators.
+      type: String
+    - contextPath: Claroty.Alert.NetworkID
+      description: The network ID.
+      type: Number
+    - contextPath: Claroty.Alert.RelatedAssets
+      description: Assets related to the alert.
+      type: String
+    - contextPath: Claroty.Alert.Resolved
+      description: The resolve status of the alert.
+      type: Number
+    - contextPath: Claroty.Alert.ResourceID
+      description: The alert resource ID (AlertID-SiteID).
+      type: String
+    - contextPath: Claroty.Alert.Severity
+      description: The alert severity.
+      type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
@@ -309,4 +386,4 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  type: python 
+  type: python
