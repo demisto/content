@@ -560,9 +560,3 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
-tests:
-- Playbook-GoogleChronicle_asset-Test
-- Playbook-GoogleChronicle_ioc_details-Test
-- Playbook-GoogleChronicle_list_alerts-Test
-- Playbook-GoogleChronicle_list_iocs-Test
-- Playbook-GoogleChronicle_reputation-Test
