@@ -2,6 +2,7 @@ id: Illuminate Integration Demonstration
 version: -1
 name: Illuminate Integration Demonstration
 description: A quick demonstration of the various illuminate enrichment commands.
+fromversion: 4.0.0
 starttaskid: '0'
 tasks:
   '0':
