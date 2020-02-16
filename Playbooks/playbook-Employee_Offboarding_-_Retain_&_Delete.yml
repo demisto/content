@@ -224,7 +224,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Google Mail Status
+    - incidentfield: Google Mail Status2
       output:
         simple: On Hold
   '44':
