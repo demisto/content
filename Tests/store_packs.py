@@ -298,7 +298,7 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_blob.reload()
     index_blob.upload_from_filename(index_zip_path)
     shutil.rmtree(index_folder_path)
-    print_color(f"Finished uploading {Pack.INDEX_NAME}.json to storage.", LOG_COLORS.GREEN)
+    print_color(f"Finished uploading {Pack.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
 def option_handler():
@@ -333,13 +333,16 @@ def main():
     specific_packs = option.pack_names
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
 
+    # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
     extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs]
 
+    # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.get_bucket(storage_bucket_name)
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_was_updated = False  # indicates whether one or more index folders were updated
 
     for pack in packs_list:
         pack.format_metadata()
@@ -354,9 +357,13 @@ def main():
 
         pack.prepare_for_index_upload()
         update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
+        index_was_updated = True  # detected index update
         pack.cleanup()
 
-    upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
+    if index_was_updated:
+        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
+    else:
+        print_warning(f"Skipping uploading index.zip to storage.")
 
 
 if __name__ == '__main__':
