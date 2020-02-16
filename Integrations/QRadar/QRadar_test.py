@@ -256,9 +256,9 @@ def test_upload_indicators_command_indicators_found(mocker):
     mocker.patch.object(qradar, 'upload_indicators_list_request', return_value=RAW_RESPONSE)
     mocker.patch.object(qradar, 'enrich_reference_set_result', return_value=REF_SET_DATA)
     res = qradar.upload_indicators_command()
-    assert res[1]['name'] == 'test_ref_set'
-    assert res[1]['number_of_elements'] == 42
-    assert res[1]['element_type'] == 'ALN'
+    assert res[2]['name'] == 'test_ref_set'
+    assert res[2]['number_of_elements'] == 42
+    assert res[2]['element_type'] == 'ALN'
 
 
 def test_upload_indicators_command_no_indicators_found(mocker):
@@ -276,8 +276,7 @@ def test_upload_indicators_command_no_indicators_found(mocker):
     mocker.patch.object(qradar, 'check_ref_set_exist', return_value=REF_SET_DATA_NO_INDICATORS)
     mocker.patch.object(qradar, 'get_indicators_list', return_value=([], []))
     res = qradar.upload_indicators_command()
-    assert res[0] == "No indicators found, Reference set test_ref_set didn't change"
-    assert res[1] == {}
+    assert res == "No indicators found, Reference set test_ref_set didn't change"
 
 
 """ CONSTANTS """
