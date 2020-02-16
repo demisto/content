@@ -2218,6 +2218,16 @@
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
             "fromversion": "5.5.0"
+        },
+        {
+          "integrations": "Expanse",
+          "playbookID": "test-Expanse-Playbook",
+          "fromversion": "5.0.0"
+        },
+        {
+          "integrations": "Expanse",
+          "playbookID": "test-Expanse",
+          "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
