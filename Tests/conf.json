@@ -394,7 +394,8 @@
         },
         {
             "integrations": "SNDBOX",
-            "playbookID": "SNDBOX_Test"
+            "playbookID": "SNDBOX_Test",
+            "timeout": 1000
         },
         {
             "integrations": "SNDBOX",
@@ -942,7 +943,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 100
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -960,7 +962,8 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240
+            "timeout": 240,
+            "pid_threshold": 6
         },
         {
             "integrations": "activedir",
@@ -1054,7 +1057,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test",
-            "memory_threshold": 150
+            "memory_threshold": 200
         },
         {
             "integrations": "McAfee NSM",
@@ -2190,7 +2193,8 @@
         },
         {
             "integrations": "GoogleCloudTranslate",
-            "playbookID": "GoogleCloudTranslate-Test"
+            "playbookID": "GoogleCloudTranslate-Test",
+            "pid_threshold": 8
         },
         {
             "integrations": "Infoblox",
