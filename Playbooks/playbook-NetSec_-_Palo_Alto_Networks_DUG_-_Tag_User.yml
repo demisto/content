@@ -71,8 +71,9 @@ tasks:
       id: 5d60dd32-6e84-48be-8a7a-6e7334530c31
       version: -1
       name: Is user in VIP list excluded from automated containment?
-      description: Checks whether an inputted user name appears in the VIP list (in Demisto). If the name appears, the name is passed to the admin user to determine if they should be blocked. 
-      If the name does not appear, the user is blocked automatically.  
+      description: |-
+        Checks whether an inputted user name appears in the VIP list (in Demisto). If the name appears, the name is passed to the admin user to determine if they should be blocked.
+        If the name does not appear, the user is blocked automatically.
       type: condition
       iscommand: false
       brand: ""
