@@ -537,7 +537,7 @@ def get_indicators_command():
     search, _ = get_indicators_search_scan()
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     indicators_list: list = []
-    ioc_enrch_lst = []
+    ioc_enrch_lst: list = []
     for hit in search.scan():
         hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
         indicators_list.extend(hit_lst)
