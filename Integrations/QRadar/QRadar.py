@@ -1107,7 +1107,7 @@ def upload_indicators_command():
         query = args.get('query')
         indicators_values_list, indicators_data_list = get_indicators_list(query, limit, page)
         if len(indicators_values_list) == 0:
-            return_outputs("No indicators found, Reference set {0} didn't change".format(reference_name))
+            return "No indicators found, Reference set {0} didn't change".format(reference_name)
         else:
             raw_response = upload_indicators_list_request(reference_name, indicators_values_list)
             ref_set_data = unicode_to_str_recur(get_ref_set(reference_name))
@@ -1115,11 +1115,10 @@ def upload_indicators_command():
             enrich_reference_set_result(ref)
             indicator_headers = ['Value', 'Type']
             ref_set_headers = ['Name', 'ElementType', 'TimeoutType', 'CreationTime', 'NumberOfElements']
-            return_outputs(tableToMarkdown("reference set {0} was updated".format(reference_name), ref,
-                                           headers=ref_set_headers) + tableToMarkdown("Indicators list",
-                                                                                      indicators_data_list,
-                                                                                      headers=indicator_headers),
-                           raw_response)
+            hr = tableToMarkdown("reference set {0} was updated".format(reference_name), ref,
+                                 headers=ref_set_headers) + tableToMarkdown("Indicators list", indicators_data_list,
+                                                                            headers=indicator_headers)
+            return hr, {}, raw_response
 
     # Gets an error if the user tried to add indicators that dont match to the reference set type
     except Exception as e:
@@ -1215,7 +1214,7 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
     elif demisto.command() == 'qradar-upload-indicators':
-        upload_indicators_command()
+        return_outputs(*upload_indicators_command())
 except Exception as e:
     message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
