@@ -610,7 +610,8 @@ class Docker:
                                   'in conf.json with value that is greater than {}\n'
                                   .format(container_name, pids_threshold, pids_usage, pids_usage))
                 additional_pid_info = cls.get_docker_pid_info(server_ip, container_id)
-                error_message += 'Additional pid information:\n{}'.format(additional_pid_info)
+                if additional_pid_info:
+                    error_message += 'Additional pid information:\n{}'.format(additional_pid_info)
                 failed_memory_test = True
 
             if failed_memory_test:
