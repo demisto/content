@@ -1,6 +1,6 @@
-id: Playbook-GoogleChronicle_reputation-Test
+id: Google Chronicle Backstory Reputation - Test
 version: -1
-name: Playbook-GoogleChronicle_reputation-Test
+name: Google Chronicle Backstory Reputation - Test
 description: This playbook uses the Google Chronicle Backstory integration and tests
   the various scenarios of the reputation command.
 starttaskid: "0"

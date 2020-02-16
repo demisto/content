@@ -1,16 +1,16 @@
-id: Playbook-GoogleChronicle_list_iocs-Test
+id: Google Chronicle Backstory List Alerts - Test
 version: -1
-name: Playbook-GoogleChronicle_list_iocs-Test
+name: Google Chronicle Backstory List Alerts - Test
 description: This playbook uses the Google Chronicle Backstory integration and tests
-  the various scenarios of the "gcb-list-iocs" command.
+  the various scenarios of the "gcb-list-alerts" command.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e0bf41ff-38f9-460c-8f0f-6c4570fee4f8
+    taskid: ffd315ca-1056-48bf-8dd3-dcb69440e516
     type: start
     task:
-      id: e0bf41ff-38f9-460c-8f0f-6c4570fee4f8
+      id: ffd315ca-1056-48bf-8dd3-dcb69440e516
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -31,10 +31,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 37ac2c94-7278-437b-806a-4b5be222da96
+    taskid: 34f048a0-1324-4714-861e-6ef92d19b341
     type: regular
     task:
-      id: 37ac2c94-7278-437b-806a-4b5be222da96
+      id: 34f048a0-1324-4714-861e-6ef92d19b341
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -47,6 +47,7 @@ tasks:
       - "2"
       - "5"
       - "7"
+      - "9"
     scriptarguments:
       all:
         simple: "yes"
@@ -58,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 195
         }
       }
@@ -67,15 +68,16 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: fe36dedb-affa-43df-81be-e39fbac23eb8
+    taskid: 36a0c0d0-8a93-475a-8292-0a160c8c994b
     type: regular
     task:
-      id: fe36dedb-affa-43df-81be-e39fbac23eb8
+      id: 36a0c0d0-8a93-475a-8292-0a160c8c994b
       version: -1
-      name: Get list of IoCs
-      description: List all of the IoCs discovered within your enterprise within the
-        specified time range.
-      script: Google Chronicle Backstory|||gcb-list-iocs
+      name: Get list of alerts
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      script: Google Chronicle Backstory|||gcb-list-alerts
       type: regular
       iscommand: true
       brand: Google Chronicle Backstory
@@ -83,8 +85,10 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      page_size:
-        simple: "3"
+      end_time: {}
+      page_size: {}
+      preset_time_range: {}
+      severity: {}
       start_time: {}
     separatecontext: false
     view: |-
@@ -99,18 +103,18 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 3a496ee1-89b0-4ce3-8882-af0075f635fa
+    taskid: 2dcb9543-7584-4487-876a-94f55a318d22
     type: condition
     task:
-      id: 3a496ee1-89b0-4ce3-8882-af0075f635fa
+      id: 2dcb9543-7584-4487-876a-94f55a318d22
       version: -1
-      name: Verify results
+      name: Verify Result
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "11"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -119,8 +123,8 @@ tasks:
           left:
             value:
               complex:
-                root: Domain
-                accessor: Name
+                root: GoogleChronicleBackstory
+                accessor: Alert.AssetName
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -129,7 +133,7 @@ tasks:
             value:
               complex:
                 root: GoogleChronicleBackstory
-                accessor: Iocs.Artifact
+                accessor: Alert.AlertInfo.Name
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -138,7 +142,7 @@ tasks:
             value:
               complex:
                 root: GoogleChronicleBackstory
-                accessor: Iocs.IocIngestTime
+                accessor: Alert.AlertInfo.Severity
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -147,7 +151,7 @@ tasks:
             value:
               complex:
                 root: GoogleChronicleBackstory
-                accessor: Iocs.FirstAccessedTime
+                accessor: Alert.AlertInfo.SourceProduct
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -156,7 +160,7 @@ tasks:
             value:
               complex:
                 root: GoogleChronicleBackstory
-                accessor: Iocs.LastAccessedTime
+                accessor: Alert.AlertInfo.Timestamp
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -165,43 +169,7 @@ tasks:
             value:
               complex:
                 root: GoogleChronicleBackstory
-                accessor: Iocs.Sources.Category
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Iocs.Sources.IntRawConfidenceScore
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Iocs.Sources.NormalizedConfidenceScore
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Iocs.Sources.RawSeverity
-                transformers:
-                - operator: uniq
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: GoogleChronicleBackstory
-                accessor: Iocs.Sources.Source
+                accessor: Alert.AlertCounts
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -215,39 +183,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 7523827b-50b9-4379-8515-14d558d5dc39
-    type: title
-    task:
-      id: 7523827b-50b9-4379-8515-14d558d5dc39
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "5":
     id: "5"
-    taskid: 26d0890f-773e-4560-8764-f63d6083637f
+    taskid: b245ebdf-bb92-40a8-8efa-a237081ba23c
     type: regular
     task:
-      id: 26d0890f-773e-4560-8764-f63d6083637f
+      id: b245ebdf-bb92-40a8-8efa-a237081ba23c
       version: -1
-      name: Invalid page size argument
-      description: List all of the IoCs discovered within your enterprise within the
-        specified time range.
-      script: Google Chronicle Backstory|||gcb-list-iocs
+      name: Invalid start time argument
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      script: Google Chronicle Backstory|||gcb-list-alerts
       type: regular
       iscommand: true
       brand: Google Chronicle Backstory
@@ -255,10 +202,12 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      page_size:
-        simple: 1a
+      end_time: {}
+      page_size: {}
       preset_time_range: {}
-      start_time: {}
+      severity: {}
+      start_time:
+        simple: 2020-01-01T00:00:00
     continueonerror: true
     separatecontext: false
     view: |-
@@ -273,12 +222,12 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 7943d48b-3364-4e7a-815b-a814af179b71
+    taskid: c536235a-73d7-40d3-8d4d-ceb6750e1ffe
     type: condition
     task:
-      id: 7943d48b-3364-4e7a-815b-a814af179b71
+      id: c536235a-73d7-40d3-8d4d-ceb6750e1ffe
       version: -1
-      name: Is error?
+      name: Is Error?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
@@ -288,7 +237,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "11"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -305,15 +254,16 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 2df2d226-8733-4378-8083-b2eaa0faf1e6
+    taskid: 50fa9767-adc9-4c2c-827c-624aa8781bf8
     type: regular
     task:
-      id: 2df2d226-8733-4378-8083-b2eaa0faf1e6
+      id: 50fa9767-adc9-4c2c-827c-624aa8781bf8
       version: -1
-      name: Invalid start time argument
-      description: List all of the IoCs discovered within your enterprise within the
-        specified time range.
-      script: Google Chronicle Backstory|||gcb-list-iocs
+      name: Invalid page size argument
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      script: Google Chronicle Backstory|||gcb-list-alerts
       type: regular
       iscommand: true
       brand: Google Chronicle Backstory
@@ -321,9 +271,12 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      page_size: {}
-      start_time:
-        simple: 2020-01-01T00:00:00
+      end_time: {}
+      page_size:
+        simple: 1a
+      preset_time_range: {}
+      severity: {}
+      start_time: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -338,12 +291,12 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 81ae629f-3ca3-4f06-853a-994f95bd9adc
+    taskid: 1476195e-6f4b-4e6c-89c2-e554458e2839
     type: condition
     task:
-      id: 81ae629f-3ca3-4f06-853a-994f95bd9adc
+      id: 1476195e-6f4b-4e6c-89c2-e554458e2839
       version: -1
-      name: Is error?
+      name: Is Error?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
@@ -353,7 +306,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "11"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -370,10 +323,79 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 0cce4e4f-461f-4ffd-835f-3d3a6c550a6c
+    taskid: 7e681bd6-fc02-4c64-8cc3-a136bddbac12
     type: regular
     task:
-      id: 0cce4e4f-461f-4ffd-835f-3d3a6c550a6c
+      id: 7e681bd6-fc02-4c64-8cc3-a136bddbac12
+      version: -1
+      name: Invalid preset time range argument
+      description: List all the alerts tracked within your enterprise for the specified
+        time range. Both the parsed alerts and their corresponding raw alert logs
+        are returned.
+      script: Google Chronicle Backstory|||gcb-list-alerts
+      type: regular
+      iscommand: true
+      brand: Google Chronicle Backstory
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      end_time: {}
+      page_size: {}
+      preset_time_range:
+        simple: Last 8 days
+      severity: {}
+      start_time: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 1727fb71-c5d8-4a6b-83b9-752e5c22c348
+    type: condition
+    task:
+      id: 1727fb71-c5d8-4a6b-83b9-752e5c22c348
+      version: -1
+      name: Is Error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: d40ca4b9-0936-4650-83ce-a53ca8af148e
+    type: regular
+    task:
+      id: d40ca4b9-0936-4650-83ce-a53ca8af148e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -383,7 +405,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "12"
     scriptarguments:
       all:
         simple: "yes"
@@ -395,19 +417,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 6c7c3c53-4641-4fe8-8ef5-322f4de04079
+  "12":
+    id: "12"
+    taskid: f3c994bc-2065-421c-87f1-0e776fe2da63
     type: regular
     task:
-      id: 6c7c3c53-4641-4fe8-8ef5-322f4de04079
+      id: f3c994bc-2065-421c-87f1-0e776fe2da63
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -417,7 +439,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
+      - "13"
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -429,8 +451,30 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 11e71dbb-7013-43f4-89fa-a33d869a3301
+    type: title
+    task:
+      id: 11e71dbb-7013-43f4-89fa-a33d869a3301
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
         }
       }
     note: false
@@ -439,12 +483,15 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "6_9_yes": 0.4
+      "10_11_yes": 0.3,
+      "3_11_yes": 0.44,
+      "6_11_yes": 0.38,
+      "8_11_yes": 0.5
     },
     "paper": {
       "dimensions": {
         "height": 1085,
-        "width": 1240,
+        "width": 1670,
         "x": 50,
         "y": 50
       }

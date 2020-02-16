@@ -1,6 +1,6 @@
-id: Playbook-GoogleChronicle_asset-Test
+id: Google Chronicle Backstory Asset - Test
 version: -1
-name: Playbook-GoogleChronicle_asset-Test
+name: Google Chronicle Backstory Asset - Test
 description: This playbook uses the Google Chronicle Backstory integration and tests
   the various scenarios of the "gcb-assets" command.
 starttaskid: "0"

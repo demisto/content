@@ -1,6 +1,6 @@
-id: Playbook-GoogleChronicle_ioc_details-Test
+id: Google Chronicle Backstory IOC Details - Test
 version: -1
-name: Playbook-GoogleChronicle_ioc_details-Test
+name: Google Chronicle Backstory IOC Details - Test
 description: This playbook uses the Google Chronicle Backstory integration and tests
   the various scenarios of the "gcb-list-ioc-details" command.
 starttaskid: "0"

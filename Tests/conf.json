@@ -2267,23 +2267,28 @@
         },
         {
             "integrations": "Google Chronicle Backstory",
-            "playbookID": "Playbook-GoogleChronicle_asset-Test"
+            "playbookID": "Google Chronicle Backstory Asset - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Google Chronicle Backstory",
-            "playbookID": "Playbook-GoogleChronicle_ioc_details-Test"
+            "playbookID": "Google Chronicle Backstory IOC Details - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Google Chronicle Backstory",
-            "playbookID": "Playbook-GoogleChronicle_list_alerts-Test"
+            "playbookID": "Google Chronicle Backstory List Alerts - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Google Chronicle Backstory",
-            "playbookID": "Playbook-GoogleChronicle_list_iocs-Test"
+            "playbookID": "Google Chronicle Backstory List IOCs - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Google Chronicle Backstory",
-            "playbookID": "Playbook-GoogleChronicle_reputation-Test"
+            "playbookID": "Google Chronicle Backstory Reputation - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Feodo Tracker Hashes Feed",
