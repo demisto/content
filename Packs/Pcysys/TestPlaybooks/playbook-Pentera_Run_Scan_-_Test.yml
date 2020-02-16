@@ -1,0 +1,111 @@
+id: Pentera Run Scan - Test
+version: -1
+name: Pentera Run Scan - Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: abec8b6a-d170-4218-8f20-0b5994e05499
+    type: start
+    task:
+      id: abec8b6a-d170-4218-8f20-0b5994e05499
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 4d8ee902-4bee-40e5-82fe-3d4456e8afc2
+    type: regular
+    task:
+      id: 4d8ee902-4bee-40e5-82fe-3d4456e8afc2
+      version: -1
+      name: Delete Context
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: a1479268-ff53-4621-8ba9-da946f34ae3b
+    type: playbook
+    task:
+      id: a1479268-ff53-4621-8ba9-da946f34ae3b
+      version: -1
+      name: Pentera Run Scan
+      playbookName: Pentera Run Scan
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    scriptarguments:
+      Pentera Task Name:
+        simple: Test Template for Playbook
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.0.0
