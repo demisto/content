@@ -17,15 +17,15 @@ number of hits against unknown website from same subnet", "rule_name": "NG_SIEM_
 unknown website from same subnet", "rule_title": "NG_SIEM_UC25- High number of hits against unknown website from same
 subnet", "security_domain": "NG_SIEM_UC25- High number of hits against unknown website from same subnet", "severity":
 "unknown", "source": "NG_SIEM_UC25- High number of hits against unknown website from same subnet", "sourcetype":
-"stash", "splunk_server": "splunk-index-02.eu.merckgroup.com", "src": "10.253.244.208 , 10.253.244.244 , 10.253.244.51 ,
- 10.253.244.84 , 10.253.244.96", "u_category": "unknown", "urgency": "low", "user": "xyz\a1234 , xyz\b5678 , xyz\c91011
+"stash", "splunk_server": "splunk-index-02.eu.merckgroup.com", "src": "2.2.2.2 , 3.3.3.3 , 4.4.4.4 ,
+ 8.8.8.8 , 10.10.10.10", "u_category": "unknown", "urgency": "low", "user": "xyz\a1234 , xyz\b5678 , xyz\c91011
  , xyz\d121314 , unknown", "website": "17.253.55.205"}"""
 
 LIST_RAW = 'Feb 13 09:02:55 1,2020/02/13 09:02:55,001606001116,THREAT,url,' \
-           '1,2020/02/13 09:02:55,192.168.0.2,8.5.1.44,0.0.0.0,0.0.0.0,rule1,jordy,,web-browsing,vsys1,trust,untrust,' \
+           '1,2020/02/13 09:02:55,10.1.1.1,1.2.3.4,0.0.0.0,0.0.0.0,rule1,jordy,,web-browsing,vsys1,trust,untrust,' \
            'ethernet1/2,ethernet1/1,forwardAll,2020/02/13 09:02:55,59460,1,62889,80,0,0,0x208000,tcp,alert,' \
            '"ushship.com/xed/config.bin",(9999),not-resolved,informational,client-to-server,' \
-           '0,0x0,192.168.0.0-192.168.255.255,United States,0,text/html'
+           '0,0x0,1.1.22.22-5.6.7.8,United States,0,text/html'
 
 
 EXPECTED = {
