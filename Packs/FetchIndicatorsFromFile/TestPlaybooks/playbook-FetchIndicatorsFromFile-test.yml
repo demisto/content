@@ -1,6 +1,6 @@
 elasticcommonfields: {}
 id: FetchIndicatorsFromFile-test
-version: 5
+version: -1
 contentitemexportablefields:
   contentitemfields:
     propagationLabels:
