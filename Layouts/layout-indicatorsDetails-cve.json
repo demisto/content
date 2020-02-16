@@ -1,252 +1,252 @@
 {
-	"TypeName": "cveRep",
-	"kind": "indicatorsDetails",
-	"layout": {
-		"TypeName": "",
-		"commitMessage": "",
-		"id": "cveRep",
-		"kind": "indicatorsDetails",
-		"modified": "2020-02-13T16:44:01.227626+02:00",
-		"name": "",
-		"prevKind": "indicatorsDetails",
-		"prevTypeId": "cveRep",
-		"propagationLabels": [
-			"all"
-		],
-		"shouldCommit": false,
-		"sortValues": null,
-		"system": false,
-		"tabs": [
-			{
-				"id": "default-main",
-				"name": "Info",
-				"sections": [
-					{
-						"h": 2,
-						"i": "default-main-reputationSources",
-						"moved": false,
-						"name": "Reputation",
-						"static": false,
-						"type": "reputationSources",
-						"w": 1,
-						"x": 1,
-						"y": 1
-					},
-					{
-						"h": 3,
-						"i": "default-main-relatedIncidents",
-						"moved": false,
-						"name": "Related Incidents",
-						"static": false,
-						"type": "relatedIncidents",
-						"w": 2,
-						"x": 0,
-						"y": 3
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"i": "default-main-indicatorTimeline",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "firstseen",
-								"height": 24,
-								"id": "indicator-first-seen",
-								"index": 0,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "lastseen",
-								"height": 24,
-								"id": "indicator-last-seen",
-								"index": 1,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "modified",
-								"height": 24,
-								"id": "6c11f3d0-b1df-11e9-b8c7-15ca72216f6a",
-								"index": 2,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "published",
-								"height": 24,
-								"id": "753f3210-b1df-11e9-b8c7-15ca72216f6a",
-								"index": 3,
-								"startCol": 0
-							}
-						],
-						"moved": false,
-						"name": "Timeline",
-						"static": false,
-						"type": "indicatorTimeline",
-						"w": 1,
-						"x": 2,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "source",
-								"height": 24,
-								"id": "indicator-source",
-								"index": 0,
-								"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "cvedescription",
-								"height": 24,
-								"id": "44fc9ca0-b1df-11e9-b8c7-15ca72216f6a",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "cvss",
-								"height": 24,
-								"id": "45c40b50-b1df-11e9-b8c7-15ca72216f6a",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "indicatortype",
-								"height": 24,
-								"id": "indicator-type",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "comment",
-								"height": 48,
-								"id": "indicator-comment",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"moved": false,
-						"name": "CVE Info",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 1
-					},
-					{
-						"h": 1,
-						"hideName": true,
-						"i": "default-main-856a1930-3d5c-11ea-8f80-71a50769e869",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Reputation Status",
-						"static": false,
-						"type": "reputationStatus",
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"h": 1,
-						"hideName": true,
-						"i": "default-main-865abac0-3d5c-11ea-8f80-71a50769e869",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Expiration Status",
-						"static": false,
-						"type": "expirationStatus",
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 3,
-						"i": "default-main-87ab2f90-3d5c-11ea-8f80-71a50769e869",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Comments",
-						"static": false,
-						"type": "comments",
-						"w": 1,
-						"x": 2,
-						"y": 5
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "default-main-201f9ae0-4e6f-11ea-8bf6-67db400d7da5",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "tags",
-								"height": 24,
-								"id": "3de33be0-4e6f-11ea-8bf6-67db400d7da5",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Tags",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "default-main-27e38520-4e6f-11ea-8bf6-67db400d7da5",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Sources Data",
-						"static": false,
-						"type": "sources",
-						"w": 2,
-						"x": 0,
-						"y": 6
-					}
-				],
-				"type": "custom"
-			}
-		],
-		"typeId": "cveRep",
-		"vcShouldIgnore": false,
-		"version": -1
-	},
-	"typeId": "cveRep",
-	"version": -1,
-	"fromVersion": "5.5.0"
+    "TypeName": "cveRep",
+    "kind": "indicatorsDetails",
+    "layout": {
+        "TypeName": "",
+        "commitMessage": "",
+        "id": "cveRep",
+        "kind": "indicatorsDetails",
+        "modified": "2020-02-13T16:44:01.227626+02:00",
+        "name": "",
+        "prevKind": "indicatorsDetails",
+        "prevTypeId": "cveRep",
+        "propagationLabels": [
+            "all"
+        ],
+        "shouldCommit": false,
+        "sortValues": null,
+        "system": false,
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "default-main-reputationSources",
+                        "moved": false,
+                        "name": "Reputation",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-relatedIncidents",
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-indicatorTimeline",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 24,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 24,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 24,
+                                "id": "6c11f3d0-b1df-11e9-b8c7-15ca72216f6a",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "published",
+                                "height": 24,
+                                "id": "753f3210-b1df-11e9-b8c7-15ca72216f6a",
+                                "index": 3,
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "source",
+                                "height": 24,
+                                "id": "indicator-source",
+                                "index": 0,
+                                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cvedescription",
+                                "height": 24,
+                                "id": "44fc9ca0-b1df-11e9-b8c7-15ca72216f6a",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cvss",
+                                "height": 24,
+                                "id": "45c40b50-b1df-11e9-b8c7-15ca72216f6a",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 24,
+                                "id": "indicator-type",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "comment",
+                                "height": 48,
+                                "id": "indicator-comment",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "CVE Info",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-856a1930-3d5c-11ea-8f80-71a50769e869",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Reputation Status",
+                        "static": false,
+                        "type": "reputationStatus",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-865abac0-3d5c-11ea-8f80-71a50769e869",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-87ab2f90-3d5c-11ea-8f80-71a50769e869",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "default-main-201f9ae0-4e6f-11ea-8bf6-67db400d7da5",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 24,
+                                "id": "3de33be0-4e6f-11ea-8bf6-67db400d7da5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-27e38520-4e6f-11ea-8bf6-67db400d7da5",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Sources Data",
+                        "static": false,
+                        "type": "sources",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            }
+        ],
+        "typeId": "cveRep",
+        "vcShouldIgnore": false,
+        "version": -1
+    },
+    "typeId": "cveRep",
+    "version": -1,
+    "fromVersion": "5.5.0"
 }
