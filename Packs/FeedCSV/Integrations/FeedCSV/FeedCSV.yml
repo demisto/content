@@ -83,8 +83,7 @@ configuration:
   name: ignore_regex
   required: false
   type: 0
-- additionalinfo: Name of the field names in the CSV feed. If several are given, will
-    use "indicator" as the default indicator value field.
+- additionalinfo: The names to give the fields in the CSV feed. If several are given, "value" will be used as the default indicator value field.
   defaultvalue: value
   display: Field Names
   name: fieldnames
