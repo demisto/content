@@ -20,14 +20,14 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
@@ -176,7 +176,13 @@ script:
         }
 
         var cmdUrl = 'alerts' + encodeToURLQuery(queryArgs);
+        logInfo('Getting/Fetching Netskope Alerts (to be incidents) with ' + String(cmdUrl));
         var result = sendRequest('GET', cmdUrl);
+        return result;
+    }
+
+    function getAlertsCommand() {
+        result = getAlerts()
         var retArray = [];
         result.data.forEach(function(arrayItem) {
             var id = arrayItem._id;
@@ -265,8 +271,9 @@ script:
     }
 
     function fetchAlerts() {
-        last_run = parseInt(getLastRun());
-        if (!isNaN(last_run)) {
+        lastRun = getLastRun();
+        last_run = parseInt(lastRun.lastTime);
+        if (isNaN(last_run)) {
             last_run = now() - parseInt(translateTimeperiod(params.firstFetch));
         }
 
@@ -274,25 +281,27 @@ script:
         args.type = "";
         args.starttime = last_run.toString();
         args.endtime = now().toString();
-
-        alerts = getAlerts().Contents;
-        alerts.reverse();  // alerts are fetched in descending order, reversing to process older first
-        incidents = [];
-        for (var i = 0; i < alerts.length; i++) {
-            item = alerts[i];
-            incident = {};
-            d = new Date(item.timestamp);
-            incident.occurred = d.toISOString();
-            incident.name = item.alert_type + " - " + item.alert_name;
-            incident.rawJSON = JSON.stringify(item);
-            incidents.push(incident);
-            last_run = item.timestamp;
-            if (incidents >= Math.min(50, params.maxFetch)) {
-                break;
+        alerts = getAlerts().data;
+        var incidents = [];
+        if (typeof alerts !== 'undefined') {
+            alerts.reverse();  // alerts are fetched in descending order, reversing to process older first
+            for (var i = 0; i < alerts.length; i++) {
+                item = alerts[i];
+                incident = {};
+                d = new Date(item.timestamp);
+                incident.occurred = d.toISOString();
+                incident.name = item.alert_type + " - " + item.alert_name;
+                incident.rawJSON = JSON.stringify(item);
+                incidents.push(incident);
+                last_run = item.timestamp;
+                if (incidents >= Math.min(50, params.maxFetch)) {
+                    break;
+                }
             }
         }
-
-        setLastRun(last_run);
+        lastRun = {'lastTime': args.endtime};
+        setLastRun(lastRun);
+        logInfo('Netskope lastRun is: ' + String(args.endtime));
         return JSON.stringify(incidents);
     }
 
@@ -315,7 +324,7 @@ script:
         case 'netskope-events':
             return getEvents();
         case 'netskope-alerts':
-            return getAlerts();
+            return getAlertsCommand();
     }
   type: javascript
   commands:

@@ -221,3 +221,22 @@ def test_parse_violating_component():
         }
     ]
     assert violating_component_list_output == parse_violating_component(violating_component_list_input)
+
+
+def test_get_data_owner():
+    from SymantecDLP import get_data_owner
+    input_empty_data_owner = {}
+    input_diff_data_owner_type = []
+    input_valid_data_owner = {
+        'name': 'TestName',
+        'email': 'TestEmail'
+    }
+    output_empty_data_owner = {}
+    output_diff_data_owner = {}
+    output_valid_data_owner = {
+        'Name': 'TestName',
+        'Email': 'TestEmail'
+    }
+    assert output_empty_data_owner == get_data_owner(input_empty_data_owner)
+    assert output_diff_data_owner == get_data_owner(input_diff_data_owner_type)
+    assert output_valid_data_owner == get_data_owner(input_valid_data_owner)
