@@ -694,7 +694,7 @@ def safe_load_json(json_object):
     if (json_object.startswith('{') and json_object.endswith('}')) or (json_object.startswith('[') and json_object.endswith(']')):
         try:
             safe_json = json.loads(json_object)
-        except json.decoder.JSONDecodeError as e:
+        except ValueError as e:
             return_error(
                 'Unable to parse JSON string. Please verify the JSON is valid. - '+str(e))
     else:
