@@ -1,10 +1,10 @@
-# How to Access the EDL Service
+### How to Access the EDL Service
 
 There are two ways that you can access the EDL service:
 - **https://*demisto_address*/instance/execute/*instance_name*** 
 - **http://*demisto_address*:*listen_port***
 
-# Access the EDL Service by Instance Name
+### Access the EDL Service by Instance Name
 To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Demisto, go to **Settings > About > Troubleshooting**.

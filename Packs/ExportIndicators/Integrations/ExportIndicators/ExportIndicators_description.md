@@ -1,10 +1,10 @@
-# How to Access the Export Indicators Service
+### How to Access the Export Indicators Service
 
 There are two ways that you can access the service:
 - **https://*demisto_address*/instance/execute/*instance_name*** 
 - **http://*demisto_address*:*listen_port***
 
-# Access the Service by Instance Name
+### Access the Service by Instance Name
 To access the service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Demisto, go to **Settings > About > Troubleshooting**.
