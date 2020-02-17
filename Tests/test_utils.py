@@ -416,7 +416,7 @@ class Docker:
     MEMORY_USAGE = 'MemUsage'
     PIDS_USAGE = 'PIDs'
     CONTAINER_NAME = 'Name'
-    DEFAULT_CONTAINER_MEMORY_USAGE = 50
+    DEFAULT_CONTAINER_MEMORY_USAGE = 75
     DEFAULT_CONTAINER_PIDS_USAGE = 3
     REMOTE_MACHINE_USER = 'ec2-user'
     SSH_OPTIONS = 'ssh -o StrictHostKeyChecking=no'
