@@ -197,7 +197,7 @@ def batch_get_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.batch_get_item(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -225,7 +225,7 @@ def batch_write_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.batch_write_item(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -252,7 +252,7 @@ def create_backup_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.create_backup(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -284,7 +284,7 @@ def create_global_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.create_global_table(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -373,7 +373,7 @@ def create_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.create_table(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -400,7 +400,7 @@ def delete_backup_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.delete_backup(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -436,7 +436,7 @@ def delete_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.delete_item(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -462,7 +462,7 @@ def delete_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.delete_table(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -489,7 +489,7 @@ def describe_backup_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.describe_backup(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -515,7 +515,7 @@ def describe_continuous_backups_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.describe_continuous_backups(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -542,7 +542,7 @@ def describe_endpoints_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.describe_endpoints(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -568,7 +568,7 @@ def describe_global_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.describe_global_table(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -595,7 +595,7 @@ def describe_global_table_settings_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.describe_global_table_settings(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -622,7 +622,7 @@ def describe_limits_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.describe_limits(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -648,7 +648,7 @@ def describe_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.describe_table(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -675,7 +675,7 @@ def describe_time_to_live_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.describe_time_to_live(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -708,7 +708,7 @@ def get_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.get_item(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -736,7 +736,7 @@ def list_backups_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.list_backups(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -764,7 +764,7 @@ def list_global_tables_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.list_global_tables(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -791,7 +791,7 @@ def list_tables_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.list_tables(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -818,7 +818,7 @@ def list_tags_of_resource_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.list_tags_of_resource(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -853,7 +853,7 @@ def put_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.put_item(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -894,7 +894,7 @@ def query_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.query(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -961,7 +961,7 @@ def restore_table_from_backup_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.restore_table_from_backup(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1030,7 +1030,7 @@ def restore_table_to_point_in_time_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.restore_table_to_point_in_time(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1069,7 +1069,7 @@ def scan_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.scan(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1097,7 +1097,7 @@ def tag_resource_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.tag_resource(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1133,7 +1133,7 @@ def transact_get_items_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.transact_get_items(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1201,7 +1201,7 @@ def transact_write_items_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.transact_write_items(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1228,7 +1228,7 @@ def untag_resource_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.untag_resource(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1259,7 +1259,7 @@ def update_continuous_backups_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.update_continuous_backups(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1298,7 +1298,7 @@ def update_global_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.update_global_table(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1360,7 +1360,7 @@ def update_global_table_settings_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.update_global_table_settings(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1397,7 +1397,7 @@ def update_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.update_item(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1481,7 +1481,7 @@ def update_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.update_table(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
@@ -1514,7 +1514,7 @@ def update_time_to_live_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw_json'.")
+        raise ValueError("Please remove other arguments before using 'raw_json'.")
     response = client.update_time_to_live(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
