@@ -8397,15 +8397,6 @@ def setup_proxy():
     socket.socket = socks.socksocket  # type: ignore
 
 
-'''COMMAND SWITCHBOARD'''
-
-commands = {
-    'test-module': test_command,
-    'whois': whois_command,
-    'domain': domain_command
-}
-
-
 ''' EXECUTION CODE '''
 
 
@@ -8414,7 +8405,12 @@ def main():
     org_socket = socket.socket
     command = demisto.command()
     try:
-        commands[command]()
+        if command == 'test-module':
+            test_command()
+        elif command == 'whois':
+            whois_command()
+        elif command == 'domain':
+            domain_command()
     except Exception as e:
         LOG(e)
         return_error(str(e))
