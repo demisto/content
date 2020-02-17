@@ -47,7 +47,7 @@ def test_gcb_list_ioc_success(client):
     """
     When valid response comes in gcb-list-iocs command it should respond with result.
     """
-    from GoogleChronicle import gcb_list_iocs_command
+    from GoogleChronicleBackstory import gcb_list_iocs_command
     with open("./TestData/list_ioc_response.txt", "rb") as f:
         dummy_response = f.read()
     with open("./TestData/list_ioc_ec.json") as f:
@@ -71,7 +71,7 @@ def test_gcb_list_ioc_failure_response(client):
     When response not come with invalid response come in gcb-list-iocs command then it should raise ValueError
     'Failed to parse response.'
     """
-    from GoogleChronicle import gcb_list_iocs_command
+    from GoogleChronicleBackstory import gcb_list_iocs_command
     with open("./TestData/list_ioc_response.txt", "rb") as f:
         dummy_response = f.read()
 
@@ -90,7 +90,7 @@ def test_gcb_list_ioc_failure_response_400(client):
     """
     When status code 400 occurred in gcb-list-iocs command it should raise ValueError 'page not found'.
     """
-    from GoogleChronicle import gcb_list_iocs_command
+    from GoogleChronicleBackstory import gcb_list_iocs_command
     mock_response = (
         Response(dict(status=400)),
         b'{"error": { "code": 400, "message": "page not found", "status": "INVALID_ARGUMENT" } }'
@@ -106,7 +106,7 @@ def test_gcb_ioc_details_command_success(client):
     """
     When command execute successfully then it should prepare valid hr, ec
     """
-    from GoogleChronicle import gcb_ioc_details_command
+    from GoogleChronicleBackstory import gcb_ioc_details_command
 
     with open("./TestData/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
@@ -133,7 +133,7 @@ def test_gcb_ioc_details_command_empty_response(client):
     """
     When there is an empty response the command should response empty ec and valid text in hr
     """
-    from GoogleChronicle import gcb_ioc_details_command
+    from GoogleChronicleBackstory import gcb_ioc_details_command
     expected_hr = '### For artifact: {}\n'.format(ARGS['artifact_value'])
     expected_hr += 'No Records Found'
 
@@ -154,7 +154,7 @@ def test_gcb_ioc_details_command_failure(client):
     """
     When there is a invalid response then ValueError should be raised with valid message
     """
-    from GoogleChronicle import gcb_ioc_details_command
+    from GoogleChronicleBackstory import gcb_ioc_details_command
 
     dummy_response = "{ \"error\": { \"code\": 400, \"message\": \"Invalid JSON payload received. Unknown name " \
                      "\'artifact.ip_address\': Cannot bind query parameter. Field \'ip_address\' could not be found" \
@@ -178,7 +178,7 @@ def test_gcb_ioc_details_command_failure_permission_denied(client):
     """
     When there is a response for permission denied then ValueError should be raised with valid message
     """
-    from GoogleChronicle import gcb_ioc_details_command
+    from GoogleChronicleBackstory import gcb_ioc_details_command
 
     dummy_response = "{ \"error\": { \"code\": 403, \"message\": \"Permission denied\" \
                      , \"status\": \"PERMISSION_DENIED\", \"details\": [ {  } ] } } "
@@ -201,7 +201,7 @@ def test_reputation_operation_command_success(client):
     When two comma separated arguments will be passed then function return_outputs should be call twice with valid
     arguments
     """
-    from GoogleChronicle import reputation_operation_command
+    from GoogleChronicleBackstory import reputation_operation_command
     with mock.patch('GoogleChronicle.return_outputs') as mock_return_outputs:
         fun = mock.Mock()
         args = {
@@ -220,7 +220,7 @@ def test_function_success(client):
     """
     When success response come then test_function command should pass.
     """
-    from GoogleChronicle import test_function
+    from GoogleChronicleBackstory import test_function
     mock_response = (
         Response(dict(status=200)),
         b'{}'
@@ -236,7 +236,7 @@ def test_function_failure_status_code_400(client):
     """
     When unsuccessful response come then test_function command should raise ValueError with appropriate message.
     """
-    from GoogleChronicle import test_function
+    from GoogleChronicleBackstory import test_function
     mock_response = (
         Response(dict(status=400)),
         b'{"error": { "code": 400, "message": "Request contains an invalid argument.", "status": "INVALID_ARGUMENT" } }'
@@ -252,7 +252,7 @@ def test_function_failure_status_code_403(client):
     """
     When entered JSON is correct but client has not given any access, should return permission denied
     """
-    from GoogleChronicle import test_function
+    from GoogleChronicleBackstory import test_function
     mock_response = (
         Response(dict(status=403)),
         b'{"error": { "code": 403, "message": "Permission denied" } }'
@@ -269,7 +269,7 @@ def test_validate_parameter_success(mocker):
     When valid input is added on Integration Configuration then it should pass
     """
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
-    from GoogleChronicle import validate_configuration_parameters
+    from GoogleChronicleBackstory import validate_configuration_parameters
     param = {
         'service_account_credential': '{"key":"value"}',
         'fetch_limit': '20',
@@ -282,7 +282,7 @@ def test_validate_parameter_failure_wrong_json():
     """
     When wrong JSON format of User Service account JSON input is added it should return validation error
     """
-    from GoogleChronicle import validate_configuration_parameters
+    from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_credentials = {
         'service_account_credential': '{"key","value"}',
         'fetch_limit': '20',
@@ -298,7 +298,7 @@ def test_validate_parameter_failure_page_size():
     """
     When page size not in positive number then it should raise ValueError
     """
-    from GoogleChronicle import validate_configuration_parameters
+    from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_page_sizes = {
         'service_account_credential': '{"key":"value"}',
         'fetch_limit': '2a0',
@@ -314,7 +314,7 @@ def test_validate_parameter_failure_wrong_fetch_days_format():
     """
     When page size not in positive number then it should raise ValueError
     """
-    from GoogleChronicle import validate_configuration_parameters
+    from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_format = {
         'service_account_credential': '{"key":"value"}',
         'fetch_limit': '20',
@@ -330,7 +330,7 @@ def test_validate_parameter_failure_wrong_fetch_days_number():
     """
     When First fetch days field's number is invalid then it should raise ValueError
     """
-    from GoogleChronicle import validate_configuration_parameters
+    from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_number = {
         'service_account_credential': '{"key":"value"}',
         'fetch_limit': '20',
@@ -346,7 +346,7 @@ def test_validate_parameter_failure_wrong_fetch_days_unit():
     """
     When First fetch days field's unit is invalid then it should raise ValueError
     """
-    from GoogleChronicle import validate_configuration_parameters
+    from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_unit = {
         'service_account_credential': '{"key":"value"}',
         'fetch_limit': '20',
@@ -387,7 +387,7 @@ def test_gcb_assets_command_success(client):
     """
     When valid response come in gcb-assets command it should respond with result.
     """
-    from GoogleChronicle import gcb_assets_command
+    from GoogleChronicleBackstory import gcb_assets_command
 
     with open("./TestData/asset_response.json", encoding='utf-8') as f:
         expected_response = json.load(f)
@@ -409,7 +409,7 @@ def test_gcb_assets_command_failure(client):
     """
     When Null response come in gcb-assets command it should respond with No Records Found.
     """
-    from GoogleChronicle import gcb_assets_command
+    from GoogleChronicleBackstory import gcb_assets_command
 
     failure_mock_response = (
         Response(dict(status=200)),
@@ -425,7 +425,7 @@ def test_gcb_assets_command_failure_with_uri_empty_response(client):
     """
     When Null response come in gcb-assets command it should respond with No Records Found.
     """
-    from GoogleChronicle import gcb_assets_command
+    from GoogleChronicleBackstory import gcb_assets_command
 
     with open("./TestData/asset_with_no_response.json", encoding='utf-8') as f:
         expected_response = json.load(f)
@@ -445,7 +445,7 @@ def test_gcb_assets_command_invalid_date(client):
     """
     When query for invalid start date in gcb-assets command it should raise ValueError.
     """
-    from GoogleChronicle import gcb_assets_command
+    from GoogleChronicleBackstory import gcb_assets_command
 
     with pytest.raises(ValueError) as error:
         gcb_assets_command(client, {'artifact_value': SUCCESS_ASSET_NAME, 'start_time': '2020-02-08'})
@@ -456,7 +456,7 @@ def test_get_artifact_type():
     """
     When valid artifact pass in get_artifact_type function then it should pass else raise ValueError
     """
-    from GoogleChronicle import get_artifact_type
+    from GoogleChronicleBackstory import get_artifact_type
 
     ip = get_artifact_type('10.0.0.1')
     assert ip == 'destination_ip_address'
@@ -484,7 +484,7 @@ def test_validate_date():
     """
     When valid date pass in validate_date function then it should pass else raise ValueError
     """
-    from GoogleChronicle import validate_start_end_date
+    from GoogleChronicleBackstory import validate_start_end_date
     from datetime import datetime, timedelta
 
     with pytest.raises(ValueError) as error:
@@ -514,7 +514,7 @@ def test_validate_date():
 
 
 def test_fetch_incident_success_with_no_param_no_alerts(client):
-    from GoogleChronicle import fetch_incidents
+    from GoogleChronicleBackstory import fetch_incidents
     param = {}
 
     mock_response = (
@@ -542,7 +542,7 @@ def test_fetch_incident_run_ioc_domain_matches(mocker, client):
     """
     With IOC Domain Matches as default selection should be called and create incident in Demisto
     """
-    from GoogleChronicle import fetch_incidents
+    from GoogleChronicleBackstory import fetch_incidents
     param = {}
 
     with open("./TestData/list_ioc_response.txt", "rb") as f:
@@ -560,7 +560,7 @@ def test_fetch_incident_run_ioc_domain_matches(mocker, client):
 
 
 def test_fetch_incident_error_in_response(client):
-    from GoogleChronicle import fetch_incidents
+    from GoogleChronicleBackstory import fetch_incidents
     param = {}
 
     mock_response = (
@@ -595,7 +595,7 @@ def validate_incident(incidents):
 
 
 def test_fetch_incident_success_with_param_and_alerts_when_executed_1st_time(mocker, client):
-    from GoogleChronicle import fetch_incidents
+    from GoogleChronicleBackstory import fetch_incidents
 
     param = {
         'first_fetch_time_interval_days': '4 days',
@@ -619,7 +619,7 @@ def test_fetch_incident_success_with_param_and_alerts_when_executed_1st_time(moc
 
 
 def test_gcb_fetch_incident_success_with_alerts_with_demisto_last_run(mocker, client):
-    from GoogleChronicle import fetch_incidents
+    from GoogleChronicleBackstory import fetch_incidents
 
     param = {
         'fetch_limit': 20,
@@ -647,7 +647,7 @@ def test_asset_with_multiple_alerts_human_readable(client):
     if multiple alerts per assert is found then, it should display asset per alerts in human readable
     :return:
     """
-    from GoogleChronicle import group_infos_by_alert_asset_name, get_gcb_alerts
+    from GoogleChronicleBackstory import group_infos_by_alert_asset_name, get_gcb_alerts
     from CommonServerPython import datetime
 
     with open("./TestData/gcb_alerts_human_readable.txt") as f:
@@ -675,7 +675,7 @@ def test_gcb_list_alert_with_no_arg_supplied_success(mocker, client):
     :param mocker:
     :return:
     """
-    from GoogleChronicle import gcb_list_alerts_command
+    from GoogleChronicleBackstory import gcb_list_alerts_command
     param = {}
 
     mock_response = (
@@ -702,7 +702,7 @@ def test_gcb_list_alert_with_severity_medium_arg_supplied_success(mocker, client
     :param mocker:
     :return:
     """
-    from GoogleChronicle import gcb_list_alerts_command
+    from GoogleChronicleBackstory import gcb_list_alerts_command
     param = {
         'severity': 'Medium'
     }
@@ -731,7 +731,7 @@ def test_gcb_list_alert_with_severity_lowercase_medium_arg_supplied_success(mock
     :param mocker:
     :return:
     """
-    from GoogleChronicle import gcb_list_alerts_command
+    from GoogleChronicleBackstory import gcb_list_alerts_command
     param = {
         'severity': 'medium'
     }
@@ -766,7 +766,7 @@ def test_gcb_list_alert_when_no_alert_found(mocker, client):
     :param mocker:
     :return:
     """
-    from GoogleChronicle import gcb_list_alerts_command
+    from GoogleChronicleBackstory import gcb_list_alerts_command
     param = {}
 
     mock_response = (
@@ -787,7 +787,7 @@ def test_validate_page_size():
     """
     When there is a invalid page size then ValueError should be raised with valid message
     """
-    from GoogleChronicle import validate_page_size
+    from GoogleChronicleBackstory import validate_page_size
     with pytest.raises(ValueError) as error:
         validate_page_size('5s')
     assert str(error.value) == "Page size must be a non-zero numeric value"
@@ -812,7 +812,7 @@ def test_ip_command_success(mocker, client):
     When command execute successfully then it should prepare valid hr, ec
     """
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
-    from GoogleChronicle import ip_command
+    from GoogleChronicleBackstory import ip_command
 
     with open("./TestData/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
@@ -837,7 +837,7 @@ def test_ip_command_success(mocker, client):
 
 
 def test_ip_command_empty_response_when_uri_empty_response(client):
-    from GoogleChronicle import ip_command
+    from GoogleChronicleBackstory import ip_command
 
     with open("./TestData/empty_list_ioc_details.json", "r") as f:
         dummy_response = f.read()
@@ -860,7 +860,7 @@ def test_ip_command_invalid_ip_address(client):
     """
     When user add invalid IP Address then it should raise ValueError with valid response
     """
-    from GoogleChronicle import ip_command
+    from GoogleChronicleBackstory import ip_command
     expected_message = 'Invalid IP - string'
 
     with pytest.raises(ValueError) as error:
@@ -873,7 +873,7 @@ def test_ip_command_empty_response(client):
     """
     When there is an empty response the command should response empty ec and valid text in hr
     """
-    from GoogleChronicle import ip_command
+    from GoogleChronicleBackstory import ip_command
     expected_hr = '### IP: {} found with Reputation: Unknown\n'.format(ARGS['ip'])
     expected_hr += 'No Records Found'
 
@@ -894,7 +894,7 @@ def test_ip_command_failure(client):
     """
     When there is a invalid response then ValueError should be raised with valid message
     """
-    from GoogleChronicle import ip_command
+    from GoogleChronicleBackstory import ip_command
 
     dummy_response = "{ \"error\": { \"code\": 400, \"message\": \"Invalid JSON payload received. Unknown name " \
                      "\'artifact.ip_address\': Cannot bind query parameter. Field \'ip_address\' could not be found" \
@@ -918,7 +918,7 @@ def test_ip_command_failure_permission_denied(client):
     """
     When there is a response for permission denied then ValueError should be raised with valid message
     """
-    from GoogleChronicle import ip_command
+    from GoogleChronicleBackstory import ip_command
 
     dummy_response = "{ \"error\": { \"code\": 403, \"message\": \"Permission denied\" \
                      , \"status\": \"PERMISSION_DENIED\", \"details\": [ {  } ] } } "
@@ -941,7 +941,7 @@ def test_domain_command_success(mocker, client):
     When command execute successfully then it should prepare valid hr, ec
     """
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
-    from GoogleChronicle import domain_command
+    from GoogleChronicleBackstory import domain_command
 
     with open("./TestData/list_ioc_details_response.json", "r") as f:
         dummy_response = f.read()
@@ -965,7 +965,7 @@ def test_domain_command_success(mocker, client):
 
 
 def test_domain_command_empty_response(client):
-    from GoogleChronicle import domain_command
+    from GoogleChronicleBackstory import domain_command
 
     with open("./TestData/empty_list_ioc_details.json", "r") as f:
         dummy_response = f.read()
@@ -988,7 +988,7 @@ def test_gcb_domain_command_empty_response(client):
     """
     When there is an empty response the command should response empty ec and valid text in hr
     """
-    from GoogleChronicle import domain_command
+    from GoogleChronicleBackstory import domain_command
     expected_hr = '### Domain: {} found with Reputation: Unknown\n'.format(ARGS['domain'])
     expected_hr += 'No Records Found'
 
@@ -1009,7 +1009,7 @@ def test_domain_command_failure(client):
     """
     When there is a invalid response then ValueError should be raised with valid message
     """
-    from GoogleChronicle import domain_command
+    from GoogleChronicleBackstory import domain_command
 
     dummy_response = "{ \"error\": { \"code\": 400, \"message\": \"Invalid JSON payload received. Unknown name " \
                      "\'artifact.domai_name\': Cannot bind query parameter. Field \'domai_name\' could not be found " \
@@ -1033,7 +1033,7 @@ def test_domain_command_failure_permission_denied(client):
     """
     When there is a response for permission denied then ValueError should be raised with valid message
     """
-    from GoogleChronicle import domain_command
+    from GoogleChronicleBackstory import domain_command
 
     dummy_response = "{ \"error\": { \"code\": 403, \"message\": \"Permission denied\" \
                      , \"status\": \"PERMISSION_DENIED\", \"details\": [ {  } ] } } "
@@ -1060,7 +1060,7 @@ def test_evaluate_dbot_score_get_all_none(mocker):
     expected_dbot_score = 0
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Low', 24)
 
     # Assert
@@ -1076,7 +1076,7 @@ def test_evaluate_dbot_score_get_all_malicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'High', 93)
 
     # Assert
@@ -1092,7 +1092,7 @@ def test_evaluate_dbot_score_get_all_suspicious(mocker):
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Medium', 44)
 
     # Assert
@@ -1108,7 +1108,7 @@ def test_evaluate_dbot_score_get_categories_suspicious(mocker):
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Low', 24)
 
     # Assert
@@ -1124,7 +1124,7 @@ def test_evaluate_dbot_score_get_categories_malicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Low', 24)
 
     # Assert
@@ -1140,7 +1140,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_severity_suspicious(mocke
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Medium', 24)
 
     # Assert
@@ -1156,7 +1156,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_severity_malicious(mocker
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'High', 24)
 
     # Assert
@@ -1172,7 +1172,7 @@ def test_evaluate_dbot_score_get_categories_malicious_severity_suspicious(mocker
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Medium', 24)
 
     # Assert
@@ -1188,7 +1188,7 @@ def test_evaluate_dbot_score_get_categories_malicious_severity_malicious(mocker)
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'High', 24)
 
     # Assert
@@ -1204,7 +1204,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_confidencescore_suspiciou
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Low', 44)
 
     # Assert
@@ -1220,7 +1220,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_confidencescore_malicious
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Low', 90)
 
     # Assert
@@ -1236,7 +1236,7 @@ def test_evaluate_dbot_score_get_categories_malicious_confidencescore_suspicious
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Medium', 44)
 
     # Assert
@@ -1252,7 +1252,7 @@ def test_evaluate_dbot_score_get_categories_malicious_confidencescore_malicious(
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Low', 90)
 
     # Assert
@@ -1268,7 +1268,7 @@ def test_evaluate_dbot_score_get_severity_suspicious(mocker):
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Medium', 20)
 
     # Assert
@@ -1284,7 +1284,7 @@ def test_evaluate_dbot_score_get_severity_malicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'High', 20)
 
     # Assert
@@ -1300,7 +1300,7 @@ def test_evaluate_dbot_score_get_severity_suspicious_confidencescore_suspicious(
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Medium', 44)
 
     # Assert
@@ -1316,7 +1316,7 @@ def test_evaluate_dbot_score_get_severity_malicious_confidencescore_suspicious(m
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'High', 44)
 
     # Assert
@@ -1332,7 +1332,7 @@ def test_evaluate_dbot_score_get_severity_suspicious_confidencescore_malicious(m
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Medium', 90)
 
     # Assert
@@ -1348,7 +1348,7 @@ def test_evaluate_dbot_score_get_severity_malicious_confidencescore_malicious(mo
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'High', 90)
 
     # Assert
@@ -1364,7 +1364,7 @@ def test_evaluate_dbot_score_get_confidencescore_suspicious(mocker):
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Low', 55)
 
     # Assert
@@ -1380,7 +1380,7 @@ def test_evaluate_dbot_score_get_confidencescore_malicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Low', 94)
     # Assert
     assert dbot_score == expected_dbot_score
@@ -1396,7 +1396,7 @@ def test_evaluate_dbot_score_get_suspicious_suspicious_malicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Medium', 90)
 
     # Assert
@@ -1413,7 +1413,7 @@ def test_evaluate_dbot_score_get_suspicious_malicious_suspicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'High', 40)
 
     # Assert
@@ -1430,7 +1430,7 @@ def test_evaluate_dbot_score_get_suspicious_malicious_malicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'High', 120)
 
     # Assert
@@ -1447,7 +1447,7 @@ def test_evaluate_dbot_score_get_malicious_malicious_suspicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'High', 40)
 
     # Assert
@@ -1464,7 +1464,7 @@ def test_evaluate_dbot_score_get_malicious_suspicious_suspicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Medium', 50)
 
     # Assert
@@ -1481,7 +1481,7 @@ def test_evaluate_dbot_score_get_malicious_suspicious_malicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Medium', 90)
 
     # Assert
@@ -1498,7 +1498,7 @@ def test_evaluate_dbot_score_get_all_none_str_confidencescore(mocker):
     expected_dbot_score = 0
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Low', 'unknown_severity')
 
     # Assert
@@ -1514,7 +1514,7 @@ def test_evaluate_dbot_score_get_all_malicious_str_confidencescore(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'High', 'High')
 
     # Assert
@@ -1530,7 +1530,7 @@ def test_evaluate_dbot_score_get_all_suspicious_str_confidencescore(mocker):
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Medium', 'Low')
 
     # Assert
@@ -1546,7 +1546,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_str_confidencescore(mocke
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Low', 'informational')
 
     # Assert
@@ -1562,7 +1562,7 @@ def test_evaluate_dbot_score_get_categories_malicious_str_confidencescore(mocker
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Low', 'informational')
 
     # Assert
@@ -1578,7 +1578,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_severity_suspicious_str_c
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Medium', 'informational')
 
     # Assert
@@ -1594,7 +1594,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_severity_malicious_str_co
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'High', 'informational')
 
     # Assert
@@ -1610,7 +1610,7 @@ def test_evaluate_dbot_score_get_categories_malicious_severity_suspicious_str_co
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Medium', 'informational')
 
     # Assert
@@ -1626,7 +1626,7 @@ def test_evaluate_dbot_score_get_categories_malicious_severity_malicious_str_con
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'High', 'informational')
 
     # Assert
@@ -1642,7 +1642,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_str_confidencescore_suspi
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Low', 'Low')
 
     # Assert
@@ -1658,7 +1658,7 @@ def test_evaluate_dbot_score_get_categories_suspicious_str_confidencescore_malic
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Low', 'Medium')
 
     # Assert
@@ -1674,7 +1674,7 @@ def test_evaluate_dbot_score_get_categories_malicious_str_confidencescore_suspic
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Medium', 'Low')
 
     # Assert
@@ -1690,7 +1690,7 @@ def test_evaluate_dbot_score_get_categories_malicious_str_confidencescore_malici
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Low', 'High')
 
     # Assert
@@ -1706,7 +1706,7 @@ def test_evaluate_dbot_score_get_severity_suspicious_str_confidencescore(mocker)
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Medium', 'unknown_severity')
 
     # Assert
@@ -1722,7 +1722,7 @@ def test_evaluate_dbot_score_get_severity_malicious_str_confidencescore(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'High', 'unknown_severity')
 
     # Assert
@@ -1738,7 +1738,7 @@ def test_evaluate_dbot_score_get_severity_suspicious_str_confidencescore_suspici
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Medium', 'low')
 
     # Assert
@@ -1754,7 +1754,7 @@ def test_evaluate_dbot_score_get_severity_malicious_str_confidencescore_suspicio
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'High', 'Low')
 
     # Assert
@@ -1770,7 +1770,7 @@ def test_evaluate_dbot_score_get_severity_suspicious_str_confidencescore_malicio
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Medium', 'medium')
 
     # Assert
@@ -1786,7 +1786,7 @@ def test_evaluate_dbot_score_get_severity_malicious_str_confidencescore_maliciou
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'High', 'High')
 
     # Assert
@@ -1802,7 +1802,7 @@ def test_evaluate_dbot_score_get_str_confidencescore_suspicious(mocker):
     expected_dbot_score = 2
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Low', 'low')
 
     # Assert
@@ -1818,7 +1818,7 @@ def test_evaluate_dbot_score_get_str_confidencescore_malicious(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Unwanted', 'Low', 'High')
     # Assert
     assert dbot_score == expected_dbot_score
@@ -1834,7 +1834,7 @@ def test_evaluate_dbot_score_get_suspicious_suspicious_malicious_str_confidences
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'Medium', 'High')
 
     # Assert
@@ -1851,7 +1851,7 @@ def test_evaluate_dbot_score_get_suspicious_malicious_suspicious_str_confidences
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'High', 'Low')
 
     # Assert
@@ -1868,7 +1868,7 @@ def test_evaluate_dbot_score_get_suspicious_malicious_malicious_str_confidencesc
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('Observed serving executables', 'High', 'High')
 
     # Assert
@@ -1885,7 +1885,7 @@ def test_evaluate_dbot_score_get_malicious_malicious_suspicious_str_confidencesc
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'High', 'Low')
 
     # Assert
@@ -1902,7 +1902,7 @@ def test_evaluate_dbot_score_get_malicious_suspicious_suspicious_str_confidences
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Medium', 'Low')
 
     # Assert
@@ -1919,7 +1919,7 @@ def test_evaluate_dbot_score_get_malicious_suspicious_malicious_str_confidencesc
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'Medium', 'Medium')
 
     # Assert
@@ -1935,7 +1935,7 @@ def test_evaluate_dbot_score_category_blank(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('', 'Medium', 90)
 
     # Assert
@@ -1951,7 +1951,7 @@ def test_evaluate_dbot_score_severity_blank(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', '', 90)
 
     # Assert
@@ -1967,7 +1967,7 @@ def test_evaluate_dbot_score_category_blank_str_confidencescore(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('', 'Medium', 'Medium')
 
     # Assert
@@ -1983,7 +1983,7 @@ def test_evaluate_dbot_score_severity_blank_str_confidencescore(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', '', 'High')
 
     # Assert
@@ -1999,7 +1999,7 @@ def test_evaluate_dbot_score_str_confidencescore_blank(mocker):
     expected_dbot_score = 3
 
     # Execute
-    from GoogleChronicle import evaluate_dbot_score
+    from GoogleChronicleBackstory import evaluate_dbot_score
     dbot_score = evaluate_dbot_score('APT-Activity', 'High', '')
 
     # Assert
@@ -2011,7 +2011,7 @@ def test_preset_time_range():
     When valid duration value pass in validate_duration function then it should pass else raise ValueError
     """
     # Execute
-    from GoogleChronicle import validate_preset_time_range
+    from GoogleChronicleBackstory import validate_preset_time_range
 
     with pytest.raises(ValueError) as error:
         validate_preset_time_range('Last10days')
@@ -2038,7 +2038,7 @@ def test_preset_time_range():
 
 
 def test_parse_error_message():
-    from GoogleChronicle import parse_error_message
+    from GoogleChronicleBackstory import parse_error_message
 
     with pytest.raises(ValueError) as error:
         parse_error_message('service unavailable')
