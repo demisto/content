@@ -1,4 +1,8 @@
 ## [Unreleased]
+Added cveRegex to validate cve_id format.
+
+## [20.2.0] - 2020-02-04
+Added ***ip_to_indicator_type*** command.
 
 
 ## [20.1.2] - 2020-01-22
