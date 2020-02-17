@@ -279,7 +279,7 @@ def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List[Dict
             'type': indicator['type'],
             'CustomFields': {'region': indicator.get('azure_region')},
             'rawJSON': indicator
-        })
+        })  # cool
 
         raw_response.append(indicator)
 
