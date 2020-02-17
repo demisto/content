@@ -12,7 +12,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, encode_string_results, safe_load_json, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    encode_string_results, safe_load_json, \
     datetime_to_string, remove_empty_elements
 
 try:
@@ -1119,3 +1120,16 @@ def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
     # emulates re.fullmatch from py3.4
     assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
+
+
+IP_TO_INDICATOR_TYPE_PACK = [
+    ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1/32', FeedIndicatorType.CIDR),
+    ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
+    ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
+]
+
+
+@pytest.mark.parametrize('ip, indicator_type', IP_TO_INDICATOR_TYPE_PACK)
+def test_ip_to_indicator(ip, indicator_type):
+    assert FeedIndicatorType.ip_to_indicator_type(ip) is indicator_type

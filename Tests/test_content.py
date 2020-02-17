@@ -18,8 +18,8 @@ from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
-from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
-
+from Tests.test_utils import print_color, print_error, print_warning, \
+    LOG_COLORS, str2bool, server_version_compare, Docker
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -27,7 +27,7 @@ urllib3.disable_warnings()
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
@@ -81,7 +81,7 @@ class TestsSettings:
         self.specific_tests_to_run = self.parse_tests_list_arg(options.testsList)
         self.is_local_run = (self.server is not None)
 
-    @ staticmethod
+    @staticmethod
     def parse_tests_list_arg(tests_list):
         tests_to_run = tests_list.split(",") if tests_list else []
         return tests_to_run
@@ -275,8 +275,8 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks,
                    test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                    prints_manager, thread_index=0, is_mock_run=False):
-    status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, test_options, is_mock_run,
-                                      thread_index=thread_index)
+    status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                      is_mock_run, thread_index=thread_index)
     # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
         prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
@@ -329,8 +329,8 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
         prints_manager.add_print_job(start_mock_message, print, thread_index)
         proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
-        status, inc_id = test_integration(c, integrations, playbook_id, prints_manager, test_options, is_mock_run=True,
-                                          thread_index=thread_index)
+        status, inc_id = test_integration(c, server_url, integrations, playbook_id, prints_manager, test_options,
+                                          is_mock_run=True, thread_index=thread_index)
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
@@ -350,7 +350,14 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
             prints_manager.add_print_job(end_mock_message, print, thread_index)
 
             return
+        elif status == PB_Status.FAILED_DOCKER_TEST:
+            error_message = 'Failed: {} failed'.format(test_message)
+            prints_manager.add_print_job(error_message, print_error, thread_index)
+            failed_playbooks.append(playbook_id)
+            end_mock_message = '------ Test {} end ------\n'.format(test_message)
+            prints_manager.add_print_job(end_mock_message, print, thread_index)
 
+            return
         else:
             mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
             prints_manager.add_print_job(mock_failed_message, print, thread_index)
@@ -518,7 +525,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 def extract_filtered_tests(is_nightly):
     if is_nightly:
         # TODO: verify this response
-        return [], False, False
+        return [], False, True
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
@@ -553,7 +560,9 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     test_message = 'playbook: ' + playbook_id
 
     test_options = {
-        'timeout': t.get('timeout', default_test_timeout)
+        'timeout': t.get('timeout', default_test_timeout),
+        'memory_threshold': t.get('memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE),
+        'pid_threshold': t.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
     }
 
     if not isinstance(integrations_conf, list):
@@ -630,7 +639,7 @@ def get_and_print_server_numeric_version(tests_settings):
         image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
         if len(image_data) != 1:
             print('Did not get one image data for server version, got {}'.format(image_data))
-            return '0.0.0'
+            return '99.99.98'  # latest
         else:
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
             if server_numeric_version:
@@ -835,12 +844,13 @@ def manage_tests(tests_settings):
                     current_instance = ami_instance_ip
                     tests_allocation_for_instance = test_allocation[current_thread_index]
 
-                    unmockable_tests = [test for test in all_unmockable_tests_list if test in tests_allocation_for_instance]
+                    unmockable_tests = [test for test in all_unmockable_tests_list
+                                        if test in tests_allocation_for_instance]
                     mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
                     print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                     print("Starts tests with server url - https://{}".format(ami_instance_ip))
 
-                    if not is_nightly or number_of_instances == 1:
+                    if number_of_instances == 1:
                         execute_testing(tests_settings, current_instance, mockable_tests, unmockable_tests,
                                         tests_data_keeper, prints_manager, thread_index=0, is_ami=True)
                     else:
@@ -904,6 +914,13 @@ def manage_tests(tests_settings):
 def main():
     print("Time is: {}\n\n\n".format(datetime.now()))
     tests_settings = options_handler()
+
+    # should be removed after solving: https://github.com/demisto/etc/issues/21383
+    # -------------
+    if 'master' in tests_settings.serverVersion.lower():
+        print('[{}] sleeping for 30 secs'.format(datetime.now()))
+        sleep(30)
+    # -------------
     manage_tests(tests_settings)
 
 
