@@ -82,8 +82,8 @@ def test_pentera_get_task_run_stats(mocker, requests_mock):
     mocker.patch.object(demisto, 'args', return_value={
         'task_run_id': '5e41923cf24e1f99979b1cb4'
     })
-    requests_mock.post('https://pentera.com:8181/api/v1/taskRun/5e41923cf24e1f99979b1cb4/taskStats',
-                       json=MOCK_RUN_TEMPLATE)
+    requests_mock.get('https://pentera.com:8181/api/v1/taskRun/5e41923cf24e1f99979b1cb4',
+                      json=MOCK_RUN_TEMPLATE)
     client_id = demisto.params().get('clientId')
     base_url = demisto.params()['url'].rstrip('/') + ':' + demisto.params()['port']
     verify_certificate = not demisto.params().get('insecure', False)
