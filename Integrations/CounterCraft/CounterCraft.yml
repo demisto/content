@@ -168,7 +168,6 @@ script:
       required: true
       description: Search criteria
     - name: max_results
-      required: true
       default: true
       description: Maximum number of results
       defaultValue: "50"

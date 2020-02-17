@@ -31,6 +31,13 @@ FETCH_DELTA = "24 hours"
 
 DEF_HEADERS = {"Accept": "application/json", "Content-Type": "application/json"}
 
+ERR_DICT = {
+    400: 'Bad request. Please check your arguments and Deception Director API manual',
+    401: 'User does not have the right permission',
+    404: 'Entity not found. Please make sure the entity does exist',
+    500: 'Bad request. Please check your arguments and Deception Director API manual',
+}
+
 CAMPAIGN_FIELDS = {
     "id": "ID",
     "name": "Name",
@@ -214,10 +221,11 @@ def http_request(request_method, path, data={}, params=""):
         headers=headers,
         verify=VERIFY_CERTIFICATE,
     )
+    demisto.debug(res.status_code)
 
-    if not res.ok:
-        demisto.debug(res.text)
-        return_error("Could not execute the request: %s" % res.text)
+    if res.status_code not in [200, 201, 204]:
+        demisto.debug("Error doing the HTTP query. We got a %s: %s" % (res.status_code, res.text))
+        return_error(ERR_DICT[res.status_code])
 
     try:
         res_json = res.json()
@@ -244,6 +252,7 @@ def return_results(title, content, human_readable, context, headers):
             outputs=context,
             raw_response=content,
         )
+        return
 
     if headers:
         if isinstance(headers, str):
@@ -335,7 +344,7 @@ def list_campaigns_command():
     name = demisto.args().get("name")
 
     if name is not None:
-        criteria = {"criteria": "name:" + name}
+        criteria = {"criteria": f"name:\"{name}\""}
     else:
         criteria = {}
 
