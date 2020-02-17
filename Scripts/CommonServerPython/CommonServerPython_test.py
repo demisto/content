@@ -398,7 +398,7 @@ def test_pascalToSpace():
 
 def test_safe_load_json():
     valid_json_str = '{"foo": "bar"}'
-    expected_valid_json_result = "{'foo': 'bar'}"
+    expected_valid_json_result = {u'foo': u'bar'}
     assert expected_valid_json_result == safe_load_json(valid_json_str)
 
 
