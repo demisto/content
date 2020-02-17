@@ -2270,6 +2270,14 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Test"
+        },
+        {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Demonstration - Test"
+        },
+        {
             "integrations": "Google Chronicle Backstory",
             "playbookID": "Google Chronicle Backstory Asset - Test",
             "fromversion": "5.0.0"
