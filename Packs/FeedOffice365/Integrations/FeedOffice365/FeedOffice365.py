@@ -168,6 +168,10 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     "value": value,
                     "type": type_,
                     "rawJSON": raw_data,
+                    "CustomFields": {
+                        "port": item.get('tcpPorts', ''),
+                        "subfeed": item.get('serviceArea', '')
+                    }
                 })
 
     return indicators
