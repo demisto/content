@@ -48,7 +48,7 @@ def test_socks_proxy(mocker, request):
         process.kill()
 
     request.addfinalizer(cleanup)
-    time.sleep(5)
+    time.sleep(1)
     Whois.main()
     assert_results_ok()
     tmp.seek(0)

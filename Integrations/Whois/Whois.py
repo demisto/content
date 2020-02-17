@@ -8405,6 +8405,7 @@ def main():
     org_socket = socket.socket
     command = demisto.command()
     try:
+        setup_proxy()
         if command == 'test-module':
             test_command()
         elif command == 'whois':
