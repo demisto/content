@@ -568,8 +568,10 @@ class Docker:
         stdout, stderr = cls.run_shell_command(cmd)
 
         if stderr:
-            print_warning("Failed getting pid info for container id: {}.\nAdditional information: {}".
-                          format(container_id, stderr))
+            ignored_warning_message = "Connection to {} closed".format(server_ip)
+            if ignored_warning_message not in stderr:
+                print_warning("Failed getting pid info for container id: {}.\nAdditional information: {}".
+                              format(container_id, stderr))
 
         return stdout
 
