@@ -8,6 +8,7 @@ from enum import Enum
 import requests
 import csv
 import io
+from typing import List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -18,9 +19,10 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 AUTH_URL_SUFFIX = '/auth/token'
 LIST_TEMPLATES_URL_SUFFIX = '/api/v1/templates'
 CANCEL_TASK_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}/cancel'
-GET_TASK_STATS_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}/taskStats'
+GET_TASK_STATS_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}'
 RUN_BULK_URL_SUFFIX = '/api/v1/template/runBulk'
 EXPORT_CSV_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}/fullActionReportCSV'
+FULL_ACTION_REPORT_FIELDNAMES = ['Severity', 'Time', 'Duration', 'Operation Type', 'Techniques', 'Parameters', 'Status']
 
 
 class Request(Enum):
@@ -128,16 +130,9 @@ class Client(BaseClient):
     def get_task_stats_by_task_run_id(self, task_run_id: str, access_token: str):
         headers = self.create_basic_authentication_header(access_token)
         url_suffix = GET_TASK_STATS_URL_SUFFIX.format(taskRunId=task_run_id)
-        res = self.generic_request(method=Request.POST.value, url_suffix=url_suffix, headers=headers, data={})
+        res = self.generic_request(method=Request.GET.value, url_suffix=url_suffix, headers=headers, data={})
         task_stats = res['taskRuns'][0]
         return task_stats
-
-    def is_task_running(self, task_run_id: str, access_token: str):
-        res = self.get_task_stats_by_task_run_id(task_run_id, access_token)
-        task_state = res['taskRuns'][0]['status']
-        if task_state == 'Running':
-            return True
-        return False
 
     def get_task_run_full_action_report_by_task_run_id(self, task_run_id: str, access_token: str):
         headers = self.create_basic_authentication_header(access_token)
@@ -167,21 +162,19 @@ def pentera_authentication(client: Client):
         })
         return 'ok'
     except Exception as e:
-        LOG(f'An error occurred during the authentication: {str(e)}')
+        demisto.error(f'An error occurred during the authentication: {str(e)}')
         raise e
 
 
 def pentera_get_task_run_full_action_report_command(client: Client, args, access_token: str):
     def _convert_csv_file_to_dict(csv_file):
-        csv_reader = csv.DictReader(io.StringIO(csv_file),
-                                    fieldnames=('Severity', 'Time', 'Duration', 'Operation Type', 'Techniques',
-                                                'Parameters', 'Status'))
+        csv_reader = csv.DictReader(io.StringIO(csv_file), fieldnames=FULL_ACTION_REPORT_FIELDNAMES)
         data = [row for row in csv_reader]
         if data and len(data) > 0:
             return data[1:]
         return []
 
-    def _convert_full_action_report_time_format(csv_file):
+    def _convert_full_action_report_time(full_action_report_list: List[dict]):
         def _parse_date(full_date, separator):
             if isinstance(full_date, str) and isinstance(separator, str):
                 date = full_date.split(separator)
@@ -191,56 +184,39 @@ def pentera_get_task_run_full_action_report_command(client: Client, args, access
                     third_arg = date[2]
                     return first_arg, second_arg, third_arg
 
-        def _convert_list_to_csv_format(data_list):
-            data_csv_format = ''
-            for data_row in data_list:
-                line = ''
-                for item in data_row:
-                    if item != data_row[-1]:
-                        line += item + ','
-                    else:
-                        line += item + '\n'
-                data_csv_format += line
-            return data_csv_format
-
-        csv_reader = csv.reader(io.StringIO(csv_file))
-        data = [['Severity', 'Time', 'Duration', 'Operation Type', 'Techniques', 'Parameters', 'Status']]
-        for row in csv_reader:
-            if row and len(row) > 0 and row != data[0]:
-                full_date_to_convert = row[1].replace(' ', '')
-                full_date_list = full_date_to_convert.split(',')
-                day, month, year = _parse_date(full_date_list[0], '/')
-                hours, minutes, seconds = _parse_date(full_date_list[1], ':')
-                converted_date = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
-                new_line = row.copy()
-                new_line[1] = converted_date
-                data.append(new_line)
-
-        data_str = _convert_list_to_csv_format(data)
-        return data_str
+        res_list: List[dict] = []
+        for ordered_dict in full_action_report_list:
+            full_date_to_convert = ordered_dict['Time'].replace(' ', '')
+            full_date_list = full_date_to_convert.split(',')
+            day, month, year = _parse_date(full_date_list[0], '/')
+            hours, minutes, seconds = _parse_date(full_date_list[1], ':')
+            converted_date = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds + 'Z'
+            new_ordered_dict = ordered_dict.copy()
+            new_ordered_dict['Time'] = converted_date
+            res_list.append(new_ordered_dict)
+        return res_list
 
     entries = []
     task_run_id = args.get('task_run_id')
     try:
         response_csv = client.get_task_run_full_action_report_by_task_run_id(task_run_id, access_token)
-        converted_response_csv = _convert_full_action_report_time_format(response_csv)
         readable_output = f"# Pentera Report for TaskRun ID {task_run_id}"
-        entry = fileResult(f'penterascan-{task_run_id}.csv', converted_response_csv, entryTypes['entryInfoFile'])
+        entry = fileResult(f'penterascan-{task_run_id}.csv', response_csv, entryTypes['entryInfoFile'])
         entry["HumanReadable"] = readable_output
         entry["ContentsFormat"] = formats["markdown"]
         entries.append(entry)
-
-        csv_dict = _convert_csv_file_to_dict(converted_response_csv)
-        human_readable = tableToMarkdown(readable_output, csv_dict)
-
+        csv_dict = _convert_csv_file_to_dict(response_csv)
+        date_converted_csv_dict = _convert_full_action_report_time(csv_dict)
+        human_readable = tableToMarkdown(readable_output, date_converted_csv_dict,
+                                         headers=FULL_ACTION_REPORT_FIELDNAMES)
         entries.append({
             "Type": entryTypes["note"],
             "ContentsFormat": formats["json"],
             "ReadableContentsFormat": formats["markdown"],
-            "Contents": csv_dict,
+            "Contents": date_converted_csv_dict,
             "EntryContext": {
                 'Pentera.TaskRun(val.ID == obj.ID)': {
-                    'FullActionReport': csv_dict,
+                    'FullActionReport': date_converted_csv_dict,
                     'ID': task_run_id
                 }
             },
