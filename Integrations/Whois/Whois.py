@@ -8412,9 +8412,9 @@ commands = {
 def main():
     LOG('command is {}'.format(str(demisto.command())))
     org_socket = socket.socket
+    command = demisto.command()
     try:
-        if demisto.command() in commands.keys():
-            commands[demisto.command()]()
+        commands[command]()
     except Exception as e:
         LOG(e)
         return_error(str(e))
