@@ -32,7 +32,6 @@ def test_socks_proxy_fail(mocker):
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
-    print results[0]['Contents']
     assert len(results) == 1
     assert "Couldn't connect with the socket-server" in results[0]['Contents']
 
@@ -53,5 +52,4 @@ def test_socks_proxy(mocker, request):
     Whois.main()
     assert_results_ok()
     tmp.seek(0)
-    print tmp.read()
     assert 'connected to' in tmp.read()  # make sure we went through microsocks
