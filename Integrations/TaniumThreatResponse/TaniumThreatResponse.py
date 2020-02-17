@@ -9,6 +9,7 @@ import json
 import urllib3
 import urllib.parse
 from dateutil.parser import parse
+from typing import Any
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
@@ -92,6 +93,33 @@ def get_process_timeline_item(raw_item, category_name, limit, offset):
     return timeline_item
 
 
+def try_parse_integer(int_to_parse: Any) -> int:
+    """
+    Tries to parse an integer.
+    """
+    try:
+        res = int(int_to_parse)
+    except (TypeError, ValueError):
+        res = 10000
+    return res
+
+
+def evidence_type_number_to_name(num: int) -> str:
+    """
+    Transforms evidence type number to it's corresponding name
+    :param num: The evidence type number
+    :return: The string name of the evidence type
+    """
+    name: str = str()
+    supported_types = ['Network', 'Process', 'File', 'Registry', 'Security', 'Image', 'DNS']
+    try:
+        name = supported_types[num - 1]
+    except IndexError:
+        name = 'Unknown'
+    finally:
+        return name
+
+
 def get_evidence_item(raw_item):
     evidence_item = {
         'ID': raw_item.get('id'),
@@ -100,7 +128,7 @@ def get_evidence_item(raw_item):
         'User': raw_item.get('user'),
         'Host': raw_item.get('host'),
         'ConnectionID': raw_item.get('connId'),
-        'Type': raw_item.get('type'),
+        'Type': evidence_type_number_to_name(try_parse_integer(raw_item.get('type'))),
         'ProcessTableId': raw_item.get('sID'),
         'Timestamp': raw_item.get('sTimestamp'),
         'Summary': raw_item.get('summary'),
