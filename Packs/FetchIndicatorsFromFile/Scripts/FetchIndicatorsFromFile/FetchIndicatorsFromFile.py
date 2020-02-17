@@ -16,16 +16,16 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
             if line_index >= starting_row:
                 indicator = row[col_num]
 
-                indicator_type = default_type
+                indicator_type = detect_type(indicator)
+
+                if indicator_type is None:
+                    continue
 
                 if type_col:
                     indicator_type = row[int(type_col) - 1]
 
-                elif auto_detect:
-                    indicator_type = detect_type(indicator)
-
-                if indicator_type is None:
-                    continue
+                elif not auto_detect:
+                    indicator_type = default_type
 
                 indicator_list.append({
                     "type": indicator_type,
@@ -51,16 +51,16 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
         if row_index >= starting_row:
             indicator = xl_sheet.cell(row_index, col_num).value
 
-            indicator_type = default_type
-
-            if type_col:
-                indicator_type = xl_sheet.cell(row_index, int(type_col) - 1).value
-
-            elif auto_detect:
-                indicator_type = detect_type(indicator)
+            indicator_type = detect_type(indicator)
 
             if indicator_type is None:
                 continue
+
+            if not auto_detect:
+                indicator_type = default_type
+
+            if type_col:
+                indicator_type = xl_sheet.cell(row_index, int(type_col) - 1).value
 
             indicator_list.append({
                 'type': indicator_type,
@@ -87,14 +87,14 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
             if indicator[0] in ".,({[":
                 indicator = indicator[0:]
 
-            indicator_type = default_type
-
-            if auto_detect:
-                indicator_type = detect_type(indicator)
+            indicator_type = detect_type(indicator)
 
             # indicator not recognized
             if indicator_type is None:
                 continue
+
+            if not auto_detect:
+                indicator_type = default_type
 
             indicator_list.append({
                 'type': indicator_type,
