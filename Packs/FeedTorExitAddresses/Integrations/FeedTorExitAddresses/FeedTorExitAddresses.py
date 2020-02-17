@@ -61,7 +61,7 @@ class Client(BaseClient):
             elif line.startswith('ExitAddress'):
                 indicator['value'] = line.split()[1]
                 raw_json = indicator.copy()
-                indicator['rawjson'] = raw_json
+                indicator['rawJSON'] = raw_json
                 indicator['fields'] = {
                     'firstseenbyfeed': indicator.get('firstseenbyfeed'),
                     'lastseenbyfeed': indicator.get('lastseenbyfeed'),
