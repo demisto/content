@@ -37,70 +37,20 @@ config = Config(
 """HELPER FUNCTIONS"""
 
 
-def safe_load_json(o):
-    kwargs = None
-    # Here we are checking the length of the entry to decide if it's a entry ID or json string.
-    if len(o) > 40:
-        try:
-            kwargs = json.loads(o)
-        except json.decoder.JSONDecodeError as e:
-            return_error(
-                'Unable to parse JSON string. Please verify the JSON is valid. - '+str(e))
-    else:
-        try:
-            path = demisto.getFilePath(o)
-            with open(path['path'], 'rb') as data:
-                try:
-                    kwargs = json.load(data)
-                except:  # lgtm [py/catch-base-exception]
-                    kwargs = json.loads(data.read())
-        except Exception as e:
-            return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
-                         'ID is correct. - '+str(e))
-    return kwargs
-
-
-def myconverter(o):
-    if isinstance(o, datetime.datetime):  # type: ignore
-        return o.__str__()
-
-
-def remove_empty_elements(d):
-    """recursively remove empty lists, empty dicts, or None elements from a dictionary"""
-
-    def empty(x):
-        return x is None or x == {} or x == []
-
-    if not isinstance(d, (dict, list)):
-        return d
-    elif isinstance(d, list):
-        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
-    else:
-        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
-
-
 def aws_table_to_markdown(response, table_header):
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(response[list(response.keys())[0]], dict) or isinstance(response[list(response.keys())[0]], list):
-                if isinstance(response[list(response.keys())[0]], list):
-                    list_response = response[list(response.keys())[0]]
-                    if isinstance(list_response[0], str):
-                        human_readable = tableToMarkdown(
-                            table_header, response)
-                    else:
-                        human_readable = tableToMarkdown(
-                            table_header, response[list(response.keys())[0]])
-                else:
-                    human_readable = tableToMarkdown(
-                        table_header, response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown(table_header, response)
-        else:
-            human_readable = tableToMarkdown(table_header, response)
+    if not isinstance(response, dict):
+        return tableToMarkdown(table_header, response)
+    elif len(response) != 1:
+        return tableToMarkdown(table_header, response)
+    elif not isinstance(response[list(response.keys())[0]], dict) and \
+            not isinstance(response[list(response.keys())[0]], list):
+        return tableToMarkdown(table_header, response)
+    elif not isinstance(response[list(response.keys())[0]], list):
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+    elif not isinstance(response[list(response.keys())[0]][0], str):
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
     else:
-        human_readable = tableToMarkdown(table_header, response)
-    return human_readable
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
 
 
 def parse_resource_ids(resource_id):
@@ -247,9 +197,9 @@ def batch_get_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.batch_get_item(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -275,9 +225,9 @@ def batch_write_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.batch_write_item(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -302,9 +252,9 @@ def create_backup_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.create_backup(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.BackupDetails(val.BackupName && val.BackupName === obj.BackupName)': response.get('BackupDetails')}
@@ -334,9 +284,9 @@ def create_global_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.create_global_table(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === obj.GlobalTableArn)': response.get('GlobalTableDescription')}
@@ -423,9 +373,9 @@ def create_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.create_table(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
@@ -450,9 +400,9 @@ def delete_backup_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.delete_backup(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.BackupDetails(val.BackupName && val.BackupName === obj.BackupName)': response.get('BackupDetails')}
@@ -486,9 +436,9 @@ def delete_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.delete_item(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -512,9 +462,9 @@ def delete_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.delete_table(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
@@ -539,9 +489,9 @@ def describe_backup_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.describe_backup(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB.BackupDescription': response['BackupDescription']}
     del response['ResponseMetadata']
@@ -565,9 +515,9 @@ def describe_continuous_backups_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.describe_continuous_backups(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.ContinuousBackupsDescription': response['ContinuousBackupsDescription']}
@@ -592,9 +542,9 @@ def describe_endpoints_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.describe_endpoints(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB.Endpoints': response['Endpoints']}
     del response['ResponseMetadata']
@@ -618,9 +568,9 @@ def describe_global_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.describe_global_table(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === obj.GlobalTableArn)': response.get('GlobalTableDescription')}
@@ -645,9 +595,9 @@ def describe_global_table_settings_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.describe_global_table_settings(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB(val.GlobalTableName && val.GlobalTableName === obj.GlobalTableName)': response}
@@ -672,9 +622,9 @@ def describe_limits_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.describe_limits(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -698,9 +648,9 @@ def describe_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.describe_table(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.Table(val.TableArn && val.TableArn === obj.TableArn)': response.get('Table')}
@@ -725,9 +675,9 @@ def describe_time_to_live_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.describe_time_to_live(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.TimeToLiveDescription': response['TimeToLiveDescription']}
@@ -758,9 +708,9 @@ def get_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.get_item(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -786,9 +736,9 @@ def list_backups_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.list_backups(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.BackupSummaries(val.BackupArn && val.BackupArn === obj.BackupArn)': response.get('BackupSummaries')}
@@ -814,9 +764,9 @@ def list_global_tables_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.list_global_tables(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB.GlobalTables': response['GlobalTables']}
     del response['ResponseMetadata']
@@ -841,9 +791,9 @@ def list_tables_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.list_tables(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB.TableNames': response['TableNames']}
     del response['ResponseMetadata']
@@ -868,9 +818,9 @@ def list_tags_of_resource_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.list_tags_of_resource(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -903,9 +853,9 @@ def put_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.put_item(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -944,9 +894,9 @@ def query_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.query(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -1011,9 +961,9 @@ def restore_table_from_backup_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.restore_table_from_backup(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
@@ -1080,9 +1030,9 @@ def restore_table_to_point_in_time_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.restore_table_to_point_in_time(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
@@ -1119,9 +1069,9 @@ def scan_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.scan(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -1147,9 +1097,9 @@ def tag_resource_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.tag_resource(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -1183,9 +1133,9 @@ def transact_get_items_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.transact_get_items(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB.ConsumedCapacity': response['ConsumedCapacity']}
     del response['ResponseMetadata']
@@ -1251,9 +1201,9 @@ def transact_write_items_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.transact_write_items(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB.ConsumedCapacity': response['ConsumedCapacity']}
     del response['ResponseMetadata']
@@ -1278,9 +1228,9 @@ def untag_resource_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.untag_resource(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB.ConsumedCapacity': response['ConsumedCapacity']}
     del response['ResponseMetadata']
@@ -1309,9 +1259,9 @@ def update_continuous_backups_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.update_continuous_backups(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.ContinuousBackupsDescription': response['ContinuousBackupsDescription']}
@@ -1348,9 +1298,9 @@ def update_global_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.update_global_table(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === obj.GlobalTableArn)': response.get('GlobalTableDescription')}
@@ -1410,9 +1360,9 @@ def update_global_table_settings_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.update_global_table_settings(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -1447,9 +1397,9 @@ def update_item_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.update_item(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
@@ -1531,9 +1481,9 @@ def update_table_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.update_table(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
@@ -1564,9 +1514,9 @@ def update_time_to_live_command(args):
         del kwargs
         kwargs = safe_load_json(args.get('raw_json', "{ }"))
     elif args.get('raw_json') is not None and kwargs:
-        return_error("Please remove other arguments before using 'raw-json'.")
+        return_error("Please remove other arguments before using 'raw_json'.")
     response = client.update_time_to_live(**kwargs)
-    response = json.dumps(response, default=myconverter)
+    response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
     outputs = {
         'AWS-DynamoDB.TimeToLiveSpecification': response['TimeToLiveSpecification']}
@@ -1686,9 +1636,7 @@ def main():  # pragma: no cover
     except ResponseParserError as e:
         return_error('Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
             error=type(e)))
-        LOG(e)
     except Exception as e:
-        LOG(e)
         return_error('Error has occurred in the AWS dynamodb Integration: {code} {message}'.format(
             code=type(e), message=e))
 

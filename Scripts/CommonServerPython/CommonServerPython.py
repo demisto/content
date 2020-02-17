@@ -4,16 +4,17 @@ Please notice that to add custom common code, add it to the CommonServerUserPyth
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
 from __future__ import print_function
-import socket
-import time
+
+import base64
 import json
-import sys
+import logging
 import os
 import re
-import base64
-import logging
-from collections import OrderedDict
+import socket
+import sys
+import time
 import xml.etree.cElementTree as ET
+from collections import OrderedDict
 from datetime import datetime, timedelta
 
 import demistomock as demisto
@@ -634,6 +635,87 @@ def b64_encode(text):
     if IS_PY3:
         res = res.decode('utf-8')  # type: ignore
     return res
+
+
+def encode_string_results(text):
+    """
+    Encode string as utf-8, if any unicode character exists.
+
+    :param text: string to encode
+    :type text: str
+    :return: encoded string
+    :rtype: str
+    """
+    if not isinstance(text, STRING_OBJ_TYPES):
+        return text
+    try:
+        return str(text)
+    except UnicodeEncodeError as exception:
+        return text.encode("utf8", "replace")
+
+
+def safe_load_json(json_object):
+    """
+    Safely loads a JSON object from an argument. Allows the argument to accept either a JSON in string form,
+    or an entry ID corresponding to a JSON file.
+
+    :param json_object: Entry ID or JSON string.
+    :return: Dictionary object from a parsed JSON file or string.
+    :rtype: dict
+    """
+    safe_json = None
+    if isinstance(json_object, dict) or isinstance(json_object, list):
+        return json_object
+    if (json_object.startswith('{') and json_object.endswith('}')) or (json_object.startswith('[') and json_object.endswith(']')):
+        try:
+            safe_json = json.loads(json_object)
+        except json.decoder.JSONDecodeError as e:
+            return_error(
+                'Unable to parse JSON string. Please verify the JSON is valid. - '+str(e))
+    else:
+        try:
+            path = demisto.getFilePath(json_object)
+            with open(path['path'], 'rb') as data:
+                try:
+                    safe_json = json.load(data)
+                except:  # lgtm [py/catch-base-exception]
+                    safe_json = json.loads(data.read())
+        except Exception as e:
+            return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
+                         'ID is correct. - '+str(e))
+    return safe_json
+
+
+def datetime_to_string(datetime_obj):
+    """
+    Converts a datetime object into a string. When used with `json.dumps()` for the `default` parameter,
+    e.g. `json.dumps(response, default=datetime_to_string)` datetime_to_string allows entire JSON objects
+    to be safely added to context without causing any datetime marshalling errors.
+    :param datetime_obj: Datetime object.
+    :return: String representation of a datetime object.
+    :rtype: str
+    """
+    if isinstance(datetime_obj, datetime):  # type: ignore
+        return datetime_obj.__str__()
+
+
+def remove_empty_elements(d):
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary.
+    :param d: Input dictionary.
+    :return: Dictionary with all empty lists, and empty dictionaries removed.
+    :rtype: dict
+    """
+
+    def empty(x):
+        return x is None or x == {} or x == []
+
+    if not isinstance(d, (dict, list)):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+    else:
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
 class IntegrationLogger(object):
@@ -2462,6 +2544,7 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
 
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.

@@ -12,7 +12,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, encode_string_results, safe_load_json, \
+    datetime_to_string, remove_empty_elements
 
 try:
     from StringIO import StringIO
@@ -392,6 +393,41 @@ def test_pascalToSpace():
     ]
     for s, expected in use_cases:
         assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
+
+
+def test_safe_load_json():
+    valid_json_str = '{"foo": "bar"}'
+    expected_valid_json_result = ""
+    assert expected_valid_json_result == safe_load_json(valid_json_str)
+
+
+def test_datetime_to_string():
+    datetime_obj = datetime.now()
+    datetime_str = datetime_to_string(datetime_obj)
+    assert isinstance(datetime_str, str)
+
+
+def test_remove_empty_elements():
+    test_dict = {
+        "foo": "bar",
+        "baz": {},
+        "empty": [],
+        "nested_dict": {
+            "empty_list": [],
+            "hummus": "pita"
+        },
+        "nested_list": {
+            "more_empty_list": []
+        }
+    }
+
+    expected_result = {
+        "foo": "bar",
+        "nested_dict": {
+            "hummus": "pita"
+        }
+    }
+    assert expected_result == remove_empty_elements(test_dict)
 
 
 def test_argToList():
@@ -975,6 +1011,19 @@ def test_parse_date_range():
     # testing local datetime and range of 73 minutes
     assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
+
+
+def test_encode_string_results():
+    s = "test"
+    assert s == encode_string_results(s)
+    s2 = u"בדיקה"
+    if IS_PY3:
+        res = str(s2)
+    else:
+        res = s2.encode("utf8")
+    assert encode_string_results(s2) == res
+    not_string = [1, 2, 3]
+    assert not_string == encode_string_results(not_string)
 
 
 class TestReturnOutputs:

@@ -27,8 +27,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -1300
+          "x": 975,
+          "y": 40
         }
       }
     note: false
@@ -59,8 +59,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -485
+          "x": 975,
+          "y": 855
         }
       }
     note: false
@@ -74,11 +74,11 @@ tasks:
       id: d039a26c-a899-439c-8c05-6c5508901100
       version: -1
       name: Employee Offboarding - Gather User Information
-      description: ''
       playbookName: Employee Offboarding - Gather User Information
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '130'
@@ -105,8 +105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -1170
+          "x": 975,
+          "y": 170
         }
       }
     note: false
@@ -120,11 +120,11 @@ tasks:
       id: b1c16257-5cad-4c9f-8727-7767d5750858
       version: -1
       name: Employee Offboarding - Revoke Permissions
-      description: ''
       playbookName: Employee Offboarding - Revoke Permissions
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '132'
@@ -166,8 +166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -1000
+          "x": 975,
+          "y": 340
         }
       }
     note: false
@@ -181,11 +181,11 @@ tasks:
       id: c994a7a0-4574-4c06-87eb-1361f5c229ee
       version: -1
       name: Employee Offboarding - Retain & Delete
-      description: ''
       playbookName: Employee Offboarding - Retain & Delete
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '128'
@@ -212,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -650
+          "x": 975,
+          "y": 690
         }
       }
     note: false
@@ -227,11 +227,11 @@ tasks:
       id: 36ec930f-5d52-4b96-8b50-3eb1994826a0
       version: -1
       name: Employee Offboarding - Delegate
-      description: ''
       playbookName: Employee Offboarding - Delegate
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '131'
@@ -255,13 +255,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": -825
+          "x": 975,
+          "y": 515
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -269,8 +270,8 @@ view: |-
       "dimensions": {
         "height": 910,
         "width": 380,
-        "x": 695,
-        "y": -1300
+        "x": 975,
+        "y": 40
       }
     }
   }
