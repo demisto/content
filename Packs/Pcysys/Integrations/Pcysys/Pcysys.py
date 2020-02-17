@@ -62,9 +62,9 @@ class Client(BaseClient):
 
             try:
                 if response_type == 'json':
-                    LOG('result is JSON')
+                    demisto.debug('result is JSON')
                     return res.json()
-                LOG('result is TEXT')
+                demisto.debug('result is TEXT')
                 return res.text
             except Exception:
                 raise ValueError(
@@ -98,18 +98,14 @@ class Client(BaseClient):
             raise Exception(str(exception))
 
     def authenticate(self, client_id, tgt):
-        try:
-            data = {
-                'client_id': client_id,
-                'tgt': tgt
-            }
-            res = self.generic_request(method=Request.POST.value, url_suffix=AUTH_URL_SUFFIX, data=data)
-            tgt = res.get('tgt')
-            access_token = res.get('token')
-            return tgt, access_token
-        except Exception as e:
-            LOG(f'An error occurred during the authentication: {str(e)}')
-            raise e
+        data = {
+            'client_id': client_id,
+            'tgt': tgt
+        }
+        res = self.generic_request(method=Request.POST.value, url_suffix=AUTH_URL_SUFFIX, data=data)
+        tgt = res.get('tgt')
+        access_token = res.get('token')
+        return tgt, access_token
 
     @staticmethod
     def create_basic_authentication_header(token: str):
@@ -158,17 +154,21 @@ class Client(BaseClient):
 
 
 def pentera_authentication(client: Client):
-    tgt = demisto.getIntegrationContext().get('tgt')
-    client_id = demisto.params().get('clientId')
-    new_tgt, access_token = client.authenticate(client_id, tgt)
-    jwt_decode_dict = jwt.get_unverified_header(access_token)
-    expiry = jwt_decode_dict.get('exp', 0) if jwt_decode_dict else 0
-    demisto.setIntegrationContext({
-        'accessToken': access_token,
-        'tgt': new_tgt,
-        'expiry': expiry
-    })
-    return 'ok'
+    try:
+        tgt = demisto.getIntegrationContext().get('tgt')
+        client_id = demisto.params().get('clientId')
+        new_tgt, access_token = client.authenticate(client_id, tgt)
+        jwt_decode_dict = jwt.get_unverified_header(access_token)
+        expiry = jwt_decode_dict.get('exp', 0) if jwt_decode_dict else 0
+        demisto.setIntegrationContext({
+            'accessToken': access_token,
+            'tgt': new_tgt,
+            'expiry': expiry
+        })
+        return 'ok'
+    except Exception as e:
+        LOG(f'An error occurred during the authentication: {str(e)}')
+        raise e
 
 
 def pentera_get_task_run_full_action_report_command(client: Client, args, access_token: str):
@@ -219,9 +219,9 @@ def pentera_get_task_run_full_action_report_command(client: Client, args, access
         data_str = _convert_list_to_csv_format(data)
         return data_str
 
+    entries = []
+    task_run_id = args.get('task_run_id')
     try:
-        entries = []
-        task_run_id = args.get('task_run_id')
         response_csv = client.get_task_run_full_action_report_by_task_run_id(task_run_id, access_token)
         converted_response_csv = _convert_full_action_report_time_format(response_csv)
         readable_output = f"# Pentera Report for TaskRun ID {task_run_id}"
@@ -248,7 +248,7 @@ def pentera_get_task_run_full_action_report_command(client: Client, args, access
         })
         return entries
     except Exception as e:
-        LOG(f'An error occurred when tried to get task run full action report: {str(e)}')
+        demisto.error(f'An error occurred when tried to get task run id: {task_run_id} full action report: {str(e)}')
         raise e
 
 
@@ -265,7 +265,7 @@ def pentera_get_task_run_stats_command(client: Client, args, access_token: str):
             task_run_stats  # raw response - the original response
         )
     except Exception as e:
-        LOG(f'An error occurred when tried to run a template by name: {str(e)}')
+        demisto.error(f'An error occurred when tried to get task run id: {task_run_id} stats: {str(e)}')
         raise e
 
 
@@ -306,7 +306,8 @@ def pentera_run_template_command(client, args, access_token):
         )
 
     except Exception as e:
-        LOG(f'An error occurred when tried to run a template by name. {str(e)}')
+        demisto.error(f'An error occurred when tried to run a template by name. Template name: {template_name}. '
+                      f'Error message: {str(e)}')
         raise e
 
 
@@ -317,7 +318,6 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     tgt = demisto.getIntegrationContext().get('tgt', None)
-    demisto.debug(f"GOT TGT: {tgt}")
     if not tgt:
         params_tgt = demisto.params()['tgt']
         demisto.setIntegrationContext({
@@ -325,7 +325,7 @@ def main():
         })
     access_token = demisto.getIntegrationContext().get('accessToken', None)
     expiry = demisto.getIntegrationContext().get('expiry', 0)
-    LOG(f'Got command: {demisto.command()}')
+    demisto.debug(f'Got command: {demisto.command()}')
     try:
         client = Client(
             base_url=base_url,
@@ -357,10 +357,8 @@ def main():
             demisto.results(pentera_get_task_run_full_action_report_command(client, demisto.args(),
                                                                             demisto.getIntegrationContext().get(
                                                                                 'accessToken')))
-        LOG.print_log()
     # Log exceptions
     except Exception as e:
-        LOG.print_log(verbose=True)
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
