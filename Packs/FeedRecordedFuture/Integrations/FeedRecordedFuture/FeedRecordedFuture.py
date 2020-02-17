@@ -303,7 +303,7 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
                 "value": value,
                 "type": raw_json['type'],
                 "rawJSON": raw_json,
-                "CustomFields": {'recordedfutureevidencedetails': evidence_details},
+                "fields": {'recordedfutureevidencedetails': evidence_details},
                 "score": score
             })
 
