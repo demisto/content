@@ -685,6 +685,7 @@ def safe_load_json(json_object):
     or an entry ID corresponding to a JSON file.
 
     :param json_object: Entry ID or JSON string.
+    :type json_object: str
     :return: Dictionary object from a parsed JSON file or string.
     :rtype: dict
     """
@@ -717,6 +718,7 @@ def datetime_to_string(datetime_obj):
     e.g. `json.dumps(response, default=datetime_to_string)` datetime_to_string allows entire JSON objects
     to be safely added to context without causing any datetime marshalling errors.
     :param datetime_obj: Datetime object.
+    :type datetime_obj: datetime.datetime
     :return: String representation of a datetime object.
     :rtype: str
     """
@@ -728,6 +730,7 @@ def remove_empty_elements(d):
     """
     Recursively remove empty lists, empty dicts, or None elements from a dictionary.
     :param d: Input dictionary.
+    :type d: dict
     :return: Dictionary with all empty lists, and empty dictionaries removed.
     :rtype: dict
     """
