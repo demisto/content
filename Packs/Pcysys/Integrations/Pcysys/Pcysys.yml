@@ -8,18 +8,21 @@ configuration:
   name: url
   required: true
   type: 0
+- defaultvalue: '8181'
+  display: Pentera API port
+  hidden: false
+  name: port
+  required: true
+  type: 0
 - display: Client Id
   name: clientId
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
+- display: TGT  (The token from Pentera UI in Administration -> API Clients)
+  hidden: false
+  name: tgt
+  required: true
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -28,17 +31,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: TGT
-  hidden: false
-  name: tgt
-  required: true
-  type: 4
-- defaultvalue: '8181'
-  display: Pentera API port
-  hidden: false
-  name: port
-  required: true
-  type: 0
 description: Integration with Pentera
 display: Pcysys
 name: Pcysys
@@ -48,7 +40,7 @@ script:
     - default: false
       description: The name of the template that you want to run
       isArray: false
-      name: templateName
+      name: template_name
       required: true
       secret: false
     deprecated: false
@@ -64,22 +56,19 @@ script:
       description: The task run id
       type: String
     - contextPath: Pentera.TaskRun.StartTime
-      description: The start time of the task run in milliseconds
-      type: String
+      description: The date when the task run started
+      type: Date
     - contextPath: Pentera.TaskRun.EndTime
-      description: The end time of  the task run in milliseconds
-      type: String
+      description: The date when the task run ended
+      type: Date
     - contextPath: Pentera.TaskRun.Status
       description: 'The status of the task run; e.g.: Running, Done, etc.'
       type: String
-    - contextPath: Pentera.TaskRun.Created
-      description: The full date of the task run
-      type: Date
   - arguments:
     - default: false
       description: The ID of the task run
       isArray: false
-      name: taskRunId
+      name: task_run_id
       required: true
       secret: false
     deprecated: false
@@ -94,22 +83,19 @@ script:
       description: Returns the name of the template
       type: String
     - contextPath: Pentera.TaskRun.StartTime
-      description: The start time of the task run in milliseconds
-      type: String
+      description: The date when the task run started
+      type: Date
     - contextPath: Pentera.TaskRun.EndTime
-      description: The end time of  the task run in milliseconds
-      type: String
+      description: The date when the task run ended
+      type: Date
     - contextPath: Pentera.TaskRun.Status
       description: 'The status of the task run; e.g.: Running, Done, etc.'
       type: String
-    - contextPath: Pentera.TaskRun.Created
-      description: The full date of the task run
-      type: Date
   - arguments:
     - default: false
       description: The ID of the task run
       isArray: false
-      name: taskRunId
+      name: task_run_id
       required: true
       secret: false
     deprecated: false
@@ -124,17 +110,14 @@ script:
       description: Returns the name of the template
       type: String
     - contextPath: Pentera.TaskRun.StartTime
-      description: The start time of the task run in milliseconds
-      type: String
+      description: The date when the task run started
+      type: Date
     - contextPath: Pentera.TaskRun.EndTime
-      description: The end time of  the task run in milliseconds
-      type: String
+      description: The date when the task run ended
+      type: Date
     - contextPath: Pentera.TaskRun.Status
       description: 'The status of the task run; e.g.: Running, Done, etc.'
       type: String
-    - contextPath: Pentera.TaskRun.Created
-      description: The full date of the task run
-      type: Date
     - contextPath: Pentera.TaskRun.FullActionReport
       description: The full action report of the task run
       type: String

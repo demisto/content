@@ -44,7 +44,7 @@ def test_pentera_get_task_run_full_action_report(mocker, requests_mock):
         'expiry': MOCK_AUTHENTICATION_EXP
     })
     mocker.patch.object(demisto, 'args', return_value={
-        'taskRunId': '5e4530961deb8eda82b08730'
+        'task_run_id': '5e4530961deb8eda82b08730'
     })
     requests_mock.get('https://pentera.com:8181/api/v1/taskRun/5e4530961deb8eda82b08730/fullActionReportCSV',
                       text=MOCK_CSV)
@@ -80,7 +80,7 @@ def test_pentera_get_task_run_stats(mocker, requests_mock):
         'expiry': MOCK_AUTHENTICATION_EXP
     })
     mocker.patch.object(demisto, 'args', return_value={
-        'taskRunId': '5e41923cf24e1f99979b1cb4'
+        'task_run_id': '5e41923cf24e1f99979b1cb4'
     })
     requests_mock.post('https://pentera.com:8181/api/v1/taskRun/5e41923cf24e1f99979b1cb4/taskStats',
                        json=MOCK_RUN_TEMPLATE)
@@ -111,7 +111,7 @@ def test_pentera_run_template(mocker, requests_mock):
         'expiry': MOCK_AUTHENTICATION_EXP
     })
     mocker.patch.object(demisto, 'args', return_value={
-        'templateName': 'omgRunThisTemplate'
+        'template_name': 'omgRunThisTemplate'
     })
     requests_mock.post('https://pentera.com:8181/api/v1/template/runBulk', json=MOCK_RUN_TEMPLATE)
     client_id = demisto.params().get('clientId')
