@@ -1,8 +1,8 @@
+import dateparser
 import demistomock as demisto
 # from CommonServerPython import *
 # from CommonServerUserPython import *
-from .Claroty import Client
-
+from .Claroty import Client, fetch_incidents
 
 MOCK_AUTHENTICATION = {
     "first_name": "admin",
@@ -17,13 +17,17 @@ RESOLVE_ALERT_RESPONSE = {
     "success": True
 }
 GET_ASSETS_RESPONSE = {
-
+    "count_filtered": 0,
+    "count_in_page": 0,
+    "count_total": 0,
+    "objects": []
 }
-GET_ALERTS_RESPONSE = {"count_filtered": 0,
-                       "count_in_page": 0,
-                       "count_total": 0,
-                       "objects": []
-                       }
+GET_ALERTS_RESPONSE = {
+    "count_filtered": 0,
+    "count_in_page": 0,
+    "count_total": 0,
+    "objects": []
+}
 
 
 # def test_say_hello_over_http(requests_mock):
@@ -75,12 +79,18 @@ def test_claroty_authentication(mocker, requests_mock):
     client = _create_client(mocker, requests_mock, 'https://website.com:5000/auth/authenticate',
                             MOCK_AUTHENTICATION, "POST")
 
-    token = client.get_token()
+    token = client._generate_token()
     assert token == 'ok'
 
 
 def test_claroty_fetch_incidents(mocker, requests_mock):
-    pass
+    client = _create_client(mocker, requests_mock, "https://website.com:5000/ranger/alerts", GET_ALERTS_RESPONSE, "GET")
+    first_fetch_time = demisto.params().get('fetch_time', '7 days').strip()
+    nextcheck, incidents = fetch_incidents(client, demisto.getLastRun(), first_fetch_time)
+
+    assert dateparser.parse(nextcheck['last_fetch']).replace(tzinfo=None)
+    assert isinstance(incidents, list)
+    # assert incidents[0]['severity'] == 1
 
 
 def test_claroty_query_alerts(mocker, requests_mock):
@@ -90,16 +100,16 @@ def test_claroty_query_alerts(mocker, requests_mock):
     assert response
 
 
-# def test_claroty_get_assets(mocker, requests_mock):
-#     client = _create_client(mocker, requests_mock, "https://website.com:5000/ranger/assets", GET_ASSETS_RESPONSE, "GET")
-#
-#     response = client.get_assets([], {}, [])
-#     assert response
+def test_claroty_get_assets(mocker, requests_mock):
+    client = _create_client(mocker, requests_mock, "https://website.com:5000/ranger/assets", GET_ASSETS_RESPONSE, "GET")
+
+    response = client.get_assets([], {}, [])
+    assert response
 
 
 def test_claroty_resolve_alerts(mocker, requests_mock):
     client = _create_client(mocker, requests_mock, 'https://website.com:5000/ranger/ranger_api/resolve_alerts',
                             RESOLVE_ALERT_RESPONSE, "POST")
 
-    response = client.resolve_alert(True, [], [], {}, 1)
+    response = client.resolve_alert(['1-1'], {}, 1, "Test is good")
     assert response["success"]
