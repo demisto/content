@@ -394,7 +394,8 @@
         },
         {
             "integrations": "SNDBOX",
-            "playbookID": "SNDBOX_Test"
+            "playbookID": "SNDBOX_Test",
+            "timeout": 1000
         },
         {
             "integrations": "SNDBOX",
@@ -942,7 +943,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 100
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -960,7 +962,8 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240
+            "timeout": 240,
+            "pid_threshold": 18
         },
         {
             "integrations": "activedir",
@@ -1054,7 +1057,7 @@
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test",
-            "memory_threshold": 150
+            "memory_threshold": 200
         },
         {
             "integrations": "McAfee NSM",
@@ -1146,7 +1149,7 @@
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewsv2_separate_process",
-            "memory_threshold": 70
+            "memory_threshold": 100
         },
         {
             "integrations": "remedy_sr_beta",
@@ -2190,7 +2193,8 @@
         },
         {
             "integrations": "GoogleCloudTranslate",
-            "playbookID": "GoogleCloudTranslate-Test"
+            "playbookID": "GoogleCloudTranslate-Test",
+            "pid_threshold": 8
         },
         {
             "integrations": "Infoblox",
@@ -2264,6 +2268,39 @@
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Test"
+        },
+        {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Demonstration - Test"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory Asset - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory IOC Details - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List Alerts - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List IOCs - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory Reputation - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Feodo Tracker Hashes Feed",
@@ -2456,6 +2493,7 @@
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
-        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233"
+        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
+        "Google Chronicle Backstory": "SDK"
     }
 }
