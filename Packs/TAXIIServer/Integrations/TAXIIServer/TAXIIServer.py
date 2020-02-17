@@ -12,13 +12,22 @@ import libtaxii
 import libtaxii.messages_11
 import libtaxii.constants
 import stix.core
-import cybox
+import stix.indicator
+import stix.extensions.marking.ais
+import stix.data_marking
+import stix.extensions.marking.tlp
+import cybox.core
+import cybox.objects.address_object
+import cybox.objects.domain_name_object
+import cybox.objects.uri_object
+import cybox.objects.file_object
 import mixbox.idgen
 import mixbox.namespaces
 import netaddr
 import uuid
 import werkzeug.urls
 import pytz
+import traceback
 
 
 ''' GLOBAL VARIABLES '''
@@ -121,49 +130,65 @@ class TAXIIServer:
         return self.get_data_feed(taxii_feeds, taxii_message.message_id, collection_name,
                                   exclusive_begin_time, inclusive_end_time)
 
-    def get_data_feed(self, taxii_feeds, message_id, collection_name, exclusive_begin_time, inclusive_end_time) -> str:
+    def get_data_feed(self, taxii_feeds, message_id, collection_name, exclusive_begin_time, inclusive_end_time)\
+            -> Response:
         if collection_name not in taxii_feeds:
             raise ValueError('Invalid message, unknown feed')
 
         if not inclusive_end_time:
             inclusive_end_time = datetime.utcnow().replace(tzinfo=pytz.utc)
 
-        # yield the opening tag of the Poll Response
-        response = '<taxii_11:Poll_Response xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1"' \
-                   ' xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" ' \
-                   'xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1"' \
-                   f' message_id="{libtaxii.messages_11.generate_message_id()}"' \
-                   f' in_response_to="{message_id}"' \
-                   f' collection_name="{collection_name}" more="false" result_part_number="1"> ' \
-                   f'<taxii_11:Inclusive_End_Timestamp>{inclusive_end_time.isoformat()}' \
-                   '</taxii_11:Inclusive_End_Timestamp>'
+        def yield_response():
+            # yield the opening tag of the Poll Response
+            response = '<taxii_11:Poll_Response xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1"' \
+                       ' xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" ' \
+                       'xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1"' \
+                       f' message_id="{libtaxii.messages_11.generate_message_id()}"' \
+                       f' in_response_to="{message_id}"' \
+                       f' collection_name="{collection_name}" more="false" result_part_number="1"> ' \
+                       f'<taxii_11:Inclusive_End_Timestamp>{inclusive_end_time.isoformat()}' \
+                       '</taxii_11:Inclusive_End_Timestamp>'
 
-        if exclusive_begin_time is not None:
-            response += (
-                    '<taxii_11:Exclusive_Begin_Timestamp>' +
-                    exclusive_begin_time.isoformat() +
-                    '</taxii_11:Exclusive_Begin_Timestamp>'
-            )
+            if exclusive_begin_time is not None:
+                response += (
+                        '<taxii_11:Exclusive_Begin_Timestamp>' +
+                        exclusive_begin_time.isoformat() +
+                        '</taxii_11:Exclusive_Begin_Timestamp>'
+                )
 
-        demisto.info('response is ' + response)
+            yield response
+            # yield the content blocks
+            indicator_query = self.collections[str(collection_name)]
 
-        # yield the content blocks
-        indicator_query = self.collections[str(collection_name)]
+            for indicator in find_indicators_by_time_frame(indicator_query, exclusive_begin_time, inclusive_end_time):
+                try:
+                    json_stix = get_stix_indicator(indicator)
+                    demisto.info(str(json_stix))
+                    stix_indicator = stix.core.STIXPackage.from_json(json_stix)
+                    cb1 = libtaxii.messages_11.ContentBlock(
+                        content_binding=libtaxii.constants.CB_STIX_XML_11,
+                        content=stix_indicator.to_xml(ns_dict={
+                            NAMESPACE_URI: NAMESPACE
+                        })
+                    )
+                    yield cb1.to_xml().decode('utf-8') + '\n'
+                except Exception:
+                    e = traceback.format_exc()
+                    handle_error(f'Failed parsing indicator to STIX: {e}')
 
-        for indicator in find_indicators_by_time_frame(indicator_query, exclusive_begin_time, inclusive_end_time):
-            json_stix = get_stix_indicator(indicator)
-            stix_indicator = stix.core.STIXPackage.from_json(json_stix)
-            cb1 = libtaxii.messages_11.ContentBlock(
-                content_binding=libtaxii.constants.CBstix_XML_11,
-                content=stix_indicator
-            )
-            response += cb1.to_xml() + '\n'
+            # yield the closing tag
 
-        # yield the closing tag
+            yield '</taxii_11:Poll_Response>'
 
-        response += '</taxii_11:Poll_Response>'
-
-        return response
+        return Response(
+            response=stream_with_context(yield_response()),
+            status=200,
+            headers={
+                'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1',
+                'X-TAXII-Protocol': 'urn:taxii.mitre.org:protocol:http:1.0'
+            },
+            mimetype='application/xml'
+        )
 
 
 SERVER: TAXIIServer
@@ -173,6 +198,7 @@ SERVER: TAXIIServer
 
 def stix_ip_observable(namespace, indicator):
     category = cybox.objects.address_object.Address.CAT_IPV4
+
     if indicator['indicator_type'] in [FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR]:
         category = cybox.objects.address_object.Address.CAT_IPV6
 
@@ -353,16 +379,37 @@ def get_stix_indicator(indicator):
     type_mapper = TYPE_MAPPING.get(type_, None)
 
     value = indicator['value']
-    source = indicator['source']
 
-    title = f'{type_}: {value}'
-    description = f'{type_} indicator from {source}'
+    title = None
+    description = None
+    handling = None
+    information_source = None
+    short_description = None
+
+    share_level = indicator.get('trafficlightprotocoltlp', '').upper()
+    if share_level and share_level.lower() in ['WHITE', 'GREEN', 'AMBER', 'RED']:
+        marking_specification = stix.data_marking.MarkingSpecification()
+        marking_specification.controlled_structure = "//node() | //@*"
+
+        tlp = stix.extensions.marking.tlp.TLPMarkingStructure()
+        tlp.color = share_level
+        marking_specification.marking_structures.append(tlp)
+
+        handling = stix.data_marking.Marking()
+        handling.add_marking(marking_specification)
 
     header = None
-    if title is not None or description is not None:
+    if (title is not None or
+            description is not None or
+            handling is not None or
+            short_description is not None or
+            information_source is not None):
         header = stix.core.STIXHeader(
             title=title,
-            description=description
+            description=description,
+            handling=handling,
+            short_description=short_description,
+            information_source=information_source
         )
 
     spid = '{}:indicator-{}'.format(
@@ -379,20 +426,20 @@ def get_stix_indicator(indicator):
             uuid.uuid4()
         )
 
-        if value['type'] == 'URL':
-            eindicator = werkzeug.urls.iri_to_uri(indicator, safe_conversion=True)
+        if type_ == 'URL':
+            eindicator = werkzeug.urls.iri_to_uri(value, safe_conversion=True)
         else:
-            eindicator = indicator
+            eindicator = value
 
         sindicator = stix.indicator.indicator.Indicator(
             id_=id_,
             title='{}: {}'.format(
-                value['type'],
+                type_,
                 eindicator
             ),
             description='{} indicator from {}'.format(
-                value['type'],
-                ', '.join(value['sources'])
+                type_,
+                ', '.join(indicator['sourceBrands'])
             ),
             timestamp=datetime.utcnow().replace(tzinfo=pytz.utc)
         )
@@ -418,6 +465,11 @@ def get_stix_indicator(indicator):
         sp.add_indicator(sindicator)
 
     return sp.to_json()
+
+
+def handle_error(error: str):
+    demisto.error(error)
+    demisto.updateModuleHealth(error)
 
 
 def access_log(f):
@@ -506,8 +558,8 @@ def find_indicators_by_time_frame(indicator_query: str, begin_time: datetime, en
         tz_end_time = datetime.strftime(end_time, '%Y-%m-%dT%H:%M:%S %z')
         indicator_query += f'createdTime:<="{tz_end_time}"'
     demisto.info(f'Querying indicators by: {indicator_query}')
-    iocs, _ = find_indicators_loop(indicator_query)
-    return iocs
+
+    return find_indicators_loop(indicator_query)
 
 
 def find_indicators_loop(indicator_query: str, total_fetched: int = 0, next_page: int = 0,
@@ -524,7 +576,7 @@ def find_indicators_loop(indicator_query: str, total_fetched: int = 0, next_page
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
         next_page += 1
-    return iocs, next_page
+    return iocs
 
 
 def taxii_make_response(taxii_message):
@@ -551,7 +603,9 @@ def taxii_discovery_service() -> Response:
     try:
         discovery_response = SERVER.get_discovery_service(libtaxii.messages_11.get_message_from_xml(request.data))
     except Exception as e:
-        return make_response(str(e), 400)
+        error = f'Could not perform the discovery request: {str(e)}'
+        handle_error(error)
+        return make_response(error, 400)
 
     return taxii_make_response(discovery_response)
 
@@ -566,7 +620,9 @@ def taxii_collection_management_service() -> Response:
     try:
         collection_response = SERVER.get_collections(libtaxii.messages_11.get_message_from_xml(request.data))
     except Exception as e:
-        return make_response(str(e), 400)
+        error = f'Could not perform the collection management request: {str(e)}'
+        handle_error(error)
+        return make_response(error, 400)
 
     return taxii_make_response(collection_response)
 
@@ -583,22 +639,14 @@ def taxii_poll_service() -> Response:
         taxiicontent_type = request.headers['X-TAXII-Content-Type']
         if taxiicontent_type == 'urn:taxii.mitre.org:message:xml:1.1':
             taxii_message = libtaxii.messages_11.get_message_from_xml(request.data)
-            poll_response = SERVER.get_poll_response(taxii_message)
         else:
             raise ValueError('Invalid message')
     except Exception as e:
-        demisto.info(str(e))
-        return make_response(str(e), 400)
+        error = f'Could not perform the polling request: {str(e)}'
+        handle_error(error)
+        return make_response(error, 400)
 
-    return Response(
-        response=poll_response,
-        status=200,
-        headers={
-            'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1',
-            'X-TAXII-Protocol': 'urn:taxii.mitre.org:protocol:http:1.0'
-        },
-        mimetype='application/xml'
-    )
+    return SERVER.get_poll_response(taxii_message)
 
 
 ''' COMMAND FUNCTIONS '''
