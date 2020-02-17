@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 HEADERS = {'Accept': 'application/json'}
-DATE_FORMAT = '%Y-%m-%d %H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 AUTH_URL_SUFFIX = '/auth/token'
 LIST_TEMPLATES_URL_SUFFIX = '/api/v1/templates'
 CANCEL_TASK_URL_SUFFIX = '/api/v1/taskRun/{taskRunId}/cancel'
@@ -181,17 +181,56 @@ def pentera_get_task_run_full_action_report_command(client: Client, args, access
             return data[1:]
         return []
 
+    def _convert_full_action_report_time_format(csv_file):
+        def _parse_date(full_date, separator):
+            if isinstance(full_date, str) and isinstance(separator, str):
+                date = full_date.split(separator)
+                if len(date) > 2:
+                    first_arg = date[0]
+                    second_arg = date[1]
+                    third_arg = date[2]
+                    return first_arg, second_arg, third_arg
+
+        def _convert_list_to_csv_format(data_list):
+            data_csv_format = ''
+            for data_row in data_list:
+                line = ''
+                for item in data_row:
+                    if item != data_row[-1]:
+                        line += item + ','
+                    else:
+                        line += item + '\n'
+                data_csv_format += line
+            return data_csv_format
+
+        csv_reader = csv.reader(io.StringIO(csv_file))
+        data = [['Severity', 'Time', 'Duration', 'Operation Type', 'Techniques', 'Parameters', 'Status']]
+        for row in csv_reader:
+            if row and len(row) > 0 and row != data[0]:
+                full_date_to_convert = row[1].replace(' ', '')
+                full_date_list = full_date_to_convert.split(',')
+                day, month, year = _parse_date(full_date_list[0], '/')
+                hours, minutes, seconds = _parse_date(full_date_list[1], ':')
+                converted_date = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds
+                new_line = row.copy()
+                new_line[1] = converted_date
+                data.append(new_line)
+
+        data_str = _convert_list_to_csv_format(data)
+        return data_str
+
     try:
         entries = []
-        task_run_id = args.get('taskRunId')
+        task_run_id = args.get('task_run_id')
         response_csv = client.get_task_run_full_action_report_by_task_run_id(task_run_id, access_token)
+        converted_response_csv = _convert_full_action_report_time_format(response_csv)
         readable_output = f"# Pentera Report for TaskRun ID {task_run_id}"
-        entry = fileResult(f'penterascan-{task_run_id}.csv', response_csv, entryTypes['entryInfoFile'])
+        entry = fileResult(f'penterascan-{task_run_id}.csv', converted_response_csv, entryTypes['entryInfoFile'])
         entry["HumanReadable"] = readable_output
         entry["ContentsFormat"] = formats["markdown"]
         entries.append(entry)
 
-        csv_dict = _convert_csv_file_to_dict(response_csv)
+        csv_dict = _convert_csv_file_to_dict(converted_response_csv)
         human_readable = tableToMarkdown(readable_output, csv_dict)
 
         entries.append({
@@ -214,13 +253,12 @@ def pentera_get_task_run_full_action_report_command(client: Client, args, access
 
 
 def pentera_get_task_run_stats_command(client: Client, args, access_token: str):
-    task_run_id = args.get('taskRunId')
+    task_run_id = args.get('task_run_id')
     try:
         task_run_stats = client.get_task_stats_by_task_run_id(task_run_id, access_token)
         parsed_response = parse_task_run_stats(task_run_stats)
         title = parsed_response['TemplateName'] + ': ' + parsed_response['Status']
         readable_output = tableToMarkdown(title, parsed_response, removeNull=True)
-
         return (
             readable_output,
             {'Pentera.TaskRun(val.ID == obj.ID)': parsed_response},
@@ -232,29 +270,35 @@ def pentera_get_task_run_stats_command(client: Client, args, access_token: str):
 
 
 def parse_task_run_stats(json_response):
-    demisto.debug(f'Got JSON response: {json_response}')
-    parsed_json_response = {
-        'ID': json_response.get('taskRunId'),
-        'TemplateName': json_response.get('taskRunName'),
-        'StartTime': json_response.get('startTime'),
-        'EndTime': json_response.get('endTime'),
-        'Status': json_response.get('status'),
-        'Created': datetime.fromtimestamp(
-            float(json_response.get('startTime')) / 1000).strftime(DATE_FORMAT)
-    }
-    LOG(f'Parsed JSON Response: {parsed_json_response}')
-    return parsed_json_response
+    def _convert_time_in_millis_to_date_format(time_in_millis):
+        time_in_date_format = None
+        try:
+            time_in_date_format = datetime.fromtimestamp(float(time_in_millis) / 1000).strftime(DATE_FORMAT)
+            return time_in_date_format
+        except TypeError:
+            return time_in_date_format
+
+    if isinstance(json_response, dict):
+        end_time_date_format = _convert_time_in_millis_to_date_format(json_response.get('endTime'))
+        start_time_date_format = _convert_time_in_millis_to_date_format(json_response.get('startTime'))
+        parsed_json_response = {
+            'ID': json_response.get('taskRunId'),
+            'TemplateName': json_response.get('taskRunName'),
+            'StartTime': start_time_date_format,
+            'EndTime': end_time_date_format,
+            'Status': json_response.get('status'),
+        }
+        return parsed_json_response
 
 
 def pentera_run_template_command(client, args, access_token):
-    template_name = args.get('templateName')
+    template_name = args.get('template_name')
     try:
         response = client.run_template_by_name(template_name, access_token)
         task_run_json = response['taskRuns'][0]
         parsed_response = parse_task_run_stats(task_run_json)
         readable_output = tableToMarkdown(template_name, parse_task_run_stats(task_run_json),
                                           removeNull=True)
-
         return (
             readable_output,
             {'Pentera.TaskRun(val.ID == obj.ID)': parsed_response},
@@ -276,7 +320,6 @@ def main():
     demisto.debug(f"GOT TGT: {tgt}")
     if not tgt:
         params_tgt = demisto.params()['tgt']
-        demisto.debug(f"TGT was not initialized, got TGT: {params_tgt}")
         demisto.setIntegrationContext({
             'tgt': params_tgt
         })
@@ -312,8 +355,9 @@ def main():
             if not client.is_access_token_valid(access_token, expiry):
                 pentera_authentication(client)
             demisto.results(pentera_get_task_run_full_action_report_command(client, demisto.args(),
-                                                                            demisto.getIntegrationContext().get('accessToken')))
-        LOG.print_log(verbose=True)
+                                                                            demisto.getIntegrationContext().get(
+                                                                                'accessToken')))
+        LOG.print_log()
     # Log exceptions
     except Exception as e:
         LOG.print_log(verbose=True)
