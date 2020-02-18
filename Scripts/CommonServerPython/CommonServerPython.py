@@ -726,24 +726,24 @@ def datetime_to_string(datetime_obj):
         return datetime_obj.__str__()
 
 
-def remove_empty_elements(d):
-    """
-    Recursively remove empty lists, empty dicts, or None elements from a dictionary.
-    :param d: Input dictionary.
-    :type d: dict
-    :return: Dictionary with all empty lists, and empty dictionaries removed.
-    :rtype: dict
-    """
-
-    def empty(x):
-        return x is None or x == {} or x == []
-
-    if not isinstance(d, (dict, list)):
-        return d
-    elif isinstance(d, list):
-        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
-    else:
-        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
+# def remove_empty_elements(d):
+#     """
+#     Recursively remove empty lists, empty dicts, or None elements from a dictionary.
+#     :param d: Input dictionary.
+#     :type d: dict
+#     :return: Dictionary with all empty lists, and empty dictionaries removed.
+#     :rtype: dict
+#     """
+#
+#     def empty(x):
+#         return x is None or x == {} or x == []
+#
+#     if not isinstance(d, (dict, list)):
+#         return d
+#     elif isinstance(d, list):
+#         return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+#     else:
+#         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
 class IntegrationLogger(object):
