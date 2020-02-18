@@ -121,6 +121,29 @@ script:
     - contextPath: Pentera.TaskRun.FullActionReport
       description: The full action report of the task run
       type: String
+    - contextPath: Pentera.TaskRun.FullActionReport.Severity
+      description: The sevirity of the action, from N/A to 10.0
+      type: Number
+    - contextPath: Pentera.TaskRun.FullActionReport.Time
+      description: The full date the action took place
+      type: Date
+    - contextPath: Pentera.TaskRun.FullActionReport.Duration
+      description: The duration of the action in milliseconds
+      type: Number
+    - contextPath: Pentera.TaskRun.FullActionReport.OperationType
+      description: 'The type of the action that ran; e.g.: "Scanning hosts", "Malware
+        injected to host", etc.'
+      type: String
+    - contextPath: Pentera.TaskRun.FullActionReport.Techniques
+      description: The MITRE technique(s) used with the relevant MITRE ID
+      type: String
+    - contextPath: Pentera.TaskRun.FullActionReport.Parameters
+      description: 'The relevant parameters of the action; e.g.: List of hosts IP
+        addresses'
+      type: String
+    - contextPath: Pentera.TaskRun.FullActionReport.Status
+      description: 'The status of the action. Can be: success, failed, canceled, no_results'
+      type: String
   dockerimage: demisto/pyjwt3:1.0.0.4946
   feed: false
   isfetch: false
