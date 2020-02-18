@@ -1,0 +1,345 @@
+elasticcommonfields: {}
+id: ArcSight Add IP Indicators
+version: -1
+fromversion: 5.5.0
+name: ArcSight Add IP Indicators
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '1'
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: '1'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 7701955f-2902-40e4-81db-0249b7febfcd
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 7701955f-2902-40e4-81db-0249b7febfcd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+      version: -1
+      name: Is ArcSight Enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ArcSight ESM v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: 1a546513-184b-49f7-83a7-6689acbd9488
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 1a546513-184b-49f7-83a7-6689acbd9488
+      version: -1
+      name: Are there filtered results?
+      description: Checks whether the specified item is in a list. The default list
+        is the Demisto Indicators Whitelist.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+      - - operator: match
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+          right:
+            value:
+              simple: \d+\.\d+\.\d+\.\d+
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '30':
+    id: '30'
+    taskid: 982b0dd6-9808-4a45-88ef-067a2459204b
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 982b0dd6-9808-4a45-88ef-067a2459204b
+      version: -1
+      name: Is there an ArcSight IP Active List?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '59'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightIPActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightIPValueFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '59':
+    id: '59'
+    taskid: 50fc36e5-21b9-4469-8b13-e384ca3cdd6b
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 50fc36e5-21b9-4469-8b13-e384ca3cdd6b
+      version: -1
+      name: Add IP to ArcSight Active list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: \d+\.\d+\.\d+\.\d+
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightIPValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightIPActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1585,
+        "width": 740,
+        "x": 340,
+        "y": -330
+      }
+    }
+  }
+inputs:
+- key: ArcSightIPActiveListID
+  value: {}
+  required: false
+  description: ID the the IP Active List resource as appears in the ArcSight UI.
+  playbookInputQuery: null
+- key: ArcsightIPValueFieldName
+  value: {}
+  required: false
+  description: The name of the Active List field to insert the IP value to.
+  playbookInputQuery: null
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01 00:00:00
+      todate: 0001-01-01 00:00:00
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue: null
+        fromvalue: null
+        field: ''
+      fromdatelicenseval: 0001-01-01 00:00:00
+    runFromLastJobTime: false
+outputs: []
+quiet: true
+tests:
+- ArcSight Add All Indicators
