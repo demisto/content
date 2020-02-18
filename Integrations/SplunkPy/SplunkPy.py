@@ -305,7 +305,7 @@ def splunk_search_command():
 
     query = build_search_query(args)
     search_kwargs = build_search_kwargs(args)
-    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+    search_job = SERVICE.jobs.create(query, **search_kwargs)  # type: ignore
     num_of_results_from_query = search_job["resultCount"]
 
     results_limit = float(demisto.args().get("event_limit", 100))
@@ -349,7 +349,7 @@ def splunk_job_create_command():
         "exec_mode": "normal",
         "app": app
     }
-    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+    search_job = SERVICE.jobs.create(query, **search_kwargs)  # type: ignore
 
     entry_context = {
         'Splunk.Job': search_job.sid
@@ -363,7 +363,7 @@ def splunk_job_create_command():
 
 
 def splunk_results_command():
-    jobs = service.jobs  # type: ignore
+    jobs = SERVICE.jobs  # type: ignore
     found = False
     res = []
     for job in jobs:
