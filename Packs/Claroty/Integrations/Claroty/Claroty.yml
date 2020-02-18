@@ -42,7 +42,7 @@ configuration:
   - High
   - Critical
   required: false
-  type: 16
+  type: 15
 - additionalinfo: All sites if none selected
   display: Site ID to fetch by
   hidden: false
@@ -236,6 +236,7 @@ script:
       - description
       - alert_indicators
       - actionable_assets
+      - category
       required: false
       secret: false
     - auto: PREDEFINED
@@ -266,15 +267,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The start date from which to get alerts. Format - YYYY-MM-DDThh:mm:ssZ
+      description: The start date from which to get alerts. Format - YYYY-MM-DDThh:mm:ssZ.
+        Example - 2020-02-02T01:02:03Z
       isArray: false
       name: date_from
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of alerts to query.
-      isArray: false
-      name: alert_number
       required: false
       secret: false
     - auto: PREDEFINED
@@ -292,6 +288,18 @@ script:
       description: The maximum number of alerts to query.
       isArray: false
       name: alert_limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set minimal severity to query by.
+      isArray: false
+      name: severity
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
       required: false
       secret: false
     deprecated: false
@@ -377,13 +385,16 @@ script:
     - contextPath: Claroty.Alert.Severity
       description: The alert severity.
       type: String
+    - contextPath: Claroty.Alert.Category
+      description: The alert category.
+      type: String
   - arguments:
     - default: false
       description: The ResourceId of the Alerts to resolve (in <alert_id>-<site_id>
         format)
       isArray: false
       name: selected_alerts
-      required: false
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false

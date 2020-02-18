@@ -28,7 +28,7 @@ GET_ASSETS_RESPONSE = {
         "criticality__": "eLow",
         "id": 15,
         "insight_names": ["Unsecured Protocols", "Windows CVEs"],
-        "ipv4": ["192.168.0.121"],
+        "ipv4": ["1.1.1.1"],
         "last_seen": "2020-02-16T10:46:00+00:00",
         "mac": ["00:0B:AB:1A:DD:DD"],
         "name": "GTWB",
@@ -53,7 +53,7 @@ GET_ALERTS_RESPONSE = {
                 "asset_type__": "eEndpoint",
                 "hostname": "GTWB",
                 "id": 15,
-                "ip": ["192.168.0.121"],
+                "ip": ["1.1.1.1"],
                 "mac": ["00:0B:AB:1A:DD:DD"],
                 "name": "GTWB",
                 "network_id": 1,
@@ -83,7 +83,7 @@ GET_ALERTS_RESPONSE = {
             "parent_indicator_id": None,
             "site_id": 1
         }],
-        "description": "A configuration has been downloaded to controller [[Chemical_plant]] by [[10.1.30.40]],"
+        "description": "A configuration has been downloaded to controller [[Chemical_plant]] by [[1.1.1.1]],"
                        " by user ENG_AB\\Administrator",
         "network_id": 1,
         "resolved": False,
