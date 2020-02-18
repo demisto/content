@@ -1,0 +1,278 @@
+elasticcommonfields: {}
+id: QRadar Add Domain Indicators
+version: -1
+name: QRadar Add Domain Indicators
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: f138a4d7-575c-4fa5-8649-5fade634a770
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: f138a4d7-575c-4fa5-8649-5fade634a770
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 666175e0-bc16-434c-8200-55b63629390d
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 666175e0-bc16-434c-8200-55b63629390d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 0d9ae7e5-ddcf-4c8f-84ad-5c090df64aba
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 0d9ae7e5-ddcf-4c8f-84ad-5c090df64aba
+      version: -1
+      name: Is QRadarEnabled?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '31'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar-test
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: 5eea45d8-9078-4575-8ee8-88724458ac55
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 5eea45d8-9078-4575-8ee8-88724458ac55
+      version: -1
+      name: Are there filtered results?
+      description: Checks whether the specified item is in a list. The default list
+        is the Demisto Indicators Whitelist.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: 74240d03-eb8f-4e1c-8b12-c67effe59b8d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 74240d03-eb8f-4e1c-8b12-c67effe59b8d
+      version: -1
+      name: Add domains to QRadar reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarDomainReferenceSetName}
+      source: {}
+      values:
+        complex:
+          root: playbookQuery
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '31':
+    id: '31'
+    taskid: b88c9e7b-3bb1-4b39-8515-d02814d9e01e
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: b88c9e7b-3bb1-4b39-8515-d02814d9e01e
+      version: -1
+      name: Is there a Qradar domains Reference Set?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.QRadarDomainReferenceSetName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1475,
+        "width": 600,
+        "x": 340,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: QRadarDomainReferenceSetName
+  value: {}
+  required: false
+  description: The name of the QRadar IP reference set to insert the data to.
+  playbookInputQuery: null
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01 00:00:00
+      todate: 0001-01-01 00:00:00
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue: null
+        fromvalue: null
+        field: ''
+      fromdatelicenseval: 0001-01-01 00:00:00
+    runFromLastJobTime: false
+outputs: []
+quiet: true
+tests:
+- Qradar Add All Indicators
