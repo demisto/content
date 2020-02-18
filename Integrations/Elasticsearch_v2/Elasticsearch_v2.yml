@@ -1,5 +1,4 @@
 category: Database
-toversion: 5.4.9
 commonfields:
   id: Elasticsearch v2
   version: -1
