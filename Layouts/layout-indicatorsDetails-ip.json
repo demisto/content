@@ -5,7 +5,7 @@
         "TypeName": "",
         "id": "ipRep",
         "kind": "indicatorsDetails",
-        "modified": "2020-02-18T15:44:35.883868+02:00",
+        "modified": "2020-02-18T14:51:03.158862008Z",
         "name": "",
         "system": false,
         "tabs": [
@@ -178,7 +178,7 @@
                         "type": "dynamicIndicator",
                         "w": 3,
                         "x": 0,
-                        "y": 9
+                        "y": 8
                     },
                     {
                         "h": 1,
@@ -294,7 +294,7 @@
                         "y": 5
                     },
                     {
-                        "h": 4,
+                        "h": 3,
                         "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
                         "items": [],
                         "maxW": 3,
@@ -334,6 +334,32 @@
                         "w": 1,
                         "x": 2,
                         "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": true,
+                        "i": "main-ecf5a860-525d-11ea-b1d8-5d4e1b5a11fa",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "recordedfutureevidencedetails",
+                                "height": 106,
+                                "id": "0bf63630-525e-11ea-b1d8-5d4e1b5a11fa",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Custom Feed Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 10
                     }
                 ],
                 "type": "custom"

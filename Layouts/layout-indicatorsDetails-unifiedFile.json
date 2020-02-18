@@ -5,7 +5,7 @@
         "TypeName": "",
         "id": "unifiedFileRep",
         "kind": "indicatorsDetails",
-        "modified": "2020-02-18T16:00:55.812724+02:00",
+        "modified": "2020-02-18T14:59:42.909651054Z",
         "name": "",
         "system": false,
         "tabs": [
@@ -501,6 +501,33 @@
                         "w": 1,
                         "x": 2,
                         "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "main-2de6c290-525f-11ea-b1d8-5d4e1b5a11fa",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "recordedfutureevidencedetails",
+                                "height": 106,
+                                "id": "452c66d0-525f-11ea-b1d8-5d4e1b5a11fa",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Custom Feed Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 9
                     }
                 ],
                 "type": "custom"

@@ -5,7 +5,7 @@
         "TypeName": "",
         "id": "domainRep",
         "kind": "indicatorsDetails",
-        "modified": "2020-02-18T15:53:51.126093+02:00",
+        "modified": "2020-02-18T14:53:42.949168053Z",
         "name": "",
         "system": false,
         "tabs": [
@@ -174,142 +174,159 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "creationdate",
-                                "height": 24,
+                                "height": 22,
                                 "id": "9e5082c0-ac6d-11e9-8443-17259235cee7",
                                 "index": 0,
                                 "listId": "3b60c080-ac6d-11e9-8443-17259235cee7",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "adminphone",
-                                "height": 24,
+                                "height": 22,
                                 "id": "4f4addb0-ac6d-11e9-8443-17259235cee7",
                                 "index": 1,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "expirationdate",
-                                "height": 24,
+                                "height": 22,
                                 "id": "1d42d510-ac6e-11e9-8443-17259235cee7",
                                 "index": 2,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "adminname",
-                                "height": 24,
+                                "height": 22,
                                 "id": "4cfef1e0-ac6d-11e9-8443-17259235cee7",
                                 "index": 3,
                                 "listId": "3b60c080-ac6d-11e9-8443-17259235cee7",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "adminemail",
-                                "height": 24,
+                                "height": 22,
                                 "id": "4a7cb3d0-ac6d-11e9-8443-17259235cee7",
                                 "index": 4,
                                 "listId": "3b60c080-ac6d-11e9-8443-17259235cee7",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "admincountry",
-                                "height": 24,
+                                "height": 22,
                                 "id": "45460420-ac6d-11e9-8443-17259235cee7",
                                 "index": 5,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "domainstatus",
-                                "height": 24,
+                                "height": 22,
                                 "id": "a55eb190-ac6d-11e9-8443-17259235cee7",
-                                "index": 6,
+                                "index": 7,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "nameservers",
-                                "height": 24,
+                                "height": 22,
                                 "id": "309dd1a0-ac6e-11e9-8443-17259235cee7",
-                                "index": 7,
+                                "index": 8,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "organization",
-                                "height": 24,
+                                "height": 22,
                                 "id": "3d11d670-ac6e-11e9-8443-17259235cee7",
-                                "index": 8,
+                                "index": 9,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "registrantname",
-                                "height": 24,
+                                "height": 22,
                                 "id": "6735a620-ac6e-11e9-8443-17259235cee7",
-                                "index": 9,
+                                "index": 10,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "registrantcountry",
-                                "height": 24,
+                                "height": 22,
                                 "id": "421456c0-ac6e-11e9-8443-17259235cee7",
-                                "index": 10,
+                                "index": 11,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "registrantemail",
-                                "height": 24,
+                                "height": 22,
                                 "id": "43fd13f0-ac6e-11e9-8443-17259235cee7",
-                                "index": 11,
+                                "index": 12,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "registrantphone",
-                                "height": 24,
+                                "height": 22,
                                 "id": "46140d10-ac6e-11e9-8443-17259235cee7",
-                                "index": 12,
+                                "index": 13,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "registrarname",
-                                "height": 24,
+                                "height": 22,
                                 "id": "541fc8e0-ac6e-11e9-8443-17259235cee7",
-                                "index": 13,
+                                "index": 14,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "registrarabuseemail",
-                                "height": 24,
+                                "height": 22,
                                 "id": "4d52e8d0-ac6e-11e9-8443-17259235cee7",
-                                "index": 14,
+                                "index": 15,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "registrarabusephone",
-                                "height": 24,
+                                "height": 22,
                                 "id": "529cd260-ac6e-11e9-8443-17259235cee7",
-                                "index": 15,
+                                "index": 16,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "subdomains",
-                                "height": 24,
+                                "height": 22,
                                 "id": "59648250-ac6e-11e9-8443-17259235cee7",
-                                "index": 16,
+                                "index": 17,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
@@ -462,6 +479,35 @@
                         "w": 1,
                         "x": 2,
                         "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "default-main-4cf6af20-525e-11ea-b1d8-5d4e1b5a11fa",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "recordedfutureevidencedetails",
+                                "height": 106,
+                                "id": "65e9b540-525e-11ea-b1d8-5d4e1b5a11fa",
+                                "index": 0,
+                                "listId": "default-main-4cf6af20-525e-11ea-b1d8-5d4e1b5a11fa",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Custom Feed Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -472,5 +518,5 @@
     },
     "typeId": "domainRep",
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVeersion": "5.5.0"
 }
