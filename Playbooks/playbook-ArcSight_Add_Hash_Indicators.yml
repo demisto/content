@@ -851,5 +851,3 @@ inputs:
   playbookInputQuery: null
 outputs: []
 quiet: true
-tests:
-- ArcSight Add All Indicators

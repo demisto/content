@@ -707,5 +707,3 @@ inputs:
     runFromLastJobTime: false
 outputs: []
 quiet: true
-tests:
-- Qradar Add All Indicators

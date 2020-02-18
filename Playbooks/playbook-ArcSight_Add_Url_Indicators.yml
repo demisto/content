@@ -325,5 +325,3 @@ inputs:
 outputs: []
 sourceplaybookid: 4dd3e7d3-3703-44e8-80d6-513874da3866
 quiet: true
-tests:
-- ArcSight Add All Indicators
