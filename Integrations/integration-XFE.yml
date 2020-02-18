@@ -94,13 +94,13 @@ script:
 
 
     function doFile(hash, longFormat) {
-        var hashList = argToList(hash);
-        var entryList = [];
-        for (i = 0; i < hashList.length; i++) {
-            hash = hashList[i];
+        var hash_list = argToList(hash);
+        var entry_list = [];
+        for (i = 0; i < hash_list.length; i++) {
+            hash = hash_list[i];
             var res = doReq('GET', 'malware/' + hash);
             if (res.statusCode === 404) {
-                entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
                     HumanReadable: 'XFE does not have details about ' + hash});
                 continue;
             }
@@ -151,9 +151,9 @@ script:
                     md += objToMd(o.origins.external) + '\n';
                 }
             }
-            entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
+            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return entryList;
+        return entry_list;
     }
 
 
@@ -164,14 +164,14 @@ script:
         threshold = parseInt(threshold);
         // Need to make sure to be backwards compatible with the JSON
 
-        var ipList = argToList(ip);
-        var entryList = [];
-        for (i = 0; i < ipList.length; i++) {
-            ip = ipList[i];
+        var ip_list = argToList(ip);
+        var entry_list = [];
+        for (i = 0; i < ip_list.length; i++) {
+            ip = ip_list[i];
             var res = {};
             var ipRes = doReq('GET', 'ipr/' + ip);
             if (ipRes.statusCode === 404) {
-                entryList.push({Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
+                entry_list.push({Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
                     HumanReadable: 'XFE does not have details about ' + ip});
                 continue;
             }
@@ -212,9 +212,9 @@ script:
                     md += arrToMd(res.malware.malware) + '\n';
                 }
             }
-            entryList.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
+            entry_list.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return entryList;
+        return entry_list;
     };
 
 
@@ -225,21 +225,21 @@ script:
 
         threshold = parseInt(threshold);
 
-        var urlList = argToList(url);
-        var entryList = [];
-        for (i = 0; i < urlList.length; i++) {
-            url = urlList[i];
+        var url_list = argToList(url);
+        var entry_list = [];
+        for (i = 0; i < url_list.length; i++) {
+            url = url_list[i];
             // Need to make sure to be backwards compatible with the JSON
             var res = {};
             var resolutionRes = doReq('GET', 'resolve/' + url);
             if (resolutionRes.statusCode === 404) {
-                entryList.push({Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
+                entry_list.push({Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
                     HumanReadable: 'XFE does not have details about ' + url});
                 continue;
             }
             var urlRes = doReq('GET', 'url/' + url);
             if (urlRes.statusCode === 404) {
-                 entryList.push({Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
+                 entry_list.push({Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
                     HumanReadable: 'XFE does not have details about ' + url});
                  continue;
             }
@@ -303,9 +303,9 @@ script:
                     md += arrToMd(res.malware.malware);
                 }
             }
-            entryList.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
+            entry_list.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return entryList;
+        return entry_list;
     };
 
 
@@ -357,13 +357,13 @@ script:
 
 
     function doCVE(cve) {
-      var cveList = argToList(cve);
-      var entryList = [];
-      for (i = 0; i < cveList.length; i++) {
-        cve = cveList[i];
+      var cve_list = argToList(cve);
+      var entry_list = [];
+      for (i = 0; i < cve_list.length; i++) {
+        cve = cve_list[i];
         var res = doReq('GET', 'vulnerabilities/search/' + cve);
         if (res.statusCode === 404) {
-          entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+          entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
               HumanReadable: 'XFE does not have details about ' + cve});
           continue;
         }
@@ -382,9 +382,9 @@ script:
         } else {
           md += 'No result found.';
         }
-        entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context});
+        entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context});
       }
-      return entryList;
+      return entry_list;
     }
 
 
