@@ -3,7 +3,7 @@ id: QRadar Add Url Indicators
 version: -1
 fromversion: 5.5.0
 name: QRadar Add Url Indicators
-description: The playbook queries indicators based on the specified tags and uploads the to the Qradar reference set in the inputs.
+description: The playbook queries indicators based on the specified tags and uploads the to the Qradar reference set in the inputs.F
 starttaskid: '0'
 tasks:
   '0':
@@ -276,3 +276,4 @@ inputs:
     runFromLastJobTime: false
 outputs: []
 quiet: true
+- No test
