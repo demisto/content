@@ -276,4 +276,5 @@ inputs:
     runFromLastJobTime: false
 outputs: []
 quiet: true
+tests:
 - No test
