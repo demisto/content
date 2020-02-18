@@ -48,7 +48,7 @@ script:
   - name: url
     arguments:
     - name: url
-      required: true
+      required: false
       default: true
       description: URL to search for
     outputs:
@@ -125,7 +125,7 @@ script:
   - name: zscaler-undo-blacklist-url
     arguments:
     - name: url
-      required: false
+      required: true
       default: true
       description: 'URL to be  removed from blacklist. Should be comma separated (i.e.
         snapchat.com,tinder.com) '
