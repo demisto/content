@@ -1,25 +1,22 @@
 id: Pentera Run Scan
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: Pentera Run Scan
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: "37"
+  '0':
+    id: '0'
+    taskid: 5a959fa6-a7d4-4fa6-8071-47de420ebf6b
     type: start
     task:
-      id: "37"
+      id: 5a959fa6-a7d4-4fa6-8071-47de420ebf6b
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
     view: |-
       {
@@ -31,23 +28,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "1":
-    id: "1"
-    taskid: "38"
+  '1':
+    id: '1'
+    taskid: 3a4bdbe3-2e52-4694-847c-a75c713304a0
     type: regular
     task:
-      id: "38"
+      id: 3a4bdbe3-2e52-4694-847c-a75c713304a0
       version: -1
       name: Run Pentera Template
       script: '|||pentera-run-template-by-name'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       template_name:
         simple: ${inputs.PenteraTaskName}
@@ -62,52 +58,43 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "2":
-    id: "2"
-    taskid: "42"
+  '2':
+    id: '2'
+    taskid: c39055fd-077a-4425-8d66-f67a1115faca
     type: playbook
     task:
-      id: "42"
+      id: c39055fd-077a-4425-8d66-f67a1115faca
       version: -1
       name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+      description: ''
       playbookName: GenericPolling
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '7'
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
         simple: ${Pentera.TaskRun.ID}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: task_run_id
       PollingCommandName:
         simple: pentera-get-task-run-status
       Timeout:
-        simple: "60"
+        simple: '60'
       dt:
-        simple: Pentera.TaskRun(val.Status != 'Done').ID
+        simple: Pentera.TaskRun(val.Status == 'Running' || val.Status == 'Cleaning
+          up').ID
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
-      max: 0
     view: |-
       {
         "position": {
@@ -118,22 +105,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "3":
-    id: "3"
-    taskid: "33"
+  '3':
+    id: '3'
+    taskid: 42db38b6-8f8b-4596-859a-bcc95f2cb854
     type: title
     task:
-      id: "33"
+      id: 42db38b6-8f8b-4596-859a-bcc95f2cb854
       version: -1
       name: Start the Scan
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -145,22 +131,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "4":
-    id: "4"
-    taskid: "34"
+  '4':
+    id: '4'
+    taskid: e219e85f-a56a-4e27-8168-f6d1452e7db0
     type: title
     task:
-      id: "34"
+      id: e219e85f-a56a-4e27-8168-f6d1452e7db0
       version: -1
       name: Wait For The Scan To Complete
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
     view: |-
       {
@@ -172,22 +157,74 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "5":
-    id: "5"
-    taskid: "35"
+  '5':
+    id: '5'
+    taskid: 9edbe478-90d3-4e33-8804-d3ea6679f63f
     type: title
     task:
-      id: "35"
+      id: 9edbe478-90d3-4e33-8804-d3ea6679f63f
       version: -1
       name: Collect The Full Action Report
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 9dfd1648-57d8-408d-8b83-2df67ab2f8b7
+    type: regular
+    task:
+      id: 9dfd1648-57d8-408d-8b83-2df67ab2f8b7
+      version: -1
+      name: Retrieve The Full Action Report
+      script: '|||pentera-get-task-run-full-action-report'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    scriptarguments:
+      task_run_id:
+        simple: ${Pentera.TaskRun.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: e55b1bd2-c601-4388-8d78-1dc24bae2ef0
+    type: title
+    task:
+      id: e55b1bd2-c601-4388-8d78-1dc24bae2ef0
+      version: -1
+      name: Update Template Status
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
     separatecontext: false
     view: |-
       {
@@ -199,20 +236,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quiet: false
-  "6":
-    id: "6"
-    taskid: "36"
+  '8':
+    id: '8'
+    taskid: fb9b4b42-aaa1-473d-853b-f35aa18463a8
     type: regular
     task:
-      id: "36"
+      id: fb9b4b42-aaa1-473d-853b-f35aa18463a8
       version: -1
-      name: Retrieve The Full Action Report
-      script: '|||pentera-get-task-run-full-action-report'
+      name: Get Template Status
+      description: ''
+      script: Pcysys|||pentera-get-task-run-status
       type: regular
       iscommand: true
-      brand: ""
+      brand: Pcysys
+    nexttasks:
+      '#none#':
+      - '5'
     scriptarguments:
       task_run_id:
         simple: ${Pentera.TaskRun.ID}
@@ -227,14 +266,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1025,
+        "height": 1345,
         "width": 380,
         "x": 50,
         "y": 50
@@ -246,5 +283,6 @@ inputs:
   value: {}
   required: true
   description: The name of the Pentera task to run
-  playbookInputQuery: null
 outputs: []
+description: ''
+fromversion: 5.0.0
