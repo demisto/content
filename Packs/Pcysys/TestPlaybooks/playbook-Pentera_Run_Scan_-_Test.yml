@@ -1,22 +1,25 @@
 id: Pentera Run Scan - Test
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 name: Pentera Run Scan - Test
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: abec8b6a-d170-4218-8f20-0b5994e05499
+  "0":
+    id: "0"
+    taskid: "20"
     type: start
     task:
-      id: abec8b6a-d170-4218-8f20-0b5994e05499
+      id: "20"
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -28,25 +31,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
-    taskid: 4d8ee902-4bee-40e5-82fe-3d4456e8afc2
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: "21"
     type: regular
     task:
-      id: 4d8ee902-4bee-40e5-82fe-3d4456e8afc2
+      id: "21"
       version: -1
       name: Delete Context
-      description: ''
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: 'yes'
+        simple: "yes"
       index: {}
       key: {}
       keysToKeep: {}
@@ -62,27 +66,29 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
-    taskid: a1479268-ff53-4621-8ba9-da946f34ae3b
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: "41"
     type: playbook
     task:
-      id: a1479268-ff53-4621-8ba9-da946f34ae3b
+      id: "41"
       version: -1
       name: Pentera Run Scan
       playbookName: Pentera Run Scan
       type: playbook
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     scriptarguments:
-      Pentera Task Name:
+      PenteraTaskName:
         simple: Test Template for Playbook
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -93,6 +99,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -107,5 +115,3 @@ view: |-
   }
 inputs: []
 outputs: []
-description: ''
-fromversion: 5.0.0

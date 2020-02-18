@@ -118,9 +118,6 @@ script:
     - contextPath: Pentera.TaskRun.Status
       description: 'The status of the task run; e.g.: Running, Done, etc.'
       type: String
-    - contextPath: Pentera.TaskRun.FullActionReport
-      description: The full action report of the task run
-      type: String
     - contextPath: Pentera.TaskRun.FullActionReport.Severity
       description: The sevirity of the action, from N/A to 10.0
       type: Number
