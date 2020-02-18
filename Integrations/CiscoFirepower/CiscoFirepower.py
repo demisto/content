@@ -13,9 +13,9 @@ urllib3.disable_warnings()
 
 INTEGRATION_NAME = 'cisco-fp'
 # lowercase with `-` dividers
-INTEGRATION_COMMAND_NAME = 'cisco-fp'
+INTEGRATION_COMMAND_NAME = 'ciscofp'
 # No dividers
-INTEGRATION_CONTEXT_NAME = 'cisco-fp'
+INTEGRATION_CONTEXT_NAME = 'CiscoFP'
 
 
 class Client(BaseClient):
@@ -27,114 +27,132 @@ class Client(BaseClient):
             url_suffix='api/fmc_platform/v1/auth/generatetoken',
             resp_type='response'
         ).headers
-        self._headers['X-auth-access-token'] = new_headers.get('X-auth-access-token')
+        self._headers = {'X-auth-access-token': new_headers.get('X-auth-access-token')}
         self._base_url += f'api/fmc_config/v1/domain/{new_headers.get("DOMAIN_UUID")}/'
         if self._headers['X-auth-access-token'] == '':
             return_error('No valid access token')
         return
 
-    def cisco_fp_list_zones(self, limit, offset) -> Dict:
-        suffix = f'object/securityzones' \
-                 f'?expanded=true&limit={limit}&offset={offset}'
+    def list_zones(self, limit, offset) -> Dict:
+        suffix = f'object/securityzones?expanded=true&limit={limit}&offset={offset}'
         return self._http_request('GET', suffix)
 
-    def cisco_fp_list_ports(self, limit, offset) -> Dict:
-        suffix = f'object/ports' \
-                 f'?expanded=true&limit={limit}&offset={offset}'
+    def list_ports(self, limit, offset) -> Dict:
+        suffix = f'object/ports?expanded=true&limit={limit}&offset={offset}'
         return self._http_request('GET', suffix)
 
-    def cisco_fp_list_url_categories(self, limit, offset) -> Dict:
-        suffix = f'object/urlcategories' \
-                 f'?expanded=true&limit={limit}&offset={offset}'
+    def list_url_categories(self, limit, offset) -> Dict:
+        suffix = f'object/urlcategories?expanded=true&limit={limit}&offset={offset}'
         return self._http_request('GET', suffix)
 
-    def cisco_fp_get_network_objects(self, limit, offset, object_type, object_id) -> Dict:
+    def get_network_objects(self, limit, offset, object_id) -> Dict:
         end_suffix = '/' + object_id if object_id else '?expanded=true&limit=' + limit + '&offset=' + offset
-        suffix = f'object/{object_type}{end_suffix}'
+        suffix = f'object/networks{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def cisco_fp_create_network_objects(self, data, object_type) -> Dict:
-        suffix = f'object/{object_type}'
+    def get_hosts_objects(self, limit, offset, object_id) -> Dict:
+        end_suffix = '/' + object_id if object_id else '?expanded=true&limit=' + limit + '&offset=' + offset
+        suffix = f'object/hosts{end_suffix}'
+        return self._http_request('GET', suffix)
+
+    def create_network_objects(self, data) -> Dict:
+        suffix = f'object/networks'
         return self._http_request('POST', suffix, json_data=data)
 
-    def cisco_fp_update_network_objects(self, data, object_type, object_id) -> Dict:
-        suffix = f'object/{object_type}/{object_id}'
+    def create_host_objects(self, data) -> Dict:
+        suffix = f'object/hosts'
+        return self._http_request('POST', suffix, json_data=data)
+
+    def update_network_objects(self, data, object_id) -> Dict:
+        suffix = f'object/networks/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def cisco_fp_delete_network_objects(self, object_type, object_id) -> Dict:
-        suffix = f'object/{object_type}/{object_id}'
+    def update_host_objects(self, data, object_id) -> Dict:
+        suffix = f'object/hosts/{object_id}'
+        return self._http_request('PUT', suffix, json_data=data)
+
+    def delete_network_objects(self, object_id) -> Dict:
+        suffix = f'object/networks/{object_id}'
         return self._http_request('DELETE', suffix)
 
-    def cisco_fp_get_network_groups_objects(self, limit, offset, object_id) -> Dict:
+    def delete_host_objects(self, object_id) -> Dict:
+        suffix = f'object/hosts/{object_id}'
+        return self._http_request('DELETE', suffix)
+
+    def get_network_groups_objects(self, limit, offset, object_id) -> Dict:
         end_suffix = '/' + object_id if object_id else '?expanded=true&limit=' + limit + '&offset=' + offset
         suffix = f'object/networkgroups{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def cisco_fp_create_network_groups_objects(self, data) -> Dict:
+    def create_network_groups_objects(self, data) -> Dict:
         suffix = 'object/networkgroups'
         return self._http_request('POST', suffix, json_data=data)
 
-    def cisco_fp_update_network_groups_objects(self, data) -> Dict:
+    def update_network_groups_objects(self, data) -> Dict:
         suffix = f'object/networkgroups/{data["id"]}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def cisco_fp_delete_network_groups_objects(self, object_id) -> Dict:
+    def delete_network_groups_objects(self, object_id) -> Dict:
         suffix = f'object/networkgroups/{object_id}'
         return self._http_request('DELETE', suffix)
 
-    def cisco_fp_get_access_policy(self, limit, offset, policy_id) -> Dict:
+    def get_access_policy(self, limit, offset, policy_id) -> Dict:
         end_suffix = '/' + policy_id if policy_id else '?expanded=true&limit=' + limit + '&offset=' + offset
         suffix = f'policy/accesspolicies{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def cisco_fp_create_access_policy(self, data) -> Dict:
+    def create_access_policy(self, data) -> Dict:
         suffix = 'policy/accesspolicies'
         return self._http_request('POST', suffix, json_data=data)
 
-    def cisco_fp_update_access_policy(self, data) -> Dict:
+    def update_access_policy(self, data) -> Dict:
         suffix = f'policy/accesspolicies/{data["id"]}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def cisco_fp_delete_access_policy(self, policy_id) -> Dict:
+    def delete_access_policy(self, policy_id) -> Dict:
         suffix = f'policy/accesspolicies/{policy_id}'
         return self._http_request('DELETE', suffix)
 
-    def cisco_fp_get_list(self, suffix) -> Dict:
+    def get_list(self, suffix) -> Dict:
         return self._http_request('GET', suffix)
 
-    def cisco_fp_create_policy_assignments(self, data) -> Dict:
+    def create_policy_assignments(self, data) -> Dict:
         suffix = 'assignment/policyassignments'
         return self._http_request('POST', suffix, json_data=data)
 
-    def cisco_fp_update_policy_assignments(self, data, pol_id) -> Dict:
+    def update_policy_assignments(self, data, pol_id) -> Dict:
         suffix = f'assignment/policyassignments/{pol_id}'
         return self._http_request('POST', suffix, json_data=data)
 
-    def cisco_get_access_rules(self, args) -> Dict:
+    def get_access_rules(self, args) -> Dict:
         limit = args.get('limit', 50)
         offset = args.get('offset', 0)
         policy_id = args.get('policy_id')
         rule_id = f'?expanded=true&limit={limit}&offset={offset}' if args.get('rule_id', '') == '' \
             else '/' + args.get('rule_id', '')
-        suffix = f'policy/accesspolicies/' \
-                 f'{policy_id}/accessrules{rule_id}'
+        suffix = f'policy/accesspolicies/{policy_id}/accessrules{rule_id}'
         return self._http_request('GET', suffix)
 
-    def cisco_fp_create_access_rules(self, args) -> Dict:
+    def create_access_rules(self, args) -> Dict:
         policy_id = args.get('policy_id')
-        suffix = f'policy/accesspolicies/' \
-                 f'{policy_id}/accessrules'
+        suffix = f'policy/accesspolicies/{policy_id}/accessrules'
         del args['policy_id']
         return self._http_request('POST', suffix, json_data=args)
 
-    def cisco_fp_delete_access_rules(self, args) -> Dict:
+    def update_access_rules(self, args) -> Dict:
+        policy_id = args.get('policy_id')
+        rule_id = args.get('id')
+        suffix = f'policy/accesspolicies/{policy_id}/accessrules/{rule_id}'
+        del args['policy_id']
+        return self._http_request('PUT', suffix, json_data=args)
+
+    def delete_access_rules(self, args) -> Dict:
         policy_id = args.get('policy_id')
         rule_id = args.get('rule_id')
-        suffix = f'policy/accesspolicies/' \
-                 f'{policy_id}/accessrules{rule_id}'
+        suffix = f'policy/accesspolicies/{policy_id}/accessrules{rule_id}'
         return self._http_request('DELETE', suffix)
 
-    def cisco_fp_deploy_to_devices(self, data) -> Dict:
+    def deploy_to_devices(self, data) -> Dict:
         suffix = 'deployment/deploymentrequests'
         return self._http_request('POST', suffix, json_data=data)
 
@@ -387,7 +405,7 @@ def raw_response_to_context_ruls(items):
 
 ''' COMMANDS '''
 @logger
-def test_module_command(client: Client, *_) -> Tuple[str, None, None]:
+def test_module_command():
     return 'ok', None, None
 
 
@@ -395,7 +413,7 @@ def test_module_command(client: Client, *_) -> Tuple[str, None, None]:
 def list_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    raw_response = client.cisco_fp_list_zones(limit, offset)
+    raw_response = client.list_zones(limit, offset)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List zones:'
@@ -424,7 +442,7 @@ def list_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 def list_ports_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    raw_response = client.cisco_fp_list_ports(limit, offset)
+    raw_response = client.list_ports(limit, offset)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List ports:'
@@ -442,7 +460,7 @@ def list_ports_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 def list_url_categories_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    raw_response = client.cisco_fp_list_url_categories(limit, offset)
+    raw_response = client.list_url_categories(limit, offset)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List url categories:'
@@ -460,126 +478,145 @@ def list_url_categories_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 def get_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
-    object_type = args.get('type', 'networks')
     object_id = args.get('object_id', '')
-    type_to_output = 'Networks' if object_type == 'networks' else 'Hosts'
 
-    raw_response = client.cisco_fp_get_network_objects(limit, offset, object_type, object_id)
+    raw_response = client.get_network_objects(limit, offset, object_id)
     items = raw_response.get('items')
     if items or 'id' in raw_response:
-        title = f'{INTEGRATION_NAME} - List {object_type} objects:'
+        title = f'{INTEGRATION_NAME} - List network objects:'
         if 'id' in raw_response:
-            title = f'{INTEGRATION_NAME} - get {object_type} object {object_id}'
+            title = f'{INTEGRATION_NAME} - get network object {object_id}'
             items = raw_response
         list_to_output = ['id', 'name', 'value', 'overridable', 'description']
         context_entry = raw_response_to_context_list(list_to_output, items)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.{type_to_output}(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.Network(val.ID && val.ID === obj.ID)': context_entry
         }
         presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
         human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
         return human_readable, context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any object.', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find any network object.', {}, {}
 
 
 def get_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    args['type'] = 'hosts'
-    return get_network_objects_command(client, args)
+    limit = args.get('limit', '50')
+    offset = args.get('offset', '0')
+    object_id = args.get('object_id', '')
+
+    raw_response = client.get_hosts_objects(limit, offset, object_id)
+    items = raw_response.get('items')
+    if items or 'id' in raw_response:
+        title = f'{INTEGRATION_NAME} - List host objects:'
+        if 'id' in raw_response:
+            title = f'{INTEGRATION_NAME} - get host object {object_id}'
+            items = raw_response
+        list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+        context_entry = raw_response_to_context_list(list_to_output, items)
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Host(val.ID && val.ID === obj.ID)': context_entry
+        }
+        presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
+        human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any host object.', {}, {}
 
 
 def create_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'name' in args and 'value' in args:
-        object_type = args.get('type', 'networks')
-        type_to_output = 'Networks' if object_type == 'networks' else 'Hosts'
-
-        data_to_post = {}
-        for key in args:
-            data_to_post[key] = args.get(key)
-
-        if type in data_to_post:
-            del data_to_post['type']
-        raw_response = client.cisco_fp_create_network_objects(data_to_post, object_type)
-        title = f'{INTEGRATION_NAME} - {object_type} object has been created.'
-        list_to_output = ['id', 'name', 'value', 'overridable', 'description']
-        context_entry = raw_response_to_context_list(list_to_output, raw_response)
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.{type_to_output}(val.ID && val.ID === obj.ID)': context_entry
-        }
-        presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
-        human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not create new object.')
+    data_to_post = args.copy()
+    print(data_to_post)
+    raw_response = client.create_network_objects(data_to_post)
+    title = f'{INTEGRATION_NAME} - network object has been created.'
+    list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+    context_entry = raw_response_to_context_list(list_to_output, raw_response)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Network(val.ID && val.ID === obj.ID)': context_entry
+    }
+    presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
+    human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
+    return human_readable, context, raw_response
 
 
 def create_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    args['type'] = 'hosts'
-    return create_network_objects_command(client, args)
+    data_to_post = args.copy()
+    raw_response = client.create_host_objects(data_to_post)
+    title = f'{INTEGRATION_NAME} - host object has been created.'
+    list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+    context_entry = raw_response_to_context_list(list_to_output, raw_response)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Host(val.ID && val.ID === obj.ID)': context_entry
+    }
+    presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
+    human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
+    return human_readable, context, raw_response
 
 
 def update_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'name' in args and 'value' in args and 'id' in args:
-        object_type = args.get('type', 'networks')
-        type_to_output = 'Networks' if object_type == 'networks' else 'Hosts'
+    object_id = args.get('id')
+    data_to_post = args.copy()
+    raw_response = client.update_network_objects(data_to_post, object_id)
+    title = f'{INTEGRATION_NAME} - network object has been updated.'
+    list_to_output = ['id', 'name', 'value', 'overridable', 'description']
 
-        object_id = args.get('id')
-        data_to_post = {}
-        for key in args:
-            data_to_post[key] = args.get(key)
-        if type in data_to_post:
-            del data_to_post['type']
-
-        raw_response = client.cisco_fp_update_network_objects(data_to_post, object_type, object_id)
-        title = f'{INTEGRATION_NAME} - {object_type} object has been updated.'
-        list_to_output = ['id', 'name', 'value', 'overridable', 'description']
-
-        context_entry = raw_response_to_context_list(list_to_output, raw_response)
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.{type_to_output}(val.ID && val.ID === obj.ID)': context_entry
-        }
-        presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
-        human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not update the object.')
+    context_entry = raw_response_to_context_list(list_to_output, raw_response)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Network(val.ID && val.ID === obj.ID)': context_entry
+    }
+    presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
+    human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
+    return human_readable, context, raw_response
 
 
 def update_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    args['type'] = 'hosts'
-    return update_network_objects_command(client, args)
+    object_id = args.get('id')
+    data_to_post = args.copy()
+    raw_response = client.update_host_objects(data_to_post, object_id)
+    title = f'{INTEGRATION_NAME} - host object has been updated.'
+    list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+
+    context_entry = raw_response_to_context_list(list_to_output, raw_response)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Host(val.ID && val.ID === obj.ID)': context_entry
+    }
+    presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
+    human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
+    return human_readable, context, raw_response
 
 
 def delete_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'id' in args:
-        object_type = args.get('type', 'networks')
-        object_id = args.get('id')
-        type_to_output = 'Networks' if object_type == 'networks' else 'Hosts'
-        raw_response = client.cisco_fp_delete_network_objects(object_type, object_id)
-        title = f'{INTEGRATION_NAME} - {object_type} object has been deleted.'
-        list_to_output = ['id', 'name', 'value', 'overridable', 'description']
-
-        context_entry = raw_response_to_context_list(list_to_output, raw_response)
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.{type_to_output}(val.ID && val.ID === obj.ID)': context_entry
-        }
-        presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
-        human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not delete the object.')
+    object_id = args.get('id')
+    raw_response = client.delete_network_objects(object_id)
+    title = f'{INTEGRATION_NAME} - network object has been deleted.'
+    list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+    context_entry = raw_response_to_context_list(list_to_output, raw_response)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Network(val.ID && val.ID === obj.ID)': context_entry
+    }
+    presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
+    human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
+    return human_readable, context, raw_response
 
 
 def delete_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    args['type'] = 'hosts'
-    return delete_network_objects_command(client, args)
+    object_id = args.get('id')
+    raw_response = client.delete_host_objects(object_id)
+    title = f'{INTEGRATION_NAME} - host object has been deleted.'
+    list_to_output = ['id', 'name', 'value', 'overridable', 'description']
+    context_entry = raw_response_to_context_list(list_to_output, raw_response)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Host(val.ID && val.ID === obj.ID)': context_entry
+    }
+    presented_output = ['ID', 'Name', 'Value', 'Overridable', 'Description']
+    human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
+    return human_readable, context, raw_response
 
 
 def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     object_id = args.get('id', '')
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
-    raw_response = client.cisco_fp_get_network_groups_objects(limit, offset, object_id)
+    raw_response = client.get_network_groups_objects(limit, offset, object_id)
     items = raw_response.get('items')
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List of network groups object:'
@@ -604,11 +641,11 @@ def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
         ids = args.get('id_list', '')
         values = args.get('value_list', '')
         if ids:
-            data_to_post['objects'] = creates_list_of_dictionary(ids, '', 'id')
+            data_to_post['objects'] = [{'id': curr_id} for curr_id in argToList(ids)]
         if values:
-            data_to_post['literals'] = creates_list_of_dictionary(values, '', 'value')
+            data_to_post['literals'] = [{'value': curr_value} for curr_value in argToList(values)]
 
-        raw_response = client.cisco_fp_create_network_groups_objects(data_to_post)
+        raw_response = client.create_network_groups_objects(data_to_post)
         title = f'{INTEGRATION_NAME} - network group has been created.'
         context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
@@ -633,7 +670,7 @@ def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
         if values:
             data_to_post['literals'] = creates_list_of_dictionary(values, '', 'value')
 
-        raw_response = client.cisco_fp_update_network_groups_objects(data_to_post)
+        raw_response = client.update_network_groups_objects(data_to_post)
         title = f'{INTEGRATION_NAME} - network group has been updated.'
         context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
@@ -651,7 +688,7 @@ def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
 def delete_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if 'id' in args:
         object_id = args['id']
-        raw_response = client.cisco_fp_delete_network_groups_objects(object_id)
+        raw_response = client.delete_network_groups_objects(object_id)
         title = f'{INTEGRATION_NAME} - network group - {object_id} - has been delete.'
         context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
@@ -669,7 +706,7 @@ def get_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     policy_id = args.get('id', '')
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
-    raw_response = client.cisco_fp_get_access_policy(limit, offset, policy_id)
+    raw_response = client.get_access_policy(limit, offset, policy_id)
     items = raw_response.get('items')
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List access policy:'
@@ -692,7 +729,7 @@ def create_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
         'defaultAction': {
             'action': args.get('action')
         }}
-    raw_response = client.cisco_fp_create_access_policy(data_to_post)
+    raw_response = client.create_access_policy(data_to_post)
     title = f'{INTEGRATION_NAME} - access policy has been created.'
     context_entry = raw_response_to_context_access_policy(raw_response)
     context = {
@@ -710,7 +747,7 @@ def update_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
             'action': args.get('action'),
             'id': args.get('default_action_id')
         }}
-    raw_response = client.cisco_fp_update_access_policy(data_to_post)
+    raw_response = client.update_access_policy(data_to_post)
     title = f'{INTEGRATION_NAME} - access policy has been updated.'
     context_entry = raw_response_to_context_access_policy(raw_response)
     context = {
@@ -722,7 +759,7 @@ def update_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
 
 def delete_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     policy_id = args.get('id')
-    raw_response = client.cisco_fp_delete_access_policy(policy_id)
+    raw_response = client.delete_access_policy(policy_id)
     title = f'{INTEGRATION_NAME} - access policy deleted.'
     context_entry = raw_response_to_context_access_policy(raw_response)
     context = {
@@ -735,27 +772,41 @@ def delete_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
 def list_security_group_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    ise = args.get('ise', '')
-    suffix = f'object/{ise}securitygrouptags' \
+    suffix = f'object/securitygrouptags' \
              f'?expanded=true&limit={limit}&offset={offset}'
-    raw_response = client.cisco_fp_get_list(suffix)
+    raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
-        title = f'{INTEGRATION_NAME} - List {ise}security group tags:'
+        title = f'{INTEGRATION_NAME} - List security group tags:'
         list_to_output = ['id', 'name', 'tag']
         context_entry = raw_response_to_context_list(list_to_output, items)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.{ise}SecurityGroupTags(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.SecurityGroupTags(val.ID && val.ID === obj.ID)': context_entry
         }
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any {ise}security group tags.', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find any security group tags.', {}, {}
 
 
 def list_ise_security_group_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    args['ise'] = 'ise'
-    return list_security_group_tags_command(client, args)
+    limit = args.get('limit', 50)
+    offset = args.get('offset', 0)
+    suffix = f'object/isesecuritygrouptags' \
+             f'?expanded=true&limit={limit}&offset={offset}'
+    raw_response = client.get_list(suffix)
+    items = raw_response.get('items')
+    if items:
+        title = f'{INTEGRATION_NAME} - List ise security group tags:'
+        list_to_output = ['id', 'name', 'tag']
+        context_entry = raw_response_to_context_list(list_to_output, items)
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.IseSecurityGroupTags(val.ID && val.ID === obj.ID)': context_entry
+        }
+        human_readable = tableToMarkdown(title, context_entry)
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any ise security group tags.', {}, {}
 
 
 def list_vlan_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -763,7 +814,7 @@ def list_vlan_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     offset = args.get('offset', 0)
     suffix = f'object/vlantags' \
              f'?expanded=true&limit={limit}&offset={offset}'
-    raw_response = client.cisco_fp_get_list(suffix)
+    raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List vlan tags:'
@@ -791,7 +842,7 @@ def list_vlan_tags_group_command(client: Client, args: Dict) -> Tuple[str, Dict,
     offset = args.get('offset', 0)
     suffix = f'object/vlangrouptags' \
              f'?expanded=true&limit={limit}&offset={offset}'
-    raw_response = client.cisco_fp_get_list(suffix)
+    raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List of vlan tags groups objects:'
@@ -829,7 +880,7 @@ def list_applications_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     offset = args.get('offset', 0)
     suffix = f'object/applications' \
              f'?expanded=true&limit={limit}&offset={offset}'
-    raw_response = client.cisco_fp_get_list(suffix)
+    raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
         context_entry = [
@@ -865,7 +916,7 @@ def list_applications_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 
 def get_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
-    raw_response = client.cisco_get_access_rules(args)
+    raw_response = client.get_access_rules(args)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List of access rules:'
@@ -943,7 +994,78 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     data_to_post['action'] = args['action']
 
     print(data_to_post)
-    raw_response = client.cisco_fp_create_access_rules(data_to_post)
+    raw_response = client.create_access_rules(data_to_post)
+    title = f'{INTEGRATION_NAME} - the new access rule:'
+    context_entry = raw_response_to_context_ruls(raw_response)
+    entry_white_list_count = switch_list_to_list_counter(context_entry)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
+    }
+    human_readable = tableToMarkdown(title, entry_white_list_count)
+    return human_readable, context, raw_response
+
+
+def update_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    data_to_post = {}
+    if 'source_zone_object_ids' in args:
+        data_to_post['sourceZones'] = {
+            'objects': creates_list_of_dictionary(args['source_zone_object_ids'], 'SecurityZone', 'id')}
+    if 'destination_zone_object_ids' in args:
+        data_to_post['destinationZones'] = {
+            'objects': creates_list_of_dictionary(args['destination_zone_object_ids'], 'SecurityZone', 'id')}
+    if 'vlan_tag_object_ids' in args:
+        data_to_post['vlanTags'] = {
+            'objects': creates_list_of_dictionary(args['vlan_tag_object_ids'], 'vlanTags', 'id')}
+    if 'source_network_object_ids' in args:
+        data_to_post['sourceNetworks'] = {
+            'objects': creates_list_of_dictionary(args['source_network_object_ids'], 'NetworkGroup', 'id')}
+    if 'source_network_addresses' in args:
+        if 'sourceNetworks' in data_to_post:
+            data_to_post['sourceNetworks']['literals'] = \
+                creates_list_of_dictionary(args['source_network_addresses'], 'Host', 'value')
+        else:
+            data_to_post['sourceNetworks'] = {
+                'literals': creates_list_of_dictionary(args['source_network_addresses'], 'Host', 'value')}
+    if 'destination_network_object_ids' in args:
+        data_to_post['destinationNetworks'] = {
+            'objects': creates_list_of_dictionary(args['destination_network_object_ids'], 'NetworkGroup', 'id')}
+    if 'destination_network_addresses' in args:
+        if 'destinationNetworks' in data_to_post:
+            data_to_post['destinationNetworks']['literals'] = \
+                creates_list_of_dictionary(args['destination_network_addresses'], 'Host', 'value')
+        else:
+            data_to_post['destinationNetworks'] = {
+                'literals': creates_list_of_dictionary(args['destination_network_addresses'], 'Host', 'value')}
+    if 'source_port_object_ids' in args:
+        data_to_post['sourcePorts'] = {
+            'objects': creates_list_of_dictionary(args['source_port_object_ids'], 'ProtocolPortObject', 'id')}
+    if 'destination_port_object_ids' in args:
+        data_to_post['destinationPorts'] = {
+            'objects': creates_list_of_dictionary(args['destination_port_object_ids'], 'ProtocolPortObject', 'id')}
+    if 'source_security_group_tag_object_ids' in args:
+        data_to_post['sourceSecurityGroupTags'] = {
+            'objects':
+                creates_list_of_dictionary(args['source_security_group_tag_object_ids'], 'SecurityGroupTag', 'id')}
+    if 'application_object_ids' in args:
+        data_to_post['applications'] = {
+            'applications': creates_list_of_dictionary(args['application_object_ids'], 'Application', 'id')}
+    if 'url_object_ids' in args:
+        data_to_post['urls'] = {'objects': creates_list_of_dictionary(args['url_object_ids'], 'Url', 'id')}
+    if 'url_addresses' in args:
+        if 'urls' in data_to_post:
+            data_to_post['urls']['literals'] = creates_list_of_dictionary(args['url_addresses'], 'Url', 'url')
+        else:
+            data_to_post['urls'] = {'literals': creates_list_of_dictionary(args['url_addresses'], 'Url', 'url')}
+    if 'enabled' in args:
+        data_to_post['enabled'] = args['enabled']
+
+    data_to_post['name'] = args['rule_name']
+    data_to_post['policy_id'] = args['policy_id']
+    data_to_post['action'] = args['action']
+    data_to_post['id'] = args['rule_id']
+
+    print(data_to_post)
+    raw_response = client.create_access_rules(data_to_post)
     title = f'{INTEGRATION_NAME} - the new access rule:'
     context_entry = raw_response_to_context_ruls(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
@@ -955,7 +1077,7 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 
 
 def delete_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    raw_response = client.cisco_fp_delete_access_rules(args)
+    raw_response = client.delete_access_rules(args)
     title = f'{INTEGRATION_NAME} - deleted access rule:'
     context_entry = raw_response_to_context_ruls(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
@@ -971,7 +1093,7 @@ def list_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Di
     offset = args.get('offset', 0)
     suffix = f'assignment/policyassignments' \
              f'?expanded=true&limit={limit}&offset={offset}'
-    raw_response = client.cisco_fp_get_list(suffix)
+    raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List of policy assignments:'
@@ -999,7 +1121,7 @@ def create_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
     data_to_post['type'] = 'PolicyAssignment'
 
     print(data_to_post)
-    raw_response = client.cisco_fp_create_policy_assignments(data_to_post)
+    raw_response = client.create_policy_assignments(data_to_post)
     title = f'{INTEGRATION_NAME} - Policy assignments has been done.'
     context_entry = raw_response_to_context_policy_assignment(raw_response)
     context = {
@@ -1024,7 +1146,7 @@ def update_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
     data_to_post['type'] = 'PolicyAssignment'
 
     print(data_to_post)
-    raw_response = client.cisco_fp_update_policy_assignments(data_to_post, policy_id)
+    raw_response = client.update_policy_assignments(data_to_post, policy_id)
     title = f'{INTEGRATION_NAME} - policy update has been done.'
     context_entry = raw_response_to_context_policy_assignment(raw_response)
     context = {
@@ -1040,7 +1162,7 @@ def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dic
     offset = args.get('offset', 0)
     suffix = f'deployment/deployabledevices' \
              f'?expanded=true&limit={limit}&offset={offset}'
-    raw_response = client.cisco_fp_get_list(suffix)
+    raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
         context_entry = [{
@@ -1068,7 +1190,7 @@ def get_device_records_command(client: Client, args: Dict) -> Tuple[str, Dict, D
     offset = args.get('offset', 0)
     suffix = f'devices/devicerecords' \
              f'?expanded=true&limit={limit}&offset={offset}'
-    raw_response = client.cisco_fp_get_list(suffix)
+    raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
         context_entry = [{
@@ -1098,7 +1220,7 @@ def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     data_to_post['version'] = args.get('version')
 
     print(data_to_post)
-    raw_response = client.cisco_fp_deploy_to_devices(data_to_post)
+    raw_response = client.deploy_to_devices(data_to_post)
     title = f'{INTEGRATION_NAME} - devices requests to deploy.'
     context_entry = {
         'TaskID': raw_response.get('metadata', {}).get('task', {}).get('id', ''),
@@ -1118,7 +1240,7 @@ def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 def get_task_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     task_id = args.get('task_id')
     suffix = f'job/taskstatuses/{task_id}'
-    raw_response = client.cisco_fp_get_list(suffix)
+    raw_response = client.get_list(suffix)
     if 'status' in raw_response:
         context_entry = {
             'Status': raw_response.get('status')
@@ -1139,70 +1261,98 @@ def get_task_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = urljoin(params.get('url'))
-    username = params['username']
-    password = params['password']
+    base_url = params.get('url')
+    username = params.get('username')
+    password = params.get('password')
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
-    headers = {'X-auth-access-token': ''}
-    client = Client(base_url=base_url, verify=verify_ssl, proxy=proxy, auth=(username, password), headers=headers)
+    client = Client(base_url=base_url, verify=verify_ssl, proxy=proxy, auth=(username, password))
 
     client.login()
 
-    command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
-
-    # Switch case
-    commands = {
-        'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-zones': list_zones_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-ports': list_ports_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-url-categories': list_url_categories_command,
-
-        f'{INTEGRATION_COMMAND_NAME}-get-network-object': get_network_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-network-object': create_network_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-network-object': update_network_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-network-object': delete_network_objects_command,
-
-        f'{INTEGRATION_COMMAND_NAME}-get-host-object': get_host_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-host-object': create_host_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-host-object': update_host_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-host-object': delete_host_objects_command,
-
-        f'{INTEGRATION_COMMAND_NAME}-get-network-groups-object': get_network_groups_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-network-groups-objects': create_network_groups_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-network-groups-objects': update_network_groups_objects_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-network-groups-objects': delete_network_groups_objects_command,
-
-        f'{INTEGRATION_COMMAND_NAME}-get-access-policy': get_access_policy_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-access-policy': create_access_policy_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-access-policy': update_access_policy_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-access-policy': delete_access_policy_command,
-
-        f'{INTEGRATION_COMMAND_NAME}-list-security-group-tags': list_security_group_tags_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-ise-security-group-tags': list_ise_security_group_tags_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-vlan-tags': list_vlan_tags_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-vlan-tags-group': list_vlan_tags_group_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-applications': list_applications_command,
-
-        f'{INTEGRATION_COMMAND_NAME}-get-access-rules': get_access_rules_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-access-rules': create_access_rules_command,
-        f'{INTEGRATION_COMMAND_NAME}-delete-access-rules': delete_access_rules_command,
-
-        f'{INTEGRATION_COMMAND_NAME}-list-policy-assignments': list_policy_assignments_command,
-        f'{INTEGRATION_COMMAND_NAME}-create-policy-assignments': create_policy_assignments_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-policy-assignments': update_policy_assignments_command,
-
-        f'{INTEGRATION_COMMAND_NAME}-get-deployable-devices': get_deployable_devices_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-device-records': get_device_records_command,
-        f'{INTEGRATION_COMMAND_NAME}-deploy-to-devices': deploy_to_devices_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-task-status': get_task_status_command
-    }
+    LOG('command is %s' % (demisto.command(),))
     try:
-        if command in commands:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output, outputs, raw_response)
-    # Log exceptions
+        if demisto.command() == 'test-module':
+            return_outputs(*test_module_command())
+        elif demisto.command() == 'ciscofp-list-zones':
+            return_outputs(*list_zones_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-list-ports':
+            return_outputs(*list_ports_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-list-url-categories':
+            return_outputs(*list_url_categories_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-get-network-object':
+            return_outputs(*get_network_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-create-network-object':
+            return_outputs(*create_network_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-update-network-object':
+            return_outputs(*update_network_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-delete-network-object':
+            return_outputs(*delete_network_objects_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-get-host-object':
+            return_outputs(*get_host_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-create-host-object':
+            return_outputs(*create_host_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-update-host-object':
+            return_outputs(*update_host_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-delete-host-object':
+            return_outputs(*delete_host_objects_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-get-network-groups-object':
+            return_outputs(*get_network_groups_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-create-network-groups-objects':
+            return_outputs(*create_network_groups_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-update-network-groups-objects':
+            return_outputs(*update_network_groups_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-delete-network-groups-objects':
+            return_outputs(*delete_network_groups_objects_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-get-access-policy':
+            return_outputs(*get_access_policy_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-create-access-policy':
+            return_outputs(*create_access_policy_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-update-access-policy':
+            return_outputs(*update_access_policy_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-delete-access-policy':
+            return_outputs(*delete_access_policy_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-list-security-group-tags':
+            return_outputs(*list_security_group_tags_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-list-ise-security-group-tags':
+            return_outputs(*list_ise_security_group_tags_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-list-vlan-tags':
+            return_outputs(*list_vlan_tags_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-list-vlan-tags-group':
+            return_outputs(*list_vlan_tags_group_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-list-applications':
+            return_outputs(*list_applications_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-get-access-rules':
+            return_outputs(*get_access_rules_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-create-access-rules':
+            return_outputs(*create_access_rules_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-update-access-rules':
+            return_outputs(*update_access_rules_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-delete-access-rules':
+            return_outputs(*delete_access_rules_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-list-policy-assignments':
+            return_outputs(*list_policy_assignments_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-create-policy-assignments':
+            return_outputs(*create_policy_assignments_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-update-policy-assignments':
+            return_outputs(*update_policy_assignments_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-get-deployable-devices':
+            return_outputs(*get_deployable_devices_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-get-device-records':
+            return_outputs(*get_device_records_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-deploy-to-devices':
+            return_outputs(*deploy_to_devices_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-get-task-status':
+            return_outputs(*get_task_status_command(client, demisto.args()))
+
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)

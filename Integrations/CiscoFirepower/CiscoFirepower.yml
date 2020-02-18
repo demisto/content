@@ -48,7 +48,7 @@ script:
     deprecated: false
     description: retrieves list of all security zone objects.
     execution: false
-    name: cisco-fp-list-zones
+    name: ciscofp-list-zones
   - arguments:
     - default: true
       description: |-
@@ -69,7 +69,7 @@ script:
     deprecated: false
     description: Retrieves list of all port objects.
     execution: false
-    name: cisco-fp-list-ports
+    name: ciscofp-list-ports
   - arguments:
     - default: true
       defaultValue: '50'
@@ -91,10 +91,11 @@ script:
     deprecated: false
     description: retrieves list of all url category objects.
     execution: false
-    name: cisco-fp-list-url-categories
+    name: ciscofp-list-url-categories
   - arguments:
     - default: false
-      description: id of the object you are interested
+      description: id of the object you are interested, If not input ID retrieves
+        list of all url categories
       isArray: false
       name: object_id
       required: false
@@ -119,7 +120,7 @@ script:
     description: Retrieves the network objects associated with the specified ID. If
       not input ID  retrieves list of all network objects.
     execution: false
-    name: cisco-fp-get-network-object
+    name: ciscofp-get-network-object
   - arguments:
     - default: false
       description: Set the name of the new object.
@@ -153,7 +154,7 @@ script:
     deprecated: false
     description: creats network object
     execution: false
-    name: cisco-fp-create-network-object
+    name: ciscofp-create-network-object
   - arguments:
     - default: false
       description: ID of the object to update.
@@ -192,7 +193,7 @@ script:
     deprecated: false
     description: update network object
     execution: false
-    name: cisco-fp-update-network-object
+    name: ciscofp-update-network-object
   - arguments:
     - default: false
       description: id of the object group you are interested
@@ -220,7 +221,7 @@ script:
     description: Retrieves the groups of network objects associated with the specified
       ID. If not input ID retrieves list of all network objects.
     execution: false
-    name: cisco-fp-get-network-groups-object
+    name: ciscofp-get-network-groups-object
   - arguments:
     - default: false
       description: the name of the group
@@ -259,7 +260,7 @@ script:
     deprecated: false
     description: create group of network objects
     execution: false
-    name: cisco-fp-create-network-groups-objects
+    name: ciscofp-create-network-groups-objects
   - arguments:
     - default: false
       description: The id of the group you want to update
@@ -305,7 +306,7 @@ script:
     deprecated: false
     description: update group of network objects
     execution: false
-    name: cisco-fp-update-network-groups-objects
+    name: ciscofp-update-network-groups-objects
   - arguments:
     - default: false
       description: ID of the object to delete.
@@ -316,7 +317,7 @@ script:
     deprecated: false
     description: delete group of network objects
     execution: false
-    name: cisco-fp-delete-network-groups-objects
+    name: ciscofp-delete-network-groups-objects
   - arguments:
     - default: false
       description: id of the object you are interested
@@ -344,7 +345,7 @@ script:
     description: Retrieves the groups of host objects associated with the specified
       ID. If not input ID retrieves list of all network objects.
     execution: false
-    name: cisco-fp-get-host-object
+    name: ciscofp-get-host-object
   - arguments:
     - default: false
       description: Set the name of the new object
@@ -378,7 +379,7 @@ script:
     deprecated: false
     description: create host object
     execution: false
-    name: cisco-fp-create-host-object
+    name: ciscofp-create-host-object
   - arguments:
     - default: false
       description: ID of the object to update.
@@ -417,7 +418,7 @@ script:
     deprecated: false
     description: update host object
     execution: false
-    name: cisco-fp-update-host-object
+    name: ciscofp-update-host-object
   - arguments:
     - default: false
       description: ID of the object to delete.
@@ -428,7 +429,7 @@ script:
     deprecated: false
     description: delete network object
     execution: false
-    name: cisco-fp-delete-network-object
+    name: ciscofp-delete-network-object
   - arguments:
     - default: false
       description: ID of the object to delete.
@@ -439,7 +440,7 @@ script:
     deprecated: false
     description: delete host object
     execution: false
-    name: cisco-fp-delete-host-object
+    name: ciscofp-delete-host-object
   - arguments:
     - default: false
       description: id of the access policy you are interested
@@ -467,7 +468,7 @@ script:
     description: Retrieves the access control policy associated with the specified
       ID. Also, retrieves list of all access control policies
     execution: false
-    name: cisco-fp-get-access-policy
+    name: ciscofp-get-access-policy
   - arguments:
     - default: false
       description: Set the name of the new access policy.
@@ -491,7 +492,7 @@ script:
     deprecated: false
     description: create access control policy
     execution: false
-    name: cisco-fp-create-access-policy
+    name: ciscofp-create-access-policy
   - arguments:
     - default: false
       description: access policy name
@@ -526,7 +527,7 @@ script:
     deprecated: false
     description: update access control policy
     execution: false
-    name: cisco-fp-update-access-policy
+    name: ciscofp-update-access-policy
   - arguments:
     - default: false
       description: id of access policy
@@ -537,7 +538,7 @@ script:
     deprecated: false
     description: delete access control policy
     execution: false
-    name: cisco-fp-delete-access-policy
+    name: ciscofp-delete-access-policy
   - arguments:
     - default: false
       description: |-
@@ -558,7 +559,7 @@ script:
     deprecated: false
     description: Retrieves list of all custom security group tag objects.
     execution: false
-    name: cisco-fp-list-security-group-tags
+    name: ciscofp-list-security-group-tags
   - arguments:
     - default: false
       description: |-
@@ -579,7 +580,7 @@ script:
     deprecated: false
     description: retrieves list of all ISE security group tag objects.
     execution: false
-    name: cisco-fp-list-ise-security-group-tags
+    name: ciscofp-list-ise-security-group-tags
   - arguments:
     - default: false
       description: |-
@@ -600,7 +601,7 @@ script:
     deprecated: false
     description: retrieves list of all vlantag objects.
     execution: false
-    name: cisco-fp-list-vlan-tags
+    name: ciscofp-list-vlan-tags
   - arguments:
     - default: false
       description: |-
@@ -621,7 +622,7 @@ script:
     deprecated: false
     description: retrieves list of all vlan group tag objects.
     execution: false
-    name: cisco-fp-list-vlan-tags-group
+    name: ciscofp-list-vlan-tags-group
   - arguments:
     - default: false
       description: |-
@@ -642,7 +643,7 @@ script:
     deprecated: false
     description: retrieves list of all application objects.
     execution: false
-    name: cisco-fp-list-applications
+    name: ciscofp-list-applications
   - arguments:
     - default: false
       description: policy id of the roles
@@ -661,7 +662,7 @@ script:
       ID and rule ID. If no rule ID is specified, retrieves list of all access rules
       associated with the specified policy ID.
     execution: false
-    name: cisco-fp-get-access-rules
+    name: ciscofp-get-access-rules
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -782,7 +783,24 @@ script:
     deprecated: false
     description: create access control rule
     execution: false
-    name: cisco-fp-create-access-rules
+    name: ciscofp-create-access-rules
+  - arguments:
+    - default: false
+      description: the policy id
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: the role id to delete
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    deprecated: false
+    description: update access control rule
+    execution: false
+    name: ciscofp-update-access-rules
   - arguments:
     - default: false
       description: the policy id
@@ -799,7 +817,7 @@ script:
     deprecated: false
     description: delete access control rule
     execution: false
-    name: cisco-fp-delete-access-rules
+    name: ciscofp-delete-access-rules
   - arguments:
     - default: false
       description: |-
@@ -820,7 +838,7 @@ script:
     deprecated: false
     description: retrieves list of all policy assignments to target devices.
     execution: false
-    name: cisco-fp-list-policy-assignments
+    name: ciscofp-list-policy-assignments
   - arguments:
     - default: false
       description: policy id
@@ -843,7 +861,7 @@ script:
     deprecated: false
     description: create policy assignments to target devices.
     execution: false
-    name: cisco-fp-create-policy-assignments
+    name: ciscofp-create-policy-assignments
   - arguments:
     - default: false
       description: polisy id
@@ -866,7 +884,7 @@ script:
     deprecated: false
     description: update policy assignments to target devices.
     execution: false
-    name: cisco-fp-update-policy-assignments
+    name: ciscofp-update-policy-assignments
   - arguments:
     - default: false
       description: |-
@@ -888,7 +906,7 @@ script:
     description: Retrieves list of all devices with configuration changes, ready to
       be deployed.
     execution: false
-    name: cisco-fp-get-deployable-devices
+    name: ciscofp-get-deployable-devices
   - arguments:
     - default: false
       description: |-
@@ -909,7 +927,7 @@ script:
     deprecated: false
     description: retrieves list of all device records.
     execution: false
-    name: cisco-fp-get-device-records
+    name: ciscofp-get-device-records
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -946,7 +964,7 @@ script:
     deprecated: false
     description: Creates a request for deploying configuration changes to devices.
     execution: false
-    name: cisco-fp-deploy-to-devices
+    name: ciscofp-deploy-to-devices
   - arguments:
     - default: false
       description: the id of the task to check the status
@@ -958,7 +976,7 @@ script:
     description: Retrieves information about a previously submitted pending job/task
       with the specified ID. Used for deploying
     execution: false
-    name: cisco-fp-get-task-status
+    name: ciscofp-get-task-status
   dockerimage: demisto/python3:3.8.1.5734
   isfetch: false
   longRunning: false

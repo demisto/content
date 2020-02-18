@@ -13,7 +13,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - restore_cache:
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
       - run:
           name: Prepare Environment
           when: always
