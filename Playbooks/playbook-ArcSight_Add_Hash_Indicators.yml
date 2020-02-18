@@ -852,4 +852,5 @@ inputs:
   playbookInputQuery: null
 outputs: []
 quiet: true
+tests:
 - No test
