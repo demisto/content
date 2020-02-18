@@ -14,6 +14,7 @@ tasks:
     separatecontext: false
     task:
       brand: ""
+      description: Manually resolved problem.
       id: d98bd2ff-2dff-4912-8a59-2477524ad23b
       iscommand: false
       name: ""
@@ -203,6 +204,7 @@ tasks:
     separatecontext: false
     task:
       brand: ""
+      description: Manually resolved problem.
       id: fc98b065-2163-4c88-8991-8ba7f526932d
       iscommand: false
       name: End
@@ -228,6 +230,7 @@ tasks:
     separatecontext: false
     task:
       brand: ""
+      description: Manually resolved problem.
       id: 8ccd27b0-c874-4851-8e60-7e625f766487
       iscommand: false
       name: Open IT Ticket to resolve issues

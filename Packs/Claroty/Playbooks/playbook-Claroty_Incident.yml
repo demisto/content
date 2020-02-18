@@ -15,6 +15,7 @@ tasks:
     separatecontext: false
     task:
       brand: ""
+      description: Manually resolved problem.
       id: 8e712abe-51e2-4176-842f-47e507439fce
       iscommand: false
       name: ""
