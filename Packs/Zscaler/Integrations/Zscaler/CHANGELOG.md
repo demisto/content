@@ -1,7 +1,5 @@
 ## [Unreleased]
 - Fixed an issue where the ***url*** command in *Zscaler* was not creating an Indicator in Demisto.
-- Changed the *ip* argument in the ***ip*** command in *Zscaler* to not be required, as it is default.
-- Changed the *url* argument in the ***url*** command in *Zscaler* to not be required, as it is default.
 - Fixed the ***url*** and ***ip*** commands in *Zscaler* output descriptions.
 - Fixed an issue where the ***zscaler-category-add-url*** command failed when passing multiple URLs separated with spaces.
 - Fixed an issue where the ***zscaler-undo-blacklist-url*** command always failed with the error "Given URL is not blacklisted".
