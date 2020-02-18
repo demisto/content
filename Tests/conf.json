@@ -1967,6 +1967,10 @@
         {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
+        },
+        {
+            "integrations": "MACVendors",
+            "playbookID": "MACVendors - Test"
         }
     ],
     "skipped_tests": {

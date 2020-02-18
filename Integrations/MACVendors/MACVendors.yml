@@ -36,8 +36,7 @@ script:
     - contextPath: MACVendors.Vendor
       description: MAC Vendor Name
       type: String
-  dockerimage: demisto/python3:3.7.4.2245
-  feed: false
+  dockerimage: demisto/python3:3.8.1.5734
   isfetch: false
   longRunning: false
   longRunningPort: false
