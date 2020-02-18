@@ -91,3 +91,7 @@ runas: DBotWeakRole
 runonce: true
 tests:
 - DbotPredictOufOfTheBoxTest
+tags:
+  - phishing
+  - ml
+comment: Predict phishing incidents using the out-of-the-box pretrained model.
