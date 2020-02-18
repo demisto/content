@@ -22,6 +22,8 @@ SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+PROXY = demisto.params().get('proxy')
+SERVICE = None
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -69,12 +71,11 @@ def get_current_splunk_time(splunk_service):
 
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    raw_ = re.split('\S,', raw)
-    for key_val in raw_:
-        key_val = key_val.replace('"', '')
-        key_val = key_val.strip()
-        if '=' in key_val:
-            key_and_val = key_val.split('=')
+    raw_response = re.split('\S,', raw)  # split by any any non-whitespace character.
+    for key_val in raw_response:
+        key_value = key_val.replace('"', '').strip()
+        if '=' in key_value:
+            key_and_val = key_value.split('=')
             result[key_and_val[0]] = key_and_val[1]
 
     return result
@@ -393,7 +394,7 @@ def fetch_incidents():
 
     now = t.strftime(SPLUNK_TIME_FORMAT)
     if demisto.get(demisto.params(), 'useSplunkTime'):
-        now = get_current_splunk_time(service)
+        now = get_current_splunk_time(SERVICE)
         t = datetime.strptime(now, SPLUNK_TIME_FORMAT)
     if len(lastRun) == 0:
         t = t - timedelta(minutes=10)
@@ -414,7 +415,7 @@ def fetch_incidents():
             field_trimmed = field.strip()
             searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    oneshotsearch_results = SERVICE.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
         inc = notable_to_incident(item)
@@ -428,7 +429,7 @@ def fetch_incidents():
 
 
 def splunk_get_indexes_command():
-    indexes = service.indexes  # type: ignore
+    indexes = SERVICE.indexes  # type: ignore
     indexesNames = []
     for index in indexes:
         index_json = {'name': index.name, 'count': index["totalEventCount"]}
@@ -439,7 +440,7 @@ def splunk_get_indexes_command():
 
 def splunk_submit_event_command():
     try:
-        index = service.indexes[demisto.args()['index']]  # type: ignore
+        index = SERVICE.indexes[demisto.args()['index']]  # type: ignore
     except KeyError:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Found no Splunk index: " + demisto.args()['index']})
@@ -500,7 +501,7 @@ def splunk_submit_event_hec_command():
 
 
 def splunk_edit_notable_event_command():
-    if not proxy:
+    if not PROXY:
         os.environ["HTTPS_PROXY"] = ""
         os.environ["HTTP_PROXY"] = ""
         os.environ["https_proxy"] = ""
@@ -546,24 +547,22 @@ def test_module():
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
         searchquery_oneshot = demisto.params()['fetchQuery']
-        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+        oneshotsearch_results = SERVICE.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         reader = results.ResultsReader(oneshotsearch_results)
         for item in reader:
             if item:
                 demisto.results('ok')
 
-    if len(service.jobs) >= 0:  # type: ignore
+    if len(SERVICE.jobs) >= 0:  # type: ignore
         demisto.results('ok')
 
 
 def main():
-    global proxy, service
-    service = None
-    proxy = demisto.params().get('proxy')
-    if proxy:
+    global PROXY, SERVICE
+    if PROXY:
         try:
-            service = client.connect(
-                handler=handler(proxy),
+            SERVICE = client.connect(
+                handler=handler(PROXY),
                 host=demisto.params()['host'],
                 port=demisto.params()['port'],
                 app=demisto.params().get('app'),
@@ -576,7 +575,7 @@ def main():
             else:
                 raise
     else:
-        service = client.connect(
+        SERVICE = client.connect(
             host=demisto.params()['host'],
             port=demisto.params()['port'],
             app=demisto.params().get('app'),
@@ -584,7 +583,7 @@ def main():
             password=demisto.params()['authentication']['password'],
             verify=VERIFY_CERTIFICATE)
 
-    if service is None:
+    if SERVICE is None:
         demisto.error("Could not connect to SplunkPy")
 
     # The command demisto.command() holds the command sent from the user.
