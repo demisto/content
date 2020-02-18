@@ -4,6 +4,10 @@ commonfields:
 name: SimpleRequest
 script: |-
   import requests
+  from urllib3 import disable_warnings
+
+  # disable insecure warnings
+  disable_warnings()
 
   resp = requests.get('https://www.demisto.com', verify=False)
 

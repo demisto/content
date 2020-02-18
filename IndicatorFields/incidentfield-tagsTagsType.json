@@ -18,10 +18,8 @@
   "breachScript": "",
   "editForm": true,
   "description": "",
-  "associatedToAll": false,
-  "associatedTypes": [
-    "File"
-  ],
+  "associatedToAll": true,
+  "associatedTypes": [],
   "caseInsensitive": true,
   "columns": null,
   "placeholder": "",

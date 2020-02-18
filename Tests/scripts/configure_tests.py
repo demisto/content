@@ -482,7 +482,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                     if not command_to_integration.get(integration_command) or \
                             command_to_integration.get(integration_command) == integration_id:
 
-                        tests = playbook_data.get('tests', [])
+                        tests = set(playbook_data.get('tests', []))
                         if tests:
                             catched_playbooks.add(playbook_name)
                             update_test_set(tests, tests_set)
@@ -516,7 +516,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                         package_name = os.path.dirname(script_file_path)
                         if glob.glob(package_name + "/*_test.py"):
                             catched_scripts.add(script_name)
-                            tests.add('Found a unittest for the script {}'.format(script_name))
+                            tests_set.add('Found a unittest for the script {}'.format(script_name))
 
                         updated_script_names.add(script_name)
                         new_versions = (script_fromversion, script_toversion)
@@ -569,7 +569,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                 package_name = os.path.dirname(script_file_path)
                 if glob.glob(package_name + "/*_test.py"):
                     catched_scripts.add(script_name)
-                    tests.add('Found a unittest for the script {}'.format(script_name))
+                    tests_set.add('Found a unittest for the script {}'.format(script_name))
 
                 updated_script_names.add(script_name)
                 new_versions = (script_fromversion, script_toversion)
@@ -597,7 +597,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                                        updated_playbook_names, catched_playbooks, tests_set)
 
 
-def update_test_set(tests_set, tests):
+def update_test_set(tests, tests_set):
     for test in tests:
         tests_set.add(test)
 
@@ -653,6 +653,7 @@ def get_test_list(files_string, branch_name):
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
         tests.add('reputations.json Test')
+        tests.add('Indicators reputation-.json Test')
 
     if is_indicator_json:
         tests.add('Test IP Indicator Fields')

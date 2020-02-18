@@ -108,7 +108,7 @@
         ]
       }
     },
-    "id": {
+    "indicatoridentification": {
       "simple": "",
       "complex": {
         "root": "Account",
@@ -129,7 +129,7 @@
     "organizationalunitou": {
       "simple": "",
       "complex": {
-        "root": "Acoount",
+        "root": "Account",
         "filters": [],
         "accessor": "OrganizationUnit",
         "transformers": [
