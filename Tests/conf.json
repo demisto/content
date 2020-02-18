@@ -1143,13 +1143,13 @@
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 150
+            "memory_threshold": 200
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewsv2_separate_process",
-            "memory_threshold": 100
+            "memory_threshold": 150
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1983,7 +1983,8 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
+            "playbookID": "RasterizeImageTest",
+            "pid_threshold": 24
         },
         {
             "integrations": "Ipstack",
@@ -2317,6 +2318,10 @@
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_30_days",
             "playbookID": "playbook-feodotrackeripblock_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
         }
     ],
