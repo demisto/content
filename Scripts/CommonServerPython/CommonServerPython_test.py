@@ -13,7 +13,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
-    encode_string_results
+    encode_string_results, safe_load_json, \
+    datetime_to_string, remove_empty_elements
 
 try:
     from StringIO import StringIO
@@ -393,6 +394,41 @@ def test_pascalToSpace():
     ]
     for s, expected in use_cases:
         assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
+
+
+def test_safe_load_json():
+    valid_json_str = '{"foo": "bar"}'
+    expected_valid_json_result = {u'foo': u'bar'}
+    assert expected_valid_json_result == safe_load_json(valid_json_str)
+
+
+def test_datetime_to_string():
+    datetime_obj = datetime.now()
+    datetime_str = datetime_to_string(datetime_obj)
+    assert isinstance(datetime_str, str)
+
+
+def test_remove_empty_elements():
+    test_dict = {
+        "foo": "bar",
+        "baz": {},
+        "empty": [],
+        "nested_dict": {
+            "empty_list": [],
+            "hummus": "pita"
+        },
+        "nested_list": {
+            "more_empty_list": []
+        }
+    }
+
+    expected_result = {
+        "foo": "bar",
+        "nested_dict": {
+            "hummus": "pita"
+        }
+    }
+    assert expected_result == remove_empty_elements(test_dict)
 
 
 def test_argToList():
