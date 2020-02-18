@@ -324,5 +324,3 @@ inputs:
     runFromLastJobTime: false
 outputs: []
 quiet: true
-tests:
-- ArcSight Add All Indicators
