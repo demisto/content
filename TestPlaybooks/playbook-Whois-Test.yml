@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d9a177e9-a194-44e1-8631-dbda8dd9ae63
+    taskid: 06119178-73ca-480a-8735-29b8f8f9520c
     type: start
     task:
-      id: d9a177e9-a194-44e1-8631-dbda8dd9ae63
+      id: 06119178-73ca-480a-8735-29b8f8f9520c
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 082d8bac-54c6-45f6-8d3e-ca3f4c541ce6
+    taskid: c895832b-2acb-4977-8b1d-d6626d8d1004
     type: regular
     task:
-      id: 082d8bac-54c6-45f6-8d3e-ca3f4c541ce6
+      id: c895832b-2acb-4977-8b1d-d6626d8d1004
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 033356a6-1fb8-497b-88db-69a06d050f24
+    taskid: 54c12bad-e2c8-450f-8927-f108b3ff4890
     type: condition
     task:
-      id: 033356a6-1fb8-497b-88db-69a06d050f24
+      id: 54c12bad-e2c8-450f-8927-f108b3ff4890
       version: -1
       name: Check results
       type: condition
@@ -124,10 +124,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 9ee88de7-a14e-4ab7-8577-484def16beb1
+    taskid: 6bc8d138-f9a1-4abf-800e-19c04c567802
     type: regular
     task:
-      id: 9ee88de7-a14e-4ab7-8577-484def16beb1
+      id: 6bc8d138-f9a1-4abf-800e-19c04c567802
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -158,10 +158,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 2caabdba-774c-4c09-8627-f88d5e1e04ee
+    taskid: 51697048-ab03-4464-8932-188f005f61be
     type: regular
     task:
-      id: 2caabdba-774c-4c09-8627-f88d5e1e04ee
+      id: 51697048-ab03-4464-8932-188f005f61be
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -188,10 +188,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 1e92db4d-6564-46c3-8932-c06de3c831b9
+    taskid: 09737e8f-f542-4b06-8fd8-b48279c3b6d5
     type: regular
     task:
-      id: 1e92db4d-6564-46c3-8932-c06de3c831b9
+      id: 09737e8f-f542-4b06-8fd8-b48279c3b6d5
       version: -1
       name: Print
       description: Prints text to war room (Markdown supprted)
@@ -199,6 +199,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       value:
         simple: Success
@@ -207,7 +210,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1490
         }
       }
     note: false
@@ -215,10 +218,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 98cdc8e8-de95-483e-87ac-451b8997b178
+    taskid: 534b2823-d3f4-4185-8fc9-e44950b00c76
     type: regular
     task:
-      id: 98cdc8e8-de95-483e-87ac-451b8997b178
+      id: 534b2823-d3f4-4185-8fc9-e44950b00c76
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -245,10 +248,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 16b1e6f0-7785-4cdf-8017-f02f957079bd
+    taskid: c691b483-541f-43ce-8276-9d5c40b5ee2a
     type: condition
     task:
-      id: 16b1e6f0-7785-4cdf-8017-f02f957079bd
+      id: c691b483-541f-43ce-8276-9d5c40b5ee2a
       version: -1
       name: Check results
       type: condition
@@ -289,10 +292,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 2ce6e538-8935-465e-8f74-e20600533e2a
+    taskid: d558b3e8-9342-45aa-85a3-6c66284ead72
     type: regular
     task:
-      id: 2ce6e538-8935-465e-8f74-e20600533e2a
+      id: d558b3e8-9342-45aa-85a3-6c66284ead72
       version: -1
       name: Sleep
       description: Sleep for 5 seconds, due to whois rate limit
@@ -317,13 +320,270 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 351178f6-6cde-4f28-8411-f17c0daad5eb
+    type: regular
+    task:
+      id: 351178f6-6cde-4f28-8411-f17c0daad5eb
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 479df6e9-d209-47b1-80d8-446810396f2b
+    type: regular
+    task:
+      id: 479df6e9-d209-47b1-80d8-446810396f2b
+      version: -1
+      name: domain
+      description: Provides data enrichment for domains.
+      script: Whois|||domain
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 4f9a68f8-689c-42c7-8842-4227bf7879c3
+    type: condition
+    task:
+      id: 4f9a68f8-689c-42c7-8842-4227bf7879c3
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.QueryStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.TechAdmin.country
+            iscontext: true
+          right:
+            value:
+              simple: US
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.Registrant.country
+            iscontext: true
+          right:
+            value:
+              simple: US
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 27efe3f7-45be-4f67-8859-8bb332e96a02
+    type: regular
+    task:
+      id: 27efe3f7-45be-4f67-8859-8bb332e96a02
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 62fd33be-9409-446b-8827-bb04d105417a
+    type: regular
+    task:
+      id: 62fd33be-9409-446b-8827-bb04d105417a
+      version: -1
+      name: domain
+      description: Provides data enrichment for domains.
+      script: Whois|||domain
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 50c90ecb-a8d1-42e4-8f27-c9a9edf1aa5e
+    type: condition
+    task:
+      id: 50c90ecb-a8d1-42e4-8f27-c9a9edf1aa5e
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.TechAdmin.country
+            iscontext: true
+          right:
+            value:
+              simple: US
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 3add51c3-0d9a-4ddf-8f58-6da4410cbd6a
+    type: regular
+    task:
+      id: 3add51c3-0d9a-4ddf-8f58-6da4410cbd6a
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Success
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 710,
+        "height": 2795,
+        "width": 760,
         "x": 50,
         "y": 50
       }

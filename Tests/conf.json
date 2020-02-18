@@ -963,7 +963,7 @@
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
             "timeout": 240,
-            "pid_threshold": 6
+            "pid_threshold": 18
         },
         {
             "integrations": "activedir",
@@ -1143,13 +1143,13 @@
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 150
+            "memory_threshold": 200
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewsv2_separate_process",
-            "memory_threshold": 70
+            "memory_threshold": 150
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1983,7 +1983,8 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
+            "playbookID": "RasterizeImageTest",
+            "pid_threshold": 24
         },
         {
             "integrations": "Ipstack",
@@ -2270,6 +2271,39 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Test"
+        },
+        {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Demonstration - Test"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory Asset - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory IOC Details - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List Alerts - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List IOCs - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory Reputation - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0"
@@ -2460,6 +2494,7 @@
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
-        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233"
+        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
+        "Google Chronicle Backstory": "SDK"
     }
 }
