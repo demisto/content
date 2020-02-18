@@ -17,30 +17,84 @@ RESOLVE_ALERT_RESPONSE = {
     "success": True
 }
 GET_ASSETS_RESPONSE = {
-    "count_filtered": 0,
-    "count_in_page": 0,
-    "count_total": 0,
-    "objects": []
+    "count_filtered": 1,
+    "count_in_page": 1,
+    "count_total": 1,
+    "objects": [{
+        "asset_type": 2,
+        "asset_type__": "eEndpoint",
+        "class_type": "IT",
+        "criticality": 0,
+        "criticality__": "eLow",
+        "id": 15,
+        "insight_names": ["Unsecured Protocols", "Windows CVEs"],
+        "ipv4": ["192.168.0.121"],
+        "last_seen": "2020-02-16T10:46:00+00:00",
+        "mac": ["00:0B:AB:1A:DD:DD"],
+        "name": "GTWB",
+        "project_parsed": None,
+        "resource_id": "15-1",
+        "risk_level": 0,
+        "site_id": 1,
+        "site_name": "site-1",
+        "vendor": "Advantech Technology",
+        "virtual_zone_name": "Endpoint: Other"
+    }]
 }
 GET_ALERTS_RESPONSE = {
-    "count_filtered": 0,
-    "count_in_page": 0,
-    "count_total": 0,
-    "objects": []
+    "count_filtered": 1,
+    "count_in_page": 1,
+    "count_total": 1,
+    "objects": [{
+        "actionable_assets": [{
+            "actionable_id": 15,
+            "asset": {
+                "asset_type": 2,
+                "asset_type__": "eEndpoint",
+                "hostname": "GTWB",
+                "id": 15,
+                "ip": ["192.168.0.121"],
+                "mac": ["00:0B:AB:1A:DD:DD"],
+                "name": "GTWB",
+                "network_id": 1,
+                "os": "Windows XP",
+                "resource_id": "15-1",
+                "site_id": 1,
+                "vendor": "Advantech Technology"
+            },
+            "id": 174,
+            "resource_id": "174-1",
+            "role": 5,
+            "role__": "ePrimary",
+            "site_id": 1
+        }],
+        "alert_indicators": [{
+            "alert_id": 48,
+            "id": 16,
+            "indicator_id": 2,
+            "indicator_info": {
+                "description": "Event occurred out of working hours",
+                "id": 2,
+                "points": 10,
+                "site_id": 1,
+                "type": 1
+            },
+            "indicator_result": False,
+            "parent_indicator_id": None,
+            "site_id": 1
+        }],
+        "description": "A configuration has been downloaded to controller [[Chemical_plant]] by [[10.1.30.40]],"
+                       " by user ENG_AB\\Administrator",
+        "network_id": 1,
+        "resolved": False,
+        "resource_id": "48-1",
+        "severity": 3,
+        "severity__": "eCritical",
+        "type": 1001,
+        "type__": "eConfigurationDownload",
+        "timestamp": "2020-02-16T10:46:00+00:00"
+    }]
 }
-
-
-# def test_say_hello_over_http(requests_mock):
-#     mock_response = {'result': 'Hello Dbot'}
-#     requests_mock.get('https://test.com/hello/Dbot', json=mock_response)
-#
-#     client = Client(base_url='https://test.com', verify=False, auth=('test', 'test'))
-#     args = {
-#         'name': 'Dbot'
-#     }
-#     _, outputs, _ = say_hello_over_http_command(client, args)
-#
-#     assert outputs['hello'] == 'Hello Dbot'
 
 
 def _create_client(mocker, requests_mock, request_url, response_json, request_type, **extra_params):
@@ -49,7 +103,8 @@ def _create_client(mocker, requests_mock, request_url, response_json, request_ty
             'identifier': 'user',
             'password': 'omgSecretsWow',
         },
-        'url': 'https://website.com'
+        'url': 'https://website.com',
+        'fetch_time': '7 days'
     })
 
     if request_type == "POST":
@@ -86,25 +141,31 @@ def test_claroty_authentication(mocker, requests_mock):
 def test_claroty_fetch_incidents(mocker, requests_mock):
     client = _create_client(mocker, requests_mock, "https://website.com:5000/ranger/alerts", GET_ALERTS_RESPONSE, "GET")
     first_fetch_time = demisto.params().get('fetch_time', '7 days').strip()
-    nextcheck, incidents = fetch_incidents(client, demisto.getLastRun(), first_fetch_time)
+    mocker.patch.object(demisto, 'incidents')
+    nextcheck, incidents = fetch_incidents(client, {'lastRun': dateparser.parse("2018-10-24T14:13:20+00:00")}, first_fetch_time)
 
-    assert dateparser.parse(nextcheck['last_fetch']).replace(tzinfo=None)
+    assert nextcheck['last_fetch']
     assert isinstance(incidents, list)
-    # assert incidents[0]['severity'] == 1
+    assert incidents[0]['severity'] == 4  # Demisto severity is higher by one (doesn't start at 0)
+    assert isinstance(incidents[0]['name'], str)
 
 
 def test_claroty_query_alerts(mocker, requests_mock):
     client = _create_client(mocker, requests_mock, "https://website.com:5000/ranger/alerts", GET_ALERTS_RESPONSE, "GET")
 
     response = client.get_alerts([], {}, [])
-    assert response
+    assert response["objects"][0]["resource_id"] == "48-1"
+    assert response["objects"][0]["severity"] == 3
+    assert response["objects"][0]["alert_indicators"]
 
 
 def test_claroty_get_assets(mocker, requests_mock):
     client = _create_client(mocker, requests_mock, "https://website.com:5000/ranger/assets", GET_ASSETS_RESPONSE, "GET")
 
     response = client.get_assets([], {}, [])
-    assert response
+    assert response["objects"][0]["resource_id"] == "15-1"
+    assert response["objects"][0]["name"] == "GTWB"
+    assert response["objects"][0]["criticality"] == 0
 
 
 def test_claroty_resolve_alerts(mocker, requests_mock):

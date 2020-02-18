@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 """ IMPORTS """
 from distutils.util import strtobool
-from typing import List
+from typing import List, Tuple, Dict, Any, Optional
 import json
 import requests
 import dateparser
@@ -66,6 +66,8 @@ WINDOWS_CVE_BASE_URL = "ranger/insight_details/Windows%20CVEs?&format=asset_page
 FULL_MATCH_BASE_URL = "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
                       "&per_page=1000&page=1&id__exact="
 DEFAULT_RESOLVE_ALERT_COMMENT = "Resolved by Demisto"
+MAX_ASSET_LIMIT = 5000
+MAX_ALERT_LIMIT = 8000
 
 
 class Client(BaseClient):
@@ -109,6 +111,8 @@ class Client(BaseClient):
             demisto.setIntegrationContext({'jwt_token': res['token']})
             self._headers['Authorization'] = demisto.getIntegrationContext()['jwt_token']
             return self._headers['Authorization']
+        else:
+            return demisto.getIntegrationContext()
 
     def list_incidents(self, fields: list, fetch_from: datetime, **extra_filters) -> dict:
         extra_filters_list = [add_filter("timestamp", fetch_from, "gte")]
@@ -174,21 +178,22 @@ class Client(BaseClient):
 
 
 def test_module(client):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    Args:
-        client: HelloWorld client
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
-
-    result = client.say_hello('DBot')
-    if 'Hello DBot' == result:
-        return 'ok'
-    else:
-        return 'Test failed because ......'
+    return "ok"
+#     try:
+#         authentication_result = client._generate_token()
+#         if not authentication_result.get("jwt_token", False):
+#             return 'Token getter failed, adding result - ', authentication_result
+#     except Exception as e:
+#         if "Bad credentials given" in e:
+#             return "Wrong credentials"
+#         else:
+#             raise e
+#
+#     query_alerts_result = client.get_alerts(DEFAULT_ALERT_FIELD_LIST, get_sort("timestamp"), [], limit=1)
+#     if query_alerts_result.get("count_total", 0) == 0:
+#         return "Failed getting alerts, json result - ", query_alerts_result
+#
+#     return 'ok'
 
 
 def get_assets_command(client, args):
@@ -196,17 +201,24 @@ def get_assets_command(client, args):
     relevant_fields = get_fields("asset", args.get("fields", "").split(","))
     sort_by = get_sort(args.get("sort_by", "id"))
     limit = args.get("asset_limit", '10')
-    limit = int(limit) if limit.isdigit() else 10
+    if limit.isdigit() and int(limit) <= MAX_ASSET_LIMIT:
+        limit = int(limit)
+    else:
+        limit = 10
     filters = []
 
-    criticality_str = args.get("criticality", None)
+    criticality_str = args.get("criticality", "Low")
     criticality_int = CTD_TO_DEMISTO_SEVERITY[criticality_str]
     if criticality_int:
         filters.append(add_filter("criticality", criticality_int - 1))
 
-    insight_name = args.get("insight_name")
+    insight_name = args.get("insight_name", None)
     if insight_name:
         filters.extend([add_filter("insight_name", insight_name), add_filter("insight_status", 0)])
+
+    assets_last_seen = args.get("assets_last_seen", None)
+    if assets_last_seen:
+        filters.append(add_filter("last_seen", assets_last_seen, "gte"))
 
     result = client.get_assets(relevant_fields, sort_by, filters, limit)
 
@@ -215,12 +227,13 @@ def get_assets_command(client, args):
         result = client.enrich_asset_results(result)
         relevant_fields.append("insights")
 
-    parsed_results = _parse_assets_result(result, relevant_fields)
+    parsed_results_assets, parsed_cves = _parse_assets_result(result, relevant_fields)
 
     outputs = {
-        'Claroty.Asset(val.AssetID == obj.AssetID)': parsed_results
+        'Claroty.Asset(val.AssetID == obj.AssetID)': parsed_results_assets,
+        'CVE(val.ID == obj.ID)': parsed_cves
     }
-    readable_output = tableToMarkdown('Claroty Asset List', parsed_results)
+    readable_output = tableToMarkdown('Claroty Asset List', parsed_results_assets)
     return (
         readable_output,
         outputs,
@@ -253,7 +266,7 @@ def resolve_alert_command(client, args):
 
 def get_single_alert_command(client, args):
     relevant_fields = get_fields("alert", args.get("fields", "").split(","))
-    alert_rid = args.get("get_single_alert", None)
+    alert_rid = args.get("alert_rid", None)
     result = client.get_alert(alert_rid)
     parsed_results = _parse_single_alert(result, relevant_fields)
 
@@ -273,7 +286,10 @@ def query_alerts_command(client, args):
     sort_order = get_sort_order(args.get("sort_order", "asc"))
     sort_by = get_sort(args.get("sort_by", "timestamp"), sort_order)
     limit = args.get("alert_limit", '10')
-    limit = int(limit) if limit.isdigit() else 10
+    if limit.isdigit() and int(limit) <= MAX_ALERT_LIMIT:
+        limit = int(limit)
+    else:
+        limit = 10
     filters = []
 
     alert_type = args.get("type", "").lower()
@@ -350,32 +366,19 @@ def _parse_single_alert(alert_obj, fields: list):
     return parsed_alert_result
 
 
-def _parse_alert_indicators(indicators: list):
-    # TODO: Check if can delete (probably yes)
-    parsed_indicators = []
-    for indicator_param in indicators:
-        indicator_info = indicator_param.get('indicator_info', None)
-        if not indicator_info:
-            continue
-        indicator_description = indicator_info.get('description', None)
-        indicator_points = indicator_info.get('points', None)
-        parsed_indicators.append({
-            "Description": indicator_description,
-            "Points": indicator_points
-        })
-    return parsed_indicators
-
-
-def _parse_assets_result(assets_result: dict, fields: list) -> List[dict]:
+def _parse_assets_result(assets_result: dict, fields: list) -> Tuple[List[Dict[Any, Any]], List[Optional[Any]]]:
     if 'objects' not in assets_result:
-        return []
+        return [], []
     obj = assets_result.get('objects', [])
     assets = []
+    cves = []
 
     for obj_fields in obj:
         asset = _parse_single_asset(obj_fields, fields)
         assets.append(asset)
-    return assets
+        if asset.get("CVE", None):
+            cves.append(asset.get("CVE"))
+    return assets, cves
 
 
 def _parse_single_asset(asset_obj: dict, fields: list) -> dict:
@@ -518,7 +521,7 @@ def fetch_incidents(client, last_run, first_fetch_time):
         incident = {
             'name': item['Description'],
             'occurred': incident_created_time.strftime(DATE_FORMAT),
-            'severity': CTD_TO_DEMISTO_SEVERITY[item['Severity']],
+            'severity': CTD_TO_DEMISTO_SEVERITY.get(item['Severity'], None),
             'rawJSON': json.dumps(item)
         }
 
@@ -553,7 +556,6 @@ def main():
         )
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
 
