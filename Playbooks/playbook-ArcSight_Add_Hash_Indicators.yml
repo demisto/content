@@ -676,7 +676,7 @@ tasks:
                 value:
                   simple: '"}]'
       resourceId:
-        simple: ${inputs.ArcSightMd5ActiveListID}
+        simple: ${inputs.ArcSightSha1ActiveListID}
     separatecontext: false
     view: |-
       {
@@ -765,7 +765,7 @@ tasks:
                 value:
                   simple: '"}]'
       resourceId:
-        simple: ${inputs.ArcSightMd5ActiveListID}
+        simple: ${inputs.ArcSightSha256ActiveListID}
     separatecontext: false
     view: |-
       {
