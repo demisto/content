@@ -1,0 +1,711 @@
+elasticcommonfields: {}
+id: QRadar Add Hash Indicators
+version: -1
+fromversion: 5.5.0
+name: QRadar Add Hash Indicators
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '1'
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: '1'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 7701955f-2902-40e4-81db-0249b7febfcd
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 7701955f-2902-40e4-81db-0249b7febfcd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 9e92c5ff-3d94-4ade-8fd8-865952c32b6c
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 9e92c5ff-3d94-4ade-8fd8-865952c32b6c
+      version: -1
+      name: Is QRadarEnabled?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '49'
+      - '50'
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar-test
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: 70dcbab0-0c9a-4db4-8285-ccdadcc9c05c
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 70dcbab0-0c9a-4db4-8285-ccdadcc9c05c
+      version: -1
+      name: Are there filtered results?
+      description: Checks whether the specified item is in a list. The default list
+        is the Demisto Indicators Whitelist.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: b4aae0ac-ae35-492e-819d-682d42a99ff3
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: b4aae0ac-ae35-492e-819d-682d42a99ff3
+      version: -1
+      name: Add Sha256 to QRadar reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarSha256ReferenceSetName}
+      source: {}
+      values:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: '64'
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '31':
+    id: '31'
+    taskid: 206f4d10-a58b-4dcf-8fc6-6e8f40bf8841
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 206f4d10-a58b-4dcf-8fc6-6e8f40bf8841
+      version: -1
+      name: Is there a Qradar Sha256 Reference Set?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '35'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.QRadarSha256ReferenceSetName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '35':
+    id: '35'
+    taskid: 59e69c6f-bbe9-45a4-8121-5f6a4a4942e5
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 59e69c6f-bbe9-45a4-8121-5f6a4a4942e5
+      version: -1
+      name: Are there Sha256 results?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '64'
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '36':
+    id: '36'
+    taskid: 37950383-adb4-4a39-8b51-41b5bc9df9f2
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 37950383-adb4-4a39-8b51-41b5bc9df9f2
+      version: -1
+      name: Is there a Qradar Sha1 Reference Set?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '37'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.QRadarSha1ReferenceSetName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '37':
+    id: '37'
+    taskid: cd3d26a0-c7ca-463b-86c1-a79736c2a196
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: cd3d26a0-c7ca-463b-86c1-a79736c2a196
+      version: -1
+      name: Are there Sha1 results?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '38'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '40'
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '38':
+    id: '38'
+    taskid: 1a3ff629-704c-4155-8f05-bd47ac35d0ed
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 1a3ff629-704c-4155-8f05-bd47ac35d0ed
+      version: -1
+      name: Add Sha1 to QRadar reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarSha1ReferenceSetName}
+      source: {}
+      values:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: '40'
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '39':
+    id: '39'
+    taskid: 3d1501e1-1457-44ef-8e09-7a7bcf210474
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 3d1501e1-1457-44ef-8e09-7a7bcf210474
+      version: -1
+      name: Is there a Qradar Md5 Reference Set?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.QRadarMd5ReferenceSetName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '40':
+    id: '40'
+    taskid: 082fcec5-c4b6-44c8-8ab3-8b39b67d2fbc
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 082fcec5-c4b6-44c8-8ab3-8b39b67d2fbc
+      version: -1
+      name: Are there Md5 results?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '41'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '32'
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2950,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '41':
+    id: '41'
+    taskid: e3c341f5-a1e0-46b1-8f4b-7183aab9f471
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: e3c341f5-a1e0-46b1-8f4b-7183aab9f471
+      version: -1
+      name: Add Md5 to QRadar reference set
+      description: Add or update a value in a reference set.
+      script: '|||qradar-update-reference-set-value'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      date_value: {}
+      ref_name:
+        simple: ${inputs.QRadarMd5ReferenceSetName}
+      source: {}
+      values:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: '32'
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '49':
+    id: '49'
+    taskid: 2991e1e6-1660-4a10-8b73-7485c5ac3407
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 2991e1e6-1660-4a10-8b73-7485c5ac3407
+      version: -1
+      name: Sha256
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '50':
+    id: '50'
+    taskid: 451ea9b6-5424-4286-88fb-7df5a1e4d664
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 451ea9b6-5424-4286-88fb-7df5a1e4d664
+      version: -1
+      name: Sha1
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '51':
+    id: '51'
+    taskid: 0d25ad51-a0d5-432c-84ef-7e3bafc01e3f
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 0d25ad51-a0d5-432c-84ef-7e3bafc01e3f
+      version: -1
+      name: Md5
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 2990,
+        "x": 340,
+        "y": -310
+      }
+    }
+  }
+inputs:
+- key: QRadarMd5ReferenceSetName
+  value: {}
+  required: false
+  description: The name of the QRadar Md5 reference set to insert the data to.
+  playbookInputQuery: null
+- key: QRadarSha1ReferenceSetName
+  value: {}
+  required: false
+  description: The name of the QRadar Sha1 reference set to insert the data to.
+  playbookInputQuery: null
+- key: QRadarSha256ReferenceSetName
+  value:
+    simple: Demisto Demo Sha256
+  required: false
+  description: The name of the QRadar Sha256 reference set to insert the data to.
+  playbookInputQuery: null
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01 00:00:00
+      todate: 0001-01-01 00:00:00
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue: null
+        fromvalue: null
+        field: ''
+      fromdatelicenseval: 0001-01-01 00:00:00
+    runFromLastJobTime: false
+outputs: []
+quiet: true
+tests:
+- Qradar Add All Indicators
