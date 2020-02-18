@@ -202,7 +202,7 @@ def test_reputation_operation_command_success(client):
     arguments
     """
     from GoogleChronicleBackstory import reputation_operation_command
-    with mock.patch('GoogleChronicle.return_outputs') as mock_return_outputs:
+    with mock.patch('GoogleChronicleBackstory.return_outputs') as mock_return_outputs:
         fun = mock.Mock()
         args = {
             'ip': '0.0.0.0,0.0.0.0'
@@ -227,7 +227,7 @@ def test_function_success(client):
     )
     client.http_client.request.return_value = mock_response
 
-    with mock.patch('GoogleChronicle.demisto.results') as mock_demisto_result:
+    with mock.patch('GoogleChronicleBackstory.demisto.results') as mock_demisto_result:
         test_function(client, PROXY_MOCK)
     mock_demisto_result.assert_called_with('ok')
 
@@ -361,7 +361,7 @@ def test_main_success(mocker, client):
     """
     When command execute successfully then main should pass
     """
-    import GoogleChronicle
+    import GoogleChronicleBackstory
     param = {
         'service_account_credential': '{"key":"value"}',
         'fetch_limit': '20',
@@ -377,10 +377,10 @@ def test_main_success(mocker, client):
 
     mocker.patch.object(demisto, 'params', return_value=param)
     mocker.patch.object(demisto, 'command', return_value="test-module")
-    mocker.patch.object(GoogleChronicle, 'test_function', return_value=('', {}, {}))
-    mocker.patch('GoogleChronicle.Client', return_value=client)
-    GoogleChronicle.main()
-    assert GoogleChronicle.test_function.called
+    mocker.patch.object(GoogleChronicleBackstory, 'test_function', return_value=('', {}, {}))
+    mocker.patch('GoogleChronicleBackstory.Client', return_value=client)
+    GoogleChronicleBackstory.main()
+    assert GoogleChronicleBackstory.test_function.called
 
 
 def test_gcb_assets_command_success(client):
