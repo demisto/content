@@ -2319,6 +2319,10 @@
             "instance_names": "feodo_tracker_ip_30_days",
             "playbookID": "playbook-feodotrackeripblock_test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "FetchIndicatorsFromFile-test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
