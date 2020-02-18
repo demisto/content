@@ -3,37 +3,12 @@ commonfields:
   id: TAXIIServer
   version: -1
 configuration:
-- additionalinfo: The query to run to update its EDL. To view expected results, you
-    can run the following command from the Demisto CLI `!findIndicators query=<your
-    query>`
-  display: Indicator Query
-  name: indicators_query
-  required: false
-  type: 0
-- additionalinfo: Maximum number of items in the EDL
-  defaultvalue: '2500'
-  display: EDL Size
-  hidden: false
-  name: edl_size
-  required: true
-  type: 0
-- additionalinfo: Enabling this will prevent automatic EDL refresh
-  display: Update EDL On Demand Only
-  name: on_demand
-  required: false
-  type: 8
-- additionalinfo: How often to refresh the EDL
-  defaultvalue: 5 minutes
-  display: Refresh Rate
-  name: cache_refresh_rate
-  required: false
-  type: 0
 - defaultvalue: 'true'
   display: Long Running Instance
   name: longRunning
   required: false
   type: 8
-- additionalinfo: Will run the EDL service on this port from within Demisto
+- additionalinfo: Will run the TAXII server on this port from within Demisto
   defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
@@ -47,12 +22,7 @@ configuration:
   name: key
   required: false
   type: 14
-- additionalinfo: JSON string of users in a username - password
-  display: Users JSON
-  name: users
-  required: false
-  type: 14
-- additionalinfo: Ignores certificate and private key, and will run the EDL service
+- additionalinfo: Ignores certificate and private key, and will run the TAXII server
     in HTTP
   display: HTTP Server
   hidden: false
@@ -60,50 +30,16 @@ configuration:
   required: false
   type: 8
 - additionalinfo: JSON string of indicator query collections.
-  defaultvalue: |-
-    {
-       "Spamhaus": "type:IP and reputation:BAD and source:Spamhaus Feed"
-    }
   display: Collection JSON
   hidden: false
   name: collections
-  required: false
+  required: true
   type: 12
-description: This integration provides External Dynamic List (EDL) as a service for
-  the system indicators (Outbound feed).
+description: This integration provides TAXII Services for the system indicators (Outbound
+  feed).
 display: TAXII Server
 name: TAXIIServer
 script:
-  commands:
-  - arguments:
-    - default: false
-      description: The query used to retrieve indicators from the system.
-      isArray: false
-      name: query
-      required: true
-      secret: false
-    - default: false
-      description: The maximum number of entries in the EDL. If no value is provided,
-        will use the value specified in the EDL Size parameter configured in the instance
-        configuration.
-      isArray: false
-      name: edl_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
-      description: Boolean
-      isArray: false
-      name: print_indicators
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-      secret: false
-    deprecated: false
-    description: Updates values stored in the EDL (only avaialable On-Demand).
-    execution: false
-    name: edl-update
   dockerimage: devdemisto/taxii-server:1.0.0.5978
   feed: false
   isfetch: false
@@ -114,5 +50,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Test_EDL
+- No test
 fromversion: 5.5.0
