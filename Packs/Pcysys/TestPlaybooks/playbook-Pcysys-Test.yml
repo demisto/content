@@ -60,10 +60,10 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: c356457c-9547-4cda-8f83-6096f6d4e757
+    taskid: 07f1ff24-c8dc-4cb5-8f76-a0dbc24266bd
     type: regular
     task:
-      id: c356457c-9547-4cda-8f83-6096f6d4e757
+      id: 07f1ff24-c8dc-4cb5-8f76-a0dbc24266bd
       version: -1
       name: pentera-run-template-by-name
       script: '|||pentera-run-template-by-name'
@@ -75,6 +75,8 @@ tasks:
       '#none#':
       - '3'
     scriptarguments:
+      template_name:
+        simple: Test Template for Playbook
       templateName:
         simple: Test Template for Playbook
     separatecontext: false
@@ -150,10 +152,10 @@ tasks:
     ignoreworker: false
   '4':
     id: '4'
-    taskid: d0051ade-fce8-4a95-8f3f-ddc05f67a0fe
+    taskid: 70de627f-203f-49f3-8e69-5386f036f478
     type: regular
     task:
-      id: d0051ade-fce8-4a95-8f3f-ddc05f67a0fe
+      id: 70de627f-203f-49f3-8e69-5386f036f478
       version: -1
       name: pentera-get-task-run-status
       script: '|||pentera-get-task-run-status'
@@ -165,6 +167,8 @@ tasks:
       '#none#':
       - '5'
     scriptarguments:
+      task_run_id:
+        simple: ${Pentera.TaskRun.ID}
       taskRunId:
         simple: 5e45883d1deb8eda82b1eed5
     separatecontext: false
@@ -248,10 +252,10 @@ tasks:
     ignoreworker: false
   '6':
     id: '6'
-    taskid: 0a0a65b2-23e1-4e7f-8133-00704a0db48b
+    taskid: 15fb8993-18c9-493c-8c27-28ac2740f334
     type: regular
     task:
-      id: 0a0a65b2-23e1-4e7f-8133-00704a0db48b
+      id: 15fb8993-18c9-493c-8c27-28ac2740f334
       version: -1
       name: pentera-get-task-run-full-action-report
       script: '|||pentera-get-task-run-full-action-report'
@@ -263,6 +267,8 @@ tasks:
       '#none#':
       - '7'
     scriptarguments:
+      task_run_id:
+        simple: ${Pentera.TaskRun.ID}
       taskRunId:
         simple: 5e45883d1deb8eda82b1eed5
     separatecontext: false
