@@ -36,16 +36,16 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: CRITICAL
+- defaultvalue: INFO
   display: Lowest Issue Severity To Pull
   hidden: false
   name: issueSeverity
   options:
   - CRITICAL
-  - ' ERROR'
-  - ' WARN'
-  - ' INFO'
-  required: true
+  - ERROR
+  - WARN
+  - INFO
+  required: false
   type: 15
 - defaultvalue: '20'
   display: Number of alerts to pull per fetch
