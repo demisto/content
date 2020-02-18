@@ -9,6 +9,9 @@ import csv
 
 def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, default_type, type_col):
     indicator_list = []
+
+    # TODO: add run on all columns functionality
+
     line_index = 0
     with open(file_path) as csv_file:
         file_reader = csv.reader(csv_file)
@@ -39,6 +42,8 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
 
 def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, auto_detect, default_type, type_col):
     indicator_list = []
+
+    # TODO: add run on all columns functionality
 
     xl_woorkbook = xlrd.open_workbook(file_path)
     if sheet_name and sheet_name != 'None':
@@ -76,15 +81,15 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
 
     indicator_list = []
 
-    raw_splitted_data = file_data.split()
+    raw_splitted_data = re.split(r"\s|\n|\t|\"|\'|\,|\0", file_data)
 
     for indicator in raw_splitted_data:
         # drop punctuation
-        if len(indicator) > 0:
-            while indicator[-1] in ".,?:;\\)}]/!\n\t\0":
+        if len(indicator) > 1:
+            while indicator[-1] in ".,?:;\\)}]/!\n\t\0\"" and len(indicator) > 1:
                 indicator = indicator[:-1]
 
-            while indicator[0] in ".,({[\n\t":
+            while indicator[0] in ".,({[\n\t\"" and len(indicator) > 1:
                 indicator = indicator[1:]
 
             indicator_type = detect_type(indicator)
@@ -136,10 +141,9 @@ def detect_type(indicator):
         return FeedIndicatorType.SHA1
 
     if re.match(emailRegex, indicator):
-        return FeedIndicatorType.Account
+        return FeedIndicatorType.Email
 
-    if "." in indicator:
-        return FeedIndicatorType.Domain
+    # TODO: add domain regex or identification
 
     else:
         return None
