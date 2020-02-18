@@ -8,7 +8,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: API url
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -36,16 +36,23 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Issue Severities To Pull
+- defaultvalue: CRITICAL
+  display: Lowest Issue Severity To Pull
   hidden: false
-  name: issueSeverities
+  name: issueSeverity
   options:
   - CRITICAL
   - ' ERROR'
   - ' WARN'
   - ' INFO'
   required: true
-  type: 16
+  type: 15
+- defaultvalue: '20'
+  display: Number of alerts to pull per fetch
+  hidden: false
+  name: maxPullSize
+  required: false
+  type: 0
 description: Indeni Integration
 display: Indeni
 name: Indeni

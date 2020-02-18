@@ -313,6 +313,14 @@ def test_item_to_incident():
     assert incident.get('name') == "Missing Privileged Credentials"
 
 
+def test_issue_severiy_to_issue_level():
+    from Indeni import issue_severity_to_issue_level
+    assert issue_severity_to_issue_level("CRITICAL") == 0
+    assert issue_severity_to_issue_level("ERROR") == 1
+    assert issue_severity_to_issue_level("WARN") == 2
+    assert issue_severity_to_issue_level("INFO") == 3
+
+
 def test_get_device_request(requests_mock):
     from Indeni import get_device_request
     device_id = "d28d0ecc-68c6-4045-9a17-826f6877ed9b"
@@ -334,13 +342,13 @@ def test_get_limited_active_issues(requests_mock):
     requests_mock.get(BASE_URL + "issues?page=3&per_page=1&sort_by=alert_id.asc&resolved=false", json=page_2)
     requests_mock.get(BASE_URL + "issues?page=4&per_page=1&sort_by=alert_id.asc&resolved=false", json={})
 
-    test_result, alert_id_index = get_limited_active_issues(1, 0, 5, True, ["CRITICAL", "ERROR"], BASE_URL)
+    test_result, alert_id_index = get_limited_active_issues(1, 0, 5, True, 1, BASE_URL)
     assert len(test_result) == 1
     assert alert_id_index == 49539
     assert test_result[0].get("unique_identifier") == "panos_vulnerability_pansa_20170021_rule"
     assert test_result[0].get("alert_id") == 49517
 
-    test_result, alert_id_index = get_limited_active_issues(1, 49539, 5, True, ["CRITICAL", "ERROR"], BASE_URL)
+    test_result, alert_id_index = get_limited_active_issues(1, 49539, 5, True, 1, BASE_URL)
     assert len(test_result) == 0
     assert alert_id_index == 49539
 
@@ -348,7 +356,7 @@ def test_get_limited_active_issues(requests_mock):
     page_3.append(PAN_VULNERABILITY_ISSUE_2)
     requests_mock.get(BASE_URL + "issues?page=4&per_page=1&sort_by=alert_id.asc&resolved=false", json=page_3)
     requests_mock.get(BASE_URL + "issues?page=5&per_page=1&sort_by=alert_id.asc&resolved=false", json={})
-    test_result, alert_id_index = get_limited_active_issues(1, 49539, 5, True, ["CRITICAL", "ERROR"], BASE_URL)
+    test_result, alert_id_index = get_limited_active_issues(1, 49539, 5, True, 1, BASE_URL)
     assert len(test_result) == 1
     assert alert_id_index == 49540
 
@@ -366,7 +374,7 @@ def test_get_limited_active_issues_filter(requests_mock):
     requests_mock.get(BASE_URL + "issues?page=3&per_page=1&sort_by=alert_id.asc&resolved=false", json=page_2)
     requests_mock.get(BASE_URL + "issues?page=4&per_page=1&sort_by=alert_id.asc&resolved=false", json={})
 
-    test_result, alert_id_index = get_limited_active_issues(1, 0, 5, False, ["CRITICAL", "ERROR"], BASE_URL)
+    test_result, alert_id_index = get_limited_active_issues(1, 0, 5, False, 1, BASE_URL)
     assert len(test_result) == 2
     assert alert_id_index == 49539
     assert test_result[0].get("unique_identifier") == "cross_vendor_network_port_down"
@@ -374,7 +382,7 @@ def test_get_limited_active_issues_filter(requests_mock):
     assert test_result[1].get("unique_identifier") == "panos_vulnerability_pansa_20170021_rule"
     assert test_result[1].get("alert_id") == 49517
 
-    test_result, alert_id_index = get_limited_active_issues(1, 49539, 5, False, ["CRITICAL", "ERROR"], BASE_URL)
+    test_result, alert_id_index = get_limited_active_issues(1, 49539, 5, False, 1, BASE_URL)
     assert len(test_result) == 0
     assert alert_id_index == 49539
 
@@ -382,6 +390,39 @@ def test_get_limited_active_issues_filter(requests_mock):
     page_3.append(PAN_VULNERABILITY_ISSUE_2)
     requests_mock.get(BASE_URL + "issues?page=4&per_page=1&sort_by=alert_id.asc&resolved=false", json=page_3)
     requests_mock.get(BASE_URL + "issues?page=5&per_page=1&sort_by=alert_id.asc&resolved=false", json={})
-    test_result, alert_id_index = get_limited_active_issues(1, 49539, 5, False, ["CRITICAL"], BASE_URL)
+    test_result, alert_id_index = get_limited_active_issues(1, 49539, 5, False, 0, BASE_URL)
     assert len(test_result) == 0
+    assert alert_id_index == 49540
+
+
+def test_get_limited_active_issues_size_filter(requests_mock):
+    from Indeni import get_limited_active_issues
+    page_0 = []
+    page_0.append(NETWORK_PORT_DOWN_ISSUE)
+    page_0.append(PAN_VULNERABILITY_ISSUE)
+    page_0.append(MISSING_CREDENTIALS_ISSUE)
+    requests_mock.get(BASE_URL + "issues?page=1&per_page=3&sort_by=alert_id.asc&resolved=false", json=page_0)
+    requests_mock.get(BASE_URL + "issues?page=2&per_page=3&sort_by=alert_id.asc&resolved=false", json={})
+
+    test_result, alert_id_index = get_limited_active_issues(3, 0, 2, False, 3, BASE_URL)
+    assert len(test_result) == 2
+    assert alert_id_index == 49517
+    assert test_result[0].get("unique_identifier") == "cross_vendor_network_port_down"
+    assert test_result[0].get("alert_id") == 49498
+    assert test_result[1].get("unique_identifier") == "panos_vulnerability_pansa_20170021_rule"
+    assert test_result[1].get("alert_id") == 49517
+
+    test_result, alert_id_index = get_limited_active_issues(3, 49517, 2, False, 3, BASE_URL)
+    assert len(test_result) == 1
+    assert test_result[0].get("unique_identifier") == "DeviceNotificationAlert"
+    assert test_result[0].get("alert_id") == 49539
+    assert alert_id_index == 49539
+
+    page_3 = []
+    page_3.append(PAN_VULNERABILITY_ISSUE_2)
+    requests_mock.get(BASE_URL + "issues?page=2&per_page=3&sort_by=alert_id.asc&resolved=false", json=page_3)
+    requests_mock.get(BASE_URL + "issues?page=3&per_page=3&sort_by=alert_id.asc&resolved=false", json={})
+    test_result, alert_id_index = get_limited_active_issues(3, 49539, 2, False, 3, BASE_URL)
+    assert len(test_result) == 1
+    assert test_result[0].get("alert_id") == 49540
     assert alert_id_index == 49540

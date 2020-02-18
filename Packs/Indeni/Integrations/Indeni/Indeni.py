@@ -8,7 +8,6 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-MAX_BATCH_SIZE = 20
 API_KEY = demisto.params().get('apikey')
 # Remove trailing slash to prevent wrong URL path to serviceaa
 SERVER = demisto.params().get('url', '')
@@ -123,7 +122,7 @@ def get_all_active_issues(per_page, sort_by, base_url):
     return issues
 
 
-def get_limited_active_issues(per_page, alert_id_index, size, only_Pan_Cve_Issues, issue_severities, base_url):
+def get_limited_active_issues(per_page, alert_id_index, size, only_Pan_Cve_Issues, lowest_issue_severity_level, base_url):
     issues = []
     issue_count = 0
     # The service endpoint to request from
@@ -147,8 +146,8 @@ def get_limited_active_issues(per_page, alert_id_index, size, only_Pan_Cve_Issue
                 alert_id_index = alert_id
                 if (only_Pan_Cve_Issues is False) or \
                         (only_Pan_Cve_Issues and item.get('unique_identifier').startswith('panos_vulnerability')):
-                    alert_severity = item.get('severity').get('description')
-                    if alert_severity in issue_severities:
+                    alert_severity_level = item.get('severity').get('level')
+                    if alert_severity_level <= lowest_issue_severity_level:
                         issues.append(item)
                         issue_count = issue_count + 1
                         if issue_count == size:
@@ -314,16 +313,33 @@ def unarchive_issue(base_url):
     http_request('PATCH', base_url + endpoint_url, data=body)
 
 
+# Indeni: CRITICAL: 0, ERROR: 1, WARN: 2, INFO: 3
+def issue_severity_to_issue_level(issue_severity):
+    if issue_severity == 'CRITICAL':
+        return 0
+    elif issue_severity == 'ERROR':
+        return 1
+    elif issue_severity == 'WARN':
+        return 2
+    elif issue_severity == 'INFO':
+        return 3
+    else:
+        return -1
+
+
 def fetch_incidents(base_url):
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
     alert_id_index = last_run.get('alert_id', 0)
-    only_Pan_Cve_Issues = demisto.params().get('onlyPullPanCveIssues', False)
-    issue_severities = demisto.params().get('issueSeverities', [])
+    only_pan_cve_issues = demisto.params().get('onlyPullPanCveIssues', False)
+    max_pull_size = demisto.params().get('maxPullSize', 20)
+    lowest_issue_severity = demisto.params().get('issueSeverity', [])
+    lowest_issue_severity_level = issue_severity_to_issue_level(lowest_issue_severity)
     incidents = []
 
     # Handle first time fetch, fetch only currently un-resolved active issues
-    result = get_limited_active_issues(100, alert_id_index, MAX_BATCH_SIZE, only_Pan_Cve_Issues, issue_severities, base_url)
+    result = get_limited_active_issues(100, alert_id_index, max_pull_size, only_pan_cve_issues,
+                                       lowest_issue_severity_level, base_url)
     for item in result[0]:
         incident = item_to_incident(item)
         incidents.append(incident)
