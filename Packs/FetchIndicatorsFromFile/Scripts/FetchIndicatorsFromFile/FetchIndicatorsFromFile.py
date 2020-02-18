@@ -76,15 +76,15 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
 
     indicator_list = []
 
-    only_indicator_list = file_data.split()
+    raw_splitted_data = file_data.split()
 
-    for indicator in only_indicator_list:
+    for indicator in raw_splitted_data:
         # drop punctuation
         if len(indicator) > 0:
-            if indicator[-1] in ".,?:;\\)}]/!\n\t":
+            while indicator[-1] in ".,?:;\\)}]/!\n\t":
                 indicator = indicator[:-1]
 
-            if indicator[0] in ".,({[":
+            while indicator[0] in ".,({[\n\t":
                 indicator = indicator[0:]
 
             indicator_type = detect_type(indicator)
