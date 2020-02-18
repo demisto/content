@@ -2,6 +2,7 @@ elasticcommonfields: {}
 id: QRadar Add Domain Indicators
 version: -1
 name: QRadar Add Domain Indicators
+description: The playbook queries indicators based on the specified tags and uploads the to the Qradar reference set in the inputs.
 starttaskid: '0'
 tasks:
   '0':
