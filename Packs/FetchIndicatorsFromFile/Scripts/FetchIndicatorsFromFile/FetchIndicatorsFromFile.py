@@ -81,11 +81,11 @@ def txt_file_to_indicator_list(file_path, auto_detect, default_type):
     for indicator in raw_splitted_data:
         # drop punctuation
         if len(indicator) > 0:
-            while indicator[-1] in ".,?:;\\)}]/!\n\t":
+            while indicator[-1] in ".,?:;\\)}]/!\n\t\0":
                 indicator = indicator[:-1]
 
             while indicator[0] in ".,({[\n\t":
-                indicator = indicator[0:]
+                indicator = indicator[1:]
 
             indicator_type = detect_type(indicator)
 
