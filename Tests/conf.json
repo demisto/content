@@ -963,7 +963,7 @@
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
             "timeout": 240,
-            "pid_threshold": 6
+            "pid_threshold": 18
         },
         {
             "integrations": "activedir",
@@ -1149,7 +1149,7 @@
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewsv2_separate_process",
-            "memory_threshold": 70
+            "memory_threshold": 100
         },
         {
             "integrations": "remedy_sr_beta",
