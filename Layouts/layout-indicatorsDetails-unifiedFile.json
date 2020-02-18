@@ -5,7 +5,7 @@
         "TypeName": "",
         "id": "unifiedFileRep",
         "kind": "indicatorsDetails",
-        "modified": "2020-02-13T17:25:25.007679+02:00",
+        "modified": "2020-02-18T16:00:55.812724+02:00",
         "name": "",
         "system": false,
         "tabs": [
@@ -410,6 +410,57 @@
                         "y": 5
                     },
                     {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "sources-field",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "score",
+                                "width": 100
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "reliability",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "expiration",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Feed Original Severity",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Feed Threat Types",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "First Seen By Feed",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Last Seen By Feed",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Sub Feed",
+                                "width": 200
+                            }
+                        ],
                         "h": 2,
                         "i": "main-2282fbc0-3d57-11ea-9dff-c57e8949d2f9",
                         "items": [],
