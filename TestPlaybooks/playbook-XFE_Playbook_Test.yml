@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: a721deab-d6dc-4f57-8282-50b0c83b077d
+    taskid: 3f40dc37-aecf-45f4-8319-3b2940fb588e
     type: regular
     task:
-      id: a721deab-d6dc-4f57-8282-50b0c83b077d
+      id: 3f40dc37-aecf-45f4-8319-3b2940fb588e
       version: -1
       name: url
       description: Check the given URL reputation
@@ -50,7 +50,7 @@ tasks:
       long: {}
       threshold: {}
       url:
-        simple: http://www.iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com/
+        simple: http://businesstobuy.net
     separatecontext: false
     view: |-
       {
@@ -64,10 +64,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: bade4211-79b1-498c-85bd-9b3a155738c8
+    taskid: 0f559e3b-b6c8-4337-8840-93145d337bf3
     type: condition
     task:
-      id: bade4211-79b1-498c-85bd-9b3a155738c8
+      id: 0f559e3b-b6c8-4337-8840-93145d337bf3
       version: -1
       name: AreValuesEqual
       description: |-
@@ -103,7 +103,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: http://www.iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com/
+                  simple: http://businesstobuy.net
           accessor: Score
       right:
         simple: "3"
@@ -552,10 +552,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 54f1e021-c69f-457d-8078-807855546e9c
+    taskid: 2c97ba69-5b52-46aa-8ca5-626b72223810
     type: condition
     task:
-      id: 54f1e021-c69f-457d-8078-807855546e9c
+      id: 2c97ba69-5b52-46aa-8ca5-626b72223810
       version: -1
       name: AreValuesEqual
       description: |-
