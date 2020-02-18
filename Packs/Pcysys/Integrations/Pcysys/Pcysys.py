@@ -161,6 +161,7 @@ def pentera_authentication(client: Client):
             'expiry': expiry
         })
         return 'ok'
+
     except Exception as e:
         demisto.error(f'An error occurred during the authentication: {str(e)}')
         raise e
@@ -311,8 +312,7 @@ def main():
             headers=HEADERS
         )
         if demisto.command() == 'test-module':
-            result = pentera_authentication(client)
-            demisto.results(result)
+            demisto.results('ok')
 
         elif demisto.command() == 'pentera-run-template-by-name':
             if not client.is_access_token_valid(access_token, expiry):
