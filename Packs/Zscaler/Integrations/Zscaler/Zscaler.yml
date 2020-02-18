@@ -48,7 +48,7 @@ script:
   - name: url
     arguments:
     - name: url
-      required: true
+      required: false
       default: true
       description: URL to search for
     outputs:
@@ -71,23 +71,23 @@ script:
       description: For malicious URLs, the reason for the vendor to make the decision
       type: string
     - contextPath: DBotScore.Indicator
-      description: The tested indicator
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Look up the categorization of the given set of URLs, e.g., abc.com,xyz.com.
       Up to 100 URLs can be looked up per request, and a URL cannot exceed 1024 characters.
   - name: ip
     arguments:
     - name: ip
-      required: true
+      required: false
       default: true
       description: IP address to search for
     outputs:
@@ -108,16 +108,16 @@ script:
         decision
       type: string
     - contextPath: DBotScore.Indicator
-      description: The tested indicator
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     description: Look up the categorization of the given set of IP addresses, e.g.,
       8.8.8.8,1.2.3.4. Up to 100 URLs can be looked up per request, and a IP cannot
