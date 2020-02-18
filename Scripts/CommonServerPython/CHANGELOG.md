@@ -2,6 +2,8 @@
 Added ***remove_empty_elements*** command.
 Added ***datetime_to_string*** command.
 Added ***safe_load_json*** command.
+
+## [20.2.3] - 2020-02-18
 Added cveRegex to validate cve_id format.
 
 ## [20.2.0] - 2020-02-04
