@@ -69,13 +69,30 @@ def get_current_splunk_time(splunk_service):
 
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    raw_response = re.split('\S,', raw)  # split by any non-whitespace character follows by
-    for key_val in raw_response:
-        key_value = key_val.replace('"', '').strip()
-        if '=' in key_value:
-            key_and_val = key_value.split('=')
-            result[key_and_val[0]] = key_and_val[1]
+    if 'message' in raw:
+        raw = raw.replace('"', '').strip('{').strip('}')
+        key_val_arr = raw.split(",")
+        for key_val in key_val_arr:
+            single_key_val = key_val.split(":")
+            if len(single_key_val) > 1:
+                val = single_key_val[1]
+                key = single_key_val[0].strip()
 
+            alreadyThere = False
+            for dictkey, dictvalue in result.items():
+                if dictkey == key:
+                    alreadyThere = True
+                    result[dictkey] = dictvalue + "," + val
+
+            if not alreadyThere:
+                result[key] = val
+    else:
+        raw_response = re.split('\S,', raw)  # split by any non-whitespace character follows by
+        for key_val in raw_response:
+            key_value = key_val.replace('"', '').strip()
+            if '=' in key_value:
+                key_and_val = key_value.split('=')
+                result[key_and_val[0]] = key_and_val[1]
     return result
 
 
