@@ -149,15 +149,17 @@ def main():
         },
     ]
     failed = False
+    failed_msg = ''
     for v in res:
         if v[status] != success:
             failed = True
             v[status] = "Failed: " + v[status]
+            failed_msg += f'* {v[status]}\n'
     table = tableToMarkdown("Docker Hardening Results Check", res, [check, status])
     return_outputs(table)
     if failed:
-        return_error("Failed verifying docker hardening. "
-                     "More details at: https://support.demisto.com/hc/en-us/articles/360040922194")
+        return_error(f'Failed verifying docker hardening:\n{failed_msg}'
+                     'More details at: https://support.demisto.com/hc/en-us/articles/360040922194')
 
 
 # python2 uses __builtin__ python3 uses builtins
