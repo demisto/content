@@ -434,39 +434,18 @@ def test_remove_empty_elements():
 def test_aws_table_to_markdown():
     header = "AWS DynamoDB DescribeBackup"
     raw_input = {
-    'BackupDescription': {
-        'BackupDetails': {
-            'BackupArn': 'testarn',
-            'BackupName': 'PB_Backup',
-            'BackupSizeBytes': 0,
-            'BackupStatus': 'AVAILABLE',
-            'BackupType': 'USER',
-            'BackupCreationDateTime': '2020-02-19 09:21:46.360000+00:00'
-        },
-        'SourceTableDetails': {
-            'TableName': 'Demisto_Test_Table',
-            'TableId': 'test_id',
-            'TableArn': 'testarn',
-            'TableSizeBytes': 0,
-            'KeySchema': [{
-                'AttributeName': 'SamplePartitionKey',
-                'KeyType': 'HASH'
-            }],
-            'TableCreationDateTime': '2019-12-31 12:45:00.017000+00:00',
-            'ProvisionedThroughput': {
-                'ReadCapacityUnits': 5,
-                'WriteCapacityUnits': 5
-            },
-            'ItemCount': 0,
-            'BillingMode': 'PROVISIONED'
-        },
-        'SourceTableFeatureDetails': {}
-    }
+        'BackupDescription': {
+            "Foo": "Bar",
+            "Baz": "Bang",
+            "TestKey": "TestValue"
+        }
     }
     expected_output = '''### AWS DynamoDB DescribeBackup
-|BackupDetails|SourceTableDetails|SourceTableFeatureDetails|
+|Baz|Foo|TestKey|
 |---|---|---|
-| BackupArn: testarn<br>BackupName: PB_Backup<br>BackupSizeBytes: 0<br>BackupStatus: AVAILABLE<br>BackupType: USER<br>BackupCreationDateTime: 2020-02-19 09:21:46.360000+00:00 | TableName: Demisto_Test_Table<br>TableId: test_id<br>TableArn: testarn<br>TableSizeBytes: 0<br>KeySchema: {'AttributeName': 'SamplePartitionKey', 'KeyType': 'HASH'}<br>TableCreationDateTime: 2019-12-31 12:45:00.017000+00:00<br>ProvisionedThroughput: {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}<br>ItemCount: 0<br>BillingMode: PROVISIONED |  |'''
+| Bang | Bar | TestValue |
+'''
+
     assert expected_output == aws_table_to_markdown(raw_input, header)
 
 
