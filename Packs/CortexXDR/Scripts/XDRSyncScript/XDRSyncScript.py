@@ -372,7 +372,7 @@ def main(args):
         if verbose:
             raise
 
-        demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
+        demisto.error(traceback.format_exc())
         return_error(str(ex), ex)
     finally:
         # even if error occurred keep trigger sync

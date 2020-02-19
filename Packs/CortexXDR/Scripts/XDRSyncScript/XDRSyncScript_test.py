@@ -464,7 +464,7 @@ def test_compare_incident_in_demisto_when_the_severity_is_unknown():
     assert {} == update_args
 
 
-def test_fix_bug_19669(mocker):
+def test_fix_bug_19669(mocker, capfd):
     """
     bug fix https://github.com/demisto/etc/issues/19669
 
@@ -500,7 +500,8 @@ def test_fix_bug_19669(mocker):
     args = {
         'interval': '1'
     }
-    xdr_script.main(args)
+    with capfd.disabled():  # this line should prevent the test failing on writing to demisto.error => print => stdout
+        xdr_script.main(args)
 
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
