@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 3f40dc37-aecf-45f4-8319-3b2940fb588e
+    taskid: 236409de-e0ff-4fcc-8b27-c396d42f853d
     type: regular
     task:
-      id: 3f40dc37-aecf-45f4-8319-3b2940fb588e
+      id: 236409de-e0ff-4fcc-8b27-c396d42f853d
       version: -1
       name: url
       description: Check the given URL reputation
@@ -48,9 +48,13 @@ tasks:
       - "2"
     scriptarguments:
       long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
       threshold: {}
       url:
-        simple: http://businesstobuy.net
+        simple: http://clinicaskin.cl
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -64,10 +68,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0f559e3b-b6c8-4337-8840-93145d337bf3
+    taskid: b10b1df3-f824-44c3-8a0b-f13728900ff7
     type: condition
     task:
-      id: 0f559e3b-b6c8-4337-8840-93145d337bf3
+      id: b10b1df3-f824-44c3-8a0b-f13728900ff7
       version: -1
       name: AreValuesEqual
       description: |-
@@ -103,7 +107,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: http://businesstobuy.net
+                  simple: http://clinicaskin.cl
           accessor: Score
       right:
         simple: "3"
