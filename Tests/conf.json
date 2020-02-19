@@ -206,6 +206,11 @@
             "playbookID": "Minerva Test playbook"
         },
         {
+            "integrations": "abuse.ch SSL Blacklist Feed",
+            "playbookID": "SSL Blacklist test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "CheckPhish",
             "playbookID": "CheckPhish-Test"
         },
