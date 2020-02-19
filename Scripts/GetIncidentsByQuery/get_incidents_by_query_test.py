@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from GetIncidentsByQuery import build_incidents_query, main
+from GetIncidentsByQuery import build_incidents_query, get_incidents, parse_relative_time, main
 
 incident1 = {
     'id': 1,
@@ -43,6 +43,50 @@ def test_build_query(mocker):
                     'and (modified:<"3 days ago") and (status:*)'
 
 
+def test_get_incidents(mocker):
+    mocker.patch.object(demisto, 'args', side_effect=get_args)
+    size = 100
+    query = 'query'
+    check_from_date = lambda x: len(x) > 5
+
+    def validate_args(command, args):
+        assert check_from_date(args.get('from'))
+        assert args['size'] == size
+        assert args['query'] == query
+        return [{'Type': entryTypes['note'], 'Contents': {'data': []}}]
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args)
+    get_incidents(query, "created", size, "3 days ago")
+    get_incidents(query, "created", size, "3 months ago")
+    get_incidents(query, "created", size, "3 weeks ago")
+    get_incidents(query, "created", size, "2020-02-16T17:45:53.179489")
+    check_from_date = lambda x: x is None
+    get_incidents(query, "modified", size, "3 weeks ago")
+
+
+def test_parse_relative_time():
+    threshold = 2
+    t1 = parse_relative_time("3 days ago")
+    t2 = datetime.now() - timedelta(days=3)
+    assert abs((t2 - t1)).total_seconds() < threshold
+
+    t1 = parse_relative_time("3 minutes ago")
+    t2 = datetime.now() - timedelta(minutes=3)
+    assert abs((t2 - t1)).total_seconds() < threshold
+
+    t1 = parse_relative_time("1 months ago")
+    t2 = datetime.now() - timedelta(minutes=43800)
+    assert abs((t2 - t1)).total_seconds() < threshold
+
+    t1 = parse_relative_time("2 weeks ago")
+    t2 = datetime.now() - timedelta(weeks=2)
+    assert abs((t2 - t1)).total_seconds() < threshold
+
+    t1 = parse_relative_time("2 years ago")
+    t2 = datetime.now() - timedelta(days=365 * 2)
+    assert abs((t2 - t1)).total_seconds() < threshold
+
+
 def test_main(mocker):
     args = get_args()
     mocker.patch.object(demisto, 'args', return_value=args)
@@ -58,3 +102,8 @@ def test_main(mocker):
     args['includeContext'] = 'true'
     entry = main()
     assert {} == entry['Contents'][0]['context']
+
+    args['whitelistFields'] = 'testField,status'
+    args['NonEmptyFields'] = 'severity'
+    entry = main()
+    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
