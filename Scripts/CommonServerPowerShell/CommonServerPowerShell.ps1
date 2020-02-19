@@ -7,14 +7,14 @@ enum ServerLogLevel {
     error
 }
 
-# Demist Class for communicating with the Demisto Server
-class Demisto {
+# Demist Object Class for communicating with the Demisto Server
+class DemistoObject {
     hidden [hashtable] $ServerEntry
     hidden [bool] $IsDebug
     hidden [bool] $IsIntegration
     hidden [hashtable] $ContextArgs
 
-    Demisto ([hashtable]$context) {
+    DemistoObject ([hashtable]$context) {
         $this.ServerEntry = $context
         $this.ContextArgs = $context.args
         $this.IsDebug = $context.IsDebug
@@ -34,16 +34,6 @@ class Demisto {
 
     [string] GetCommand () {
         return $this.ServerEntry.command
-    }
-
-    [array] Incidents ($Incidents) {
-        $Incidents = $Incidents | ConvertTo-Json -Depth 6
-        return $this.Results(@{Type = 1; Contents = $Incidents; ContentsFormat = "json" })
-    }
-
-    [array] Credentials ($Credentials) {
-        $Credentials = $Credentials | ConvertTo-Json -Depth 6
-        return $this.Results(@{Type = 1; Contents = $Credentials; ContentsFormat = "json" })
     }
 
     [hashtable] Investigation () {
@@ -155,32 +145,107 @@ class Demisto {
         return $this.ServerEntry.context.Incidents
     }
 
+    [array] Incidents () {
+        return $this.GetIncidents()
+    }
+
     [hashtable] Incident () {
         return $this.GetIncidents()[0]
     }
 
+    # Script Functions
+
+    [array] ExecuteCommand ($Command, $CmdArgs) {
+        if ( $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        return $this.ServerRequest(@{type = "executeCommand"; command = $Command; args = $CmdArgs })
+    }
+
+    [array] Execute ($Module, $Command, $CmdArgs) {
+        if ( $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        return $this.ServerRequest(@{type = "execute"; module = $Module; command = $Command; args = $CmdArgs })
+    }
+
+    [array] GetAllSupportedCommands () {
+        if ( $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        return $this.ServerRequest(@{type = "getAllModulesSupportedCmds" })
+    }
+
+    SetContext ($Name, $Value) {
+        if ( $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        $this.ServerRequest(@{type = "setContext"; name = $Name; value = $Value })
+    }
+
+    [Object[]] GetModules () {
+        if ( $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        return $this.ServerRequest(@{type = "getAllModules" })
+    }
+
+    # Integration Functions
+
     [string] IntegrationInstance () {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
         return $this.ServerEntry.context.IntegrationInstance
     }
 
+    [array] Incidents ($Incidents) {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        $Incidents = $Incidents | ConvertTo-Json -Depth 6
+        return $this.Results(@{Type = 1; Contents = $Incidents; ContentsFormat = "json" })
+    }
+
+    [array] Credentials ($Credentials) {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
+        $Credentials = $Credentials | ConvertTo-Json -Depth 6
+        return $this.Results(@{Type = 1; Contents = $Credentials; ContentsFormat = "json" })
+    }
+
     [Object[]] GetLastRun () {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
         return $this.ServerRequest(@{type = "executeCommand"; command = "getLastRun"; args = @{ } })
     }
 
     SetLastRun ($Value) {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
         $this.ServerRequest(@{type = "executeCommand"; command = "setLastRun"; args = @{ value = $Value } })
     }
 
     [Object[]] GetIntegrationContext () {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
         return $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
     }
 
     SetIntegrationContext ($Value) {
+        if ( -not $this.IsIntegration ) {
+            throw "Method not supported"
+        }
         $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{ value = $Value } })
     }
 }
+
 $InnerContext = $global:InnerContext | ConvertFrom-Json -AsHashtable
-[Demisto]$demisto = [Demisto]::New($InnerContext)
+[DemistoObject]$demisto = [DemistoObject]::New($InnerContext)
 Remove-Variable InnerContext
 function global:Write-Host($UserInput) { $demisto.Log($UserInput) | Out-Null }
 function global:Write-Output($UserInput) { $demisto.Log($UserInput) | Out-Null }
@@ -218,4 +283,3 @@ Metadata about the table contents
 #>
 
 }
-
