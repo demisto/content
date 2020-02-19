@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXIIServer
+  id: TAXII Server
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -24,6 +24,7 @@ configuration:
   type: 14
 - additionalinfo: Ignores certificate and private key, and will run the TAXII server
     in HTTP
+  defaultvalue: 'true'
   display: HTTP Server
   hidden: false
   name: http_flag
@@ -38,7 +39,7 @@ configuration:
 description: This integration provides TAXII Services for the system indicators (Outbound
   feed).
 display: TAXII Server
-name: TAXIIServer
+name: TAXII Server
 script:
   dockerimage: devdemisto/taxii-server:1.0.0.5978
   feed: false

@@ -49,7 +49,6 @@ import netaddr
 import uuid
 import werkzeug.urls
 import pytz
-import traceback
 
 
 ''' GLOBAL VARIABLES '''
@@ -84,13 +83,13 @@ class TAXIIServer:
         """
         Class for a TAXII Server configuration.
         Args:
-            host: The server address
-            port: The server port
-            collections: The JSON string of collections of indicator queries
-            certificate: The server certificate for SSL
-            private_key: The private key for SSL
-            http_server: Whether to use HTTP server (not SSL)
-            credentials: The user credentials
+            host: The server address.
+            port: The server port.
+            collections: The JSON string of collections of indicator queries.
+            certificate: The server certificate for SSL.
+            private_key: The private key for SSL.
+            http_server: Whether to use HTTP server (not SSL).
+            credentials: The user credentials.
         """
         self.host = host
         self.port = port
@@ -137,11 +136,13 @@ class TAXIIServer:
         )
 
         for instance in self.service_instances:
+            instance_type = instance['type']
+            instance_path = instance['path']
             taxii_service_instance = ServiceInstance(
-                instance['type'],
+                instance_type,
                 'urn:taxii.mitre.org:services:1.1',
                 'urn:taxii.mitre.org:protocol:http:1.0',
-                "{}/{}".format(discovery_service_url, instance['path']),
+                f'{discovery_service_url}/{instance_path}',
                 ['urn:taxii.mitre.org:message:xml:1.1'],
                 available=True
             )
@@ -158,7 +159,7 @@ class TAXIIServer:
         Returns:
             The collection management response.
         """
-        taxii_feeds = [name for name, query in self.collections.items()]
+        taxii_feeds = list(self.collections.keys())
 
         if taxii_message.message_type != MSG_COLLECTION_INFORMATION_REQUEST:
             raise ValueError('Invalid message, invalid Message Type')
@@ -171,13 +172,13 @@ class TAXIIServer:
         for feed in taxii_feeds:
             collection_info = CollectionInformation(
                 feed,
-                '{} Data Feed'.format(feed),
+                f'{feed} Data Feed',
                 ['urn:stix.mitre.org:xml:1.1.1'],
                 True
             )
             polling_instance = PollingServiceInstance(
                 'urn:taxii.mitre.org:protocol:http:1.0',
-                '{}:{}/taxii-poll-service'.format(self.host, self.port),
+                f'{self.host}:{self.port}/taxii-poll-service',
                 ['urn:taxii.mitre.org:message:xml:1.1']
             )
             collection_info.polling_service_instances.append(polling_instance)
@@ -195,18 +196,18 @@ class TAXIIServer:
             The poll response.
         """
         if taxii_message.message_type != MSG_POLL_REQUEST:
-            raise ValueError('Invalid message')
+            raise ValueError('Invalid message, invalid Message Type')
 
-        taxii_feeds = [name for name, query in self.collections.items()]
+        taxii_feeds = list(self.collections.keys())
         collection_name = taxii_message.collection_name
         exclusive_begin_time = taxii_message.exclusive_begin_timestamp_label
         inclusive_end_time = taxii_message.inclusive_end_timestamp_label
 
-        return self.get_data_feed(taxii_feeds, taxii_message.message_id, collection_name,
-                                  exclusive_begin_time, inclusive_end_time)
+        return self.stream_stix_data_feed(taxii_feeds, taxii_message.message_id, collection_name,
+                                          exclusive_begin_time, inclusive_end_time)
 
-    def get_data_feed(self, taxii_feeds: list, message_id: str, collection_name: str,
-                      exclusive_begin_time: datetime, inclusive_end_time: datetime) -> Response:
+    def stream_stix_data_feed(self, taxii_feeds: list, message_id: str, collection_name: str,
+                              exclusive_begin_time: datetime, inclusive_end_time: datetime) -> Response:
         """
         Get the indicator query results in STIX data feed format.
         Args:
@@ -226,6 +227,11 @@ class TAXIIServer:
             inclusive_end_time = datetime.utcnow().replace(tzinfo=pytz.utc)
 
         def yield_response() -> Generator:
+            """
+
+            Streams the STIX indicators as XML string.
+
+            """
             # yield the opening tag of the Poll Response
             response = '<taxii_11:Poll_Response xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1"' \
                        ' xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" ' \
@@ -237,9 +243,8 @@ class TAXIIServer:
                        '</taxii_11:Inclusive_End_Timestamp>'
 
             if exclusive_begin_time is not None:
-                response += ('<taxii_11:Exclusive_Begin_Timestamp>'
-                             + exclusive_begin_time.isoformat()
-                             + '</taxii_11:Exclusive_Begin_Timestamp>')
+                response += (f'<taxii_11:Exclusive_Begin_Timestamp>{exclusive_begin_time.isoformat()}'
+                             f'</taxii_11:Exclusive_Begin_Timestamp>')
 
             yield response
 
@@ -249,17 +254,17 @@ class TAXIIServer:
             for indicator in find_indicators_by_time_frame(indicator_query, exclusive_begin_time, inclusive_end_time):
                 try:
                     json_stix = get_stix_indicator(indicator)
-                    demisto.info(str(json_stix))
                     stix_indicator = stix.core.STIXPackage.from_json(json_stix)
-                    cb1 = ContentBlock(
+                    content_block = ContentBlock(
                         content_binding=CB_STIX_XML_11,
                         content=stix_indicator.to_xml(ns_dict={
                             NAMESPACE_URI: NAMESPACE
                         })
                     )
-                    yield cb1.to_xml().decode('utf-8') + '\n'
-                except Exception:
-                    e = traceback.format_exc()
+
+                    content_xml = content_block.to_xml().decode('utf-8')
+                    yield f'{content_xml}\n'
+                except Exception as e:
                     handle_long_running_error(f'Failed parsing indicator to STIX: {e}')
 
             # yield the closing tag
@@ -283,7 +288,7 @@ DEMISTO_LOGGER: Handler = Handler()
 ''' STIX MAPPING '''
 
 
-def stix_ip_observable(namespace: str, indicator: dict) -> List[Observable]:
+def create_stix_ip_observable(namespace: str, indicator: dict) -> List[Observable]:
     """
     Create STIX IP observable.
     Args:
@@ -294,11 +299,12 @@ def stix_ip_observable(namespace: str, indicator: dict) -> List[Observable]:
         STIX IP observable.
     """
     category = cybox.objects.address_object.Address.CAT_IPV4
+    type_ = indicator.get('indicator_type', '')
+    value = indicator.get('value', '')
 
-    if indicator['indicator_type'] in [FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR]:
+    if type_ in [FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR]:
         category = cybox.objects.address_object.Address.CAT_IPV6
 
-    value = indicator['value']
     indicator_values = [value]
     if '-' in value:
         # looks like an IP Range, let's try to make it a CIDR
@@ -314,18 +320,14 @@ def stix_ip_observable(namespace: str, indicator: dict) -> List[Observable]:
 
     observables = []
     for indicator_value in indicator_values:
-        id_ = '{}:observable-{}'.format(
-            namespace,
-            uuid.uuid4()
-        )
-
+        id_ = f'{namespace}:observable-{uuid.uuid4()}'
         address_object = cybox.objects.address_object.Address(
             address_value=indicator_value,
             category=category
         )
 
         observable = Observable(
-            title='{}: {}'.format(indicator['indicator_type'], indicator_value),
+            title=f'{type_}: {indicator_value}',
             id_=id_,
             item=address_object
         )
@@ -335,7 +337,7 @@ def stix_ip_observable(namespace: str, indicator: dict) -> List[Observable]:
     return observables
 
 
-def stix_email_addr_observable(namespace: str, indicator: dict) -> List[Observable]:
+def create_stix_email_observable(namespace: str, indicator: dict) -> List[Observable]:
     """
     Create STIX Email observable.
     Args:
@@ -346,19 +348,17 @@ def stix_email_addr_observable(namespace: str, indicator: dict) -> List[Observab
         STIX Email observable.
     """
     category = cybox.objects.address_object.Address.CAT_EMAIL
-
-    id_ = '{}:observable-{}'.format(
-        namespace,
-        uuid.uuid4()
-    )
+    type_ = indicator.get('indicator_type', '')
+    value = indicator.get('value', '')
+    id_ = f'{namespace}:observable-{uuid.uuid4()}'
 
     email_object = cybox.objects.address_object.Address(
-        address_value=indicator['value'],
+        address_value=indicator.get('value', ''),
         category=category
     )
 
     observable = Observable(
-        title='{}: {}'.format(indicator['indicator_type'], indicator['value']),
+        title=f'{type_}: {value}',
         id_=id_,
         item=email_object
     )
@@ -366,7 +366,7 @@ def stix_email_addr_observable(namespace: str, indicator: dict) -> List[Observab
     return [observable]
 
 
-def stix_domain_observable(namespace, indicator):
+def create_stix_domain_observable(namespace, indicator):
     """
     Create STIX Domain observable.
     Args:
@@ -376,17 +376,15 @@ def stix_domain_observable(namespace, indicator):
     Returns:
         STIX Domain observable.
     """
-    id_ = '{}:observable-{}'.format(
-        namespace,
-        uuid.uuid4()
-    )
+    id_ = f'{namespace}:observable-{uuid.uuid4()}'
+    value = indicator.get('value', '')
 
     domain_object = cybox.objects.domain_name_object.DomainName()
-    domain_object.value = indicator['value']
+    domain_object.value = value
     domain_object.type_ = 'FQDN'
 
     observable = Observable(
-        title='FQDN: ' + indicator['value'],
+        title=f'FQDN: {value}',
         id_=id_,
         item=domain_object
     )
@@ -394,7 +392,7 @@ def stix_domain_observable(namespace, indicator):
     return [observable]
 
 
-def stix_url_observable(namespace, indicator):
+def create_stix_url_observable(namespace, indicator):
     """
     Create STIX URL observable.
     Args:
@@ -404,18 +402,16 @@ def stix_url_observable(namespace, indicator):
     Returns:
         STIX URL observable.
     """
-    id_ = '{}:observable-{}'.format(
-        namespace,
-        uuid.uuid4()
-    )
+    id_ = f'{namespace}:observable-{uuid.uuid4()}'
+    value = indicator.get('value', '')
 
     uri_object = cybox.objects.uri_object.URI(
-        value=indicator['value'],
+        value=value,
         type_=cybox.objects.uri_object.URI.TYPE_URL
     )
 
     observable = Observable(
-        title='URL: ' + indicator['value'],
+        title=f'URL: {value}',
         id_=id_,
         item=uri_object
     )
@@ -423,7 +419,7 @@ def stix_url_observable(namespace, indicator):
     return [observable]
 
 
-def stix_hash_observable(namespace, indicator):
+def create_stix_hash_observable(namespace, indicator):
     """
     Create STIX file observable.
     Args:
@@ -431,18 +427,18 @@ def stix_hash_observable(namespace, indicator):
         indicator: The Demisto File indicator.
 
     Returns:
-        STIX File observable
+        STIX File observable.
     """
-    id_ = '{}:observable-{}'.format(
-        namespace,
-        uuid.uuid4()
-    )
+
+    id_ = f'{namespace}:observable-{uuid.uuid4()}'
+    value = indicator.get('value', '')
+    type_ = indicator.get('indicator_type', '')
 
     file_object = cybox.objects.file_object.File()
     file_object.add_hash(indicator)
 
     observable = Observable(
-        title='{}: {}'.format(indicator['indicator_type'], indicator['value']),
+        title=f'{value}: {type_}',
         id_=id_,
         item=file_object
     )
@@ -453,59 +449,59 @@ def stix_hash_observable(namespace, indicator):
 TYPE_MAPPING = {
     FeedIndicatorType.IP: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
-        'mapper': stix_ip_observable
+        'mapper': create_stix_ip_observable
     },
     FeedIndicatorType.CIDR: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
-        'mapper': stix_ip_observable
+        'mapper': create_stix_ip_observable
     },
     FeedIndicatorType.IPv6: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
-        'mapper': stix_ip_observable
+        'mapper': create_stix_ip_observable
     },
     FeedIndicatorType.IPv6CIDR: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_IP_WATCHLIST,
-        'mapper': stix_ip_observable
+        'mapper': create_stix_ip_observable
     },
     FeedIndicatorType.URL: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_URL_WATCHLIST,
-        'mapper': stix_url_observable
+        'mapper': create_stix_url_observable
     },
     FeedIndicatorType.Domain: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_DOMAIN_WATCHLIST,
-        'mapper': stix_domain_observable
+        'mapper': create_stix_domain_observable
     },
     FeedIndicatorType.SHA256: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': stix_hash_observable
+        'mapper': create_stix_hash_observable
     },
     FeedIndicatorType.SHA1: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': stix_hash_observable
+        'mapper': create_stix_hash_observable
     },
     FeedIndicatorType.MD5: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': stix_hash_observable
+        'mapper': create_stix_hash_observable
     },
     FeedIndicatorType.File: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_FILE_HASH_WATCHLIST,
-        'mapper': stix_hash_observable
+        'mapper': create_stix_hash_observable
     },
     FeedIndicatorType.Email: {
         'indicator_type': stix.common.vocabs.IndicatorType.TERM_MALICIOUS_EMAIL,
-        'mapper': stix_email_addr_observable
+        'mapper': create_stix_email_observable
     }
 }
 
 
 def set_id_namespace(uri: str, name: str):
     """
-    Set the XML namespace
+    Set the XML namespace.
     Args:
-        uri: The namespace URI
-        name: The namespace name
+        uri: The namespace URI.
+        name: The namespace name.
     """
-    # maec and cybox
+
     namespace = mixbox.namespaces.Namespace(uri, name)
     mixbox.idgen.set_id_namespace(namespace)
 
@@ -521,17 +517,16 @@ def get_stix_indicator(indicator: dict) -> str:
     """
     set_id_namespace(NAMESPACE_URI, NAMESPACE)
 
-    type_ = indicator['indicator_type']
+    type_ = indicator.get('indicator_type', '')
     type_mapper: dict = TYPE_MAPPING.get(type_, {})
 
-    value = indicator['value']
+    value = indicator.get('value', '')
+    source = indicator.get('sourceBrands', [])
+    sources = ','.join(source)
 
-    title = None
-    description = None
     handling = None
-    information_source = None
-    short_description = None
 
+    # Add TLP if available
     share_level = indicator.get('trafficlightprotocoltlp', '').upper()
     if share_level and share_level in ['WHITE', 'GREEN', 'AMBER', 'RED']:
         marking_specification = stix.data_marking.MarkingSpecification()
@@ -545,72 +540,61 @@ def get_stix_indicator(indicator: dict) -> str:
         handling.add_marking(marking_specification)
 
     header = None
-    if (title is not None
-            or description is not None
-            or handling is not None
-            or short_description is not None
-            or information_source is not None):
+    if handling is not None:
         header = stix.core.STIXHeader(
-            title=title,
-            description=description,
-            handling=handling,
-            short_description=short_description,
-            information_source=information_source
+            handling=handling
         )
 
-    spid = '{}:indicator-{}'.format(
-        NAMESPACE,
-        uuid.uuid4()
-    )
-    sp = stix.core.STIXPackage(id_=spid, stix_header=header)
+    # Create the STIX package
+    package_id = f'{NAMESPACE}:observable-{uuid.uuid4()}'
+    stix_package = stix.core.STIXPackage(id_=package_id, stix_header=header)
 
+    # Get the STIX observables according to the indicator mapper
     observables = type_mapper['mapper'](NAMESPACE, indicator)
 
+    # Create the STIX indicator
     for observable in observables:
-        id_ = '{}:indicator-{}'.format(
-            NAMESPACE,
-            uuid.uuid4()
-        )
+        id_ = f'{NAMESPACE}:indicator-{uuid.uuid4()}'
 
         if type_ == 'URL':
-            eindicator = werkzeug.urls.iri_to_uri(value, safe_conversion=True)
+            indicator_value = werkzeug.urls.iri_to_uri(value, safe_conversion=True)
         else:
-            eindicator = value
+            indicator_value = value
 
-        sindicator = stix.indicator.indicator.Indicator(
+        stix_indicator = stix.indicator.indicator.Indicator(
             id_=id_,
-            title='{}: {}'.format(
-                type_,
-                eindicator
-            ),
-            description='{} indicator from {}'.format(
-                type_,
-                ', '.join(indicator['sourceBrands'])
-            ),
+            title=f'{type_}: {indicator_value}',
+            description=f'{type_} indicator from {sources}',
             timestamp=datetime.utcnow().replace(tzinfo=pytz.utc)
         )
 
+        # Confidence is mapped by the indicator score
         confidence = 'Low'
-        if indicator.get('score') is None:
+        indicator_score = indicator.get('score')
+        if indicator_score is None:
             demisto.error(f'indicator without score: {value}')
-            sindicator.confidence = "Unknown"  # We shouldn't be here
-        score = int(indicator.get('score', 0))
-        if score < 2:
-            pass
-        elif score < 3:
-            confidence = 'Medium'
+            stix_indicator.confidence = "Unknown"
         else:
-            confidence = 'High'
+            score = int(indicator.get('score', 0))
+            if score < 2:
+                pass
+            elif score < 3:
+                confidence = 'Medium'
+            else:
+                confidence = 'High'
 
-        sindicator.confidence = confidence
+        stix_indicator.confidence = confidence
 
-        sindicator.add_indicator_type(type_mapper['indicator_type'])
+        stix_indicator.add_indicator_type(type_mapper['indicator_type'])
 
-        sindicator.add_observable(observable)
+        stix_indicator.add_observable(observable)
 
-        sp.add_indicator(sindicator)
+        stix_package.add_indicator(stix_indicator)
 
-    return sp.to_json()
+    return stix_package.to_json()
+
+
+''' HELPER FUNCTIONS '''
 
 
 def handle_long_running_error(error: str):
@@ -673,7 +657,8 @@ def taxii_check(f: Callable) -> Callable:
             return make_response('Invalid TAXII Headers', 400)
         taxii_content_type = request.headers.get('X-TAXII-Protocol', None)
 
-        if taxii_content_type not in ['urn:taxii.mitre.org:protocol:http:1.0', 'urn:taxii.mitre.org:protocol:https:1.0']:
+        if taxii_content_type not in ['urn:taxii.mitre.org:protocol:http:1.0',
+                                      'urn:taxii.mitre.org:protocol:https:1.0']:
             return make_response('Invalid TAXII Headers', 400)
 
         taxii_content_type = request.headers.get('X-TAXII-Services', None)
@@ -687,7 +672,7 @@ def taxii_check(f: Callable) -> Callable:
 
 def get_port(params: dict = demisto.params()) -> int:
     """
-    Gets port from the integration parameters
+    Gets port from the integration parameters.
     """
     port_mapping: str = params.get('longRunningPort', '')
     port: int
@@ -704,7 +689,7 @@ def get_port(params: dict = demisto.params()) -> int:
 
 def get_collections(params: dict = demisto.params()) -> dict:
     """
-    Gets the indicator query collections from the integration parameters
+    Gets the indicator query collections from the integration parameters.
     """
     collections_json: str = params.get('collections', '')
 
@@ -775,7 +760,7 @@ def taxii_make_response(taxii_message: TAXIIMessage):
         taxii_message: The taxii message.
 
     Returns:
-        A taxii HTTP response
+        A taxii HTTP response.
     """
     h = {
         'Content-Type': "application/xml",
@@ -795,7 +780,7 @@ def taxii_make_response(taxii_message: TAXIIMessage):
 @validate_credentials
 def taxii_discovery_service() -> Response:
     """
-    Route for discovery service
+    Route for discovery service.
     """
 
     try:
@@ -813,7 +798,7 @@ def taxii_discovery_service() -> Response:
 @validate_credentials
 def taxii_collection_management_service() -> Response:
     """
-    Route for collection management
+    Route for collection management.
     """
 
     try:
@@ -831,7 +816,7 @@ def taxii_collection_management_service() -> Response:
 @validate_credentials
 def taxii_poll_service() -> Response:
     """
-    Route for poll service
+    Route for poll service.
     """
 
     try:
@@ -915,10 +900,11 @@ def main():
     credentials: dict = params.get('credentials', None)
 
     global SERVER
-    SERVER = TAXIIServer(f'{server_link_parts.scheme}://{server_link_parts.hostname}', port, collections,
+    scheme = 'https' if not http_server else 'http'
+    SERVER = TAXIIServer(f'{scheme}://{server_link_parts.hostname}', port, collections,
                          certificate, private_key, http_server, credentials)
 
-    demisto.debug('Command being called is {}'.format(command))
+    demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module
     }
