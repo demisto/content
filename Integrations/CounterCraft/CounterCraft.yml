@@ -132,7 +132,7 @@ script:
     arguments:
     - name: value
       required: true
-      description: Object value
+      description: Object value. For example 'root' or '192.168.1.1'
     outputs:
     - contextPath: CounterCraft.Object.ID
       description: Object ID
@@ -166,7 +166,7 @@ script:
     arguments:
     - name: criteria
       required: true
-      description: Search criteria
+      description: Search criteria. For example 'type_code:ValidAuth'
     - name: max_results
       default: true
       description: Maximum number of results
@@ -278,7 +278,7 @@ script:
       description: Deception Support Node ID
     - name: campaign_id
       required: true
-      description: Campaign
+      description: ID of the campaign where you want to deploy a new host. You can execute countercraft-list-campaigns in order to obtain the ID
     - name: os_family
       required: true
       auto: PREDEFINED
