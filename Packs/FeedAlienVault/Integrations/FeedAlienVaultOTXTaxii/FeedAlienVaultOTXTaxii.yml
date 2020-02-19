@@ -94,7 +94,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: alienvaultotx-get-indicators
-  dockerimage: devdemisto/alienvault-taxii:1.0.0.6041
+  dockerimage: devdemisto/taxii:1.0.0.6050
   feed: true
   isfetch: false
   longRunning: false
@@ -103,3 +103,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0
+
