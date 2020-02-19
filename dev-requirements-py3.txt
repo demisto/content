@@ -1,7 +1,7 @@
 flake8==3.7.9
 bandit==1.6.2
 demisto-py==2.0.9
-demisto-sdk==0.3.6
+git+https://github.com/demisto/demisto-sdk.git@validate_integration_cmd_no_output
 pytest==5.2.1
 pytest-mock==1.11.1
 ruamel.yaml==0.16.5

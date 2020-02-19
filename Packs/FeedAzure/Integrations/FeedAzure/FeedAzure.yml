@@ -43,7 +43,7 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
+- display: "test"
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
@@ -178,7 +178,6 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: azure-get-indicators
-    outputs:
   dockerimage: demisto/python3:3.8.1.5734
   feed: true
   isfetch: false
