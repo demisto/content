@@ -851,7 +851,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Sha1 of the file to stop and quarantine on the machin.
+      description: The file sha1 hash to stop and quarantine on the machine.
       isArray: false
       name: sha1
       required: true
@@ -879,6 +879,156 @@ script:
       by its ID
     execution: false
     name: microsoft-atp-list-investigations
+  - arguments:
+    - default: false
+      description: The machine's ID
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment to associate with the action.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Start automated investigation on a machine.
+    execution: false
+    name: microsoft-atp-start-investigation
+    outputs:
+    - type: Unknown
+  - arguments:
+    - default: false
+      description: The domain address
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the statistics on the given domain.
+    execution: false
+    name: microsoft-atp-get-domain-statistics
+  - arguments:
+    - default: false
+      description: The domain address
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of Alerts related to a given domain address.
+    execution: false
+    name: microsoft-atp-get-domain-alerts
+  - arguments:
+    - default: false
+      description: The domain address
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of Machines that have communicated to or from
+      a given domain address.
+    execution: false
+    name: microsoft-atp-get-domain-machines
+  - arguments:
+    - default: false
+      description: File sha1 hash to get statistics on
+      isArray: false
+      name: sha1
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the statistics for the given file.
+    execution: false
+    name: microsoft-atp-get-file-statistics
+  - arguments:
+    - default: false
+      description: File sha1 hash to get statistics on
+      isArray: false
+      name: sha1
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of alerts related to a given file hash.
+    execution: false
+    name: microsoft-atp-get-file-alerts
+  - arguments:
+    - default: false
+      description: The IP address
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the statistics for the given IP.
+    execution: false
+    name: microsoft-atp-get-ip-statistics
+  - arguments:
+    - default: false
+      description: The Ip address
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of alerts related to a given IP address.
+    execution: false
+    name: microsoft-atp-get-ip-alerts
+  - arguments:
+    - default: false
+      description: |-
+        The user ID.  Note that the id is not the full UPN, but only the user name.
+         (e.g., to retrieve alerts for user1@contoso.com use user1)
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of alerts related to a given user ID.
+    execution: false
+    name: microsoft-atp-get-user-alerts
+  - arguments:
+    - default: false
+      description: |-
+        The user ID.  Note that the id is not the full UPN, but only the user name.
+        (e.g., to retrieve machines for user1@contoso.com use user1)
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a collection of machines related to a given user ID.
+    execution: false
+    name: microsoft-atp-get-user-machines
+  - arguments:
+    - default: false
+      description: The machine ID
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The action to use for the tag
+      isArray: false
+      name: action
+      predefined:
+      - Add
+      - Remove
+      required: true
+      secret: false
+    - default: false
+      description: The tag name
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds or remove tag to a specific Machine.
+    execution: false
+    name: microsoft-atp-add-remove-machine-tag
   dockerimage: demisto/crypto:1.0.0.303
   feed: false
   isfetch: true

@@ -146,7 +146,7 @@ def get_access_token():
     return access_token
 
 
-def http_request(method, url_suffix, json=None, params=None):
+def http_request(method, url_suffix, json=None, data=None, params=None):
 
     token = get_access_token()
     r = requests.request(
@@ -157,13 +157,15 @@ def http_request(method, url_suffix, json=None, params=None):
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        verify=USE_SSL
+        verify=USE_SSL,
+        data=data
+
     )
     if r.status_code not in {200, 201}:
         try:
             error = r.json().get('error')
             msg = error['message'] if 'message' in error else r.reason
-            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
+            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, r.text))
         except ValueError:
             msg = r.text if r.text else r.reason
             return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
@@ -348,44 +350,21 @@ def get_machines():
 
 
 def get_file_related_machines_command():
-
     file = demisto.args()['file']
     machines = get_file_related_machines(file).get('value', [])
     if machines:
         output = []
         endpoint_context = []
         for machine in machines:
-            current_machine_output = {
-                'ComputerDNSName': machine.get('computerDnsName'),
-                'ID': machine.get('id'),
-                'AgentVersion': machine.get('agentVersion'),
-                'FirstSeen': machine.get('firstSeen'),
-                'LastSeen': machine.get('lastSeen'),
-                'HealthStatus': machine.get('healthStatus'),
-                'IsAADJoined': machine.get('isAadJoined'),
-                'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
-                'LastIPAddress': machine.get('lastIpAddress'),
-                'Tags': machine.get('machineTags'),
-                'OSBuild': machine.get('osBuild'),
-                'OSPlatform': machine.get('osPlatform'),
-                'RBACGroupID': machine.get('rbacGroupId'),
-                'RiskScore': machine.get('riskScore'),
-                'RelatedFile': file
-            }
+            current_machine_output = get_machine_data(machine.get('id'))
+            current_machine_output['RelatedFile'] = file
             current_endpoint_output = {
                 'Hostname': machine.get('computerDnsName'),
                 'IPAddress': machine.get('lastExternalIpAddress'),
                 'OS': machine.get('osPlatform')
             }
-            rbac_group_name = machine.get('rbacGroupName')
-            if rbac_group_name:
-                current_machine_output['RBACGroupName'] = rbac_group_name
-            aad_device_id = machine.get('aadDeviceId')
-            if aad_device_id:
-                current_machine_output['AADDeviceID'] = aad_device_id
             os_version = machine.get('osVersion')
             if os_version:
-                current_machine_output['OSVersion'] = os_version
                 current_endpoint_output['OSVersion'] = os_version
             output.append(current_machine_output)
             endpoint_context.append(current_endpoint_output)
@@ -419,40 +398,18 @@ def get_file_related_machines(file):
 def get_machine_details_command():
 
     machine_id = demisto.args()['machine_id']
-    machine = get_machine_details(machine_id)
+    machine = get_machine_details_request(machine_id)
     if machine:
         output = []
         endpoint_context = []
-        current_machine_output = {
-            'ComputerDNSName': machine.get('computerDnsName'),
-            'ID': machine.get('id'),
-            'AgentVersion': machine.get('agentVersion'),
-            'FirstSeen': machine.get('firstSeen'),
-            'LastSeen': machine.get('lastSeen'),
-            'HealthStatus': machine.get('healthStatus'),
-            'IsAADJoined': machine.get('isAadJoined'),
-            'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
-            'LastIPAddress': machine.get('lastIpAddress'),
-            'Tags': machine.get('machineTags'),
-            'OSBuild': machine.get('osBuild'),
-            'OSPlatform': machine.get('osPlatform'),
-            'RBACGroupID': machine.get('rbacGroupId'),
-            'RiskScore': machine.get('riskScore')
-        }
+        current_machine_output = get_machine_data(machine_id)
         current_endpoint_output = {
             'Hostname': machine.get('computerDnsName'),
             'IPAddress': machine.get('lastExternalIpAddress'),
             'OS': machine.get('osPlatform')
         }
-        rbac_group_name = machine.get('rbacGroupName')
-        if rbac_group_name:
-            current_machine_output['RBACGroupName'] = rbac_group_name
-        aad_device_id = machine.get('aadDeviceId')
-        if aad_device_id:
-            current_machine_output['AADDeviceID'] = aad_device_id
         os_version = machine.get('osVersion')
         if os_version:
-            current_machine_output['OSVersion'] = os_version
             current_endpoint_output['OSVersion'] = os_version
         output.append(current_machine_output)
         endpoint_context.append(current_endpoint_output)
@@ -475,7 +432,7 @@ def get_machine_details_command():
     demisto.results(entry)
 
 
-def get_machine_details(machine_id):
+def get_machine_details_request(machine_id):
 
     cmd_url = '/machines/{}'.format(machine_id)
     response = http_request('GET', cmd_url)
@@ -638,13 +595,11 @@ def update_alert(alert_id, json):
 
 
 def get_alert_related_domains_request(alert_id):
-    """
-        Get the alert ID and return all the domains that related to it
-
-        Args:
-              alert_id (str): Alert ID
-        Returns:
-            dict:
+    """Retrieves all domains related to a specific alert.
+    Args:
+        alert_id (str): Alert ID
+    Returns:
+        dict. Related domains
     """
     cmd_url = '/alerts/{}/domains'.format(alert_id)
     response = http_request('GET', cmd_url)
@@ -652,13 +607,11 @@ def get_alert_related_domains_request(alert_id):
 
 
 def get_alert_related_files_request(alert_id):
-    """
-        Get the alert ID and return all the files that related to it
-
-        Args:
-              alert_id (str): Alert ID
-        Returns:
-            dict:
+    """Retrieves all files related to a specific alert.
+    Args:
+        alert_id (str): Alert ID
+    Returns:
+        dict. Related files
     """
     cmd_url = '/alerts/{}/files'.format(alert_id)
     response = http_request('GET', cmd_url)
@@ -666,12 +619,11 @@ def get_alert_related_files_request(alert_id):
 
 
 def get_alert_related_ips_request(alert_id):
-    """
-        Get the alert ID and return all the ip's that related to it
-        Args:
-              alert_id (str): Alert ID
-        Returns:
-            dict:
+    """Retrieves all IPs related to a specific alert.
+    Args:
+        alert_id (str): Alert ID
+    Returns:
+        dict. Related IPs
     """
     cmd_url = '/alerts/{}/ips'.format(alert_id)
     response = http_request('GET', cmd_url)
@@ -679,40 +631,43 @@ def get_alert_related_ips_request(alert_id):
 
 
 def get_alert_related_user_request(alert_id):
-    """
-        Get the alert ID and return the user related to it
-        Args:
-              alert_id (str): Alert ID
-        Returns:
-            dict:
+    """Retrieves the User related to a specific alert.
+    Args:
+        alert_id (str): Alert ID
+    Returns:
+        dict. Related user
     """
     cmd_url = '/alerts/{}/user'.format(alert_id)
     response = http_request('GET', cmd_url)
     return response
 
 def get_machine_action_by_id_request(action_id):
-    """
-        Get the action ID and return the action's details
-        Args:
-              action_id (str): Action ID
-        Returns:
-            dict:
+    """Retrieves specific Machine Action by its ID.
+    Args:
+        action_id (str): Action ID
+    Returns:
+        dict. Machine Action entity
     """
     cmd_url = '/machineactions/{}'.format(action_id)
     response = http_request('GET', cmd_url)
     return response
 
 def get_machine_actions_request():
-    """
-        Dict. Returns the machine's actions
+    """Retrieves all Machine Action
+    Returns:
+        dict. Machine Action entity
     """
     cmd_url = '/machineactions'
     response = http_request('GET', cmd_url)
     return response
 
 def get_investigation_package_request(machine_id, comment):
-    """
-        Dict. Returns the machine's investigation_package
+    """Collect investigation package from a machine.
+    Args:
+        machine_id (str): Machine ID
+        comment (str): Comment to associate with the action
+    Returns:
+        dict. Machine's investigation_package
     """
     cmd_url = '/machines/{}/collectInvestigationPackage'.format(machine_id)
     json = {
@@ -722,16 +677,23 @@ def get_investigation_package_request(machine_id, comment):
     return response
 
 def get_investigation_package_sas_uri_request(action_id):
-    """
-        Dict. Returns the link for the package
+    """Get a URI that allows downloading of an Investigation package.
+    Args:
+        action_id (str): Action ID
+    Returns:
+        dict. An object that holds the link for the package
     """
     cmd_url = '/machineactions/{}/getPackageUri'.format(action_id)
     response = http_request('GET', cmd_url)
     return response
 
 def restrict_app_execution_request(machine_id, comment):
-    """
-        Dict. Returns the machine's investigation_package
+    """Restrict execution of all applications on the machine except a predefined set.
+    Args:
+        machine_id (str): Machine ID
+        comment (str): Comment to associate with the action
+    Returns:
+        dict. Machine action
     """
     cmd_url = '/machines/{}/restrictCodeExecution'.format(machine_id)
     json = {
@@ -741,8 +703,12 @@ def restrict_app_execution_request(machine_id, comment):
     return response
 
 def remove_app_restriction_request(machine_id, comment):
-    """
-        Dict. Returns the machine's investigation_package
+    """Enable execution of any application on the machine.
+    Args:
+        machine_id (str): Machine ID
+        comment (str): Comment to associate with the action
+    Returns:
+        dict. Machine action
     """
     cmd_url = '/machines/{}/unrestrictCodeExecution'.format(machine_id)
     json = {
@@ -752,7 +718,14 @@ def remove_app_restriction_request(machine_id, comment):
     return response
 
 def stop_and_quarantine_file_request(machine_id, file_sha1, comment):
-
+    """Stop execution of a file on a machine and delete it.
+    Args:
+        machine_id (str): Machine ID
+        file_sha1: (str): File's hash
+        comment (str): Comment to associate with the action
+    Returns:
+        dict. Machine action
+    """
     cmd_url = '/machines/{}/stopAndQuarantineFile'.format(machine_id)
     json = {
         'Comment': comment,
@@ -762,40 +735,165 @@ def stop_and_quarantine_file_request(machine_id, file_sha1, comment):
     return response
 
 def get_investigation_by_id_request(investigation_id):
-    """
-        Get the investigation ID and return the investigation details
-        Args:
-              investigation_id (str): The investigation ID
-        Returns:
-            dict:
+    """Get the investigation ID and return the investigation details
+    Args:
+        investigation_id (str): The investigation ID
+    Returns:
+        dict. Investigations entity
     """
     cmd_url = '/investigations/{}'.format(investigation_id)
     response = http_request('GET', cmd_url)
     return response
 
-def get_investigation_list_request():
+def get_alert_by_id_request(alert_id):
+    """Get the alert ID and return the alert details
+    Args:
+        alert_id (str): The alert ID
+    Returns:
+        dict. Alert's entity
     """
-        Dict. Returns the investigations list
+    cmd_url = '/alerts/{}'.format(alert_id)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_investigation_list_request():
+    """Retrieves a collection of Investigations.
+    Returns:
+        dict. A collection of Investigations entities.
     """
     cmd_url = '/investigations'
     response = http_request('GET', cmd_url)
     return response
 
 def start_investigation_request(machine_id, comment):
-    """
-        Start automated investigation on a machine.
-
-        Args:
-              investigation_id (str): The investigation ID
-        Returns:
-            dict:
-           Dict. Returns the investigations list
+    """Start automated investigation on a machine.
+    Args:
+          machine_id (str): The Machine ID
+          comment (str): Comment to associate with the action
+    Returns:
+        dict. Investigation's entity
     """
     cmd_url = '/machines/{}/startInvestigation'.format(machine_id)
     json = {
         'Comment': comment,
     }
     response = http_request('POST', cmd_url, json=json)
+    return response
+
+def get_domain_statistics_request(domain):
+    """Retrieves the statistics on the given domain.
+    Args:
+        domain (str): The Domain's address
+    Returns:
+        dict. Domain's statistics
+    """
+    cmd_url = '/domains/{}/stats'.format(domain)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_file_statistics_request(file_sha1):
+    """Retrieves the statistics on the given file.
+    Args:
+        file_sha1 (str): The file's hash
+    Returns:
+        dict. File's statistics
+    """
+    cmd_url = '/files/{}/stats'.format(file_sha1)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_ip_statistics_request(ip):
+    """Retrieves the statistics on the given IP.
+    Args:
+        ip (str): The IP address
+    Returns:
+        dict. IP's statistics
+    """
+    cmd_url = '/ips/{}/stats'.format(ip)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_domain_alerts_request(domain):
+    """Retrieves a collection of Alerts related to a given domain address.
+    Args:
+        domain (str): The Domain's address
+    Returns:
+        dict. Alerts entities
+    """
+    cmd_url = '/domains/{}/alerts'.format(domain)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_file_alerts_request(file_sha1):
+    """Retrieves a collection of Alerts related to a given file hash.
+    Args:
+        file_sha1 (str): The file's hash
+    Returns:
+        dict. Alerts entities
+    """
+    cmd_url = '/files/{}/alerts'.format(file_sha1)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_ip_alerts_request(ip):
+    """Retrieves a collection of Alerts related to a given IP.
+    Args:
+        ip (str): The IP address
+    Returns:
+        dict. Alerts entities
+    """
+    cmd_url = '/ips/{}/alerts'.format(ip)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_user_alerts_request(username):
+    """Retrieves a collection of Alerts related to a given  user ID.
+    Args:
+        username (str): The user ID
+    Returns:
+        dict. Alerts entities
+    """
+    cmd_url = '/users/{}/alerts'.format(username)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_domain_machines_request(domain):
+    """Retrieves a collection of Machines that have communicated to or from a given domain address.
+    Args:
+        domain (str): The Domain's address
+    Returns:
+        dict. Machines entities
+    """
+    cmd_url = '/domains/{}/alerts'.format(domain)
+    response = http_request('GET', cmd_url)
+    return response
+
+def get_user_machines_request(username):
+    """Retrieves a collection of machines related to a given user ID..
+    Args:
+        username (str): The user ID
+    Returns:
+        dict. Machines entities
+    """
+    cmd_url = '/users/{}/machines'.format(username)
+    response = http_request('GET', cmd_url)
+    return response
+
+def add_remove_machine_tag_request(machine_id, action, tag):
+    """Retrieves a collection of machines related to a given user ID..
+    Args:
+        machine_id (str): The machine ID
+        action (str): Add or Remove action
+        tag (str): The tag name
+    Returns:
+        dict. Updated machine's entity
+    """
+    cmd_url = '/machines/{}/tags'.format(machine_id)
+    new_tags = {
+        "Value" : tag,
+        "Action": action
+    }
+    response = http_request('POST', cmd_url, json=new_tags)
     return response
 
 def get_advanced_hunting_command():
@@ -922,12 +1020,12 @@ def get_alert_related_user_command():
     demisto.results(entry)
 
 def get_alert_related_files_command():
-    """
-       The function returns the files associated to a specific alert.
+    """Retrieves all files related to a specific alert.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
     alert_id = demisto.args().get('id')
     limit = int(demisto.args().get('limit'))
-    demisto.results(limit)
     response_files_list = get_alert_related_files_request(alert_id)
     files_data_list = []
     headers = ['FileProductName', 'Issuer', 'FilePublisher', 'FileType', 'Size']
@@ -941,16 +1039,20 @@ def get_alert_related_files_command():
         'Size': file_obj.get('size')})
         if len(files_data_list) == limit:
             break
-    context_output = camelize(response_files_list['value'])
+    context_output = {
+        'alertId': alert_id,
+        'files': camelize(response_files_list['value'])
+    }
     ec = camelize({
-        'MicrosoftATP.Files(val.sha1 === obj.sha1)': context_output
+        'MicrosoftATP.AlertFiles(val.alertId === obj.alertId)': context_output
     })
     hr = tableToMarkdown('Alert {} Related Files:'.format(alert_id), files_data_list, headers=headers)
-    return_outputs(hr, ec, response_files_list)
+    return hr, ec, response_files_list
 
 def get_alert_related_ips_command():
-    """
-       The function returns the ips associated to a specific alert.
+    """Retrieves all IPs related to a specific alert.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
     alert_id = demisto.args().get('id')
     response_ips_list = get_alert_related_ips_request(alert_id)
@@ -958,16 +1060,20 @@ def get_alert_related_ips_command():
     headers = ['IP address']
     for ip in response_ips_list['value']:
         ips_list.append(ip['id'])
-    context_output = camelize(response_ips_list['value'])
+    context_output = {
+        'alertId': alert_id,
+        'ips': camelize(response_ips_list['value'])
+    }
     ec = camelize({
-        'MicrosoftATP.IPs(val.id === obj.id)': context_output
+        'MicrosoftATP.AlertIPs(val.alertId === obj.alertId)': context_output
     })
     hr = tableToMarkdown('Alert {} Related IPs:'.format(alert_id), ips_list, headers=headers)
-    return_outputs(hr, ec, response_ips_list)
+    return hr, ec, response_ips_list
 
 def get_alert_related_domains_command():
-    """
-       The function returns the Domains associated to a specific alert.
+    """Retrieves all domains related to a specific alert.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
     alert_id = demisto.args().get('id')
     response_domains_list = get_alert_related_domains_request(alert_id)
@@ -975,18 +1081,20 @@ def get_alert_related_domains_command():
     headers = ['Domain']
     for domain in response_domains_list['value']:
         domains_list.append(domain['host'])
-    context_output = camelize(response_domains_list['value'])
+    context_output = {
+        'alertId': alert_id,
+        'domains': camelize(response_domains_list['value'])
+    }
     ec = camelize({
-        'MicrosoftATP.Domains(val.host === obj.host)': context_output
+        'MicrosoftATP.AlertDomains(val.alertId === obj.alertId)': context_output
     })
     hr = tableToMarkdown('Alert {} Related Domains:'.format(alert_id), domains_list, headers=headers)
-    return_outputs(hr, ec, response_domains_list)
+    return hr, ec, response_domains_list
 
 def get_machine_action_by_id_command():
-    """
-        Returns machine's actions, if machine ID is None, return all actions
-        Returns:
-            dict: Machine's actions
+    """Returns machine's actions, if machine ID is None, return all actions
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
     action_id = demisto.args().get('id', '')
     headers = ['ID', 'Type', 'Scope', 'Requestor', 'Requestor Comment', 'Status', 'Machine ID', 'Computer Dns Name',
@@ -1002,18 +1110,17 @@ def get_machine_action_by_id_command():
         actions_list = []
         for action in response['value']:
             actions_list.append(get_action_data(action['id']))
-        hr = tableToMarkdown('Actions Info:', actions_list, headers=headers)
+        hr = tableToMarkdown('Machine actions Info:', actions_list, headers=headers)
         context_output = camelize(response['value'])
     ec = camelize({
-        'MicrosoftATP.Actions(val.id === obj.id)': context_output
+        'MicrosoftATP.MachineActions(val.id === obj.id)': context_output
     })
-    return_outputs(hr, ec, response)
+    return hr, ec, response
 
 def get_action_data(action_id):
-    """
-        Get action ID and returns the action's info
-        Returns:
-            dict: Action's info
+    """Get action ID and returns the action's info
+    Returns:
+        dict. Action's info
     """
     response = get_machine_action_by_id_request(action_id)
     action_data = {
@@ -1035,45 +1142,40 @@ def get_action_data(action_id):
     return action_data
 
 def get_machine_investigation_package_command():
+    """Collect investigation package from a machine.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
-        Collect investigation package from a machine.
-        Returns:
-            dict: Machine's investigation package
-    """
-
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
     response = get_investigation_package_request(machine_id, comment)
     action_data = get_action_data(response['id'])
     hr = tableToMarkdown('Initiating collect investigation package from {} machine :'.format(machine_id), action_data)
     ec = camelize({
-        'MicrosoftATP.Actions(val.id === obj.id)': response
+        'MicrosoftATP.MachineActions(val.id === obj.id)': response
     })
-    return_outputs(hr, ec, response)
+    return hr, ec, response
 
 
 def get_investigation_package_sas_uri_command():
+    """Returns a URI that allows downloading an Investigation package.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
-        Collect investigation package from a machine.
-        Returns:
-            dict: Machine's investigation package
-    """
-
     action_id = demisto.args().get('action_id')
     response = get_investigation_package_sas_uri_request(action_id)
     link = response['value']
     hr = tableToMarkdown('success. This link is valid for a very short time and should be used immediately for'
                          ' downloading the package to a local storage. :', link)
     ec = camelize({
-        'MicrosoftATP.URI': link
+        'MicrosoftATP.InvestigationURI(val.link === obj.link)': link
     })
-    return_outputs(hr, ec, response)
+    return hr, ec, response
 
 def restrict_app_execution_command():
-    """
-        Restrict execution of all applications on the machine except a predefined set.
-        Returns:
-            dict: Action info
+    """Restrict execution of all applications on the machine except a predefined set.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
@@ -1082,32 +1184,30 @@ def restrict_app_execution_command():
     hr = tableToMarkdown('Initiating Restrict execution of all applications on the machine {} except a predefined set:'
                          .format(machine_id), action_data)
     ec = camelize({
-        'MicrosoftATP.Actions(val.id === obj.id)': response
+        'MicrosoftATP.MachineActions(val.id === obj.id)': response
     })
-    return_outputs(hr, ec, response)
+    return hr, ec, response
 
 def remove_app_restriction_command():
-        """
-            Enable execution of any application on the machine.
-            Returns:
-                dict: Machine's action info
-        """
-        machine_id = demisto.args().get('machine_id')
-        comment = demisto.args().get('comment')
-        response = remove_app_restriction_request(machine_id, comment)
-        action_data = get_action_data(response['id'])
-        hr = tableToMarkdown(
-            'Removing applications restriction on the machine {}:'.format(machine_id), action_data)
-        ec = camelize({
-            'MicrosoftATP.Actions(val.id === obj.id)': response
-        })
-        return_outputs(hr, ec, response)
+    """Enable execution of any application on the machine.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    machine_id = demisto.args().get('machine_id')
+    comment = demisto.args().get('comment')
+    response = remove_app_restriction_request(machine_id, comment)
+    action_data = get_action_data(response['id'])
+    hr = tableToMarkdown(
+        'Removing applications restriction on the machine {}:'.format(machine_id), action_data)
+    ec = camelize({
+        'MicrosoftATP.MachineActions(val.id === obj.id)': response
+    })
+    return hr, ec, response
 
 def stop_and_quarantine_file_command():
-    """
-        Stop execution of a file on a machine and delete it.
-        Returns:
-            dict: Machine's action info
+    """Stop execution of a file on a machine and delete it.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
     machine_id = demisto.args().get('machine_id')
     file_sha1 = demisto.args().get('sha1')
@@ -1117,15 +1217,14 @@ def stop_and_quarantine_file_command():
     hr = tableToMarkdown(
         'Stopping the execution of a file on {} machine and deleting it:'.format(machine_id), action_data)
     ec = camelize({
-        'MicrosoftATP.Actions(val.id === obj.id)': response
+        'MicrosoftATP.MachineActions(val.id === obj.id)': response
     })
-    return_outputs(hr, ec, response)
+    return hr, ec, response
 
 def get_investigations_by_id_command():
-    """
-        Returns the investigation info, if investigation ID is None, return all investigations
-        Returns:
-            dict: investigation's data
+    """Returns the investigation info, if investigation ID is None, return all investigations
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
     investigation_id = demisto.args().get('id', '')
     headers = ['ID', 'Start Time', 'End Time', 'Cancelled By', 'Investigation State', 'Status Details', 'Machine ID',
@@ -1145,13 +1244,14 @@ def get_investigations_by_id_command():
     ec = camelize({
         'MicrosoftATP.Investigations(val.id === obj.id)': context_output
     })
-    return_outputs(hr, ec, response)
+    return hr, ec, response
 
 def get_investigation_data(investigation_id):
-    """
-        Get investigation ID and returns the investigation info
-        Returns:
-            dict: Investigation's info
+    """Get investigation ID and returns the investigation info
+    Args:
+        investigation_id: The investigation ID
+    Returns:
+        dict. Investigation's info
     """
     response = get_investigation_by_id_request(investigation_id)
     investigation_data = {
@@ -1168,21 +1268,298 @@ def get_investigation_data(investigation_id):
     return investigation_data
 
 def start_investigation_command():
-    """
-        Start automated investigation on a machine.
-        Returns:
-            dict: Investigation info
+    """Start automated investigation on a machine.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
     """
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
-    response = stop_and_quarantine_file_request(machine_id, file_sha1, comment)
-    action_data = get_action_data(response['id'])
+    response = start_investigation_request(machine_id, comment)
+    investigation_id = response['id']
+    investigation_data = get_investigation_data(investigation_id)
     hr = tableToMarkdown(
-        'Stopping the execution of a file on {} machine and deleting it:'.format(machine_id), action_data)
+        'Starting investigation {} on {} machine:'.format(investigation_id, machine_id), investigation_data)
     ec = camelize({
-        'MicrosoftATP.Actions(val.id === obj.id)': response
+        'MicrosoftATP.Investigation(val.id === obj.id)': response
     })
-    return_outputs(hr, ec, response)
+    return hr, ec, response
+
+def get_domain_statistics_command():
+    """Retrieves the statistics on the given domain.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    domain = demisto.args().get('domain')
+    response = get_domain_statistics_request(domain)
+    domain_stat = {
+        "Host": response.get('host'),
+        "Org Prevalence": response.get('orgPrevalence'),
+        "Org First Seen": response.get('orgFirstSeen'),
+        "Org Last Seen": response.get('orgLastSeen')
+    }
+    hr = tableToMarkdown(
+        'Statistics on {} domain:'.format(domain), domain_stat)
+
+    context_output = {
+        'domain': domain,
+        'Statistics': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.DomainStatistics(val.domain === obj.domain)': context_output
+    })
+    return hr, ec, response
+
+def get_domain_alerts_command():
+    """Retrieves a collection of Alerts related to a given domain address.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'Title', 'Description', 'Incident ID', 'Severity', 'Status', 'Classification', 'Category',
+               'Threat Family Name', 'Machine ID']
+    domain = demisto.args().get('domain')
+    response = get_domain_alerts_request(domain)
+    alerts_list = []
+    for alert in response['value']:
+        alerts_list.append(get_alert_data(alert['id']))
+    hr = tableToMarkdown('Domain {} related alerts Info:'.format(domain), alerts_list, headers=headers)
+    context_output = {
+        'domain': domain,
+        'alerts': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.DomainAlerts(val.domain === obj.domain)': context_output
+    })
+    return hr, ec, response
+
+def get_alert_data(alert_id):
+    """Get investigation ID and returns the investigation info
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    response = get_alert_by_id_request(alert_id)
+    alert_data = {
+            "ID": response.get('id'),
+            "Title": response.get('title'),
+            "Description": response.get('description'),
+            "Incident ID": response.get('incidentId'),
+            "Severity": response.get('severity'),
+            "Status": response.get('status'),
+            "Classification": response.get('classification'),
+            "Category": response.get('category'),
+            "Threat Family Name": response.get('threatFamilyName'),
+            "Machine ID": response.get('machineId'),
+        }
+    return alert_data
+
+def get_domain_machine_command():
+    """Retrieves a collection of Machines that have communicated to or from a given domain address.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'ComputerDNSName', 'RiskScore']
+    domain = demisto.args().get('domain')
+    response = get_domain_machines_request(domain)
+    machines_list = []
+    for machine in response['value']:
+        machines_list.append(get_machine_data(machine['id']))
+    hr = tableToMarkdown('Machines that have communicated with {} domain:'.format(domain), machines_list,
+                         headers=headers)
+    context_output = {
+        'domain': domain,
+        'machines': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.DomainMachines(val.domain === obj.domain)': context_output
+    })
+    return hr, ec, response
+
+def get_machine_data(machine_id):
+    """Get machine ID and returns the machine's info
+    Returns:
+        dict. machine's info
+    """
+    machine = get_machine_details_request(machine_id)
+    machine_data = assign_params(**{
+        'ComputerDNSName': machine.get('computerDnsName'),
+        'ID': machine.get('id'),
+        'AgentVersion': machine.get('agentVersion'),
+        'FirstSeen': machine.get('firstSeen'),
+        'LastSeen': machine.get('lastSeen'),
+        'HealthStatus': machine.get('healthStatus'),
+        'IsAADJoined': machine.get('isAadJoined'),
+        'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
+        'LastIPAddress': machine.get('lastIpAddress'),
+        'Tags': machine.get('machineTags'),
+        'OSBuild': machine.get('osBuild'),
+        'OSPlatform': machine.get('osPlatform'),
+        'RBACGroupID': machine.get('rbacGroupId'),
+        'RiskScore': machine.get('riskScore'),
+        'RBACGroupName':machine.get('rbacGroupName'),
+        'AADDeviceID':machine.get('aadDeviceId'),
+        'OSVersion': machine.get('osVersion'),
+        'ExposureScore': machine.get('exposureScore')
+    })
+    return machine_data
+
+def get_file_statistics_command():
+    """Retrieves the statistics on the given file.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    file_sha1 = demisto.args().get('sha1')
+    response = get_file_statistics_request(file_sha1)
+    file_name = response.get('topFileNames')
+    file_stat = assign_params(**{
+        "Sha1": response.get('sha1'),
+        "Org Prevalence": response.get('orgPrevalence'),
+        "Org First Seen": response.get('orgFirstSeen'),
+        "Org Last Seen": response.get('orgLastSeen'),
+        "Global Prevalence": response.get('globalPrevalence'),
+        "Global First Observed": response.get('globalFirstObserved'),
+        "Global Last Observed": response.get('globalLastObserved'),
+        "Top File Names": file_name,
+    })
+    hr = tableToMarkdown(
+        'Statistics on {} file:'.format(file_name), file_stat)
+    context_output = {
+        'sha1': file_sha1,
+        'Statistics': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.FileStatistics(val.sha1 === obj.sha1)': context_output
+    })
+    return hr, ec, response
+
+def get_file_alerts_command():
+    """Retrieves a collection of Alerts related to a given file hash.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'Title', 'Description', 'Incident ID', 'Severity', 'Status', 'Classification', 'Category',
+               'Threat Family Name', 'Machine ID']
+    file_sha1 = demisto.args().get('sha1')
+    response = get_file_alerts_request(file_sha1)
+    alerts_list = []
+    for alert in response['value']:
+        alerts_list.append(get_alert_data(alert['id']))
+    hr = tableToMarkdown('File {} related alerts Info:'.format(file_sha1), alerts_list, headers=headers)
+    context_output = {
+        'sha1': file_sha1,
+        'alerts': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.FileAlerts(val.sha1 === obj.sha1)': context_output
+    })
+    return hr, ec, response
+
+def get_ip_statistics_command():
+    """Retrieves the statistics on the given IP.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    ip = demisto.args().get('ip')
+    response = get_ip_statistics_request(ip)
+    ip_stat = assign_params(**{
+        "IP Address": response.get('ipAddress'),
+        "Org Prevalence": response.get('orgPrevalence'),
+        "Org First Seen": response.get('orgFirstSeen'),
+        "Org Last Seen": response.get('orgLastSeen')
+    })
+    hr = tableToMarkdown(
+        'Statistics on {} IP:'.format(ip), ip_stat)
+    context_output = {
+        'ipAddress': ip,
+        'Statistics': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.IPStatistics(val.ipAddress === obj.ipAddress)': context_output
+    })
+    return hr, ec, response
+
+def get_ip_alerts_command():
+    """Retrieves a collection of Alerts related to a given IP.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'Title', 'Description', 'Incident ID', 'Severity', 'Status', 'Classification', 'Category',
+               'Threat Family Name', 'Machine ID']
+    ip = demisto.args().get('ip')
+    response = get_ip_alerts_request(ip)
+    alerts_list = []
+    for alert in response['value']:
+        alerts_list.append(get_alert_data(alert['id']))
+    hr = tableToMarkdown('IP {} related alerts Info:'.format(ip), alerts_list, headers=headers)
+    context_output = {
+        'ipAddress': ip,
+        'alerts': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.IPAlerts(val.ipAddress === obj.ipAddress)': context_output
+    })
+    return hr, ec, response
+
+def get_user_alerts_command():
+    """Retrieves a collection of Alerts related to a given user ID.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'Title', 'Description', 'Incident ID', 'Severity', 'Status', 'Classification', 'Category',
+               'Threat Family Name', 'Machine ID']
+    username = demisto.args().get('username')
+    response = get_user_alerts_request(username)
+    alerts_list = []
+    for alert in response['value']:
+        alerts_list.append(get_alert_data(alert['id']))
+    hr = tableToMarkdown('User {} related alerts Info:'.format(username), alerts_list, headers=headers)
+    context_output = {
+        'username': username,
+        'alerts': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.UserAlerts(val.username === obj.username)': context_output
+    })
+    return hr, ec, response
+
+def get_user_machine_command():
+    """Retrieves a collection of machines related to a given user ID.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'ComputerDNSName', 'OsPlatform','LastIpAddress', 'LastExternalIpAddress', 'HealthStatus',
+               'RiskScore', 'ExposureScore']
+    username = demisto.args().get('username')
+    response = get_user_machines_request(username)
+    machines_list = []
+    for machine in response['value']:
+        machines_list.append(get_machine_data(machine['id']))
+    hr = tableToMarkdown('Machines that are related to user {}:'.format(username), machines_list, headers=headers)
+    context_output = {
+        'username': username,
+        'machines': camelize(response['value'])
+    }
+    ec = camelize({
+        'MicrosoftATP.UserMachines(val.username === obj.username)': context_output
+    })
+    return hr, ec, response
+
+def add_remove_machine_tag_command():
+    """Adds or remove tag to a specific Machine.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'ComputerDNSName', 'OsPlatform','LastIpAddress', 'LastExternalIpAddress', 'HealthStatus',
+               'RiskScore', 'ExposureScore']
+    machine_id = demisto.args().get('machine_id')
+    action = demisto.args().get('action')
+    tag = demisto.args().get('tag')
+    response = add_remove_machine_tag_request(machine_id, action, tag)
+    machine_data = get_machine_data(machine_id)
+    hr = tableToMarkdown('Succeed to {} tag :'.format(action, machine_id), machine_data, headers=headers)
+    ec = camelize({
+        'MicrosoftATP.Machines(val.id === obj.id)': response
+    })
+    return hr, ec, response
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
 
@@ -1296,38 +1673,66 @@ try:
         create_alert_command()
 
     elif demisto.command() == 'microsoft-atp-get-alert-related-files':
-        get_alert_related_files_command()
+        return_outputs(*get_alert_related_files_command())
 
     elif demisto.command() == 'microsoft-atp-get-alert-related-ips':
-        get_alert_related_ips_command()
+        return_outputs(*get_alert_related_ips_command())
 
     elif demisto.command() == 'microsoft-atp-get-alert-related-domains':
-        get_alert_related_domains_command()
+        return_outputs(*get_alert_related_domains_command())
 
     elif demisto.command() == 'microsoft-atp-list-machine-actions':
-        get_machine_action_by_id_command()
+        return_outputs(*get_machine_action_by_id_command())
 
     elif demisto.command() == 'microsoft-atp-collect-investigation-package':
-        get_machine_investigation_package_command()
+        return_outputs(*get_machine_investigation_package_command())
 
     elif demisto.command() == 'microsoft-atp-get-investigation-package-sas-uri':
-        get_investigation_package_sas_uri_command()
+        return_outputs(*get_investigation_package_sas_uri_command())
 
     elif demisto.command() == 'microsoft-atp-restrict-app-execution':
-        restrict_app_execution_command()
+        return_outputs(*restrict_app_execution_command())
 
     elif demisto.command() == 'microsoft-atp-remove-app-restriction':
-        remove_app_restriction_command()
+        return_outputs(*remove_app_restriction_command())
 
     elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
-        stop_and_quarantine_file_command()
+        return_outputs(*stop_and_quarantine_file_command())
 
     elif demisto.command() == 'microsoft-atp-list-investigations':
-        get_investigations_by_id_command()
+        return_outputs(*get_investigations_by_id_command())
 
     elif demisto.command() == 'microsoft-atp-start-investigation':
-        get_investigations_by_id_command()
+        return_outputs(*start_investigation_command())
 
+    elif demisto.command() == 'microsoft-atp-get-domain-statistics':
+        return_outputs(*get_domain_statistics_command())
 
+    elif demisto.command() == 'microsoft-atp-get-domain-alerts':
+        return_outputs(*get_domain_alerts_command())
+
+    elif demisto.command() == 'microsoft-atp-get-domain-machines':
+        return_outputs(*get_domain_machine_command())
+
+    elif demisto.command() == 'microsoft-atp-get-file-statistics':
+        return_outputs(*get_file_statistics_command())
+
+    elif demisto.command() == 'microsoft-atp-get-file-alerts':
+        return_outputs(*get_file_alerts_command())
+
+    elif demisto.command() == 'microsoft-atp-get-ip-statistics':
+        return_outputs(*get_ip_statistics_command())
+
+    elif demisto.command() == 'microsoft-atp-get-ip-alerts':
+        return_outputs(*get_ip_alerts_command())
+
+    elif demisto.command() == 'microsoft-atp-get-user-alerts':
+        return_outputs(*get_user_alerts_command())
+
+    elif demisto.command() == 'microsoft-atp-get-user-machines':
+        return_outputs(*get_user_machine_command())
+
+    elif demisto.command() == 'microsoft-atp-add-remove-machine-tag':
+        return_outputs(*add_remove_machine_tag_command())
 except Exception as e:
     return_error(str(e))
