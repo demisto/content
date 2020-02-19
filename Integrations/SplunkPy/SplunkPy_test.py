@@ -84,23 +84,6 @@ EXPECTED = {
     "website": "2.2.2.2"
 }
 
-EXPECTED_MESSAGE_RESPONSE = {
-    "SCOPE[29]": "autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags.modify",
-    "SCOPE[2]": "AVSSCP\/Docstash\/Get",
-    "SCOPE[30]": "autopay\/events\/payroll\/v1\/earning-configuration.payroll-accumulators.modify",
-    "SCOPE[31]": "autopay\/events\/payroll\/v1\/earning-configuration.remove",
-    "SCOPE[32]": "autopay\/events\/payroll\/v1\/retro-pay-request.add",
-    "SCOPE[33]": "autopay\/events\/payroll\/v1\/worker-insurable-payments.modify",
-    "SCOPE[34]": "autopay\/payroll\/v1\/cafeteria-plan-configurations",
-    "SCOPE[35]": "autopay\/payroll\/v1\/cafeteria-plan-configurations\/{configurationItemID}",
-    "SCOPE[36]": "autopay\/payroll\/v1\/cafeteria-plan-configurations\/{configurationItemID}\/payroll-item-"
-                "configurations",
-    "SCOPE[37]": "autopay\/payroll\/v1\/cafeteria-plan-configurations\/{configurationItemID}\/payroll-item-"
-                "configurations\/{payrollItemID}",
-    "SCOPE[38]": "autopay\/payroll\/v1\/deposit-configurations",
-    "SCOPE[39]": "autopay\/payroll\/v1\/earning-configurations"
-}
-
 
 def test_raw_to_dict():
     from SplunkPy import rawToDict
