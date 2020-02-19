@@ -4,8 +4,6 @@
 	"defaultIncidentType": "Indeni Incidents",
 	"id": "26f69346-6a69-4375-8890-e2ea7b0aae34",
 	"incidentSamples": [],
-	"instanceId": "c766cbce-a2a3-4214-88fb-686a317431ed",
-	"instanceName": "10.11.80.21",
 	"isDefault": false,
 	"keyTypeMap": {
 		"UNAUTOREMEDIATABLE_ISSUE": "Indeni Incidents"
