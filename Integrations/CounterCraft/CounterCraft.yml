@@ -85,6 +85,39 @@ script:
     - contextPath: CounterCraft.Host.TypeCode
       description: Host Type
       type: string
+    - contextPath: Host.Domain
+      description: The domain of the host
+      type: string
+    - contextPath: Host.Hostname
+      description: The name of the host
+      type: string
+    - contextPath: Host.BIOSVersion
+      description: The BIOS version of the host
+      type: string
+    - contextPath: Host.ID
+      description: The UUID of the host
+      type: string
+    - contextPath: Host.IP
+      description: The IP address of the host
+      type: string
+    - contextPath: Host.Memory
+      description: The memory of the host
+      type: string
+    - contextPath: Host.Model
+      description: The model of the host
+      type: string
+    - contextPath: Host.OS
+      description: The OS of the host
+      type: string
+    - contextPath: Host.OSVersion
+      description: The OS version of the host
+      type: string
+    - contextPath: Host.Processor
+      description: The processor of the host
+      type: string
+    - contextPath: Host.Processors
+      description: The number of processors of the host
+      type: string
     description: Lists all deception hosts
   - name: countercraft-list-services
     arguments:
