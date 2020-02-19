@@ -1,6 +1,6 @@
-id: TestXFE
+id: Test_XFE_v2
 version: 30
-name: TestXFE
+name: Test_XFE_v2
 starttaskid: "0"
 tasks:
   "0":
