@@ -14,7 +14,6 @@ from bs4 import BeautifulSoup
 from netaddr import IPAddress
 from six import string_types
 from typing import Dict, List
-import ssl
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()

@@ -2328,6 +2328,11 @@
         {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
+        },
+        {
+           "integrations": "Alien Vault OTX TAXII Feed",
+            "playbookID": "playbook-feedalienvaultotx_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
