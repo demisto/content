@@ -551,7 +551,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     # Check last queried item's timestamp
     latest_created_time = None
     if items:
-        latest_created_time = dateparser.parse(items[-1]['Timestamp']).replace(tzinfo=None)
+        latest_created_time = dateparser.parse(items[-1]['Timestamp']).replace(tzinfo=None).strftime(DATE_FORMAT)
 
     # If timestamp stayed the same than get next 10
     if last_fetch == latest_created_time:
@@ -583,9 +583,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     if not current_rids:
         current_rids = last_run_rids
 
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT),
-                'last_run_rids': current_rids, "page_to_query": page_to_query}
-    demisto.info(f"========================================== {next_run}")
+    next_run = {'last_fetch': latest_created_time, 'last_run_rids': current_rids, "page_to_query": page_to_query}
     return next_run, incidents
 
 
@@ -593,7 +591,7 @@ def main():
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
 
-    base_url = demisto.params()['url'].rstrip('/') + ':5000'
+    base_url = demisto.params()['url'].rstrip('/')
 
     verify_certificate = not demisto.params().get('insecure', True)
 
