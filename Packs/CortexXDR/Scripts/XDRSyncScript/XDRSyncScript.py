@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 from dateutil import parser
 import copy
 from typing import Optional, Dict
+import traceback
 
 
 # XDR_FIELDS
@@ -151,15 +152,12 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
 def compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr, xdr_incident_in_context, fields_mapping):
     modified_in_xdr = int(incident_in_xdr.get("modification_time"))
     modified_in_xdr_in_context = int(xdr_incident_in_context.get("modification_time"))
-
     incident_in_xdr_was_modified = False
 
     demisto_update_args = {}
     if modified_in_xdr > modified_in_xdr_in_context:
-
         for field_in_xdr in XDR_INCIDENT_FIELDS:
             if field_in_xdr in fields_mapping:
-
                 current_value = incident_in_xdr.get(field_in_xdr)
                 previous_value = xdr_incident_in_context.get(field_in_xdr)
 
@@ -280,17 +278,16 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
     if incident_in_xdr_was_modified:
         demisto.debug("the incident in xdr was modified, updating the incident in demisto")
         demisto.debug("demisto_update_args: {}".format(json.dumps(demisto_update_args, indent=4)))
-
         xdr_incident = latest_incident_in_xdr_result[0]['Contents']
-        update_incident = dict()
-        update_incident[xdr_alerts_field] = replace_in_keys(xdr_incident.get('alerts').get('data', []), '_', '')
-        update_incident[xdr_file_artifacts_field] = replace_in_keys(xdr_incident.get('file_artifacts').get('data', []),
-                                                                    '_', '')
-        update_incident[xdr_network_artifacts_field] = replace_in_keys(xdr_incident.get('network_artifacts').get('data',
-                                                                                                                 []),
-                                                                       '_', '')
 
-        res = demisto.executeCommand("setIncident", update_incident)
+        demisto_update_args[xdr_alerts_field] = replace_in_keys(xdr_incident.get('alerts').get('data', []), '_', '')
+        demisto_update_args[xdr_file_artifacts_field] = replace_in_keys(
+            xdr_incident.get('file_artifacts').get('data', []), '_', '')
+
+        demisto_update_args[xdr_network_artifacts_field] = replace_in_keys(
+            xdr_incident.get('network_artifacts').get('data', []), '_', '')
+
+        res = demisto.executeCommand("setIncident", demisto_update_args)
         if is_error(res):
             raise ValueError(get_error(res))
 
@@ -372,6 +369,10 @@ def main(args):
                                                    first_run, xdr_alerts_field, xdr_file_artifacts_field,
                                                    xdr_network_artifacts_field, incident_in_demisto, verbose)
     except Exception as ex:
+        if verbose:
+            raise
+
+        demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
         return_error(str(ex), ex)
     finally:
         # even if error occurred keep trigger sync
