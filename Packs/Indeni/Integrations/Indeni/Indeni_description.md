@@ -1,3 +1,8 @@
-## Hello World
-- This text is markdown
-- Here you should explain how to configure the instance in Demisto
+## Indeni
+You can retrieve the API Key from the Indeni UI
+
+Naviate to:
+- Settings
+- About
+
+Use the *API Key* shown in the *API INFO* section

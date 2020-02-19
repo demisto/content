@@ -207,7 +207,16 @@ def get_alert_info(base_url):
         human_format['notes'] = '\n'.join([a['text'] for a in n]) if isinstance(n, list) else n
     if 'alert_blocks' in human_format:
         n = human_format['alert_blocks']
-        human_format['alert_blocks'] = '\n'.join([a['body'] for a in n]) if isinstance(n, list) else n
+        if isinstance(n, list):
+            bodies: List[str] = []
+            for a in n:
+                body = a.get('body', None)
+                if body:
+                    bodies.append(body)
+            if len(bodies) > 0:
+                human_format['alert_blocks'] = '\n'.join(bodies)
+        else:
+            human_format['alert_blocks'] = n
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -278,21 +287,31 @@ def get_notes(base_url):
     alert_id = demisto.args().get('alert_id')
     endpoint_url = 'issues/' + alert_id + '/notes'
     response = http_request('GET', base_url + endpoint_url)
+    readable_notes = []
+    context_notes = {
+        'AlertID': alert_id
+    }
     notes = []
     for note in response:
-        notes.append({
-            'note': note.get('text'),
-            'timestamp': timestamp_to_datestring(note.get('timestamp'))
-        })
+        text = note.get('text', None)
+        if text:
+            readable_notes.append({
+                'note': text,
+                'timestamp': timestamp_to_datestring(note.get('timestamp'))
+            })
+            notes.append(text)
+    if len(notes) > 0:
+        context_notes['Note'] = notes
+
     content = {
-        'Indeni.AlertInfo(val.AlertID == obj.AlertID).Note': notes
+        'Indeni.AlertInfo(val.AlertID == obj.AlertID)': context_notes
     }
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': content,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Issue Notes', notes, removeNull=True),
+        'HumanReadable': tableToMarkdown('Issue Notes', readable_notes, removeNull=True),
         'EntryContext': content
     })
 
