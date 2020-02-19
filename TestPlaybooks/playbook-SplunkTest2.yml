@@ -1,18 +1,14 @@
 id: Splunk-Test
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: Splunk-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "153"
+    taskid: fe46a9c6-fca2-4376-8b10-6a0d47d66c8e
     type: start
     task:
-      id: "153"
+      id: fe46a9c6-fca2-4376-8b10-6a0d47d66c8e
       version: -1
       name: ""
       iscommand: false
@@ -28,37 +24,29 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "1":
     id: "1"
-    taskid: "162"
+    taskid: 6b91de0b-957f-43ab-88c9-f2c10174506f
     type: regular
     task:
-      id: "162"
+      id: 6b91de0b-957f-43ab-88c9-f2c10174506f
       version: -1
       name: splunk-search
-      description: Searches Splunk for events.
-      script: '|||splunk-search'
+      description: Search Splunk for events
+      script: SplunkPy|||splunk-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      app: {}
-      batch_limit: {}
       earliest_time:
         simple: -1000d
       event_limit: {}
       latest_time: {}
       query:
         simple: '* | head 3'
-      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -67,17 +55,12 @@ tasks:
           "y": 195
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "2":
     id: "2"
-    taskid: "147"
+    taskid: afe0b8d8-d593-41e1-8be7-cb312a544fb2
     type: regular
     task:
-      id: "147"
+      id: afe0b8d8-d593-41e1-8be7-cb312a544fb2
       version: -1
       name: Verify Context result of Splunk Search
       scriptName: VerifyContext
@@ -100,24 +83,18 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "3":
     id: "3"
-    taskid: "161"
+    taskid: a923a471-df1d-4c77-8d60-92fcdd4cb02d
     type: regular
     task:
-      id: "161"
+      id: a923a471-df1d-4c77-8d60-92fcdd4cb02d
       version: -1
       name: Get indexes names
-      description: Prints all Splunk index names.
-      script: '|||splunk-get-indexes'
+      script: SplunkPy|||splunk-get-indexes
       type: regular
       iscommand: true
-      brand: ""
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "6"
@@ -132,17 +109,12 @@ tasks:
           "y": 545
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "4":
     id: "4"
-    taskid: "141"
+    taskid: a12f77fc-fa5a-4419-8179-bd0c81133bff
     type: condition
     task:
-      id: "141"
+      id: a12f77fc-fa5a-4419-8179-bd0c81133bff
       version: -1
       name: Has main index
       scriptName: StringContains
@@ -170,24 +142,18 @@ tasks:
           "y": 895
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "5":
     id: "5"
-    taskid: "165"
+    taskid: 3c8622d5-aad0-4efb-800c-61a4f3d18979
     type: regular
     task:
-      id: "165"
+      id: 3c8622d5-aad0-4efb-800c-61a4f3d18979
       version: -1
       name: Create new Splunk event
-      description: Creates a new event in Splunk.
-      script: '|||splunk-submit-event'
+      script: SplunkPy|||splunk-submit-event
       type: regular
       iscommand: true
-      brand: ""
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "8"
@@ -208,17 +174,12 @@ tasks:
           "y": 1070
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "6":
     id: "6"
-    taskid: "137"
+    taskid: e20e59c8-4fcd-458f-8f25-4eb57e4ab50b
     type: regular
     task:
-      id: "137"
+      id: e20e59c8-4fcd-458f-8f25-4eb57e4ab50b
       version: -1
       name: DumpJSON
       description: Dumps a json from context key input, and returns a json object
@@ -242,17 +203,12 @@ tasks:
           "y": 720
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "7":
     id: "7"
-    taskid: "142"
+    taskid: 38a12b6c-cf45-4aed-8119-c5af3069cebc
     type: regular
     task:
-      id: "142"
+      id: 38a12b6c-cf45-4aed-8119-c5af3069cebc
       version: -1
       name: FAIL
       scriptName: VerifyContext
@@ -272,36 +228,29 @@ tasks:
           "y": 1070
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "8":
     id: "8"
-    taskid: "163"
+    taskid: 4666fa1f-8e98-4c26-8b75-b48219d62603
     type: regular
     task:
-      id: "163"
+      id: 4666fa1f-8e98-4c26-8b75-b48219d62603
       version: -1
       name: Test eventcount query
-      description: Searches Splunk for events.
-      script: '|||splunk-search'
+      script: SplunkPy|||splunk-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
-      app: {}
-      batch_limit: {}
       earliest_time: {}
       event_limit: {}
+      extend-context:
+        simple: eventcount=
       latest_time: {}
       query:
         simple: '| eventcount'
-      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -310,17 +259,12 @@ tasks:
           "y": 1245
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "9":
     id: "9"
-    taskid: "143"
+    taskid: d726bdbf-1783-43c0-8345-78a1509b22f7
     type: condition
     task:
-      id: "143"
+      id: d726bdbf-1783-43c0-8345-78a1509b22f7
       version: -1
       name: Verify eventcount
       scriptName: IsGreaterThan
@@ -345,17 +289,12 @@ tasks:
           "y": 1420
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "10":
     id: "10"
-    taskid: "150"
+    taskid: 11c7d1e7-dc6b-4f31-843e-d5530ac9fee4
     type: regular
     task:
-      id: "150"
+      id: 11c7d1e7-dc6b-4f31-843e-d5530ac9fee4
       version: -1
       name: Hurry!
       scriptName: Print
@@ -373,17 +312,12 @@ tasks:
           "y": 2645
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "11":
     id: "11"
-    taskid: "138"
+    taskid: 32810da8-cfab-46b3-86d1-4ca32aea53ce
     type: regular
     task:
-      id: "138"
+      id: 32810da8-cfab-46b3-86d1-4ca32aea53ce
       version: -1
       name: FAIL
       scriptName: VerifyContext
@@ -403,17 +337,12 @@ tasks:
           "y": 1595
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "12":
     id: "12"
-    taskid: "151"
+    taskid: 0526ccff-71b5-405e-874f-1da81a919a40
     type: title
     task:
-      id: "151"
+      id: 0526ccff-71b5-405e-874f-1da81a919a40
       version: -1
       name: Test _raw parsing
       type: title
@@ -430,24 +359,18 @@ tasks:
           "y": 1610
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "13":
     id: "13"
-    taskid: "166"
+    taskid: ad00a519-843a-430d-8e28-76d58a367888
     type: regular
     task:
-      id: "166"
+      id: ad00a519-843a-430d-8e28-76d58a367888
       version: -1
       name: Parse Raw
-      description: Parses the raw part of the event.
-      script: '|||splunk-parse-raw'
+      script: SplunkPy|||splunk-parse-raw
       type: regular
       iscommand: true
-      brand: ""
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "14"
@@ -461,17 +384,12 @@ tasks:
           "y": 1770
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "14":
     id: "14"
-    taskid: "139"
+    taskid: e0d3eb61-4c4c-479a-8097-65f485f8790d
     type: regular
     task:
-      id: "139"
+      id: e0d3eb61-4c4c-479a-8097-65f485f8790d
       version: -1
       name: Verify parse get's to context
       scriptName: VerifyContext
@@ -494,17 +412,12 @@ tasks:
           "y": 1945
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "15":
     id: "15"
-    taskid: "152"
+    taskid: f5e76637-2f8d-4799-87c3-5d0eac9c62b9
     type: regular
     task:
-      id: "152"
+      id: f5e76637-2f8d-4799-87c3-5d0eac9c62b9
       version: -1
       name: Add raw Data example
       scriptName: Set
@@ -535,43 +448,34 @@ tasks:
           "y": 2120
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "16":
     id: "16"
-    taskid: "164"
+    taskid: a36495dc-0c5e-4cef-8065-1ec37c75fb4a
     type: regular
     task:
-      id: "164"
+      id: a36495dc-0c5e-4cef-8065-1ec37c75fb4a
       version: -1
       name: Parse Raw example
-      description: Parses the raw part of the event.
-      script: '|||splunk-parse-raw'
+      script: SplunkPy|||splunk-parse-raw
       type: regular
       iscommand: true
-      brand: ""
+      brand: SplunkPy
     nexttasks:
       '#none#':
       - "17"
     scriptarguments:
+      extend-context:
+        simple: parsedRaw=
       raw:
         simple: ${rawEvent}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 2300
+          "x": 480,
+          "y": 2295
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quiet: false
   "17":
     id: "17"
     taskid: "167"
