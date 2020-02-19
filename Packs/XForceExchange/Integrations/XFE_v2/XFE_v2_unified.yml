@@ -43,6 +43,15 @@ configuration:
   type: 0
 description: IBM X-Force Exchange lets you receive threat intelligence about applications,
   IP addresses, URls and hashes
+detaileddescription: "# Configure API Credentials\r\n\r\nTo configure the credentials\
+  \ of IBM X-Force Exchange, you should generate an API key and API password.\r\n\
+  In order to generate those keys, you must have an IBM X-Force Exchange Account.\r\
+  \nThen, follow the steps below:\r\n\r\n1. Log in to the IBM X-Force Exchange website.\r\
+  \n2. Click on the profile icon, and go to Settings.\r\n3. Go to API Access tab,\
+  \ and generate an API key.\r\n4. Copy your API key and API password, and enter it\
+  \ inside the API key and password fields.\r\n\r\n**Note**: retain the API password\
+  \ for your records. You cannot request the API password again.\r\nAlso, provide\
+  \ a meaningful name for the API key."
 display: IBM X-Force Exchange (v2)
 name: XFE_v2
 script:
@@ -935,7 +944,7 @@ script:
                             }
                   }
 
-        domain['WHOIS']['Registrant'] = domain['Registrant']
+        domain['WHOIS']['Registrant'] = domain['Registrant']  # type: ignore
 
         context = {outputPaths['domain']: domain, 'XFE.Whois(obj.Host==val.Host)': outputs}
         markdown = tableToMarkdown(f'X-Force Whois result for {args["host"]}', outputs, removeNull=True)
