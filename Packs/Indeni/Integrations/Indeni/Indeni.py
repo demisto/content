@@ -84,8 +84,11 @@ def test_module(base_url):
     """
     Performs basic get request to get item samples
     """
-    ## add try and catch expection.
-    http_request('GET', base_url + 'issues?page=1&per_page=2&sort_by=updated_at.desc')
+    try:
+        http_request('GET', base_url + 'labels')
+        demisto.results('ok')
+    except Exception as e:
+        return_error(f'Test failed. Error: {str(e)}')
 
 
 def get_device_request(device_id, base_url):
@@ -354,7 +357,6 @@ def fetch_incidents(base_url):
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration test button.
     test_module(BASE_URL)
-    demisto.results('ok')
 elif demisto.command() == 'fetch-incidents':
     # Set and define the fetch incidents command to run after activated via integration settings.
     fetch_incidents(BASE_URL)

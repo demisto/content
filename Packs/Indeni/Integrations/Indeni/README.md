@@ -28,7 +28,8 @@ the Jira ticket as Done, the playbook will automatically acknowledge the issue i
     * __Incident type__
     * __Only Pull Palo Alto Network Vulnerability Issues__: true if only wants Palo Alto Network vulnerability issues, false will pull all issues
     * __Use system proxy settings__
-    * __Issue Severities To Pull__
+    * __Number of issues to pull per fetch__: max number of issues that will be ingested as incidents per fetch cycle
+    * __Lowest Issue Severity To Pull__: Any issue with higher or equivalent severity will be pulled
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---

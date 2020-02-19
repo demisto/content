@@ -48,7 +48,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: '20'
-  display: Number of alerts to pull per fetch
+  display: Number of issues to pull per fetch
   hidden: false
   name: maxPullSize
   required: false
