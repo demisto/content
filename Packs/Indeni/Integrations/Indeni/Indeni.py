@@ -1,6 +1,7 @@
 from CommonServerPython import *
 ''' IMPORTS '''
 
+from typing import List
 import json
 import requests
 
@@ -84,11 +85,8 @@ def test_module(base_url):
     """
     Performs basic get request to get item samples
     """
-    try:
-        http_request('GET', base_url + 'labels')
-        demisto.results('ok')
-    except Exception as e:
-        return_error(f'Test failed. Error: {str(e)}')
+    http_request('GET', base_url + 'labels')
+    demisto.results('ok')
 
 
 def get_device_request(device_id, base_url):
@@ -106,7 +104,7 @@ def get_alert_detail_request(alert_id, base_url):
 
 
 def get_all_active_issues(per_page, sort_by, base_url):
-    issues = []
+    issues: List[dict] = []
     # The service endpoint to request from
     endpoint_url = 'issues'
     # Dictionary of params for the request
@@ -354,26 +352,34 @@ def fetch_incidents(base_url):
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    test_module(BASE_URL)
-elif demisto.command() == 'fetch-incidents':
-    # Set and define the fetch incidents command to run after activated via integration settings.
-    fetch_incidents(BASE_URL)
-elif demisto.command() == 'indeni-get-device-info':
-    get_device_info(BASE_URL)
-elif demisto.command() == 'indeni-get-alert-info':
-    get_alert_info(BASE_URL)
-elif demisto.command() == 'indeni-get-alert-summary':
-    get_alert_summary(BASE_URL)
-elif demisto.command() == 'indeni-post-note':
-    post_note(BASE_URL)
-    demisto.results('Done')
-elif demisto.command() == 'indeni-archive-issue':
-    archive_issue(BASE_URL)
-    demisto.results('Done')
-elif demisto.command() == 'indeni-unarchive-issue':
-    unarchive_issue(BASE_URL)
-    demisto.results('Done')
-elif demisto.command() == 'indeni-get-notes':
-    get_notes(BASE_URL)
+def main():
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module(BASE_URL)
+        elif demisto.command() == 'fetch-incidents':
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            fetch_incidents(BASE_URL)
+        elif demisto.command() == 'indeni-get-device-info':
+            get_device_info(BASE_URL)
+        elif demisto.command() == 'indeni-get-alert-info':
+            get_alert_info(BASE_URL)
+        elif demisto.command() == 'indeni-get-alert-summary':
+            get_alert_summary(BASE_URL)
+        elif demisto.command() == 'indeni-post-note':
+            post_note(BASE_URL)
+            demisto.results('Done')
+        elif demisto.command() == 'indeni-archive-issue':
+            archive_issue(BASE_URL)
+            demisto.results('Done')
+        elif demisto.command() == 'indeni-unarchive-issue':
+            unarchive_issue(BASE_URL)
+            demisto.results('Done')
+        elif demisto.command() == 'indeni-get-notes':
+            get_notes(BASE_URL)
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
