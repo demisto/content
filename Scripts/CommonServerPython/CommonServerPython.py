@@ -110,6 +110,7 @@ class FeedIndicatorType(object):
     Account = "Account"
     CVE = "CVE"
     Domain = "Domain"
+    DomainGlobe = "DomainGlobe"
     Email = "Email"
     File = "File"
     FQDN = "Domain"
@@ -131,6 +132,7 @@ class FeedIndicatorType(object):
             FeedIndicatorType.Account,
             FeedIndicatorType.CVE,
             FeedIndicatorType.Domain,
+            FeedIndicatorType.DomainGlobe,
             FeedIndicatorType.Email,
             FeedIndicatorType.File,
             FeedIndicatorType.MD5,
@@ -1771,6 +1773,8 @@ hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
+
+domainGlobRegEx = r'\b(\*\.)([\w\d]+\.)+[\w\d]+\b'
 
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
