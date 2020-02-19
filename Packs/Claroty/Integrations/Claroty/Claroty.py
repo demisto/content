@@ -218,11 +218,13 @@ def get_assets_command(client: Client, args: dict) -> Tuple:
         relevant_fields.append("insights")
 
     parsed_results_assets, parsed_cves = _parse_assets_result(result, relevant_fields)
-
     outputs = {
-        'Claroty.Asset(val.AssetID == obj.AssetID)': parsed_results_assets,
-        'CVE(val.ID == obj.ID)': parsed_cves
+        'Claroty.Asset(val.AssetID == obj.AssetID)': parsed_results_assets
     }
+
+    if parsed_cves and len(parsed_cves) > 0:
+        outputs['CVE(val.ID == obj.ID)'] = parsed_cves
+
     readable_output = tableToMarkdown('Claroty Asset List', parsed_results_assets)
     return (
         readable_output,
@@ -232,24 +234,33 @@ def get_assets_command(client: Client, args: dict) -> Tuple:
 
 
 def resolve_alert_command(client: Client, args: dict) -> Tuple:
-    # TODO: CHECK FORMAT
+    bad_input = False
     selected_alerts_arg = args.get("selected_alerts", [])
     selected_alert_list = selected_alerts_arg.split(",") \
         if isinstance(selected_alerts_arg, str) else selected_alerts_arg
+    for alert in selected_alert_list:
+        split_alert = alert.split("-")
+        if len(split_alert) != 2 or not split_alert[0].isnumeric() or not split_alert[1].isnumeric():
+            bad_input = True
 
     resolve_type = RESOLVE_STRING_TO_TYPE[args.get("resolve_as", "resolve")]
 
     resolve_comment = args.get("resolve_comment", DEFAULT_RESOLVE_ALERT_COMMENT)
 
-    result = client.resolve_alert(selected_alert_list, args.get("filters", {}), resolve_type, resolve_comment)
+    if not bad_input:
+        result = client.resolve_alert(selected_alert_list, args.get("filters", {}), resolve_type, resolve_comment)
 
-    outputs = {
-        "Claroty.Resolve_out": result
-    }
-    if result['success']:
-        readable_output = f"## Alert was resolved successfully"
+        outputs = {
+            "Claroty.Resolve_out": result
+        }
+        if result['success']:
+            readable_output = f"## Alert was resolved successfully"
+        else:
+            readable_output = f"## Alert was not resolved"
     else:
-        readable_output = f"## Alert was not resolved"
+        result = {}
+        outputs = {}
+        readable_output = f"## Bad input"
 
     return (
         readable_output,

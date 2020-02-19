@@ -295,7 +295,7 @@ script:
       default: false
       description: Set minimal severity to query by.
       isArray: false
-      name: severity
+      name: minimal_severity
       predefined:
       - Low
       - Medium
@@ -490,4 +490,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-  fromversion: 5.0.0
