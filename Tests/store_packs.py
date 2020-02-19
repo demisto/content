@@ -23,7 +23,7 @@ DIR_NAME_TO_CONTENT_TYPE = {
     "Dashboards": "dashboard",
     "IncidentFields": "incidentfield",
     "IncidentTypes": "incidenttype",
-    # "IndicatorFields": "indicatorfields",
+    "IndicatorFields": "reputation",
     "Integrations": "integration",
     "Layouts": "layout",
     "Playbooks": "playbook",
