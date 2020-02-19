@@ -82,7 +82,6 @@ class Client(BaseClient):
         else:
             self._headers['Authorization'] = "ok"
 
-        # TODO: move to integration context
         self._list_to_filters: dict = {'alerts': [], 'assets': []}
 
     def _request_with_token(self, url_suffix: str, method: str = "GET",
@@ -283,13 +282,15 @@ def query_alerts_command(client: Client, args: dict) -> Tuple:
     relevant_fields, sort_by, limit = _init_request_values("alert", "timestamp", "alert_limit", args, True)
     filters = []
 
-    alert_type = args.get("type", "").lower()
+    alert_type = args.get("type", "").lower().replace(" ", "")
+    alert_type_exists = False
     if alert_type:
         alert_filters = client.get_ranger_table_filters('alerts')
         filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
         if filters_url_suffix:
             for filter_type in filters_url_suffix:
                 filters.append(add_filter(filter_type[0], filter_type[1]))
+                alert_type_exists = True
 
     alert_time = args.get("date_from", None)
     if alert_time:
@@ -299,8 +300,12 @@ def query_alerts_command(client: Client, args: dict) -> Tuple:
     if alert_severity:
         add_filter("severity", get_severity_filter(alert_severity), "gte")
 
-    result = client.get_alerts(relevant_fields, sort_by, filters, limit)
-    parsed_results = _parse_alerts_result(result, relevant_fields)
+    if bool(alert_type) == alert_type_exists:
+        result = client.get_alerts(relevant_fields, sort_by, filters, limit)
+        parsed_results = _parse_alerts_result(result, relevant_fields)
+    else:
+        result = {}
+        parsed_results = []
 
     outputs = {
         'Claroty.Alert(val.ResourceID == obj.ResourceID)': parsed_results
@@ -358,7 +363,6 @@ def _parse_single_alert(alert_obj: dict, fields: list) -> dict:
             alert_type_value = alert_obj.get("type__", [])
             parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["type__"]] = alert_type_value[1:] \
                 if alert_type_value else None
-
 
         elif field == "alert_indicators":
             indicator_str_result = ""
@@ -481,7 +485,7 @@ def transform_filters_labels_to_values(table_filters, filter_name: str, filter_v
     for table_filter in table_filters:
         if table_filter['name'].lower() == filter_name:
             table_filter_value = next((table_filter_value['value'] for table_filter_value in table_filter['values']
-                                      if filter_val == table_filter_value['label'].lower()), None)
+                                      if filter_val == table_filter_value['label'].lower().replace(" ", "")), None)
             if table_filter_value:
                 chosen_filters.append((table_filter['name'], table_filter_value))
 
@@ -508,16 +512,21 @@ def get_list_incidents(client: Client, latest_created_time):
     if site_id:
         extra_filters["site_id"] = site_id
 
-    alert_type = demisto.params().get("alert_type", None)
+    alert_type = demisto.params().get("alert_type", "").lower().replace(" ", "")
+    alert_type_exists = False
     if alert_type:
         alert_filters = client.get_ranger_table_filters('alerts')
-        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type.lower())
+        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
         if filters_url_suffix:
             for filter_type in filters_url_suffix:
                 extra_filters["type"] = filter_type[1]
+                alert_type_exists = True
 
-    response = client.list_incidents(field_list, get_sort("timestamp"), latest_created_time.strftime(DATE_FORMAT),
-                                     **extra_filters)
+    if bool(alert_type) == alert_type_exists:
+        response = client.list_incidents(field_list, get_sort("timestamp"), latest_created_time.strftime(DATE_FORMAT),
+                                         **extra_filters)
+    else:
+        response = {}
 
     return response, field_list
 
@@ -560,7 +569,7 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
             current_max_rid = item["ResourceID"]
     next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT),
                 'last_resource_id': current_max_rid}
-    demisto.info(f"========================================== {next_run}")
+    # demisto.info(f"========================================== {next_run}")
     return next_run, incidents
 
 
