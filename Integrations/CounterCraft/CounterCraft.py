@@ -235,6 +235,30 @@ def http_request(request_method, path, data={}, params=""):
         return_error(str(ex))
 
 
+def return_host_standard_context(host):
+
+    host_standard_context = {}
+
+    if host['type_code'] == 'MACHINE':
+
+        host_standard_context["ID"] = host['uuid']
+        host_standard_context["IP"] = host['data']['ip_address']
+
+        if 'ansible_facts' in host['data']:
+
+            host_standard_context["Domain"] = host['data']['ansible_facts']['ansible_domain']
+            host_standard_context["Hostname"] = host['data']['ansible_facts']['ansible_hostname']
+            host_standard_context["BIOSVersion"] = host['data']['ansible_facts']['ansible_bios_version']
+            host_standard_context["Memory"] = host['data']['ansible_facts']['ansible_memtotal_mb']
+            host_standard_context["Model"] = host['data']['ansible_facts']['ansible_memtotal_mb']
+            host_standard_context["OS"] = host['data']['ansible_facts']['ansible_os_family']
+            host_standard_context["OSVersion"] = host['data']['ansible_facts']['ansible_distribution_version']
+            host_standard_context["Processor"] = ' '.join(host['data']['ansible_facts']['ansible_processor'])
+            host_standard_context["Processors"] = len(host['data']['ansible_facts']['ansible_processor'])
+
+    return host_standard_context
+
+
 def return_results(title, content, human_readable, context, headers):
     """
     Generic function that receives a result json, and turns it into an entryObject
@@ -391,13 +415,15 @@ def list_hosts_command():
                 for old_key, new_key in HOST_FIELDS.items()
             }
         )
+
     context = createContext(new_hosts, removeNull=True)
+    contextHosts = createContext([return_host_standard_context(x) for x in res["data"]], removeNull=True)
 
     return_results(
         "Hosts",
         res["data"],
         new_hosts,
-        {"CounterCraft.Host(val.ID && val.ID === obj.ID)": context},
+        {"CounterCraft.Host(val.ID && val.ID === obj.ID)": context, "Host(val.IP && val.IP === obj.IP)": contextHosts},
         headers=["ID", "Name", "Description", "StatusCode", "TypeCode"],
     )
 
