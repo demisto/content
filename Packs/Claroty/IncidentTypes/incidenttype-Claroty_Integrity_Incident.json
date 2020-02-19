@@ -11,7 +11,7 @@
 	"id": "Claroty Integrity Incident",
 	"locked": false,
 	"name": "Claroty Integrity Incident",
-	"playbookId": "54e6d2f8-8f27-4291-8ab7-e81480780c0e",
+	"playbookId": "Claroty Incident",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
@@ -19,5 +19,6 @@
 	"system": false,
 	"version": -1,
 	"weeks": 0,
-	"weeksR": 0
+	"weeksR": 0,
+	"fromversion": "5.0.0"
 }

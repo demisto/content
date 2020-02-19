@@ -2,22 +2,22 @@ id: Claroty Manage Asset CVEs
 inputs: []
 name: Claroty Manage Asset CVEs
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     separatecontext: false
     task:
-      brand: ""
-      description: Manually resolved problem.
+      brand: ''
+      description: ''
       id: d98bd2ff-2dff-4912-8a59-2477524ad23b
       iscommand: false
-      name: ""
+      name: ''
       version: -1
     taskid: d98bd2ff-2dff-4912-8a59-2477524ad23b
     timertriggers: []
@@ -29,12 +29,12 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     scriptarguments:
       criticality:
@@ -42,11 +42,11 @@ tasks:
       fields: {}
       insight_name: {}
       should_enrich_assets:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
     task:
-      brand: ""
-      description: Gets all assets from CTD. You can apply one or more filters.
+      brand: ''
+      description: ''
       id: 9d2e2b1c-10b8-4d3e-8ffa-8542957d2b40
       iscommand: true
       name: Get Claroty High Criticality Asset and CVE Information
@@ -63,13 +63,13 @@ tasks:
           "y": 195
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "3"
-      - "4"
+      - '3'
+      - '4'
     note: false
     scriptarguments:
       append: {}
@@ -79,8 +79,8 @@ tasks:
         simple: ${Claroty.Asset}
     separatecontext: false
     task:
-      brand: ""
-      description: Sets a value into the context with the given context key
+      brand: ''
+      description: ''
       id: edc6a8a1-8444-4a2a-825a-5e0232f858ec
       iscommand: false
       name: Set ClarotyAsset Context key in Context
@@ -97,12 +97,12 @@ tasks:
           "y": 370
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     scriptarguments:
       append: {}
@@ -118,7 +118,7 @@ tasks:
               operator: greaterThanOrEqual
               right:
                 value:
-                  simple: "7.0"
+                  simple: '7.0'
           root: ClarotyAsset
           transformers:
           - args:
@@ -129,8 +129,8 @@ tasks:
             operator: SetIfEmpty
     separatecontext: false
     task:
-      brand: ""
-      description: Sets a value into the context with the given context key
+      brand: ''
+      description: ''
       id: bf0aac68-4af0-45d8-868a-7b3427ce66fc
       iscommand: false
       name: Filter Assets with High Score CVEs (>= 7.0)
@@ -147,12 +147,12 @@ tasks:
           "y": 545
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     scriptarguments:
       append: {}
@@ -168,7 +168,7 @@ tasks:
               operator: lessThan
               right:
                 value:
-                  simple: "7"
+                  simple: '7'
           root: ClarotyAsset
           transformers:
           - args:
@@ -179,8 +179,8 @@ tasks:
             operator: SetIfEmpty
     separatecontext: false
     task:
-      brand: ""
-      description: Sets a value into the context with the given context key
+      brand: ''
+      description: ''
       id: 9c773fa9-5ff4-4e49-8cc7-7c3db4705d06
       iscommand: false
       name: Filter Other Assets (Score < 7.0)
@@ -197,14 +197,14 @@ tasks:
           "y": 545
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     note: false
     separatecontext: false
     task:
-      brand: ""
-      description: Manually resolved problem.
+      brand: ''
+      description: ''
       id: fc98b065-2163-4c88-8991-8ba7f526932d
       iscommand: false
       name: End
@@ -220,17 +220,17 @@ tasks:
           "y": 895
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     separatecontext: false
     task:
-      brand: ""
-      description: Manually resolved problem.
+      brand: ''
+      description: ''
       id: 8ccd27b0-c874-4851-8e60-7e625f766487
       iscommand: false
       name: Open IT Ticket to resolve issues
@@ -246,12 +246,12 @@ tasks:
           "y": 720
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     scriptarguments:
       account: {}
@@ -488,7 +488,7 @@ tasks:
       score: {}
       sectorofaffectedparty: {}
       severity:
-        simple: "4"
+        simple: '4'
       signature: {}
       signindatetime: {}
       sizenumberofemployees: {}
@@ -574,7 +574,7 @@ tasks:
     separatecontext: false
     task:
       brand: Builtin
-      description: commands.local.cmd.create.inc
+      description: ''
       id: ebb429c2-fc3a-44d9-8a99-05ded946c54b
       iscommand: true
       name: Create Demisto Incidents
@@ -604,3 +604,5 @@ view: |-
       }
     }
   }
+description: ''
+fromversion: 5.0.0

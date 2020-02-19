@@ -182,5 +182,6 @@
 		"simple": "Category"
 	},
 	"unclassifiedCases": {},
-	"version": -1
+	"version": -1,
+	"fromversion": "5.0.0"
 }

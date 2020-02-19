@@ -113,7 +113,7 @@ class Client(BaseClient):
         else:
             return demisto.getIntegrationContext()
 
-    def list_incidents(self, fields: list, sort_by: dict, fetch_from_date: datetime, page_number: int,
+    def list_incidents(self, fields: list, sort_by: dict, fetch_from_date: str, page_number: int,
                        **extra_filters) -> dict:
         extra_filters_list = [add_filter("timestamp", fetch_from_date, "gte")]
         for extra_filter in extra_filters:
@@ -182,23 +182,14 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    try:
-        authentication_result = client._generate_token()
-        if not authentication_result.get("jwt_token", False):
-            return f'Token getter failed, adding result - {authentication_result}'
+    authentication_result = client._generate_token()
+    if not authentication_result.get("jwt_token", False):
+        return f'Token getter failed, adding result - {authentication_result}'
 
-        query_alerts_result = client.get_alerts(DEFAULT_ALERT_FIELD_LIST, get_sort("timestamp"), [], limit=1)
-        if query_alerts_result.get("count_total", 0) == 0:
-            return f"Failed getting alerts, json result - {query_alerts_result}"
+    query_alerts_result = client.get_alerts(DEFAULT_ALERT_FIELD_LIST, get_sort("timestamp"), [], limit=1)
+    if query_alerts_result.get("count_total", "Failed") == "Failed":
+        return f"Failed getting alerts, json result - {query_alerts_result}"
 
-    # Can't debug, exception is useless
-    except Exception as e:
-        return "aaaaaaa"
-    except DemistoException as e:
-        if "401" in str(e):
-            return "Bad credentials given"
-        else:
-            raise e
     return 'ok'
 
 
@@ -241,6 +232,7 @@ def get_assets_command(client: Client, args: dict) -> Tuple:
 
 
 def resolve_alert_command(client: Client, args: dict) -> Tuple:
+    # TODO: CHECK FORMAT
     selected_alerts_arg = args.get("selected_alerts", [])
     selected_alert_list = selected_alerts_arg.split(",") \
         if isinstance(selected_alerts_arg, str) else selected_alerts_arg
@@ -505,7 +497,7 @@ def get_severity_filter(severity: str) -> str:
     return severity_filter
 
 
-def get_list_incidents(client: Client, latest_created_time, page_number: int):
+def get_list_incidents(client: Client, latest_created_time: str, page_number: int):
     field_list = DEFAULT_ALERT_FIELD_LIST + ["timestamp"]
     extra_filters = {}
 
@@ -529,8 +521,8 @@ def get_list_incidents(client: Client, latest_created_time, page_number: int):
                 alert_type_exists = True
 
     if bool(alert_type) == alert_type_exists:
-        response = client.list_incidents(field_list, get_sort("timestamp"), latest_created_time.strftime(DATE_FORMAT),
-                                         page_number, **extra_filters)
+        response = client.list_incidents(field_list, get_sort("timestamp"), latest_created_time, page_number,
+                                         **extra_filters)
     else:
         response = {}
 
@@ -545,10 +537,8 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     last_run_rids = last_run.get('last_run_rids', {})
     page_to_query = last_run.get('page_to_query', 1)
 
-    if last_fetch is None:
-        last_fetch = first_fetch_time
-    else:
-        last_fetch = dateparser.parse(last_fetch).replace(tzinfo=None)
+    if not last_fetch:
+        last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
 
     current_rids = []
     incidents = []
