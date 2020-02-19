@@ -1,3 +1,2 @@
-## Hello World
-- This text is markdown
-- Here you should explain how to configure the instance in Demisto
+## Alien Vault OTX TAXII Feed
+This integration fetches indicators from AlienVault OTX using a TAXII client.
