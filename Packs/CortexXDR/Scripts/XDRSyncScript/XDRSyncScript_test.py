@@ -2,7 +2,8 @@ from CommonServerPython import *
 import copy
 import json
 import XDRSyncScript as xdr_script
-from XDRSyncScript import ASSIGNED_USER_MAIL_XDR_FIELD, MODIFICATION_TIME_XDR_FIELD
+from XDRSyncScript import ASSIGNED_USER_MAIL_XDR_FIELD, MODIFICATION_TIME_XDR_FIELD, MANUAL_SEVERITY_XDR_FIELD, SEVERITY_XDR_FIELD
+
 
 
 INCIDENT_IN_DEMISTO = {
@@ -511,18 +512,7 @@ def test_fix_bug_19669(mocker, capfd):
     assert results[0]['Contents'] == 'Raised exception'
 
 
-def test_incident_just_fetched():
-    """
-    - incident was just fetched from XDR and created in Demisto
-
-    - XDRSyncScript executed
-
-    - nothing should be updated, because both incidents are synced
-    """
-    pass
-
-
-def create_test_incident(no_assignee=False):
+def create_test_incident(no_assignee=False, severity=None):
     xdr_incident = copy.deepcopy(INCIDENT_FROM_XDR)
     demisto_incident = copy.deepcopy(INCIDENT_IN_DEMISTO)
 
@@ -533,7 +523,18 @@ def create_test_incident(no_assignee=False):
         demisto_incident['xdrassignedusermail'] = ''
         demisto_incident['xdrassigneduserprettyname'] = ''
 
+    if severity:
+        xdr_incident[SEVERITY_XDR_FIELD] = severity
+
+        # 3=high, 2=medium, 1=low
+        demisto_incident['severity'] = {
+            'high': 3,
+            'medium': 2,
+            'low': 1
+        }[severity]
+
     xdr_incident_from_previous_run = copy.deepcopy(xdr_incident)
+
     if 'alerts' in xdr_incident_from_previous_run:
         del xdr_incident_from_previous_run['alerts']
     if 'file_artifacts' in xdr_incident_from_previous_run:
@@ -634,3 +635,73 @@ def test_incident_was_modified_in_xdr(mocker):
 
     scheduled_command = scheduled_command_args['command']
     assert '"assigned_user_mail": "foo@test.com"' in scheduled_command
+
+
+def test_incident_was_modified_in_demisto(mocker):
+    """
+    - incident in demisto and in XDR with low severity
+
+    - incident severity in Demisto is updated by the user to be "high"
+
+    - XDRSyncScript executed
+
+    - ensure incident severity in XDR is updated to be high
+    - ensure playbook is NOT executed
+    - ensure XDRSyncScript is scheduled to be executed in the next internal with
+        xdr_incident_from_previous_run has severity=high
+    """
+    import XDRSyncScript as xdr_script
+    import demistomock as demisto
+
+    # - incident in demisto
+    # - incident in xdr
+    demisto_incident, xdr_incident_from_previous_run, xdr_incident_latest = create_test_incident(severity='low')
+
+    # - incident severity in Demisto is updated by the user to be "high"
+    demisto_incident['severity'] = 3
+
+    # - XDRSyncScript executed
+    mocker.patch.object(demisto, 'incidents', return_value=[demisto_incident])
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{
+        'Contents': {
+            'incident': xdr_incident_latest,
+            'alerts': {
+                'data': xdr_incident_latest['alerts']
+            },
+            'file_artifacts': {
+                'data': xdr_incident_latest['file_artifacts']
+            },
+            'network_artifacts': {
+                'data': xdr_incident_latest['network_artifacts']
+            }
+        },
+        'HumanReadable': 'nla',
+        'Type': entryTypes['note'],
+        'Format': formats['json']
+    }])
+    args = {
+        'interval': '1',
+        'verbose': 'true',
+        'first': 'false',
+        SEVERITY_XDR_FIELD: 'severity',
+        'xdr_alerts': 'xdralerts',
+        'xdr_file_artifacts': 'xdrfileartifacts',
+        'xdr_network_artifacts': 'xdrnetworkartifacts',
+        'xdr_incident_from_previous_run': json.dumps(xdr_incident_from_previous_run)
+    }
+    xdr_script.main(args)
+
+    # - ensure incident severity in XDR is updated to be high
+    is_called, xdr_update_args = get_execute_command_call(demisto.executeCommand, 'xdr-update-incident')
+    assert is_called is True
+    assert xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] == 'high'
+
+    # - ensure playbook is NOT executed
+    is_playbook_executed, _ = get_execute_command_call(demisto.executeCommand, 'setPlaybook')
+    assert not is_playbook_executed
+
+    # - ensure XDRSyncScript is scheduled to be executed in the next internal with
+    #     xdr_incident_from_previous_run has severity=high
+    is_called, scheduled_command_args = get_execute_command_call(demisto.executeCommand, 'ScheduleCommand')
+    assert is_called is True

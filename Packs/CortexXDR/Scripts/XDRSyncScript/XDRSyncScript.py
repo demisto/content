@@ -60,7 +60,6 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
     incident_in_demisto_was_modified = False
 
     xdr_update_args: Dict[str, Optional[str]] = {}
-
     if modified_in_demisto > modified_in_xdr_in_context:
         if ASSIGNED_USER_MAIL_XDR_FIELD in fields_mapping:
             field_name_in_demisto = fields_mapping[ASSIGNED_USER_MAIL_XDR_FIELD]
