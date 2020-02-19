@@ -1,12 +1,12 @@
 from Pcysys import Client, pentera_authentication, pentera_run_template_command, pentera_get_task_run_stats_command, \
     pentera_get_task_run_full_action_report_command
 import demistomock as demisto
+import jwt
 
 MOCK_PENTERA_FULL_ACTION_REPORT = 'penterascan-5e4530961deb8eda82b08730.csv'
 MOCK_CSV = open('TestData/mock_csv_file', 'r').read()
 MOCK_AUTHENTICATION = {
-    "token": "eyJhbGciOiJIUzI1NiIsImV4cCI6MTU3OTc2MzM2NCwiaWF0IjoxNTc5NzYyNDY0fQ.eyJ1c2VybmFtZSI6ImFkbWluIiwiaXAiOiIxOT"
-             "IuMTY4LjAuMTIifQ.EiLAjQFPqMySo5DFNyjfd7gliyiscPnHPpLOuFPEytk",
+    "token": "TOKEN",
     "tgt": "TGT"
 }
 MOCK_AUTHENTICATION_EXP = 1579763364
@@ -141,6 +141,9 @@ def test_pentera_authentication(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={
         'tgt': 'omgNewSecret'
     })
+    mocker.patch.object(jwt, 'get_unverified_header',
+                        return_value={'alg': 'HS256', 'exp': 1579763364, 'iat': 1579762464})
+
     requests_mock.post('https://pentera.com:8181/auth/token', json=MOCK_AUTHENTICATION)
     mocker.patch.object(demisto, 'args', return_value={})
     mocker.patch.object(demisto, 'setIntegrationContext')
