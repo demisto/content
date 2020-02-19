@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+1. Support whitelist specific incidents fields
 
 ## [19.11.0] - 2019-11-12
 #### New Script
