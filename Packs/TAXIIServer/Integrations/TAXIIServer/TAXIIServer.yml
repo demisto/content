@@ -22,7 +22,7 @@ configuration:
   name: key
   required: false
   type: 14
-- additionalinfo: Ignores certificate and private key, and will run the TAXII server
+- additionalinfo: Ignores the certificate and private key, and will run the TAXII server
     in HTTP
   defaultvalue: 'true'
   display: HTTP Server
@@ -30,13 +30,13 @@ configuration:
   name: http_flag
   required: false
   type: 8
-- additionalinfo: JSON string of indicator query collections.
+- additionalinfo: JSON string of indicator query collections
   display: Collection JSON
   hidden: false
   name: collections
   required: true
   type: 12
-description: This integration provides TAXII Services for the system indicators (Outbound
+description: This integration provides TAXII Services for system indicators (Outbound
   feed).
 display: TAXII Server
 name: TAXII Server
