@@ -557,3 +557,5 @@ inputs: []
 outputs: []
 description: ''
 fromversion: 5.0.0
+tests:
+  - No tests - Demo playbook
