@@ -253,13 +253,10 @@ class TAXIIServer:
 
             for indicator in find_indicators_by_time_frame(indicator_query, exclusive_begin_time, inclusive_end_time):
                 try:
-                    json_stix = get_stix_indicator(indicator)
-                    stix_indicator = stix.core.STIXPackage.from_json(json_stix)
+                    stix_xml_indicator = get_stix_indicator(indicator).to_xml(ns_dict={NAMESPACE_URI: NAMESPACE})
                     content_block = ContentBlock(
                         content_binding=CB_STIX_XML_11,
-                        content=stix_indicator.to_xml(ns_dict={
-                            NAMESPACE_URI: NAMESPACE
-                        })
+                        content=stix_xml_indicator
                     )
 
                     content_xml = content_block.to_xml().decode('utf-8')
@@ -506,14 +503,14 @@ def set_id_namespace(uri: str, name: str):
     mixbox.idgen.set_id_namespace(namespace)
 
 
-def get_stix_indicator(indicator: dict) -> str:
+def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
     """
     Convert a Demisto indicator to STIX.
     Args:
         indicator: The Demisto indicator.
 
     Returns:
-        The STIX indicator as JSON string.
+        The STIX indicator as XML string.
     """
     set_id_namespace(NAMESPACE_URI, NAMESPACE)
 
@@ -591,7 +588,7 @@ def get_stix_indicator(indicator: dict) -> str:
 
         stix_package.add_indicator(stix_indicator)
 
-    return stix_package.to_json()
+    return stix_package
 
 
 ''' HELPER FUNCTIONS '''
@@ -696,7 +693,7 @@ def get_collections(params: dict = demisto.params()) -> dict:
     try:
         collections = json.loads(collections_json)
     except Exception:
-        raise ValueError('The collections string must be a valid JSON string.')
+        raise ValueError('The collections string must be a valid JSON object.')
 
     return collections
 
@@ -720,12 +717,12 @@ def find_indicators_by_time_frame(indicator_query: str, begin_time: datetime, en
 
     if begin_time:
         tz_begin_time = datetime.strftime(begin_time, '%Y-%m-%dT%H:%M:%S %z')
-        indicator_query += f'createdTime:>"{tz_begin_time}"'
+        indicator_query += f'sourcetimestamp:>"{tz_begin_time}"'
         if end_time:
             indicator_query += ' and '
     if end_time:
         tz_end_time = datetime.strftime(end_time, '%Y-%m-%dT%H:%M:%S %z')
-        indicator_query += f'createdTime:<="{tz_end_time}"'
+        indicator_query += f'sourcetimestamp:<="{tz_end_time}"'
     demisto.info(f'Querying indicators by: {indicator_query}')
 
     return find_indicators_loop(indicator_query)
@@ -762,14 +759,14 @@ def taxii_make_response(taxii_message: TAXIIMessage):
     Returns:
         A taxii HTTP response.
     """
-    h = {
+    headers = {
         'Content-Type': "application/xml",
         'X-TAXII-Content-Type': 'urn:taxii.mitre.org:message:xml:1.1',
         'X-TAXII-Protocol': 'urn:taxii.mitre.org:protocol:http:1.0'
     }
-    r = make_response((taxii_message.to_xml(pretty_print=True), 200, h))
+    response = make_response((taxii_message.to_xml(pretty_print=True), 200, headers))
 
-    return r
+    return response
 
 
 ''' ROUTE FUNCTIONS '''
@@ -836,13 +833,13 @@ def taxii_poll_service() -> Response:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module():
-    run_server(True)
+def test_module(taxii_server: TAXIIServer):
+    run_server(taxii_server, True)
 
     return 'ok', {}, {}
 
 
-def run_server(is_test: bool = False):
+def run_server(taxii_server: TAXIIServer, is_test: bool = False):
     """
     Start the taxii server.
     """
@@ -851,30 +848,30 @@ def run_server(is_test: bool = False):
     private_key_path = str()
     ssl_args = dict()
     try:
-        if SERVER.certificate and SERVER.private_key and not SERVER.http_server:
+        if taxii_server.certificate and taxii_server.private_key and not taxii_server.http_server:
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
-            certificate_file.write(bytes(SERVER.certificate, 'utf-8'))
+            certificate_file.write(bytes(taxii_server.certificate, 'utf-8'))
             certificate_file.close()
             ssl_args['certfile'] = certificate_path
 
             private_key_file = NamedTemporaryFile(delete=False)
             private_key_path = private_key_file.name
-            private_key_file.write(bytes(SERVER.private_key, 'utf-8'))
+            private_key_file.write(bytes(taxii_server.private_key, 'utf-8'))
             private_key_file.close()
             ssl_args['keyfile'] = private_key_path
             demisto.debug('Starting HTTPS Server')
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', SERVER.port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        wsgi_server = WSGIServer(('', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
-            server_process = Process(target=server.serve_forever)
+            server_process = Process(target=wsgi_server.serve_forever)
             server_process.start()
             time.sleep(10)
             server_process.terminate()
         else:
-            server.serve_forever()
+            wsgi_server.serve_forever()
     except Exception as e:
         if certificate_path:
             os.unlink(certificate_path)
@@ -911,9 +908,9 @@ def main():
 
     try:
         if command == 'long-running-execution':
-            run_server()
+            run_server(SERVER)
         else:
-            readable_output, outputs, raw_response = commands[command]()
+            readable_output, outputs, raw_response = commands[command](SERVER)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'

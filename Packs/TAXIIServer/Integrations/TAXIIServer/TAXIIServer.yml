@@ -22,6 +22,11 @@ configuration:
   name: key
   required: false
   type: 14
+- display: Username
+  hidden: false
+  name: credentials
+  required: false
+  type: 9
 - additionalinfo: Ignores certificate and private key, and will run the TAXII server
     in HTTP
   defaultvalue: 'true'
@@ -30,7 +35,8 @@ configuration:
   name: http_flag
   required: false
   type: 8
-- additionalinfo: JSON string of indicator query collections.
+- additionalinfo: JSON string of indicator query collections - dictionary of the collection
+    name as the key and the query as the value.
   display: Collection JSON
   hidden: false
   name: collections
