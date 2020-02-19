@@ -1,6 +1,6 @@
 import dateparser
 import demistomock as demisto
-from .Claroty import Client, fetch_incidents
+from Claroty import Client, fetch_incidents
 
 MOCK_AUTHENTICATION = {
     "first_name": "admin",
@@ -105,7 +105,8 @@ def _create_client(mocker, requests_mock, request_url, response_json, request_ty
         'fetch_time': '7 days'
     })
 
-    if request_type == "POST":
+    requests_mock.post('https://website.com:5000/auth/authenticate', json=MOCK_AUTHENTICATION)
+    if request_type == "POST" and request_url != 'https://website.com:5000/auth/authenticate':
         requests_mock.post(request_url, json=response_json)
     elif request_type == "GET":
         requests_mock.get(request_url, json=response_json)
@@ -122,7 +123,6 @@ def _create_client(mocker, requests_mock, request_url, response_json, request_ty
         verify=verify_certificate,
         credentials=(username, password),
         proxy=proxy,
-        not_mock=False,
     )
 
     return client
@@ -132,7 +132,7 @@ def test_claroty_authentication(mocker, requests_mock):
     client = _create_client(mocker, requests_mock, 'https://website.com:5000/auth/authenticate',
                             MOCK_AUTHENTICATION, "POST")
 
-    token = client._generate_token()
+    token = client._generate_token()["jwt_token"]
     assert token == 'ok'
 
 

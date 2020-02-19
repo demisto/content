@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 """ IMPORTS """
 from distutils.util import strtobool
-from typing import List, Tuple, Dict, Any, Optional, Union
+from typing import List, Tuple, Dict, Any, Union
 import json
 import requests
 import dateparser
@@ -74,18 +74,12 @@ MAX_ALERT_LIMIT = 75
 class Client(BaseClient):
     def __init__(self, **kwargs):
         self._credentials = kwargs.pop("credentials", (None, None))
-        not_mock = kwargs.pop("not_mock", True)
         super().__init__(**kwargs)
         self._headers = DEFAULT_HEADERS
-        if not_mock:
-            self._generate_token()
-        else:
-            self._headers['Authorization'] = "ok"
-
+        self._generate_token()
         self._list_to_filters: dict = {'alerts': [], 'assets': []}
 
-    def _request_with_token(self, url_suffix: str, method: str = "GET",
-                            data: dict = None) -> Union[Dict, str, requests.Response]:
+    def _request_with_token(self, url_suffix: str, method: str = "GET", data=None):
         try:
             return self._http_request(method, url_suffix=url_suffix, data=data)
         except DemistoException:
@@ -96,7 +90,7 @@ class Client(BaseClient):
 
             return self._http_request(method, url_suffix=url_suffix, data=data)
 
-    def _generate_token(self) -> Union[str, dict]:
+    def _generate_token(self):
         if not demisto.getIntegrationContext().get("jwt_token"):
             res = self._http_request(
                 'POST',
@@ -123,13 +117,11 @@ class Client(BaseClient):
                 extra_filters_list.append(add_filter(extra_filter, extra_filters[extra_filter]))
         return self.get_alerts(fields=fields, sort_by=sort_by, filters=extra_filters_list, page_number=page_number)
 
-    def get_assets(self, fields: list, sort_by: dict, filters: list,
-                   limit: int = 10) -> Union[Dict, str, requests.Response]:
+    def get_assets(self, fields: list, sort_by: dict, filters: list, limit: int = 10):
         url_suffix = self._add_extra_params_to_url('ranger/assets', fields, sort_by, filters, limit)
         return self._request_with_token(url_suffix, 'GET')
 
-    def get_alerts(self, fields: list, sort_by: dict, filters: list,
-                   limit: int = 10, page_number: int = 1) -> Union[Dict, str, requests.Response]:
+    def get_alerts(self, fields: list, sort_by: dict, filters: list, limit: int = 10, page_number: int = 1):
         url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort_by, filters, limit, page_number)
         return self._request_with_token(url_suffix, 'GET')
 
@@ -141,8 +133,7 @@ class Client(BaseClient):
             self._list_to_filters[table] = self._request_with_token(f'ranger/{table}/filters', 'GET')['filters']
         return self._list_to_filters[table]
 
-    def resolve_alert(self, selected_alerts: list, filters: dict, resolve_type: int,
-                      resolve_comment: str) -> Union[Dict, str, requests.Response]:
+    def resolve_alert(self, selected_alerts: list, filters: dict, resolve_type: int, resolve_comment: str):
         return self._request_with_token(
             'ranger/ranger_api/resolve_alerts',
             'POST',
@@ -181,7 +172,7 @@ class Client(BaseClient):
         return assets
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client):
     authentication_result = client._generate_token()
     if not authentication_result.get("jwt_token", False):
         return f'Token getter failed, adding result - {authentication_result}'
@@ -363,7 +354,7 @@ def _parse_alerts_result(alert_result: dict, fields: list) -> List[dict]:
     return alerts
 
 
-def _parse_single_alert(alert_obj: dict, fields: list) -> dict:
+def _parse_single_alert(alert_obj, fields: list):
     parsed_alert_result = {}
     for field in fields:
         if field == "type":
@@ -403,7 +394,7 @@ def _parse_single_alert(alert_obj: dict, fields: list) -> dict:
     return parsed_alert_result
 
 
-def _parse_assets_result(assets_result: dict, fields: list) -> Tuple[List[Dict[Any, Any]], List[Optional[Any]]]:
+def _parse_assets_result(assets_result: dict, fields: list) -> Tuple:
     if 'objects' not in assets_result:
         return [], []
     obj = assets_result.get('objects', [])
@@ -602,8 +593,7 @@ def main():
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
 
-    base_url = demisto.params().get('url')
-    base_url = base_url[:-1] if base_url[-1] == "/" else base_url
+    base_url = demisto.params()['url'].rstrip('/') + ':5000'
 
     verify_certificate = not demisto.params().get('insecure', True)
 
