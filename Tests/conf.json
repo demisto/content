@@ -206,6 +206,11 @@
             "playbookID": "Minerva Test playbook"
         },
         {
+            "integrations": "abuse.ch SSL Blacklist Feed",
+            "playbookID": "SSL Blacklist test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "CheckPhish",
             "playbookID": "CheckPhish-Test"
         },
@@ -2318,6 +2323,10 @@
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_30_days",
             "playbookID": "playbook-feodotrackeripblock_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
         }
     ],
