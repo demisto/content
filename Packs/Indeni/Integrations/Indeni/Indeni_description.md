@@ -1,7 +1,7 @@
 ## Indeni
 You can retrieve the API Key from the Indeni UI
 
-Naviate to:
+Navigate to:
 - Settings
 - About
 
