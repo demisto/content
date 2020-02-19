@@ -97,6 +97,9 @@ def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dic
                           'title', 'description', 'platforms_affected', 'exploitability']
     additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
 
+    if dbot_score['Score'] == 3:
+        outputs['Malicious'] = {'Vendor': 'XFE', 'Description': report.get('description')}
+
     context = {outputPaths['cve']: outputs,
                DBOT_SCORE_KEY: dbot_score,
                f'XFE.{outputPaths["cve"]}': additional_info}
@@ -126,7 +129,7 @@ def test_module(client: Client) -> str:
         str: 'ok' if test passed, anything else will fail the test.
     """
 
-    return 'ok' if client.ip_report('8.8.8.8')['ip'] == '8.8.8.8' else 'Connection failed.'
+    return 'ok' if client.url_report('google.com') else 'Connection failed.'
 
 
 def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -152,13 +155,14 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         report = client.ip_report(ip)
         outputs = {'Address': report['ip'],
                    'Score': report.get('score'),
-                   'Geo': {'Country': report.get('geo', {}).get('country', '')},
-                   'Malicious': {'Vendor': 'XFE'}
-                   }
+                   'Geo': {'Country': report.get('geo', {}).get('country', '')}}
         additional_info = {string_to_context_key(field): report[field] for field in
                            ['reason', 'reasonDescription', 'subnets']}
         dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
                       'Score': calculate_score(report['score'], threshold)}
+
+        if dbot_score['Score'] == 3:
+            outputs['Malicious'] = {'Vendor': 'XFE', 'Description': additional_info['Reasondescription']}
 
         context[outputPaths['ip']].append(outputs)
         context[f'XFE.{outputPaths["ip"]}'].append(additional_info)
@@ -196,12 +200,15 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     for url in urls:
         report = client.url_report(url)
 
-        outputs = {'Data': report['url'], 'Malicious': {'Vendor': 'XFE'}}
+        outputs = {'Data': report['url']}
         dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
                       'Score': calculate_score(report['score'], threshold)}
 
+        if dbot_score['Score'] == 3:
+            outputs['Malicious'] = {'Vendor': 'XFE'}
+
         context[outputPaths['url']].append(outputs)
-        context[DBOT_SCORE_KEY] = dbot_score
+        context[DBOT_SCORE_KEY].append(dbot_score)
 
         table = {'Score': report['score'],
                  'Categories': '\n'.join(report['cats'].keys())}
@@ -353,11 +360,28 @@ def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]
 
     result = client.whois(args['host'])
 
+    contact = [{k.title(): v for k, v in contact.items()} for contact in result.get('contact', [])]
     outputs = {'Host': args['host'], 'RegistrarName': result.get('registrarName'),
                'Created': result.get('createdDate'), 'Updated': result.get('updatedDate'),
                'Expires': result.get('expiresDate'), 'Email': result.get('contactEmail'),
-               'Contact': [{k.title(): v for k, v in contact.items()} for contact in result.get('contact', [])]}
-    context = {'XFE.Whois(obj.Host==val.Host)': outputs}
+               'Contact': contact}
+
+    domain = {'Name': args['host'], 'CreationDate': outputs['Created'],
+              'ExpirationDate': outputs['Expires'], 'UpdatedDate': outputs['Updated'],
+              'Organization': contact[0]['Organization'] if contact else '',
+              'Registrant': {'Country': contact[0]['Country'] if contact else '',
+                             'Name': contact[0]['Organization'] if contact else ''},
+              'WHOIS': {'Registrar': {'Name': result.get('registrarName'),
+                                      'Email': result.get('contactEmail')
+                                      },
+                        'UpdatedDate': outputs['Updated'], 'ExpirationDate': outputs['Expires'],
+                        'CreationDate': outputs['Created']
+                        }
+              }
+
+    domain['WHOIS']['Registrant'] = domain['Registrant']  # type: ignore
+
+    context = {outputPaths['domain']: domain, 'XFE.Whois(obj.Host==val.Host)': outputs}
     markdown = tableToMarkdown(f'X-Force Whois result for {args["host"]}', outputs, removeNull=True)
 
     return markdown, context, result

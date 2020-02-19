@@ -330,13 +330,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The start of the date range for searching
+      description: |-
+        The start of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: The end of the date range for searching
+      description: |-
+        The end of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       isArray: false
       name: end_date
       required: false
@@ -418,27 +422,77 @@ script:
     - contextPath: XFE.Whois.Contact
       description: Contact information of the host's organization
       type: Unknown
+    - contextPath: Domain.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The creation date of the domain.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date the domain has been updated.
+      type: Date
+    - contextPath: Domain.Organization
+      description: The organizaton which owns the domain.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the domain's registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the domain's registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the domain's registar.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Email
+      description: The email of the domain's registar.
+      type: String
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date the domain has been updated.
+      type: String
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The date the domain has been updated.
+      type: Unknown
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The creation date of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the domain's registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the domain's registrant.
+      type: String
   - arguments:
     - default: true
-      description: The query for the search.
+      description: |-
+        The query for the search.
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
       isArray: false
       name: q
       required: true
       secret: false
     - default: false
-      description: The start of the date range for searching.
+      description: |-
+        The start of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: The end of the date range for searching.
+      description: |-
+        The end of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       isArray: false
       name: end_date
       required: false
       secret: false
     - default: false
-      description: Bookmark used to page through results.
+      description: |-
+        Bookmark used to page through results.
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
       isArray: false
       name: bookmark
       required: false
@@ -599,6 +653,9 @@ script:
                               'title', 'description', 'platforms_affected', 'exploitability']
         additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
 
+        if dbot_score['Score'] == 3:
+            outputs['Malicious'] = {'Vendor': 'XFE', 'Description': report.get('description')}
+
         context = {outputPaths['cve']: outputs,
                    DBOT_SCORE_KEY: dbot_score,
                    f'XFE.{outputPaths["cve"]}': additional_info}
@@ -628,10 +685,10 @@ script:
             str: 'ok' if test passed, anything else will fail the test.
         """
 
-        return 'ok' if client.ip_report('8.8.8.8')['ip'] == '8.8.8.8' else 'Connection failed.'
+        return 'ok' if client.url_report('google.com') else 'Connection failed.'
 
 
-    def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         """
         Executes IP enrichment against X-Force Exchange.
 
@@ -641,26 +698,27 @@ script:
         Returns:
             str: human readable presentation of the IP report.
             dict: the results to return into Demisto's context.
-            dict: the raw data from X-Force client (used for debugging).
+            Any: the raw data from X-Force client (used for debugging).
         """
 
         threshold = int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))
 
         markdown = ''
-        context: Dict[str, Any] = defaultdict(list)
+        context: dict = defaultdict(list)
         reports = []
 
         for ip in argToList(args.get('ip')):
             report = client.ip_report(ip)
             outputs = {'Address': report['ip'],
                        'Score': report.get('score'),
-                       'Geo': {'Country': report.get('geo', {}).get('country', '')},
-                       'Malicious': {'Vendor': 'XFE'}
-                       }
+                       'Geo': {'Country': report.get('geo', {}).get('country', '')}}
             additional_info = {string_to_context_key(field): report[field] for field in
                                ['reason', 'reasonDescription', 'subnets']}
             dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
                           'Score': calculate_score(report['score'], threshold)}
+
+            if dbot_score['Score'] == 3:
+                outputs['Malicious'] = {'Vendor': 'XFE', 'Description': additional_info['Reasondescription']}
 
             context[outputPaths['ip']].append(outputs)
             context[f'XFE.{outputPaths["ip"]}'].append(additional_info)
@@ -676,7 +734,7 @@ script:
         return markdown, context, reports
 
 
-    def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         """
          Executes URL enrichment against X-Force Exchange.
 
@@ -686,7 +744,7 @@ script:
          Returns:
              str: human readable presentation of the URL report.
              dict: the results to return into Demisto's context.
-             dict: the raw data from X-Force client (used for debugging).
+             Any: the raw data from X-Force client (used for debugging).
          """
 
         urls = argToList(args.get('url', '')) or argToList(args.get('domain', ''))
@@ -698,12 +756,15 @@ script:
         for url in urls:
             report = client.url_report(url)
 
-            outputs = {'Data': report['url'], 'Malicious': {'Vendor': 'XFE'}}
+            outputs = {'Data': report['url']}
             dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
                           'Score': calculate_score(report['score'], threshold)}
 
+            if dbot_score['Score'] == 3:
+                outputs['Malicious'] = {'Vendor': 'XFE'}
+
             context[outputPaths['url']].append(outputs)
-            context[DBOT_SCORE_KEY] = dbot_score
+            context[DBOT_SCORE_KEY].append(dbot_score)
 
             table = {'Score': report['score'],
                      'Categories': '\n'.join(report['cats'].keys())}
@@ -714,7 +775,7 @@ script:
         return markdown, context, reports
 
 
-    def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         """
          Get details about vulnerabilities (latest / search) from X-Force Exchange.
 
@@ -723,8 +784,8 @@ script:
              args (Dict[str, str]): the arguments for the command.
          Returns:
              str: human readable presentation of the CVEs reports.
-             context: the results to return into Demisto's context.
-             report: the raw data from X-Force Exchange client (used for debugging).
+             dict: the results to return into Demisto's context.
+             Any: the raw data from X-Force Exchange client (used for debugging).
         """
 
         threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
@@ -756,7 +817,7 @@ script:
         return total_markdown, total_context, reports
 
 
-    def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         """
          Executes CVE enrichment against X-Force Exchange.
 
@@ -767,7 +828,7 @@ script:
          Returns:
              str: human readable presentation of the CVE report.
              dict: the results to return into Demisto's context.
-             dict: the raw data from X-Force client (used for debugging).
+             Any: the raw data from X-Force client (used for debugging).
          """
 
         threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
@@ -780,16 +841,16 @@ script:
             cve_markdown, cve_context, _ = get_cve_results(args['cve_id'], report[0], threshold)
 
             markdown += cve_markdown
-            context[outputPaths['cve']] = cve_context[outputPaths['cve']]
-            context[DBOT_SCORE_KEY] = cve_context[DBOT_SCORE_KEY]
-            context[f'XFE.{outputPaths["cve"]}'] = cve_context[f'XFE.{outputPaths["cve"]}']
+            context[outputPaths['cve']].append(cve_context[outputPaths['cve']])
+            context[DBOT_SCORE_KEY].append(cve_context[DBOT_SCORE_KEY])
+            context[f'XFE.{outputPaths["cve"]}'].append(cve_context[f'XFE.{outputPaths["cve"]}'])
 
             reports.append(report)
 
         return markdown, context, reports
 
 
-    def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         """
         Executes file hash enrichment against X-Force Exchange.
 
@@ -800,10 +861,10 @@ script:
         Returns:
              str: human readable presentation of the file hash report.
              dict: the results to return into Demisto's context.
-             dict: the raw data from X-Force Exchange client (used for debugging).
+             Any: the raw data from X-Force Exchange client (used for debugging).
         """
 
-        context: Dict[str, Any] = defaultdict(list)
+        context: dict = defaultdict(list)
         markdown = ''
         reports = []
 
@@ -839,7 +900,7 @@ script:
         return markdown, context, reports
 
 
-    def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, dict]:
+    def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         """
         Gets information about the given host address.
 
@@ -850,16 +911,33 @@ script:
         Returns:
              str: human readable presentation of the information about the host.
              dict: the results to return into Demisto's context.
-             dict: the raw data from X-Force Exchange client (used for debugging).
+             Any: the raw data from X-Force Exchange client (used for debugging).
         """
 
         result = client.whois(args['host'])
 
+        contact = [{k.title(): v for k, v in contact.items()} for contact in result.get('contact', [])]
         outputs = {'Host': args['host'], 'RegistrarName': result.get('registrarName'),
                    'Created': result.get('createdDate'), 'Updated': result.get('updatedDate'),
                    'Expires': result.get('expiresDate'), 'Email': result.get('contactEmail'),
-                   'Contact': [{k.title(): v for k, v in contact.items()} for contact in result.get('contact', [])]}
-        context = {'XFE.Whois(obj.Host==val.Host)': outputs}
+                   'Contact': contact}
+
+        domain = {'Name': args['host'], 'CreationDate': outputs['Created'],
+                  'ExpirationDate': outputs['Expires'], 'UpdatedDate': outputs['Updated'],
+                  'Organization': contact[0]['Organization'] if contact else '',
+                  'Registrant': {'Country': contact[0]['Country'] if contact else '',
+                                 'Name': contact[0]['Organization'] if contact else ''},
+                  'WHOIS': {'Registrar': {'Name': result.get('registrarName'),
+                                          'Email': result.get('contactEmail')
+                                          },
+                            'UpdatedDate': outputs['Updated'], 'ExpirationDate': outputs['Expires'],
+                            'CreationDate': outputs['Created']
+                            }
+                  }
+
+        domain['WHOIS']['Registrant'] = domain['Registrant']
+
+        context = {outputPaths['domain']: domain, 'XFE.Whois(obj.Host==val.Host)': outputs}
         markdown = tableToMarkdown(f'X-Force Whois result for {args["host"]}', outputs, removeNull=True)
 
         return markdown, context, result

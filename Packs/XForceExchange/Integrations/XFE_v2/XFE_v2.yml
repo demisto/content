@@ -330,13 +330,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The start of the date range for searching
+      description: |-
+        The start of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: The end of the date range for searching
+      description: |-
+        The end of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       isArray: false
       name: end_date
       required: false
@@ -418,27 +422,77 @@ script:
     - contextPath: XFE.Whois.Contact
       description: Contact information of the host's organization
       type: Unknown
+    - contextPath: Domain.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The creation date of the domain.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date the domain has been updated.
+      type: Date
+    - contextPath: Domain.Organization
+      description: The organizaton which owns the domain.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the domain's registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the domain's registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the domain's registar.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Email
+      description: The email of the domain's registar.
+      type: String
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date the domain has been updated.
+      type: String
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The date the domain has been updated.
+      type: Unknown
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The creation date of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the domain's registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the domain's registrant.
+      type: String
   - arguments:
     - default: true
-      description: The query for the search.
+      description: |-
+        The query for the search.
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
       isArray: false
       name: q
       required: true
       secret: false
     - default: false
-      description: The start of the date range for searching.
+      description: |-
+        The start of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: The end of the date range for searching.
+      description: |-
+        The end of the date range for searching.
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       isArray: false
       name: end_date
       required: false
       secret: false
     - default: false
-      description: Bookmark used to page through results.
+      description: |-
+        Bookmark used to page through results.
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
       isArray: false
       name: bookmark
       required: false
