@@ -2,12 +2,34 @@
 ---
 
 Use the Claroty CTD integration to manage assets and alerts.
-This integration was integrated and tested with version xx of Claroty
+This integration was integrated and tested with version 4.0.1 of Claroty
 ## Claroty Playbook
----
+Playbook 1: OT Asset Discovery
+Maintaining an accurate enterprise asset database is extremely difficult,
+but without it effective security is near impossible. This playbook automates the population and maintenance of the 
+enterprise’s configuration management database (CMDB) with OT asset information.
+ The rich contextual data provided for each asset makes it realistic to prioritize security processes and actions 
+ based on the CMDB.
+Proactive vulnerability management is a fundamental control because it hardens assets against the most common exploits
+ seen in the wild. This playbook automates OT vulnerability management: it identifies high-severity vulnerabilities on
+ OT assets, and creates context-rich tickets in the enterprise service manager for action. Crucially, it focuses on
+ high-risk issues on truly important assets, so that non-critical issues do not overwhelm the vulnerability management
+ process and obfuscate the issues that demand immediate attention.
+
+Playbook 3: OT Threat Detection Alerts
+In order to scale, enterprises must centralize and automate the processing of alerts that are indicators of risk or
+ compromise. This playbook automates the passing of OT threat detection alerts from the Claroty CTD system to the
+ enterprise SIEM and ticketing system. CTD correlates the alert with asset and flow information observed in the OT 
+ environment and passes it upstream via the integration, allowing security analysts to quickly evaluate the alert and
+ take corrective action if necessary.
+
 
 ## Use Cases
----
+Retrieve and resolve alerts related to OT devices (communicating outside of the network,
+ policy violations such as active outside working hours, etc.)
+
+Insights: get information about vulnerable assets in the network (retrieve vulnerabilities and CVEs per asset,
+divide according to CVE risk and mitigate accordingly (high will have different mitigation steps)
 
 ## Configure Claroty on Demisto
 ---
