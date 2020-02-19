@@ -1300,6 +1300,12 @@
             "nightly": true
         },
         {
+            "integrations": "XFE_v2",
+            "playbookID": "Test_XFE_v2",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 500
