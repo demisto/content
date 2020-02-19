@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added the grid type and fix headers in the relevant investigation reports.
+- Fixes to the bar chart, and header fixes + logo rollback.
