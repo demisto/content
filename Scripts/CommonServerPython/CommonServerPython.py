@@ -746,6 +746,32 @@ def remove_empty_elements(d):
         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
+def aws_table_to_markdown(response, table_header):
+    """
+    Converts a raw response from AWS into a markdown formatted table. This function checks to see if
+    there is only one nested dict in the top level of the dictionary and will use the nested data.
+    :param response: Raw response from AWS
+    :type response: dict
+    :param table_header: The header string to use for the table.
+    :type table_header: str
+    :return: Markdown formatted table as a string.
+    ":rtype: ``str``
+    """
+    if not isinstance(response, dict):
+        return tableToMarkdown(table_header, response)
+    elif len(response) != 1:
+        return tableToMarkdown(table_header, response)
+    elif not isinstance(response[list(response.keys())[0]], dict) and \
+            not isinstance(response[list(response.keys())[0]], list):
+        return tableToMarkdown(table_header, response)
+    elif not isinstance(response[list(response.keys())[0]], list):
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+    elif not isinstance(response[list(response.keys())[0]][0], str):
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+    else:
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
