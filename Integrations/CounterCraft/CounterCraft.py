@@ -250,7 +250,7 @@ def return_host_standard_context(host):
             host_standard_context["Hostname"] = host['data']['ansible_facts']['ansible_hostname']
             host_standard_context["BIOSVersion"] = host['data']['ansible_facts']['ansible_bios_version']
             host_standard_context["Memory"] = host['data']['ansible_facts']['ansible_memtotal_mb']
-            host_standard_context["Model"] = host['data']['ansible_facts']['ansible_memtotal_mb']
+            host_standard_context["Model"] = host['data']['ansible_facts']['ansible_product_name']
             host_standard_context["OS"] = host['data']['ansible_facts']['ansible_os_family']
             host_standard_context["OSVersion"] = host['data']['ansible_facts']['ansible_distribution_version']
             host_standard_context["Processor"] = ' '.join(host['data']['ansible_facts']['ansible_processor'])
