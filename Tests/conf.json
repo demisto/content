@@ -165,7 +165,8 @@
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "timeout" : 2400,
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "pid_threshold": 30
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -393,7 +394,8 @@
         },
         {
             "integrations": "SNDBOX",
-            "playbookID": "SNDBOX_Test"
+            "playbookID": "SNDBOX_Test",
+            "timeout": 1000
         },
         {
             "integrations": "SNDBOX",
@@ -501,7 +503,8 @@
             "integrations": "google-vault",
             "playbookID": "Google-Vault-Generic-Test",
             "nightly": true,
-            "timeout": 3600
+            "timeout": 3600,
+            "memory_threshold": 65
         },
         {
             "integrations": "google-vault",
@@ -660,7 +663,8 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500
+            "timeout": 500,
+            "pid_threshold": 6
         },
         {
             "playbookID": "CutTransformerTest"
@@ -933,12 +937,14 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 100
         },
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 100
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -956,7 +962,8 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240
+            "timeout": 240,
+            "pid_threshold": 18
         },
         {
             "integrations": "activedir",
@@ -1049,7 +1056,8 @@
         },
         {
             "integrations": "SplunkPy",
-            "playbookID": "SplunkPySearch_Test"
+            "playbookID": "SplunkPySearch_Test",
+            "memory_threshold": 200
         },
         {
             "integrations": "McAfee NSM",
@@ -1135,13 +1143,13 @@
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 150
+            "memory_threshold": 200
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewsv2_separate_process",
-            "memory_threshold": 70
+            "memory_threshold": 150
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1900,7 +1908,8 @@
         },
         {
             "integrations": "AWS - EC2",
-            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b"
+            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b",
+            "memory_threshold": 65
         },
         {
             "integrations": "AWS - EC2",
@@ -1974,7 +1983,8 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
+            "playbookID": "RasterizeImageTest",
+            "pid_threshold": 24
         },
         {
             "integrations": "Ipstack",
@@ -2029,7 +2039,8 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0"
+            "fromversion": "4.1.0",
+            "memory_threshold": 60
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2159,7 +2170,8 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular"
+          "instance_names": "ewv2_regular",
+          "memory_threshold": 65
         },
         {
           "integrations": "QRadar",
@@ -2182,7 +2194,8 @@
         },
         {
             "integrations": "GoogleCloudTranslate",
-            "playbookID": "GoogleCloudTranslate-Test"
+            "playbookID": "GoogleCloudTranslate-Test",
+            "pid_threshold": 8
         },
         {
             "integrations": "Infoblox",
@@ -2258,6 +2271,39 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Test"
+        },
+        {
+            "integrations": "illuminate",
+            "playbookID": "illuminate Integration Demonstration - Test"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory Asset - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory IOC Details - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List Alerts - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory List IOCs - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Google Chronicle Backstory",
+            "playbookID": "Google Chronicle Backstory Reputation - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Feodo Tracker Hashes Feed",
             "playbookID": "playbook-feodoteackerhash_test",
             "fromversion": "5.5.0"
@@ -2272,6 +2318,10 @@
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_30_days",
             "playbookID": "playbook-feodotrackeripblock_test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
         }
     ],
@@ -2448,6 +2498,7 @@
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
-        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233"
+        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
+        "Google Chronicle Backstory": "SDK"
     }
 }
