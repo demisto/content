@@ -1,19 +1,16 @@
+elasticcommonfields: {}
 id: test_Qradar
 version: -1
-fromversion: 5.5.0
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: test_Qradar
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 48db819f-7d0f-4f18-8763-2e2edc9aa258
+    taskid: ba245c81-a894-46f0-8163-57e0af543c30
     type: start
     task:
-      id: 48db819f-7d0f-4f18-8763-2e2edc9aa258
+      elasticcommonfields: {}
+      id: ba245c81-a894-46f0-8163-57e0af543c30
       version: -1
       name: ""
       description: start
@@ -26,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1985,
           "y": 50
         }
       }
@@ -34,13 +31,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 1b18f382-2e45-473d-8aa1-18aa2b1e00e6
+    taskid: 7db37162-995a-44bc-8c93-7c8af06345a3
     type: regular
     task:
-      id: 1b18f382-2e45-473d-8aa1-18aa2b1e00e6
+      elasticcommonfields: {}
+      id: 7db37162-995a-44bc-8c93-7c8af06345a3
       version: -1
       name: qradar-get-assets
       description: execute command qradar-get-assets
@@ -69,13 +67,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: ee5496de-02d5-4595-81e8-0c369b0db3b9
+    taskid: 779d169f-f652-4b98-874e-d317c6f75ab4
     type: regular
     task:
-      id: ee5496de-02d5-4595-81e8-0c369b0db3b9
+      elasticcommonfields: {}
+      id: 779d169f-f652-4b98-874e-d317c6f75ab4
       version: -1
       name: qradar-create-note in existing offense
       description: execute command qradar-create-note
@@ -105,13 +104,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: c8be5261-2434-4bf1-8934-17c595694f80
+    taskid: 1415a4b2-f6f3-40c7-8c80-57c20a59b444
     type: regular
     task:
-      id: c8be5261-2434-4bf1-8934-17c595694f80
+      elasticcommonfields: {}
+      id: 1415a4b2-f6f3-40c7-8c80-57c20a59b444
       version: -1
       name: qradar-get-note
       description: execute command qradar-get-note
@@ -141,13 +141,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 575f8575-0936-4f89-82a6-5d8a45c5c02f
+    taskid: c7423dd2-df4c-4975-8c31-ddf4b07ede2e
     type: regular
     task:
-      id: 575f8575-0936-4f89-82a6-5d8a45c5c02f
+      elasticcommonfields: {}
+      id: c7423dd2-df4c-4975-8c31-ddf4b07ede2e
       version: -1
       name: qradar-offenses
       description: execute command qradar-offenses
@@ -177,13 +178,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: ed33faee-c962-476c-802f-d332c8ed28e7
+    taskid: bcba7338-5491-4efc-8760-189da6c008b4
     type: regular
     task:
-      id: ed33faee-c962-476c-802f-d332c8ed28e7
+      elasticcommonfields: {}
+      id: bcba7338-5491-4efc-8760-189da6c008b4
       version: -1
       name: qradar-offense-by-id
       description: execute command qradar-offense-by-id
@@ -212,13 +214,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 10a308a3-7e11-41b1-825a-b418ff03c431
+    taskid: 65619bef-0e03-4e93-8e5c-450a8932262f
     type: condition
     task:
-      id: 10a308a3-7e11-41b1-825a-b418ff03c431
+      elasticcommonfields: {}
+      id: 65619bef-0e03-4e93-8e5c-450a8932262f
       version: -1
       name: Verify offense credibility exists
       description: Verifies offense credibility exists
@@ -250,13 +253,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 18d65cea-4d82-4652-80e9-7eaa37a4ed3f
+    taskid: d26df271-f639-4f9a-8e5f-d34e46d0b120
     type: regular
     task:
-      id: 18d65cea-4d82-4652-80e9-7eaa37a4ed3f
+      elasticcommonfields: {}
+      id: d26df271-f639-4f9a-8e5f-d34e46d0b120
       version: -1
       name: Set offense protected to false (qradar-update-offense)
       description: execute command qradar-update-offense
@@ -290,13 +294,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: f9e82c10-cd8c-4327-8717-4533986168c8
+    taskid: 115cb159-0cc7-4c19-8e79-a26e05b25d09
     type: condition
     task:
-      id: f9e82c10-cd8c-4327-8717-4533986168c8
+      elasticcommonfields: {}
+      id: 115cb159-0cc7-4c19-8e79-a26e05b25d09
       version: -1
       name: Verify protected was set to false
       description: Verifies protected was set to false
@@ -326,13 +331,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: ad8265de-078b-416a-806d-b77cbca24ea5
+    taskid: 437021d9-b3c2-414d-8f90-9854ad778321
     type: regular
     task:
-      id: ad8265de-078b-416a-806d-b77cbca24ea5
+      elasticcommonfields: {}
+      id: 437021d9-b3c2-414d-8f90-9854ad778321
       version: -1
       name: Set offense protected to true (qradar-update-offense)
       description: execute command qradar-update-offense
@@ -366,13 +372,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: c04ad836-22b4-4543-8833-53abfebce4e5
+    taskid: d92d9c04-3cce-40a4-8db8-e745abf2b51d
     type: condition
     task:
-      id: c04ad836-22b4-4543-8833-53abfebce4e5
+      elasticcommonfields: {}
+      id: d92d9c04-3cce-40a4-8db8-e745abf2b51d
       version: -1
       name: Verify protected was set to true
       description: Verifies protected was set to true
@@ -402,13 +409,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 7e688c76-905d-4ebc-804a-4449cfc17874
+    taskid: dbe73d6c-42ee-413a-8a5a-1a6ca6f446bb
     type: title
     task:
-      id: 7e688c76-905d-4ebc-804a-4449cfc17874
+      elasticcommonfields: {}
+      id: dbe73d6c-42ee-413a-8a5a-1a6ca6f446bb
       version: -1
       name: Offense test was completed successfully
       description: Offense test end
@@ -427,13 +435,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 65b169bd-5957-4ea4-8e5b-cd2aeaf8ddf9
+    taskid: b801921e-f002-4db9-86b4-003399106be0
     type: title
     task:
-      id: 65b169bd-5957-4ea4-8e5b-cd2aeaf8ddf9
+      elasticcommonfields: {}
+      id: b801921e-f002-4db9-86b4-003399106be0
       version: -1
       name: Offense test was completed successfully
       description: Offense test end
@@ -452,13 +461,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: a030ebfc-1eaf-4b86-898f-d1df4be6a3bd
+    taskid: b63eabb1-c18a-4137-890e-94f8aa704de5
     type: condition
     task:
-      id: a030ebfc-1eaf-4b86-898f-d1df4be6a3bd
+      elasticcommonfields: {}
+      id: b63eabb1-c18a-4137-890e-94f8aa704de5
       version: -1
       name: Verify note text matches
       description: Verifies note text matches request
@@ -491,13 +501,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: f706d3c8-372f-4ee9-8dec-e7b503ac0623
+    taskid: 94535ac8-31ce-4a19-832c-a02a2d96bba6
     type: title
     task:
-      id: f706d3c8-372f-4ee9-8dec-e7b503ac0623
+      elasticcommonfields: {}
+      id: 94535ac8-31ce-4a19-832c-a02a2d96bba6
       version: -1
       name: Notes test was completed successfully
       description: Notes test end
@@ -516,13 +527,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 7be2857f-c25f-4931-833c-293c891d61a1
+    taskid: 6f8adfd0-ca42-4924-8701-1a91f8c94676
     type: regular
     task:
-      id: 7be2857f-c25f-4931-833c-293c891d61a1
+      elasticcommonfields: {}
+      id: 6f8adfd0-ca42-4924-8701-1a91f8c94676
       version: -1
       name: qradar-get-asset-by-id
       description: execute command qradar-get-asset-by-id
@@ -548,13 +560,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: df72396c-0815-49fd-8bdf-2175a466c6ff
+    taskid: 852305e6-5c6c-414f-85a4-64c0c7585694
     type: condition
     task:
-      id: df72396c-0815-49fd-8bdf-2175a466c6ff
+      elasticcommonfields: {}
+      id: 852305e6-5c6c-414f-85a4-64c0c7585694
       version: -1
       name: Verify MACAddress was pulled successfully
       description: Verifies MACAddress was pulled successfully
@@ -584,13 +597,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: ee3e10d5-2402-4034-87e2-3593a5b2a6bd
+    taskid: bde30ad2-0acf-4684-83af-34809ffafd93
     type: title
     task:
-      id: ee3e10d5-2402-4034-87e2-3593a5b2a6bd
+      elasticcommonfields: {}
+      id: bde30ad2-0acf-4684-83af-34809ffafd93
       version: -1
       name: Assets test was completed successfully
       description: Assets test end
@@ -609,13 +623,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 7d67722b-c417-477c-86e6-5b61410af5d1
+    taskid: a31771f0-c70b-4622-8c2f-fa0c9105c2bf
     type: title
     task:
-      id: 7d67722b-c417-477c-86e6-5b61410af5d1
+      elasticcommonfields: {}
+      id: a31771f0-c70b-4622-8c2f-fa0c9105c2bf
       version: -1
       name: Search test was completed successfully
       description: Search test end
@@ -634,13 +649,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: cabf5483-ce0f-48ed-80d6-015fb6455d18
+    taskid: 7e1da961-036a-40b4-8fa2-f8a155dc5c0d
     type: regular
     task:
-      id: cabf5483-ce0f-48ed-80d6-015fb6455d18
+      elasticcommonfields: {}
+      id: 7e1da961-036a-40b4-8fa2-f8a155dc5c0d
       version: -1
       name: Delete All Context
       description: Deletes all the context
@@ -655,6 +671,7 @@ tasks:
       - "27"
       - "26"
       - "37"
+      - "44"
     scriptarguments:
       all:
         simple: "yes"
@@ -666,7 +683,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1985,
           "y": 195
         }
       }
@@ -674,13 +691,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 316e0d70-eb31-46d2-8a07-a42f6ebfe65c
+    taskid: 9d31ecde-1611-461b-883b-ab69d28e85aa
     type: playbook
     task:
-      id: 316e0d70-eb31-46d2-8a07-a42f6ebfe65c
+      elasticcommonfields: {}
+      id: 9d31ecde-1611-461b-883b-ab69d28e85aa
       version: -1
       name: QRadarFullSearch
       description: Use QRadarFullSearch to initiate a search and get the results
@@ -718,13 +736,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: "63"
+    taskid: c40ba162-29ac-442d-8452-5afd7a75d866
     type: regular
     task:
-      id: "63"
+      elasticcommonfields: {}
+      id: c40ba162-29ac-442d-8452-5afd7a75d866
       version: -1
       name: qradar-delete-reference-set
       description: Deletes a reference set corresponding to the name provided.
@@ -751,13 +770,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: "59"
+    taskid: 38363f47-09df-42cc-806a-65b9387ee5b6
     type: regular
     task:
-      id: "59"
+      elasticcommonfields: {}
+      id: 38363f47-09df-42cc-806a-65b9387ee5b6
       version: -1
       name: qradar-create-reference-set
       description: Creates a new reference set. If the provided name is already in
@@ -788,13 +808,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: "57"
+    taskid: 7af1ff38-8cf4-4cea-8e67-43d6f6634a79
     type: regular
     task:
-      id: "57"
+      elasticcommonfields: {}
+      id: 7af1ff38-8cf4-4cea-8e67-43d6f6634a79
       version: -1
       name: qradar-create-reference-set-value
       description: Add or update a value in a reference set.
@@ -826,13 +847,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: "58"
+    taskid: fd802118-84db-45a8-892d-ada2c5c71925
     type: regular
     task:
-      id: "58"
+      elasticcommonfields: {}
+      id: fd802118-84db-45a8-892d-ada2c5c71925
       version: -1
       name: qradar-get-reference-by-name
       description: Information about the reference set that had data added or updated.
@@ -863,13 +885,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: a38dfbad-ca3d-445a-8dd8-a46d086b4905
+    taskid: bf38c9ea-1933-428a-8ce7-340dcfcb004b
     type: condition
     task:
-      id: a38dfbad-ca3d-445a-8dd8-a46d086b4905
+      elasticcommonfields: {}
+      id: bf38c9ea-1933-428a-8ce7-340dcfcb004b
       version: -1
       name: Validate test_value appears in reference set
       description: Validates reference set values are pulled correctly
@@ -902,13 +925,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: "62"
+    taskid: 89ed20e5-69ee-4610-8237-a5a2d8f01dfe
     type: regular
     task:
-      id: "62"
+      elasticcommonfields: {}
+      id: 89ed20e5-69ee-4610-8237-a5a2d8f01dfe
       version: -1
       name: Delete test_value from reference set
       description: Deletes a value in a reference set.
@@ -938,13 +962,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: "60"
+    taskid: 72d4821a-233b-4d7b-881e-b50f2679603c
     type: regular
     task:
-      id: "60"
+      elasticcommonfields: {}
+      id: 72d4821a-233b-4d7b-881e-b50f2679603c
       version: -1
       name: qradar-get-reference-by-name
       description: Information about the reference set that had data added or updated.
@@ -974,13 +999,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 44aa6570-5e4c-4de2-803e-675f7f4d943e
+    taskid: e643a4cb-881d-4b11-8778-52ddba400616
     type: condition
     task:
-      id: 44aa6570-5e4c-4de2-803e-675f7f4d943e
+      elasticcommonfields: {}
+      id: e643a4cb-881d-4b11-8778-52ddba400616
       version: -1
       name: Validate test_playbookk reference set is empty
       description: Validates test_playbookk reference set is empty
@@ -1013,13 +1039,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "35":
     id: "35"
-    taskid: "64"
+    taskid: 3f0f18a6-ad3a-4598-8516-74d834d75b61
     type: regular
     task:
-      id: "64"
+      elasticcommonfields: {}
+      id: 3f0f18a6-ad3a-4598-8516-74d834d75b61
       version: -1
       name: qradar-delete-reference-set
       description: Deletes a reference set corresponding to the name provided.
@@ -1027,9 +1054,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-    nexttasks:
-      '#none#':
-      - "42"
     scriptarguments:
       ref_name:
         simple: test_playbookk
@@ -1045,13 +1069,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: bbdc8ba2-4d2a-4c10-83c3-0d311a43e091
+    taskid: 8029ee9a-7909-4ef4-8900-977758d97ece
     type: title
     task:
-      id: bbdc8ba2-4d2a-4c10-83c3-0d311a43e091
+      elasticcommonfields: {}
+      id: 8029ee9a-7909-4ef4-8900-977758d97ece
       version: -1
       name: Reference set was completed successfuly
       description: Reference set was completed successfuly
@@ -1062,21 +1087,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 2295
+          "x": 3060,
+          "y": 910
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "37":
     id: "37"
-    taskid: fd55c2b2-5d4b-4253-8904-3605ae8cab0f
+    taskid: f72c1dd2-c151-4492-8fa4-8b7002b7cddb
     type: regular
     task:
-      id: fd55c2b2-5d4b-4253-8904-3605ae8cab0f
+      elasticcommonfields: {}
+      id: f72c1dd2-c151-4492-8fa4-8b7002b7cddb
       version: -1
       name: Test fetch incidents
       scriptName: FetchFromInstance
@@ -1102,13 +1128,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "38":
     id: "38"
-    taskid: e2e8de3a-7af9-4a42-82ce-cb4f65909690
+    taskid: a59cdaf2-8b14-4ba1-82e4-c9bae5d48fad
     type: title
     task:
-      id: e2e8de3a-7af9-4a42-82ce-cb4f65909690
+      elasticcommonfields: {}
+      id: a59cdaf2-8b14-4ba1-82e4-c9bae5d48fad
       version: -1
       name: Fetch test was completed successfuly
       type: title
@@ -1126,13 +1153,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "39":
     id: "39"
-    taskid: 49cb278d-c334-4f28-8e34-e66c643996e2
+    taskid: 41acca54-b15f-4232-8636-dda829c56141
     type: regular
     task:
-      id: 49cb278d-c334-4f28-8e34-e66c643996e2
+      elasticcommonfields: {}
+      id: 41acca54-b15f-4232-8636-dda829c56141
       version: -1
       name: qradar-get-assets-by-fields
       description: List all assets found in the model
@@ -1161,13 +1189,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "40":
     id: "40"
-    taskid: 10c3caf1-79b2-4847-8f7b-5439780ef6ec
+    taskid: ae49b40c-7c4d-4b2d-8a05-d0e73b9fc63b
     type: condition
     task:
-      id: 10c3caf1-79b2-4847-8f7b-5439780ef6ec
+      elasticcommonfields: {}
+      id: ae49b40c-7c4d-4b2d-8a05-d0e73b9fc63b
       version: -1
       name: Verify Context
       type: condition
@@ -1196,13 +1225,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "42":
     id: "42"
-    taskid: "61"
+    taskid: 0d2d88a7-f221-4b7d-8a15-16f8d245e8d0
     type: regular
     task:
-      id: "61"
+      elasticcommonfields: {}
+      id: 0d2d88a7-f221-4b7d-8a15-16f8d245e8d0
       version: -1
       name: qradar-upload-indicators
       description: Upload indicators from Demisto to Qradar
@@ -1217,34 +1247,35 @@ tasks:
       element_type:
         simple: ALN
       limit:
-        simple: "20"
+        simple: "10"
       page:
         simple: "0"
       query:
         simple: reputation:Good
       ref_name:
-        simple: test_playbook
+        simple: test_playbook_1
       time_to_live: {}
       timeout_type: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 1945
+          "x": 3060,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "43":
     id: "43"
-    taskid: "56"
+    taskid: a67c04ba-a820-4016-8ef3-eeba9f3fd94a
     type: regular
     task:
-      id: "56"
+      elasticcommonfields: {}
+      id: a67c04ba-a820-4016-8ef3-eeba9f3fd94a
       version: -1
       name: qradar-delete-reference-set
       description: Deletes a reference set corresponding to the name provided.
@@ -1257,27 +1288,61 @@ tasks:
       - "36"
     scriptarguments:
       ref_name:
-        simple: test_playbook
+        simple: test_playbook_1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 2120
+          "x": 3060,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 443d20d2-3702-4f8c-800e-12cf416a1ee6
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 443d20d2-3702-4f8c-800e-12cf416a1ee6
+      version: -1
+      name: qradar-delete-reference-set
+      description: Deletes a reference set corresponding to the name provided.
+      script: '|||qradar-delete-reference-set'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      ref_name:
+        simple: test_playbook_1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
-        "width": 2960,
+        "height": 1815,
+        "width": 3390,
         "x": 50,
         "y": 50
       }
