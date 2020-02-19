@@ -221,7 +221,6 @@ def http_request(request_method, path, data={}, params=""):
         headers=headers,
         verify=VERIFY_CERTIFICATE,
     )
-    demisto.debug(res.status_code)
 
     if res.status_code not in [200, 201, 204]:
         demisto.debug("Error doing the HTTP query. We got a %s: %s" % (res.status_code, res.text))
@@ -305,7 +304,6 @@ def test_module_command():
 
     http_request("GET", "/campaigns")
     demisto.results("ok")
-    sys.exit(0)
 
 
 def list_dsns_command():
@@ -858,7 +856,6 @@ def fetch_incidents_command():
                 max_timestamp = int(notification["ctime"])
 
     demisto.incidents(incidents)
-    demisto.debug(incidents)
     demisto.setLastRun({"time": max_timestamp})
 
 
