@@ -755,7 +755,7 @@ def aws_table_to_markdown(response, table_header):
     :param table_header: The header string to use for the table.
     :type table_header: str
     :return: Markdown formatted table as a string.
-    ":rtype: ``str``
+    :rtype: str
     """
     if not isinstance(response, dict):
         return tableToMarkdown(table_header, response)
