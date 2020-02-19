@@ -1,7 +1,5 @@
 import dateparser
 import demistomock as demisto
-# from CommonServerPython import *
-# from CommonServerUserPython import *
 from .Claroty import Client, fetch_incidents
 
 MOCK_AUTHENTICATION = {

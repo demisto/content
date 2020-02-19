@@ -125,7 +125,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Get all assets seen last from the given date. Format - '
+      description: Get all assets seen last from the given date. Format - YYYY-MM-DDThh:mm:ssZ.
+        Example - 2020-02-02T01:02:03Z
       isArray: false
       name: assets_last_seen
       required: false
@@ -223,7 +224,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: Alert fields to return. The default value is "all".
+      description: Alert fields to return.
       isArray: false
       name: fields
       predefined:

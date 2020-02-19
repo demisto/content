@@ -1,4 +1,4 @@
-id: 54e6d2f8-8f27-4291-8ab7-e81480780c0e
+id: Claroty Incident
 inputs: []
 name: Claroty Incident
 fromversion: "5.0.0"
@@ -100,11 +100,8 @@ tasks:
       - "5"
     note: false
     scriptarguments:
-      excluded_alerts: {}
       resolve_as:
         simple: resolve
-      select_all:
-        simple: ' False'
       selected_alerts:
         simple: ${Claroty.Alert.ResourceID}
     separatecontext: false

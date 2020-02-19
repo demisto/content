@@ -67,8 +67,8 @@ WINDOWS_CVE_BASE_URL = "ranger/insight_details/Windows%20CVEs?&format=asset_page
 FULL_MATCH_BASE_URL = "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
                       "&per_page=1000&page=1&id__exact="
 DEFAULT_RESOLVE_ALERT_COMMENT = "Resolved by Demisto"
-MAX_ASSET_LIMIT = 5000
-MAX_ALERT_LIMIT = 8000
+MAX_ASSET_LIMIT = 75
+MAX_ALERT_LIMIT = 75
 
 
 class Client(BaseClient):
@@ -104,7 +104,7 @@ class Client(BaseClient):
                 data=json.dumps({"username": self._credentials[0], "password": self._credentials[1]}),
             )
 
-            if res['password_expired']:
+            if res.get('password_expired', None):
                 raise DemistoException("Password expired, please update credentials")
 
             demisto.setIntegrationContext({'jwt_token': res['token']})
@@ -113,14 +113,15 @@ class Client(BaseClient):
         else:
             return demisto.getIntegrationContext()
 
-    def list_incidents(self, fields: list, sort_by: dict, fetch_from: datetime, **extra_filters) -> dict:
-        extra_filters_list = [add_filter("timestamp", fetch_from, "gte")]
+    def list_incidents(self, fields: list, sort_by: dict, fetch_from_date: datetime, page_number: int,
+                       **extra_filters) -> dict:
+        extra_filters_list = [add_filter("timestamp", fetch_from_date, "gte")]
         for extra_filter in extra_filters:
             if extra_filter == "severity":
                 extra_filters_list.append(add_filter(extra_filter, extra_filters[extra_filter], "gte"))
             else:
                 extra_filters_list.append(add_filter(extra_filter, extra_filters[extra_filter]))
-        return self.get_alerts(fields=fields, sort_by=sort_by, filters=extra_filters_list)
+        return self.get_alerts(fields=fields, sort_by=sort_by, filters=extra_filters_list, page_number=page_number)
 
     def get_assets(self, fields: list, sort_by: dict, filters: list,
                    limit: int = 10) -> Union[Dict, str, requests.Response]:
@@ -128,8 +129,8 @@ class Client(BaseClient):
         return self._request_with_token(url_suffix, 'GET')
 
     def get_alerts(self, fields: list, sort_by: dict, filters: list,
-                   limit: int = 10) -> Union[Dict, str, requests.Response]:
-        url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort_by, filters, limit)
+                   limit: int = 10, page_number: int = 1) -> Union[Dict, str, requests.Response]:
+        url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort_by, filters, limit, page_number)
         return self._request_with_token(url_suffix, 'GET')
 
     def get_alert(self, rid: str) -> Union[Dict, str, requests.Response]:
@@ -158,9 +159,10 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def _add_extra_params_to_url(url_suffix: str, fields: list, sort_by: dict, filters: list, limit: int = 10) -> str:
+    def _add_extra_params_to_url(url_suffix: str, fields: list, sort_by: dict, filters: list, limit: int = 10,
+                                 page_number: int = 1) -> str:
         url_suffix += "?fields=" + ',;$'.join(fields)
-        url_suffix += f"&page=1&per_page={limit}"
+        url_suffix += f"&page={page_number}&per_page={limit}"
 
         if sort_by:
             url_suffix += f"&sort={sort_by['order']}{sort_by['field']}"
@@ -252,7 +254,10 @@ def resolve_alert_command(client: Client, args: dict) -> Tuple:
     outputs = {
         "Claroty.Resolve_out": result
     }
-    readable_output = f"## Resolve alert status - {result['success']}"
+    if result['success']:
+        readable_output = f"## Alert was resolved successfully"
+    else:
+        readable_output = f"## Alert was not resolved"
 
     return (
         readable_output,
@@ -500,8 +505,8 @@ def get_severity_filter(severity: str) -> str:
     return severity_filter
 
 
-def get_list_incidents(client: Client, latest_created_time):
-    field_list = DEFAULT_ALERT_FIELD_LIST + ["timestamp", "severity"]
+def get_list_incidents(client: Client, latest_created_time, page_number: int):
+    field_list = DEFAULT_ALERT_FIELD_LIST + ["timestamp"]
     extra_filters = {}
 
     severity = demisto.params().get("severity", None)
@@ -512,11 +517,12 @@ def get_list_incidents(client: Client, latest_created_time):
     if site_id:
         extra_filters["site_id"] = site_id
 
-    alert_type = demisto.params().get("alert_type", "").lower().replace(" ", "")
+    alert_type = demisto.params().get("alert_type", None)
     alert_type_exists = False
     if alert_type:
         alert_filters = client.get_ranger_table_filters('alerts')
-        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
+        filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type",
+                                                                alert_type.lower().replace(" ", ""))
         if filters_url_suffix:
             for filter_type in filters_url_suffix:
                 extra_filters["type"] = filter_type[1]
@@ -524,7 +530,7 @@ def get_list_incidents(client: Client, latest_created_time):
 
     if bool(alert_type) == alert_type_exists:
         response = client.list_incidents(field_list, get_sort("timestamp"), latest_created_time.strftime(DATE_FORMAT),
-                                         **extra_filters)
+                                         page_number, **extra_filters)
     else:
         response = {}
 
@@ -536,40 +542,58 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     This function will execute each interval (default is 1 minute).
     """
     last_fetch = last_run.get('last_fetch', None)
-    last_rid = last_run.get('last_resource_id', '0-0')
+    last_run_rids = last_run.get('last_run_rids', {})
+    page_to_query = last_run.get('page_to_query', 1)
 
     if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch_time).replace(tzinfo=None)
+        last_fetch = first_fetch_time
     else:
         last_fetch = dateparser.parse(last_fetch).replace(tzinfo=None)
 
-    latest_created_time = last_fetch
-    current_max_rid = last_rid
+    current_rids = []
     incidents = []
 
-    response, field_list = get_list_incidents(client, latest_created_time)
+    response, field_list = get_list_incidents(client, last_fetch, page_to_query)
     items = _parse_alerts_result(response, field_list)
+
+    # Check last queried item's timestamp
+    latest_created_time = None
+    if items:
+        latest_created_time = dateparser.parse(items[-1]['Timestamp']).replace(tzinfo=None)
+
+    # If timestamp stayed the same than get next 10
+    if last_fetch == latest_created_time:
+        page_to_query += 1
+    else:
+        page_to_query = 1
 
     for item in items:
         # Make datetime object unaware of timezone for comparison
         incident_created_time = dateparser.parse(item['Timestamp']).replace(tzinfo=None)
-        incident = {
-            'name': item['Description'],
-            'occurred': incident_created_time.strftime(DATE_FORMAT),
-            'severity': CTD_TO_DEMISTO_SEVERITY.get(item['Severity'], None),
-            'rawJSON': json.dumps(item)
-        }
 
-        incidents.append(incident)
+        # Don't add duplicated incidents
+        if item["ResourceID"] not in last_run_rids:
+            incident = {
+                'name': item.get('Description', None),
+                'occurred': incident_created_time.strftime(DATE_FORMAT),
+                'severity': CTD_TO_DEMISTO_SEVERITY.get(item.get('Severity', None), None),
+                'rawJSON': json.dumps(item)
+            }
 
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
-            current_max_rid = item["ResourceID"]
-        elif incident_created_time == latest_created_time:
-            current_max_rid = item["ResourceID"]
+            incidents.append(incident)
+            current_rids.append(item["ResourceID"])
+
+    # If there were no items queried, latest_created_time is the same as last run
+    if latest_created_time is None:
+        latest_created_time = last_fetch
+
+    # If no new items were retrieved, last_run_rids stay the same
+    if not current_rids:
+        current_rids = last_run_rids
+
     next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT),
-                'last_resource_id': current_max_rid}
-    # demisto.info(f"========================================== {next_run}")
+                'last_run_rids': current_rids, "page_to_query": page_to_query}
+    demisto.info(f"========================================== {next_run}")
     return next_run, incidents
 
 
@@ -578,6 +602,7 @@ def main():
     password = demisto.params().get('credentials').get('password')
 
     base_url = demisto.params().get('url')
+    base_url = base_url[:-1] if base_url[-1] == "/" else base_url
 
     verify_certificate = not demisto.params().get('insecure', True)
 

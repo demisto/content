@@ -4,8 +4,6 @@
 	"defaultIncidentType": "",
 	"id": "babb69e2-059c-4ac2-896a-76e9e42844e5",
 	"incidentSamples": [],
-	"instanceId": "27523108-c127-4681-8bd3-a4d84cb115bc",
-	"instanceName": "Claroty_instance_1",
 	"isDefault": false,
 	"keyTypeMap": {
 		"Integrity": "Claroty Integrity Incident",
