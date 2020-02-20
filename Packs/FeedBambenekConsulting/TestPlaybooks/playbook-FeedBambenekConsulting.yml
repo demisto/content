@@ -1,0 +1,190 @@
+elasticcommonfields: {}
+id: BambenekConsultingFeed_Test
+version: -1
+name: BambenekConsultingFeed_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a05596ac-e926-4838-817d-0fad7b970d56
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: a05596ac-e926-4838-817d-0fad7b970d56
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: eb5eed5e-bc62-4059-83ed-143170976b9f
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: eb5eed5e-bc62-4059-83ed-143170976b9f
+      version: -1
+      name: Get Indicators
+      description: Gets the feed indicators.
+      script: Bambenek Consulting Feed|||bambenek-get-indicators
+      type: regular
+      iscommand: true
+      brand: Bambenek Consulting Feed
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: BambenekFeed.value=value::BambenekFeed.type=type
+      indicator_type:
+        simple: IP
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9ab9488a-04c9-4f37-8aff-d0f2ba4a5025
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 9ab9488a-04c9-4f37-8aff-d0f2ba4a5025
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f8dd1620-511c-49dd-8d32-41d1ebd171b6
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f8dd1620-511c-49dd-8d32-41d1ebd171b6
+      version: -1
+      name: Delete Context
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d0826027-b1d7-48b4-8d70-ef7e15672cb4
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: d0826027-b1d7-48b4-8d70-ef7e15672cb4
+      version: -1
+      name: Assert Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: BambenekFeed.value
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: BambenekFeed.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: BambenekConsultingFeed_Test
+fromversion: 5.5.0

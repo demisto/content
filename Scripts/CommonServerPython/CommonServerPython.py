@@ -146,6 +146,31 @@ class FeedIndicatorType(object):
             FeedIndicatorType.URL
         )
 
+    @staticmethod
+    def ip_to_indicator_type(ip):
+        """Returns the indicator type of the input IP.
+
+        :type ip: ``str``
+        :param ip: IP address to get it's indicator type.
+
+        :rtype: ``str``
+        :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
+        """
+        if re.match(ipv4cidrRegex, ip):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv4Regex, ip):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6cidrRegex, ip):
+            return FeedIndicatorType.IPv6CIDR
+
+        elif re.match(ipv6Regex, ip):
+            return FeedIndicatorType.IPv6
+
+        else:
+            return None
+
 
 
 
@@ -1745,6 +1770,7 @@ emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
