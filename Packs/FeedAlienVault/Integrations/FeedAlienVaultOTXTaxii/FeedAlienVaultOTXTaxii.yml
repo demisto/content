@@ -84,14 +84,15 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: The maximum number of results to return. The default value is 50.
+      defaultValue: '10'
+      description: The maximum number of indicators to return. The default value is
+        10.
       isArray: false
       name: limit
-      required: false
+      required: true
       secret: false
     deprecated: false
-    description: Gets the feed indicators.
+    description: Gets the indicators from AutoFocus.
     execution: false
     name: alienvaultotx-get-indicators
   dockerimage: demisto/taxii:1.0.0.6086
