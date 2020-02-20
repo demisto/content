@@ -196,7 +196,7 @@ script:
     - contextPath: Indeni.AlertInfo.Note
       description: Notes for the given issue
       type: Unknown
-  dockerimage: demisto/python3:3.7.5.3066
+  dockerimage: demisto/python3:3.8.1.5734
   feed: false
   isfetch: true
   longRunning: true
