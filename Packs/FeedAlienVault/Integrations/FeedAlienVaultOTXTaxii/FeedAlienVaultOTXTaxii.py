@@ -1,9 +1,10 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa: E402
-from CommonServerUserPython import *  # noqa: E402
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 
 # IMPORTS
+
 import cabby
 import requests
 import urllib3
