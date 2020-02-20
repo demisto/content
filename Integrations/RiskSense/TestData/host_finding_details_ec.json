@@ -1,0 +1,253 @@
+{
+  "RiskSense.HostFinding(val.Id == obj.Id)": [
+    {
+      "Id": 115469577,
+      "Source": "source name",
+      "SourceId": "source id",
+      "Title": "title",
+      "Port": 25,
+      "GroupCount": 1,
+      "Group": [
+        {
+          "Id": 7990,
+          "Name": "group name"
+        }
+      ],
+      "Host": {
+        "HostId": 3569982,
+        "HostName": "hostname1",
+        "IpAddress": "ip address",
+        "Criticality": 5,
+        "External": true,
+        "Port": [
+          {
+            "Id": 42841210,
+            "Number": 21
+          },
+          {
+            "Id": 42841323,
+            "Number": 22
+          },
+          {
+            "Id": 42841347,
+            "Number": 23
+          },
+          {
+            "Id": 42841183,
+            "Number": 25
+          },
+          {
+            "Id": 42841178,
+            "Number": 111
+          },
+          {
+            "Id": 42841312,
+            "Number": 123
+          },
+          {
+            "Id": 42841336,
+            "Number": 587
+          },
+          {
+            "Id": 42841279,
+            "Number": 852
+          },
+          {
+            "Id": 42841222,
+            "Number": 6112
+          },
+          {
+            "Id": 42841168,
+            "Number": 7100
+          },
+          {
+            "Id": 42841236,
+            "Number": 8005
+          },
+          {
+            "Id": 42841197,
+            "Number": 8007
+          },
+          {
+            "Id": 42841329,
+            "Number": 32771
+          },
+          {
+            "Id": 42841246,
+            "Number": 32772
+          },
+          {
+            "Id": 42841259,
+            "Number": 32775
+          },
+          {
+            "Id": 42841269,
+            "Number": 32776
+          },
+          {
+            "Id": 42841361,
+            "Number": 32777
+          },
+          {
+            "Id": 42841370,
+            "Number": 32778
+          },
+          {
+            "Id": 42841172,
+            "Number": 32779
+          }
+        ],
+        "Rs3": 644
+      },
+      "Network": {
+        "Id": 78038,
+        "Name": "network name",
+        "Type": "type 1"
+      },
+      "Assessment": [
+        {
+          "Id": 67442,
+          "Name": "Assessment",
+          "Date": "2019-04-23"
+        }
+      ],
+      "Vulnerability": [
+        {
+          "Cve": "cve name",
+          "BaseScore": 7.5,
+          "ThreatCount": 0,
+          "AttackVector": "Network",
+          "AccessComplexity": "Low",
+          "Authentication": "None",
+          "ConfidentialityImpact": "Partial",
+          "Integrity": "Partial",
+          "AvailabilityImpact": "Partial",
+          "Trending": false,
+          "VulnLastTrendingOn": null
+        }
+      ],
+      "ThreatCount": 0,
+      "Threat": [],
+      "Patch": [
+        {
+          "Name": "patches name",
+          "Url": "url name"
+        }
+      ],
+      "TagCount": 4,
+      "Tag": [
+        {
+          "Id": 215551,
+          "Name": "tag name1",
+          "Category": "category",
+          "Description": "",
+          "Created": "2019-04-24T21:35:12",
+          "Updated": "2019-06-19T19:23:08",
+          "Color": "#dd8361"
+        },
+        {
+          "Id": 215554,
+          "Name": "tag name 2",
+          "Category": "category 2",
+          "Description": "",
+          "Created": "2019-04-24T21:39:59",
+          "Updated": "2019-04-24T21:39:59",
+          "Color": "#78a19b"
+        },
+        {
+          "Id": 225744,
+          "Name": "tag name 3",
+          "Category": "category 3",
+          "Description": "",
+          "Created": "2019-08-28T17:27:15",
+          "Updated": "2019-08-28T17:27:15",
+          "Color": "#648d9f"
+        },
+        {
+          "Id": 225750,
+          "Name": "tag name 4",
+          "Category": "category",
+          "Description": "",
+          "Created": "2019-08-28T18:50:30",
+          "Updated": "2019-10-31T03:40:55",
+          "Color": "#648d9f"
+        }
+      ],
+      "TagAssetCount": [
+        {
+          "id": 215551,
+          "name": "Data_Center_1",
+          "category": "catgory name",
+          "description": "",
+          "created": "2019-04-24T21:35:12",
+          "updated": "2019-06-19T19:23:08",
+          "color": "#dd8361"
+        },
+        {
+          "id": 215554,
+          "name": "Linux_Team_2",
+          "category": "category name",
+          "description": "",
+          "created": "2019-04-24T21:39:59",
+          "updated": "2019-04-24T21:39:59",
+          "color": "#78a19b"
+        }
+      ],
+      "TagAsset": [
+        {
+          "Id": 215551,
+          "Name": "Data_Center_1",
+          "Category": "catgory name",
+          "Created": "2019-04-24T21:35:12",
+          "Updated": "2019-06-19T19:23:08",
+          "Color": "#dd8361"
+        },
+        {
+          "Id": 215554,
+          "Name": "Linux_Team_2",
+          "Category": "category name",
+          "Created": "2019-04-24T21:39:59",
+          "Updated": "2019-04-24T21:39:59",
+          "Color": "#78a19b"
+        }
+      ],
+      "Output": "output",
+      "Severity": 7.5,
+      "SeverityDetail": {
+        "Combined": 7.5,
+        "Overridden": false,
+        "Scanner": "3",
+        "CvssV2": 7.5,
+        "CvssV3": null,
+        "Aggregated": 7.5,
+        "State": null,
+        "StateName": null,
+        "ExpirationDate": ""
+      },
+      "RiskRating": 5.67,
+      "Xrs3Impact": null,
+      "Xrs3ImpactOnCategory": null,
+      "LastFoundOn": "2011-01-21",
+      "DiscoveredOn": "2011-01-21",
+      "ResolvedOn": "",
+      "ScannerName": "scanner name",
+      "FindingType": "finding type",
+      "MachineId": "",
+      "StatusEmbedded": {
+        "State": "state",
+        "StateName": "state name",
+        "StateDescription": "state description",
+        "Status": true,
+        "DurationInDays": "3291",
+        "DueDate": "2019-12-01T00:00:00",
+        "ExpirationDate": ""
+      },
+      "ManualFindingReportCount": 0,
+      "ManualFindingReport": [],
+      "NoteCount": 0,
+      "Note": [],
+      "Assignment": [],
+      "Services": "service1"
+    }
+  ]
+}

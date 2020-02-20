@@ -1,0 +1,17 @@
+{
+  "RiskSense.HostFinding.Vulnerability(val.Cve == obj.Cve)": [
+    {
+      "Cve": "cve",
+      "BaseScore": 5,
+      "ThreatCount": 8,
+      "AttackVector": "attack vector type",
+      "AccessComplexity": "access complexity",
+      "Authentication": "authentication",
+      "ConfidentialityImpact": "confidentiality impact",
+      "Integrity": "integrity",
+      "AvailabilityImpact": "availability impact",
+      "Trending": false,
+      "VulnLastTrendingOn": null
+    }
+  ]
+}
