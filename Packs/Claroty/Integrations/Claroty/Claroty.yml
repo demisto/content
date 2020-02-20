@@ -482,7 +482,7 @@ script:
     - contextPath: Claroty.Alert.Severity
       description: The alert severity.
       type: String
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.8.1.5734
   feed: false
   isfetch: true
   longRunning: false
