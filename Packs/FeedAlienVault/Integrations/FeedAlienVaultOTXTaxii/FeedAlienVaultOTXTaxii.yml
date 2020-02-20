@@ -76,6 +76,11 @@ configuration:
   name: collection
   required: true
   type: 0
+- display: Get All Active Collections
+  hidden: false
+  name: all_collections
+  required: false
+  type: 8
 description: This integration fetches indicators from AlienVault OTX using a TAXII
   client.
 display: Alien Vault OTX TAXII Feed
@@ -105,4 +110,3 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
-

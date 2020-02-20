@@ -342,33 +342,51 @@ class StixDecode(object):
 
 
 class Client():
-    def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False):
+    def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False,
+                 all_collections: bool = False):
+
         taxii_client = cabby.create_client(discovery_path="https://otx.alienvault.com/taxii/discovery")
         taxii_client.set_auth(username=str(api_key), password="foo", verify_ssl=not insecure)
         if proxy:
             taxii_client.set_proxies(handle_proxy())
 
         self.taxii_client = taxii_client
-        self.collection = collection
 
-    def build_iterator(self):
-        return list(self.taxii_client.poll(collection_name=self.collection))
+        self.all_collections = all_collections
+        if all_collections:
+            self.collections = self.get_all_collections()
+
+        else:
+            self.collections = collection.split(',')
+
+    def get_all_collections(self):
+        return list(self.taxii_client.get_collections())
+
+    def build_iterator(self, collection):
+        return list(self.taxii_client.poll(collection_name=collection))
 
     def decode_indicators(self, response):
         return StixDecode.decode(response)
 
 
 def module_test_command(client: Client, args: Dict):
-    try:
+    passed_collections = []  # type:List
+    for collection in client.collections:
+        try:
 
-        client.build_iterator()
+            client.build_iterator(collection)
+            passed_collections.append(collection)
 
-    except Exception as e:
-        if e.__class__ is requests.exceptions.SSLError:
-            raise Exception("SSL Connection failed - try marking the Trust Any Certificate checkbox.")
-        else:
-            raise Exception(f"Unable to poll from the collection {client.collection} check the collection name and "
-                            f"configuration on Alien Vault")
+        except Exception as e:
+            if e.__class__ is requests.exceptions.SSLError:
+                raise Exception("SSL Connection failed - try marking the Trust Any Certificate checkbox.")
+            else:
+                if not client.all_collections:
+                    raise Exception(f"Unable to poll from the collection {collection} check the collection name and "
+                                    f"configuration on Alien Vault")
+
+    if len(passed_collections) == 0:
+        raise Exception("Unable to poll from any collection - please check the configuration on Alien Vault")
 
     return 'ok', {}, {}
 
@@ -400,18 +418,28 @@ def parse_indicators(sub_indicator_list, full_indicator_list):
 
 
 def fetch_indicators_command(client: Client, limit=None):
-    taxii_iter = client.build_iterator()
-    indicator_list = []  # type:List
-    index = 0
-    only_indicator_list = []  # type:List
-    for raw_response in taxii_iter:
-        _, res = client.decode_indicators(raw_response.content)
-        parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list)
-        indicator_list.extend(parsed_list)
-        if limit:
-            index = index + 1
-            if limit == index:
-                break
+    for collection in client.collections:
+        try:
+            taxii_iter = client.build_iterator(collection)
+
+        except Exception as e:
+            if not client.all_collections:
+                raise Exception(e)
+
+            else:
+                pass
+
+        indicator_list = []  # type:List
+        index = 0
+        only_indicator_list = []  # type:List
+        for raw_response in taxii_iter:
+            _, res = client.decode_indicators(raw_response.content)
+            parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list)
+            indicator_list.extend(parsed_list)
+            if limit:
+                index = index + 1
+                if limit == index:
+                    break
 
     return indicator_list
 
@@ -492,7 +520,8 @@ def observable_extract_properties(observable):
 def main():
     params = demisto.params()
 
-    client = Client(params.get('api_key'), params.get('collection'), params.get('insecure'), params.get('proxy'))
+    client = Client(params.get('api_key'), params.get('collection'), params.get('insecure'), params.get('proxy'),
+                    params.get('all_collections'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
