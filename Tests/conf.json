@@ -278,6 +278,14 @@
             "playbookID": "StringContainsArray_test"
         },
         {
+            "integrations": "Pentera",
+            "playbookID": "Pcysys-Test"
+        },
+        {
+            "integrations": "Pentera",
+            "playbookID": "Pentera Run Scan - Test"
+        },
+        {
             "integrations": "Fidelis Elevate Network",
             "playbookID": "Fidelis-Test"
         },
@@ -2385,6 +2393,7 @@
 
 
         "_comment": "~~~ OTHER ~~~",
+        "￿Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",

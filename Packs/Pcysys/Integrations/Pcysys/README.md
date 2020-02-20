@@ -19,10 +19,10 @@ Use Case #2: Automated real-time validation for critical vulnerabilities
 Challenge: Continuous security validation is critical for the ongoing cyber hygiene of an organization’s network. However, critical vulnerabilities require on-demand testing as they influence many components of the network. Security teams struggle with prioritizing remediation and understanding the true impact vulnerabilities have on their specific network.
 Solution: After running automated single-action tests for critical vulnerabilities, the Demisto integration allows security teams to automate the response process based on the findings. For example, PenTera discovers the vulnerability of different components of the network, e.g a server or an endpoint. The latter is a simpler fix that should go through one workflow, perhaps even be automatically remediated, while the first, a much more complex process, will create a high-risk task in the relevant workflow, automatically prioritizing the response tasks based on business impact severity.
 
-## Configure Pcysys on Demisto
+## Configure Pentera on Demisto
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for Pcysys.
+2. Search for Pentera.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Server URL (e.g. https://192.168.64.128)__
