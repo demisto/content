@@ -13,7 +13,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
-    encode_string_results
+    encode_string_results, domainGlobRegEx
 
 try:
     from StringIO import StringIO
@@ -1075,7 +1075,12 @@ regexes_test = [
     (ipv6cidrRegex, '2001:db8:a0b:12f0::1/64', True),
     (ipv6cidrRegex, '2001:db8:a0b:12f0::1/256', False),
     (ipv6cidrRegex, '2001:db8:a0b:12f0::1::1/25', False),
-    (ipv6cidrRegex, '2001:db8:a0b:12f0::1aaasds::1/1', False)
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1aaasds::1/1', False),
+    (domainGlobRegEx, '*.outlook.com', True),
+    (domainGlobRegEx, '*.office.outlook.com', True),
+    (domainGlobRegEx, '*.outlook.com', False),
+    (domainGlobRegEx, '*-outlook.com', False),
+    (domainGlobRegEx, '*office-outlook.com', False),
 ]
 
 
