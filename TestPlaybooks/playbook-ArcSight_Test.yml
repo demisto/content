@@ -1,3 +1,4 @@
+elasticcommonfields: {}
 id: ArcSight ESM v2 Test
 version: -1
 name: ArcSight ESM v2 Test
@@ -6,10 +7,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9c963ab8-af59-4339-8be4-e73e7573c401
+    taskid: b90dd7e7-23f4-47ab-8904-89afe700b274
     type: start
     task:
-      id: 9c963ab8-af59-4339-8be4-e73e7573c401
+      elasticcommonfields: {}
+      id: b90dd7e7-23f4-47ab-8904-89afe700b274
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +29,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: fc92367c-188a-47e3-877f-3a3af5fb9b2b
+    taskid: 820fa1b4-9296-4349-8c7d-177e0a52ada9
     type: regular
     task:
-      id: fc92367c-188a-47e3-877f-3a3af5fb9b2b
+      elasticcommonfields: {}
+      id: 820fa1b4-9296-4349-8c7d-177e0a52ada9
       version: -1
       name: get all cases
       script: '|||as-get-all-cases'
@@ -52,12 +58,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: bf09822d-b63e-4366-8816-e6d290b56f27
+    taskid: 24c727a7-3b48-449f-80a7-3a78833bfbe2
     type: regular
     task:
-      id: bf09822d-b63e-4366-8816-e6d290b56f27
+      elasticcommonfields: {}
+      id: 24c727a7-3b48-449f-80a7-3a78833bfbe2
       version: -1
       name: get case event ids
       script: '|||as-get-case-event-ids'
@@ -82,12 +92,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: b5eee223-0399-413f-8887-cab48e9e0606
+    taskid: bc9a877d-e3fb-46af-82ab-956c303d694a
     type: regular
     task:
-      id: b5eee223-0399-413f-8887-cab48e9e0606
+      elasticcommonfields: {}
+      id: bc9a877d-e3fb-46af-82ab-956c303d694a
       version: -1
       name: delete context
       scriptName: DeleteContext
@@ -114,12 +128,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: c3cb8fb7-4bce-42e1-8f14-554c319a7579
+    taskid: f3d748e3-e81e-4812-8bf2-4cbec2549a19
     type: regular
     task:
-      id: c3cb8fb7-4bce-42e1-8f14-554c319a7579
+      elasticcommonfields: {}
+      id: f3d748e3-e81e-4812-8bf2-4cbec2549a19
       version: -1
       name: get pre-existing case
       script: '|||as-get-case'
@@ -144,12 +162,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 62957e68-5415-4bc9-83a3-64aacb24a4f5
+    taskid: 2e0ec7db-a559-4df0-8c21-db7a104d3b05
     type: regular
     task:
-      id: 62957e68-5415-4bc9-83a3-64aacb24a4f5
+      elasticcommonfields: {}
+      id: 2e0ec7db-a559-4df0-8c21-db7a104d3b05
       version: -1
       name: update case
       script: '|||as-update-case'
@@ -176,12 +198,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: a1a2a3a1-df01-4497-8b11-5442faaf20b8
+    taskid: 7856ef18-0ed8-4daf-84cf-c44251625804
     type: regular
     task:
-      id: a1a2a3a1-df01-4497-8b11-5442faaf20b8
+      elasticcommonfields: {}
+      id: 7856ef18-0ed8-4daf-84cf-c44251625804
       version: -1
       name: get entries
       script: '|||as-get-entries'
@@ -206,12 +232,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: e01249cf-05d1-47a7-8d94-cfbebfb3b1bc
+    taskid: 7ad0099e-c34c-4942-806a-e3b823f53381
     type: condition
     task:
-      id: e01249cf-05d1-47a7-8d94-cfbebfb3b1bc
+      elasticcommonfields: {}
+      id: 7ad0099e-c34c-4942-806a-e3b823f53381
       version: -1
       name: check case name
       type: condition
@@ -238,12 +268,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 282360f4-e482-4fc2-8a43-468ff139c3b8
+    taskid: e87dbd7e-914f-4677-89a8-c6ef5645a896
     type: condition
     task:
-      id: 282360f4-e482-4fc2-8a43-468ff139c3b8
+      elasticcommonfields: {}
+      id: e87dbd7e-914f-4677-89a8-c6ef5645a896
       version: -1
       name: check for events
       type: condition
@@ -270,12 +304,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 508f7907-63a4-4745-8036-1001e0c7b616
+    taskid: acc2f3e2-8004-487c-8b16-bd9e4246b3e1
     type: condition
     task:
-      id: 508f7907-63a4-4745-8036-1001e0c7b616
+      elasticcommonfields: {}
+      id: acc2f3e2-8004-487c-8b16-bd9e4246b3e1
       version: -1
       name: 'check severity '
       type: condition
@@ -307,12 +345,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 7db7ff65-4a4d-44f8-853a-5252a8fa3208
+    taskid: cb3cb8c1-4da7-4aa8-8811-bdad57b20dd5
     type: regular
     task:
-      id: 7db7ff65-4a4d-44f8-853a-5252a8fa3208
+      elasticcommonfields: {}
+      id: cb3cb8c1-4da7-4aa8-8811-bdad57b20dd5
       version: -1
       name: add entries
       script: '|||as-add-entries'
@@ -337,12 +379,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 3fa81234-b523-4590-8add-769004bb0058
+    taskid: 632adcd9-b811-4980-89a5-dc8b376ce76f
     type: regular
     task:
-      id: 3fa81234-b523-4590-8add-769004bb0058
+      elasticcommonfields: {}
+      id: 632adcd9-b811-4980-89a5-dc8b376ce76f
       version: -1
       name: get all query viewers
       script: '|||as-get-all-query-viewers'
@@ -362,12 +408,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: ac9211fe-bb69-4683-8792-121d1e7e4eb0
+    taskid: 42965bcc-addd-4479-8d7d-45990791b94c
     type: regular
     task:
-      id: ac9211fe-bb69-4683-8792-121d1e7e4eb0
+      elasticcommonfields: {}
+      id: 42965bcc-addd-4479-8d7d-45990791b94c
       version: -1
       name: clear entries
       script: '|||as-clear-entries'
@@ -390,12 +440,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: b3214022-3092-4eb5-8e0c-3401e2d234db
+    taskid: d97c07af-ec06-45ba-8203-111ddf2fe3d8
     type: title
     task:
-      id: b3214022-3092-4eb5-8e0c-3401e2d234db
+      elasticcommonfields: {}
+      id: d97c07af-ec06-45ba-8203-111ddf2fe3d8
       version: -1
       name: done
       type: title
@@ -406,17 +460,21 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2990
+          "y": 3210
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: d9985408-fade-4128-8b11-912d065ee629
+    taskid: b8556bb1-e420-437c-8594-ce74ad98a6c7
     type: title
     task:
-      id: d9985408-fade-4128-8b11-912d065ee629
+      elasticcommonfields: {}
+      id: b8556bb1-e420-437c-8594-ce74ad98a6c7
       version: -1
       name: good luck
       type: title
@@ -435,12 +493,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 2de9fec4-7a2f-401e-84a2-8e564b0f2730
+    taskid: 64814fc9-da70-4002-88d2-c3506ac557b0
     type: regular
     task:
-      id: 2de9fec4-7a2f-401e-84a2-8e564b0f2730
+      elasticcommonfields: {}
+      id: 64814fc9-da70-4002-88d2-c3506ac557b0
       version: -1
       name: get query viewer results
       script: '|||as-get-query-viewer-results'
@@ -471,12 +533,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 7cbc8daf-0b6a-4c50-80c9-50012e28ca9e
+    taskid: ba78e2f4-6b31-4558-8618-c0c6a363ced3
     type: regular
     task:
-      id: 7cbc8daf-0b6a-4c50-80c9-50012e28ca9e
+      elasticcommonfields: {}
+      id: ba78e2f4-6b31-4558-8618-c0c6a363ced3
       version: -1
       name: get correlated events
       script: '|||as-get-case-event-ids'
@@ -501,12 +567,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 61206ad2-64c6-4414-8d9c-668ac0448984
+    taskid: d129dde1-d9c3-4ac6-8ac7-86a763e2c1c8
     type: regular
     task:
-      id: 61206ad2-64c6-4414-8d9c-668ac0448984
+      elasticcommonfields: {}
+      id: d129dde1-d9c3-4ac6-8ac7-86a763e2c1c8
       version: -1
       name: get correlated events 2
       script: '|||as-get-case-event-ids'
@@ -515,7 +585,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "19"
     scriptarguments:
       caseId:
         simple: 7-TbDfGkBABCenF0601F2Ww==
@@ -531,12 +601,49 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 74bfff00-5d90-4323-841a-4b768de32aed
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 74bfff00-5d90-4323-841a-4b768de32aed
+      version: -1
+      name: get big amount of entries
+      description: Returns all entries in the Active List
+      script: '|||as-get-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      entryFilter: {}
+      resourceId:
+        simple: HLCxgJHABABCAIZQhf9uOtg==
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3005,
+        "height": 3225,
         "width": 380,
         "x": 50,
         "y": 50
