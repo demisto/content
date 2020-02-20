@@ -527,6 +527,7 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
             err_details += 'retrieved from the instance post installation.'
             prints_manager.add_print_job('Content Update was Unsuccessful:\n{}'.format(err_details), print_error,
                                          thread_index)
+            prints_manager.execute_thread_prints(thread_index)
             sys.exit(1)
 
 
