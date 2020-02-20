@@ -4,7 +4,10 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 
 ## Use Cases
 ---
-1. Export list of malicious IPs to block via a firewall.
+1. Generating feeds to be used on PAN-OS as External Dynamic Lists.
+2. Create External Dynamic Lists to track on AutoFocus the IP addresses, URLs and domains used by ransomware, known APT groups and active malware campaigns.
+3. Create External Dynamic Lists to track the IPs and URLs used by Microsoft Office365, or used as tor exit nodes, or used by CDNs and cloud services.
+
 
 ## Configure ExportIndicators on Demisto
 ---
@@ -19,12 +22,10 @@ This integration provides External Dynamic List (EDL) as a service for the syste
     * __Update On Demand Only__: When set to true, will only update the service indicators via **edl-update** command.
     * __Refresh Rate__: How often to refresh the export indicators list (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
-    * __Long Running Instance__: Must be set to true, otherwise the service will be available.
+    * __Long Running Instance__: Must be set to true, otherwise the service will not be available.
     * __Listen Port__: Will run the *Export Indicators Service* on this port from within Demisto
     * __Certificate (Required for HTTPS)__: HTTPS Certificate provided by pasting its values into this field.
     * __Private Key (Required for HTTPS)__: HTTPS private key provided by pasting its valuies into this field.
-    * __HTTP Server__: Ignores certificate and private key, and will run the export indicators service
-    in HTTP
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
