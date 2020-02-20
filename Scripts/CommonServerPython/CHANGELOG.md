@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added domainGlobRegEx to validate DomainGlob format.
+Added **DomainGlob** to our **FeedIndicatorType** class and an associated regex.
 
 ## [20.2.3] - 2020-02-18
 Added cveRegex to validate cve_id format.
