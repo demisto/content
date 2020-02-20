@@ -27,8 +27,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Ignores certificate and private key, and will run the TAXII server
-    in HTTP
+- additionalinfo: Ignores the certificate and private key, and will run the TAXII server in HTTP
   defaultvalue: 'true'
   display: HTTP Server
   hidden: false
@@ -46,7 +45,7 @@ configuration:
   name: collections
   required: true
   type: 12
-description: This integration provides TAXII Services for the system indicators (Outbound
+description: This integration provides TAXII Services for system indicators (Outbound
   feed).
 display: TAXII Server
 name: TAXII Server
