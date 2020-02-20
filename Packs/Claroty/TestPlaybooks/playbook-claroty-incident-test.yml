@@ -1,0 +1,104 @@
+id: Claroty Incident - Test
+inputs: []
+name: Claroty Incident - Test
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      id: 2cc4ae88-cd78-4171-8ab1-6276e75633bc
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 2cc4ae88-cd78-4171-8ab1-6276e75633bc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '2'
+    note: false
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: Delete field from context
+      id: 164fd255-51da-4fc6-848f-c55e8d1cfe2d
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 164fd255-51da-4fc6-848f-c55e8d1cfe2d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+  '2':
+    id: '2'
+    ignoreworker: false
+    note: false
+    separatecontext: true
+    task:
+      brand: ''
+      id: 47d29b2b-55dd-4008-8adb-ac8e8240449e
+      iscommand: false
+      name: Claroty Incident
+      playbookName: Claroty Incident
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 47d29b2b-55dd-4008-8adb-ac8e8240449e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+description: ''
+fromversion: 5.0.0
