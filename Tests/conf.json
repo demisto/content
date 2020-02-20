@@ -4,17 +4,7 @@
     "tests": [
         {
             "integrations": "Claroty",
-            "playbookID": "Claroty Incident - Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Claroty",
             "playbookID": "Claroty - Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Claroty",
-            "playbookID": "Claroty CVE - Test",
             "fromversion": "5.0.0"
         },
         {
