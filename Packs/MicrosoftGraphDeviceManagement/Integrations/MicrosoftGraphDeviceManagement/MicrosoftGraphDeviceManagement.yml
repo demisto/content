@@ -1,0 +1,821 @@
+category: IT Services
+commonfields:
+  id: Microsoft Graph Device Management
+  version: -1
+configuration:
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
+  name: tenant_id
+  required: true
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Use a self deployed Azure Application
+  name: self_deployed
+  required: false
+  type: 8
+description: TBD
+display: Microsoft Graph Device Management
+name: Microsoft Graph Device Management
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get managed devices
+    execution: false
+    name: msgraph-get-managed-device-by-id
+    outputs:
+    - contextPath: MSGraphDeviceManagement.Device.ID
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.UserID
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.Name
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceOwnerType
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.actionName
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.ActionState
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.StartDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.lastUpdatedDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.EnrolledDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.LastSyncDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.OperatingSystem
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ComplianceState
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.JailBroken
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ManagementAgent
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.OSVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.EASDeviceId
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.EASActivationDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.ActivationLockBypassCode
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.EmailAddress
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ExchangeAccessState
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.exchangeAccessStateReason
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.IsSupervised
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.IsEncrypted
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.UserPrincipalName
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.Model
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.Manufacturer
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.IMEI
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.SerialNumber
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.PhoneNumber
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.AndroidSecurityPatchLevel
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.inventory
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.modernApps
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.resourceAccess
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.deviceConfiguration
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.WiFiMacAddress
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.resetCount
+      description: TBD
+      type: Number
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.restartCount
+      description: TBD
+      type: Number
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.testSigning
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.safeMode,
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerSecurityVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.tpmVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcr0
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBootConfigurationPolicyFingerPrint
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.SubscriberCarrier
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.MEID
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes
+      description: TBD
+      type: Number
+    - contextPath: MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes
+      description: TBD
+      type: Number
+    - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceName
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
+      description: TBD
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-sync-device
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-disable-lost-mode
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-locate-device
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-reboot-now
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-shutdown
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-bypass-activation-lock
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-retire
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-reset-passcode
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-remote-lock
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-request-remote-assistance
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-recover-passcode
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-logout-shared-apple-device-active-user
+  - arguments:
+    - default: false
+      description: The principal name of the user to be deleted.
+      isArray: false
+      name: user-principal-name
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-delete-user-from-shared-apple-device
+  - arguments:
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-windows-defender-update-signatures
+  - arguments:
+    - default: true
+      description: Whether to keep the user's data or not. (Default is set to true)
+      isArray: false
+      name: keep-user-data
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-clean-windows-device
+  - arguments:
+    - default: true
+      description: Whether to peformn quick scan or not. (Default is set to true)
+      isArray: false
+      name: quick-scan
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-windows-defender-scan
+  - arguments:
+    - default: true
+      description: Whether to keep enrollment data or not. (Default is set to true)
+      isArray: false
+      name: keep-enrollment-data
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: true
+      description: Whether to keep the user's data or not. (Default is set to true)
+      isArray: false
+      name: keep-user-data
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The MacOS unlock code.
+      isArray: false
+      name: mac-os-unlock-code
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-device-wipe
+  - arguments:
+    - default: false
+      description: TBD
+      isArray: false
+      name: session-initiation-protocal-address
+      required: true
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: exchange-server
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      description: Whether to enable calendar sync or not. (Default is set to false)
+      isArray: false
+      name: calendar-sync-enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: true
+      description: Whether to enable password rotation or not. (Default is set to
+        false)
+      isArray: false
+      name: password-rotation-enabled
+      predefined:
+        - 'true'
+        - 'false'
+      auto: PREDEFINED
+      required: false
+      secret: false
+    - default: false
+      description: The device account password.
+      isArray: false
+      name: device-account-password
+      required: true
+      secret: false
+    - default: false
+      description: The device account email.
+      isArray: false
+      name: device-account-email
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the managed device to be fetched (Can be retreived using
+        the msgraph-list-managed-devices command)
+      isArray: false
+      name: device-id
+      required: true
+      secret: false
+    deprecated: false
+    description: TBD
+    execution: false
+    name: msgraph-update-windows-device-account
+  - arguments:
+    - default: true
+      defaultValue: '10'
+      description: The number of managed devices to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List of managed devices
+    execution: false
+    name: msgraph-list-managed-devices
+    outputs:
+    - contextPath: MSGraphDeviceManagement.Device.ID
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.UserID
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.Name
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceOwnerType
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.actionName
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.ActionState
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.StartDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.lastUpdatedDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.EnrolledDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.LastSyncDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.OperatingSystem
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ComplianceState
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.JailBroken
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ManagementAgent
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.OSVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.EASDeviceId
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.EASActivationDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.ActivationLockBypassCode
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.EmailAddress
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ExchangeAccessState
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.exchangeAccessStateReason
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.IsSupervised
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.IsEncrypted
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.UserPrincipalName
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.Model
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.Manufacturer
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.IMEI
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.SerialNumber
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.PhoneNumber
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.AndroidSecurityPatchLevel
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.inventory
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.modernApps
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.resourceAccess
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.deviceConfiguration
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness
+      description: TBD
+      type: Boolean
+    - contextPath: MSGraphDeviceManagement.Device.WiFiMacAddress
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime
+      description: TBD
+      type: Date
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.resetCount
+      description: TBD
+      type: Number
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.restartCount
+      description: TBD
+      type: Number
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.testSigning
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.safeMode,
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerSecurityVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.tpmVersion
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcr0
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBootConfigurationPolicyFingerPrint
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.SubscriberCarrier
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.MEID
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes
+      description: TBD
+      type: Number
+    - contextPath: MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes
+      description: TBD
+      type: Number
+    - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceName
+      description: TBD
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
+      description: TBD
+      type: String
+  dockerimage: demisto/crypto:1.0.0.303
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No Test
