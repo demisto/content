@@ -1,3 +1,7 @@
+# TAXII Service Integration
+
+This integration provides TAXII Services for the system indicators (Outbound feed).
+
 ## Configure Collections
 Each TAXII collection in the integration is represented by a Demisto indicator query.
 
