@@ -76,8 +76,7 @@ EMAIL_INDICATORS = '''
                "source":"2@947",
                "entryId":"2@947",
                "category":"Sighting"
-            }
-            
+               }
          ],
          "account":"",
          "timestamp":"2020-02-12T17:42:11.48852+02:00",
@@ -364,8 +363,22 @@ FILE_INDICATORS = '''
 '''
 
 INDICATOR_QUERY = 'type:IP and sourceBrands:"Bambenek Consulting Feed"' \
-                  ' and createdTime:>"2020-02-10T11:32:32 +0000" and' \
-                  ' createdTime:<="2020-02-20T11:32:32 +0000"'
+                  ' and sourcetimestamp:>"2020-02-10T11:32:32 +0000" and' \
+                  ' sourcetimestamp:<="2020-02-20T11:32:32 +0000"'
+
+
+def test_get_https_hostname(mocker):
+    from TAXIIServer import get_https_hostname
+    # Set
+    mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
+
+    host_name = 'demistoserver.works'
+
+    # Arrange
+    host_name = get_https_hostname(host_name)
+
+    # Assert
+    assert host_name == 'demistoserver.works/instance/execute/eyy'
 
 
 def test_find_indicators_by_time_frame(mocker):
@@ -402,9 +415,8 @@ def test_find_indicators_loop(mocker):
     indicators = find_indicators_loop('q')
 
     # Assert
-    assert len(indicators) == 2
+    assert len(indicators) == 1
     assert indicators[0]['value'] == '52.218.100.20'
-    assert indicators[1]['value'] == '52.218.101.252'
 
 
 @pytest.mark.parametrize('indicator',
