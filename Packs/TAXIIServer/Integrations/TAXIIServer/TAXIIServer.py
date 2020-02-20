@@ -125,10 +125,11 @@ class TAXIIServer:
         Returns:
             The discovery response.
         """
-        discovery_service_url = f'{self.host}:{self.port}'
 
         if taxii_message.message_type != MSG_DISCOVERY_REQUEST:
             raise ValueError('Invalid message, invalid Message Type')
+
+        discovery_service_url = self.get_url()
 
         discovery_response = DiscoveryResponse(
             generate_message_id(),
@@ -160,6 +161,7 @@ class TAXIIServer:
             The collection management response.
         """
         taxii_feeds = list(self.collections.keys())
+        url = self.get_url()
 
         if taxii_message.message_type != MSG_COLLECTION_INFORMATION_REQUEST:
             raise ValueError('Invalid message, invalid Message Type')
@@ -178,7 +180,7 @@ class TAXIIServer:
             )
             polling_instance = PollingServiceInstance(
                 'urn:taxii.mitre.org:protocol:http:1.0',
-                f'{self.host}:{self.port}/taxii-poll-service',
+                f'{url}/taxii-poll-service',
                 ['urn:taxii.mitre.org:message:xml:1.1']
             )
             collection_info.polling_service_instances.append(polling_instance)
@@ -277,6 +279,16 @@ class TAXIIServer:
             },
             mimetype='application/xml'
         )
+
+    def get_url(self):
+        """
+        Returns:
+            The service URL according to the protocol.
+        """
+        if self.http_server:
+            return f'{self.host}:{self.port}'
+        else:
+            return self.host
 
 
 SERVER: TAXIIServer
@@ -594,6 +606,26 @@ def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
 ''' HELPER FUNCTIONS '''
 
 
+def get_calling_context():
+    return demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+
+
+def get_https_hostname(host_name):
+    """
+    Get the host name for the https endpoint.
+    Args:
+        host_name:
+
+    Returns:
+        The host name in the format of host/instance/execute/instance_name
+    """
+    calling_context = get_calling_context()
+    instance_name = calling_context.get('IntegrationInstance', '')
+    host_name = os.path.join(host_name, 'instance', 'execute', instance_name)
+
+    return host_name
+
+
 def handle_long_running_error(error: str):
     """
     Handle errors in the long running process.
@@ -897,8 +929,13 @@ def main():
     credentials: dict = params.get('credentials', None)
 
     global SERVER
-    scheme = 'https' if not http_server else 'http'
-    SERVER = TAXIIServer(f'{scheme}://{server_link_parts.hostname}', port, collections,
+    scheme = 'http'
+    host_name = server_link_parts.hostname
+    if not http_server:
+        scheme = 'https'
+        host_name = get_https_hostname(host_name)
+
+    SERVER = TAXIIServer(f'{scheme}://{host_name}', port, collections,
                          certificate, private_key, http_server, credentials)
 
     demisto.debug(f'Command being called is {command}')

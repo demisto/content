@@ -37,6 +37,10 @@ configuration:
   type: 8
 - additionalinfo: JSON string of indicator query collections - dictionary of the collection
     name as the key and the query as the value.
+  defaultvalue: |-
+    {
+       "AWS": "type:CIDR and sourceBrands:\"AWS Feed\""
+    }
   display: Collection JSON
   hidden: false
   name: collections
@@ -47,7 +51,7 @@ description: This integration provides TAXII Services for the system indicators 
 display: TAXII Server
 name: TAXII Server
 script:
-  dockerimage: devdemisto/taxii-server:1.0.0.5978
+  dockerimage: devdemisto/taxii-server:1.0.0.6083
   feed: false
   isfetch: false
   longRunning: true
