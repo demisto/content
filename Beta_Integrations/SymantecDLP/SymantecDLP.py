@@ -13,9 +13,23 @@ from typing import Dict, Tuple, Any
 from dateutil.parser import parse
 import urllib3
 import uuid
+import tempfile
+import os
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+def get_cache_path():
+    path = tempfile.gettempdir() + "/zeepcache"
+    try:
+        os.makedirs(path)
+    except OSError:
+        if os.path.isdir(path):
+            pass
+        else:
+            raise
+    return os.path.join(path, "cache.db")
 
 
 class SymantecAuth(AuthBase):
@@ -691,7 +705,8 @@ def main():
     wsdl: str = f'{server}/ProtectManager/services/v2011/incidents?wsdl'
     session: Session = Session()
     session.auth = SymantecAuth(username, password, server)
-    cache: SqliteCache = SqliteCache(timeout=None)
+    session.verify = verify_ssl
+    cache: SqliteCache = SqliteCache(path=get_cache_path(), timeout=None)
     transport: Transport = Transport(session=session, cache=cache)
     client: Client = Client(wsdl=wsdl, transport=transport)
     client.transport.session.verify = verify_ssl
