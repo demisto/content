@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added domainGlobRegEx to validate domainGlob format.
+Added domainGlobRegEx to validate DomainGlob format.
 
 ## [20.2.3] - 2020-02-18
 Added cveRegex to validate cve_id format.

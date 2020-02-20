@@ -1,5 +1,5 @@
 {
-  "id": "domainGlob",
+  "id": "DomainGlob",
   "version": -1,
   "fromVersion": "5.5.0",
   "modified": "2019-07-18T07:37:50.270500504Z",
@@ -8,8 +8,8 @@
   "shouldPublish": false,
   "shouldCommit": false,
   "regex": "",
-  "details": "domainGlob",
-  "prevDetails": "domainGlob",
+  "details": "DomainGlob",
+  "prevDetails": "DomainGlob",
   "reputationScriptName": "",
   "reputationCommand": "",
   "enhancementScriptNames": [],
