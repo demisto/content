@@ -1,3 +1,5 @@
+import demisto_ml
+
 from CommonServerPython import *
 
 OUT_OF_THE_BOX_MODEL_NAME = 'demisto_out_of_the_box_model'
@@ -13,7 +15,8 @@ def oob_model_exists():
 
 def load_oob_model():
     with open(OUT_OF_THE_BOX_MODEL_PATH, 'rb') as input_file:
-        encoded_model = input_file.read()
+        encryped_model = input_file.read()
+    encoded_model = demisto_ml.decrypt_model(encryped_model)
     res = demisto.executeCommand('createMLModel', {'modelData': encoded_model,
                                                    'modelName': OUT_OF_THE_BOX_MODEL_NAME,
                                                    'modelLabels': ['legit', 'spam', 'malicious'],
@@ -46,7 +49,7 @@ def load_oob_model():
 
 def predict_phishing_words(email_subject, email_body, email_body_html, min_text_length, label_threshold,
                            word_threshold, top_word_limit, is_return_error):
-    if not oob_model_exists():
+    if not oob_model_exists() or True:
         load_oob_model()
     res = demisto.executeCommand('DBotPredictPhishingWords', {'modelName': OUT_OF_THE_BOX_MODEL_NAME,
                                                               'emailBody': email_body,
