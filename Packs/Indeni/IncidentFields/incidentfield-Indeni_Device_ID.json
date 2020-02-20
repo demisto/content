@@ -1,6 +1,8 @@
 {
 	"associatedToAll": false,
-	"associatedTypes": "Indeni Incident",
+	"associatedTypes": [
+      "Indeni Incident"
+    ],
 	"breachScript": "",
 	"caseInsensitive": true,
 	"cliName": "indenideviceid",
