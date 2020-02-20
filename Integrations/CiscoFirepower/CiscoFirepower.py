@@ -17,6 +17,10 @@ INTEGRATION_COMMAND_NAME = 'ciscofp'
 # No dividers
 INTEGRATION_CONTEXT_NAME = 'CiscoFP'
 
+OUTPUT_KEYS_DICTIONARY = {
+    'id': 'ID'
+}
+
 
 class Client(BaseClient):
     def login(self):
@@ -24,11 +28,11 @@ class Client(BaseClient):
         """
         new_headers = self._http_request(
             'POST',
-            url_suffix='api/fmc_platform/v1/auth/generatetoken',
+            url_suffix='/api/fmc_platform/v1/auth/generatetoken',
             resp_type='response'
         ).headers
         self._headers = {'X-auth-access-token': new_headers.get('X-auth-access-token')}
-        self._base_url += f'api/fmc_config/v1/domain/{new_headers.get("DOMAIN_UUID")}/'
+        self._base_url += f'/api/fmc_config/v1/domain/{new_headers.get("DOMAIN_UUID")}/'
         if self._headers['X-auth-access-token'] == '':
             return_error('No valid access token')
         return
@@ -161,13 +165,23 @@ class Client(BaseClient):
 
 
 def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
+    """Receives a list of dictionaries or a dictionary,
+    and if one of the keys contains a list or dictionary with lists,
+    returns the size of the lists
+
+    :type data: ``list`` or ``dict``
+    :param data:  context entry
+
+    :return: ``list`` or ``dict``
+    :rtype: context entry for human readable`
+    """
     if isinstance(data, list):
         return [switch_list_to_list_counter(dat) for dat in data]
     new_data = {}
     for item in data:
         if type(data[item]) == list:
             new_data[item] = len(data[item])
-        elif type(data[item]) == dict:
+        elif data[item] and type(data[item]) == dict:
             counter = 0
             for in_item in data[item]:
                 if type(data[item][in_item]) == list:
@@ -179,6 +193,26 @@ def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
 
 
 def creates_list_of_dictionary(value: str, type_name: str, value_key: str):
+    """Receives a comma delimited string with values and key for the valus and type
+    returns a list of dictionary with value by the given key and by the given type
+        Examples:
+        >>> creates_list_of_dictionary('1111,2222,3333', 'myID', 'id')
+        [{id: '1111', type: 'myID'}, {id: '2222', type: 'myID'}, {id: '2222', type: 'myID'}]
+        >>> creates_list_of_dictionary('1111,2222,3333', '', 'id')
+        [{id: '1111'}, {id: '2222'}, {id: '2222'}]
+
+    :type value: ``str``
+    :param value:  comma delimited string with values (required)
+
+    :type type_name: ``str``
+    :keyword type_name: Type add to dictionary, if you do not add then type will not be added to the dictionary
+
+    :type value_key: ``str``
+    :keyword value_key: Value keyword
+
+    :return: list of dictionary white the given data
+    :rtype: ``list``
+    """
     id_list = argToList(value)
     objects = []
     for current_id in id_list:
@@ -191,20 +225,20 @@ def creates_list_of_dictionary(value: str, type_name: str, value_key: str):
     return objects
 
 
-def custom_title(key):
-    if key == 'id':
-        return 'ID'
-    else:
-        return key.capitalize()
-
-
 def raw_response_to_context_list(list_key, items):
+    """Receives a dictionary or list of dictionaries and returns only the keys that exist in the list_key
+    and changes the keys by Context Standards
+
+    :type items: ``list`` or ``dict``
+    :param items:  list of dict or dict of data from http request
+
+    :type list_key: ``list``
+    :keyword list_key: Selected keys to copy on context_entry
+    """
     if isinstance(items, list):
         return [raw_response_to_context_list(list_key, item) for item in items]
 
-    list_to_output = {}
-    for key in list_key:
-        list_to_output[custom_title(key)] = items.get(key, '')
+    list_to_output = {OUTPUT_KEYS_DICTIONARY.get(key, key.capitalize()): items.get(key, '') for key in list_key}
     return list_to_output
 
 
@@ -374,7 +408,6 @@ def raw_response_to_context_ruls(items):
                     'Protocol': obj.get('protocol', '')
                 } for obj in items.get('sourcePorts', {}).get('objects', [])
             ]
-
     if 'destinationPorts' in items:
         entry['DestinationPorts'] = {}
         if 'literals' in items.get('destinationPorts'):
@@ -404,9 +437,6 @@ def raw_response_to_context_ruls(items):
 
 
 ''' COMMANDS '''
-@logger
-def test_module_command():
-    return 'ok', None, None
 
 
 @logger
@@ -525,7 +555,6 @@ def get_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
 
 def create_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     data_to_post = args.copy()
-    print(data_to_post)
     raw_response = client.create_network_objects(data_to_post)
     title = f'{INTEGRATION_NAME} - network object has been created.'
     list_to_output = ['id', 'name', 'value', 'overridable', 'description']
@@ -636,7 +665,7 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
 
 
 def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'name' in args and 'id_list' or 'value_list':
+    if 'id_list' or 'value_list' in args:
         data_to_post = {'name': args.get('name')}
         ids = args.get('id_list', '')
         values = args.get('value_list', '')
@@ -657,11 +686,11 @@ def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not create new group.')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not create new group, Missing value or ID.')
 
 
 def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'name' in args and 'id_list' or 'value_list':
+    if 'id_list' or 'value_list' in args:
         data_to_post = {'name': args.get('name'), 'id': args.get('id')}
         ids = args.get('id_list', '')
         values = args.get('value_list', '')
@@ -682,24 +711,21 @@ def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not update the group.')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not update the group, Missing value or ID.')
 
 
 def delete_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'id' in args:
-        object_id = args['id']
-        raw_response = client.delete_network_groups_objects(object_id)
-        title = f'{INTEGRATION_NAME} - network group - {object_id} - has been delete.'
-        context_entry = raw_response_to_context_network_groups(raw_response)
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
-        }
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
-        entry_white_list_count = switch_list_to_list_counter(context_entry)
-        human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not delete the group.')
+    object_id = args['id']
+    raw_response = client.delete_network_groups_objects(object_id)
+    title = f'{INTEGRATION_NAME} - network group - {object_id} - has been delete.'
+    context_entry = raw_response_to_context_network_groups(raw_response)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
+    }
+    presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
+    entry_white_list_count = switch_list_to_list_counter(context_entry)
+    human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
+    return human_readable, context, raw_response
 
 
 def get_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -993,7 +1019,6 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     data_to_post['policy_id'] = args['policy_id']
     data_to_post['action'] = args['action']
 
-    print(data_to_post)
     raw_response = client.create_access_rules(data_to_post)
     title = f'{INTEGRATION_NAME} - the new access rule:'
     context_entry = raw_response_to_context_ruls(raw_response)
@@ -1063,10 +1088,8 @@ def update_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     data_to_post['policy_id'] = args['policy_id']
     data_to_post['action'] = args['action']
     data_to_post['id'] = args['rule_id']
-
-    print(data_to_post)
     raw_response = client.create_access_rules(data_to_post)
-    title = f'{INTEGRATION_NAME} - the new access rule:'
+    title = f'{INTEGRATION_NAME} - access rule:'
     context_entry = raw_response_to_context_ruls(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
     context = {
@@ -1219,7 +1242,6 @@ def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     data_to_post['ignoreWarning'] = args.get('ignore_warning')
     data_to_post['version'] = args.get('version')
 
-    print(data_to_post)
     raw_response = client.deploy_to_devices(data_to_post)
     title = f'{INTEGRATION_NAME} - devices requests to deploy.'
     context_entry = {
@@ -1273,7 +1295,8 @@ def main():  # pragma: no cover
     LOG('command is %s' % (demisto.command(),))
     try:
         if demisto.command() == 'test-module':
-            return_outputs(*test_module_command())
+            return_outputs('ok')
+            # Login is performed at the beginning of each flow (line 1271) if the login fails we return an error.
         elif demisto.command() == 'ciscofp-list-zones':
             return_outputs(*list_zones_command(client, demisto.args()))
         elif demisto.command() == 'ciscofp-list-ports':

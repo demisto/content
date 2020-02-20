@@ -785,14 +785,124 @@ script:
     execution: false
     name: ciscofp-create-access-rules
   - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Action—A rule's action determines how the system handles matching
+        traffic
+      isArray: false
+      name: action
+      predefined:
+      - ALLOW
+      - TRUST
+      - BLOCK
+      - MONITOR
+      - BLOCK_RESET
+      - BLOCK_INTERACTIVE
+      - BLOCK_RESET_INTERACTIVE
+      required: true
+      secret: false
     - default: false
-      description: the policy id
+      description: the role name
+      isArray: false
+      name: rule_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      description: Boolean indicating to enable or not.
+      isArray: false
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: list of source Zones object id
+      isArray: true
+      name: source_zone_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: policy id to create there the new role
       isArray: false
       name: policy_id
       required: true
       secret: false
     - default: false
-      description: the role id to delete
+      description: list of destination Zones object id
+      isArray: true
+      name: destination_zone_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of vlan Tags object id
+      isArray: true
+      name: vlan_tag_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of network object id
+      isArray: true
+      name: source_network_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of addresses
+      isArray: true
+      name: source_network_addresses
+      required: false
+      secret: false
+    - default: false
+      description: source_network_object_ids
+      isArray: true
+      name: destination_network_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of addresses
+      isArray: true
+      name: destination_network_addresses
+      required: false
+      secret: false
+    - default: false
+      description: list of port object id
+      isArray: false
+      name: source_port_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of port object id
+      isArray: false
+      name: destination_port_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of security group tag object id
+      isArray: false
+      name: source_security_group_tag_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of application object id
+      isArray: true
+      name: application_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of url object id
+      isArray: true
+      name: url_object_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of url_addresses
+      isArray: true
+      name: url_addresses
+      required: false
+      secret: false
+    - default: false
+      description: the id of the rule to update
       isArray: false
       name: rule_id
       required: true
