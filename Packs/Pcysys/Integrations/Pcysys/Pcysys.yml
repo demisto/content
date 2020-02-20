@@ -31,7 +31,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An Integration with the Pentera by Pcysys
+description: An Integration with Pentera by Pcysys
 display: Pentera
 name: Pentera
 script:
