@@ -77,6 +77,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators shared directly from demisto.
+  defaultvalue: "true"
   display: Demisto Shared Feed
   hidden: false
   name: demisto_shared
@@ -98,6 +99,23 @@ configuration:
   display: Default Indicator Type
   hidden: false
   name: default_type
+  required: false
+  type: 0
+- display: Index from which to fetch incidents (CSV)
+  name: fetch_index
+  required: false
+  type: 0
+- defaultvalue: Simple-Date
+  display: Time field type
+  name: time_method
+  options:
+  - Simple-Date
+  - Timestamp-Seconds
+  - Timestamp-Milliseconds
+  required: false
+  type: 15
+- display: Index time field (for sorting sort and limiting data)
+  name: time_field
   required: false
   type: 0
 description: Fetch indicators stored in an Elasticsearch database.

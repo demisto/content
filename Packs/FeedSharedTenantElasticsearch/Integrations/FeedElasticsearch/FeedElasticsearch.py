@@ -31,12 +31,15 @@ MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 
 
 class Client:
-    def __init__(self, insecure, server, username, password):
+    def __init__(self, insecure, server, username, password, time_field, time_method, fetch_index):
         self.insecure = insecure
         self.proxy = handle_proxy()
         self.server = server
         self.username = username
         self.password = password
+        self.time_field = time_field
+        self.time_method = time_method
+        self.fetch_index = fetch_index
         self.es = self._elasticsearch_builder()
 
     def _elasticsearch_builder(self):
@@ -70,11 +73,24 @@ class Client:
             res = requests.get(self.server, verify=self.insecure, headers=headers)
         return res
 
-    def get_elasticsearch(self):
-        return self.es
+
+''' ###################### COMMANDS ###################### '''
 
 
-def test_command(client):
+def test_command(client, demisto_shared, src_val, src_type, default_type, time_field, time_method, fetch_index):
+    if not demisto_shared:
+        if not src_val:
+            return_error('Please provide a "Source Indicator Value"')
+        if not src_type and not default_type:
+            return_error('Please provide a "Source Indicator Type" or "Default Indicator Type"')
+        if not default_type:
+            return_error('Please provide a "Default Indicator Type"')
+        if not time_field:
+            return_error('Please provide a "Time Field"')
+        if not time_method:
+            return_error('Please provide a "Time Method"')
+        if not fetch_index:
+            return_error('Please provide a "Fetch Index"')
     try:
         res = client.send_test_request()
         if res.status_code >= 400:
@@ -94,12 +110,29 @@ def test_command(client):
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
-    get_indicators_search_scan(client)
+    get_scan_demisto_format(client)
     demisto.results('ok')
 
 
+def get_generic_indicators(search, src_val, src_type, default_type):
+    ioc_lst: list = []
+    for hit in search.scan():
+        hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type)
+        ioc_lst.extend(hit_lst)
+    hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
+    ec = {'ElasticsearchFeed': {'Indicators': ioc_lst}}
+    return_outputs(hr, ec, ioc_lst)
+
+
 def get_indicators_command(client, demisto_shared, src_val, src_type, default_type):
-    search, _ = get_indicators_search_scan(client)
+    search, _ = get_scan_demisto_format(client)
+    if demisto_shared:
+        get_demisto_indicators(search)
+    else:
+        get_generic_indicators(search, src_val, src_type, default_type)
+
+
+def get_demisto_indicators(search):
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     indicators_list: list = []
     ioc_enrch_lst: list = []
@@ -116,8 +149,54 @@ def get_indicators_command(client, demisto_shared, src_val, src_type, default_ty
     return_outputs(hr, ec, indicators_list)
 
 
-def fetch_indicators_command(client, demisto_shared, src_val, src_type, default_type):
-    search, now = get_indicators_search_scan(client)
+def fetch_indicators_command(client, demisto_shared, src_val, src_type, default_type, last_fetch):
+    if demisto_shared:
+        now = fetch_and_create_indicators_demisto_format(client, last_fetch)
+    else:
+        now = fetch_and_create_indicators_custom_format(client, src_val, src_type, default_type, last_fetch)
+    demisto.setLastRun({'time': now})
+
+
+def fetch_and_create_indicators_custom_format(client, src_val, src_type, default_type, last_fetch):
+    search, now = get_scan_generic_format(client, last_fetch)
+    ioc_lst: list = []
+    for hit in search.scan():
+        hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type)
+        ioc_lst.extend(hit_lst)
+    if ioc_lst:
+        for b in batch(ioc_lst, batch_size=2000):
+            demisto.createIndicators(b)
+    return now
+
+
+def get_scan_generic_format(client, last_fetch):
+    # if method is simple date - convert the date string to datetime
+    now = datetime.now()
+    es = client.es
+    time_method = client.time_method
+    if last_fetch:
+        if 'Simple-Date' == time_method or 'Milliseconds' in time_method:
+            last_fetch_timestamp = int(last_fetch * 1000)
+    time_field = client.time_field
+    fetch_index = client.fetch_index
+    query = QueryString(query=time_field + ":*")
+    range_field = {time_field: {'gt': datetime.fromtimestamp(float(last_fetch)), 'lte': now}} if last_fetch else {
+        time_field: {'lte': now}}
+    # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
+    search = Search(using=es, index=fetch_index).filter({'range': range_field}).query(query)
+    return search, str(now.timestamp())
+
+
+def extract_indicators_from_generic_hit(hit, src_val, src_type, default_type):
+    ioc_lst = []
+    ioc = results_to_indicator(hit, src_val, src_type, default_type)
+    if ioc.get('value'):
+        ioc_lst.append(ioc)
+    return ioc_lst
+
+
+def fetch_and_create_indicators_demisto_format(client, last_fetch):
+    search, now = get_scan_demisto_format(client, last_fetch)
     ioc_lst: list = []
     ioc_enrch_lst: list = []
     for hit in search.scan():
@@ -133,20 +212,21 @@ def fetch_indicators_command(client, demisto_shared, src_val, src_type, default_
             # ensure batch sizes don't exceed 2000
             for b in batch(enrch_batch, batch_size=2000):
                 demisto.createIndicators(b)
-    demisto.setLastRun({'time': now})
+    return now
 
 
-def get_indicators_search_scan(client):
+def get_scan_demisto_format(client, last_fetch=None):
     now = datetime.now()
-    time_field = "calculatedTime"
-    last_fetch = demisto.getLastRun().get('time')
+    time_field = client.time_field
     range_field = {time_field: {'gt': datetime.fromtimestamp(float(last_fetch)), 'lte': now}} if last_fetch else {
         time_field: {'lte': now}}
-    es = client.get_elasticsearch()
+    es = client.es
     query = QueryString(query=time_field + ":*")
     tenant_hash = demisto.getIndexHash()
     # all shared indexes minus this tenant shared
-    indexes = f'*-shared*,-*{tenant_hash}*-shared*'
+    indexes = '*-shared*'
+    if tenant_hash:
+        indexes += f',-*{tenant_hash}*-shared*'
     search = Search(using=es, index=indexes).filter({'range': range_field}).query(query)
     return search, str(now.timestamp())
 
@@ -171,10 +251,14 @@ def extract_indicators_from_insight_hit(hit):
     return ioc_lst, ioc_enirhcment_list
 
 
-def results_to_indicator(hit):
+def results_to_indicator(hit, ioc_val_key='name', ioc_type_key=None, default_ioc_type=None):
     ioc_dict = hit.to_dict()
-    ioc_dict['value'] = ioc_dict.get('name')
+    ioc_dict['value'] = ioc_dict.get(ioc_val_key)
     ioc_dict['rawJSON'] = dict(ioc_dict)
+    if ioc_type_key:
+        ioc_dict['type'] = ioc_dict.get(ioc_type_key)
+    if ioc_dict.get('type') is None:
+        ioc_dict['type'] = default_ioc_type
     return ioc_dict
 
 
@@ -200,16 +284,20 @@ def main():
         creds = params.get('credentials')
         username, password = (creds.get('identifier'), creds.get('password')) if creds else (None, None)
         insecure = not params.get('insecure')
-        client = Client(insecure, server, username, password)
         demisto_shared = params.get('demisto_shared')
+        time_field = 'calculatedTime' if demisto_shared else params.get('time_field')
+        time_method = params.get('time_method')
+        fetch_index = params.get('fetch_index')
+        client = Client(insecure, server, username, password, time_field, time_method, fetch_index)
         src_val = params.get('src_val')
         src_type = params.get('src_type')
         default_type = params.get('default_type')
+        last_fetch = demisto.getLastRun().get('time')
 
         if demisto.command() == 'test-module':
-            test_command(client)
+            test_command(client, demisto_shared, src_val, src_type, default_type, time_field, time_method, fetch_index)
         elif demisto.command() == 'fetch-indicators':
-            fetch_indicators_command(client, demisto_shared, src_val, src_type, default_type)
+            fetch_indicators_command(client, demisto_shared, src_val, src_type, default_type, last_fetch)
         elif demisto.command() == 'es-get-indicators':
             get_indicators_command(client, demisto_shared, src_val, src_type, default_type)
     except Exception as e:
