@@ -3,6 +3,7 @@ id: ArcSight Add Url Indicators
 version: -1
 fromversion: 5.5.0
 name: ArcSight Add Url Indicators
+description: The playbook queries indicators based on the specified tags and uploads the to the Qradar reference set in the inputs.
 starttaskid: '0'
 tasks:
   '0':
@@ -71,6 +72,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'
@@ -168,6 +170,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'

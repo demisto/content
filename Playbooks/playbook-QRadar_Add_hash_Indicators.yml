@@ -72,6 +72,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'
@@ -221,6 +222,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'
@@ -259,6 +261,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'
@@ -308,6 +311,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'
@@ -346,6 +350,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'
@@ -445,6 +450,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'
@@ -483,6 +489,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
       - '3'
