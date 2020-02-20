@@ -673,6 +673,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
 
 def main():
+    handle_proxy()
     params: Dict = demisto.params()
     server: str = params.get('server', '').rstrip('/')
     credentials: Dict = params.get('credentials', {})
@@ -690,10 +691,10 @@ def main():
     wsdl: str = f'{server}/ProtectManager/services/v2011/incidents?wsdl'
     session: Session = Session()
     session.auth = SymantecAuth(username, password, server)
-    session.verify = verify_ssl
     cache: SqliteCache = SqliteCache(timeout=None)
     transport: Transport = Transport(session=session, cache=cache)
     client: Client = Client(wsdl=wsdl, transport=transport)
+    client.transport.session.verify = verify_ssl
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -710,7 +711,6 @@ def main():
         'symantec-dlp-incident-violations': incident_violations_command
     }
     try:
-        handle_proxy()
         if command == 'fetch-incidents':
             fetch_incidents(client, fetch_time, fetch_limit, last_run, saved_report_id)  # type: ignore[operator]
         elif command == 'test-module':
