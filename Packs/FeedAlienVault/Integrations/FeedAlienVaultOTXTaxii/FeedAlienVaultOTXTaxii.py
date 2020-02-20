@@ -27,6 +27,81 @@ urllib3.disable_warnings()
 
 EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
 
+""" Helper Methods """
+
+
+def package_extract_properties(package):
+    """Extracts properties from the STIX package"""
+    result: Dict[str, str] = {}
+
+    header = package.find_all('STIX_Header')
+    if len(header) == 0:
+        return result
+
+    # share level
+    mstructures = header[0].find_all('Marking_Structure')
+    for ms in mstructures:
+        type_ = ms.get('xsi:type')
+        if type_ is result:
+            continue
+
+        color = ms.get('color')
+        if color is result:
+            continue
+
+        type_ = type_.lower()
+        if 'tlpmarkingstructuretype' not in type_:
+            continue
+
+        result['share_level'] = color.lower()  # https://www.us-cert.gov/tlp
+        break
+
+    # decode title
+    title = next((c for c in header[0] if c.name == 'Title'), None)
+    if title is not None:
+        result['stix_package_title'] = title.text
+
+    # decode description
+    description = next((c for c in header[0] if c.name == 'Description'), None)
+    if description is not None:
+        result['stix_package_description'] = description.text
+
+    # decode description
+    sdescription = next((c for c in header[0] if c.name == 'Short_Description'), None)
+    if sdescription is not None:
+        result['stix_package_short_description'] = sdescription.text
+
+    # decode identity name from information_source
+    information_source = next((c for c in header[0] if c.name == 'Information_Source'), None)
+    if information_source is not None:
+        identity = next((c for c in information_source if c.name == 'Identity'), None)
+        if identity is not None:
+            name = next((c for c in identity if c.name == 'Name'))
+            if name is not None:
+                result['stix_package_information_source'] = name.text
+
+    return result
+
+
+def observable_extract_properties(observable):
+    """Extracts properties from observable"""
+    result = {}
+
+    title = next((c for c in observable if c.name == 'Title'), None)
+    if title is not None:
+        title = title.text
+        result['stix_title'] = title
+
+    description = next((c for c in observable if c.name == 'Description'), None)
+    if description is not None:
+        description = description.text
+        result['stix_description'] = description
+
+    return result
+
+
+""" TAXII STIX DECODE """
+
 
 class AddressObject(object):
     """
@@ -341,7 +416,19 @@ class StixDecode(object):
         return timestamp, StixDecode._deduplicate(result)
 
 
+""" Alien Vault OTX TAXII Client """
+
+
 class Client():
+    """Client for AlienVault OTX Feed - gets indicator lists from collections using TAXII client
+
+        Attributes:
+            api_key(str): The API key for AlienVault OTX.
+            collection(str): The collections on which to run the feed.
+            insecure(bool): Use SSH on http request.
+            proxy(str): Use system proxy.
+            all_collections(bool): Whether to run on all active collections.
+        """
     def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False,
                  all_collections: bool = False):
 
@@ -360,6 +447,11 @@ class Client():
             self.collections = collection.split(',')
 
     def get_all_collections(self):
+        """Gets a list of all collections listed in the AlienVault OTX instance.
+
+        Returns:
+            list. A list of all collection names in AlienVault OTX.
+        """
         collections = self.taxii_client.get_collections()
         full_collection_list = []
         for collection in collections:
@@ -367,14 +459,43 @@ class Client():
         return full_collection_list
 
     def build_iterator(self, collection):
+        """Returns a list of all XML elements from the given collection.
+
+        Args:
+            collection(str): The collection name to fetch the elements from.
+
+        Returns:
+            list. A list of XML elements (strings).
+        """
         return list(self.taxii_client.poll(collection_name=collection))
 
     def decode_indicators(self, response):
+        """Decode the XML response given using STIXDecode class.
+
+        Args:
+            response(str): An XML response from a collection of AlienVault.
+
+        Returns:
+            list. A list of indicators (dicts) decoded from the response.
+        """
         return StixDecode.decode(response)
 
 
 def module_test_command(client: Client, args: Dict):
+    """Test module for the integration
+    will run on all the collections given and check for a response.
+    if all_collections is checked will return an error only in case no collection returned a response.
+    if all_collections is not checked will return an error for the collections that did not respond.
+
+    Args:
+        client(Client): The AlienVault OTX client.
+        args(dict): empty dictionary.
+
+    Returns:
+        str,dict,dict. ok if passed - will raise an Exception otherwise.
+    """
     passed_collections = []  # type:List
+    failed_collections = []  # type:List
     for collection in client.collections:
         try:
 
@@ -386,8 +507,12 @@ def module_test_command(client: Client, args: Dict):
                 raise Exception("SSL Connection failed - try marking the Trust Any Certificate checkbox.")
             else:
                 if not client.all_collections:
-                    raise Exception(f"Unable to poll from the collection {collection} check the collection name and "
-                                    f"configuration on Alien Vault")
+                    failed_collections.append(collection)
+                    continue
+
+    if not client.all_collections and len(failed_collections) > 0:
+        raise Exception(f"Unable to poll from the collections {str(failed_collections)} check the collection names and "
+                        f"configuration on Alien Vault")
 
     if len(passed_collections) == 0:
         raise Exception("Unable to poll from any collection - please check the configuration on Alien Vault")
@@ -396,6 +521,15 @@ def module_test_command(client: Client, args: Dict):
 
 
 def get_indicators_command(client: Client, args: Dict):
+    """Runs fetch indicators and return the indicators.
+
+    Args:
+        client(Client): The AlienVault OTX client.
+        args(dict): The command arguments
+
+    Returns:
+        str,dict,dict. The human readable, and rawJSON from the command - no context created.
+    """
     limit = int(args.get('limit', 50))
     indicator_list = fetch_indicators_command(client, limit)
 
@@ -406,6 +540,16 @@ def get_indicators_command(client: Client, args: Dict):
 
 
 def parse_indicators(sub_indicator_list, full_indicator_list):
+    """Gets a decoded indicator list and returns a parsed version of the indicator with accordance with Demisto's
+    Feed indicator standards.
+
+    Args:
+        sub_indicator_list(list): A list of STIXDecoded indicators
+        full_indicator_list(list): A list of all the indicators fetched to this point - used to prevent duplications.
+
+    Returns:
+        list,list. A list of parsed indicators and an updated list of all indicators polled
+    """
     parsed_indicator_list = []  # type: List
     for indicator in sub_indicator_list:
         if indicator['indicator'] in full_indicator_list:
@@ -422,6 +566,15 @@ def parse_indicators(sub_indicator_list, full_indicator_list):
 
 
 def fetch_indicators_command(client: Client, limit=None):
+    """Fetch indicators from AlienVault OTX.
+
+    Args:
+        client(Client): The AlienVault OTX client.
+        limit(any): How many XML elements to parse, None if all should be parsed.
+
+    Returns:
+        list. A list of indicators.
+    """
     for collection in client.collections:
         try:
             taxii_iter = client.build_iterator(collection)
@@ -446,79 +599,6 @@ def fetch_indicators_command(client: Client, limit=None):
                     break
 
     return indicator_list
-
-
-""" Helper Methods """
-
-
-def package_extract_properties(package):
-    """Extracts properties from the STIX package"""
-    result: Dict[str, str] = {}
-
-    header = package.find_all('STIX_Header')
-    if len(header) == 0:
-        return result
-
-    # share level
-    mstructures = header[0].find_all('Marking_Structure')
-    for ms in mstructures:
-        type_ = ms.get('xsi:type')
-        if type_ is result:
-            continue
-
-        color = ms.get('color')
-        if color is result:
-            continue
-
-        type_ = type_.lower()
-        if 'tlpmarkingstructuretype' not in type_:
-            continue
-
-        result['share_level'] = color.lower()  # https://www.us-cert.gov/tlp
-        break
-
-    # decode title
-    title = next((c for c in header[0] if c.name == 'Title'), None)
-    if title is not None:
-        result['stix_package_title'] = title.text
-
-    # decode description
-    description = next((c for c in header[0] if c.name == 'Description'), None)
-    if description is not None:
-        result['stix_package_description'] = description.text
-
-    # decode description
-    sdescription = next((c for c in header[0] if c.name == 'Short_Description'), None)
-    if sdescription is not None:
-        result['stix_package_short_description'] = sdescription.text
-
-    # decode identity name from information_source
-    information_source = next((c for c in header[0] if c.name == 'Information_Source'), None)
-    if information_source is not None:
-        identity = next((c for c in information_source if c.name == 'Identity'), None)
-        if identity is not None:
-            name = next((c for c in identity if c.name == 'Name'))
-            if name is not None:
-                result['stix_package_information_source'] = name.text
-
-    return result
-
-
-def observable_extract_properties(observable):
-    """Extracts properties from observable"""
-    result = {}
-
-    title = next((c for c in observable if c.name == 'Title'), None)
-    if title is not None:
-        title = title.text
-        result['stix_title'] = title
-
-    description = next((c for c in observable if c.name == 'Description'), None)
-    if description is not None:
-        description = description.text
-        result['stix_description'] = description
-
-    return result
 
 
 def main():
