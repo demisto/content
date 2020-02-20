@@ -1,5 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
+from dateutil.parser import parse
 
 """MOCKED RESPONSES"""
 
@@ -478,28 +479,26 @@ def test_context_creation_es6():
 
 
 @patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2_5_5.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
 @patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
 @patch("Elasticsearch_v2_5_5.FETCH_INDEX", "users")
 def test_incident_creation_e6():
     from Elasticsearch_v2_5_5 import results_to_incidents_datetime
-    last_fetch = datetime.strptime('2019-08-29T14:44:00Z', '%Y-%m-%dT%H:%M:%SZ')
+    last_fetch = parse('2019-08-29T14:44:00Z')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-29 14:46:00'
+    assert str(last_fetch2) == '2019-08-29T14:46:00Z'
     assert str(incidents) == MOCK_ES6_INCIDETNS
 
 
 @patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2_5_5.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
 @patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
 @patch("Elasticsearch_v2_5_5.FETCH_INDEX", "customer")
 def test_incident_creation_e7():
     from Elasticsearch_v2_5_5 import results_to_incidents_datetime
-    last_fetch = datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ')
+    last_fetch = parse('2019-08-27T17:59:00')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-27 18:01:00'
+    assert str(last_fetch2) == '2019-08-27T18:01:00Z'
     assert str(incidents) == MOCK_ES7_INCIDENTS
 
 
@@ -530,13 +529,45 @@ def test_incident_creation_with_timestamp_e7():
 
 def test_extract_indicators_from_insight_hit(mocker):
     import Elasticsearch_v2_5_5 as es2
-    mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
-    ioc_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    mocker.patch.object(es2, 'results_to_indicator', return_value=dict(PARSED_INDICATOR_HIT))
+    ioc_lst, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
     # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
-    assert len(ioc_lst) == 3
+    assert len(ioc_lst) == 1
+    assert len(ioc_enrch_lst[0]) == 2
     assert ioc_lst[0].get('value')
     # moduleToFeedMap with isEnrichment: False should be added to ioc_lst
     assert ioc_lst[0].get('moduleToFeedMap').get('Demisto.Demisto')
     assert ioc_lst[0].get('moduleToFeedMap').get('VirusTotal.VirusTotal') is None
-    set(FEED_IOC_KEYS).issubset(ioc_lst[1])
-    set(FEED_IOC_KEYS).issubset(ioc_lst[2])
+    set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0][0])
+    set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0][1])
+
+
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Timestamp-Seconds')
+@patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
+@patch("Elasticsearch_v2_5_5.FETCH_INDEX", "customer")
+def test_create_enrichment_batches_one_indicator(mocker):
+    import Elasticsearch_v2_5_5 as es2
+    mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
+    _, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    ioc_enrch_lst_of_lsts = es2.create_enrichment_batches(ioc_enrch_lst)
+    assert len(ioc_enrch_lst_of_lsts) == 2
+    assert ioc_enrch_lst_of_lsts[0][0] == ioc_enrch_lst[0][0]
+    assert ioc_enrch_lst_of_lsts[1][0] == ioc_enrch_lst[0][1]
+
+
+@patch("Elasticsearch_v2_5_5.TIME_METHOD", 'Timestamp-Seconds')
+@patch("Elasticsearch_v2_5_5.TIME_FIELD", 'Date')
+@patch("Elasticsearch_v2_5_5.FETCH_INDEX", "customer")
+def test_create_enrichment_batches_mult_indicators(mocker):
+    import Elasticsearch_v2_5_5 as es2
+    ioc_enrch_lst = [
+        [1, 2, 3],
+        [4, 5],
+        [6, 7, 8, 9]
+    ]
+    ioc_enrch_lst_of_lsts = es2.create_enrichment_batches(ioc_enrch_lst)
+    assert len(ioc_enrch_lst_of_lsts) == 4
+    assert ioc_enrch_lst_of_lsts[0] == [1, 4, 6]
+    assert ioc_enrch_lst_of_lsts[1] == [2, 5, 7]
+    assert ioc_enrch_lst_of_lsts[2] == [3, 8]
+    assert ioc_enrch_lst_of_lsts[3] == [9]
