@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+ - Aligning ***Fetch incidents***' raw data with ***kl-get-records*** data and format.
 
 ## [19.12.1] - 2019-12-25
 - Updating the ***Lockpath KeyLight*** integration. 
