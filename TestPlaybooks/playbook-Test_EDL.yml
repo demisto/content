@@ -1,16 +1,20 @@
+elasticcommonfields: {}
 id: Test_EDL
 version: -1
-contentitemfields:
-  propagationLabels: []
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
 name: Test_EDL
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 31ac12b2-8c93-4cac-8c78-2d8bc2a4c60c
+    taskid: 3b35f8c5-ad3e-4f8e-8bd6-3ce48c140668
     type: start
     task:
-      id: 31ac12b2-8c93-4cac-8c78-2d8bc2a4c60c
+      elasticcommonfields: {}
+      id: 3b35f8c5-ad3e-4f8e-8bd6-3ce48c140668
       version: -1
       name: ""
       iscommand: false
@@ -30,13 +34,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: c745ef83-8485-4838-8916-adf896fc6829
+    taskid: 7bd71efa-53d1-4290-8c18-673f62c99e73
     type: regular
     task:
-      id: c745ef83-8485-4838-8916-adf896fc6829
+      elasticcommonfields: {}
+      id: 7bd71efa-53d1-4290-8c18-673f62c99e73
       version: -1
       name: Check Update EDL
       description: Updates values stored in the EDL (only avaialable On-Demand).
@@ -63,7 +68,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quiet: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
