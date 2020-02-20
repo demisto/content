@@ -295,15 +295,12 @@ def main():
         if demisto.command() == 'test-module':
             test()
             demisto.results('ok')
-            sys.exit(0)
         elif demisto.command() == 'file':
             results = file(args.get('file'))
             demisto.results(results)
-            sys.exit(0)
         elif demisto.command() == 'tie-file-references':
             results = file_references(args.get('file'))
             demisto.results(results)
-            sys.exit(0)
         elif demisto.command() == 'tie-set-file-reputation':
             results = set_file_reputation(
                 args.get('file'),
@@ -312,9 +309,9 @@ def main():
                 args.get('comment')
             )
             demisto.results(results)
-            sys.exit(0)
-    except Exception:
+    except Exception as e:
         validate_certificates_format()
+        return_error(str(e))
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

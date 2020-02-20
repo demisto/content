@@ -124,10 +124,10 @@ def validate_certificates_format():
     if '-----END CERTIFICATE-----' not in demisto.params()['cert_file']:
         return_error(
             "The client certificates content seem to be incorrect as it doesn't end with -----END CERTIFICATE-----")
-    if '-----BEGIN CERTIFICATE-----' not in demisto.params()['broker_ca_bundle']:
+    if not demisto.params()['broker_ca_bundle'].lstrip(" ").startswith('-----BEGIN CERTIFICATE-----'):
         return_error(
             "The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
-    if '-----END CERTIFICATE-----' not in demisto.params()['broker_ca_bundle']:
+    if not demisto.params()['broker_ca_bundle'].rstrip(" ").endswith('-----END CERTIFICATE-----'):
         return_error(
             "The broker certificate seem to be incorrect as they don't end with '-----END CERTIFICATE-----'")
 

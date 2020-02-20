@@ -62,4 +62,3 @@ def test_validate_certificate_format(mocker):
                     'broker_ca_bundle': spaces_in_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
     validate_certificates_format()
-    assert 1 == 1
