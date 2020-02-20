@@ -2,6 +2,7 @@ from pytest import raises
 from CommonServerPython import *
 from dateutil.parser import parse
 
+RETURN_ERROR_TARGET = 'SymantecDLP.return_error'
 
 def test_get_incident_attributes():
     from SymantecDLP import get_incident_attributes
@@ -240,3 +241,16 @@ def test_get_data_owner():
     assert output_empty_data_owner == get_data_owner(input_empty_data_owner)
     assert output_diff_data_owner == get_data_owner(input_diff_data_owner_type)
     assert output_valid_data_owner == get_data_owner(input_valid_data_owner)
+
+
+def test_self_signed_ssl(mocker):
+    from SymantecDLP import main
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'https://self-signed.badssl.com/',
+        'insecure': True
+    })
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    try:
+        main()
+    except Exception as ex:
+        assert 'certificate' not in str(ex).lower()
