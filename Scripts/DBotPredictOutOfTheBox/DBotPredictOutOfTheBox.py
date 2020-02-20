@@ -1,3 +1,4 @@
+# pylint: disable=no-member
 import demisto_ml
 
 from CommonServerPython import *
