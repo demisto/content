@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added domainGlobRegEx to validate domainGlob format.
+Added **DomainGlob** to our **FeedIndicatorType** class and an associated regex.
 
 ## [20.2.3] - 2020-02-18
 Added cveRegex to validate cve_id format.
@@ -50,4 +50,3 @@ Fixed the IntegrationLogger auto-replace of sensitive strings.
 
 ## [19.8.0] - 2019-08-06
   - Added is_mac command
-
