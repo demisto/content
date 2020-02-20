@@ -590,14 +590,11 @@ def fetch_incidents(client: Client, args: dict) -> None:
     incidents = []
     max_fetch_time = last_fetch_time
     for record in res:
-        occurred_at = ''
-        for field in record.get('FieldValues', []):
-            if str(field.get('Key')) == field_id:
-                occurred_at = field.get('Value')
-                break
+        record['Fields'] = client.field_output_to_hr_fields(record.pop('FieldValues'), component_id)
+        occurred_at = record.get('Fields', {}).get(filter_field, '')
         incident = {'name': f'Keylight record {record.get("DisplayName")}',
                     'occurred': occurred_at.split('.')[0] + 'Z',
-                    'rawJSON': str(record)
+                    'rawJSON': json.dumps(record)
                     }
         if datetime.strptime(occurred_at.split('.')[0], "%Y-%m-%dT%H:%M:%S") > \
                 datetime.strptime(max_fetch_time.split('.')[0], "%Y-%m-%dT%H:%M:%S"):
@@ -617,7 +614,6 @@ def main():
     username = params.get('credentials', {}).get('identifier', '')
     password = params.get('credentials', {}).get('password', '')
     client = Client(address, verify, proxy, headers={'Accept': 'application/json'})
-
     commands = {
         'kl-get-component': get_component_command,
         'kl-get-field-list': get_field_list_command,
