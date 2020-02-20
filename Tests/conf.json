@@ -2339,7 +2339,6 @@
     ],
     "skipped_tests": {
         "okta_test_playbook": "Issue 22235",
-        "AzureFeed - Test": "Issue 22233",
         "Test-VulnDB": "Issue 22232",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
