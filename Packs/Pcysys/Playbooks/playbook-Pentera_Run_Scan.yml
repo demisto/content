@@ -245,10 +245,10 @@ tasks:
       version: -1
       name: Get Template Status
       description: ''
-      script: Pcysys|||pentera-get-task-run-status
+      script: Pentera|||pentera-get-task-run-status
       type: regular
       iscommand: true
-      brand: Pcysys
+      brand: Pentera
     nexttasks:
       '#none#':
       - '5'

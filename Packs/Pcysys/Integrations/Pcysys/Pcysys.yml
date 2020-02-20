@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Pcysys
+  id: Pentera
   version: -1
 configuration:
 - defaultvalue: https://pentera.com
@@ -31,9 +31,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integration with Pentera
-display: Pcysys
-name: Pcysys
+description: An Integration with the Pentera by Pcysys
+display: Pentera
+name: Pentera
 script:
   commands:
   - arguments:
