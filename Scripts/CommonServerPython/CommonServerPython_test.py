@@ -1078,7 +1078,7 @@ regexes_test = [
     (ipv6cidrRegex, '2001:db8:a0b:12f0::1aaasds::1/1', False),
     (domainGlobRegEx, '*.outlook.com', True),
     (domainGlobRegEx, '*.office.outlook.com', True),
-    (domainGlobRegEx, '*.outlook.com', False),
+    (domainGlobRegEx, '*outlook.com', False),
     (domainGlobRegEx, '*-outlook.com', False),
     (domainGlobRegEx, '*office-outlook.com', False),
 ]
