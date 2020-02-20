@@ -1,15 +1,15 @@
 {
 	"brandName": "Indeni",
 	"custom": true,
-	"defaultIncidentType": "Indeni Incidents",
+	"defaultIncidentType": "Indeni Incident",
 	"id": "26f69346-6a69-4375-8890-e2ea7b0aae34",
 	"incidentSamples": [],
 	"isDefault": false,
 	"keyTypeMap": {
-		"UNAUTOREMEDIATABLE_ISSUE": "Indeni Incidents"
+		"UNAUTOREMEDIATABLE_ISSUE": "Indeni Incident"
 	},
 	"mapping": {
-		"Indeni Incidents": {
+		"Indeni Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Indeni Device ID": {
