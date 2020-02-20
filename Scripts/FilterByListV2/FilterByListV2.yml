@@ -1,8 +1,8 @@
 commonfields:
-  id: FilterByList
+  id: FilterByListV2
   version: -1
 enabled: true
-name: FilterByList
+name: FilterByListV2
 args:
 - default: true
   description: The item to look for in the list.
@@ -49,11 +49,11 @@ outputs:
   description: The name of the list you compared with.
   type: string
 - contextPath: List.In
-  description: The list of items in the list.
-  type: Unknown
+  description: The list values within the the list you entered.
+  type: string
 - contextPath: List.NotIn
-  description: The list of items not in the list.
-  type: Unknown
+  description: The list values not within the the list you entered.
+  type: string
 script: '-'
 subtype: python2
 system: false
@@ -63,5 +63,3 @@ timeout: '0'
 type: python
 runas: DBotWeakRole
 runonce: false
-tests:
-- FilterByList - Test
