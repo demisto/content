@@ -709,7 +709,6 @@ def main():
     cache: SqliteCache = SqliteCache(path=get_cache_path(), timeout=None)
     transport: Transport = Transport(session=session, cache=cache)
     client: Client = Client(wsdl=wsdl, transport=transport)
-    client.transport.session.verify = verify_ssl
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
