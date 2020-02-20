@@ -208,8 +208,8 @@ class Client(BaseClient):
 
 def build_client(demisto_params: dict) -> Client:
     server: str = str(demisto_params.get('server'))
-    proxy: bool = demisto_params.get('proxy') == 'true'
-    insecure: bool = demisto_params.get('insecure') == 'true'
+    proxy: bool = demisto_params.get('proxy')
+    insecure: bool = demisto_params.get('insecure')
     credentials: dict = demisto_params.get('credentials', {})
     username: str = str(credentials.get('identifier'))
     password: str = str(credentials.get('password'))
