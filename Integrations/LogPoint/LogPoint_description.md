@@ -1,0 +1,1 @@
+Get token from Logpoint UI, user preferences, Log Fetching key. (SECRET KEY)

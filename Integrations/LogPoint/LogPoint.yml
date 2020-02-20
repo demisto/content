@@ -1,0 +1,196 @@
+commonfields:
+  id: LogPoint
+  version: -1
+name: LogPoint
+display: LogPoint
+category: Analytics & SIEM
+description: Integration to LogPoint SIEM
+configuration:
+- display: Server URL (e.g. https://192.168.1.1)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: Username
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: SECRET KEY (FOR FETCHING LOGS)
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents starting from (%Y-%m-%dT%H:%M:%SZ)
+  name: queryStartTime
+  defaultvalue: 1980-01-01T12:00:00Z
+  type: 0
+  required: false
+- display: Status of incidents to get
+  name: incindenttypetoget
+  defaultvalue: all
+  type: 15
+  required: false
+  options:
+  - all
+  - unresolved
+  - resolved
+  - closed
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: lp-get-user-timezone
+    arguments: []
+    description: To retrieve the timezone from the user preferences
+  - name: lp-get-logpoints
+    arguments: []
+    description: To retrieve the LogPoints
+  - name: lp-get-repos
+    arguments: []
+    description: Get all available repos
+  - name: lp-get-devices
+    arguments: []
+    description: Get all devices
+  - name: lp-get-livesearches
+    arguments: []
+    description: Get all configured live searches
+  - name: lp-get-livesearch-results
+    arguments:
+    - name: life-id
+      required: true
+      description: life-id
+    description: Get live search results
+  - name: lp-search
+    arguments:
+    - name: repo
+      description: repo
+      defaultValue: 127.0.0.1:5504/default
+    - name: query
+      required: true
+      description: query to use
+    - name: timeout
+      description: timeout for search
+      defaultValue: "500"
+    - name: client_name
+      description: which client name to use
+      defaultValue: gui
+    - name: starts
+      description: starts
+      defaultValue: '{}'
+    - name: limit
+      description: limit
+      defaultValue: "30"
+    - name: time-range
+      description: time-range to use. default 10mins
+      defaultValue: Last 10 minutes
+    outputs:
+    - contextPath: Logpoint-SIEM.searchId
+      description: Search ID
+      type: Unknown
+    description: Search Logpoint for logs
+  - name: lp-search-results
+    arguments:
+    - name: searchId
+      required: true
+      description: Search ID to use
+    description: Get the search results
+  - name: lp-get-incidents
+    arguments:
+    - name: TimeStampFrom
+      required: true
+      description: From this timestamp
+    - name: TimeStampTo
+      required: true
+      description: To this timestamp
+    outputs:
+    - contextPath: Logpoint-SIEM.incidents
+      description: List of incidents
+      type: Unknown
+    description: Get all incidents from LogPoint
+  - name: lp-get-single-incident
+    arguments:
+    - name: IncidentObjectID
+      required: true
+      description: Value of field 'id'
+    - name: IncidentId
+      required: true
+      description: |-
+        Value of field 'incident_id' of the
+        particular incident.
+    - name: Date
+      required: true
+      description: Value of field 'detection_timestamp' of the particular incident.
+    description: Get info from a single incident
+  - name: lp-get-incident-states
+    arguments:
+    - name: TimeStampFrom
+      required: true
+      description: From this timestamp
+    - name: TimeStampTo
+      required: true
+      description: To this timestamp
+    description: Get states of the incidents
+  - name: lp-add-comment-to-incident
+    arguments:
+    - name: id
+      required: true
+      description: Object id of a particular incident.
+    - name: comments
+      required: true
+      description: Comments to be added to a particular incident.
+    description: Add comment to an incident
+  - name: lp-assign-incident
+    arguments:
+    - name: id
+      required: true
+      description: Object id of the incidents to be reassigned.
+    - name: new_assignee
+      required: true
+      description: Object id of the user whom the incidents are assigned.
+    description: Assign incident to a new analyst
+  - name: lp-resolve-incident
+    arguments:
+    - name: id
+      required: true
+      description: id of the incident
+    description: Resolve an incident
+  - name: lp-close-incident
+    arguments:
+    - name: id
+      required: true
+      description: id of the incident
+    description: Close an incident
+  - name: lp-reopen-incident
+    arguments:
+    - name: id
+      required: true
+      description: id of the incident
+    description: Reopen an incident
+  - name: lp-get-all-users
+    arguments: []
+    description: List all users in the system
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: true
+  runonce: false
+  subtype: python3
