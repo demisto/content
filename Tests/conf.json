@@ -684,7 +684,8 @@
             "integrations": [
               "ThreatQ v2",
               "AlienVault OTX v2"
-            ]
+            ],
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "SCADAfence CNM",
