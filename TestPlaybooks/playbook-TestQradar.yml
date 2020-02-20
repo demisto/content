@@ -2,6 +2,7 @@ elasticcommonfields: {}
 id: test_Qradar
 version: -1
 name: test_Qradar
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
