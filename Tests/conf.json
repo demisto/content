@@ -1023,7 +1023,8 @@
         },
         {
             "integrations": "jira-v2",
-            "playbookID": "Jira-v2-Test"
+            "playbookID": "Jira-v2-Test",
+            "timeout": 500
         },
         {
             "integrations": "ipinfo",
@@ -2342,6 +2343,22 @@
         }
     ],
     "skipped_tests": {
+        "okta_test_playbook": "Issue 22235",
+        "AzureFeed - Test": "Issue 22233",
+        "Test-VulnDB": "Issue 22232",
+        "TestProofpointFeed": "Issue 22229",
+        "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
+        "Akamai_WAF_SIEM-Test": "Issue 22225",
+        "Luminate-TestPlaybook": "Issue 22224",
+        "GetTime-ObjectVsStringTest": "Issue 22223",
+        "GetTime-Test": "Issue 22222",
+        "EmailReputationTest": "Issue 22187",
+        "test_Qradar": "Issue 22186",
+        "IntSights Test": "Issue 22185",
+        "Tenable.io test": "Issue 22184",
+        "ThreatQ - Test": "Issue 22175",
+        "whois_test": "Issue 22174",
+        "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2369,7 +2386,6 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "ssdeepreputationtest": "Issue #20953",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633"
     },
