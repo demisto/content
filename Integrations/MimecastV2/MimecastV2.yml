@@ -431,6 +431,12 @@ script:
     - contextPath: Mimecast.Policy.Todate
       description: Policy expiration date
       type: date
+    - contextPath: Mimecast.Policy.Sender.Type
+      description: The sender type
+      type: String
+    - contextPath: Mimecast.Policy.Receiver.Type
+      description: The receiver type
+      type: String
   - arguments:
     - default: false
       description: Policy ID
@@ -1286,7 +1292,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+    description: Adds a user to a group. The email_address and domain_adddress arguments
+      are optional, but one of them must be supplied.
     execution: false
     name: mimecast-add-group-member
     outputs:
@@ -1316,7 +1323,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Removes a user from a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+    description: Removes a user from a group. The email_address and domain_adddress
+      arguments are optional, but one of them must be supplied.
     execution: false
     name: mimecast-remove-group-member
     outputs:
@@ -1411,7 +1419,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The message component by which to search. Can be "hash" or "messagId". Default is "hash".
+      description: The message component by which to search. Can be "hash" or "messagId".
+        Default is "hash".
       isArray: false
       name: search_by
       predefined:
@@ -1420,13 +1429,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The startt date of messages to remediate. Default value is the previous month. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      description: 'The startt date of messages to remediate. Default value is the
+        previous month. (Format: yyyy-mm-ddThh:mm:ss+0000)'
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: 'Theend date of messages to remediate. Default value is the end of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      description: 'Theend date of messages to remediate. Default value is the end
+        of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
       isArray: false
       name: end_date
       required: false
@@ -1540,8 +1551,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of file hashes to check if they have been seen within
-        an account.
+      description: List of file hashes to check if they were seen in an account.
       isArray: true
       name: hashes_to_search
       required: true
@@ -1557,6 +1567,125 @@ script:
     - contextPath: Mimecast.Hash.Detected
       description: Whether the hash was found in the account.
       type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the policy to update.
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: A new description for the policy.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain.
+      isArray: false
+      name: fromType
+      predefined:
+      - everyone
+      - internal_addresses
+      - external_addresses
+      - email_domain
+      - profile_group
+      - address_attribute_value
+      - individual_email_address
+      - free_mail_domains
+      - header_display_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain.
+      isArray: false
+      name: toType
+      predefined:
+      - everyone
+      - internal_addresses
+      - external_addresses
+      - email_domain
+      - profile_group
+      - individual_email_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The block action. Can be "no_action" or "block_sender".'
+      isArray: false
+      name: option
+      predefined:
+      - no_action
+      - block_sender
+      required: false
+      secret: false
+    - default: false
+      description: The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain.
+      isArray: false
+      name: fromValue
+      required: false
+      secret: false
+    - default: false
+      description: The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain.
+      isArray: false
+      name: toValue
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The part from where addresses are pulled. Can be "envelope_from", "header_from", or "both".
+      isArray: false
+      name: fromPart
+      predefined:
+      - envelope_from
+      - header_from
+      - both
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates the specified policy.
+    execution: false
+    name: mimecast-update-policy
+    outputs:
+    - contextPath: Mimecast.Policy.ID
+      description: Policy ID.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Address
+      description: Block Sender by email address value.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Domain
+      description: Block sender by domain value.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Group
+      description: Block sender by group value.
+      type: string
+    - contextPath: Mimecast.Policy.Bidirectional
+      description: Whether the blocked policy is bidirectional.
+      type: boolean
+    - contextPath: Mimecast.Policy.Receiver.Address
+      description: Block emails to receiver type address.
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Domain
+      description: Block emails to receiver type domain.
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Group
+      description: Block emails to receiver type group.
+      type: string
+    - contextPath: Mimecast.Policy.Fromdate
+      description: The policy validation start date.
+      type: date
+    - contextPath: Mimecast.Policy.Todate
+      description: The policy expiration date.
+      type: date
+    - contextPath: Mimecast.Policy.Sender.Type
+      description: The sender type.
+      type: String
+    - contextPath: Mimecast.Policy.Receiver.Type
+      description: The receiver type.
+      type: String
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
