@@ -1023,7 +1023,8 @@
         },
         {
             "integrations": "jira-v2",
-            "playbookID": "Jira-v2-Test"
+            "playbookID": "Jira-v2-Test",
+            "timeout": 500
         },
         {
             "integrations": "ipinfo",
