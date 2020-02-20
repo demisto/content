@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added the list name that you compare with to the context.
 
 ## [19.11.1] - 2019-11-26
 Added the option to search for an exact match.
