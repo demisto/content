@@ -53,7 +53,7 @@ configuration:
   name: maxPullSize
   required: false
   type: 0
-description: Indeni Integration
+description: Indeni is a turn-key automated monitoring providing visibility for security infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced experience, to deliver automation of tedious tasks with integration with your existing processes.
 display: Indeni
 name: Indeni
 script:
