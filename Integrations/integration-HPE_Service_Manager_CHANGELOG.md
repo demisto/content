@@ -1,2 +1,2 @@
 ## [Unreleased]
-Improved parameters and commands descriptions.
+Improved parameters and command descriptions.
