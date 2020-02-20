@@ -1656,12 +1656,12 @@ class CommandResults:
     """
     This class should contain results of an integration command or a script
     """
-    def __init__(self, output_prefix, key_field, outputs, indicators=None, readable_output=None):
+    def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None):
         # type: (str, str, object, list) -> None
         self.indicators = indicators
 
-        self.output_prefix = output_prefix
-        self.key_field = key_field
+        self.outputs_prefix = outputs_prefix
+        self.outputs_key_field = outputs_key_field
         self.outputs = outputs
         self.readable_output = readable_output
 
@@ -1682,7 +1682,7 @@ class CommandResults:
 
             raw_response = self.outputs
 
-            outputs_key = '{}(val.{} == obj.{})'.format(self.output_prefix, self.key_field, self.key_field)
+            outputs_key = '{}(val.{} == obj.{})'.format(self.outputs_prefix, self.outputs_key_field, self.outputs_key_field)
             outputs.update({
                 outputs_key: self.outputs
             })
@@ -1745,8 +1745,8 @@ class IP(Indicator):
     """
     CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
-    def __init__(self, ip, asn, hostname, geo_latitude, geo_longitude, geo_country, geo_description,
-                 detection_engines, positive_engines, dbot_score=None):
+    def __init__(self, ip, asn=None, hostname=None, geo_latitude=None, geo_longitude=None, geo_country=None,
+                 geo_description=None, detection_engines=None, positive_engines=None, dbot_score=None):
 
         self.ip = ip
         self.asn = asn
@@ -1854,8 +1854,9 @@ class File(Indicator):
                    'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
                    'val.SSDeep && val.SSDeep == obj.SSDeep)'
 
-    def __init__(self, name, entry_id, size, md5, sha1, sha256, sha512, ssdeep, extension, file_type, hostname, path,
-                 company, product_name, digital_signature, signature, author, tags):
+    def __init__(self, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None, sha512=None, ssdeep=None,
+                 extension=None, file_type=None, hostname=None, path=None, company=None, product_name=None,
+                 digital_signature=None, signature=None, author=None, tags=None, dbot_score=None):
         self.name = name
         self.entry_id = entry_id
         self.size = size
@@ -1875,8 +1876,7 @@ class File(Indicator):
         self.author = author
         self.tags = tags
 
-        # DBotScore fields
-        self.dbot_score = None  # type: ignore
+        self.dbot_score = dbot_score
 
     def set_dbot_score(self, dbot_score):
         # type: (DBotScore) -> None
@@ -1995,13 +1995,12 @@ class URL(Indicator):
     """
     CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-    def __init__(self, url, detection_engines, positive_detections):
+    def __init__(self, url, detection_engines=None, positive_detections=None, dbot_score=None):
         self.url = url
         self.detection_engines = detection_engines
         self.positive_detections = positive_detections
 
-        # DBotScore fields
-        self.dbot_score = None  # type: ignore
+        self.dbot_score = dbot_score
 
     def set_dbot_score(self, dbot_score):
         # type: (DBotScore) -> None
@@ -2109,8 +2108,9 @@ class Domain(Indicator):
     """
     CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
-    def __init__(self, domain, dns, detection_engines, positive_detections, whois, organization, sub_domains,
-                 creation_date, update_date, expiration_date, domain_status, name_servers, dbot_score=None):
+    def __init__(self, domain, dns=None, detection_engines=None, positive_detections=None, whois=None,
+                 organization=None, sub_domains=None, creation_date=None, update_date=None, expiration_date=None,
+                 domain_status=None, name_servers=None, dbot_score=None):
         self.domain = domain
         self.dns = dns
         self.detection_engines = detection_engines

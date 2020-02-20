@@ -1312,10 +1312,11 @@ def search_ip_command(ip):
         raw_response.append(raw_response)
 
     command_results = CommandResults(
-        output_prefix='AutoFocus.IP',
-        key_field='IndicatorValue',
-        readable_output=human_readable,
+        outputs_prefix='AutoFocus.IP',
+        outputs_key_field='IndicatorValue',
         outputs=outputs,
+
+        readable_output=human_readable,
         raw_response=raw_response,
         indicators=ip_indicators
     )
@@ -1325,14 +1326,14 @@ def search_ip_command(ip):
 
 def search_domain_command(args):
     indicator_type = 'Domain'
-    domain_list = argToList(args.get('domain'))
+    domain_name_list = argToList(args.get('domain'))
 
     domain_indicator_list = []
-    outputs = []
+    autofocus_domain_list = []
     raw_response = []
     human_readable = ''
 
-    for domain_name in domain_list:
+    for domain_name in domain_name_list:
         raw_res = search_indicator('domain', domain_name)
         score = calculate_dbot_score(raw_res, indicator_type)
         dbot_score = DBotScore(
@@ -1342,7 +1343,7 @@ def search_domain_command(args):
             score=score
         )
 
-        domain_object = Domain(
+        domain = Domain(
             domain=domain_name,
             dbot_score=dbot_score,
             whois=WHOIS(
@@ -1373,15 +1374,16 @@ def search_domain_command(args):
 
         human_readable += md
 
-        domain_indicator_list.append(domain_object)
+        domain_indicator_list.append(domain)
         raw_response.append(raw_res)
-        outputs.append(autofocus_domain_output)
+        autofocus_domain_list.append(autofocus_domain_output)
 
     command_results = CommandResults(
-        output_prefix='AutoFocus.Domain',
-        key_field='IndicatorValue',
+        outputs_prefix='AutoFocus.Domain',
+        outputs_key_field='IndicatorValue',
+        outputs=autofocus_domain_list,
+
         readable_output=human_readable,
-        outputs=outputs,
         raw_response=raw_response,
         indicators=domain_indicator_list
     )
@@ -1392,27 +1394,113 @@ def search_domain_command(args):
 def search_url_command(url):
     indicator_type = 'URL'
     url_list = argToList(url)
-    indicator_details = []
-    for _url in url_list:
-        raw_res = search_indicator('url', _url)
-        score = calculate_dbot_score(raw_res, indicator_type)
-        res = parse_indicator_response(raw_res, indicator_type)
-        indicator_details.append({'raw_response': raw_res, 'value': _url, 'score': score, 'response': res})
 
-    get_indicator_outputs(indicator_type, indicator_details, 'Data')
+    url_indicator_list = []
+    autofocus_url_list = []
+    raw_response = []
+    human_readable = ''
+
+    for url_name in url_list:
+
+        raw_res = search_indicator('url', url_name)
+        score = calculate_dbot_score(raw_res, indicator_type)
+
+        dbot_score = DBotScore(
+            indicator=url_name,
+            indicator_type=DBotScoreType.URL,
+            integration_name=VENDOR_NAME,
+            score=score
+        )
+
+        url = URL(
+            url=url_name,
+            dbot_score=dbot_score
+        )
+
+        autofocus_url_output = parse_indicator_response(raw_res, indicator_type)
+
+        tags = autofocus_url_output.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
+        if tags:
+            indicators_data = autofocus_url_output.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data)
+            md += tableToMarkdown('Indicator Tags:', tags)
+        else:
+            md = tableToMarkdown(table_name, autofocus_url_output)
+
+        human_readable += md
+
+        url_indicator_list.append(url)
+        raw_response.append(raw_res)
+        autofocus_url_list.append(autofocus_url_output)
+
+    command_results = CommandResults(
+        outputs_prefix='AutoFocus.URL',
+        outputs_key_field='IndicatorValue',
+        outputs=autofocus_url_list,
+
+        readable_output=human_readable,
+        raw_response=raw_response,
+        indicators=url_indicator_list
+    )
+
+    return command_results
 
 
 def search_file_command(file):
     indicator_type = 'File'
     file_list = argToList(file)
-    indicator_details = []
-    for _file in file_list:
-        raw_res = search_indicator('sha256', _file)
-        score = calculate_dbot_score(raw_res, indicator_type)
-        res = parse_indicator_response(raw_res, indicator_type)
-        indicator_details.append({'raw_response': raw_res, 'value': _file, 'score': score, 'response': res})
 
-    get_indicator_outputs(indicator_type, indicator_details, 'SHA256')
+    file_indicator_list = []
+    autofocus_file_list = []
+    raw_response = []
+    human_readable = ''
+
+    for sha256 in file_list:
+        raw_res = search_indicator('sha256', sha256)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        dbot_score = DBotScore(
+            indicator=sha256,
+            indicator_type=DBotScoreType.HASH,
+            integration_name=VENDOR_NAME,
+            score=score
+        )
+
+        file = File(
+            sha256=sha256,
+            dbot_score=dbot_score
+        )
+
+        autofocus_file_output = parse_indicator_response(raw_res, indicator_type)
+
+        tags = autofocus_file_output.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
+        if tags:
+            indicators_data = autofocus_file_output.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data)
+            md += tableToMarkdown('Indicator Tags:', tags)
+        else:
+            md = tableToMarkdown(table_name, autofocus_file_output)
+
+        human_readable += md
+
+        file_indicator_list.append(file)
+        raw_response.append(raw_res)
+        autofocus_file_list.append(autofocus_file_output)
+
+    command_results = CommandResults(
+        outputs_prefix='AutoFocus.File',
+        outputs_key_field='IndicatorValue',
+        outputs=autofocus_file_list,
+
+        readable_output=human_readable,
+        raw_response=raw_response,
+        indicators=file_indicator_list
+    )
+
+    return command_results
 
 
 def get_export_list_command(args):
@@ -1538,9 +1626,9 @@ def main():
         elif active_command == 'domain':
             demisto.results(search_domain_command(args))
         elif active_command == 'url':
-            search_url_command(**args)
+            demisto.results(search_url_command(**args))
         elif active_command == 'file':
-            search_file_command(**args)
+            demisto.results(search_file_command(**args))
 
     except Exception as e:
         return_error(f'Unexpected error: {e}')
