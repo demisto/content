@@ -171,3 +171,5 @@ view: |-
     }
   }
 description: ''
+tests:
+  - No Test
