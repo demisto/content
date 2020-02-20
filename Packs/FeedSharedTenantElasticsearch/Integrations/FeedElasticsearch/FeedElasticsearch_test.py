@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 """MOCKED RESPONSES"""
 
 PARSED_INDICATOR_HIT = {
@@ -130,7 +128,7 @@ FEED_IOC_KEYS = (
 
 
 def test_extract_indicators_from_insight_hit(mocker):
-    import FeedSharedTenantElasticsearch as es2
+    import FeedElasticsearch as es2
     mocker.patch.object(es2, 'results_to_indicator', return_value=dict(PARSED_INDICATOR_HIT))
     ioc_lst, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
     # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
@@ -144,11 +142,8 @@ def test_extract_indicators_from_insight_hit(mocker):
     set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0][1])
 
 
-@patch("FeedSharedTenantElasticsearch.TIME_METHOD", 'Timestamp-Seconds')
-@patch("FeedSharedTenantElasticsearch.TIME_FIELD", 'Date')
-@patch("FeedSharedTenantElasticsearch.FETCH_INDEX", "customer")
 def test_create_enrichment_batches_one_indicator(mocker):
-    import FeedSharedTenantElasticsearch as es2
+    import FeedElasticsearch as es2
     mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
     _, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
     ioc_enrch_lst_of_lsts = es2.create_enrichment_batches(ioc_enrch_lst)
@@ -157,11 +152,8 @@ def test_create_enrichment_batches_one_indicator(mocker):
     assert ioc_enrch_lst_of_lsts[1][0] == ioc_enrch_lst[0][1]
 
 
-@patch("FeedSharedTenantElasticsearch.TIME_METHOD", 'Timestamp-Seconds')
-@patch("FeedSharedTenantElasticsearch.TIME_FIELD", 'Date')
-@patch("FeedSharedTenantElasticsearch.FETCH_INDEX", "customer")
-def test_create_enrichment_batches_mult_indicators(mocker):
-    import FeedSharedTenantElasticsearch as es2
+def test_create_enrichment_batches_mult_indicators():
+    import FeedElasticsearch as es2
     ioc_enrch_lst = [
         [1, 2, 3],
         [4, 5],

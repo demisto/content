@@ -1,0 +1,135 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ElasticsearchFeed
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username for server login
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: feedExpirationPolicy
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: feedExpirationInterval
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: Indicators shared directly from demisto.
+  display: Demisto Shared Feed
+  hidden: false
+  name: demisto_shared
+  required: false
+  type: 8
+- additionalinfo: Source key that contains the indicator value in the index.
+  display: Source Indicator Value Key
+  hidden: false
+  name: src_val
+  required: false
+  type: 0
+- additionalinfo: Source key that contains the indicator type in the index.
+  display: Source Indicator Type Key
+  hidden: false
+  name: src_type
+  required: false
+  type: 0
+- additionalinfo: Default indicator type used in case no type was provided.
+  display: Default Indicator Type
+  hidden: false
+  name: default_type
+  required: false
+  type: 0
+description: Fetch indicators stored in an Elasticsearch database.
+display: Elasticsearch Feed
+name: ElasticsearchFeed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of indicators to fetch.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets indicators available in the configured Elasticsearch database.
+    execution: false
+    name: es-get-indicators
+    outputs:
+    - contextPath: ElasticsearchFeed.Indicators
+      description: Indicators fetched from Elasticsearch.
+      type: Unknown
+    - contextPath: ElasticsearchFeed.Enrichments
+      description: Enrichment indicators fetched from Elasticsearch.
+      type: Unknown
+  dockerimage: demisto/elasticsearch:1.0.0.4677
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

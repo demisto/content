@@ -2126,8 +2126,8 @@
             "playbookID": "Elasticsearch_v2_test"
         },
         {
-            "integrations": "SharedTenantElasticsearchFeed",
-            "instance_names": "es_v7",
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_demisto_feed",
             "playbookID": "Elasticsearch_Fetch_Indicators_Test",
             "fromversion": "5.5.0"
         },

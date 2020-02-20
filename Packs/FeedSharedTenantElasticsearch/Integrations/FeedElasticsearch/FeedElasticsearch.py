@@ -14,15 +14,6 @@ import warnings
 requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
-SERVER = demisto.params().get('url', '').rstrip('/')
-CREDS = demisto.params().get('credentials')
-if CREDS:
-    USERNAME = CREDS.get('identifier')
-    PASSWORD = CREDS.get('password')
-else:
-    USERNAME = None
-    PASSWORD = None
-PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
     400: '400 Bad Request - Incorrect or invalid parameters',
     401: '401 Unauthorized - Incorrect or invalid username or password',
@@ -36,42 +27,56 @@ HTTP_ERRORS = {
 
 '''VARIABLES FOR FETCH INCIDENTS'''
 FETCH_SIZE = 50
-INSECURE = not demisto.params().get('insecure', False)
 MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 
 
-def elasticsearch_builder():
-    """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    if USERNAME:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
+class Client:
+    def __init__(self, insecure, server, username, password):
+        self.insecure = insecure
+        self.proxy = handle_proxy()
+        self.server = server
+        self.username = username
+        self.password = password
+        self.es = self._elasticsearch_builder()
+
+    def _elasticsearch_builder(self):
+        """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
+        if self.username:
+            if self.proxy:
+                return Elasticsearch(hosts=[self.server], connection_class=RequestsHttpConnection,
+                                     http_auth=(self.username, self.password), verify_certs=self.insecure,
+                                     proxies=self.proxy)
+
+            else:
+                return Elasticsearch(hosts=[self.server], connection_class=RequestsHttpConnection,
+                                     http_auth=(self.username, self.password), verify_certs=self.insecure)
 
         else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+            if self.proxy:
+                return Elasticsearch(hosts=[self.server], connection_class=RequestsHttpConnection,
+                                     verify_certs=self.insecure, proxies=self.proxy)
 
-    else:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 verify_certs=INSECURE, proxies=handle_proxy())
+            else:
+                return Elasticsearch(hosts=[self.server], connection_class=RequestsHttpConnection,
+                                     verify_certs=self.insecure)
 
+    def send_test_request(self):
+        headers = {
+            'Content-Type': "application/json"
+        }
+        if self.username:
+            res = requests.get(self.server, auth=(self.username, self.password), verify=self.insecure, headers=headers)
         else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE)
+            res = requests.get(self.server, verify=self.insecure, headers=headers)
+        return res
+
+    def get_elasticsearch(self):
+        return self.es
 
 
-def test_func():
-    headers = {
-        'Content-Type': "application/json"
-    }
-
+def test_command(client):
     try:
-        if USERNAME:
-            res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers)
-
-        else:
-            res = requests.get(SERVER, verify=INSECURE, headers=headers)
-
+        res = client.send_test_request()
         if res.status_code >= 400:
             try:
                 res.raise_for_status()
@@ -89,13 +94,12 @@ def test_func():
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
-    get_indicators_search_scan()
-
+    get_indicators_search_scan(client)
     demisto.results('ok')
 
 
-def get_indicators_command():
-    search, _ = get_indicators_search_scan()
+def get_indicators_command(client, demisto_shared, src_val, src_type, default_type):
+    search, _ = get_indicators_search_scan(client)
     limit = int(demisto.args().get('limit', FETCH_SIZE))
     indicators_list: list = []
     ioc_enrch_lst: list = []
@@ -108,12 +112,12 @@ def get_indicators_command():
     hr = tableToMarkdown('Indicators', indicators_list, ['name'])
     for ioc_enrch_obj in ioc_enrch_lst:
         hr += tableToMarkdown('Enrichments', ioc_enrch_obj, ['value', 'sourceBrand', 'score'])
-    ec = {'ElasticsearchFeed.SharedIndicators': {'Indicators': indicators_list, 'Enrichments': ioc_enrch_lst}}
+    ec = {'ElasticsearchFeed': {'Indicators': indicators_list, 'Enrichments': ioc_enrch_lst}}
     return_outputs(hr, ec, indicators_list)
 
 
-def fetch_indicators_command():
-    search, now = get_indicators_search_scan()
+def fetch_indicators_command(client, demisto_shared, src_val, src_type, default_type):
+    search, now = get_indicators_search_scan(client)
     ioc_lst: list = []
     ioc_enrch_lst: list = []
     for hit in search.scan():
@@ -132,13 +136,13 @@ def fetch_indicators_command():
     demisto.setLastRun({'time': now})
 
 
-def get_indicators_search_scan():
+def get_indicators_search_scan(client):
     now = datetime.now()
     time_field = "calculatedTime"
     last_fetch = demisto.getLastRun().get('time')
     range_field = {time_field: {'gt': datetime.fromtimestamp(float(last_fetch)), 'lte': now}} if last_fetch else {
         time_field: {'lte': now}}
-    es = elasticsearch_builder()
+    es = client.get_elasticsearch()
     query = QueryString(query=time_field + ":*")
     tenant_hash = demisto.getIndexHash()
     # all shared indexes minus this tenant shared
@@ -191,12 +195,23 @@ def create_enrichment_batches(ioc_enrch_lst):
 def main():
     try:
         LOG('command is %s' % (demisto.command(),))
+        params = demisto.params()
+        server = params.get('url', '').rstrip('/')
+        creds = params.get('credentials')
+        username, password = (creds.get('identifier'), creds.get('password')) if creds else (None, None)
+        insecure = not params.get('insecure')
+        client = Client(insecure, server, username, password)
+        demisto_shared = params.get('demisto_shared')
+        src_val = params.get('src_val')
+        src_type = params.get('src_type')
+        default_type = params.get('default_type')
+
         if demisto.command() == 'test-module':
-            test_func()
+            test_command(client)
         elif demisto.command() == 'fetch-indicators':
-            fetch_indicators_command()
-        elif demisto.command() == 'get-shared-indicators':
-            get_indicators_command()
+            fetch_indicators_command(client, demisto_shared, src_val, src_type, default_type)
+        elif demisto.command() == 'es-get-indicators':
+            get_indicators_command(client, demisto_shared, src_val, src_type, default_type)
     except Exception as e:
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
 

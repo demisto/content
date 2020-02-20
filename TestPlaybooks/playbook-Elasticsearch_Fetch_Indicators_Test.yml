@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Get Shared Indicators
       description: Get indicators shared with this tenant (MT only).
-      script: '|||get-shared-indicators'
+      script: '|||es-get-indicators'
       type: regular
       iscommand: true
       brand: ""
@@ -84,7 +84,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ElasticsearchFeed.SharedIndicators.Indicators.value
+              simple: ElasticsearchFeed.Indicators.value
             iscontext: true
           right:
             value:
