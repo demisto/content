@@ -173,26 +173,7 @@
           "Color": "#648d9f"
         }
       ],
-      "TagAssetCount": [
-        {
-          "id": 215551,
-          "name": "Data_Center_1",
-          "category": "catgory name",
-          "description": "",
-          "created": "2019-04-24T21:35:12",
-          "updated": "2019-06-19T19:23:08",
-          "color": "#dd8361"
-        },
-        {
-          "id": 215554,
-          "name": "Linux_Team_2",
-          "category": "category name",
-          "description": "",
-          "created": "2019-04-24T21:39:59",
-          "updated": "2019-04-24T21:39:59",
-          "color": "#78a19b"
-        }
-      ],
+      "TagAssetCount": 2,
       "TagAsset": [
         {
           "Id": 215551,
