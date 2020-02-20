@@ -3,9 +3,9 @@ import copy
 import time
 from pprint import pformat
 import uuid
+import ast
 import urllib
 import urllib3
-import ast
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
@@ -110,7 +110,7 @@ def __create_integration_instance(client, integration_name, integration_instance
     configuration = __get_integration_config(client, integration_name, prints_manager,
                                              thread_index=thread_index)
     if not configuration:
-        return None, 'No configuration'
+        return None, 'No configuration', None
 
     module_configuration = configuration['configuration']
     if not module_configuration:
@@ -164,13 +164,13 @@ def __create_integration_instance(client, integration_name, integration_instance
             integration_name, conn_err
         )
         prints_manager.add_print_job(error_message, print_error, thread_index)
-        return None, error_message
+        return None, error_message, None
 
     if res[1] != 200:
         error_message = 'create instance failed with status code ' + str(res[1])
         prints_manager.add_print_job(error_message, print_error, thread_index)
         prints_manager.add_print_job(pformat(res[0]), print_error, thread_index)
-        return None, error_message
+        return None, error_message, None
 
     integration_config = ast.literal_eval(res[0])
     module_instance['id'] = integration_config['id']
@@ -485,8 +485,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         playbook_state = __get_investigation_playbook_state(client, investigation_id, prints_manager,
                                                             thread_index=thread_index)
 
-        if playbook_state == PB_Status.COMPLETED or playbook_state == \
-                PB_Status.NOT_SUPPORTED_VERSION:
+        if playbook_state in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION):
             break
         if playbook_state == PB_Status.FAILED:
             if is_mock_run:
@@ -525,7 +524,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         prints_manager.add_print_job("Skipping docker container memory resource check for test {}".format(playbook_id),
                                      print_warning, thread_index)
 
-    test_pass = playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION
+    test_pass = playbook_state in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
     if test_pass:
         # delete incident
         __delete_incident(client, incident, prints_manager, thread_index=thread_index)
