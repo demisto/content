@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Fixes to the bar chart, and header fixes + logo rollback.
+- Fixes the bar chart and header, as well as rolls back the logo.
