@@ -71,12 +71,15 @@ configuration:
   name: api_key
   required: true
   type: 4
-- display: The Collection to fetch from
+- additionalinfo: Support a CSV of collections.
+  display: The Collections to Fetch From
   hidden: false
   name: collection
   required: true
   type: 0
-- display: Get All Active Collections
+- additionalinfo: If checked - will run on all active collections regaurdless of the
+    entered collections
+  display: Get All Active Collections
   hidden: false
   name: all_collections
   required: false
@@ -90,8 +93,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of indicators to return. The default value is
-        10.
+      description: The maximum number of XML elemnts to parse from the TAXII response.
+        Default value is 10.
       isArray: false
       name: limit
       required: true
