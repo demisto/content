@@ -1356,7 +1356,8 @@ def get_domain_machine_command():
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
-    headers = ['ID', 'ComputerDNSName', 'RiskScore']
+    headers = ['ID', 'ComputerDNSName', 'OsPlatform','LastIpAddress', 'LastExternalIpAddress', 'HealthStatus',
+               'RiskScore', 'ExposureScore']
     domain = demisto.args().get('domain')
     response = get_domain_machines_request(domain)
     machines_list = []
