@@ -360,7 +360,11 @@ class Client():
             self.collections = collection.split(',')
 
     def get_all_collections(self):
-        return list(self.taxii_client.get_collections())
+        collections = self.taxii_client.get_collections()
+        full_collection_list = []
+        for collection in collections:
+            full_collection_list.append(collection.name)
+        return full_collection_list
 
     def build_iterator(self, collection):
         return list(self.taxii_client.poll(collection_name=collection))
@@ -427,7 +431,7 @@ def fetch_indicators_command(client: Client, limit=None):
                 raise Exception(e)
 
             else:
-                pass
+                continue
 
         indicator_list = []  # type:List
         index = 0
