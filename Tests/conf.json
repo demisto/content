@@ -680,6 +680,13 @@
             "playbookID": "CutTransformerTest"
         },
         {
+            "playbookID": "Default - Test",
+            "integrations": [
+              "ThreatQ v2",
+              "AlienVault OTX v2"
+            ]
+        },
+        {
             "integrations": "SCADAfence CNM",
             "playbookID": "SCADAfence_test"
         },
