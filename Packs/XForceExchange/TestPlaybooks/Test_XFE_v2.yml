@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: afed6164-3d77-4a8b-8487-0eaa2afdd706
+    taskid: 6273fdd6-669b-43ca-8de9-e8d9d8a7cc6e
     type: start
     task:
-      id: afed6164-3d77-4a8b-8487-0eaa2afdd706
+      id: 6273fdd6-669b-43ca-8de9-e8d9d8a7cc6e
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 853ba9c0-51df-45a4-8cf4-a1caffcc9c27
+    taskid: 7bbf7f5b-c8af-412f-89e5-e745af3c8ebe
     type: regular
     task:
-      id: 853ba9c0-51df-45a4-8cf4-a1caffcc9c27
+      id: 7bbf7f5b-c8af-412f-89e5-e745af3c8ebe
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -50,7 +50,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 200
+          "y": 195
         }
       }
     note: false
@@ -58,10 +58,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: c4a7ebff-dda7-4f4f-88b0-2b91e3a50870
+    taskid: 3571a2d3-2966-4360-8855-c5ef302ed5e0
     type: regular
     task:
-      id: c4a7ebff-dda7-4f4f-88b0-2b91e3a50870
+      id: 3571a2d3-2966-4360-8855-c5ef302ed5e0
       version: -1
       name: ip
       script: '|||ip'
@@ -81,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
@@ -89,10 +89,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: c72079c0-3187-442a-8657-dc57a9dfda3c
+    taskid: e11b6f02-fa35-4536-8d6c-a0e1f97438e6
     type: condition
     task:
-      id: c72079c0-3187-442a-8657-dc57a9dfda3c
+      id: e11b6f02-fa35-4536-8d6c-a0e1f97438e6
       version: -1
       name: Verify Outputs for IP
       type: condition
@@ -113,14 +113,6 @@ tasks:
           right:
             value:
               simple: 8.8.8.8
-      - - operator: isEqualString
-          left:
-            value:
-              simple: IP.Malicious.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: XFE
       - - operator: isEqualString
           left:
             value:
@@ -145,14 +137,14 @@ tasks:
           right:
             value:
               simple: XFE
-      - - operator: InRange
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.Score
             iscontext: true
           right:
             value:
-              simple: 1,3
+              simple: "1"
       - - operator: isNotEmpty
           left:
             value:
@@ -172,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 590
+          "y": 545
         }
       }
     note: false
@@ -180,10 +172,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 0979a301-3afd-4b01-82c7-8bce0f033afd
+    taskid: 06179f79-cffb-4d79-8033-6e09c22fe618
     type: regular
     task:
-      id: 0979a301-3afd-4b01-82c7-8bce0f033afd
+      id: 06179f79-cffb-4d79-8033-6e09c22fe618
       version: -1
       name: url
       script: '|||url'
@@ -203,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 800
+          "y": 720
         }
       }
     note: false
@@ -211,10 +203,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 785e3deb-df2f-4a81-899c-f04508eb0c84
+    taskid: 614b8507-ed8f-4077-8aac-38a43476ce29
     type: condition
     task:
-      id: 785e3deb-df2f-4a81-899c-f04508eb0c84
+      id: 614b8507-ed8f-4077-8aac-38a43476ce29
       version: -1
       name: Verify Outputs for URL
       type: condition
@@ -235,14 +227,6 @@ tasks:
           right:
             value:
               simple: https://google.com
-      - - operator: isEqualString
-          left:
-            value:
-              simple: URL.Malicious.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: XFE
       - - operator: isEqualString
           left:
             value:
@@ -268,19 +252,19 @@ tasks:
           right:
             value:
               simple: XFE
-      - - operator: InRange
+      - - operator: isEqualString
           left:
             value:
               simple: DBotScore.[1].Score
             iscontext: true
           right:
             value:
-              simple: 1,3
+              simple: "1"
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1000
+          "y": 895
         }
       }
     note: false
@@ -288,10 +272,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 7d145cfc-839c-48c1-8a3b-9d1f2bcb025d
+    taskid: 098921b5-b795-443b-8bee-bf60cd81260d
     type: regular
     task:
-      id: 7d145cfc-839c-48c1-8a3b-9d1f2bcb025d
+      id: 098921b5-b795-443b-8bee-bf60cd81260d
       version: -1
       name: file
       script: '|||file'
@@ -305,12 +289,15 @@ tasks:
       file:
         simple: 474B9CCF5AB9D72CA8A333889BBB34F0
       long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1200
+          "y": 1070
         }
       }
     note: false
@@ -318,10 +305,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 35228800-943e-47fb-8e0d-7f0d8e1fe5fe
+    taskid: 9fcdedc1-107a-4636-8e6f-e49fde932f6a
     type: condition
     task:
-      id: 35228800-943e-47fb-8e0d-7f0d8e1fe5fe
+      id: 9fcdedc1-107a-4636-8e6f-e49fde932f6a
       version: -1
       name: Verify Outputs for File
       type: condition
@@ -329,7 +316,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -384,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1400
+          "y": 1245
         }
       }
     note: false
@@ -392,10 +379,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 20948f68-5a37-4ce7-8d37-10d599804ced
+    taskid: 02f597dc-288d-4b78-87a1-ab03c7f336e7
     type: regular
     task:
-      id: 20948f68-5a37-4ce7-8d37-10d599804ced
+      id: 02f597dc-288d-4b78-87a1-ab03c7f336e7
       version: -1
       name: domain
       script: '|||domain'
@@ -415,7 +402,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1600
+          "y": 1595
         }
       }
     note: false
@@ -423,10 +410,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 7d5b7796-209f-403b-8543-77295be1127f
+    taskid: 624f4ee5-5399-4bd5-8ee5-bf1035a91b6f
     type: regular
     task:
-      id: 7d5b7796-209f-403b-8543-77295be1127f
+      id: 624f4ee5-5399-4bd5-8ee5-bf1035a91b6f
       version: -1
       name: cve-search
       script: '|||cve-search'
@@ -445,7 +432,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2010
+          "y": 1945
         }
       }
     note: false
@@ -453,10 +440,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: c9bfa8a2-611c-4d2d-8c3a-ad8dfefd1d1a
+    taskid: b7569c05-49f5-4e91-8bfb-195defa5b04a
     type: condition
     task:
-      id: c9bfa8a2-611c-4d2d-8c3a-ad8dfefd1d1a
+      id: b7569c05-49f5-4e91-8bfb-195defa5b04a
       version: -1
       name: Verify Outputs for CVE
       type: condition
@@ -548,7 +535,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2210
+          "y": 2120
         }
       }
     note: false
@@ -556,10 +543,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 2a5f9bd1-ebf9-47cc-80cc-798b5adee96d
+    taskid: 2dd1b136-b9b6-43bc-8082-dde32128dc26
     type: regular
     task:
-      id: 2a5f9bd1-ebf9-47cc-80cc-798b5adee96d
+      id: 2dd1b136-b9b6-43bc-8082-dde32128dc26
       version: -1
       name: cve-latest
       script: '|||cve-latest'
@@ -574,7 +561,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2400
+          "y": 2295
         }
       }
     note: false
@@ -582,10 +569,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: b1fa952f-f834-4dc8-82fe-274dc43ba531
+    taskid: cc9c8405-5e8b-409a-8b35-05a66b220492
     type: condition
     task:
-      id: b1fa952f-f834-4dc8-82fe-274dc43ba531
+      id: cc9c8405-5e8b-409a-8b35-05a66b220492
       version: -1
       name: Verify Outputs for Recent CVEs
       type: condition
@@ -598,7 +585,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: CVE.[1].ID
@@ -667,7 +654,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2600
+          "y": 2470
         }
       }
     note: false
@@ -675,10 +662,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: a86e45de-94f8-4ca7-80ee-9a799d9d53ce
+    taskid: 95a7e896-5b92-4a22-8859-caff41211bad
     type: regular
     task:
-      id: a86e45de-94f8-4ca7-80ee-9a799d9d53ce
+      id: 95a7e896-5b92-4a22-8859-caff41211bad
       version: -1
       name: xfe-whois
       script: '|||xfe-whois'
@@ -696,7 +683,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2800
+          "y": 2645
         }
       }
     note: false
@@ -704,10 +691,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: c2d54d49-02a6-4129-8411-dd1c7aaf1643
+    taskid: 7a96fcb4-7488-4bfb-8fc4-b59412a5705a
     type: condition
     task:
-      id: c2d54d49-02a6-4129-8411-dd1c7aaf1643
+      id: 7a96fcb4-7488-4bfb-8fc4-b59412a5705a
       version: -1
       name: Verify Outputs for Whois
       type: condition
@@ -762,7 +749,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3000
+          "y": 2820
         }
       }
     note: false
@@ -770,10 +757,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 903f28a1-bbff-4c52-8cd8-fdd1969467b2
+    taskid: 75b96f84-78c4-4f63-8e57-d73ce3e74d75
     type: regular
     task:
-      id: 903f28a1-bbff-4c52-8cd8-fdd1969467b2
+      id: 75b96f84-78c4-4f63-8e57-d73ce3e74d75
       version: -1
       name: xfe-search-cves
       script: '|||xfe-search-cves'
@@ -794,7 +781,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3200
+          "y": 2995
         }
       }
     note: false
@@ -802,10 +789,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 118a5928-e695-4e66-8f2a-542ff55558bd
+    taskid: 3e037de3-ff17-4981-809e-d3d14dd0abba
     type: condition
     task:
-      id: 118a5928-e695-4e66-8f2a-542ff55558bd
+      id: 3e037de3-ff17-4981-809e-d3d14dd0abba
       version: -1
       name: Verify Outputs for Search CVEs by Query
       type: condition
@@ -897,7 +884,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3400
+          "y": 3170
         }
       }
     note: false
@@ -905,10 +892,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: ccebbf30-4359-4b80-86db-32e58821f1ef
+    taskid: 385b512c-e3be-4d57-8a26-a46c6e78923b
     type: title
     task:
-      id: ccebbf30-4359-4b80-86db-32e58821f1ef
+      id: 385b512c-e3be-4d57-8a26-a46c6e78923b
       version: -1
       name: Test Done
       type: title
@@ -919,7 +906,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3600
+          "y": 3345
         }
       }
     note: false
@@ -927,10 +914,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 315b3c51-8d7b-490d-8fcb-ca5b7d116899
+    taskid: 7f2ba594-20b9-4477-844b-d7e79576dfae
     type: condition
     task:
-      id: 315b3c51-8d7b-490d-8fcb-ca5b7d116899
+      id: 7f2ba594-20b9-4477-844b-d7e79576dfae
       version: -1
       name: Verify Outputs for Domain
       type: condition
@@ -946,7 +933,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: URL.[1].Data
+              simple: URL.Data
             iscontext: true
           right:
             value:
@@ -954,24 +941,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: URL.[1].Malicious.Vendor
-            iscontext: true
-          right:
-            value:
-              simple: XFE
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.[3].Indicator
-            iscontext: true
-          right:
-            value:
-              simple: URL.[1].Data
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: DBotScore.[3].Type
+              simple: DBotScore.Type
             iscontext: true
           right:
             value:
@@ -979,24 +949,66 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: DBotScore.[3].Vendor
+              simple: DBotScore.Vendor
             iscontext: true
           right:
             value:
               simple: XFE
-      - - operator: InRange
+      - - operator: isEqualString
           left:
             value:
-              simple: DBotScore.[3].Score
+              simple: DBotScore.Score
             iscontext: true
           right:
             value:
-              simple: 1,3
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: ibm.com
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1800
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 724f35bc-6b63-46d3-887c-d07e56ce4296
+    type: regular
+    task:
+      id: 724f35bc-6b63-46d3-887c-d07e56ce4296
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -1007,7 +1019,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3615,
+        "height": 3360,
         "width": 380,
         "x": 50,
         "y": 50
