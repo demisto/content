@@ -53,7 +53,7 @@ Look up the host details. The host details can be searched based on input parame
 | operator | The match operator should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values;'LIKE' - filter records with specific pattern provided. | Optional | 
 | exclusive_operator | The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False. If set to True, host not matching the specified values are fetched. | Optional | 
 | value | The value of the host property mentioned in 'fieldname' to be considered for filter criteria. | Optional | 
-| page | Te index of the page. The index is numeric value starting with 0. | Optional | 
+| page | The index of the page. The index is numeric value starting with 0. | Optional | 
 | size | The maximum number of records to be fetched in one page. | Optional | 
 | sort_by | The fieldname that should be considered for sorting the returned records. | Optional | 
 | sort_order | The sorting order to be considered for returned records. | Optional | 
