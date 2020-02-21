@@ -2,7 +2,7 @@
 ---
 
 CounterCraft Deception Solution detects advanced adversaries. Automate counterintelligence campaigns to discover targeted attacks with real-time active response.
-This integration was integrated and tested with version xx of CounterCraft Deception Director
+This integration was integrated and tested with version 2.5.13 of CounterCraft Deception Director
 ## CounterCraft Deception Director Playbook
 ---
 

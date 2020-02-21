@@ -13,17 +13,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Fetch incidents
-  name: isFetch
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
-- display: API Key  for Deception Director connection
+- display: API Key for Deception Director connection
   name: api_key
   defaultvalue: ""
   type: 4
@@ -35,13 +25,21 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
   type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
   required: false
 script:
   script: ''
@@ -450,3 +448,6 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
+fromversion: 5.0.0
+tests:
+  - CounterCraft - Test

@@ -2343,7 +2343,8 @@
         },
         {
             "integrations": "CounterCraft Deception Director",
-            "playbookID": "CounterCraft-Test"
+            "playbookID": "CounterCraft - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {

@@ -183,6 +183,12 @@ Linux in AWS | Linux machine in AWS | DESIGN | MACHINE |\n"
                 "TypeCode": "MACHINE",
                 "StatusCode": "DESIGN",
             }
+        ],
+        'Host(val.IP && val.IP === obj.IP)': [
+            {
+                'ID': '61daa693-11cf-49a6-8fae-5111f630ee39',
+                'IP': '1.4.5.6'
+            }
         ]
     }
 
