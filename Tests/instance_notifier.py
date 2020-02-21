@@ -6,7 +6,7 @@ from slackclient import SlackClient
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
 from Tests.test_content import ParallelPrintsManager
 from Tests.test_utils import str2bool, print_color, print_error, LOG_COLORS, print_warning
-
+from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
 
 SERVER_URL = "https://{}"
 
@@ -22,6 +22,12 @@ def options_handler():
     options = parser.parse_args()
 
     return options
+
+
+def install_new_content(client, server):
+    prints_manager = ParallelPrintsManager(1)
+    update_content_on_demisto_instance(client, server, prints_manager, 0)
+    prints_manager.execute_thread_prints(0)
 
 
 def get_integrations(secret_conf_path):
@@ -41,6 +47,9 @@ def test_instances(secret_conf_path, server, username, password):
 
     prints_manager = ParallelPrintsManager(1)
 
+    content_installation_client = demisto_client.configure(base_url=server, username=username, password=password,
+                                                           verify_ssl=False)
+    install_new_content(content_installation_client, server)
     for integration in integrations:
         c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
         integrations_counter += 1
@@ -53,7 +62,7 @@ def test_instances(secret_conf_path, server, username, password):
         has_integration = integration.get('has_integration', True)
 
         if has_integration:
-            instance_id, failure_message = __create_integration_instance(
+            instance_id, failure_message, _ = __create_integration_instance(
                 c, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager
             )
             if failure_message == 'No configuration':
@@ -61,7 +70,8 @@ def test_instances(secret_conf_path, server, username, password):
                               "in content repo".format(integration_instance_name))
                 continue
             if not instance_id:
-                print_error('Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
+                print_error(
+                    'Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
                 failed_integrations.append("{} {} - devops comments: {}".format(
                     integration_name, product_description, devops_comments))
             else:
