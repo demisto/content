@@ -78,7 +78,7 @@ configuration:
   required: true
   type: 0
 - additionalinfo: If checked - will run on all active collections regaurdless of the
-    entered collections
+    entered collections.
   display: Get All Active Collections
   hidden: false
   name: all_collections
@@ -93,7 +93,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of XML elemnts to parse from the TAXII response.
+      description: The maximum number of XML elements to parse from the TAXII response.
         Default value is 10.
       isArray: false
       name: limit
