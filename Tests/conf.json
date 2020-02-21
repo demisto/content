@@ -2132,6 +2132,10 @@
         {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test"
+        },
+        {
+            "integrations": "CounterCraft Deception Director",
+            "playbookID": "CounterCraft-Test"
         }
     ],
     "skipped_tests": {
