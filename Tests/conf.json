@@ -2336,6 +2336,7 @@
         }
     ],
     "skipped_tests": {
+        "test-Expanse": "Expanse should provide domain that they have in their system",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
