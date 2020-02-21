@@ -1,0 +1,25 @@
+{
+  "errors": [],
+  "page": {
+    "size": 20,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 0
+  },
+  "_embedded": {
+    "uniqueHostFindings": [
+      {
+        "title": "Title 1",
+        "severity": 2.3,
+        "hostCount": 690,
+        "source": "Source Name",
+        "sourceId": "Source Id"
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "href"
+    }
+  }
+}
