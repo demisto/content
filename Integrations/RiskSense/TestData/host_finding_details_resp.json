@@ -1,0 +1,273 @@
+{
+  "errors": [],
+  "page": {
+    "size": 20,
+    "totalElements": 13,
+    "totalPages": 1,
+    "number": 0
+  },
+  "_embedded": {
+    "hostFindings": [
+      {
+        "id": 115469577,
+        "source": "source name",
+        "sourceId": "source id",
+        "title": "title",
+        "port": 25,
+        "description": "description",
+        "services": [
+          "service1"
+        ],
+        "group": {
+          "id": 7990,
+          "name": "Group name"
+        },
+        "groups": [
+          {
+            "id": 7990,
+            "name": "group name"
+          }
+        ],
+        "host": {
+          "hostId": 3569982,
+          "hostName": "hostname1",
+          "ipAddress": "ip address",
+          "criticality": 5,
+          "external": true,
+          "ports": [
+            {
+              "id": 42841210,
+              "number": 21
+            },
+            {
+              "id": 42841323,
+              "number": 22
+            },
+            {
+              "id": 42841347,
+              "number": 23
+            },
+            {
+              "id": 42841183,
+              "number": 25
+            },
+            {
+              "id": 42841178,
+              "number": 111
+            },
+            {
+              "id": 42841312,
+              "number": 123
+            },
+            {
+              "id": 42841336,
+              "number": 587
+            },
+            {
+              "id": 42841279,
+              "number": 852
+            },
+            {
+              "id": 42841222,
+              "number": 6112
+            },
+            {
+              "id": 42841168,
+              "number": 7100
+            },
+            {
+              "id": 42841236,
+              "number": 8005
+            },
+            {
+              "id": 42841197,
+              "number": 8007
+            },
+            {
+              "id": 42841329,
+              "number": 32771
+            },
+            {
+              "id": 42841246,
+              "number": 32772
+            },
+            {
+              "id": 42841259,
+              "number": 32775
+            },
+            {
+              "id": 42841269,
+              "number": 32776
+            },
+            {
+              "id": 42841361,
+              "number": 32777
+            },
+            {
+              "id": 42841370,
+              "number": 32778
+            },
+            {
+              "id": 42841172,
+              "number": 32779
+            }
+          ],
+          "rs3": 644
+        },
+        "network": {
+          "id": 78038,
+          "name": "network name",
+          "type": "type 1"
+        },
+        "statusEmbedded": {
+          "state": "state",
+          "stateName": "state name",
+          "stateDescription": "state description",
+          "status": true,
+          "userIds": [],
+          "durationInDays": "3291",
+          "dueDate": "2019-12-01T00:00:00",
+          "expirationDate": ""
+        },
+        "assessments": [
+          {
+            "id": 67442,
+            "name": "Assessment",
+            "date": "2019-04-23"
+          }
+        ],
+        "assignments": [],
+        "vulnerabilities": {
+          "vulnInfoList": [
+            {
+              "cve": "cve name",
+              "baseScore": 7.5,
+              "threatCount": 0,
+              "summary": "description",
+              "attackVector": "Network",
+              "accessComplexity": "Low",
+              "authentication": "None",
+              "confidentialityImpact": "Partial",
+              "integrity": "Partial",
+              "availabilityImpact": "Partial",
+              "trending": false,
+              "vulnLastTrendingOn": null
+            }
+          ],
+          "vulnLastTrendingOn": null,
+          "trending": false
+        },
+        "vulnerabilitiesWithV3": [],
+        "threats": {
+          "manualExploits": [],
+          "threats": [],
+          "threatLastTrendingOn": null,
+          "trending": false
+        },
+        "manualFindingReports": [],
+        "solution": "solution",
+        "patches": [
+          {
+            "name": "patches name",
+            "url": "url name"
+          }
+        ],
+        "tags": [
+          {
+            "id": 215551,
+            "name": "tag name1",
+            "category": "category",
+            "description": "",
+            "created": "2019-04-24T21:35:12",
+            "updated": "2019-06-19T19:23:08",
+            "color": "#dd8361"
+          },
+          {
+            "id": 215554,
+            "name": "tag name 2",
+            "category": "category 2",
+            "description": "",
+            "created": "2019-04-24T21:39:59",
+            "updated": "2019-04-24T21:39:59",
+            "color": "#78a19b"
+          },
+          {
+            "id": 225744,
+            "name": "tag name 3",
+            "category": "category 3",
+            "description": "",
+            "created": "2019-08-28T17:27:15",
+            "updated": "2019-08-28T17:27:15",
+            "color": "#648d9f"
+          },
+          {
+            "id": 225750,
+            "name": "tag name 4",
+            "category": "category",
+            "description": "",
+            "created": "2019-08-28T18:50:30",
+            "updated": "2019-10-31T03:40:55",
+            "color": "#648d9f"
+          }
+        ],
+        "tagsAsset": [
+          {
+            "id": 215551,
+            "name": "Data_Center_1",
+            "category": "catgory name",
+            "description": "",
+            "created": "2019-04-24T21:35:12",
+            "updated": "2019-06-19T19:23:08",
+            "color": "#dd8361"
+          },
+          {
+            "id": 215554,
+            "name": "Linux_Team_2",
+            "category": "category name",
+            "description": "",
+            "created": "2019-04-24T21:39:59",
+            "updated": "2019-04-24T21:39:59",
+            "color": "#78a19b"
+          }
+        ],
+        "tickets": [],
+        "notes": [],
+        "authScanDetail": null,
+        "authScanHistory": [],
+        "output": "output",
+        "severity": 7.5,
+        "severityEmbedded": {
+          "combined": 7.5,
+          "overridden": false,
+          "scanner": "3",
+          "cvssV2": 7.5,
+          "cvssV3": null,
+          "aggregated": 7.5,
+          "state": null,
+          "stateName": null,
+          "expirationDate": ""
+        },
+        "riskRating": 5.67,
+        "xrs3Impact": null,
+        "xrs3ImpactOnCategory": null,
+        "lastFoundOn": "2011-01-21",
+        "discoveredOn": "2011-01-21",
+        "resolvedOn": "",
+        "scannerName": "scanner name",
+        "findingType": "finding type",
+        "machineId": "",
+        "detailedDescription": "",
+        "detailedSolution": "",
+        "cloudSecurityGroups": [],
+        "cloudScalingGroups": [],
+        "scannerPluginStatus": "",
+        "additionalInfo": null
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "http://platform.risksense.com/api/v1/client/747/hostFinding/search?page=0&size=20&sort=riskRating,desc"
+    }
+  }
+}

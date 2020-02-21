@@ -1,0 +1,392 @@
+id: RiskSense Get Closed Host Findings - Test
+version: -1
+name: RiskSense Get Closed Host Findings - Test
+description: This playbook uses the RiskSense integration and tests the various scenarios
+  of the "risksense-get-closed-host-findings" command. 
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 09225056-5b42-4f65-8f75-7faf740a1e43
+    type: start
+    task:
+      id: 09225056-5b42-4f65-8f75-7faf740a1e43
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 9a9e7052-2cb1-40f4-8d06-8b459fe9a46a
+    type: regular
+    task:
+      id: 9a9e7052-2cb1-40f4-8d06-8b459fe9a46a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 2da00f3e-c6a6-42bd-8145-4355c9595462
+    type: regular
+    task:
+      id: 2da00f3e-c6a6-42bd-8145-4355c9595462
+      version: -1
+      name: Execute risksense-get-closed-host-findings command from Demisto
+      description: A detail of close host finding with its severity level divided
+        into Critical, High, Medium, Low and info part.Displays vulnerability information
+        like CVE, threats associated with current findings and origin of findings.
+      script: RiskSense|||risksense-get-closed-host-findings
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      exclusive_operator: {}
+      fieldname: {}
+      operator: {}
+      page: {}
+      size:
+        simple: "1"
+      sort_by: {}
+      sort_order: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 951daed4-4019-4eef-8fb2-d0c7f106babf
+    type: condition
+    task:
+      id: 951daed4-4019-4eef-8fb2-d0c7f106babf
+      version: -1
+      name: Is context data matched to the response?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Host.HostName
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Host.IpAddress
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Title
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.RiskRating
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Host.Criticality
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Severity
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Group.Id
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Tag.Id
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.TagAsset.Id
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Host.HostId
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.SourceId
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Network.Id
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Assessment.Id
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.LastFoundOn
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.FindingType
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.ScannerName
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Id
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 7588387a-3a5b-4321-81e0-24d60b89d978
+    type: regular
+    task:
+      id: 7588387a-3a5b-4321-81e0-24d60b89d978
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: a8f5447a-3656-46a6-845d-0a4ead0ac9c8
+    type: title
+    task:
+      id: a8f5447a-3656-46a6-845d-0a4ead0ac9c8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 093eb4d7-69f0-42ea-850c-7b997d1637a6
+    type: regular
+    task:
+      id: 093eb4d7-69f0-42ea-850c-7b997d1637a6
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_7_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: RiskSense Get Open Host Findings - Test
