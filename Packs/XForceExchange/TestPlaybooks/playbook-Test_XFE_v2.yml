@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6273fdd6-669b-43ca-8de9-e8d9d8a7cc6e
+    taskid: c65d0090-0563-4d66-8294-12495370f821
     type: start
     task:
-      id: 6273fdd6-669b-43ca-8de9-e8d9d8a7cc6e
+      id: c65d0090-0563-4d66-8294-12495370f821
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 7bbf7f5b-c8af-412f-89e5-e745af3c8ebe
+    taskid: c07be386-6b85-4cc5-8ed2-23550da1adc5
     type: regular
     task:
-      id: 7bbf7f5b-c8af-412f-89e5-e745af3c8ebe
+      id: c07be386-6b85-4cc5-8ed2-23550da1adc5
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -58,24 +58,29 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 3571a2d3-2966-4360-8855-c5ef302ed5e0
+    taskid: da523f16-9f5b-433a-8289-3ef5fa6f0b00
     type: regular
     task:
-      id: 3571a2d3-2966-4360-8855-c5ef302ed5e0
+      id: da523f16-9f5b-433a-8289-3ef5fa6f0b00
       version: -1
       name: ip
-      script: '|||ip'
+      description: IP to check
+      script: XFE_v2|||ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: XFE_v2
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
+      fullResponse: {}
       ip:
         simple: 8.8.8.8
       long: {}
+      retries: {}
+      sampleSize: {}
       threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -89,10 +94,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: e11b6f02-fa35-4536-8d6c-a0e1f97438e6
+    taskid: 19760593-ed15-4091-819a-822841088fd3
     type: condition
     task:
-      id: e11b6f02-fa35-4536-8d6c-a0e1f97438e6
+      id: 19760593-ed15-4091-819a-822841088fd3
       version: -1
       name: Verify Outputs for IP
       type: condition
@@ -172,24 +177,29 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 06179f79-cffb-4d79-8033-6e09c22fe618
+    taskid: 507db1c8-58da-4af8-8d24-c2dc47402e7a
     type: regular
     task:
-      id: 06179f79-cffb-4d79-8033-6e09c22fe618
+      id: 507db1c8-58da-4af8-8d24-c2dc47402e7a
       version: -1
       name: url
-      script: '|||url'
+      description: Check the given URL reputation
+      script: XFE_v2|||url
       type: regular
       iscommand: true
-      brand: ""
+      brand: XFE_v2
     nexttasks:
       '#none#':
       - "5"
     scriptarguments:
       long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
       threshold: {}
       url:
         simple: https://google.com
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -203,10 +213,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 614b8507-ed8f-4077-8aac-38a43476ce29
+    taskid: 8d9dd840-41a2-41f4-861f-b95171ea9563
     type: condition
     task:
-      id: 614b8507-ed8f-4077-8aac-38a43476ce29
+      id: 8d9dd840-41a2-41f4-861f-b95171ea9563
       version: -1
       name: Verify Outputs for URL
       type: condition
@@ -272,16 +282,17 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 098921b5-b795-443b-8bee-bf60cd81260d
+    taskid: 334227c0-7a19-4d0c-8699-a28003a80bcf
     type: regular
     task:
-      id: 098921b5-b795-443b-8bee-bf60cd81260d
+      id: 334227c0-7a19-4d0c-8699-a28003a80bcf
       version: -1
       name: file
-      script: '|||file'
+      description: Check file reputation
+      script: XFE_v2|||file
       type: regular
       iscommand: true
-      brand: ""
+      brand: XFE_v2
     nexttasks:
       '#none#':
       - "7"
@@ -305,10 +316,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 9fcdedc1-107a-4636-8e6f-e49fde932f6a
+    taskid: ae6ed8f5-8b71-42b6-81a4-29e5ad76c9f1
     type: condition
     task:
-      id: 9fcdedc1-107a-4636-8e6f-e49fde932f6a
+      id: ae6ed8f5-8b71-42b6-81a4-29e5ad76c9f1
       version: -1
       name: Verify Outputs for File
       type: condition
@@ -379,24 +390,29 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 02f597dc-288d-4b78-87a1-ab03c7f336e7
+    taskid: 3c0008bf-8b13-41fb-8b3e-80f8b35c9206
     type: regular
     task:
-      id: 02f597dc-288d-4b78-87a1-ab03c7f336e7
+      id: 3c0008bf-8b13-41fb-8b3e-80f8b35c9206
       version: -1
       name: domain
-      script: '|||domain'
+      description: Check domain reputation
+      script: XFE_v2|||domain
       type: regular
       iscommand: true
-      brand: ""
+      brand: XFE_v2
     nexttasks:
       '#none#':
       - "19"
     scriptarguments:
       domain:
         simple: ibm.com
+      fullResponse: {}
       long: {}
+      retries: {}
+      sampleSize: {}
       threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -410,23 +426,23 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 624f4ee5-5399-4bd5-8ee5-bf1035a91b6f
+    taskid: 53ae7009-9d15-471f-87bd-a8e1fca84caa
     type: regular
     task:
-      id: 624f4ee5-5399-4bd5-8ee5-bf1035a91b6f
+      id: 53ae7009-9d15-471f-87bd-a8e1fca84caa
       version: -1
       name: cve-search
-      script: '|||cve-search'
+      description: Search for details about the given CVE
+      script: XFE_v2|||cve-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: XFE_v2
     nexttasks:
       '#none#':
       - "11"
     scriptarguments:
       cve_id:
         simple: CVE-2013-3893
-      cveId: {}
     separatecontext: false
     view: |-
       {
@@ -440,10 +456,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: b7569c05-49f5-4e91-8bfb-195defa5b04a
+    taskid: 7ac31e31-2647-408b-8f04-878a216261e4
     type: condition
     task:
-      id: b7569c05-49f5-4e91-8bfb-195defa5b04a
+      id: 7ac31e31-2647-408b-8f04-878a216261e4
       version: -1
       name: Verify Outputs for CVE
       type: condition
@@ -543,19 +559,24 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 2dd1b136-b9b6-43bc-8082-dde32128dc26
+    taskid: 728ca2b2-5227-4d4b-8374-ce11393df13d
     type: regular
     task:
-      id: 2dd1b136-b9b6-43bc-8082-dde32128dc26
+      id: 728ca2b2-5227-4d4b-8374-ce11393df13d
       version: -1
       name: cve-latest
-      script: '|||cve-latest'
+      description: Return the latest vulnerabilities found
+      script: XFE_v2|||cve-latest
       type: regular
       iscommand: true
-      brand: ""
+      brand: XFE_v2
     nexttasks:
       '#none#':
       - "13"
+    scriptarguments:
+      end_date: {}
+      limit: {}
+      start_date: {}
     separatecontext: false
     view: |-
       {
@@ -569,10 +590,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: cc9c8405-5e8b-409a-8b35-05a66b220492
+    taskid: 80f418a0-df66-4c70-818b-69021981830f
     type: condition
     task:
-      id: cc9c8405-5e8b-409a-8b35-05a66b220492
+      id: 80f418a0-df66-4c70-818b-69021981830f
       version: -1
       name: Verify Outputs for Recent CVEs
       type: condition
@@ -662,16 +683,17 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 95a7e896-5b92-4a22-8859-caff41211bad
+    taskid: 7d11f1b1-7a5d-4994-8ece-02a1c74ada2b
     type: regular
     task:
-      id: 95a7e896-5b92-4a22-8859-caff41211bad
+      id: 7d11f1b1-7a5d-4994-8ece-02a1c74ada2b
       version: -1
       name: xfe-whois
-      script: '|||xfe-whois'
+      description: Gets information about the given host address
+      script: XFE_v2|||xfe-whois
       type: regular
       iscommand: true
-      brand: ""
+      brand: XFE_v2
     nexttasks:
       '#none#':
       - "15"
@@ -682,8 +704,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 60,
+          "y": 2650
         }
       }
     note: false
@@ -691,10 +713,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 7a96fcb4-7488-4bfb-8fc4-b59412a5705a
+    taskid: 01fef1a5-fb7a-4660-8c80-aac9ccd4db6e
     type: condition
     task:
-      id: 7a96fcb4-7488-4bfb-8fc4-b59412a5705a
+      id: 01fef1a5-fb7a-4660-8c80-aac9ccd4db6e
       version: -1
       name: Verify Outputs for Whois
       type: condition
@@ -757,16 +779,17 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 75b96f84-78c4-4f63-8e57-d73ce3e74d75
+    taskid: 7f50921c-2c14-41f1-84d2-d3f12cd6ac3c
     type: regular
     task:
-      id: 75b96f84-78c4-4f63-8e57-d73ce3e74d75
+      id: 7f50921c-2c14-41f1-84d2-d3f12cd6ac3c
       version: -1
       name: xfe-search-cves
-      script: '|||xfe-search-cves'
+      description: Gets list of all vulnerabilities associated with the search term.
+      script: XFE_v2|||xfe-search-cves
       type: regular
       iscommand: true
-      brand: ""
+      brand: XFE_v2
     nexttasks:
       '#none#':
       - "17"
@@ -789,10 +812,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 3e037de3-ff17-4981-809e-d3d14dd0abba
+    taskid: 9abc6339-f007-489b-8ba6-2f0426263d5c
     type: condition
     task:
-      id: 3e037de3-ff17-4981-809e-d3d14dd0abba
+      id: 9abc6339-f007-489b-8ba6-2f0426263d5c
       version: -1
       name: Verify Outputs for Search CVEs by Query
       type: condition
@@ -892,10 +915,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 385b512c-e3be-4d57-8a26-a46c6e78923b
+    taskid: b1b8f0ab-2dc5-4dfa-85a8-82acd53f312d
     type: title
     task:
-      id: 385b512c-e3be-4d57-8a26-a46c6e78923b
+      id: b1b8f0ab-2dc5-4dfa-85a8-82acd53f312d
       version: -1
       name: Test Done
       type: title
@@ -914,10 +937,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 7f2ba594-20b9-4477-844b-d7e79576dfae
+    taskid: fd13df92-92c8-4837-80fd-ee99d7a39370
     type: condition
     task:
-      id: 7f2ba594-20b9-4477-844b-d7e79576dfae
+      id: fd13df92-92c8-4837-80fd-ee99d7a39370
       version: -1
       name: Verify Outputs for Domain
       type: condition
@@ -982,10 +1005,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 724f35bc-6b63-46d3-887c-d07e56ce4296
+    taskid: 568004bf-577b-4068-8035-e1cf07384830
     type: regular
     task:
-      id: 724f35bc-6b63-46d3-887c-d07e56ce4296
+      id: 568004bf-577b-4068-8035-e1cf07384830
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1020,7 +1043,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3360,
-        "width": 380,
+        "width": 390,
         "x": 50,
         "y": 50
       }
