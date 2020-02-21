@@ -42,11 +42,6 @@ configuration:
   - Timestamp-Milliseconds
   required: false
   type: 15
-- defaultvalue: '%Y-%m-%dT%H:%M:%SZ'
-  display: Time format as kept in Elasticsearch
-  name: fetch_time_format
-  required: false
-  type: 0
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
@@ -95,7 +90,7 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
+- display: "feedExpirationInterval"
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
@@ -361,6 +356,12 @@ script:
     outputs:
     - contextPath: ElasticsearchFeed.SharedIndicators
       description: Indicators shared from other tenants.
+      type: Unknown
+    - contextPath: ElasticsearchFeed.SharedIndicators.Indicators
+      description: Indicators shared from other tenants without enrichments.
+      type: Unknown
+    - contextPath: ElasticsearchFeed.SharedIndicators.Enrichments
+      description: Enrichment indicators shared from other tenants.
       type: Unknown
   dockerimage: demisto/elasticsearch:1.0.0.4677
   feed: true
