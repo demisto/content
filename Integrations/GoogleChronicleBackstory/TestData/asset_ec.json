@@ -1,0 +1,46 @@
+{
+    "Host": [
+      {
+        "IP": "10.0.9.117"
+      },
+      {
+        "IP": "10.0.9.117"
+      },
+      {
+        "MACAddress": "00:1B:44:11:3A:B7"
+      },
+      {
+        "ID": "B17"
+      }
+    ],
+    "GoogleChronicleBackstory.Asset(val.IpAddress && val.IpAddress == obj.IpAddress)": [
+      {
+        "IpAddress": "10.0.9.117",
+        "FirstAccessedTime": "2020-01-22T07:08:39.930255Z",
+        "LastAccessedTime": "2020-01-24T07:51:25.083668Z",
+        "AccessedDomain": "www.google.com"
+      },
+      {
+        "IpAddress": "10.0.9.117",
+        "FirstAccessedTime": "",
+        "LastAccessedTime": "",
+        "AccessedDomain": "www.google.com"
+      }
+    ],
+    "GoogleChronicleBackstory.Asset(val.MACAddress && val.MACAddress == obj.MACAddress)": [
+      {
+        "MACAddress": "00:1B:44:11:3A:B7",
+        "FirstAccessedTime": "2020-01-12T07:08:39.930255Z",
+        "LastAccessedTime": "2020-01-14T07:51:25.083668Z",
+        "AccessedDomain": "www.google.com"
+      }
+    ],
+    "GoogleChronicleBackstory.Asset(val.ProductId && val.ProductId == obj.ProductId)": [
+      {
+        "ProductId": "B17",
+        "FirstAccessedTime": "2020-01-10T07:08:39.930255Z",
+        "LastAccessedTime": "2020-01-11T07:51:25.083668Z",
+        "AccessedDomain": "www.google.com"
+      }
+    ]
+}
