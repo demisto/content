@@ -4,6 +4,9 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 XFORCE_URL = 'https://exchange.xforce.ibmcloud.com'
 DEFAULT_THRESHOLD = 7
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
@@ -178,6 +181,53 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     return markdown, context, reports
 
 
+def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+    """
+     Executes URL enrichment against X-Force Exchange.
+
+     Args:
+         client (Client): X-Force client.
+         args (Dict[str, str]): the arguments for the command.
+     Returns:
+         str: human readable presentation of the URL report.
+         dict: the results to return into Demisto's context.
+         Any: the raw data from X-Force client (used for debugging).
+     """
+
+    domains = argToList(args.get('domain', ''))
+    threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
+    context: Dict[str, Any] = defaultdict(list)
+    markdown = ''
+    reports = []
+
+    for domain in domains:
+        report = client.url_report(domain)
+
+        outputs = {'Data': report['url']}
+        dbot_score = {
+            'Indicator': report['url'],
+            'Type': 'domain',
+            'Vendor': 'XFE',
+            'Score': calculate_score(report['score'], threshold)
+        }
+
+        if dbot_score['Score'] == 3:
+            outputs['Malicious'] = {'Vendor': 'XFE'}
+
+        context[outputPaths['domain']].append(outputs)
+        context[DBOT_SCORE_KEY].append(dbot_score)
+
+        table = {
+            'Score': report['score'],
+            'Categories': '\n'.join(report['cats'].keys())
+        }
+        markdown += tableToMarkdown(f'X-Force Domain Reputation for: {report["url"]}\n'
+                                    f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True)
+        reports.append(report)
+
+    return markdown, context, reports
+
+
 def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     """
      Executes URL enrichment against X-Force Exchange.
@@ -191,7 +241,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
          Any: the raw data from X-Force client (used for debugging).
      """
 
-    urls = argToList(args.get('url', '')) or argToList(args.get('domain', ''))
+    urls = argToList(args.get('url', ''))
     threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
     context: Dict[str, Any] = defaultdict(list)
     markdown = ''
@@ -213,7 +263,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         table = {'Score': report['score'],
                  'Categories': '\n'.join(report['cats'].keys())}
         markdown += tableToMarkdown(f'X-Force URL Reputation for: {report["url"]}\n'
-                                    f'{XFORCE_URL}/ip/{report["url"]}', table, removeNull=True)
+                                    f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True)
         reports.append(report)
 
     return markdown, context, reports
@@ -398,7 +448,7 @@ def main():
     commands = {
         'ip': ip_command,
         'url': url_command,
-        'domain': url_command,
+        'domain': domain_command,
         'cve-latest': cve_search_command,
         'cve-search': cve_get_command,
         'file': file_command,

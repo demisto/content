@@ -247,10 +247,10 @@ script:
     execution: false
     name: domain
     outputs:
-    - contextPath: URL.Data
-      description: The file's URL
+    - contextPath: Domain.Name
+      description: Domain
       type: String
-    - contextPath: URL.Malicious.Vendor
+    - contextPath: Domain.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
       type: String
     - contextPath: DBotScore.Indicator
