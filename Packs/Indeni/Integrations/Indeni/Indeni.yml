@@ -105,7 +105,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: get detailed alert info
+    description: Get detailed alert info
     execution: false
     name: indeni-get-alert-info
     outputs:
@@ -129,7 +129,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: gets summary of given alert type for all devices
+    description: Get summary of given alert type for all devices
     execution: false
     name: indeni-get-alert-summary
     outputs:
@@ -189,7 +189,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the notes from issue
+    description: Get the notes from issue
     execution: false
     name: indeni-get-notes
     outputs:
