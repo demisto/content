@@ -117,6 +117,7 @@ tasks:
       script: '|||domain'
       type: regular
       iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "77"
