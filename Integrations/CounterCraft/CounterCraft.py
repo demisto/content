@@ -25,7 +25,7 @@ SERVER = demisto.params().get("server").rstrip("/") + "/api"
 API_KEY = demisto.params().get("api_key")
 SECRET_KEY = demisto.params().get("secret_key")
 VERIFY_CERTIFICATE = not demisto.params().get("insecure", False)
-PROXY = demisto.params().get('proxy')
+PROXY = demisto.params().get('proxy', False)
 FETCH_DELTA = "24 hours"
 
 DEF_HEADERS = {"Accept": "application/json", "Content-Type": "application/json"}
@@ -901,7 +901,7 @@ def main():
             fetch_incidents_command()
     except Exception as e:
         return_error(
-            "Unable to perform command : {}, Reason: {}".format(demisto.command, e)
+            "Unable to perform command : {}, Reason: {}".format(demisto.command(), e)
         )
 
 
