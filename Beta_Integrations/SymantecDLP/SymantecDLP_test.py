@@ -1,6 +1,7 @@
 from pytest import raises
 from CommonServerPython import *
 from dateutil.parser import parse
+from SymantecDLP import main, get_cache_path
 
 
 def test_get_incident_attributes():
@@ -240,3 +241,39 @@ def test_get_data_owner():
     assert output_empty_data_owner == get_data_owner(input_empty_data_owner)
     assert output_diff_data_owner == get_data_owner(input_diff_data_owner_type)
     assert output_valid_data_owner == get_data_owner(input_valid_data_owner)
+
+
+def test_get_cache_path():
+    path = get_cache_path()
+    assert path.endswith('cache.db')
+    test_path = path + '.test'
+    # make sure we are able to create a file in this path (test for non-root user in docker)
+    f = open(test_path, mode='w')
+    f.close()
+    os.remove(test_path)
+
+
+def test_self_signed_insecure_ssl(mocker):
+    # test that we fail on an error other than certificate when insecure is True
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'https://self-signed.badssl.com/',
+        'insecure': True
+    })
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    try:
+        main()
+    except Exception as ex:
+        assert 'certificate' not in str(ex).lower(), f'got certificate error: {ex}'
+
+
+def test_self_signed_secure_ssl(mocker):
+    # test that we fail on a certificate error when insecure is False
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'https://self-signed.badssl.com/',
+        'insecure': False
+    })
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    try:
+        main()
+    except Exception as ex:
+        assert 'certificate' in str(ex).lower()

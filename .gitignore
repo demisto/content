@@ -6,6 +6,7 @@ TestData/EmailWithNonUnicodeAttachmentName.eml
 TestData/EmailWithNonUnicodeSubject.eml
 *.pyc
 .pytest_cache
+.python-version
 
 CommonServerPython.py
 *Module.py
@@ -23,3 +24,4 @@ conftest.py
 !Tests/scripts/dev_envs/pytest/conftest.py
 venv
 failed_unittests.txt
+.python-version
