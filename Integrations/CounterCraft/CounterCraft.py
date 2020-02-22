@@ -18,8 +18,6 @@ from hashlib import sha1
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-PROXY = handle_proxy("proxy", False)
-
 """ GLOBALS"""
 
 X_API_KEY_AUTHENTICATION_HEADER_PREFIX = "X-API-Key-Auth-"
@@ -27,6 +25,7 @@ SERVER = demisto.params().get("server").rstrip("/") + "/api"
 API_KEY = demisto.params().get("api_key")
 SECRET_KEY = demisto.params().get("secret_key")
 VERIFY_CERTIFICATE = not demisto.params().get("insecure", False)
+PROXY = demisto.params().get('proxy')
 FETCH_DELTA = "24 hours"
 
 DEF_HEADERS = {"Accept": "application/json", "Content-Type": "application/json"}
@@ -213,6 +212,10 @@ def http_request(request_method, path, data={}, params=""):
     headers["Authorization"] = "APIKey %s:%s" % (API_KEY, signature)
     url = SERVER + path
 
+    proxies = None
+    if PROXY:
+        proxies = handle_proxy()
+
     res = requests.request(
         request_method,
         url,
@@ -220,6 +223,7 @@ def http_request(request_method, path, data={}, params=""):
         params=params,
         headers=headers,
         verify=VERIFY_CERTIFICATE,
+        proxies=proxies
     )
 
     if res.status_code not in [200, 201, 204]:
