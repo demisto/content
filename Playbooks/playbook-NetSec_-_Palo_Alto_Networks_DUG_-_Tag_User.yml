@@ -1,0 +1,265 @@
+id: NetSec - Palo Alto Networks DUG - Tag User
+version: -1
+fromversion: 5.0.0
+name: NetSec - Palo Alto Networks DUG - Tag User
+description: 'Block a user by tagging them in the Palo Alto Networks NGFW. This requires
+  PAN-OS 9.1 or higher.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e075a102-f806-43e4-85ce-a1aca534406e
+    type: start
+    task:
+      id: e075a102-f806-43e4-85ce-a1aca534406e
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2b0f9a00-495e-45d1-8a07-df0818217a83
+    type: regular
+    task:
+      id: 2b0f9a00-495e-45d1-8a07-df0818217a83
+      version: -1
+      name: Panorama - Tag User
+      description: ""
+      script: '|||panorama-register-user-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      Users:
+        simple: ${inputs.username}
+      tag:
+        simple: ${inputs.tagname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 5d60dd32-6e84-48be-8a7a-6e7334530c31
+    type: condition
+    task:
+      id: 5d60dd32-6e84-48be-8a7a-6e7334530c31
+      version: -1
+      name: Is user in VIP list excluded from automated containment?
+      description: |-
+        Checks whether an inputted user name appears in the VIP list (in Demisto). If the name appears, the name is passed to the admin user to determine if they should be blocked.
+        If the name does not appear, the user is blocked automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: inputs.username
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: VIPUsers
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 7056a53e-acb5-417c-804b-28def00eb058
+    type: condition
+    task:
+      id: 7056a53e-acb5-417c-804b-28def00eb058
+      version: -1
+      name: Escalate - Manager approves quarantine for VIP user?
+      description: The admin user manually approves or denies the quarantine request.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "1"
+    separatecontext: false
+    sla:
+      hours: 1
+      days: 0
+      weeks: 0
+    defaultassigneecomplex:
+      simple: admin
+    restrictedcompletion: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 5d58bd45-6dc5-489a-84e5-bfe0d642343f
+    type: title
+    task:
+      id: 5d58bd45-6dc5-489a-84e5-bfe0d642343f
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: a0c6678d-898f-43d8-8aeb-4a8c6fd83122
+    type: condition
+    task:
+      id: a0c6678d-898f-43d8-8aeb-4a8c6fd83122
+      version: -1
+      name: Is there a VIP username list to check?
+      description: Check if a list of VIP users exists in Demisto. If the list exists, the playbook retrieves the list. If no list exists, the user is automatically blocked.
+      scriptName: IsListExist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "11"
+    scriptarguments:
+      listName:
+        simple: ${inputs.VIPListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: cada2e5b-96b5-4d58-8e89-0385c9f03656
+    type: regular
+    task:
+      id: cada2e5b-96b5-4d58-8e89-0385c9f03656
+      version: -1
+      name: Get VIP user list
+      description: commands.local.cmd.list.get
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: VIPUsers=.
+      listName:
+        simple: ${inputs.VIPListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 870,
+        "x": 60,
+        "y": -165
+      }
+    }
+  }
+inputs:
+- key: tagname
+  value: {}
+  required: true
+  description: ""
+- key: username
+  value: {}
+  required: true
+  description: ""
+- key: VIPListName
+  value:
+    simple: VIP_Users
+  required: false
+  description: Name of the list that contains VIP users who can only be blocked after manager approval.
+outputs: []
+tests:
+  - No test
