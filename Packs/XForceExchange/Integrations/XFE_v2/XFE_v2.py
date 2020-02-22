@@ -203,7 +203,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
     for domain in domains:
         report = client.url_report(domain)
 
-        outputs = {'Data': report['url']}
+        outputs = {'Name': report['url']}
         dbot_score = {
             'Indicator': report['url'],
             'Type': 'domain',
