@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed the setting: **Use system proxy settings**, so proxies are ignored when not enabled.
 
 ## [20.2.3] - 2020-02-18
   - Updated Chromium to version 80.
