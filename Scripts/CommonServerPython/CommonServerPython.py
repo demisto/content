@@ -1656,13 +1656,16 @@ class CommandResults:
     """
     This class should contain results of an integration command or a script
     """
-    def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None):
-        # type: (str, str, object, list) -> None
+    def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
+                 raw_response=None):
+        # type: (str, str, object, list, str, Any) -> None
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
         self.outputs_key_field = outputs_key_field
         self.outputs = outputs
+
+        self.raw_response = raw_response
         self.readable_output = readable_output
 
     def to_context(self):
@@ -1674,13 +1677,17 @@ class CommandResults:
             for indicator in self.indicators:
                 outputs.update(indicator.to_context())
 
+        if self.raw_response:
+            raw_response = self.raw_response
+
         if self.outputs:
             if not self.readable_output:
                 human_readable = tableToMarkdown('Results', self.outputs)
             else:
                 human_readable = self.readable_output
 
-            raw_response = self.outputs
+            if not self.raw_response:
+                raw_response = self.outputs
 
             outputs_key = '{}(val.{} == obj.{})'.format(self.outputs_prefix, self.outputs_key_field, self.outputs_key_field)
             outputs.update({
@@ -2038,10 +2045,10 @@ class WHOIS(object):
     """
     WHOIS is a class that used with Domain class
     """
-    def __init__(self, domain_status, name_servers, creation_date, update_date, expiration_date,
-                 registrar_name, registrar_abuse_email, registrar_abuse_phone,
-                 registrant_name, registrant_email, registrant_phone,
-                 admin_name, admin_email, admin_phone):
+    def __init__(self, domain_status=None, name_servers=None, creation_date=None, update_date=None,
+                 expiration_date=None, registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
+                 registrant_name=None, registrant_email=None, registrant_phone=None,
+                 admin_name=None, admin_email=None, admin_phone=None):
 
         self.domain_status = domain_status
         self.name_servers = name_servers
@@ -2148,7 +2155,13 @@ class Domain(Indicator):
             domain_context['PositiveDetections'] = self.positive_detections
 
         if self.whois:
-            domain_context['WHOIS'] = self.whois
+            domain_context['WHOIS'] = self.whois.to_context()
+
+            if domain_context['WHOIS']['Admin']:
+                domain_context['Admin'] = domain_context['WHOIS']['Admin']
+
+            if domain_context['WHOIS']['Registrant']:
+                domain_context['Registrant'] = domain_context['WHOIS']['Registrant']
 
         if self.organization:
             domain_context['Organization'] = self.organization
@@ -2397,7 +2410,6 @@ emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
-cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)

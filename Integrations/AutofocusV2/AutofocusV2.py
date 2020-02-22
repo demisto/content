@@ -1309,7 +1309,7 @@ def search_ip_command(ip):
 
         ip_indicators.append(ip)
         outputs.append(autofocus_ip_output)
-        raw_response.append(raw_response)
+        raw_response.append(raw_res)
 
     command_results = CommandResults(
         outputs_prefix='AutoFocus.IP',

@@ -940,7 +940,15 @@ class TestCommandResults:
             detection_engines=10,
             positive_detections=5,
             organization='Some Organization',
-            whois=None,
+            whois=WHOIS(
+                admin_phone='18000000',
+                admin_email='admin@test.com',
+
+                registrant_name='Mr Registrant',
+
+                registrar_name='Mr Registrar',
+                registrar_abuse_email='registrar@test.com'
+            ),
             creation_date='2019-01-01T00:00:00',
             update_date='2019-01-02T00:00:00',
             expiration_date=None,
@@ -994,7 +1002,34 @@ class TestCommandResults:
                         'sub-domain1.somedomain.com',
                         'sub-domain2.somedomain.com',
                         'sub-domain3.somedomain.com'
-                    ]
+                    ],
+                    'Admin': {
+                        'Phone': '18000000',
+                        'Email': 'admin@test.com',
+                        'Name': None
+                    },
+                    'Registrant': {
+                        'Name': 'Mr Registrant',
+                        'Email': None,
+                        'Phone': None
+                    },
+                    'WHOIS': {
+                        'Admin': {
+                            'Name': None,
+                            'Phone': '18000000',
+                            'Email': 'admin@test.com'
+                        },
+                        'Registrar': {
+                            'Name': 'Mr Registrar',
+                            'AbuseEmail': 'registrar@test.com',
+                            'AbusePhone': None
+                        },
+                        'Registrant': {
+                            'Name': 'Mr Registrant',
+                            'Email': None,
+                            'Phone': None
+                        }
+                    }
                 },
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
                     'Indicator': 'somedomain.com',
