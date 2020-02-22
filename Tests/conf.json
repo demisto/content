@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Claroty",
+            "playbookID": "Claroty - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Blocklist_de Feed",
             "playbookID": "Blocklist_de - Test",
             "fromversion": "5.5.0"
@@ -1379,6 +1384,12 @@
             "nightly": true
         },
         {
+            "integrations": "XFE_v2",
+            "playbookID": "Test_XFE_v2",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "McAfee Threat Intelligence Exchange",
             "playbookID": "search_endpoints_by_hash_-_tie_-_test",
             "timeout": 500
@@ -2266,6 +2277,16 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Expanse",
+            "playbookID": "test-Expanse-Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Expanse",
+            "playbookID": "test-Expanse",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "DShield Feed",
             "playbookID": "playbook-DshieldFeed_test",
             "fromversion": "5.5.0"
@@ -2343,8 +2364,8 @@
         }
     ],
     "skipped_tests": {
+        "test-Expanse": "Expanse should provide domain that they have in their system",
         "okta_test_playbook": "Issue 22235",
-        "AzureFeed - Test": "Issue 22233",
         "Test-VulnDB": "Issue 22232",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
@@ -2391,6 +2412,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Claroty": "Issue 22255",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
