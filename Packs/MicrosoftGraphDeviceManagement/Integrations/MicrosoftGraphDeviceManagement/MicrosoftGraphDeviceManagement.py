@@ -18,6 +18,18 @@ HEADERS: dict = {
                'Manufacturer', 'Model', 'IMEI', 'MEID']
 }
 
+SPECIAL_ACTIONS: dict = {
+    'shutdown': {
+        'camel_case_form': 'shutDown',
+        'body_generating_function': 'build_request_body_generic'
+    },
+    'update-windows-device-account': {
+        'camel_case_form': 'updateWindowsDeviceAccount',
+        'body_generating_function': 'build_request_body_update_windows_device_account'
+    }
+}
+
+
 ''' CLIENT '''
 
 
@@ -173,18 +185,88 @@ def build_device_human_readable(device: dict) -> dict:
     return assign_params(**device_human_readable)
 
 
-def dash_to_camelcase(s: str) -> Union[str, Any]:
+def dash_to_camelcase(action: str) -> Union[str, Any]:
     """
     Convert a dashed separated string to camel case
-    :param s: The dashed string to convert (e.g. hello-world)
+    :param action: The dashed string to convert (e.g. hello-world)
     :return: The camel cased string (e.g. helloWorld)
     """
 
-    if not isinstance(s, str):
-        return s
+    if not isinstance(action, str):
+        return action
 
-    components = s.split('-')
+    if action in SPECIAL_ACTIONS.keys():
+        return SPECIAL_ACTIONS[action]['camel_case_form']
+
+    components = action.split('-')
     return components[0] + ''.join(x.title() for x in components[1:])
+
+
+def build_request_body_generic(args: dict) -> dict:
+    """
+    Builds the http request body of a generic command (make_action_command)
+    :param args: demisto.args
+    :return: The body of the http request
+    """
+    return {dash_to_camelcase(k): v for k, v in args.items() if k != 'device-id'}
+
+
+def build_request_body_update_windows_device_account(args: dict) -> dict:
+    """
+    Builds the http request body of msgraph-update-windows-device-account command
+    :param args: demisto.args
+    :return: The body of the http request
+    """
+    body: dict = {dash_to_camelcase(k): v for k, v in args.items() if k not in ['device-id', 'device-account-password']}
+    body.update({
+        'deviceAcount': {
+            '@odata.type': 'microsoft.graph.windowsDeviceAccount',
+            'password': args.get('device-account-password')
+        }
+    })
+    return {'updateWindowsDeviceAccountActionParameter': body}
+
+
+def build_request_body(args: dict, action: str) -> Union[dict, None]:
+    """
+    Build the body of the http request to send to MS Graph API
+    :param args: demisto.args
+    :param action: the action name
+    :return: The body of the http request
+    """
+    body: dict = dict()
+    err_msg: str = str()
+    if action in SPECIAL_ACTIONS.keys():
+        try:
+            body = eval(f'{SPECIAL_ACTIONS["body_generating_function"]}(args)')
+        except NameError:
+            err_msg = f'Not implemented function {SPECIAL_ACTIONS["body_generating_function"]}.'
+            demisto.debug(err_msg)
+            raise NameError(err_msg)
+        except TypeError:
+            err_msg = f'Check number of arguments / argument types for function ' \
+                           f'{SPECIAL_ACTIONS["body_generating_function"]}'
+            demisto.debug(err_msg)
+            raise TypeError(err_msg)
+    else:
+        body = build_request_body_generic(args)
+
+    return body if body else None
+
+
+def get_action(demisto_command: str) -> str:
+    """
+    Parses the action name from the command being executed
+    :param demisto_command: The command being executed
+    :return: The action name
+    """
+    try:
+        command: str = demisto_command.split('msgraph-')[1]
+        return command if not command.startswith('device-') else command.split('device-')[1]
+    except IndexError:
+        err_msg: str = f'Command {demisto_command} is not of format msgraph-command'
+        demisto.debug(err_msg)
+        raise DemistoException(err_msg)
 
 
 ''' COMMANDS '''
@@ -214,33 +296,10 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> Tuple[str, 
 
 
 def make_action_command(client: MsGraphClient, args: dict) -> Tuple[str, dict, dict]:
-    command: str = demisto.command().split('msgraph-')[1]
-    action: str = command if not command.startswith('device-') else command.split('device-')[1]
-    body: dict = {dash_to_camelcase(k): v for k, v in args.items() if k != 'device-id'}
-    body = body if body else None
+    action: str = get_action(demisto.command())
+    body: Union[dict, None] = build_request_body(args, action)
     url_suffix: str = f'deviceManagement/managedDevices/{args.get("device-id")}/{dash_to_camelcase(action)}'
-    client.make_request('POST', url_suffix, data=body, resp_type='')
-    return f'Device {action.replace("-", " ")} action activated successfully.', {}, {}
-
-
-def shutdown_command(client: MsGraphClient, args: dict) -> Tuple[str, dict, dict]:
-    url_suffix: str = f'deviceManagement/managedDevices/{args.get("device-id")}/shutDown'
-    client.make_request('POST', url_suffix, data=None, resp_type='')
-    return 'Device shutdown action activated successfully.', {}, {}
-
-
-def update_windows_device_account_command(client: MsGraphClient, args: dict) -> Tuple[str, dict, dict]:
-    action: str = demisto.command().split('msgraph-')[1]
-    b: dict = {dash_to_camelcase(k): v for k, v in args.items() if k not in ['device-id', 'device-account-password']}
-    b.update({
-        'deviceAcount': {
-            '@odata.type': 'microsoft.graph.windowsDeviceAccount',
-            'password': args.get('device-account-password')
-        }
-    })
-    body: dict = {'updateWindowsDeviceAccountActionParameter': b}
-    url_suffix: str = f'deviceManagement/managedDevices/{args.get("device-id")}/{dash_to_camelcase(action)}'
-    client.make_request('POST', url_suffix, data=body, resp_type='')
+    client.make_request('POST', url_suffix, data=body, resp_type='None')
     return f'Device {action.replace("-", " ")} action activated successfully.', {}, {}
 
 
@@ -285,7 +344,7 @@ def main():
         'msgraph-locate-device': make_action_command,
         'msgraph-sync-device': make_action_command,
         'msgraph-device-reboot-now': make_action_command,
-        'msgraph-device-shutdown': shutdown_command,
+        'msgraph-device-shutdown': make_action_command,
         'msgraph-device-bypass-activation-lock': make_action_command,
         'msgraph-device-retire': make_action_command,
         'msgraph-device-reset-passcode': make_action_command,
@@ -298,7 +357,7 @@ def main():
         'msgraph-clean-windows-device': make_action_command,
         'msgraph-device-windows-defender-scan': make_action_command,
         'msgraph-device-wipe': make_action_command,
-        'msgraph-update-windows-device-account': update_windows_device_account_command
+        'msgraph-update-windows-device-account': make_action_command
     }
     command: str = demisto.command()
     LOG(f'Command being called is {command}')
