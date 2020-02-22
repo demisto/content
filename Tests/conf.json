@@ -2361,6 +2361,11 @@
             "integrations": "Indeni",
             "playbookID": "Indeni_test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "CounterCraft Deception Director",
+            "playbookID": "CounterCraft - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
