@@ -1,5 +1,6 @@
 ## [Unreleased]
-Fixed the setting: **Use system proxy settings**, so proxies are ignored when not enabled.
+  - Fixed the setting: **Use system proxy settings**, so proxies are ignored when not enabled.
+  - Fixed an issue with the ***rasterize*** command in which child processes were defunct when using a proxy server.
 
 ## [20.2.3] - 2020-02-18
   - Updated Chromium to version 80.
