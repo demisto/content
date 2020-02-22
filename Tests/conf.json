@@ -2356,6 +2356,11 @@
         {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Indeni",
+            "playbookID": "Indeni_test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
