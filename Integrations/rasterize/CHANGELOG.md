@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.3] - 2020-02-18
   - Updated Chromium to version 80.
   - Added support for specifying a maximum page load time (default is set to 180 seconds).
   - Changed the default user agent to match the Chrome user agent.
