@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Improved integration description.
 
 ## [19.12.1] - 2019-12-25
 -
