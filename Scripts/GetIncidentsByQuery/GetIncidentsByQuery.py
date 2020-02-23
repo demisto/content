@@ -68,13 +68,13 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
 
 def get_incidents(query, time_field, size, from_date):
     args = {"query": query, "size": size, "sort": time_field}
-    if time_field == "created":
+    if time_field == "created" and from_date:
         from_datetime = None
         try:
             from_datetime = parser.parse(from_date)
         except Exception:
             pass
-        if from_datetime and from_date.strip().endswith("ago"):
+        if from_datetime is None and from_date.strip().endswith("ago"):
             from_datetime = parse_relative_time(from_date)
         if from_datetime:
             args['from'] = from_datetime.isoformat()
