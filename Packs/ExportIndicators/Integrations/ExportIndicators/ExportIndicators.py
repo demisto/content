@@ -262,7 +262,6 @@ def test_module(args, params):
             raise ValueError(
                 'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
-    run_server(params, is_test=True)
     return 'ok', {}, {}
 
 
@@ -274,7 +273,6 @@ def run_long_running(params):
     """
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
-    http_server: bool = params.get('http_flag', True)
 
     certificate_path = str()
     private_key_path = str()

@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
-from gevent import spawn
 from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any, Dict, cast
 from base64 import b64decode
