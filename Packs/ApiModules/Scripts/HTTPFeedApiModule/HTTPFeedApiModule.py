@@ -23,7 +23,7 @@ class Client(BaseClient):
         :param: url: URL of the feed.
         :param: polling_timeout: timeout of the polling request in seconds.
             Default: 20
-        :param: custom_fields_mapping: Dict, the CustomFields to be used in the indicator - where the keys
+        :param: custom_fields_mapping: Dict, the "fields" to be used in the indicator - where the keys
         are the *current* keys of the fields returned feed data and the *values* are the *indicator fields in Demisto*.
         :param: headers: list, Optional list of headers to send in the request.
         :param: ignore_regex: Python regular expression for lines that should be
@@ -322,7 +322,7 @@ def fetch_indicators_command(client, itype, **kwargs):
 
                     if len(client.custom_fields_mapping.keys()) > 0:
                         custom_fields = client.custom_fields_creator(attributes)
-                        indicator_data["CustomFields"] = custom_fields
+                        indicator_data["fields"] = custom_fields
 
                     indicators.append(indicator_data)
     return indicators
