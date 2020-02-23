@@ -1,6 +1,7 @@
 {
 	"id": "incident_duoaccountstatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2019-12-17T17:52:56.359921105Z",
 	"name": "Duo Account Status",
 	"ownerOnly": false,

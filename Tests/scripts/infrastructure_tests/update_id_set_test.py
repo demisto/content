@@ -1,11 +1,12 @@
 import unittest
 import pytest
-from Tests.scripts.update_id_set import has_duplicate, get_integration_data, get_script_data, get_playbook_data,\
+from Tests.scripts.update_id_set import has_duplicate, get_integration_data, get_script_data, get_playbook_data, \
     re_create_id_set, find_duplicates
 import os
 import json
 import sys
 import tempfile
+
 
 WIDGET_DATA = {
     "id": "temp-widget-dup-check",
@@ -73,7 +74,6 @@ INCIDENT_FIELD_DATA = {
     "name": "Account ID",
     "fromVersion": "5.0.0"
 }
-
 
 MOCKED_DATA = [
     (
@@ -157,34 +157,41 @@ def test_had_duplicates(id_set, id_to_check, result):
 
 
 INTEGRATION_DATA = {
-    "Cortex XDR - IR": {
-        "name": "Cortex XDR - IR",
-        "file_path": "Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml",
+    "Dummy Integration": {
+        "name": "Dummy Integration",
+        "file_path": "TestData/DummyPack/Integrations/DummyIntegration.yml",
         "fromversion": "4.1.0",
-        "commands": [
-            "xdr-get-incidents",
-            "xdr-get-incident-extra-data",
-            "xdr-update-incident"
-        ],
-        'pack': 'CortexXDR'
+        "commands": ['xdr-get-incidents',
+                     'xdr-get-incident-extra-data',
+                     'xdr-update-incident',
+                     'xdr-insert-parsed-alert',
+                     'xdr-insert-cef-alerts',
+                     'xdr-isolate-endpoint',
+                     'xdr-unisolate-endpoint',
+                     'xdr-get-endpoints',
+                     'xdr-get-distribution-versions',
+                     'xdr-create-distribution',
+                     'xdr-get-distribution-url',
+                     'xdr-get-create-distribution-status',
+                     'xdr-get-audit-management-logs',
+                     'xdr-get-audit-agent-reports']
     }
 }
 
 SCRIPT_DATA = {
-    "EntryWidgetNumberHostsXDR": {
-        "name": "EntryWidgetNumberHostsXDR",
-        "file_path": "Packs/CortexXDR/Scripts/EntryWidgetNumberHostsXDR/EntryWidgetNumberHostsXDR.yml",
+    "DummyScript": {
+        "name": "DummyScript",
+        "file_path": "TestData/DummyPack/Scripts/DummyScript.yml",
         "fromversion": "5.0.0",
         "tests": [
             "No test - no need to test widget"
-        ],
-        'pack': 'CortexXDR'
+        ]
     }
 }
 
 PLAYBOOK_DATA = {
-    "name": "Cortex XDR Incident Handling",
-    "file_path": "Packs/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml",
+    "name": "Dummy Playbook",
+    "file_path": "TestData/DummyPack/Playbooks/DummyPlaybook.yml",
     "fromversion": "4.5.0",
     "implementing_scripts": [
         "XDRSyncScript",
@@ -201,7 +208,7 @@ PLAYBOOK_DATA = {
     "tests": [
         "No Test"
     ],
-    'pack': 'CortexXDR'
+    'pack': 'DummyPack'
 }
 
 
@@ -210,7 +217,8 @@ class TestIntegration(unittest.TestCase):
         """
         Test for getting all the integration data
         """
-        file_path = 'Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml'
+        # mocker.patch.object('get_pack_name', return_value='DummyPack')
+        file_path = 'TestData/DummyPack/Integrations/DummyIntegration.yml'
         data = get_integration_data(file_path)
         self.assertDictEqual(data, INTEGRATION_DATA)
 
@@ -218,7 +226,7 @@ class TestIntegration(unittest.TestCase):
         """
         Test for getting the script data
         """
-        file_path = 'Packs/CortexXDR/Scripts/EntryWidgetNumberHostsXDR/EntryWidgetNumberHostsXDR.yml'
+        file_path = 'TestData/DummyPack/Scripts/DummyScript.yml'
         data = get_script_data(file_path)
         self.assertDictEqual(data, SCRIPT_DATA)
 
@@ -226,8 +234,8 @@ class TestIntegration(unittest.TestCase):
         """
         Test for getting the playbook data
         """
-        file_path = 'Packs/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml'
-        data = get_playbook_data(file_path)['Cortex XDR Incident Handling']
+        file_path = 'TestData/DummyPack/Playbooks/DummyPlaybook.yml'
+        data = get_playbook_data(file_path)['Dummy Playbook']
         self.assertEqual(data['name'], PLAYBOOK_DATA['name'])
         self.assertEqual(data['file_path'], PLAYBOOK_DATA['file_path'])
         self.assertEqual(data['fromversion'], PLAYBOOK_DATA['fromversion'])
@@ -283,7 +291,8 @@ class TestIntegration(unittest.TestCase):
         json.dump(LAYOUT_DATA, temp_layout)
         temp_layout.flush()
         os.fsync(temp_layout.fileno())
-        temp_layout2 = tempfile.NamedTemporaryFile(mode="w+", prefix='layout-', suffix='.json',  # disable-secrets-detection
+        temp_layout2 = tempfile.NamedTemporaryFile(mode="w+", prefix='layout-', suffix='.json',
+                                                   # disable-secrets-detection
                                                    dir='Packs/CortexXDR/Layouts')  # disable-secrets-detection
         json.dump(LAYOUT_DATA, temp_layout2)
         temp_layout2.flush()
@@ -302,19 +311,22 @@ class TestIntegration(unittest.TestCase):
         os.fsync(temp_dashboard2.fileno())
 
         # create one incident type field and one indicator type field with same data
-        temp_incident_field = tempfile.NamedTemporaryFile(mode='w+', prefix='incidentfield-',  # disable-secrets-detection
-                                                          suffix='.json', dir='IncidentFields')  # disable-secrets-detection
+        temp_incident_field = tempfile.NamedTemporaryFile(mode='w+', prefix='incidentfield-',
+                                                          # disable-secrets-detection
+                                                          suffix='.json',
+                                                          dir='IncidentFields')  # disable-secrets-detection
         json.dump(INCIDENT_FIELD_DATA, temp_incident_field)
         temp_incident_field.flush()
         os.fsync(temp_incident_field.fileno())
-        temp_indicator_field = tempfile.NamedTemporaryFile(mode='w+', prefix='incidentfield-',  # disable-secrets-detection
+        temp_indicator_field = tempfile.NamedTemporaryFile(mode='w+', prefix='incidentfield-',
+                                                           # disable-secrets-detection
                                                            suffix='.json', dir='IndicatorFields')
         json.dump(INCIDENT_FIELD_DATA, temp_indicator_field)
         temp_indicator_field.flush()
         os.fsync(temp_indicator_field.fileno())
 
         # create temporary file for id_set
-        temp_id_set = tempfile.NamedTemporaryFile(mode="w+", prefix='temp_id_set-',   # disable-secrets-detection
+        temp_id_set = tempfile.NamedTemporaryFile(mode="w+", prefix='temp_id_set-',  # disable-secrets-detection
                                                   suffix='.json', dir='Tests/scripts')  # disable-secrets-detection
         json_path = temp_id_set.name
 
