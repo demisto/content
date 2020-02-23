@@ -15,6 +15,7 @@ import email
 from requests.exceptions import ConnectionError
 from collections import deque
 
+from multiprocessing import Process
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
@@ -1960,7 +1961,7 @@ def encode_and_submit_results(obj):
     demisto.results(str_to_unicode(obj))
 
 
-def main():
+def sub_main():
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
     global config, credentials
     EWS_SERVER = demisto.params()['ewsServer']
@@ -2112,6 +2113,29 @@ def main():
                 log_stream.close()
             except Exception as ex:
                 demisto.error("EWS: unexpected exception when trying to remove log handler: {}".format(ex))
+
+
+def process_main():
+    """setup stdin to fd=0 so we can read from the server"""
+    sys.stdin = os.fdopen(0, "r")
+    sub_main()
+
+
+def main():
+    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+    # collector. `separate_process` flag will run the integration on a separate process that will prevent
+    # memory leakage.
+    separate_process = demisto.params().get("separate_process", False)
+    demisto.debug("Running as separate_process: {}".format(separate_process))
+    if separate_process:
+        try:
+            p = Process(target=process_main)
+            p.start()
+            p.join()
+        except Exception as ex:
+            demisto.error("Failed starting Process: {}".format(ex))
+    else:
+        sub_main()
 
 
 # python2 uses __builtin__ python3 uses builtins
