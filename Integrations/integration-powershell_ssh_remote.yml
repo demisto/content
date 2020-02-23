@@ -20,7 +20,7 @@ configuration:
   required: true
   additionalinfo: Domain or IP of target machine
 - display: Username
-  name: username
+  name: credentials
   defaultvalue: ""
   type: 9
   required: true
@@ -28,8 +28,8 @@ configuration:
 script:
   script: |-
     $global:HOSTNAME = $demisto.Params().hostname
-    $global:USERNAME = $demisto.Params().username
-    $global:PASSWORD = $demisto.Params().password
+    $global:USERNAME = $demisto.Params().credentials.identifier
+    $global:PASSWORD = $demisto.Params().credentials.password
 
     function CreateSession ()
     {
