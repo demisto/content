@@ -1,11 +1,9 @@
-## Overview
----
-This integration provides an endpoint with a list of indicators as a service for the system indicators.
+Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 
 ## Use Cases
 ---
-1. Export list of malicious IPs to block via a firewall.
-2. Export list of indicators the a supporting service such as Splunk (via csv output).
+1. Export a list of malicious IPs to block via a firewall.
+2. Export a list of indicators to a service such as Splunk, using a supported output format.
 
 ## Configure ExportIndicators on Demisto
 ---
@@ -31,12 +29,8 @@ This integration provides an endpoint with a list of indicators as a service for
     * __Password__: The password to authenticate when fetching the indicators.
 4. Click __Test__ to validate the URLs, token, and connection.
 
-## Commands
----
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. eis-update
-### 1. eis-update
+
+### Update values in the export indicators service
 ---
 Updates values stored in the export indicators service (only avaialable On-Demand).
 ##### Required Permissions
