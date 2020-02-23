@@ -75,9 +75,9 @@ args:
   required: false
   secret: false
 - default: false
-  description: Whitelist these incident fields.
+  description: A comma-separate list of fields inside the object to poplulate.
   isArray: false
-  name: whitelistFields
+  name: populateFields
   required: false
   secret: false
 comment: Gets a list of incident objects and the associated incident outputs that

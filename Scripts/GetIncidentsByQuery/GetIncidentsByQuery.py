@@ -102,12 +102,11 @@ def main():
     incident_list = get_incidents(query, demisto.args()['timeField'],
                                   int(demisto.args()['limit']),
                                   demisto.args().get('fromDate'))
-    whitelist_fields = demisto.args().get('whitelistFields')
-    if whitelist_fields:
-        whitelist_fields = get_comma_sep_list(whitelist_fields)
-        whitelist_fields += get_comma_sep_list(demisto.args().get('NonEmptyFields', ''))
-        whitelist_fields = set([x for x in whitelist_fields if x])
-    print whitelist_fields
+    fields_to_populate = demisto.args().get('populateFields')
+    if fields_to_populate:
+        fields_to_populate = get_comma_sep_list(fields_to_populate)
+        fields_to_populate += get_comma_sep_list(demisto.args().get('NonEmptyFields', ''))
+        fields_to_populate = set([x for x in fields_to_populate if x])
     include_context = demisto.args()['includeContext'] == 'true'
     # extend incidents fields \ context
     new_incident_list = []
@@ -118,8 +117,8 @@ def main():
         if include_context:
             i['context'] = get_context(i['id'])
 
-        if whitelist_fields and len(whitelist_fields) > 0:
-            i = {k: v for k, v in i.items() if k in whitelist_fields}
+        if fields_to_populate and len(fields_to_populate) > 0:
+            i = {k: v for k, v in i.items() if k in fields_to_populate}
         new_incident_list.append(i)
 
     incident_list = new_incident_list
