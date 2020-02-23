@@ -10,6 +10,7 @@ from StringIO import StringIO
 import requests
 import urllib3
 import io
+import re
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -68,18 +69,14 @@ def get_current_splunk_time(splunk_service):
 
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
-    raw = raw.strip("}")
-    raw = raw.strip("{")
-    key_val_arr = raw.split(",")
-
-    for key_val in key_val_arr:
-        single_key_val = key_val.split("=")
-        if len(single_key_val) > 1:
-            val = single_key_val[1]
-            val = val.strip("\\")
-            val = val.strip("\"")
-            val = val.strip("\\")
-            key = single_key_val[0].strip()
+    if 'message' in raw:
+        raw = raw.replace('"', '').strip('{').strip('}')
+        key_val_arr = raw.split(",")
+        for key_val in key_val_arr:
+            single_key_val = key_val.split(":")
+            if len(single_key_val) > 1:
+                val = single_key_val[1]
+                key = single_key_val[0].strip()
 
             alreadyThere = False
             for dictkey, dictvalue in result.items():
@@ -89,13 +86,17 @@ def rawToDict(raw):
 
             if not alreadyThere:
                 result[key] = val
-
+    else:
+        raw_response = re.split('\S,', raw)  # split by any non-whitespace character follows by
+        for key_val in raw_response:
+            key_value = key_val.replace('"', '').strip()
+            if '=' in key_value:
+                key_and_val = key_value.split('=')
+                result[key_and_val[0]] = key_and_val[1]
     return result
 
 
 # Converts to an str
-
-
 def convert_to_str(obj):
     if isinstance(obj, unicode):
         return obj.encode('utf-8')
@@ -234,36 +235,6 @@ def request(url, message, **kwargs):
     }
 
 
-service = None
-proxy = demisto.params()['proxy']
-if proxy:
-    try:
-        service = client.connect(
-            handler=handler(proxy),
-            host=demisto.params()['host'],
-            port=demisto.params()['port'],
-            app=demisto.params().get('app'),
-            username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'],
-            verify=VERIFY_CERTIFICATE)
-    except urllib2.URLError as e:
-        if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
-            pass
-        else:
-            raise
-else:
-    service = client.connect(
-        host=demisto.params()['host'],
-        port=demisto.params()['port'],
-        app=demisto.params().get('app'),
-        username=demisto.params()['authentication']['identifier'],
-        password=demisto.params()['authentication']['password'],
-        verify=VERIFY_CERTIFICATE)
-
-if service is None:
-    demisto.error("Could not connect to SplunkPy")
-
-
 def build_search_kwargs(args):
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
@@ -276,6 +247,8 @@ def build_search_kwargs(args):
         kwargs_normalsearch['earliest_time'] = args['earliest_time']
     if demisto.get(args, 'latest_time'):
         kwargs_normalsearch['latest_time'] = args['latest_time']
+    if demisto.get(args, 'app'):
+        kwargs_normalsearch['app'] = args['app']
     return kwargs_normalsearch
 
 
@@ -318,7 +291,7 @@ def get_current_results_batch(search_job, batch_size, results_offset):
     return results_batch
 
 
-def parse_batch_of_results(current_batch_of_results, max_results_to_add):
+def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     parsed_batch_results = []
     batch_dbot_scores = []
     results_reader = results.ResultsReader(io.BufferedReader(ResponseReaderWrapper(current_batch_of_results)))
@@ -332,6 +305,8 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add):
             if demisto.get(item, 'host'):
                 batch_dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname',
                                           'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
+            if app:
+                item['app'] = app
             # Normal events are returned as dicts
             parsed_batch_results.append(item)
 
@@ -340,7 +315,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add):
     return parsed_batch_results, batch_dbot_scores
 
 
-def splunk_search_command():
+def splunk_search_command(service):
     args = demisto.args()
 
     query = build_search_query(args)
@@ -361,7 +336,8 @@ def splunk_search_command():
     while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
         current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
         max_results_to_add = results_limit - len(total_parsed_results)
-        parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add)
+        parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add,
+                                                                         search_kwargs.get('app', ''))
         total_parsed_results.extend(parsed_batch_results)
         dbot_scores.extend(batch_dbot_scores)
 
@@ -379,12 +355,14 @@ def splunk_search_command():
     })
 
 
-def splunk_job_create_command():
+def splunk_job_create_command(service):
     query = demisto.args()['query']
+    app = demisto.args().get('app', '')
     if not query.startswith('search'):
         query = 'search ' + query
     search_kwargs = {
-        "exec_mode": "normal"
+        "exec_mode": "normal",
+        "app": app
     }
     search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
 
@@ -399,7 +377,7 @@ def splunk_job_create_command():
     })
 
 
-def splunk_results_command():
+def splunk_results_command(service):
     jobs = service.jobs  # type: ignore
     found = False
     res = []
@@ -419,7 +397,7 @@ def splunk_results_command():
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
-def fetch_incidents():
+def fetch_incidents(service):
     lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
 
@@ -465,7 +443,7 @@ def fetch_incidents():
         demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
 
 
-def splunk_get_indexes_command():
+def splunk_get_indexes_command(service):
     indexes = service.indexes  # type: ignore
     indexesNames = []
     for index in indexes:
@@ -475,7 +453,7 @@ def splunk_get_indexes_command():
                      'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
 
 
-def splunk_submit_event_command():
+def splunk_submit_event_command(service):
     try:
         index = service.indexes[demisto.args()['index']]  # type: ignore
     except KeyError:
@@ -537,7 +515,7 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command():
+def splunk_edit_notable_event_command(proxy):
     if not proxy:
         os.environ["HTTPS_PROXY"] = ""
         os.environ["HTTP_PROXY"] = ""
@@ -578,7 +556,7 @@ def splunk_parse_raw_command():
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
 
 
-def test_module():
+def test_module(service):
     if demisto.params().get('isFetch'):
         t = datetime.utcnow() - timedelta(days=3)
         time = t.strftime(SPLUNK_TIME_FORMAT)
@@ -594,24 +572,58 @@ def test_module():
         demisto.results('ok')
 
 
-# The command demisto.command() holds the command sent from the user.
-if demisto.command() == 'test-module':
-    test_module()
-if demisto.command() == 'splunk-search':
-    splunk_search_command()
-if demisto.command() == 'splunk-job-create':
-    splunk_job_create_command()
-if demisto.command() == 'splunk-results':
-    splunk_results_command()
-if demisto.command() == 'fetch-incidents':
-    fetch_incidents()
-if demisto.command() == 'splunk-get-indexes':
-    splunk_get_indexes_command()
-if demisto.command() == 'splunk-submit-event':
-    splunk_submit_event_command()
-if demisto.command() == 'splunk-notable-event-edit':
-    splunk_edit_notable_event_command()
-if demisto.command() == 'splunk-parse-raw':
-    splunk_parse_raw_command()
-if demisto.command() == 'splunk-submit-event-hec':
-    splunk_submit_event_hec_command()
+def main():
+    service = None
+    proxy = demisto.params().get('proxy')
+    if proxy:
+        try:
+            service = client.connect(
+                handler=handler(proxy),
+                host=demisto.params()['host'],
+                port=demisto.params()['port'],
+                app=demisto.params().get('app'),
+                username=demisto.params()['authentication']['identifier'],
+                password=demisto.params()['authentication']['password'],
+                verify=VERIFY_CERTIFICATE)
+        except urllib2.URLError as e:
+            if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
+                pass
+            else:
+                raise
+    else:
+        service = client.connect(
+            host=demisto.params()['host'],
+            port=demisto.params()['port'],
+            app=demisto.params().get('app'),
+            username=demisto.params()['authentication']['identifier'],
+            password=demisto.params()['authentication']['password'],
+            verify=VERIFY_CERTIFICATE)
+
+    if service is None:
+        demisto.error("Could not connect to SplunkPy")
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        test_module(service)
+    if demisto.command() == 'splunk-search':
+        splunk_search_command(service)
+    if demisto.command() == 'splunk-job-create':
+        splunk_job_create_command(service)
+    if demisto.command() == 'splunk-results':
+        splunk_results_command(service)
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents(service)
+    if demisto.command() == 'splunk-get-indexes':
+        splunk_get_indexes_command(service)
+    if demisto.command() == 'splunk-submit-event':
+        splunk_submit_event_command(service)
+    if demisto.command() == 'splunk-notable-event-edit':
+        splunk_edit_notable_event_command(proxy)
+    if demisto.command() == 'splunk-parse-raw':
+        splunk_parse_raw_command()
+    if demisto.command() == 'splunk-submit-event-hec':
+        splunk_submit_event_hec_command()
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
