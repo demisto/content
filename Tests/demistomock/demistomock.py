@@ -560,3 +560,9 @@ def integrationInstance():
 
 def createIndicators(indicators_batch):
     return ""
+
+def searchIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '', value = ''):
+    return {}
+
+def getIndexHash():
+    return ''

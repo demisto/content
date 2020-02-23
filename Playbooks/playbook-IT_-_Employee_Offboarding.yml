@@ -1,0 +1,380 @@
+id: IT - Employee Offboarding
+version: -1
+fromversion: 5.0.0
+name: IT - Employee Offboarding
+description: This playbook offboards company employees to maintain organizational
+  security and prevent abuse of company resources. It streamlines the process of returning
+  company property, delegates resources to the employee's manager, retains important
+  data that is in possession of the employee, and deletes the user and user information
+  if chosen to do so.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a99d2982-2041-46a5-876a-d2eab2ebb4ac
+    type: start
+    task:
+      id: a99d2982-2041-46a5-876a-d2eab2ebb4ac
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '133'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '128':
+    id: '128'
+    taskid: bdf9d115-5d83-4380-8dcc-debd9e9f3ae5
+    type: regular
+    task:
+      id: bdf9d115-5d83-4380-8dcc-debd9e9f3ae5
+      version: -1
+      name: Close offboarding incident
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '129':
+    id: '129'
+    taskid: d039a26c-a899-439c-8c05-6c5508901100
+    type: playbook
+    task:
+      id: d039a26c-a899-439c-8c05-6c5508901100
+      version: -1
+      name: Employee Offboarding - Gather User Information
+      playbookName: Employee Offboarding - Gather User Information
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '130'
+    scriptarguments:
+      DuoUsername:
+        complex:
+          root: inputs.DuoUsername
+      OffboardingUserEmail:
+        complex:
+          root: incident
+          accessor: employeeemail
+      ServiceNowAssetsTableName:
+        complex:
+          root: inputs.ServiceNowAssetsTableName
+      UserManagerEmail:
+        complex:
+          root: incident
+          accessor: employeemanageremail
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '130':
+    id: '130'
+    taskid: b1c16257-5cad-4c9f-8727-7767d5750858
+    type: playbook
+    task:
+      id: b1c16257-5cad-4c9f-8727-7767d5750858
+      version: -1
+      name: Employee Offboarding - Revoke Permissions
+      playbookName: Employee Offboarding - Revoke Permissions
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '132'
+    scriptarguments:
+      CompanyPropertyReceiverEmail:
+        complex:
+          root: inputs.CompanyPropertyReceiverEmail
+      DuoUsername:
+        complex:
+          root: inputs.DuoUsername
+      LogisticsEmail:
+        complex:
+          root: inputs.LogisticsEmail
+      OffboardingUserEmail:
+        complex:
+          root: incident
+          accessor: employeeemail
+      OldEmployeeGroupName:
+        complex:
+          root: inputs.OldEmployeeGroupName
+      PerformPotentiallyHarmfulActions:
+        complex:
+          root: inputs.PerformPotentiallyHarmfulActions
+      ServiceNowAssetsTableName:
+        complex:
+          root: inputs.ServiceNowAssetsTableName
+      UserManagerEmail:
+        complex:
+          root: incident
+          accessor: employeemanageremail
+      WipeAccountFromMobile:
+        complex:
+          root: inputs.WipeAccountFromMobile
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '131':
+    id: '131'
+    taskid: c994a7a0-4574-4c06-87eb-1361f5c229ee
+    type: playbook
+    task:
+      id: c994a7a0-4574-4c06-87eb-1361f5c229ee
+      version: -1
+      name: Employee Offboarding - Retain & Delete
+      playbookName: Employee Offboarding - Retain & Delete
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '128'
+    scriptarguments:
+      OffboardingUserEmail:
+        complex:
+          root: incident
+          accessor: employeeemail
+      OldEmployeeGroupName:
+        complex:
+          root: inputs.OldEmployeeGroupName
+      PerformPotentiallyHarmfulActions:
+        complex:
+          root: inputs.PerformPotentiallyHarmfulActions
+      UserManagerEmail:
+        complex:
+          root: incident
+          accessor: employeemanageremail
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '132':
+    id: '132'
+    taskid: 36ec930f-5d52-4b96-8b50-3eb1994826a0
+    type: playbook
+    task:
+      id: 36ec930f-5d52-4b96-8b50-3eb1994826a0
+      version: -1
+      name: Employee Offboarding - Delegate
+      playbookName: Employee Offboarding - Delegate
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '131'
+    scriptarguments:
+      AutoreplyMessage:
+        complex:
+          root: inputs.AutoreplyMessage
+      OffboardingUserEmail:
+        complex:
+          root: incident
+          accessor: employeeemail
+      UserManagerEmail:
+        complex:
+          root: incident
+          accessor: employeemanageremail
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '133':
+    id: '133'
+    taskid: db4807ad-cdb0-429f-83fe-6c3c3d1428ad
+    type: playbook
+    task:
+      id: db4807ad-cdb0-429f-83fe-6c3c3d1428ad
+      version: -1
+      name: Wait Until Datetime
+      description: ''
+      playbookName: Wait Until Datetime
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '129'
+    scriptarguments:
+      DatetimeToWaitUntil:
+        complex:
+          root: incident
+          accessor: offboardingdate
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1080,
+        "width": 380,
+        "x": 725,
+        "y": 140
+      }
+    }
+  }
+inputs:
+- key: UserManagerEmail
+  value:
+    complex:
+      root: incident
+      accessor: employeemanageremail
+  required: false
+  description: The email of the manager of the user you are offboarding.
+- key: OffboardingUserEmail
+  value:
+    complex:
+      root: incident
+      accessor: employeeemail
+  required: true
+  description: The email address of the user that you are offboarding.
+- key: AutoreplyMessage
+  value:
+    simple: This employee is no longer with our company.
+  required: false
+  description: The automatic message that is sent as reply from the user you are offboarding
+    once they lose access to their email account.
+- key: WipeAccountFromMobile
+  value:
+    simple: 'False'
+  required: false
+  description: Whether the Google account of the user should be removed from the mobile
+    device of the user.
+- key: LogisticsEmail
+  value: {}
+  required: false
+  description: The email address of the logistics department who has the data about
+    which company property the user has.
+- key: DuoUsername
+  value: {}
+  required: false
+  description: The username, in Duo, of the user you are offboarding.
+- key: CompanyPropertyReceiverEmail
+  value: {}
+  required: false
+  description: The email of the department responsible for receiving returned company
+    property from the user you are offboarding. In some organizations, this may be
+    the same as the LogisticsEmail playbook input.
+- key: OldEmployeeGroupName
+  value:
+    simple: Old Employees
+  required: false
+  description: The name of the group in Active Directory that contains old employee
+    user accounts. If a group name is specified, the user will be added to that group
+    instead of getting deleted at the end of the offboarding process.
+- key: ServiceNowAssetsTableName
+  value:
+    simple: alm_asset
+  required: false
+  description: The name of the "Assets" table in ServiceNow. This will be used to
+    get the assets that belong to the user you are offboarding.
+- key: PerformPotentiallyHarmfulActions
+  value:
+    simple: 'False'
+  required: true
+  description: Whether to perform potentially harmful actions, such as revoking user
+    permissions and deleting the user. Taking the actions is necessary for a more
+    complete offboarding process, and if set to False - the actions will have to be
+    taken manually.
+outputs: []
+sourceplaybookid: IT - Employee Offboarding
+tests:
+  - no test

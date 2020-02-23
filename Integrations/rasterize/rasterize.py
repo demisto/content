@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException
+from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException, TimeoutException
 from PyPDF2 import PdfFileReader
 from pdf2image import convert_from_path
 import numpy as np
@@ -13,6 +13,9 @@ from io import BytesIO
 import sys
 import base64
 import time
+import subprocess
+import traceback
+import re
 
 PROXY = demisto.getParam('proxy')
 
@@ -22,6 +25,7 @@ if PROXY:
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
+DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
 DEFAULT_STDOUT = sys.stdout
 
 URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for one of several reasons. " \
@@ -29,6 +33,55 @@ URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for
 EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when there is a refused connection." \
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
+CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'  # noqa
+DEFAULT_CHROME_OPTIONS = [
+    '--no-sandbox',
+    '--headless',
+    '--disable-gpu',
+    '--hide-scrollbars',
+    '--disable_infobars',
+    '--start-maximized',
+    '--start-fullscreen',
+    '--ignore-certificate-errors',
+    '--disable-dev-shm-usage',
+    '--verbose',
+    '--log-path=chromedriver.log',
+    f'--user-agent={CHROME_USER_AGENT}'
+]
+
+USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
+
+
+def opt_name(opt):
+    return opt.split('=', 1)[0]
+
+
+def merge_options(default_options, user_options):
+    """merge the defualt options and user options
+
+    Arguments:
+        default_options {list} -- list of options to use
+        user_options {string} -- user configured options comma seperated (comma value can be escaped with \\)
+
+    Returns:
+        list -- merged options
+    """
+    user_options = re.split(r'(?<!\\),', user_options) if user_options else list()
+    if not user_options:  # nothing to do
+        return default_options
+    options = []
+    remove_opts = []
+    for opt in user_options:
+        opt = opt.strip()
+        if opt.startswith('[') and opt.endswith(']'):
+            remove_opts.append(opt[1:-1])
+        else:
+            options.append(opt.replace(r'\,', ','))
+    # remove values (such as in user-agent)
+    option_names = [opt_name(x) for x in options]
+    # add filtered defaults only if not in removed and we don't have it already
+    options.extend([x for x in default_options if (opt_name(x) not in remove_opts and opt_name(x) not in option_names)])
+    return options
 
 
 def check_response(driver):
@@ -46,14 +99,8 @@ def init_driver(offline_mode=False):
         with tempfile.TemporaryFile() as log:
             sys.stdout = log  # type: ignore
             chrome_options = webdriver.ChromeOptions()
-            chrome_options.add_argument('--no-sandbox')
-            chrome_options.add_argument('--headless')
-            chrome_options.add_argument('--disable-gpu')
-            chrome_options.add_argument('--hide-scrollbars')
-            chrome_options.add_argument('--disable_infobars')
-            chrome_options.add_argument('--start-maximized')
-            chrome_options.add_argument('--start-fullscreen')
-            chrome_options.add_argument('--ignore-certificate-errors')
+            for opt in merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS):
+                chrome_options.add_argument(opt)
 
             driver = webdriver.Chrome(options=chrome_options)
             if offline_mode:
@@ -68,25 +115,47 @@ def init_driver(offline_mode=False):
     return driver
 
 
+def find_zombie_processes():
+    """find zombie proceses
+    Returns:
+        ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
+    """
+    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,cmd'],
+                                     stderr=subprocess.STDOUT, universal_newlines=True)
+    lines = ps_out.splitlines()
+    pid = str(os.getpid())
+    zombies = []
+    if len(lines) > 1:
+        for l in lines[1:]:
+            pinfo = l.split()
+            if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
+                zombies.append(pinfo[0])
+    return zombies, ps_out
+
+
 def quit_driver_and_reap_children(driver):
     """
-    Quits the driver's session and reaps all of child processes
+    Quits the driver's session and reaps all of zombie child processes
     :param driver: The driver
     :return: None
     """
     demisto.debug(f'Quitting driver session: {driver.session_id}')
     driver.quit()
     try:
-        child_pid = 1
-        while child_pid:
-            # waiting for child process to terminate
-            child_pid = os.waitpid(-1, os.WNOHANG)[0]
-            demisto.debug(f'Child {str(child_pid)} was reaped successfully.')
-    except ChildProcessError:
-        pass
+        zombies, ps_out = find_zombie_processes()
+        if zombies:
+            demisto.info(f'Found zombie processes will waitpid: {ps_out}')
+            for pid in zombies:
+                waitres = os.waitpid(int(pid), os.WNOHANG)[1]
+                demisto.info(f'waitpid result: {waitres}')
+        else:
+            demisto.debug(f'No zombie processes found for ps output: {ps_out}')
+    except Exception as e:
+        demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
-def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0, offline_mode: bool = False):
+def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0,
+              offline_mode: bool = False, max_page_load_time: int = 180):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -97,17 +166,15 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
     :param wait_time: time in seconds to wait before taking a screenshot
     """
     driver = init_driver(offline_mode)
-
+    page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
     try:
-        demisto.debug(f'Navigating to path. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
-
+        demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}. page load: {page_load_time}')
+        driver.set_page_load_timeout(page_load_time)
         driver.get(path)
         driver.implicitly_wait(5)
         if wait_time > 0 or DEFAULT_WAIT_TIME > 0:
             time.sleep(wait_time or DEFAULT_WAIT_TIME)
-
         check_response(driver)
-
         demisto.debug('Navigating to path - COMPLETED')
 
         if r_type.lower() == 'pdf':
@@ -123,6 +190,12 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
             return_error(err_msg) if WITH_ERRORS else return_warning(err_msg, exit=True)
         else:
             return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex), exit=True)
+    except TimeoutException as ex:
+        err_msg = f'Timeout exception with max load time of: {page_load_time} seconds. {ex}'
+        return_error(err_msg) if WITH_ERRORS else return_warning(err_msg, exit=True)
+    except Exception as ex:
+        demisto.error("General exception when doing rasterize: {}. Trace: {}".format(ex, traceback.format_exc()))
+        return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex), exit=True)
     finally:
         quit_driver_and_reap_children(driver)
 
@@ -219,6 +292,7 @@ def rasterize_command():
     h = demisto.args().get('height', DEFAULT_H).rstrip('px')
     r_type = demisto.args().get('type', 'png')
     wait_time = int(demisto.args().get('wait_time', 0))
+    page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
     if not (url.startswith('http')):
         url = f'http://{url}'
@@ -228,7 +302,7 @@ def rasterize_command():
         proxy_flag = f"--proxy={HTTPS_PROXY if url.startswith('https') else HTTP_PROXY}"  # type: ignore
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
-    output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time)
+    output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load)
     res = fileResult(filename=filename, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']

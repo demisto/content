@@ -1,7 +1,7 @@
 {
     "id": "ipRep",
     "version": -1,
-    "fromVersion": "5.0.0",
+    "fromVersion": "5.5.0",
     "modified": "2019-07-18T07:17:53.843554502Z",
     "sortValues": null,
     "commitMessage": "",
@@ -26,6 +26,7 @@
     "contextPath": "IP(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],
+    "expiration": 10080,
     "defaultMapping": {
         "asn": {
             "simple": "",
@@ -126,6 +127,90 @@
                 "root": "IP",
                 "filters": [],
                 "accessor": "PositiveDetections",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "port": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Port",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "region": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Region",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Reported By",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Threat Types",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocoltlp": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Traffic Light Protocol (TLP)",
                 "transformers": [
                     {
                         "operator": "uniq",

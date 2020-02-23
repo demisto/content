@@ -1,7 +1,10 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Prisma Cloud"
+		"Prisma Cloud",
+		"ExtraHop Detection",
+		"AWS IAM Policy Misconfiguration",
+		"AWS EC2 Instance Misconfiguration"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -37,3 +40,4 @@
 	"version": -1,
 	"fromVersion": "5.0.0"
 }
+

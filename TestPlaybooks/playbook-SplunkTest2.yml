@@ -478,13 +478,12 @@ tasks:
       }
   "17":
     id: "17"
-    taskid: 90521670-3b29-4eb5-84b3-0ab049fd4bf4
+    taskid: "167"
     type: condition
     task:
-      id: 90521670-3b29-4eb5-84b3-0ab049fd4bf4
+      id: "167"
       version: -1
       name: Is Raw parsed ?
-      scriptName: AreValuesEqual
       type: condition
       iscommand: false
       brand: ""
@@ -493,23 +492,15 @@ tasks:
       - "18"
       "yes":
       - "10"
-    scriptarguments:
-      left:
-        complex:
-          root: parsedRaw
-          accessor: timestamps
-          transformers:
-          - operator: splitAndTrim
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: count
-      right:
-        simple: "3"
-    results:
-    - AreValuesEqual
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Splunk.Raw.Parsed
+            iscontext: true
     view: |-
       {
         "position": {
@@ -517,12 +508,17 @@ tasks:
           "y": 2470
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
   "18":
     id: "18"
-    taskid: 6e9a6ee9-746a-4aad-83a4-6aad8a899ebe
+    taskid: "168"
     type: regular
     task:
-      id: 6e9a6ee9-746a-4aad-83a4-6aad8a899ebe
+      id: "168"
       version: -1
       name: FAIL
       scriptName: VerifyContext
@@ -542,6 +538,11 @@ tasks:
           "y": 2645
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
