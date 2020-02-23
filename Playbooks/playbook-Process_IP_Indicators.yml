@@ -1,0 +1,2058 @@
+elasticcommonfields: {}
+id: Process IP Indicators
+version: -1
+fromversion: 5.5.0
+name: Process IP Indicators
+description: 'This playbook processes indicators by running enrichment, manually reviewing
+  the indicator, and tagging indicators accordingly based on user preferences or enrichment
+  results. Tagging can later be used to update black/white list and other purposes.
+  To process indicators, go to playbook inputs, choose From indicators and set your
+  query (for example: "type:ip").'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 78e61b73-8045-41d4-8937-e6a0fde8c8f7
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: 78e61b73-8045-41d4-8937-e6a0fde8c8f7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: fd7e0c86-ea5e-4853-8d75-ea6aa69601b3
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: fd7e0c86-ea5e-4853-8d75-ea6aa69601b3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 66d5f248-d88b-42f2-8db6-1ae18a1b6e2b
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 66d5f248-d88b-42f2-8db6-1ae18a1b6e2b
+      version: -1
+      name: Are there results?
+      description: Checks whether the specified item is in a list. The default list
+        is the Demisto Indicators Whitelist.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "73"
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "21":
+    id: "21"
+    taskid: df083164-4d96-4d13-8484-af11cc1ed98a
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: df083164-4d96-4d13-8484-af11cc1ed98a
+      version: -1
+      name: Gather more data on results
+      description: Check IP reputation
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+      - "78"
+      - "79"
+      - "80"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: ${playbookQuery.value}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "44":
+    id: "44"
+    taskid: a7775e0b-49d7-4069-8eec-3b40a43d53cb
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: a7775e0b-49d7-4069-8eec-3b40a43d53cb
+      version: -1
+      name: Add bad tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: processed_bad
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "45":
+    id: "45"
+    taskid: 92f1fad1-8762-4261-8523-ce12c92ab03f
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 92f1fad1-8762-4261-8523-ce12c92ab03f
+      version: -1
+      name: Are there indicators  with high risk score?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 2370,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "46":
+    id: "46"
+    taskid: 69857b1d-55a3-43d9-837c-beb70556e3cb
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 69857b1d-55a3-43d9-837c-beb70556e3cb
+      version: -1
+      name: Are there indicators with good Dbot score?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": -1310,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "47":
+    id: "47"
+    taskid: 946542b9-f3b7-4b48-873b-e1971863d001
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 946542b9-f3b7-4b48-873b-e1971863d001
+      version: -1
+      name: Add good tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: processed_good
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1510,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "48":
+    id: "48"
+    taskid: f5a04324-cf86-4ed2-8e2c-bd19bee6afc4
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: f5a04324-cf86-4ed2-8e2c-bd19bee6afc4
+      version: -1
+      name: Are there indicators with unknown risk score?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "49":
+    id: "49"
+    taskid: e27c82bc-40ce-47f3-8d3c-8a8a9a8a7c20
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: e27c82bc-40ce-47f3-8d3c-8a8a9a8a7c20
+      version: -1
+      name: Add unknown tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: processed_unknown
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          accessor: Indicator
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "50":
+    id: "50"
+    taskid: 9a7cb3f2-5d93-4fe7-87a1-a9c935024094
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 9a7cb3f2-5d93-4fe7-87a1-a9c935024094
+      version: -1
+      name: Are there indicators with suspicious Dbot score?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "51":
+    id: "51"
+    taskid: 6a714ef4-6219-4c6e-8989-b1ffbdfe53bc
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 6a714ef4-6219-4c6e-8989-b1ffbdfe53bc
+      version: -1
+      name: Add suspicious tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: processed_suspicious
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Indicator
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "52":
+    id: "52"
+    taskid: e6a3b136-4b0e-4044-852a-dfb70805a6cd
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: e6a3b136-4b0e-4044-852a-dfb70805a6cd
+      version: -1
+      name: Do values appear in business partners IP list?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: List.In
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: List.ListName
+            iscontext: true
+          right:
+            value:
+              simple: inputs.BusinessPartnersIPListName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "53":
+    id: "53"
+    taskid: c4eecf42-29af-40f0-873c-1815dd007433
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: c4eecf42-29af-40f0-873c-1815dd007433
+      version: -1
+      name: Add business partner tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: business_partner
+      indicatorsValues:
+        complex:
+          root: List
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: List.ListName
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.BusinessPartnersDomainsListName
+                iscontext: true
+          accessor: In
+          transformers:
+          - operator: uniq
+      value:
+        simple: ${List.In}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "54":
+    id: "54"
+    taskid: 43757440-b75d-43ff-8206-38c78b689d3e
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 43757440-b75d-43ff-8206-38c78b689d3e
+      version: -1
+      name: Is there a business partners IP list?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.BusinessPartnersIPListName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "55":
+    id: "55"
+    taskid: f2d49785-8d4c-448c-82ab-4d1cfba1e0c3
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f2d49785-8d4c-448c-82ab-4d1cfba1e0c3
+      version: -1
+      name: Run filter by list check on indicators
+      description: Checks whether the specified item is in a list. The default list
+        is the Demisto Indicators Whitelist.
+      scriptName: FilterByList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      ignorecase:
+        simple: "yes"
+      listname:
+        simple: ${inputs.BusinessPartnersIPListName}
+      matchexact:
+        simple: "yes"
+      values:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "60":
+    id: "60"
+    taskid: 5d2bae1b-b521-43ab-83f6-be7231bc44af
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 5d2bae1b-b521-43ab-83f6-be7231bc44af
+      version: -1
+      name: Manual approve indicators to be good
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "81"
+      "yes":
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: a3b8d0b9-f875-4129-837c-15e880797d0e
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: a3b8d0b9-f875-4129-837c-15e880797d0e
+      version: -1
+      name: Manual approve indicators to be suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "51"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 6a3ad09f-f9a3-4aaa-89e7-08c87ce5a3bb
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 6a3ad09f-f9a3-4aaa-89e7-08c87ce5a3bb
+      version: -1
+      name: Manual approve indicators to be unknown
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "87"
+      "yes":
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 0de5c8c4-ee09-4edc-85a6-7f085b0d8bbe
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 0de5c8c4-ee09-4edc-85a6-7f085b0d8bbe
+      version: -1
+      name: Manual approve indicators to be bad
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "92"
+      "yes":
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 40db730c-20a7-47a8-81c5-f90018fefb63
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 40db730c-20a7-47a8-81c5-f90018fefb63
+      version: -1
+      name: Is auto approved is allowed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "63"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AllowAutomaticApproval
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 94babd45-78e5-46ce-8cab-dadcfb8761ad
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 94babd45-78e5-46ce-8cab-dadcfb8761ad
+      version: -1
+      name: Is auto approved is allowed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AllowAutomaticApproval
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 3c2e3756-1654-4dce-8262-bdf82a41b4cd
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 3c2e3756-1654-4dce-8262-bdf82a41b4cd
+      version: -1
+      name: Is auto approved is allowed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AllowAutomaticApproval
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 33327609-20c7-4006-8ac2-e61dfeef2bca
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 33327609-20c7-4006-8ac2-e61dfeef2bca
+      version: -1
+      name: Is auto approved is allowed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AllowAutomaticApproval
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": -1510,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 1c9bd49f-d5b5-423c-8de4-ae0c800a25da
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 1c9bd49f-d5b5-423c-8de4-ae0c800a25da
+      version: -1
+      name: Remove other tags from indicators
+      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: processed_bad,processed_suspicious,processed_unknown
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1180,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "70":
+    id: "70"
+    taskid: 10747b08-267e-4d66-8b0d-93ae30937913
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 10747b08-267e-4d66-8b0d-93ae30937913
+      version: -1
+      name: Remove other tags from indicators
+      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: processed_bad,processed_good,processed_unknown
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Indicator
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "71":
+    id: "71"
+    taskid: 5851ff12-7e0a-475a-89f9-60a175aa47d5
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 5851ff12-7e0a-475a-89f9-60a175aa47d5
+      version: -1
+      name: Remove other tags from indicators
+      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: processed_bad,processed_good,processed_suspicious
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          accessor: Indicator
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "72":
+    id: "72"
+    taskid: 101e4a29-e1a6-462f-8b1b-46db2efc41a5
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 101e4a29-e1a6-462f-8b1b-46db2efc41a5
+      version: -1
+      name: Remove other tags from indicators
+      description: commands.local.cmd.remove.values.to.indicator.multi.select.field
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: processed_unknown,processed_good,processed_suspicious
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "73":
+    id: "73"
+    taskid: b87fc5a4-674e-4002-86cd-18b8e79d8eb5
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: b87fc5a4-674e-4002-86cd-18b8e79d8eb5
+      version: -1
+      name: Business partner IP list
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 2d7dad70-4ec2-4708-8db4-89e8114895a9
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 2d7dad70-4ec2-4708-8db4-89e8114895a9
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: ffcd410f-4cd5-4e6e-86f6-d1aca74323ab
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: ffcd410f-4cd5-4e6e-86f6-d1aca74323ab
+      version: -1
+      name: Good indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1310,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 1f0eae8e-f802-490f-8b92-91f86e94c5d0
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 1f0eae8e-f802-490f-8b92-91f86e94c5d0
+      version: -1
+      name: Suspicious indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 23328b9a-a508-4e00-8579-6fee11a85a66
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 23328b9a-a508-4e00-8579-6fee11a85a66
+      version: -1
+      name: Unknown indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: bc17cddf-d214-4b03-8745-1ae957497da1
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: bc17cddf-d214-4b03-8745-1ae957497da1
+      version: -1
+      name: Bad indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2370,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 4515f5c0-7a9d-414a-8b27-4558ebcdd931
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 4515f5c0-7a9d-414a-8b27-4558ebcdd931
+      version: -1
+      name: Manually provide tag for listed indicators
+      description: Go to the next task and provide in the value field the name of
+        the tag to add and select run Automation Now.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: cf7eea28-1565-4a63-833d-1adfbf9b9b67
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: cf7eea28-1565-4a63-833d-1adfbf9b9b67
+      version: -1
+      name: Add manual user tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${UserDefinedTag1}
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "83":
+    id: "83"
+    taskid: 54dcef3d-d191-430c-80d3-b86018088098
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 54dcef3d-d191-430c-80d3-b86018088098
+      version: -1
+      name: Set tags to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserDefinedTag1
+      stringify: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: 441aefc2-2c20-4d82-8b58-6f62b4769a32
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 441aefc2-2c20-4d82-8b58-6f62b4769a32
+      version: -1
+      name: Manually provide tag for listed indicators
+      description: Go to the next task and provide in the value field the name of
+        the tag to add and select run Automation Now.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 51396b92-3968-42ff-86a4-26ae4cb91c21
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 51396b92-3968-42ff-86a4-26ae4cb91c21
+      version: -1
+      name: Add manual user tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${UserDefinedTag2}
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "87":
+    id: "87"
+    taskid: 46dc6871-b40e-4795-8ec1-b7d0687d756b
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 46dc6871-b40e-4795-8ec1-b7d0687d756b
+      version: -1
+      name: Manually provide tag for listed indicators
+      description: Go to the next task and provide in the value field the name of
+        the tag to add and select run Automation Now.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 795e7fe6-e611-401b-827e-ea48b6139e33
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 795e7fe6-e611-401b-827e-ea48b6139e33
+      version: -1
+      name: Add manual user tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${UserDefinedTag3}
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "91":
+    id: "91"
+    taskid: 679a5b61-26c5-4ceb-8a70-a445f0f12838
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 679a5b61-26c5-4ceb-8a70-a445f0f12838
+      version: -1
+      name: Add manual user tag to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: ${UserDefinedTag4}
+      indicatorsValues:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2160,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "92":
+    id: "92"
+    taskid: 011d95fc-0665-4556-8da6-8fa9a0725310
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 011d95fc-0665-4556-8da6-8fa9a0725310
+      version: -1
+      name: Manually provide tag for listed indicators
+      description: Go to the next task and provide in the value field the name of
+        the tag to add and select run Automation Now.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2160,
+          "y": 1195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: 327a4bf7-a5f7-4aa4-8816-e3a22a91b100
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 327a4bf7-a5f7-4aa4-8816-e3a22a91b100
+      version: -1
+      name: Set tags to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserDefinedTag2
+      stringify: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: 3e85791f-0b84-41dd-82f7-c637a79c089e
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 3e85791f-0b84-41dd-82f7-c637a79c089e
+      version: -1
+      name: Set tags to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserDefinedTag3
+      stringify: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: d7afb707-f17d-42e8-86dd-f08597e465cc
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: d7afb707-f17d-42e8-86dd-f08597e465cc
+      version: -1
+      name: Set tags to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserDefinedTag4
+      stringify: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2160,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3525,
+        "width": 4480,
+        "x": -1510,
+        "y": -1530
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: BusinessPartnersIPListName
+  value: {}
+  required: false
+  description: A Demisto list containing business partners IP values. IP Indicators
+    that appear in the list will be tagged as business partners.
+  playbookInputQuery: null
+- key: AllowAutomaticApproval
+  value:
+    simple: "yes"
+  required: true
+  description: Values will be yes or no, default is yes.
+  playbookInputQuery: null
+outputs: []
+tests:
+- No test
