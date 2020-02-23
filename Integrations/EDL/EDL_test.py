@@ -178,12 +178,28 @@ class TestHelperFunctions:
     def test_validate_basic_authentication(self):
         """Test Authentication"""
         from EDL import validate_basic_authentication
+        data = {
+            "empty_auth": {},
+            "basic_missing_auth": {
+                "Authorization": "missing basic"
+            },
+            "colon_missing_auth": {
+                "Authorization": "Basic bWlzc2luZ19jb2xvbg=="
+            },
+            "wrong_length_auth": {
+                "Authorization": "Basic YTpiOmM="
+            },
+            "wrong_credentials_auth": {
+                "Authorization": "Basic YTpi"
+            },
+            "right_credentials_auth": {
+                "Authorization": "Basic dXNlcjpwd2Q="
+            }
+        }
         username, password = 'user', 'pwd'
-        with open('EDL_test/TestHelperFunctions/authentication_test_data.json', 'r') as f:
-            data = json.loads(f.read())
-            assert not validate_basic_authentication(data.get('empty_auth'), username, password)
-            assert not validate_basic_authentication(data.get('basic_missing_auth'), username, password)
-            assert not validate_basic_authentication(data.get('colon_missing_auth'), username, password)
-            assert not validate_basic_authentication(data.get('wrong_length_auth'), username, password)
-            assert not validate_basic_authentication(data.get('wrong_credentials_auth'), username, password)
-            assert validate_basic_authentication(data.get('right_credentials_auth'), username, password)
+        assert not validate_basic_authentication(data.get('empty_auth'), username, password)
+        assert not validate_basic_authentication(data.get('basic_missing_auth'), username, password)
+        assert not validate_basic_authentication(data.get('colon_missing_auth'), username, password)
+        assert not validate_basic_authentication(data.get('wrong_length_auth'), username, password)
+        assert not validate_basic_authentication(data.get('wrong_credentials_auth'), username, password)
+        assert validate_basic_authentication(data.get('right_credentials_auth'), username, password)
