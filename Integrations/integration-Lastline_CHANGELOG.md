@@ -1,12 +1,6 @@
 ## [Unreleased]
-
-
-## [19.12.0] - 2019-12-10
--  
-
-## [19.9.1] - 2019-09-18
--
-
+  - Deprecate lastline v1
+  
 ## [18.8.2] - 2018-08-21
 Added the *File.Type* output to the following commands:
   - ***file***
