@@ -1,13 +1,10 @@
 This integration provides External Dynamic List (EDL) as a service for the system indicators (Outbound feed).
 
-## Overview
----
-This integration provides External Dynamic List (EDL) as a service for the system indicators (Outbound feed).
 
 ## Use Cases
 ---
-1. Generating feeds to be used on PAN-OS as External Dynamic Lists.
-2. Create External Dynamic Lists to track on AutoFocus the IP addresses, URLs and domains used by ransomware, known APT groups and active malware campaigns.
+1. Generateg feeds to be used on PAN-OS as External Dynamic Lists.
+2. Create External Dynamic Lists (EDLs) to track on AutoFocus the IP addresses, URLs and domains used by ransomware, known APT groups, and active malware campaigns.
 3. Create External Dynamic Lists to track the IPs and URLs used by Microsoft Office365, or used as tor exit nodes, or used by CDNs and cloud services.
 
 ## Configure EDL on Demisto
