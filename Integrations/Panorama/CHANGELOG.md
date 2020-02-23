@@ -1,5 +1,26 @@
 ## [Unreleased]
+  - Added 2 new commands:
+    - ***panorama-register-user-tag***
+    - ***panorama-unregister-user-tag***
 
+## [20.2.3] - 2020-02-18
+  - Fixed an issue in ***panorama-get-service*** where the *name* argument should be mandatory.
+  - Fixed an issue in ***panorama-create-rule*** and ***panorama-create-block-rule*** commands.
+  - Added the *category* argument to the ***panorama-create-rule*** command.
+  - Added 7 new commands:
+    - ***panorama-download-latest-content-update***
+    - ***panorama-content-update-download-status***
+    - ***panorama-install-latest-content-update***
+    - ***panorama-content-update-install-status***
+    - ***panorama-check-latest-panos-software***
+    - ***panorama-download-panos-version***
+    - ***panorama-download-panos-status***
+    - ***panorama-install-panos-version***
+    - ***panorama-install-panos-status***
+    - ***panorama-device-reboot***
+
+## [20.1.2] - 2020-01-22
+Fixed an issue where trying to download a filter-pcap with the necessary arguments did not return the correct results.
 
 ## [20.1.0] - 2020-01-07
   - Fixed an issue when trying to download a threat-pcap without the necessary arguments.
@@ -63,4 +84,3 @@ Added the ***panorama-security-policy-match*** command.
   - Improved error handling when trying to edit an uncommitted Custom URL category.
   - Added the ***panorama-list-rules*** command.
   - Added *edl* as an option for the *object_type* argument in the ***panorama-custom-block-rule*** command.
-

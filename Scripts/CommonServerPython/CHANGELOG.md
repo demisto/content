@@ -1,10 +1,19 @@
 ## [Unreleased]
 Added the *timeline* argument to the ***return_outputs*** convenience function.
 
+## [20.2.3] - 2020-02-18
+Added cveRegex to validate cve_id format.
+
+## [20.2.0] - 2020-02-04
+Added ***ip_to_indicator_type*** command.
+
+
+## [20.1.2] - 2020-01-22
+Added encode string results - safe handle unicode strings to demisto results
+
 ## [20.1.0] - 2020-01-07
  - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
  - Added the **batch** command, which takes an iterable and how many items to return and yields batches of that size.
- 
 
 ## [19.12.0] - 2019-12-10
 -

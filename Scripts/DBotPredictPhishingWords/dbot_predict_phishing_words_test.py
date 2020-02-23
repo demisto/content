@@ -3,7 +3,7 @@ from collections import defaultdict
 import pytest
 
 from CommonServerPython import *
-from DBotPredictPhishingWords import get_model_data, predict_phishing_words
+from DBotPredictPhishingWords import get_model_data, predict_phishing_words, main
 
 TOKENIZATION_RESULT = None
 
@@ -27,6 +27,8 @@ def executeCommand(command, args=None):
     elif command == 'getMLModel':
         return [{'Contents': {'modelData': "ModelDataML"}, 'Type': 'note'}]
     elif command == 'WordTokenizerNLP':
+        TOKENIZATION_RESULT['originalText'] = args['value']
+        TOKENIZATION_RESULT['tokenizedText'] = args['value']
         return [{'Contents': TOKENIZATION_RESULT,
                  'Type': 'note'}]
     elif command == 'HighlightWords':
@@ -62,7 +64,7 @@ def test_predict_phishing_words(mocker):
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            }
 
-    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
+    res = predict_phishing_words("modelName", "list", "word1", "word2 word3", 0, 0, 0, 10, True)
     correct_res = {'OriginalText': 'word1 word2 word3',
                    'Probability': 0.7, 'NegativeWords': ['word2'],
                    'TextTokensHighlighted': '<b>word1</b> word2 word3',
@@ -128,7 +130,7 @@ def test_predict_phishing_words_hashed(mocker):
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            'wordsToHashedTokens': {'word1': ['23423'], 'word2': ['432432'], 'word3': ['12321']},
                            }
-    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
+    res = predict_phishing_words("modelName", "list", "word1", "word2 word3", 0, 0, 0, 10, True)
     assert res['Contents'] == {'OriginalText': 'word1 word2 word3',
                                'Probability': 0.7, 'NegativeWords': ['word2'],
                                'TextTokensHighlighted': '<b>word1</b> word2 word3',
@@ -154,7 +156,7 @@ def test_predict_phishing_words_tokenization_by_character(mocker):
                                                                  'Probability': 0.7,
                                                                  'PositiveWords': positive_tokens,
                                                                  'NegativeWords': negative_tokens}, create=True)
-    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
+    res = predict_phishing_words("modelName", "list", original_text, "", 0, 0, 0, 10, True)
     correct_highlighted = ' '.join(
         bold(w) if any(pos_token in w for pos_token in positive_tokens) else w for w in original_text.split())
     assert res['Contents'] == {'OriginalText': original_text,
@@ -194,7 +196,7 @@ def test_predict_phishing_words_tokenization_by_character_hashed(mocker):
                                                                  'Probability': 0.7,
                                                                  'PositiveWords': positive_tokens,
                                                                  'NegativeWords': negative_tokens}, create=True)
-    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
+    res = predict_phishing_words("modelName", "list", original_text, "", 0, 0, 0, 10, True)
     correct_highlighted = ' '.join(
         bold(w) if any(unhash_token(pos_token) in w for pos_token in positive_tokens) else w for w in
         original_text.split())
@@ -204,3 +206,64 @@ def test_predict_phishing_words_tokenization_by_character_hashed(mocker):
                                'PositiveWords': [w for w in original_text.split() if
                                                  any(unhash_token(pos_token) in w for pos_token in positive_tokens)],
                                'Label': 'Valid'}
+
+
+def test_main(mocker):
+    global TOKENIZATION_RESULT
+    args = {'modelName': 'modelName', 'modelStoreType': 'list', 'emailSubject': 'word1', 'emailBody': 'word2 word3',
+            'minTextLength': '0', 'labelProbabilityThreshold': '0', 'wordThreshold': '0', 'topWordsLimit': '10',
+            'returnError': 'true'}
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch('demisto_ml.decode_model', return_value="Model", create=True)
+    mocker.patch('demisto_ml.filter_model_words', return_value=("text", 2), create=True)
+    mocker.patch('demisto_ml.explain_model_words', return_value={"Label": 'Valid',
+                                                                 'Probability': 0.7,
+                                                                 'PositiveWords': ['word1'],
+                                                                 'NegativeWords': ['word2']},
+                 create=True)
+
+    TOKENIZATION_RESULT = {'originalText': '%s %s' % (args['emailSubject'], args['emailBody']),
+                           'tokenizedText': '%s %s' % (args['emailSubject'], args['emailBody']),
+                           'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
+                           }
+
+    res = main()
+    correct_res = {'OriginalText': 'word1 word2 word3',
+                   'Probability': 0.7, 'NegativeWords': ['word2'],
+                   'TextTokensHighlighted': '<b>word1</b> word2 word3',
+                   'PositiveWords': ['word1'], 'Label': 'Valid'}
+    assert res['Contents'] == correct_res
+
+    args['emailBodyHTML'] = args.pop('emailBody')
+    TOKENIZATION_RESULT = {'originalText': '%s %s' % (args['emailSubject'], args['emailBodyHTML']),
+                           'tokenizedText': '%s %s' % (args['emailSubject'], args['emailBodyHTML']),
+                           'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
+                           }
+    main()
+    assert res['Contents'] == correct_res
+
+
+def test_no_positive_words(mocker):
+    # make sure that if no positive words were found, TextTokensHighlighted output is equivalent to original text
+    global TOKENIZATION_RESULT
+    args = {'modelName': 'modelName', 'modelStoreType': 'list', 'emailSubject': 'word1', 'emailBody': 'word2 word3',
+            'minTextLength': '0', 'labelProbabilityThreshold': '0', 'wordThreshold': '0', 'topWordsLimit': '10',
+            'returnError': 'true'}
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch('demisto_ml.decode_model', return_value="Model", create=True)
+    mocker.patch('demisto_ml.filter_model_words', return_value=("text", 2), create=True)
+    mocker.patch('demisto_ml.explain_model_words', return_value={"Label": 'Valid',
+                                                                 'Probability': 0.7,
+                                                                 'PositiveWords': [],
+                                                                 'NegativeWords': ['word2']},
+                 create=True)
+
+    TOKENIZATION_RESULT = {'originalText': '%s %s' % (args['emailSubject'], args['emailBody']),
+                           'tokenizedText': '%s %s' % (args['emailSubject'], args['emailBody']),
+                           'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
+                           }
+
+    res = main()
+    assert res['Contents']['TextTokensHighlighted'] == TOKENIZATION_RESULT['originalText']
