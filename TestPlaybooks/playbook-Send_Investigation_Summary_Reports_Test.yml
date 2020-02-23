@@ -1,5 +1,5 @@
 id: Send Investigation Summary Reports - Test
-version: 1
+version: -1
 name: Send Investigation Summary Reports - Test
 description: 'Playbook should be run as a scheduled job at a recommended interval
   of once every 15 minutes. Playbook simply calls sub playbook: "Send Investigation
