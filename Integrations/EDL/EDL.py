@@ -238,8 +238,6 @@ def test_module(args, params):
 def run_long_running(params):
     """
     Start the long running server
-    :param params: Demisto params
-    :return: None
     """
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
