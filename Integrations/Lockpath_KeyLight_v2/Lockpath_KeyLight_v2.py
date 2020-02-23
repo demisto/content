@@ -591,7 +591,7 @@ def fetch_incidents(client: Client, args: dict) -> None:
     max_fetch_time = last_fetch_time
     for record in res:
         record['Fields'] = client.field_output_to_hr_fields(record.pop('FieldValues'), component_id)
-        occurred_at = record.get('Fields', {}).get(filter_field, '')
+        occurred_at = record.get('Fields', {}).get(filter_field, datetime.now().strftime("%Y-%m-%dT%H:%M:%S"))
         incident = {'name': f'Keylight record {record.get("DisplayName")}',
                     'occurred': occurred_at.split('.')[0] + 'Z',
                     'rawJSON': json.dumps(record)
