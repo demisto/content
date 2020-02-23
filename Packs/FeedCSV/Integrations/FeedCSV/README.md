@@ -32,3 +32,36 @@ Fetch indicators from a CSV feed. The integration allows a great amount of user 
 4. Click __Test__ to validate the URLs, token, and connection.
 
 
+## Step by step configuration
+---
+As an example, we'll be looking at the SSL BL feed by Abuse. This would be a feed for indicators of type IP.
+
+**Indicator Type** - IP, as mentioned earlier.
+
+The **Server URL** field would be https://sslbl.abuse.ch/blacklist/sslipblacklist.csv.
+
+**Credentials** - This feed does not require authentication so we will not need to configure credentials.
+
+From a quick look at the feed in the web browser, we are going to configure the rest of the parameters:
+
+**Ignore Regex** - We are going to need to ignore all the text inside the part enclosed by the `#` character (included) 
+so we'll configure `^#` as the regular expression to use to ignore this text.
+
+**Field Names** - We have 3 fields in this feed - `Firstseen,DstIP,DstPort`. The integration ignores these headers and we have to configure the field names for each indicator.
+Note that the field for the indicator value itself (the IP) must be `value`. So we will configure these field names: `date,value,name`, so that the indicator will be created with these fields.
+
+**Double quote** - No need to double the quote characters, we'll leave that unchecked.
+
+**Delimiter** - The delimiter between the fields in this feed is `,`, so we'll use that as the value for this field.
+
+**Quote Character** - No need to change the quote character, we'll leave that as the default (`"`).
+
+**Escape Character** - No need to change the escape character, we'll leave that empty.
+
+**Skip Initial Space** - No whitespaces between the delimiter and the value, we'll leave the unchecked.
+
+Now we have successfully configured an instance for the Abuse SSL BL feed, once we enable `Fetches indicators` the instance will start pulling indicators.
+
+By clicking `Mapping` in the integration instance, we can map the field names we previously configured to actual indicator fields (except `value` which is the indicator value).
+We can use `Set up a new classification rule` using actual data from the feed.
+
