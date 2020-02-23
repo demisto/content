@@ -186,43 +186,12 @@ def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
             for in_item in data[item]:
                 if type(data[item][in_item]) == list:
                     counter += len(data[item][in_item])
-            new_data[item] = counter if counter > 0 else 1
+                elif data[item][in_item]:
+                    counter = 1 if counter == 0 else counter
+            new_data[item] = counter
         else:
             new_data[item] = data[item]
     return new_data
-
-
-def creates_list_of_dictionary(value: str, type_name: str, value_key: str):
-    """Receives a comma delimited string with values and key for the valus and type
-    returns a list of dictionary with value by the given key and by the given type
-        Examples:
-        >>> creates_list_of_dictionary('1111,2222,3333', 'myID', 'id')
-        [{id: '1111', type: 'myID'}, {id: '2222', type: 'myID'}, {id: '2222', type: 'myID'}]
-        >>> creates_list_of_dictionary('1111,2222,3333', '', 'id')
-        [{id: '1111'}, {id: '2222'}, {id: '2222'}]
-
-    :type value: ``str``
-    :param value:  comma delimited string with values (required)
-
-    :type type_name: ``str``
-    :keyword type_name: Type add to dictionary, if you do not add then type will not be added to the dictionary
-
-    :type value_key: ``str``
-    :keyword value_key: Value keyword
-
-    :return: list of dictionary white the given data
-    :rtype: ``list``
-    """
-    id_list = argToList(value)
-    objects = []
-    for current_id in id_list:
-        if value_key == '':
-            objects.append(current_id)
-        elif type_name == '':
-            objects.append({value_key: current_id})
-        else:
-            objects.append({value_key: current_id, 'type': type_name})
-    return objects
 
 
 def raw_response_to_context_list(list_key, items):
@@ -300,7 +269,7 @@ def raw_response_to_context_access_policy(items):
 def raw_response_to_context_ruls(items):
     if isinstance(items, list):
         return [raw_response_to_context_ruls(item) for item in items]
-    entry = {
+    return {
         'ID': items.get('id'),
         'Name': items.get('name'),
         'Action': items.get('action'),
@@ -309,131 +278,114 @@ def raw_response_to_context_ruls(items):
         'RuleIndex': items.get('metadata', {}).get('ruleIndex', ''),
         'Section': items.get('metadata', {}).get('section', ''),
         'Category': items.get('metadata', {}).get('category', ''),
-    }
-    if 'urls' in items:
-        entry['Urls'] = {}
-        if 'literals' in items.get('urls'):
-            entry['Urls']['Literals'] = [{
+        'Uels': {
+            'Literals': [{
                     'URL': obj.get('url', '')
                 }for obj in items.get('urls', {}).get('literals', [])
-            ]
-        if 'objects' in items.get('urls'):
-            entry['Urls']['Objects'] = [{
+            ],
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', '')
                 } for obj in items.get('urls', {}).get('objects', [])
             ]
-    if 'vlanTags' in items:
-        entry['VlanTags'] = {}
-        if 'literals' in items.get('vlanTags'):
-            entry['VlanTags']['Literals'] = [{
+        },
+        'VlanTags': {
+            'Literals': [{
                     'EndTag': obj.get('endTag', ''),
                     'StartTag': obj.get('startTag', '')
                 } for obj in items.get('vlanTags', {}).get('literals', [])
-            ]
-        if 'objects' in items.get('vlanTags'):
-            entry['VlanTags']['Objects'] = [{
+            ],
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', ''),
                     'Type': obj.get('type', '')
                 } for obj in items.get('vlanTags', {}).get('objects', [])
             ]
-    if 'sourceZones' in items:
-        entry['SourceZones'] = {}
-        if 'objects' in items.get('sourceZones'):
-            entry['SourceZones']['Objects'] = [{
+        },
+        'SourceZones': {
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', ''),
                     'Type': obj.get('type', '')
                 } for obj in items.get('sourceZones', {}).get('objects', [])
             ]
-    if 'applications' in items and 'applications' in items.get('applications', {}):
-        entry['Applications'] = [{
+        },
+        'Applications': [{
                 'Name': obj.get('name', ''),
                 'ID': obj.get('id', '')
             } for obj in items.get('applications', {}).get('applications', [])
-        ]
-    if 'destinationZones' in items:
-        entry['DestinationZones'] = {}
-        if 'objects' in items.get('destinationZones'):
-            entry['DestinationZones']['Objects'] = [{
+        ],
+        'DestinationZones': {
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', ''),
                     'Type': obj.get('type', '')
                 } for obj in items.get('destinationZones', {}).get('objects', [])
             ]
-    if 'sourceNetworks' in items:
-        entry['SourceNetworks'] = {}
-        if 'literals' in items.get('sourceNetworks'):
-            entry['SourceNetworks']['Literals'] = [{
+        },
+        'SourceNetworks': {
+            'Literals': [{
                     'Type': obj.get('type', ''),
                     'Value': obj.get('value', '')
                 }for obj in items.get('sourceNetworks', {}).get('literals', [])
-            ]
-        if 'objects' in items.get('sourceNetworks'):
-            entry['SourceNetworks']['Objects'] = [{
+            ],
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', ''),
                     'Type': obj.get('type', '')
                 } for obj in items.get('sourceNetworks', {}).get('objects', [])
             ]
-    if 'destinationNetworks' in items:
-        entry['DestinationNetworks'] = {}
-        if 'literals' in items.get('destinationNetworks'):
-            entry['DestinationNetworks']['Literals'] = [{
+        },
+        'DestinationNetworks': {
+            'Literals': [{
                     'Type': obj.get('type', ''),
                     'Value': obj.get('value', '')
                 } for obj in items.get('destinationNetworks', {}).get('literals', [])
             ],
-        if 'objects' in items.get('destinationNetworks'):
-            entry['DestinationNetworks']['Objects'] = [{
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', ''),
                     'Type': obj.get('type', '')
                 } for obj in items.get('destinationNetworks', {}).get('objects', [])
             ]
-    if 'sourcePorts' in items:
-        entry['SourcePorts'] = {}
-        if 'literals' in items.get('sourcePorts'):
-            entry['SourcePorts']['Literals'] = [{
+        },
+        'SourcePorts': {
+            'Literals': [{
                     'Port': obj.get('port', ''),
                     'Protocol': obj.get('protocol', '')
                 } for obj in items.get('sourcePorts', {}).get('literals', [])
-            ]
-        if 'objects' in items.get('sourcePorts'):
-            entry['SourcePorts']['Objects'] = [{
+            ],
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', ''),
                     'Type': obj.get('type', ''),
                     'Protocol': obj.get('protocol', '')
                 } for obj in items.get('sourcePorts', {}).get('objects', [])
             ]
-    if 'destinationPorts' in items:
-        entry['DestinationPorts'] = {}
-        if 'literals' in items.get('destinationPorts'):
-            entry['DestinationPorts']['Literals'] = [{
+        },
+        'DestinationPorts': {
+            'Literals': [{
                     'Port': obj.get('port', ''),
                     'Protocol': obj.get('protocol', '')
                 } for obj in items.get('destinationPorts', {}).get('literals', [])
-            ]
-        if 'objects' in items.get('destinationPorts'):
-            entry['DestinationPorts']['Objects'] = [{
+            ],
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', ''),
                     'Type': obj.get('type', ''),
                     'Protocol': obj.get('protocol', '')
                 } for obj in items.get('destinationPorts', {}).get('objects', [])
             ]
-    if 'sourceSecurityGroupTags' in items:
-        entry['SourceSecurityGroupTags'] = {}
-        if 'objects' in items.get('sourceSecurityGroupTags'):
-            entry['SourceSecurityGroupTags']['Objects'] = [{
+        },
+        'SourceSecurityGroupTags': {
+            'Objects': [{
                     'Name': obj.get('name', ''),
                     'ID': obj.get('id', ''),
                     'Type': obj.get('type', '')
                 } for obj in items.get('sourceSecurityGroupTags', {}).get('objects', [])
             ]
-    return entry
+        }
+    }
 
 
 ''' COMMANDS '''
@@ -695,9 +647,9 @@ def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
         ids = args.get('id_list', '')
         values = args.get('value_list', '')
         if ids:
-            data_to_post['objects'] = creates_list_of_dictionary(ids, '', 'id')
+            data_to_post['objects'] = [{'id': curr_id} for curr_id in argToList(ids)]
         if values:
-            data_to_post['literals'] = creates_list_of_dictionary(values, '', 'value')
+            data_to_post['literals'] = [{'value': curr_value} for curr_value in argToList(values)]
 
         raw_response = client.update_network_groups_objects(data_to_post)
         title = f'{INTEGRATION_NAME} - network group has been updated.'
@@ -964,54 +916,56 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 
     data_to_post = {}
     if 'source_zone_object_ids' in args:
-        data_to_post['sourceZones'] = {
-            'objects': creates_list_of_dictionary(args['source_zone_object_ids'], 'SecurityZone', 'id')}
+        data_to_post['sourceZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
+                                        } for curr_id in argToList(args['source_zone_object_ids'])]}
     if 'destination_zone_object_ids' in args:
-        data_to_post['destinationZones'] = {
-            'objects': creates_list_of_dictionary(args['destination_zone_object_ids'], 'SecurityZone', 'id')}
+        data_to_post['destinationZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
+                                        } for curr_id in argToList(args['destination_zone_object_ids'])]}
     if 'vlan_tag_object_ids' in args:
-        data_to_post['vlanTags'] = {
-            'objects': creates_list_of_dictionary(args['vlan_tag_object_ids'], 'vlanTags', 'id')}
+        data_to_post['vlanTags'] = {'objects': [{'id': curr_id, 'type': 'vlanTags'
+                                    } for curr_id in argToList(args['vlan_tag_object_ids'])]}
     if 'source_network_object_ids' in args:
-        data_to_post['sourceNetworks'] = {
-            'objects': creates_list_of_dictionary(args['source_network_object_ids'], 'NetworkGroup', 'id')}
+        data_to_post['sourceNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
+                                    } for curr_id in argToList(args['source_network_object_ids'])]}
     if 'source_network_addresses' in args:
         if 'sourceNetworks' in data_to_post:
-            data_to_post['sourceNetworks']['literals'] = \
-                creates_list_of_dictionary(args['source_network_addresses'], 'Host', 'value')
+            data_to_post['sourceNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
+                                    } for curr_id in argToList(args['source_network_addresses'])]
         else:
-            data_to_post['sourceNetworks'] = {
-                'literals': creates_list_of_dictionary(args['source_network_addresses'], 'Host', 'value')}
+            data_to_post['sourceNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
+                                    } for curr_id in argToList(args['source_network_addresses'])]}
     if 'destination_network_object_ids' in args:
-        data_to_post['destinationNetworks'] = {
-            'objects': creates_list_of_dictionary(args['destination_network_object_ids'], 'NetworkGroup', 'id')}
+        data_to_post['destinationNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
+                                    } for curr_id in argToList(args['destination_network_object_ids'])]}
     if 'destination_network_addresses' in args:
         if 'destinationNetworks' in data_to_post:
-            data_to_post['destinationNetworks']['literals'] = \
-                creates_list_of_dictionary(args['destination_network_addresses'], 'Host', 'value')
+            data_to_post['destinationNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
+                                    } for curr_id in argToList(args['destination_network_addresses'])]
         else:
-            data_to_post['destinationNetworks'] = {
-                'literals': creates_list_of_dictionary(args['destination_network_addresses'], 'Host', 'value')}
+            data_to_post['destinationNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
+                                    } for curr_id in argToList(args['destination_network_addresses'])]}
     if 'source_port_object_ids' in args:
-        data_to_post['sourcePorts'] = {
-            'objects': creates_list_of_dictionary(args['source_port_object_ids'], 'ProtocolPortObject', 'id')}
+        data_to_post['sourcePorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
+                                    } for curr_id in argToList(args['source_port_object_ids'])]}
     if 'destination_port_object_ids' in args:
-        data_to_post['destinationPorts'] = {
-            'objects': creates_list_of_dictionary(args['destination_port_object_ids'], 'ProtocolPortObject', 'id')}
+        data_to_post['destinationPorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
+                                    } for curr_id in argToList(args['destination_port_object_ids'])]}
     if 'source_security_group_tag_object_ids' in args:
-        data_to_post['sourceSecurityGroupTags'] = {
-            'objects':
-                creates_list_of_dictionary(args['source_security_group_tag_object_ids'], 'SecurityGroupTag', 'id')}
+        data_to_post['sourceSecurityGroupTags'] = {'objects': [{'id': curr_id, 'type': 'SecurityGroupTag'
+                                    } for curr_id in argToList(args['source_security_group_tag_object_ids'])]}
     if 'application_object_ids' in args:
-        data_to_post['applications'] = {
-            'applications': creates_list_of_dictionary(args['application_object_ids'], 'Application', 'id')}
+        data_to_post['applications'] =  {'applications': [{'id': curr_id, 'type': 'Application'
+                                    } for curr_id in argToList(args['application_object_ids'])]}
     if 'url_object_ids' in args:
-        data_to_post['urls'] = {'objects': creates_list_of_dictionary(args['url_object_ids'], 'Url', 'id')}
+        data_to_post['urls'] = {'objects': [{'id': curr_id, 'type': 'Url'
+                                    } for curr_id in argToList(args['url_object_ids'])]}
     if 'url_addresses' in args:
         if 'urls' in data_to_post:
-            data_to_post['urls']['literals'] = creates_list_of_dictionary(args['url_addresses'], 'Url', 'url')
+            data_to_post['urls']['literals'] =[{'url': curr_id, 'type': 'Url'
+                                    } for curr_id in argToList(args['url_addresses'])]
         else:
-            data_to_post['urls'] = {'literals': creates_list_of_dictionary(args['url_addresses'], 'Url', 'url')}
+            data_to_post['urls'] = {'literals': [{'url': curr_id, 'type': 'Url'
+                                    } for curr_id in argToList(args['url_addresses'])]}
     if 'enabled' in args:
         data_to_post['enabled'] = args['enabled']
 
@@ -1033,54 +987,63 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 def update_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     data_to_post = {}
     if 'source_zone_object_ids' in args:
-        data_to_post['sourceZones'] = {
-            'objects': creates_list_of_dictionary(args['source_zone_object_ids'], 'SecurityZone', 'id')}
+        data_to_post['sourceZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
+                                                    } for curr_id in argToList(args['source_zone_object_ids'])]}
     if 'destination_zone_object_ids' in args:
-        data_to_post['destinationZones'] = {
-            'objects': creates_list_of_dictionary(args['destination_zone_object_ids'], 'SecurityZone', 'id')}
+        data_to_post['destinationZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
+                                                         } for curr_id in
+                                                        argToList(args['destination_zone_object_ids'])]}
     if 'vlan_tag_object_ids' in args:
-        data_to_post['vlanTags'] = {
-            'objects': creates_list_of_dictionary(args['vlan_tag_object_ids'], 'vlanTags', 'id')}
+        data_to_post['vlanTags'] = {'objects': [{'id': curr_id, 'type': 'vlanTags'
+                                                 } for curr_id in argToList(args['vlan_tag_object_ids'])]}
     if 'source_network_object_ids' in args:
-        data_to_post['sourceNetworks'] = {
-            'objects': creates_list_of_dictionary(args['source_network_object_ids'], 'NetworkGroup', 'id')}
+        data_to_post['sourceNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
+                                                       } for curr_id in argToList(args['source_network_object_ids'])]}
     if 'source_network_addresses' in args:
         if 'sourceNetworks' in data_to_post:
-            data_to_post['sourceNetworks']['literals'] = \
-                creates_list_of_dictionary(args['source_network_addresses'], 'Host', 'value')
+            data_to_post['sourceNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
+                                                           } for curr_id in argToList(args['source_network_addresses'])]
         else:
-            data_to_post['sourceNetworks'] = {
-                'literals': creates_list_of_dictionary(args['source_network_addresses'], 'Host', 'value')}
+            data_to_post['sourceNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
+                                                            } for curr_id in
+                                                           argToList(args['source_network_addresses'])]}
     if 'destination_network_object_ids' in args:
-        data_to_post['destinationNetworks'] = {
-            'objects': creates_list_of_dictionary(args['destination_network_object_ids'], 'NetworkGroup', 'id')}
+        data_to_post['destinationNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
+                                                            } for curr_id in
+                                                           argToList(args['destination_network_object_ids'])]}
     if 'destination_network_addresses' in args:
         if 'destinationNetworks' in data_to_post:
-            data_to_post['destinationNetworks']['literals'] = \
-                creates_list_of_dictionary(args['destination_network_addresses'], 'Host', 'value')
+            data_to_post['destinationNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
+                                                                } for curr_id in
+                                                               argToList(args['destination_network_addresses'])]
         else:
-            data_to_post['destinationNetworks'] = {
-                'literals': creates_list_of_dictionary(args['destination_network_addresses'], 'Host', 'value')}
+            data_to_post['destinationNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
+                                                                 } for curr_id in
+                                                                argToList(args['destination_network_addresses'])]}
     if 'source_port_object_ids' in args:
-        data_to_post['sourcePorts'] = {
-            'objects': creates_list_of_dictionary(args['source_port_object_ids'], 'ProtocolPortObject', 'id')}
+        data_to_post['sourcePorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
+                                                    } for curr_id in argToList(args['source_port_object_ids'])]}
     if 'destination_port_object_ids' in args:
-        data_to_post['destinationPorts'] = {
-            'objects': creates_list_of_dictionary(args['destination_port_object_ids'], 'ProtocolPortObject', 'id')}
+        data_to_post['destinationPorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
+                                                         } for curr_id in
+                                                        argToList(args['destination_port_object_ids'])]}
     if 'source_security_group_tag_object_ids' in args:
-        data_to_post['sourceSecurityGroupTags'] = {
-            'objects':
-                creates_list_of_dictionary(args['source_security_group_tag_object_ids'], 'SecurityGroupTag', 'id')}
+        data_to_post['sourceSecurityGroupTags'] = {'objects': [{'id': curr_id, 'type': 'SecurityGroupTag'
+                                                                } for curr_id in
+                                                               argToList(args['source_security_group_tag_object_ids'])]}
     if 'application_object_ids' in args:
-        data_to_post['applications'] = {
-            'applications': creates_list_of_dictionary(args['application_object_ids'], 'Application', 'id')}
+        data_to_post['applications'] = {'applications': [{'id': curr_id, 'type': 'Application'
+                                                          } for curr_id in argToList(args['application_object_ids'])]}
     if 'url_object_ids' in args:
-        data_to_post['urls'] = {'objects': creates_list_of_dictionary(args['url_object_ids'], 'Url', 'id')}
+        data_to_post['urls'] = {'objects': [{'id': curr_id, 'type': 'Url'
+                                             } for curr_id in argToList(args['url_object_ids'])]}
     if 'url_addresses' in args:
         if 'urls' in data_to_post:
-            data_to_post['urls']['literals'] = creates_list_of_dictionary(args['url_addresses'], 'Url', 'url')
+            data_to_post['urls']['literals'] = [{'url': curr_id, 'type': 'Url'
+                                                 } for curr_id in argToList(args['url_addresses'])]
         else:
-            data_to_post['urls'] = {'literals': creates_list_of_dictionary(args['url_addresses'], 'Url', 'url')}
+            data_to_post['urls'] = {'literals': [{'url': curr_id, 'type': 'Url'
+                                                  } for curr_id in argToList(args['url_addresses'])]}
     if 'enabled' in args:
         data_to_post['enabled'] = args['enabled']
 
@@ -1134,16 +1097,16 @@ def list_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Di
 def create_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     data_to_post = {}
     if 'device_ids' in args:
-        data_to_post['targets'] = creates_list_of_dictionary(args['device_ids'], 'Device', 'id')
+        data_to_post['targets'] = [{'id': curr_id, 'type': 'Device'} for curr_id in argToList(args['device_ids'])]
     if 'device_group_ids' in args:
         if 'targets' in data_to_post:
-            data_to_post['targets'].extend(creates_list_of_dictionary(args['device_group_ids'], 'DeviceGroup', 'id'))
+            data_to_post['targets'].extend([{'id': curr_id, 'type': 'DeviceGroup'
+                                             } for curr_id in argToList(args['device_group_ids'])])
         else:
-            data_to_post['targets'] = creates_list_of_dictionary(args['device_group_ids'], 'DeviceGroup', 'id')
+            data_to_post['targets'] = [{'id': curr_id, 'type': 'DeviceGroup'
+                                        } for curr_id in argToList(args['device_group_ids'])]
     data_to_post['policy'] = {'id': args.get('policy_id')}
     data_to_post['type'] = 'PolicyAssignment'
-
-    print(data_to_post)
     raw_response = client.create_policy_assignments(data_to_post)
     title = f'{INTEGRATION_NAME} - Policy assignments has been done.'
     context_entry = raw_response_to_context_policy_assignment(raw_response)
@@ -1159,12 +1122,14 @@ def update_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
     data_to_post = {}
     policy_id = args.get('policy_id')
     if 'device_ids' in args:
-        data_to_post['targets'] = creates_list_of_dictionary(args['device_ids'], 'Device', 'id')
+        data_to_post['targets'] = [{'id': curr_id, 'type': 'Device'} for curr_id in argToList(args['device_ids'])]
     if 'device_group_ids' in args:
         if 'targets' in data_to_post:
-            data_to_post['targets'].extend(creates_list_of_dictionary(args['device_group_ids'], 'DeviceGroup', 'id'))
+            data_to_post['targets'].extend([{'id': curr_id, 'type': 'DeviceGroup'
+                                             } for curr_id in argToList(args['device_group_ids'])])
         else:
-            data_to_post['targets'] = creates_list_of_dictionary(args['device_group_ids'], 'DeviceGroup', 'id')
+            data_to_post['targets'] = [{'id': curr_id, 'type': 'DeviceGroup'
+                                        } for curr_id in argToList(args['device_group_ids'])]
     data_to_post['policy'] = {'id': args.get('policy_id')}
     data_to_post['type'] = 'PolicyAssignment'
 
@@ -1237,7 +1202,7 @@ def get_device_records_command(client: Client, args: Dict) -> Tuple[str, Dict, D
 def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     data_to_post = {}
     if 'device_ids' in args:
-        data_to_post['deviceList'] = creates_list_of_dictionary(args['device_ids'], '', '')
+        data_to_post['deviceList'] = argToList(args['device_ids'])
     data_to_post['forceDeploy'] = args.get('force_deploy')
     data_to_post['ignoreWarning'] = args.get('ignore_warning')
     data_to_post['version'] = args.get('version')
