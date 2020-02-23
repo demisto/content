@@ -47,7 +47,9 @@ def test_get_incidents(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args)
     size = 100
     query = 'query'
-    check_from_date = lambda x: len(x) > 5
+
+    def check_from_date(x):
+        return len(x) > 5
 
     def validate_args(command, args):
         assert check_from_date(args.get('from'))
@@ -60,7 +62,10 @@ def test_get_incidents(mocker):
     get_incidents(query, "created", size, "3 months ago")
     get_incidents(query, "created", size, "3 weeks ago")
     get_incidents(query, "created", size, "2020-02-16T17:45:53.179489")
-    check_from_date = lambda x: x is None
+
+    def check_from_date(x):
+        return x is None
+
     get_incidents(query, "modified", size, "3 weeks ago")
 
 
@@ -105,5 +110,8 @@ def test_main(mocker):
 
     args['populateFields'] = 'testField,status'
     args['NonEmptyFields'] = 'severity'
+    entry = main()
+    assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
+    args.pop('fromDate')
     entry = main()
     assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
