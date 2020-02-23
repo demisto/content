@@ -2369,6 +2369,9 @@
         }
     ],
     "skipped_tests": {
+        "PANW - Hunting and threat detection by indicator type Test": "Issue 22300",
+        "Send Investigation Summary Reports": "Issue 22299",
+        "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "okta_test_playbook": "Issue 22235",
         "Test-VulnDB": "Issue 22232",
