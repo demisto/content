@@ -51,6 +51,5 @@ def test_threshold_found_2(mocker):
 
 def test_no_existing_threshold(mocker):
     with pytest.raises(SystemExit):
-        find_threshold(y_pred_str=json.dumps(y_pred), y_true_str=json.dumps(y_true), target_precision=1, target_recall=0)
-
-
+        find_threshold(y_pred_str=json.dumps(y_pred), y_true_str=json.dumps(y_true), target_precision=1,
+                       target_recall=0)

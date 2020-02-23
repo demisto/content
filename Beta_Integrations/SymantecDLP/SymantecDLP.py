@@ -13,9 +13,23 @@ from typing import Dict, Tuple, Any
 from dateutil.parser import parse
 import urllib3
 import uuid
+import tempfile
+import os
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+def get_cache_path():
+    path = tempfile.gettempdir() + "/zeepcache"
+    try:
+        os.makedirs(path)
+    except OSError:
+        if os.path.isdir(path):
+            pass
+        else:
+            raise
+    return os.path.join(path, "cache.db")
 
 
 class SymantecAuth(AuthBase):
@@ -31,6 +45,20 @@ class SymantecAuth(AuthBase):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_data_owner(data_owner: Any) -> dict:
+    """
+    parses the data owner object
+    :param data_owner: the data owner object, can be of any type
+    :return: the parsed object
+    """
+    if data_owner and isinstance(data_owner, dict):
+        return {'Name': data_owner.get('name'), 'Email': data_owner.get('email')}
+    if data_owner and not isinstance(data_owner, dict):
+        LOG(f"A data owner was found in the incident, but did not match the expected format.\n "
+            f"Found: {str(data_owner)}")
+    return {}
 
 
 def get_incident_binaries(client: Client, incident_id: str, include_original_message: bool = True,
@@ -265,7 +293,6 @@ def get_incident_details(raw_incident_details: dict, args: dict) -> dict:
     message_source: dict = incident.get('messageSource', {})
     message_type: dict = incident.get('messageType', {})
     policy: dict = incident.get('policy', {})
-    data_owner: dict = incident.get('dataOwner', {})
     incident_details: dict = {
         'ID': raw_incident_details.get('incidentID'),
         'LongID': raw_incident_details.get('incidentLongId'),
@@ -293,10 +320,7 @@ def get_incident_details(raw_incident_details: dict, args: dict) -> dict:
         'RuleViolationCount': incident.get('ruleViolationCount'),
         'DetectionServer': incident.get('detectionServer'),
         'CustomAttribute': parse_custom_attribute(incident.get('customAttributeGroup', []), args),
-        'DataOwner': {
-            'Name': data_owner.get('name'),
-            'Email': data_owner.get('email')
-        },
+        'DataOwner': get_data_owner(incident.get('dataOwner', {})),
         'EventDate': incident.get('eventDate')
     }
     return {key: val for key, val in incident_details.items() if val}
@@ -432,9 +456,8 @@ def get_incident_details_command(client: Client, args: dict) -> Tuple[str, dict,
 
     if raw_incident and isinstance(raw_incident, list):
         serialized_incident = helpers.serialize_object(raw_incident[0])
-        raw_response = serialized_incident
-        raw_incident_details: dict = json.loads(json.dumps(serialized_incident, default=datetime_to_iso_format))
-        incident_details: dict = get_incident_details(raw_incident_details, args)
+        raw_response = json.loads(json.dumps(serialized_incident, default=datetime_to_iso_format))
+        incident_details: dict = get_incident_details(raw_response, args)
         raw_headers = ['ID', 'CreationDate', 'DetectionDate', 'Severity', 'Status', 'MessageSourceType',
                        'MessageType', 'Policy Name']
         headers = ['ID', 'Creation Date', 'Detection Date', 'Severity', 'Status', 'DLP Module',
@@ -664,6 +687,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
 
 def main():
+    handle_proxy()
     params: Dict = demisto.params()
     server: str = params.get('server', '').rstrip('/')
     credentials: Dict = params.get('credentials', {})
@@ -682,7 +706,7 @@ def main():
     session: Session = Session()
     session.auth = SymantecAuth(username, password, server)
     session.verify = verify_ssl
-    cache: SqliteCache = SqliteCache(timeout=None)
+    cache: SqliteCache = SqliteCache(path=get_cache_path(), timeout=None)
     transport: Transport = Transport(session=session, cache=cache)
     client: Client = Client(wsdl=wsdl, transport=transport)
 
@@ -701,7 +725,6 @@ def main():
         'symantec-dlp-incident-violations': incident_violations_command
     }
     try:
-        handle_proxy()
         if command == 'fetch-incidents':
             fetch_incidents(client, fetch_time, fetch_limit, last_run, saved_report_id)  # type: ignore[operator]
         elif command == 'test-module':

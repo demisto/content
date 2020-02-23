@@ -1,26 +1,12 @@
 import pytest
 import demistomock as demisto
 import json
+from MicrosoftApiModule import *
 from MicrosoftGraphListener import MsGraphClient
 from MicrosoftGraphListener import add_second_to_str_date
 
 
-@pytest.fixture()
-def emails_data():
-    with open('test_data/emails_data') as emails_json:
-        mocked_emails = json.load(emails_json)
-        return mocked_emails
-
-
-@pytest.fixture
-def expected_incident():
-    with open('test_data/expected_incident') as emails_json:
-        mocked_emails = json.load(emails_json)
-        return mocked_emails
-
-
-@pytest.fixture
-def client():
+def oproxy_client():
     refresh_token = "dummy_refresh_token"
     auth_id = "dummy_auth_id"
     enc_key = "dummy_enc_key"
@@ -33,9 +19,46 @@ def client():
     base_url = "https://graph.microsoft.com/v1.0/"
     ok_codes = (200, 201, 202)
 
-    return MsGraphClient(refresh_token, auth_id, enc_key, token_retrieval_url, app_name,
-                         mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, base_url=base_url,
-                         verify=True, proxy=False, ok_codes=ok_codes)
+    ms_client = MicrosoftClient.from_oproxy(auth_id, enc_key, token_retrieval_url, app_name,
+                                            refresh_token=refresh_token,
+                                            base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+
+    return MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
+
+
+def self_deployed_client():
+    tenant_id = "dummy_tenant"
+    client_id = "dummy_client_id"
+    client_secret = "dummy_secret"
+    app_url = "app_url"
+    mailbox_to_fetch = "dummy@mailbox.com"  # disable-secrets-detection
+    folder_to_fetch = "Phishing"
+    first_fetch_interval = "20 minutes"
+    emails_fetch_limit = 50
+    base_url = "https://graph.microsoft.com/v1.0/"
+    scope = "https://graph.microsoft.com/.default"
+    ok_codes = (200, 201, 202)
+
+    ms_client = MicrosoftClient.from_self_deployed(tenant_id, client_id,
+                                                   client_secret, app_url=app_url,
+                                                   scope=scope,
+                                                   base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+
+    return MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
+
+
+@pytest.fixture()
+def expected_incident():
+    with open('test_data/expected_incident') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+@pytest.fixture()
+def emails_data():
+    with open('test_data/emails_data') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
 
 
 @pytest.fixture
@@ -50,9 +73,10 @@ def last_run_data():
     return last_run
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_fetch_incidents(mocker, client, emails_data, expected_incident, last_run_data):
     mocker.patch('MicrosoftGraphListener.get_now_utc', return_value='2019-11-12T15:01:00Z')
-    mocker.patch.object(client, '_http_request', return_value=emails_data)
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
@@ -69,22 +93,24 @@ def test_fetch_incidents(mocker, client, emails_data, expected_incident, last_ru
     assert result_incidents == expected_incident
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_data):
     changed_folder = "Changed_Folder"
     client._folder_to_fetch = changed_folder
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
-    mocker.patch.object(client, '_http_request', return_value=emails_data)
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
     mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_fetch_incidents_detect_initial(mocker, client, emails_data):
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
-    mocker.patch.object(client, '_http_request', return_value=emails_data)
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
     mocker.patch.object(demisto, "info")
     client.fetch_incidents({})
 
@@ -96,12 +122,14 @@ def test_add_second_to_str_date():
     assert add_second_to_str_date("2019-11-12T15:00:00Z", 10) == "2019-11-12T15:00:10Z"
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_parse_email_as_label(client):
     assert client._parse_email_as_labels({'ID': 'dummy_id'}) == [{'type': 'Email/ID', 'value': 'dummy_id'}]
     assert client._parse_email_as_labels({'To': ['dummy@recipient.com']}) == [
         {'type': 'Email/To', 'value': 'dummy@recipient.com'}]
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_build_recipient_input(client):
     recipient_input = ["dummy1@rec.com", "dummy2@rec.com", "dummy3@rec.com"]  # disable-secrets-detection
     result_recipients_input = client._build_recipient_input(recipient_input)
@@ -112,6 +140,7 @@ def test_build_recipient_input(client):
     assert result_recipients_input == expected_recipients_input
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_build_body_input(client):
     first_body_input = ["test body 1", "text"]
     second_body_input = ["test body 2", "HTML"]
@@ -122,6 +151,7 @@ def test_build_body_input(client):
     assert second_result_body_input == {'content': 'test body 2', 'contentType': 'HTML'}
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_build_headers_input(client):
     headers_input = ['x-header-one:header1', 'x-header-two:heasder2']
     result_expecte_headers = [{'name': 'x-header-one', 'value': 'header1'},
@@ -130,6 +160,7 @@ def test_build_headers_input(client):
     assert client._build_headers_input(headers_input) == result_expecte_headers
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_build_message(client):
     message_input = {
         'to_recipients': ['dummy@recipient.com'],  # disable-secrets-detection

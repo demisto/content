@@ -44,13 +44,19 @@ script:
       required: true
       secret: false
     - default: false
+      description: The type of the indicator to add to the miner.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
       description: Comment for the indicator.
       isArray: false
       name: comment
       required: false
       secret: false
     deprecated: false
-    description: Add indicator to a miner.
+    description: Add an indicator to a miner.
     execution: false
     name: minemeld-add-to-miner
   - arguments:
@@ -62,13 +68,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the indicator  to remove.
+      description: The value of the indicator to remove.
       isArray: false
       name: indicator
       required: true
       secret: false
+    - default: false
+      description: The type of the indicator to remove from the miner.
+      isArray: false
+      name: type
+      required: false
+      secret: false
     deprecated: false
-    description: Remove an indicator from a miner.
+    description: Removes an indicator from a miner.
     execution: false
     name: minemeld-remove-from-miner
   - arguments:

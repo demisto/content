@@ -1645,13 +1645,13 @@ tasks:
       max_symbols: {}
       max_ucase: {}
       min_digits:
-        simple: "1"
+        simple: "2"
       min_lcase:
-        simple: "1"
+        simple: "2"
       min_symbols:
-        simple: "1"
+        simple: "2"
       min_ucase:
-        simple: "1"
+        simple: "2"
     separatecontext: false
     view: |-
       {
