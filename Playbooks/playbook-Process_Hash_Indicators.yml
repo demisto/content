@@ -1661,7 +1661,7 @@ tasks:
         simple: tags
       fieldValue:
         simple: Md5
-      value:
+      indicatorsValues:
         complex:
           root: playbookQuery
           filters:
@@ -1709,7 +1709,7 @@ tasks:
         simple: tags
       fieldValue:
         simple: Sha1
-      value:
+      indicatorsValues:
         complex:
           root: playbookQuery
           filters:
@@ -1757,7 +1757,7 @@ tasks:
         simple: tags
       fieldValue:
         simple: Sha256
-      value:
+      indicatorsValues:
         complex:
           root: playbookQuery
           filters:
