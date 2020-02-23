@@ -1,4 +1,4 @@
- Before you can use AWS Access Analyzer, you need to perform several configuration steps in your AWS environment.
+Before you can use AWS Access Analyzer, you need to perform several configuration steps in your AWS environment.
 
 ### Prerequisites
 - Attach an instance profile with the required permissions to the Demisto server or engine that is running on your AWS environment.
