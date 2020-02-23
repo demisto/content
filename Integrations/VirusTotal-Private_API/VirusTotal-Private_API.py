@@ -17,7 +17,7 @@ sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
 ''' GLOBAL VARS '''
 SERVER_URL = 'https://www.virustotal.com/vtapi/v2/'
-API_KEY = demisto.params()['APIKey']
+API_KEY = demisto.params().get('APIKey', '')
 
 USE_SSL = False if demisto.params().get('insecure') else True
 PREFERRED_VENDORS = demisto.params().get("preferredVendors", None)
@@ -1125,8 +1125,10 @@ def main():
         handle_proxy(proxy_param_name='useProxy')
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
+            # disable-secrets-detection-start
             if check_file_behaviour(
                     '10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):  # guardrails-disable-line
+                # disable-secrets-detection-end
                 demisto.results('ok')
             else:
                 demisto.results('test failed')
