@@ -1,3 +1,7 @@
+# TAXII Service Integration
+
+This integration provides TAXII Services for system indicators (Outbound feed).
+
 ## Configure Collections
 Each TAXII collection in the integration is represented by a Demisto indicator query.
 
@@ -22,12 +26,12 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
 
 ## How to use HTTPS
-To use HTTPS, a certificate and private key have to be provided in the integration configuration. 
+To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
 
 The `HTTP Server` check box needs to be unchecked.
 
 ## How to use authentication
 The integration allows the use of basic authentication in the requests.
-To enable it, a user and password have to be provided in the Credentials parameters in the integration configuration.
+To enable basic authentication, a user and password have to be supplied in the Credentials parameters in the integration configuration.
 
 The server will then authenticate the requests by the `Authorization` header, expecting basic authentication encrypted in base64 to match the given credentials.
