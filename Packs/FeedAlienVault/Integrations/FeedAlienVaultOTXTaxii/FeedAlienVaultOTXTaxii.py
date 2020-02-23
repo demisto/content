@@ -12,7 +12,7 @@ import dateutil
 import pytz
 import dateutil.parser
 from bs4 import BeautifulSoup
-from netaddr import IPAddress
+from netaddr import IPAddress, iprange_to_cidrs, IPNetwork
 from six import string_types
 from typing import Dict, List
 
@@ -118,24 +118,57 @@ class AddressObject(object):
         acategory = props.get('category', None)
         if acategory is None:
             try:
-                ip = IPAddress(indicator)
-                if ip.version == 4:
-                    type_ = 'IP'
-                elif ip.version == 6:
-                    type_ = 'IPv6'
+                # if ',' in the ip address then we have a range (10.0.0.0,10.0.0.255)
+                # and we want to change it to a CIDR object (10.0.0.0/24)
+                if ',' in indicator:
+                    ips = indicator.split(',')
+                    indicator = str(iprange_to_cidrs(ips[0], ips[1])[0])
+                    cidr = IPNetwork(indicator)
+                    if cidr.version == 4:
+                        type_ = 'CIDR'
+                    elif cidr.version == 6:
+                        type_ = 'IPv6CIDR'
+                    else:
+                        LOG('Unknown ip version: {!r}'.format(cidr.version))
+                        return []
+
                 else:
-                    LOG('Unknown ip version: {!r}'.format(ip.version))
-                    return []
+                    ip = IPAddress(indicator)
+                    if ip.version == 4:
+                        type_ = 'IP'
+                    elif ip.version == 6:
+                        type_ = 'IPv6'
+                    else:
+                        LOG('Unknown ip version: {!r}'.format(ip.version))
+                        return []
 
             except Exception:
                 return []
 
         elif acategory == 'ipv4-addr':
-            type_ = 'IP'
+            # if ',' in the ip address then we have a range (10.0.0.0,10.0.0.255)
+            # and we want to change it to a CIDR object (10.0.0.0/24)
+            if ',' in indicator:
+                ips = indicator.split(',')
+                indicator = str(iprange_to_cidrs(ips[0], ips[1])[0].cidr)
+                type_ = 'CIDR'
+
+            else:
+                type_ = 'IP'
+
         elif acategory == 'ipv6-addr':
-            type_ = 'IPv6'
+            # Same logic as above just for ipv6
+            if ',' in indicator:
+                ips = indicator.split(',')
+                indicator = str(iprange_to_cidrs(ips[0], ips[1])[0].cidr)
+                type_ = 'IPv6CIDR'
+
+            else:
+                type_ = 'IPv6'
+
         elif acategory == 'e-mail':
             type_ = 'Email'
+
         else:
             LOG('Unknown AddressObjectType category: {!r}'.format(acategory))
             return []
@@ -575,6 +608,7 @@ def fetch_indicators_command(client: Client, limit=None):
     Returns:
         list. A list of indicators.
     """
+    indicator_list = []  # type:List
     for collection in client.collections:
         try:
             taxii_iter = client.build_iterator(collection)
@@ -586,7 +620,6 @@ def fetch_indicators_command(client: Client, limit=None):
             else:
                 continue
 
-        indicator_list = []  # type:List
         index = 0
         only_indicator_list = []  # type:List
         for raw_response in taxii_iter:
