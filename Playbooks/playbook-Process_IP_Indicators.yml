@@ -3,10 +3,8 @@ id: Process IP Indicators
 version: -1
 fromversion: 5.5.0
 name: Process IP Indicators
-description: The playbook handles the processing of indicators by running enrichment
-  and tagging the indicators accordingly. Indicators found as good will be added to
-  the Demisto white list. Indicators that are found to be bad will be checked against
-  the white list and removed accordingly.
+description: This playbook processes indicators by running enrichment, manually reviewing the indicator,
+  and tagging indicators accordingly based on user preferences or enrichment results.
 starttaskid: "0"
 tasks:
   "0":
