@@ -45,6 +45,9 @@ args:
 comment: Checks whether the specified item is in a list. The default list is the Demisto
   Indicators Whitelist.
 outputs:
+- contextPath: List.ListName
+  description: The name of the list you compared with.
+  type: string
 - contextPath: List.In
   description: The list of items in the list.
   type: Unknown
