@@ -7,7 +7,6 @@ TestData/EmailWithNonUnicodeSubject.eml
 *.pyc
 .pytest_cache
 .python-version
-
 CommonServerPython.py
 *Module.py
 !Packs/ApiModules/Scripts/*/*Module.py
