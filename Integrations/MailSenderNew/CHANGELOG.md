@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.2.3] - 2020-02-18
+Fixed an issue where in some cases attachments display as being empty.
+
 ## [19.11.0] - 2019-11-12
  - Added support for versions of *smtplib* that use stderr from sys.
  - Fixed support for CRAM-MD5 authentication.
