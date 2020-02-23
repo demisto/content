@@ -26,8 +26,7 @@ def test_get_indicators_1():
             feed_url_to_config=feed_url_to_config,
         )
         hr, indicators_ec, raw_json = get_indicators_command(client, args)
-        indicators_ec = indicators_ec.get('CSV.Indicator')
-        assert len(indicators_ec) == 35
+        assert not indicators_ec
         for ind_json in raw_json:
             ind_val = ind_json.get('value')
             ind_type = ind_json.get('type')
@@ -65,11 +64,10 @@ def test_get_indicators_with_mapping():
             feed_url_to_config=feed_url_to_config
         )
         hr, indicators_ec, raw_json = get_indicators_command(client, args)
-        indicators_ec = indicators_ec.get('CSV.Indicator')
-        assert len(indicators_ec) == 35
+        assert not indicators_ec
         for ind_json in raw_json:
             ind_val = ind_json.get('value')
-            ind_map = ind_json['CustomFields'].get('AAA')
+            ind_map = ind_json['fields'].get('AAA')
             ind_type = ind_json.get('type')
             ind_rawjson = ind_json.get('rawJSON')
             assert ind_val
@@ -103,8 +101,7 @@ def test_get_indicators_2():
             feed_url_to_config=feed_url_to_config,
         )
         hr, indicators_ec, raw_json = get_indicators_command(client, args)
-        indicators_ec = indicators_ec.get('CSV.Indicator')
-        assert len(indicators_ec) == 35
+        assert not indicators_ec
         for ind_json in raw_json:
             ind_val = ind_json.get('value')
             ind_type = ind_json.get('type')
