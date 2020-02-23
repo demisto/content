@@ -34,14 +34,14 @@ def test_timestamp_length_equalization():
     timestamp_in_millisecond_after, timestamp_in_seconds_after = timestamp_length_equalization(timestamp_in_millisecond,
                                                                                                timestamp_in_seconds)
 
-    assert timestamp_in_millisecond_after == 1574585006
-    assert timestamp_in_seconds_after == 1574585015
+    assert timestamp_in_millisecond_after == 1574585006000
+    assert timestamp_in_seconds_after == 1574585015000
 
     timestamp_in_seconds_after, timestamp_in_millisecond_after = timestamp_length_equalization(timestamp_in_seconds,
                                                                                                timestamp_in_millisecond)
 
-    assert timestamp_in_millisecond_after == 1574585006
-    assert timestamp_in_seconds_after == 1574585015
+    assert timestamp_in_millisecond_after == 1574585006000
+    assert timestamp_in_seconds_after == 1574585015000
 
 
 def test_run_command_failure_sensor_offline(requests_mock, mocker):

@@ -2,6 +2,7 @@
 import demistomock as demisto
 import copy
 import json
+import re
 import os
 import sys
 import requests
@@ -10,7 +11,9 @@ import pytest
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    encode_string_results
 
 try:
     from StringIO import StringIO
@@ -622,11 +625,26 @@ def test_return_error_fetch_incidents(mocker):
     assert returned_error
 
 
+def test_return_error_fetch_indicators(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-indicators
+    mocker.patch.object(demisto, 'command', return_value="fetch-indicators")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
 def test_return_error_long_running_execution(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"
 
-    # Test fetch-incidents
+    # Test long-running-execution
     mocker.patch.object(demisto, 'command', return_value="long-running-execution")
     returned_error = False
     try:
@@ -960,6 +978,19 @@ def test_parse_date_range():
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
 
 
+def test_encode_string_results():
+    s = "test"
+    assert s == encode_string_results(s)
+    s2 = u"בדיקה"
+    if IS_PY3:
+        res = str(s2)
+    else:
+        res = s2.encode("utf8")
+    assert encode_string_results(s2) == res
+    not_string = [1, 2, 3]
+    assert not_string == encode_string_results(not_string)
+
+
 class TestReturnOutputs:
     def test_return_outputs(self, mocker):
         mocker.patch.object(demisto, 'results')
@@ -995,3 +1026,74 @@ class TestReturnOutputs:
         assert outputs == results['Contents']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
+
+
+def test_argToBoolean():
+    assert argToBoolean('true') is True
+    assert argToBoolean('yes') is True
+    assert argToBoolean('TrUe') is True
+    assert argToBoolean(True) is True
+
+    assert argToBoolean('false') is False
+    assert argToBoolean('no') is False
+    assert argToBoolean(False) is False
+
+
+batch_params = [
+    # full batch case
+    ([1, 2, 3], 1, [[1], [2], [3]]),
+    # empty case
+    ([], 1, []),
+    # out of index case
+    ([1, 2, 3], 5, [[1, 2, 3]]),
+    # out of index in end with batches
+    ([1, 2, 3, 4, 5], 2, [[1, 2], [3, 4], [5]]),
+    ([1] * 100, 2, [[1, 1]] * 50)
+]
+
+
+@pytest.mark.parametrize('iterable, sz, expected', batch_params)
+def test_batch(iterable, sz, expected):
+    for i, item in enumerate(batch(iterable, sz)):
+        assert expected[i] == item
+
+
+regexes_test = [
+    (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.a.1', False),
+    (ipv4Regex, '192.168..1.1', False),
+    (ipv4Regex, '192.256.1.1', False),
+    (ipv4Regex, '192.256.1.1.1', False),
+    (ipv4cidrRegex, '192.168.1.1/32', True),
+    (ipv4cidrRegex, '192.168.1.1.1/30', False),
+    (ipv4cidrRegex, '192.168.1.b/30', False),
+    (ipv4cidrRegex, '192.168.1.12/381', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::1', True),
+    (ipv6Regex, '2001:db8:a0b:12f0::1/11', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::1::1', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::98aa5', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/64', True),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/256', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1::1/25', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1aaasds::1/1', False)
+]
+
+
+@pytest.mark.parametrize('pattern, string, expected', regexes_test)
+def test_regexes(pattern, string, expected):
+    # (str, str, bool) -> None
+    # emulates re.fullmatch from py3.4
+    assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
+
+
+IP_TO_INDICATOR_TYPE_PACK = [
+    ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1/32', FeedIndicatorType.CIDR),
+    ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
+    ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
+]
+
+
+@pytest.mark.parametrize('ip, indicator_type', IP_TO_INDICATOR_TYPE_PACK)
+def test_ip_to_indicator(ip, indicator_type):
+    assert FeedIndicatorType.ip_to_indicator_type(ip) is indicator_type

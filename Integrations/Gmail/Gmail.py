@@ -777,7 +777,8 @@ def set_autoreply(user_id, enable_autoreply, response_subject, response_body_pla
             'responseBodyPlainText': response_body_plain_text,
         }}
 
-    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.basic'])
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.basic'],
+                          delegated_user=user_id)
     result = service.users().settings().updateVacation(**command_args).execute()
     return result
 
@@ -797,7 +798,8 @@ def delegate_user_mailbox_command():
 
 
 def delegate_user_mailbox(user_id, delegate_email, delegate_token):
-    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.sharing'])
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.sharing'],
+                          delegated_user=user_id)
     if delegate_token:  # guardrails-disable-line
         command_args = {
             'userId': user_id if user_id != 'me' else ADMIN_EMAIL,

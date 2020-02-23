@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
 Fixed an issue with test module.
 
 ## [19.11.1] - 2019-11-26
