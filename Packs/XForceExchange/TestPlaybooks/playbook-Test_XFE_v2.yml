@@ -956,7 +956,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: URL.Data
+              simple: Domain.Name
             iscontext: true
           right:
             value:
@@ -968,7 +968,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: url
+              simple: domain
       - - operator: isEqualString
           left:
             value:
