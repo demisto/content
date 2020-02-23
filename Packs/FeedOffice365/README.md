@@ -58,12 +58,11 @@ There is no context output for this command.
 ### Indicators from Office 365 Feed:
 |value|type|
 |---|---|
-| 13.107.6.152/31 | CIDR |
-| 23.103.160.0/20 | CIDR |
-| 131.253.33.215/32 | CIDR |
-| 132.245.0.0/16 | CIDR |
-| 150.171.32.0/22 | CIDR |
-| 204.79.197.215/32 | CIDR |
-| 2603:1006::/40 | IPv6CIDR |
-| 2603:1016::/36 | IPv6CIDR |
+| 0.0.0.0/0 | CIDR |
+| 0.0.0.0/0 | CIDR |
+| 0.0.0.0/0 | CIDR |
+| 0.0.0.0/0 | CIDR |
+| 0.0.0.0/0 | CIDR |
+| 0.0.0.0/0 | CIDR |
+
 
