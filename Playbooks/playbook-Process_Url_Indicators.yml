@@ -3,19 +3,20 @@ id: Process Url Indicators
 version: -1
 fromversion: 5.5.0
 name: Process Url Indicators
-description: The playbook handles the processing of indicators by running enrichment
-  and tagging the indicators accordingly. Indicators found as good will be added to
-  the Demisto white list. Indicators that are found to be bad will be checked against
-  the white list and removed accordingly.
+description: 'This playbook processes indicators by running enrichment, manually reviewing
+  the indicator, and tagging indicators accordingly based on user preferences or enrichment
+  results. Tagging can later be used to update black/white list and other purposes.
+  To process indicators, go to playbook inputs, choose From indicators and set your
+  query (for example: "type:url").'
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "1"
+    taskid: 313fb0dc-a2d7-4b0b-82e3-7c4cb3b4b29c
     type: start
     task:
       elasticcommonfields: {}
-      id: "1"
+      id: 313fb0dc-a2d7-4b0b-82e3-7c4cb3b4b29c
       version: -1
       name: ""
       iscommand: false
@@ -39,11 +40,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 7701955f-2902-40e4-81db-0249b7febfcd
+    taskid: b699e9a1-9567-46fb-862b-5b17f8560446
     type: title
     task:
       elasticcommonfields: {}
-      id: 7701955f-2902-40e4-81db-0249b7febfcd
+      id: b699e9a1-9567-46fb-862b-5b17f8560446
       version: -1
       name: Done
       type: title
@@ -65,11 +66,11 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 06e6a9ea-ae4a-4918-8fde-912a9e83e83d
+    taskid: 21b582a1-f7db-4e5e-820b-38aa003a96e0
     type: condition
     task:
       elasticcommonfields: {}
-      id: 06e6a9ea-ae4a-4918-8fde-912a9e83e83d
+      id: 21b582a1-f7db-4e5e-820b-38aa003a96e0
       version: -1
       name: Are there results?
       description: Checks whether the specified item is in a list. The default list
@@ -106,11 +107,11 @@ tasks:
     quietmode: 2
   "21":
     id: "21"
-    taskid: 594310e9-a1d4-415e-8175-7ee64be19c88
+    taskid: eff7fd52-7d89-4f0e-809c-6cb461133f83
     type: regular
     task:
       elasticcommonfields: {}
-      id: 594310e9-a1d4-415e-8175-7ee64be19c88
+      id: eff7fd52-7d89-4f0e-809c-6cb461133f83
       version: -1
       name: Gather more data on results
       description: Check the given URL reputation
@@ -149,11 +150,11 @@ tasks:
     quietmode: 1
   "44":
     id: "44"
-    taskid: 2264f5d4-2273-429d-8d06-bc0bd9dc1f07
+    taskid: 84fcec74-5a37-495e-864a-a3535704245f
     type: regular
     task:
       elasticcommonfields: {}
-      id: 2264f5d4-2273-429d-8d06-bc0bd9dc1f07
+      id: 84fcec74-5a37-495e-864a-a3535704245f
       version: -1
       name: Add bad tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -221,11 +222,11 @@ tasks:
     quietmode: 1
   "45":
     id: "45"
-    taskid: 7e5f286d-acf9-4e3a-8acd-1aefc3c2c5a2
+    taskid: effdbc79-9cf0-4c65-8cd9-2a899e5eccab
     type: condition
     task:
       elasticcommonfields: {}
-      id: 7e5f286d-acf9-4e3a-8acd-1aefc3c2c5a2
+      id: effdbc79-9cf0-4c65-8cd9-2a899e5eccab
       version: -1
       name: Are there indicators  with high risk score?
       type: condition
@@ -263,11 +264,11 @@ tasks:
     quietmode: 2
   "46":
     id: "46"
-    taskid: 749367a5-6ea2-4423-8442-72d0d68fb723
+    taskid: cd201c7a-6495-40ec-8b2b-8d20f498f562
     type: condition
     task:
       elasticcommonfields: {}
-      id: 749367a5-6ea2-4423-8442-72d0d68fb723
+      id: cd201c7a-6495-40ec-8b2b-8d20f498f562
       version: -1
       name: Are there indicators with good Dbot score?
       type: condition
@@ -305,11 +306,11 @@ tasks:
     quietmode: 2
   "47":
     id: "47"
-    taskid: f676313f-45c0-495f-82b4-55872f5a7a4e
+    taskid: 631c6c9a-f401-4b67-80dc-770d71959ec3
     type: regular
     task:
       elasticcommonfields: {}
-      id: f676313f-45c0-495f-82b4-55872f5a7a4e
+      id: 631c6c9a-f401-4b67-80dc-770d71959ec3
       version: -1
       name: Add good tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -368,11 +369,11 @@ tasks:
     quietmode: 1
   "48":
     id: "48"
-    taskid: f20b62b7-f690-4122-824b-06d456c4efb3
+    taskid: a74d2dfd-7d49-4c23-816a-b848b23c34f6
     type: condition
     task:
       elasticcommonfields: {}
-      id: f20b62b7-f690-4122-824b-06d456c4efb3
+      id: a74d2dfd-7d49-4c23-816a-b848b23c34f6
       version: -1
       name: Are there indicators with unknown risk score?
       type: condition
@@ -410,11 +411,11 @@ tasks:
     quietmode: 2
   "49":
     id: "49"
-    taskid: fef6b4f9-89f2-4596-8576-137e84f9585b
+    taskid: 772300b7-7860-4f63-8a25-4e28446af6a4
     type: regular
     task:
       elasticcommonfields: {}
-      id: fef6b4f9-89f2-4596-8576-137e84f9585b
+      id: 772300b7-7860-4f63-8a25-4e28446af6a4
       version: -1
       name: Add unknown tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -482,11 +483,11 @@ tasks:
     quietmode: 1
   "50":
     id: "50"
-    taskid: 3a67ff9b-fc8f-4f13-8a26-8eff11f96c69
+    taskid: f946b75b-3008-41d1-888c-625ca36506ac
     type: condition
     task:
       elasticcommonfields: {}
-      id: 3a67ff9b-fc8f-4f13-8a26-8eff11f96c69
+      id: f946b75b-3008-41d1-888c-625ca36506ac
       version: -1
       name: Are there indicators with suspicious Dbot score?
       type: condition
@@ -524,11 +525,11 @@ tasks:
     quietmode: 2
   "51":
     id: "51"
-    taskid: 00e445cf-fcbb-4566-84f5-a16ee7750bee
+    taskid: bed76f41-ce07-4312-8a86-bbee09679dcf
     type: regular
     task:
       elasticcommonfields: {}
-      id: 00e445cf-fcbb-4566-84f5-a16ee7750bee
+      id: bed76f41-ce07-4312-8a86-bbee09679dcf
       version: -1
       name: Add suspicious tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -587,11 +588,11 @@ tasks:
     quietmode: 1
   "52":
     id: "52"
-    taskid: 6e869d4f-ccf3-41ea-817a-03aed47dfff6
+    taskid: 042166ca-936c-41d5-8527-19d43bedc590
     type: condition
     task:
       elasticcommonfields: {}
-      id: 6e869d4f-ccf3-41ea-817a-03aed47dfff6
+      id: 042166ca-936c-41d5-8527-19d43bedc590
       version: -1
       name: Do values appear in business partners Url list?
       type: condition
@@ -635,11 +636,11 @@ tasks:
     quietmode: 2
   "53":
     id: "53"
-    taskid: ccd7d7a5-83a0-433e-88c0-b1bf3b6b4e6c
+    taskid: d61f5b1b-f383-4fd7-8f18-60b4888e0c19
     type: regular
     task:
       elasticcommonfields: {}
-      id: ccd7d7a5-83a0-433e-88c0-b1bf3b6b4e6c
+      id: d61f5b1b-f383-4fd7-8f18-60b4888e0c19
       version: -1
       name: Add business partner tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -688,11 +689,11 @@ tasks:
     quietmode: 2
   "54":
     id: "54"
-    taskid: c14e9876-6955-4b76-8d71-768faab0a55d
+    taskid: 8dbba0b8-ced3-4614-83f9-b4bcb9d7ffb6
     type: condition
     task:
       elasticcommonfields: {}
-      id: c14e9876-6955-4b76-8d71-768faab0a55d
+      id: 8dbba0b8-ced3-4614-83f9-b4bcb9d7ffb6
       version: -1
       name: Is there a business partners Url list?
       type: condition
@@ -727,11 +728,11 @@ tasks:
     quietmode: 2
   "55":
     id: "55"
-    taskid: 54b1bbb7-bfdb-41d5-8f12-273e1dae7058
+    taskid: a0abf9c1-827c-4227-8f1a-e5eda2ba5b47
     type: regular
     task:
       elasticcommonfields: {}
-      id: 54b1bbb7-bfdb-41d5-8f12-273e1dae7058
+      id: a0abf9c1-827c-4227-8f1a-e5eda2ba5b47
       version: -1
       name: Run filter by list check on indicators
       description: Checks whether the specified item is in a list. The default list
@@ -767,11 +768,11 @@ tasks:
     quietmode: 2
   "60":
     id: "60"
-    taskid: 5e84c219-b6be-4cd9-8ec7-b8c120fb241e
+    taskid: b00e5c6f-b743-4946-8fc5-c77116ec34fa
     type: condition
     task:
       elasticcommonfields: {}
-      id: 5e84c219-b6be-4cd9-8ec7-b8c120fb241e
+      id: b00e5c6f-b743-4946-8fc5-c77116ec34fa
       version: -1
       name: Manual approve indicators to be good
       type: condition
@@ -798,20 +799,19 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 7d21f44d-4272-4aa6-8cb4-dcddf49441a5
+    taskid: 4149ebbd-b7e1-4da4-8293-6b7f834f0041
     type: condition
     task:
       elasticcommonfields: {}
-      id: 7d21f44d-4272-4aa6-8cb4-dcddf49441a5
+      id: 4149ebbd-b7e1-4da4-8293-6b7f834f0041
       version: -1
       name: Manual approve indicators to be suspicious
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "84"
+      - "93"
       "yes":
       - "51"
     separatecontext: false
@@ -829,20 +829,19 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 5d4962b7-90cc-4841-8179-68f03da6f0b6
+    taskid: 2a5e12b6-ce67-4bf4-8cc3-d1c38e56f612
     type: condition
     task:
       elasticcommonfields: {}
-      id: 5d4962b7-90cc-4841-8179-68f03da6f0b6
+      id: 2a5e12b6-ce67-4bf4-8cc3-d1c38e56f612
       version: -1
       name: Manual approve indicators to be unknown
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "87"
+      - "95"
       "yes":
       - "49"
     separatecontext: false
@@ -860,20 +859,19 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: 1a422ee1-05eb-4d19-8f77-abcd5a731e8a
+    taskid: b4bcc308-aa8b-459b-8c61-1dc4d521e768
     type: condition
     task:
       elasticcommonfields: {}
-      id: 1a422ee1-05eb-4d19-8f77-abcd5a731e8a
+      id: b4bcc308-aa8b-459b-8c61-1dc4d521e768
       version: -1
       name: Manual approve indicators to be bad
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "92"
+      - "97"
       "yes":
       - "44"
     separatecontext: false
@@ -891,11 +889,11 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: b057b983-9607-4dd0-885b-812cd813d020
+    taskid: 8ad1d76e-c5f3-454b-88bf-73b5ad5e13f5
     type: condition
     task:
       elasticcommonfields: {}
-      id: b057b983-9607-4dd0-885b-812cd813d020
+      id: 8ad1d76e-c5f3-454b-88bf-73b5ad5e13f5
       version: -1
       name: Is auto approved is allowed?
       type: condition
@@ -933,11 +931,11 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: 0b069d93-18a9-40e3-8120-15c1de414063
+    taskid: 7ab00d9b-2686-4288-8761-06a408a94242
     type: condition
     task:
       elasticcommonfields: {}
-      id: 0b069d93-18a9-40e3-8120-15c1de414063
+      id: 7ab00d9b-2686-4288-8761-06a408a94242
       version: -1
       name: Is auto approved is allowed?
       type: condition
@@ -975,11 +973,11 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: 594dd4bf-be92-4c45-80cb-cfe9728d0619
+    taskid: 446c9524-f072-4e8c-8f95-03355237bc3a
     type: condition
     task:
       elasticcommonfields: {}
-      id: 594dd4bf-be92-4c45-80cb-cfe9728d0619
+      id: 446c9524-f072-4e8c-8f95-03355237bc3a
       version: -1
       name: Is auto approved is allowed?
       type: condition
@@ -1017,11 +1015,11 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 899630a0-decc-4622-8555-85c87a915437
+    taskid: e0ed265b-dd64-40b4-8bdb-346059beede1
     type: condition
     task:
       elasticcommonfields: {}
-      id: 899630a0-decc-4622-8555-85c87a915437
+      id: e0ed265b-dd64-40b4-8bdb-346059beede1
       version: -1
       name: Is auto approved is allowed?
       type: condition
@@ -1059,11 +1057,11 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: 5bd47d1c-15f6-4e88-8831-77d2fab4c5da
+    taskid: 7ac103ce-22a1-4539-8798-6b289952aeb2
     type: regular
     task:
       elasticcommonfields: {}
-      id: 5bd47d1c-15f6-4e88-8831-77d2fab4c5da
+      id: 7ac103ce-22a1-4539-8798-6b289952aeb2
       version: -1
       name: Remove other tags from indicators
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -1122,11 +1120,11 @@ tasks:
     quietmode: 1
   "70":
     id: "70"
-    taskid: ef2c3d1b-431f-4ff2-87f7-eb198e1e4f4c
+    taskid: 997c2218-f886-41de-8cdc-ee9dc81929be
     type: regular
     task:
       elasticcommonfields: {}
-      id: ef2c3d1b-431f-4ff2-87f7-eb198e1e4f4c
+      id: 997c2218-f886-41de-8cdc-ee9dc81929be
       version: -1
       name: Remove other tags from indicators
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -1185,11 +1183,11 @@ tasks:
     quietmode: 1
   "71":
     id: "71"
-    taskid: 6d53127e-e521-4923-8044-7c28fafbb2d5
+    taskid: edfbe126-3144-4fb7-8165-1d3fe7789f9b
     type: regular
     task:
       elasticcommonfields: {}
-      id: 6d53127e-e521-4923-8044-7c28fafbb2d5
+      id: edfbe126-3144-4fb7-8165-1d3fe7789f9b
       version: -1
       name: Remove other tags from indicators
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -1248,11 +1246,11 @@ tasks:
     quietmode: 1
   "72":
     id: "72"
-    taskid: 80576b73-2621-43b6-8e42-5ae7afe499e8
+    taskid: 8aedb4d6-7dad-4eb0-80a8-a620808b9b79
     type: regular
     task:
       elasticcommonfields: {}
-      id: 80576b73-2621-43b6-8e42-5ae7afe499e8
+      id: 8aedb4d6-7dad-4eb0-80a8-a620808b9b79
       version: -1
       name: Remove other tags from indicators
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -1311,11 +1309,11 @@ tasks:
     quietmode: 1
   "73":
     id: "73"
-    taskid: 6f72d432-506d-4479-8186-6174fc0094aa
+    taskid: 0773b64b-1363-495d-87fa-ef541b90230a
     type: title
     task:
       elasticcommonfields: {}
-      id: 6f72d432-506d-4479-8186-6174fc0094aa
+      id: 0773b64b-1363-495d-87fa-ef541b90230a
       version: -1
       name: Business partner Url list
       type: title
@@ -1340,11 +1338,11 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: 4212c414-7581-406f-8753-54094b2de6fa
+    taskid: 0a0fbee4-fd48-4bde-82e6-59e63daae90e
     type: title
     task:
       elasticcommonfields: {}
-      id: 4212c414-7581-406f-8753-54094b2de6fa
+      id: 0a0fbee4-fd48-4bde-82e6-59e63daae90e
       version: -1
       name: Enrichment
       type: title
@@ -1369,11 +1367,11 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: 7c360418-a52a-4738-8c03-709a8f89f997
+    taskid: f0a5eb8a-8952-45b0-82e2-261782ea610a
     type: title
     task:
       elasticcommonfields: {}
-      id: 7c360418-a52a-4738-8c03-709a8f89f997
+      id: f0a5eb8a-8952-45b0-82e2-261782ea610a
       version: -1
       name: Good indicators
       type: title
@@ -1398,11 +1396,11 @@ tasks:
     quietmode: 0
   "78":
     id: "78"
-    taskid: 1c5221d1-79ba-4627-8e6e-4d610f8e7260
+    taskid: c53ac421-c27e-4e84-8d67-083705c3d214
     type: title
     task:
       elasticcommonfields: {}
-      id: 1c5221d1-79ba-4627-8e6e-4d610f8e7260
+      id: c53ac421-c27e-4e84-8d67-083705c3d214
       version: -1
       name: Suspicious indicators
       type: title
@@ -1427,11 +1425,11 @@ tasks:
     quietmode: 0
   "79":
     id: "79"
-    taskid: 94b98c2e-e78b-46b2-8315-1d2ee37c165b
+    taskid: ae649aaf-f6ad-437b-8e3b-512f348d8da6
     type: title
     task:
       elasticcommonfields: {}
-      id: 94b98c2e-e78b-46b2-8315-1d2ee37c165b
+      id: ae649aaf-f6ad-437b-8e3b-512f348d8da6
       version: -1
       name: Unknown indicators
       type: title
@@ -1456,11 +1454,11 @@ tasks:
     quietmode: 0
   "80":
     id: "80"
-    taskid: 17d6dff3-a0e5-4b6a-8397-e9042e6e8b4f
+    taskid: 23a93f9a-ad9e-47f9-8f68-4891160a5294
     type: title
     task:
       elasticcommonfields: {}
-      id: 17d6dff3-a0e5-4b6a-8397-e9042e6e8b4f
+      id: 23a93f9a-ad9e-47f9-8f68-4891160a5294
       version: -1
       name: Bad indicators
       type: title
@@ -1485,14 +1483,15 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: f43c860b-afb7-421b-8f23-f214fbba3c76
+    taskid: 29a364f1-f16e-4b87-8a2e-fa7e6ae45a38
     type: regular
     task:
       elasticcommonfields: {}
-      id: f43c860b-afb7-421b-8f23-f214fbba3c76
+      id: 29a364f1-f16e-4b87-8a2e-fa7e6ae45a38
       version: -1
       name: Manually provide tag for listed indicators
-      description: Input in the comments the tag name to be applied for these indicators.
+      description: Go to the next task and provide in the value field the name of
+        the tag to add and select run Automation Now.
       type: regular
       iscommand: false
       brand: ""
@@ -1514,11 +1513,11 @@ tasks:
     quietmode: 0
   "82":
     id: "82"
-    taskid: 0551f0e4-a12b-4da9-8430-12a641f8c28e
+    taskid: 51cedac9-c7b2-46a0-886b-28afc1539c1c
     type: regular
     task:
       elasticcommonfields: {}
-      id: 0551f0e4-a12b-4da9-8430-12a641f8c28e
+      id: 51cedac9-c7b2-46a0-886b-28afc1539c1c
       version: -1
       name: Add manual user tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -1576,21 +1575,18 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 1
   "83":
     id: "83"
-    taskid: 15a6cb77-c07c-4fdc-80be-6d6cfba39193
+    taskid: 5dabc30e-992d-4c6f-87d5-d980ebcb00bd
     type: regular
     task:
       elasticcommonfields: {}
-      id: 15a6cb77-c07c-4fdc-80be-6d6cfba39193
+      id: 5dabc30e-992d-4c6f-87d5-d980ebcb00bd
       version: -1
       name: Set tags to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
-      scriptName: commentsToContext
+      description: Sets a value into the context with the given context key
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -1598,11 +1594,11 @@ tasks:
       '#none#':
       - "82"
     scriptarguments:
-      contextKey:
+      append: {}
+      key:
         simple: UserDefinedTag1
-      entryId:
-        simple: ${lastCompletedTaskEntries.[0]}
-      listSeperator: {}
+      stringify: {}
+      value: {}
     separatecontext: false
     view: |-
       {
@@ -1616,81 +1612,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "84":
-    id: "84"
-    taskid: acf340c3-9410-411b-8129-8ba71ea2e069
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: acf340c3-9410-411b-8129-8ba71ea2e069
-      version: -1
-      name: Manually provide tag for listed indicators
-      description: Input in the comments the tag name to be applied for these indicators.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "85"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 1195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "85":
-    id: "85"
-    taskid: 9229956d-ab86-4a26-8df3-744bb4059da7
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 9229956d-ab86-4a26-8df3-744bb4059da7
-      version: -1
-      name: Set tags to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
-      scriptName: commentsToContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "86"
-    scriptarguments:
-      contextKey:
-        simple: UserDefinedTag2
-      entryId:
-        simple: ${lastCompletedTaskEntries.[0]}
-      listSeperator: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 1385
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "86":
     id: "86"
-    taskid: 94a26cb8-5b07-495e-83de-935194edfb55
+    taskid: e9e4e2ab-5645-48da-8847-992a866d0823
     type: regular
     task:
       elasticcommonfields: {}
-      id: 94a26cb8-5b07-495e-83de-935194edfb55
+      id: e9e4e2ab-5645-48da-8847-992a866d0823
       version: -1
       name: Add manual user tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -1749,81 +1677,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 1
-  "87":
-    id: "87"
-    taskid: 2c85c1bd-05af-4005-84a4-b6bd5d5700b8
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 2c85c1bd-05af-4005-84a4-b6bd5d5700b8
-      version: -1
-      name: Manually provide tag for listed indicators
-      description: Input in the comments the tag name to be applied for these indicators.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "88"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 1195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "88":
-    id: "88"
-    taskid: e4619116-5448-44a0-8cfa-5582ebbbbb70
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: e4619116-5448-44a0-8cfa-5582ebbbbb70
-      version: -1
-      name: Set tags to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
-      scriptName: commentsToContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "89"
-    scriptarguments:
-      contextKey:
-        simple: UserDefinedTag3
-      entryId:
-        simple: ${lastCompletedTaskEntries.[0]}
-      listSeperator: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 1385
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "89":
     id: "89"
-    taskid: 039f3c78-4a85-4270-83ce-f855a5ba636e
+    taskid: d7eb80da-7ff4-4257-86d5-c1e7efd73bf5
     type: regular
     task:
       elasticcommonfields: {}
-      id: 039f3c78-4a85-4270-83ce-f855a5ba636e
+      id: d7eb80da-7ff4-4257-86d5-c1e7efd73bf5
       version: -1
       name: Add manual user tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -1882,52 +1742,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 1
-  "90":
-    id: "90"
-    taskid: 434a5a08-add1-4211-8b97-4f45ff49f3b7
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 434a5a08-add1-4211-8b97-4f45ff49f3b7
-      version: -1
-      name: Set tags to context
-      description: "Takes the comments of a given entry ID and stores them in the
-        incident context, under a provided context key. \nFor accessing the last executed
-        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
-        the entryId input parameter."
-      scriptName: commentsToContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "91"
-    scriptarguments:
-      contextKey:
-        simple: UserDefinedTag4
-      entryId:
-        simple: ${lastCompletedTaskEntries.[0]}
-      listSeperator: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2160,
-          "y": 1385
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "91":
     id: "91"
-    taskid: 75fbdcf0-1822-46c9-8c1d-10338b8202c8
+    taskid: 1204f004-0251-4385-814a-881622dc4049
     type: regular
     task:
       elasticcommonfields: {}
-      id: 75fbdcf0-1822-46c9-8c1d-10338b8202c8
+      id: 1204f004-0251-4385-814a-881622dc4049
       version: -1
       name: Add manual user tag to indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -1986,28 +1807,197 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 1
-  "92":
-    id: "92"
-    taskid: ebc04610-f4a5-436a-884a-92cfa6e8f4cd
+  "93":
+    id: "93"
+    taskid: 56161e94-2072-4593-80f6-56552a059345
     type: regular
     task:
       elasticcommonfields: {}
-      id: ebc04610-f4a5-436a-884a-92cfa6e8f4cd
+      id: 56161e94-2072-4593-80f6-56552a059345
       version: -1
       name: Manually provide tag for listed indicators
-      description: Input in the comments the tag name to be applied for these indicators.
+      description: Go to the next task and provide in the value field the name of
+        the tag to add and select run Automation Now.
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "90"
+      - "94"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: ef5c082d-83a2-4741-8d76-1cfe9a3d2f7e
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: ef5c082d-83a2-4741-8d76-1cfe9a3d2f7e
+      version: -1
+      name: Set tags to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserDefinedTag2
+      stringify: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: 9a24d9b9-e06b-4f31-8a85-0865d82e810d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 9a24d9b9-e06b-4f31-8a85-0865d82e810d
+      version: -1
+      name: Manually provide tag for listed indicators
+      description: Go to the next task and provide in the value field the name of
+        the tag to add and select run Automation Now.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 40d9e108-a98c-4b4e-8606-d6cb0a87631d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 40d9e108-a98c-4b4e-8606-d6cb0a87631d
+      version: -1
+      name: Set tags to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserDefinedTag2
+      stringify: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: bb06e61b-3355-4d6a-891a-5198d56e3268
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: bb06e61b-3355-4d6a-891a-5198d56e3268
+      version: -1
+      name: Manually provide tag for listed indicators
+      description: Go to the next task and provide in the value field the name of
+        the tag to add and select run Automation Now.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 2160,
           "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: 42bb52ec-27c0-4e8e-8ede-c70f15aa8706
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 42bb52ec-27c0-4e8e-8ede-c70f15aa8706
+      version: -1
+      name: Set tags to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserDefinedTag2
+      stringify: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2160,
+          "y": 1385
         }
       }
     note: false
@@ -2033,7 +2023,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-    query: ""
+    query: ''
     queryEntity: indicators
     results: null
     daterange:
@@ -2061,6 +2051,7 @@ inputs:
   description: Values will be yes or no, default is yes.
   playbookInputQuery: null
 outputs: []
-quiet: false
+sourceplaybookid: 4dd3e7d3-3703-44e8-80d6-513874da3866
+quiet: true
 tests:
 - No test
