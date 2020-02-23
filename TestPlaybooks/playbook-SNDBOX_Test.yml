@@ -1,3 +1,4 @@
+elasticcommonfields: {}
 id: SNDBOX_Test
 version: -1
 name: SNDBOX_Test
@@ -8,6 +9,7 @@ tasks:
     taskid: fff92052-f29b-4697-8316-64d3633ed401
     type: start
     task:
+      elasticcommonfields: {}
       id: fff92052-f29b-4697-8316-64d3633ed401
       version: -1
       name: ""
@@ -20,16 +22,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: cfd9dcf2-6d23-4a1e-872a-59e05f82b807
     type: regular
     task:
+      elasticcommonfields: {}
       id: cfd9dcf2-6d23-4a1e-872a-59e05f82b807
       version: -1
       name: Start Clean
@@ -51,16 +58,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 93cad980-6541-43a7-84f9-7a983dbba4e0
     type: regular
     task:
+      elasticcommonfields: {}
       id: 93cad980-6541-43a7-84f9-7a983dbba4e0
       version: -1
       name: Is Integration Online
@@ -75,16 +87,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 132733a9-cbf2-4241-82aa-e4dee86155a9
     type: regular
     task:
+      elasticcommonfields: {}
       id: 132733a9-cbf2-4241-82aa-e4dee86155a9
       version: -1
       name: Get Test File
@@ -103,8 +120,7 @@ tasks:
       insecure: {}
       method:
         simple: GET
-      password:
-        simple: '{ENCRYPTED}aHE7kOB/KVykK55LbjeM16bqnXCeogqNDj+PHeh6r258a5yrpGDcHB4tgPxiYEile81OJ4swARKdU17afnc2vQ=='
+      password: {}
       proxy: {}
       saveAsFile:
         simple: "yes"
@@ -116,16 +132,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: e6e71338-f063-4575-8f15-d600cecad684
     type: regular
     task:
+      elasticcommonfields: {}
       id: e6e71338-f063-4575-8f15-d600cecad684
       version: -1
       name: Submit
@@ -143,17 +164,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: ab2c5764-edef-4965-87b8-9709f2a181d6
+    taskid: 6a5ab4b1-12cd-47e5-868f-893ba5e64389
     type: regular
     task:
-      id: ab2c5764-edef-4965-87b8-9709f2a181d6
+      elasticcommonfields: {}
+      id: 6a5ab4b1-12cd-47e5-868f-893ba5e64389
       version: -1
       name: Get Info
       script: '|||sndbox-analysis-info'
@@ -162,8 +188,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
-      - "8"
+      - "10"
     scriptarguments:
       analysis_id:
         simple: ${SNDBOX.Analysis.ID}
@@ -171,16 +196,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: d73b88c0-dce8-40e1-864d-438c07c26d5d
     type: regular
     task:
+      elasticcommonfields: {}
       id: d73b88c0-dce8-40e1-864d-438c07c26d5d
       version: -1
       name: Download Sample
@@ -190,7 +220,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "7"
     scriptarguments:
       analysis_id:
         simple: ${SNDBOX.Analysis.ID}
@@ -199,15 +229,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: 9b3286b4-f141-4842-848c-af7b3bc18e9e
     type: regular
     task:
+      elasticcommonfields: {}
       id: 9b3286b4-f141-4842-848c-af7b3bc18e9e
       version: -1
       name: Download Report
@@ -215,6 +250,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
     scriptarguments:
       analysis_id:
         complex:
@@ -225,52 +263,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
-  "8":
-    id: "8"
-    taskid: bbfa98f3-7fc9-4e95-8283-c77cfa82ef4f
-    type: condition
-    task:
-      id: bbfa98f3-7fc9-4e95-8283-c77cfa82ef4f
-      version: -1
-      name: Check if task is done
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: SNDBOX.Analysis.Status
-            iscontext: true
-          right:
-            value:
-              simple: finished
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: 5de12561-5a8a-48e5-8afd-e50038edac55
     type: title
     task:
+      elasticcommonfields: {}
       id: 5de12561-5a8a-48e5-8afd-e50038edac55
       version: -1
       name: End Test
@@ -282,17 +289,81 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1260
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 065fe57d-f6af-459e-8f0b-4a7d29f0305b
+    type: playbook
+    task:
+      elasticcommonfields: {}
+      id: 065fe57d-f6af-459e-8f0b-4a7d29f0305b
+      version: -1
+      name: GenericPolling - Get Info
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: SNDBOX
+          accessor: Analysis.ID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: sndbox-analysis-info
+      Timeout:
+        simple: "10"
+      dt:
+        simple: SNDBOX.Analysis(val.Status !== 'finished').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
-        "width": 810,
+        "height": 1610,
+        "width": 380,
         "x": 50,
         "y": 50
       }

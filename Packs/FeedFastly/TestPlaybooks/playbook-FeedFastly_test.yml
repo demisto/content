@@ -70,11 +70,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: abe8971c-da7a-42cb-8fc8-e78389df535a
+    taskid: 9f408646-8b26-496a-8c61-bfaf1c870743
     type: regular
     task:
       elasticcommonfields: {}
-      id: abe8971c-da7a-42cb-8fc8-e78389df535a
+      id: 9f408646-8b26-496a-8c61-bfaf1c870743
       version: -1
       name: get-indicators-ip
       description: Fetches indicators from the feed.
@@ -86,6 +86,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
+      extend-context:
+        simple: Indicator=.[0]
       limit:
         simple: "1"
     separatecontext: false
@@ -103,11 +105,11 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 9dee9970-7277-44cf-880c-331cc11e672f
+    taskid: 3ede471a-55ea-4514-834c-50d5ec142333
     type: condition
     task:
       elasticcommonfields: {}
-      id: 9dee9970-7277-44cf-880c-331cc11e672f
+      id: 3ede471a-55ea-4514-834c-50d5ec142333
       version: -1
       name: verify get indicators
       type: condition
@@ -120,24 +122,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: Type
+              simple: Indicator.type
             iscontext: true
-          right:
-            value:
-              simple: CIDR
-    - label: condition-2
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Type
-            iscontext: true
-          right:
-            value:
-              simple: IPv6CIDR
     view: |-
       {
         "position": {
