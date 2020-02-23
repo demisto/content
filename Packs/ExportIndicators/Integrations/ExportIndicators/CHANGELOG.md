@@ -1,2 +1,2 @@
 ## [Unreleased]
-This integration provides Export Indicators List as a service for the system indicators, and supports basic authentication.
+The Export Indicators integration exports system indicators to a list (file) and supports basic authentication.
