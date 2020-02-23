@@ -115,7 +115,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: '''false'''
+      defaultValue: 'false'
       description: Return only the attributes set with the "to_ids" flag
       isArray: false
       name: to_ids
