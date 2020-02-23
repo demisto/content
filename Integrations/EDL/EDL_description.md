@@ -2,7 +2,7 @@
 
 There are two ways that you can access the EDL service.
 
-### Access the EDL Service by URS and Port (HTTP)
+### Access the EDL Service by URL and Port (HTTP)
 In a web browser, go to **http://*demisto_address*:*listen_port***.
 
 
