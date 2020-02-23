@@ -285,7 +285,10 @@ def run_server(params, is_test=False):
         port = get_params_port(params)
         ssl_args = dict()
 
-        if certificate and private_key and not http_server:
+        if (certificate and not private_key) or (private_key and not certificate):
+            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
+
+        if certificate and private_key:
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
             certificate_file.write(bytes(certificate, 'utf-8'))
@@ -305,7 +308,7 @@ def run_server(params, is_test=False):
         if is_test:
             server_process = Process(target=server.serve_forever)
             server_process.start()
-            time.sleep(10)
+            time.sleep(5)
             server_process.terminate()
         else:
             server.serve_forever()

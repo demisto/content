@@ -47,13 +47,6 @@ configuration:
   name: key
   required: false
   type: 14
-- additionalinfo: Ignores certificate and private key, and will run the EDL service
-    in HTTP
-  display: HTTP Server
-  hidden: false
-  name: http_flag
-  required: false
-  type: 8
 - display: Username
   additionalinfo: Enable basic authentication for accessing the EDL. If left empty, no authentication is enforced. 
   name: credentials

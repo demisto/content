@@ -49,10 +49,6 @@ configuration:
   name: key
   required: false
   type: 14
-- display: HTTP Server
-  name: http_flag
-  required: false
-  type: 8
 - display: Username
   additionalinfo: Enable basic authentication for accessing the EDL. If left empty, no authentication is enforced. 
   name: credentials
