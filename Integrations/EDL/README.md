@@ -3,7 +3,7 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 
 ## Use Cases
 ---
-1. Generateg feeds to be used on PAN-OS as External Dynamic Lists.
+1. Generate feeds to be used on PAN-OS as External Dynamic Lists.
 2. Create External Dynamic Lists (EDLs) to track on AutoFocus the IP addresses, URLs and domains used by ransomware, known APT groups, and active malware campaigns.
 3. Create External Dynamic Lists to track the IPs and URLs used by Microsoft Office365, or used as tor exit nodes, or used by CDNs and cloud services.
 
