@@ -74,7 +74,7 @@ def get_incidents(query, time_field, size, from_date):
             from_datetime = parser.parse(from_date)
         except Exception:
             pass
-        if from_datetime is None and from_date.strip().endswith("ago"):
+        if from_datetime and from_date.strip().endswith("ago"):
             from_datetime = parse_relative_time(from_date)
         if from_datetime:
             args['from'] = from_datetime.isoformat()
