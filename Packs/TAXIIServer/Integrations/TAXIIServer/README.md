@@ -32,6 +32,6 @@ The `HTTP Server` check box needs to be unchecked.
 
 ## How to use authentication
 The integration allows the use of basic authentication in the requests.
-To enable it, a user and password have to be provided in the Credentials parameters in the integration configuration.
+To enable basic authentication, a user and password have to be supplied in the Credentials parameters in the integration configuration.
 
 The server will then authenticate the requests by the `Authorization` header, expecting basic authentication encrypted in base64 to match the given credentials.
