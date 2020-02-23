@@ -22,7 +22,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -64,6 +64,9 @@ script:
         );
 
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            if (res.Status.indexOf('pass=') !== -1) {
+                throw 'Request Failed.\nStatus code: ' + res.StatusCode + '. Check your Server URL and Port.';
+            }
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
         return res.Body;

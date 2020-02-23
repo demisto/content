@@ -1,0 +1,863 @@
+elasticcommonfields: {}
+id: ArcSight Add Hash Indicators
+version: -1
+fromversion: 5.5.0
+name: ArcSight Add Hash Indicators
+description: This playbook queries indicators based on a pre-defined query and adds the found indicators to
+  a ArcSight Active list. To query indicators, go to playbook inputs, choose "from indicators" and set your query.
+  for example type:file. Your Active List (resource) ID should also be defined in the playbook inputs.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '1'
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: '1'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 7701955f-2902-40e4-81db-0249b7febfcd
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 7701955f-2902-40e4-81db-0249b7febfcd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+      version: -1
+      name: Is ArcSight Enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '47'
+      - '46'
+      - '45'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ArcSight ESM v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: f20c5b6e-3fe0-4c35-8cdb-e276c7fb3ec2
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: f20c5b6e-3fe0-4c35-8cdb-e276c7fb3ec2
+      version: -1
+      name: Are there filtered results?
+      description: Checks whether the specified item is in a list. The default list
+        is the Demisto Indicators Whitelist.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '28':
+    id: '28'
+    taskid: 8659cab9-7fa7-4e4d-87b4-24407e97cccd
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 8659cab9-7fa7-4e4d-87b4-24407e97cccd
+      version: -1
+      name: Is there an ArcSight Md5 Active List?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightMd5ActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightMd5ValueFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '29':
+    id: '29'
+    taskid: 6fe8123a-4cee-40f2-81be-09057762cb03
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 6fe8123a-4cee-40f2-81be-09057762cb03
+      version: -1
+      name: Is there an ArcSight Sha1 Active List?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '33'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.ArcSightSha1ActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightSha1ValueFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '30':
+    id: '30'
+    taskid: d819ead6-ec77-49a0-81f1-86148d5b0dfb
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: d819ead6-ec77-49a0-81f1-86148d5b0dfb
+      version: -1
+      name: Is there an ArcSight Sha256 Active List?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '34'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.ArcSightSha256ActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightSha256ValueFieldName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '32':
+    id: '32'
+    taskid: 7a652461-b3f2-4809-8314-4514ca1c6ea7
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 7a652461-b3f2-4809-8314-4514ca1c6ea7
+      version: -1
+      name: Are there Md5 results?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '57'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+          right:
+            value:
+              simple: '32'
+    view: |-
+      {
+        "position": {
+          "x": 2920,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '33':
+    id: '33'
+    taskid: 34439cc1-f479-43ab-8ea2-6fc2dcfe13ff
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: 34439cc1-f479-43ab-8ea2-6fc2dcfe13ff
+      version: -1
+      name: Are there Sha1 results?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '58'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+          right:
+            value:
+              simple: '40'
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '34':
+    id: '34'
+    taskid: fab8291c-ff74-49b9-89e7-766ebd78ef5e
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: fab8291c-ff74-49b9-89e7-766ebd78ef5e
+      version: -1
+      name: Are there Sha256 results?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      'yes':
+      - '59'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: playbookQuery.value
+            iscontext: true
+          right:
+            value:
+              simple: '64'
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '45':
+    id: '45'
+    taskid: ea7f3652-5fd8-41f6-854d-0e9ada3bc216
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: ea7f3652-5fd8-41f6-854d-0e9ada3bc216
+      version: -1
+      name: Md5
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2570,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '46':
+    id: '46'
+    taskid: 197a6554-7f88-48bd-8058-242dd4caa9b3
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 197a6554-7f88-48bd-8058-242dd4caa9b3
+      version: -1
+      name: Sha1
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '47':
+    id: '47'
+    taskid: e453d443-f8fe-4ab8-82e3-0027376632b0
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: e453d443-f8fe-4ab8-82e3-0027376632b0
+      version: -1
+      name: Sha256
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '57':
+    id: '57'
+    taskid: f8b143ea-b812-42ab-8d8b-9ddbcc4495ea
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f8b143ea-b812-42ab-8d8b-9ddbcc4495ea
+      version: -1
+      name: Add Md5 to ArcSight Active list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: '32'
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightMd5ValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightMd5ActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '58':
+    id: '58'
+    taskid: fffcb66f-1748-48e7-8196-d2fd2416ece2
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: fffcb66f-1748-48e7-8196-d2fd2416ece2
+      version: -1
+      name: Add Sha1 to ArcSight Active list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: '40'
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightSha1ValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightSha1ActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '59':
+    id: '59'
+    taskid: 4415fd55-bdf2-4e53-8c3b-fbefaa209e91
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 4415fd55-bdf2-4e53-8c3b-fbefaa209e91
+      version: -1
+      name: Add Sha256 to ArcSight Active list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: '64'
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightSha256ValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightSha256ActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 2960,
+        "x": 340,
+        "y": -310
+      }
+    }
+  }
+inputs:
+- key: ArcSightMd5ActiveListID
+  value:
+    simple:
+  required: false
+  description: ID the the Md5 hash ActiveList resource as appears in the ArcSight
+    UI.
+  playbookInputQuery: null
+- key: ArcsightMd5ValueFieldName
+  value:
+    simple:
+  required: false
+  description: The name of the Active List field to insert the Md5 hash value to.
+  playbookInputQuery: null
+- key: ArcSightSha1ActiveListID
+  value: {}
+  required: false
+  description: ID the the Sha1 hash ActiveList resource as appears in the ArcSight
+    UI.
+  playbookInputQuery: null
+- key: ArcsightSha1ValueFieldName
+  value: {}
+  required: false
+  description: The name of the Active List field to insert the Sha1 hash value to.
+  playbookInputQuery: null
+- key: ArcSightSha256ActiveListID
+  value:
+    simple: null
+  required: false
+  description: ID the the Sha256 hash Active List resource as appears in the ArcSight
+    UI.
+- key: ''
+  value: {}
+  required: false
+  description: ''
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01 00:00:00
+      todate: 0001-01-01 00:00:00
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue: null
+        fromvalue: null
+        field: ''
+      fromdatelicenseval: 0001-01-01 00:00:00
+    runFromLastJobTime: false
+- key: ArcsightSha256ValueFieldName
+  value: {}
+  required: false
+  description: The name of the Active List fields to insert the Sha256 hash value
+    to.
+outputs: []
+quiet: true
+tests:
+- No test

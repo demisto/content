@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.2.3] - 2020-02-18
+Fixed an issue where the ***fetch-incidents*** was fetching the same incident repeatedly.
+
 ## [19.10.0] - 2019-10-03
 -
 
