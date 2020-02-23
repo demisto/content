@@ -33,11 +33,7 @@ CONTENT_DIRS = [
     WIDGETS_DIR,
 ]
 
-PACKAGES_TO_SKIP = [
-    'HelloWorld',
-    'HelloWorldSimple',
-    'HelloWorldScript'
-]
+PACKAGES_TO_SKIP = []
 
 # temp folder names
 BUNDLE_POST = 'bundle_post'

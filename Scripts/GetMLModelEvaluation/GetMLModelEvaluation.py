@@ -106,7 +106,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold,
             int(test_set_size - coverage), int(test_set_size)),
         '- Expected coverage ratio: The model will attempt to provide a prediction for {:.2f}% of incidents. '
         '({}/{})'.format(
-            coverage / test_set_size * 100, int(coverage), int(test_set_size)),
+            float(coverage) / test_set_size * 100, int(coverage), int(test_set_size)),
         '- Evaluation of the model performance using this probability threshold can be found below:']
     pd.set_option('display.max_columns', None)
 

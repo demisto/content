@@ -1,6 +1,16 @@
 ## [Unreleased]
 
 
+## [20.2.0] - 2020-02-04
+Added classification to 'AWS EC2 Instance Misconfiguration' incident type.
+
+
+## [20.1.2] - 2020-01-22
+Added classification to 'AWS IAM Policy Misconfiguration' incident type.
+
+## [20.1.0] - 2020-01-07
+Replaced Account field with Account Name field.
+
 ## [19.12.0] - 2019-12-10
 Updated classifier with new transformer.
 
