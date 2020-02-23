@@ -1,2 +1,2 @@
 ## [Unreleased]
-This integration provides External Dynamic List (EDL) as a service for the system indicators, and support basic authentication.
+This integration provides External Dynamic List (EDL) as a service for the system indicators and supports enforcing basic authentication (username and password).
