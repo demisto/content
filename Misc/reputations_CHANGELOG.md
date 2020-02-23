@@ -1,5 +1,6 @@
 ## [Unreleased]
-The **CVE CVSS Score** indicator type is only available in Demisto version 4.5.x and earlier.
+- The **CVE CVSS Score** indicator type is only available in Demisto version 4.5.x and earlier.
+- Added a **Domain** indicator from 5.5
 
 ## [19.11.1] - 2019-11-26
 Added support to identify URLs and domains prefixed with 'http:' or 'http:\\'.
