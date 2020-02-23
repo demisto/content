@@ -1,9 +1,9 @@
 import importlib
 import demistomock as demisto
 queued_response = {u'response_code': -2,
- u'resource': u'YES_THIS_IS_A_UID',
-  u'scan_id': u'YES_THIS_IS_A_UID',
-   u'verbose_msg': u'Your resource is queued for analysis'}
+                   u'resource': u'YES_THIS_IS_A_UID',
+                   u'scan_id': u'YES_THIS_IS_A_UID',
+                   u'verbose_msg': u'Your resource is queued for analysis'}
 
 
 def test_get_file_response_queued_response(mocker, requests_mock):

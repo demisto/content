@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+    - Added a queued for analysis status for ***vt-private-get-file-report*** command. This status will be printed in the human
+    readable.
 
 ## [19.9.1] - 2019-09-18
     - Added context outputs to match context standards, which enables outputs to be found for field mapping.
