@@ -339,13 +339,15 @@ script:
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
     var addUser = function() {
+        var check_if_user_exists = (args.check_if_user_exists == 'True');
+        var requests_suffix = check_if_user_exists ? 'users.json' : 'users/create_or_update.json';
         var body = {
                 user: {
                     name: args.name,
                     email: args.email
                 }
         };
-        res = sendRequest('POST', 'users.json', JSON.stringify(body));
+        res = sendRequest('POST', requests_suffix, JSON.stringify(body));
         md = 'Zendesk user added successfuly - ' + args.name + ' (' + args.email + ')\n';
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
@@ -775,6 +777,14 @@ script:
     - name: email
       required: true
       description: Email address of the user to add.
+    - name: check_if_user_exists
+      default: true
+      auto: PREDEFINED
+      predefined:
+        - "True"
+        - "False"
+      description: Whether to check if the specified user already exists in Zendesk. Can be "True" or "False". Default is "False".
+      defaultValue: "False"
     description: Adds a user (not agent or admin) to Zendesk.
   - name: zendesk-get-article
     arguments:
