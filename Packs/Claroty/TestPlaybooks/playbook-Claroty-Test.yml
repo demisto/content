@@ -1,0 +1,427 @@
+id: Claroty - Test
+version: 11
+name: Claroty - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a8d21d15-0a59-4da0-8da9-fbf589bc451c
+    type: start
+    task:
+      id: a8d21d15-0a59-4da0-8da9-fbf589bc451c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 1bc8dbc7-4f01-44f0-8735-24fd606d96ea
+    type: regular
+    task:
+      id: 1bc8dbc7-4f01-44f0-8735-24fd606d96ea
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 9417dce8-bdf4-4ff1-809a-c3de14081c8d
+    type: regular
+    task:
+      id: 9417dce8-bdf4-4ff1-809a-c3de14081c8d
+      version: -1
+      name: claroty-get-assets
+      script: '|||claroty-get-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      asset_amount: {}
+      asset_limit:
+        simple: "1"
+      assets_last_seen: {}
+      criticality:
+        simple: High
+      fields: {}
+      insight_name: {}
+      should_enrich_assets: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 94c7b7bf-53f4-48fd-8f01-d3dfcbd6c586
+    type: condition
+    task:
+      id: 94c7b7bf-53f4-48fd-8f01-d3dfcbd6c586
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Claroty.Asset.AssetID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Claroty.Asset.AssetType
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Claroty.Asset.Criticality
+            iscontext: true
+          right:
+            value:
+              simple: High
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 7ada54a1-a6c3-4899-8924-a178049339e1
+    type: regular
+    task:
+      id: 7ada54a1-a6c3-4899-8924-a178049339e1
+      version: -1
+      name: claroty-query-alerts
+      script: '|||claroty-query-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alert_limit:
+        simple: "1"
+      alert_number: {}
+      date_from: {}
+      fields: {}
+      severity: {}
+      sort_by: {}
+      sort_order: {}
+      type:
+        simple: Configuration Download
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 3982b630-6dfd-4d57-8bbe-439041f7f9eb
+    type: condition
+    task:
+      id: 3982b630-6dfd-4d57-8bbe-439041f7f9eb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Claroty.Alert.AlertTypeID
+            iscontext: true
+          right:
+            value:
+              simple: "1001"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Claroty.Alert.AlertTypeID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Claroty.Alert.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Claroty.Alert.Severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4d3ee78e-ac10-4445-8bcc-dfc999e24584
+    type: regular
+    task:
+      id: 4d3ee78e-ac10-4445-8bcc-dfc999e24584
+      version: -1
+      name: claroty-resolve-alert
+      script: '|||claroty-resolve-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      resolve_as: {}
+      resolve_comment: {}
+      selected_alerts:
+        simple: ${Claroty.Alert.ResourceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: fbaf9104-4d5d-4ebf-8888-03b01922acb0
+    type: condition
+    task:
+      id: fbaf9104-4d5d-4ebf-8888-03b01922acb0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Claroty.Resolve_out.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 87c17b28-3e20-4570-8f77-de1fadd50a2e
+    type: regular
+    task:
+      id: 87c17b28-3e20-4570-8f77-de1fadd50a2e
+      version: -1
+      name: claroty-get-single-alert
+      script: '|||claroty-get-single-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_rid:
+        simple: ${Claroty.Alert.ResourceID}
+      fields: {}
+      get_single_alert: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 783396f8-59a4-40fb-8b20-35bd03879cfc
+    type: condition
+    task:
+      id: 783396f8-59a4-40fb-8b20-35bd03879cfc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Claroty.Alert.Description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 8217d45b-79cc-42b6-81bb-4b7474ff65dc
+    type: title
+    task:
+      id: 8217d45b-79cc-42b6-81bb-4b7474ff65dc
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 8acd6cc8-fe43-4fd9-81ad-cc2ff74e8574
+    type: regular
+    task:
+      id: 8acd6cc8-fe43-4fd9-81ad-cc2ff74e8574
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Claroty.Alert.Description
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
