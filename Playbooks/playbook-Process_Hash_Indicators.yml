@@ -1,7 +1,7 @@
 elasticcommonfields: {}
-id: Process Hash Indicators Test
+id: Process Hash Indicators
 version: -1
-name: Process Hash Indicators Test
+name: Process Hash Indicators
 fromversion: 5.5.0
 description: The playbook handles the processing of indicators by running enrichment
   and tagging the indicators accordingly. Indicators found as good will be added to
