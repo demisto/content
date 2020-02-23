@@ -50,7 +50,7 @@ configuration:
   required: false
   type: 14
 - display: Username
-  additionalinfo: Enable basic authentication for accessing the EDL. If left empty, no authentication is enforced. 
+  additionalinfo: Enable basic authentication for accessing the EDL. If empty, no authentication is enforced. 
   name: credentials
   required: false
   type: 9
@@ -82,7 +82,7 @@ script:
       secret: false
     - default: false
       description: The maximum number of entries in the output. If no value is provided,
-        will use the value specified in the List Size parameter configured in the
+        will use the value specified in the "List Size" parameter configured in the
         instance configuration.
       isArray: false
       name: list_size
@@ -90,8 +90,8 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to print the indicators. If set to true will print the
-        indicators the that were saved to the export indicators service. The default
+      description: Whether to print the indicators. If set to "true" will print the
+        indicators that were saved to the Export Indicators Service. The default
         value is "false".
       isArray: false
       name: print_indicators
@@ -101,7 +101,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates values stored in the export indicators service (only avaialable
+    description: Updates values stored in the Export Indicators Service (only avaialable
       On-Demand).
     execution: false
     name: eis-update
