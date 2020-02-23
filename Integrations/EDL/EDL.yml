@@ -48,7 +48,7 @@ configuration:
   required: false
   type: 14
 - display: Username
-  additionalinfo: Enable basic authentication for accessing the EDL. If left empty, no authentication is enforced. 
+  additionalinfo: Uses basic authentication for accessing the EDL. If empty, no authentication is enforced. 
   name: credentials
   required: false
   type: 9
@@ -67,7 +67,7 @@ script:
       secret: false
     - default: false
       description: The maximum number of entries in the EDL. If no value is provided,
-        will use the value specified in the EDL Size parameter configured in the instance
+        will use the value specified in the "EDL Size" parameter configured in the instance
         configuration.
       isArray: false
       name: edl_size
