@@ -19,7 +19,7 @@ API_KEY = demisto.params().get('api_key')
 PAGE_LIMIT = demisto.params().get('page_limit')
 FIRST_RUN = int(demisto.params().get('first_run', '7'))
 SERVER = 'https://expander.expanse.co'
-INSECURE = demisto.params().get('insecure')
+VERIFY_CERTIFICATES = not demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
 BASE_URL = SERVER
 EXPOSURE_EVENT_TYPES = "ON_PREM_EXPOSURE_APPEARANCE,ON_PREM_EXPOSURE_REAPPEARANCE"
@@ -128,7 +128,7 @@ def http_request(method, endpoint, params=None, token=False):
         url,
         params=params,
         headers=head,
-        verify=INSECURE
+        verify=VERIFY_CERTIFICATES
     )
     if r.status_code != 200:
         demisto.error(r.text)

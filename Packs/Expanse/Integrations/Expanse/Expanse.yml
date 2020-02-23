@@ -65,6 +65,18 @@ script:
     - contextPath: IP.Geo.Description
       description: Additional information about the location
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
     - contextPath: Expanse.IP.Address
       description: Internet Protocol Address
       type: String
@@ -147,7 +159,7 @@ script:
     name: domain
     outputs:
     - contextPath: Domain.Name
-      description: 'The domain name, for example: "google.com'
+      description: 'The domain name, for example: "google.com"'
       type: String
     - contextPath: Domain.DNS
       description: A list of IP objects resolved by DNS
@@ -233,6 +245,18 @@ script:
     - contextPath: Domain.WHOIS.Admin.Phone
       description: The phone number of the domain administrator
       type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
     - contextPath: Expanse.Domain.Name
       description: 'The domain name, for example: "google.com'
       type: String

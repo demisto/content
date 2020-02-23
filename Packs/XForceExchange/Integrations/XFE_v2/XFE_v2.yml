@@ -85,17 +85,17 @@ script:
       description: For malicious IPs, the score from the vendor
       type: Unknown
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: Unknown
+      description: The indicator that was tested.
+      type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: String
+      description: The indicator type.
+      type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: Unknown
+      description: The vendor used to calculate the score.
+      type: string
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: Unknown
+      description: The actual score.
+      type: number
     - contextPath: XFE.IP.Reason
       description: The reason for the given score from X-Force Exchange
       type: String
@@ -138,17 +138,17 @@ script:
       description: For malicious URLs, the vendor that made the decision
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: String
+      description: The indicator that was tested.
+      type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: String
+      description: The indicator type.
+      type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: String
+      description: The vendor used to calculate the score.
+      type: string
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: Number
+      description: The actual score.
+      type: number
   - arguments:
     - auto: PREDEFINED
       default: true
@@ -186,17 +186,17 @@ script:
       description: For malicious files, the reason for the vendor to make the decision
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: String
+      description: The indicator that was tested.
+      type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: String
+      description: The indicator type.
+      type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: String
+      description: The vendor used to calculate the score.
+      type: string
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: Number
+      description: The actual score.
+      type: number
     - contextPath: XFE.File.CnCServers
       description: C&C servers related to the given file
       type: Unknown
@@ -247,24 +247,24 @@ script:
     execution: false
     name: domain
     outputs:
-    - contextPath: URL.Data
-      description: The file's URL
+    - contextPath: Domain.Name
+      description: Domain
       type: String
-    - contextPath: URL.Malicious.Vendor
+    - contextPath: Domain.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: String
+      description: The indicator that was tested.
+      type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: String
+      description: The indicator type.
+      type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: String
+      description: The vendor used to calculate the score.
+      type: string
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: Number
+      description: The actual score.
+      type: number
   - arguments:
     - auto: PREDEFINED
       default: true
