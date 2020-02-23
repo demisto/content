@@ -12,7 +12,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    encode_string_results
 
 try:
     from StringIO import StringIO
@@ -977,6 +978,19 @@ def test_parse_date_range():
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
 
 
+def test_encode_string_results():
+    s = "test"
+    assert s == encode_string_results(s)
+    s2 = u"בדיקה"
+    if IS_PY3:
+        res = str(s2)
+    else:
+        res = s2.encode("utf8")
+    assert encode_string_results(s2) == res
+    not_string = [1, 2, 3]
+    assert not_string == encode_string_results(not_string)
+
+
 class TestReturnOutputs:
     def test_return_outputs(self, mocker):
         mocker.patch.object(demisto, 'results')
@@ -1085,3 +1099,16 @@ def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
     # emulates re.fullmatch from py3.4
     assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
+
+
+IP_TO_INDICATOR_TYPE_PACK = [
+    ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1/32', FeedIndicatorType.CIDR),
+    ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
+    ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
+]
+
+
+@pytest.mark.parametrize('ip, indicator_type', IP_TO_INDICATOR_TYPE_PACK)
+def test_ip_to_indicator(ip, indicator_type):
+    assert FeedIndicatorType.ip_to_indicator_type(ip) is indicator_type

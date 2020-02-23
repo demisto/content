@@ -49,6 +49,8 @@ tasks:
     scriptarguments:
       limit:
         simple: "10"
+      initial_interval:
+        simple: "4 days"
     separatecontext: false
     view: |-
       {
