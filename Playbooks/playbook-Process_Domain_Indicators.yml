@@ -274,8 +274,8 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
-    description: ''
       '#default#':
       - "3"
       "yes":
