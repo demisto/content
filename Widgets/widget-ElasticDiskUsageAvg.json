@@ -1,0 +1,31 @@
+{
+  "id": "es-disk-current-usage",
+  "version": -1,
+  "fromVersion": "5.5.0",
+  "name": "Elastic Disk Current Usage",
+  "dataType": "system",
+  "widgetType": "number",
+  "query": "es-disk.usedPercent",
+  "isPredefined": true,
+  "params": {
+    "currencySign": "%",
+    "signAlignment": "right",
+    "colors": {
+      "isEnabled": true,
+      "items": {
+        "#FF1B15": {
+          "value": 80
+        },
+        "#FAC100": {
+          "value": 60
+        },
+        "#00CD33": {
+          "value": -1
+        }
+      },
+      "type": "above"
+    }
+  },
+  "size": 0,
+  "description": "Elastic Disk Current Usage %"
+}

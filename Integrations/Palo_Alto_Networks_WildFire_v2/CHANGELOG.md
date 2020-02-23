@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.1.0] - 2020-01-07
 - Fixed an issue in which the ***wildfire-report*** was not returning outputs for non-malicious URLs.
 
 ## [19.11.1] - 2019-11-26

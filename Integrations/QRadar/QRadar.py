@@ -6,14 +6,16 @@ import json
 import requests
 import traceback
 import urllib
-from requests.exceptions import HTTPError
+import re
+from requests.exceptions import HTTPError, ConnectionError
 from copy import deepcopy
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+SERVER = demisto.params().get('server')[:-1] if str(demisto.params().get('server')).endswith('/') \
+    else demisto.params().get('server')
 CREDENTIALS = demisto.params().get('credentials')
 USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
 PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
@@ -200,29 +202,49 @@ def dict_values_to_comma_separated_string(dic):
 
 
 # Sends request to the server using the given method, url, headers and params
-def send_request(method, url, headers=AUTH_HEADERS, params=None):
+def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
+    res = None
     try:
-        log_hdr = deepcopy(headers)
-        log_hdr.pop('SEC', None)
-        LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
-            .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
-        if TOKEN:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
-        else:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
-                                   auth=(USERNAME, PASSWORD))
-        res.raise_for_status()
+        try:
+            res = send_request_no_error_handling(headers, method, params, url, data=data)
+            res.raise_for_status()
+        except ConnectionError:
+            # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
+            res = send_request_no_error_handling(headers, method, params, url, data=data)
+            res.raise_for_status()
+
     except HTTPError:
-        err_json = res.json()
-        err_msg = ''
-        if 'message' in err_json:
-            err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
-        elif 'http_response' in err_json:
-            err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
-        if 'code' in err_json:
-            err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
-        raise Exception(err_msg)
+        if res is not None:
+            err_json = res.json()
+            err_msg = ''
+            if 'message' in err_json:
+                err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
+            elif 'http_response' in err_json:
+                err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
+            if 'code' in err_json:
+                err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+
+            raise Exception(err_msg)
+        else:
+            raise
+
     return res.json()
+
+
+def send_request_no_error_handling(headers, method, params, url, data):
+    """
+        Send request with no error handling, so the error handling can be done via wrapper function
+    """
+    log_hdr = deepcopy(headers)
+    log_hdr.pop('SEC', None)
+    LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
+        .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
+    if TOKEN:
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data)
+    else:
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data,
+                               auth=(USERNAME, PASSWORD))
+    return res
 
 
 # Generic function that receives a result json, and turns it into an entryObject
@@ -236,7 +258,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
         }
     obj = filter_dict_null(obj)
     if headers:
-        if isinstance(headers, str):
+        if isinstance(headers, STRING_TYPES):
             headers = headers.split(',')
         if isinstance(obj, dict):
             headers = list(set(headers).intersection(set(obj.keys())))
@@ -246,7 +268,7 @@ def get_entry_for_object(title, obj, contents, headers=None, context_key=None, h
         'Contents': contents,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable if human_readable else tableToMarkdown(title, obj, headers),
+        'HumanReadable': human_readable if human_readable else tableToMarkdown(title, obj, headers).replace('\t', ' '),
         'EntryContext': ec
     }
 
@@ -397,7 +419,7 @@ def create_note(offense_id, note_text, fields):
 
 
 # Returns the result of a reference request
-def get_reference_by_name(ref_name, _range='', _filter='', _fields=''):
+def get_ref_set(ref_name, _range='', _filter='', _fields=''):
     url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'filter': _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
@@ -467,6 +489,7 @@ def test_module():
 
 def fetch_incidents():
     query = demisto.params().get('query')
+    full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
     if last_run and offense_id == 0:
@@ -479,14 +502,19 @@ def fetch_incidents():
         # start looking for the end of the list by doubling the page position until we're empty.
         # then start binary search back until you find the end of the list and finally return
         # `offensesPerCall` from the end.
+    demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
     raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
+    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
     if len(raw_offenses) >= OFFENSES_PER_CALL:
         last_offense_pos = find_last_page_pos(fetch_query)
         raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
                                     _filter=fetch_query)
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
-    enrich_offense_res_with_source_and_destination_address(raw_offenses)
+    if full_enrich:
+        demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
+        enrich_offense_res_with_source_and_destination_address(raw_offenses)
+        demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
@@ -525,8 +553,10 @@ def create_incident_from_offense(offense):
     labels = []
     for i in range(len(keys)):
         labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
+    formatted_description = re.sub(r'\s\n', ' ', offense['description']).replace('\n', ' ') if \
+        offense['description'] else ''
     return {
-        'name': '{0} {1}'.format(offense['id'], offense['description']),
+        'name': '{id} {description}'.format(id=offense['id'], description=formatted_description),
         'labels': labels,
         'rawJSON': json.dumps(offense),
         'occurred': occured
@@ -719,9 +749,7 @@ def get_search_results_command():
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
-    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', ' ')
-    return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key,
-                                human_readable=human_readable)
+    return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key)
 
 
 def get_assets_command():
@@ -906,7 +934,7 @@ def create_note_command():
 
 
 def get_reference_by_name_command():
-    raw_ref = get_reference_by_name(demisto.args().get('ref_name'))
+    raw_ref = get_ref_set(demisto.args().get('ref_name'))
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     convert_date_elements = True if demisto.args().get('date_value') == 'True' and ref[
         'ElementType'] == 'DATE' else False
@@ -965,12 +993,19 @@ def delete_reference_set_command():
 
 
 def update_reference_set_value_command():
+    """
+        The function creates or updates values in QRadar reference set
+    """
     args = demisto.args()
+    values = argToList(args.get('value'))
     if args.get('date_value') == 'True':
-        value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        values = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for value in values]
+    if len(values) > 1:
+        raw_ref = upload_indicators_list_request(args.get('ref_name'), values)
+    elif len(values) == 1:
+        raw_ref = update_reference_set_value(args.get('ref_name'), values[0], args.get('source'))
     else:
-        value = args.get('value')
-    raw_ref = update_reference_set_value(args.get('ref_name'), value, args.get('source'))
+        raise DemistoException('Expected at least a single value, cant create or update an empty value')
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     enrich_reference_set_result(ref)
     return get_entry_for_reference_set(ref, title='Element value was updated successfully in reference set:')
@@ -1029,6 +1064,112 @@ def get_domains_by_id_command():
         }
 
 
+def upload_indicators_list_request(reference_name, indicators_list):
+    """
+        Upload indicators list to the reference set
+
+        Args:
+              reference_name (str): Reference set name
+              indicators_list (list): Indicators values list
+        Returns:
+            dict: Reference set object
+    """
+    url = '{0}/api/reference_data/sets/bulk_load/{1}'.format(SERVER, urllib.quote(reference_name, safe=''))
+    params = {'name': reference_name}
+    return send_request('POST', url, params=params, data=json.dumps(indicators_list))
+
+
+def upload_indicators_command():
+    """
+        The function finds indicators according to user query and updates QRadar reference set
+
+        Returns:
+            (string, dict). Human readable and the raw response
+    """
+    try:
+        args = demisto.args()
+        reference_name = args.get('ref_name')
+        element_type = args.get('element_type')
+        timeout_type = args.get('timeout_type')
+        time_to_live = args.get('time_to_live')
+        limit = int(args.get('limit'))
+        page = int(args.get('page'))
+        if not check_ref_set_exist(reference_name):
+            if element_type:
+                create_reference_set(reference_name, element_type, timeout_type, time_to_live)
+            else:
+                return_error("There isn't a reference set with the name {0}. To create one,"
+                             " please enter an element type".format(reference_name))
+        else:
+            if element_type or time_to_live or timeout_type:
+                return_error("The reference set {0} is already exist. Element type, time to live or timeout type "
+                             "cannot be modified".format(reference_name))
+        query = args.get('query')
+        indicators_values_list, indicators_data_list = get_indicators_list(query, limit, page)
+        if len(indicators_values_list) == 0:
+            return "No indicators found, Reference set {0} didn't change".format(reference_name)
+        else:
+            raw_response = upload_indicators_list_request(reference_name, indicators_values_list)
+            ref_set_data = unicode_to_str_recur(get_ref_set(reference_name))
+            ref = replace_keys(ref_set_data, REFERENCE_NAMES_MAP)
+            enrich_reference_set_result(ref)
+            indicator_headers = ['Value', 'Type']
+            ref_set_headers = ['Name', 'ElementType', 'TimeoutType', 'CreationTime', 'NumberOfElements']
+            hr = tableToMarkdown("reference set {0} was updated".format(reference_name), ref,
+                                 headers=ref_set_headers) + tableToMarkdown("Indicators list", indicators_data_list,
+                                                                            headers=indicator_headers)
+            return hr, {}, raw_response
+
+    # Gets an error if the user tried to add indicators that dont match to the reference set type
+    except Exception as e:
+        if '1005' in str(e):
+            return "You tried to add indicators that dont match to reference set type"
+        raise e
+
+
+def check_ref_set_exist(ref_set_name):
+    """
+        The function checks if reference set is exist
+
+    Args:
+        ref_set_name (str): Reference set name
+
+    Returns:
+        dict: If found - Reference set object, else - Error
+    """
+
+    try:
+        return get_ref_set(ref_set_name)
+    # If reference set does not exist, return None
+    except Exception as e:
+        if '1002' in str(e):
+            return None
+        raise e
+
+
+def get_indicators_list(indicator_query, limit, page):
+    """
+        Get Demisto indicators list using demisto.searchIndicators
+
+        Args:
+              indicator_query (str): The query demisto.searchIndicators use to find indicators
+              limit (int): The amount of indicators the user want to add to reference set
+              page (int): Page's number the user would like to start from
+        Returns:
+             list, list: List of indicators values and a list with all indicators data
+    """
+    indicators_values_list = []
+    indicators_data_list = []
+    fetched_iocs = demisto.searchIndicators(query=indicator_query, page=page, size=limit).get('iocs')
+    for indicator in fetched_iocs:
+        indicators_values_list.append(indicator['value'])
+        indicators_data_list.append({
+            'Value': indicator['value'],
+            'Type': indicator['indicator_type']
+        })
+    return indicators_values_list, indicators_data_list
+
+
 # Command selector
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))
@@ -1072,6 +1213,8 @@ try:
         demisto.results(get_domains_command())
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
+    elif demisto.command() == 'qradar-upload-indicators':
+        return_outputs(*upload_indicators_command())
 except Exception as e:
     message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)

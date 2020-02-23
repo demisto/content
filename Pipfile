@@ -6,3 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+pytest = "*"
+pylint = "*"
+
+[requires]
+# python_version = "3.7"
+

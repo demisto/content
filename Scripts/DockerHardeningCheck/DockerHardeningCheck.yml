@@ -1,0 +1,34 @@
+commonfields:
+  id: DockerHardeningCheck
+  version: -1
+name: DockerHardeningCheck
+script: ''
+type: python
+tags:
+- Utility
+comment: 'Checks if the Docker container running this script has been hardened according
+  to the recommended settings at: https://support.demisto.com/hc/en-us/articles/360040922194'
+enabled: true
+args:
+- name: memory
+  description: The amount of memory to check. Can specify in bytes or append MB/GB
+    for Mega/Giga bytes. Default is 1 GB.
+  defaultValue: 1GB
+- name: pids
+  description: The maximum number of PIDs to check.
+  defaultValue: "256"
+- name: fds_soft
+  description: The soft file descriptor limit to check.
+  defaultValue: "1024"
+- name: fds_hard
+  description: The hard file descriptor limit to check.
+  defaultValue: "8192"
+- name: cpus
+  description: The number of CPUs limit to check.
+  defaultValue: "1"
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.1.5734
+runas: DBotWeakRole
+fromversion: 5.0.0
