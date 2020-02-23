@@ -10,6 +10,7 @@ args:
 - name: html
   required: true
   default: true
+  description: "HTML to convert to Markdown"
 scripttarget: 0
 subtype: python3
 runonce: false
