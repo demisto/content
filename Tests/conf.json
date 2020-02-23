@@ -2061,8 +2061,7 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0",
-            "memory_threshold": 60
+            "fromversion": "4.1.0"            
         },
         {
             "integrations": "Anomali ThreatStream v2",
