@@ -9,26 +9,6 @@ from typing import Tuple, Any, Union
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBAL VARS '''
-
-HEADERS: dict = {
-    'raw_device': ['id', 'userId', 'deviceName', 'operatingSystem', 'osVersion', 'emailAddress',
-                   'manufacturer', 'model', 'imei', 'meid'],
-    'device': ['ID', 'User ID', 'Device Name', 'Operating System', 'OS Version', 'Email Address',
-               'Manufacturer', 'Model', 'IMEI', 'MEID']
-}
-
-SPECIAL_ACTIONS: dict = {
-    'shutdown': {
-        'camel_case_form': 'shutDown',
-        'body_generating_function': 'build_request_body_generic'
-    },
-    'update-windows-device-account': {
-        'camel_case_form': 'updateWindowsDeviceAccount',
-        'body_generating_function': 'build_request_body_update_windows_device_account'
-    }
-}
-
 
 ''' CLIENT '''
 
@@ -234,20 +214,8 @@ def build_request_body(args: dict, action: str) -> Union[dict, None]:
     :param action: the action name
     :return: The body of the http request
     """
-    body: dict = dict()
-    err_msg: str = str()
     if action in SPECIAL_ACTIONS.keys():
-        try:
-            body = eval(f'{SPECIAL_ACTIONS["body_generating_function"]}(args)')
-        except NameError:
-            err_msg = f'Not implemented function {SPECIAL_ACTIONS["body_generating_function"]}.'
-            demisto.debug(err_msg)
-            raise NameError(err_msg)
-        except TypeError:
-            err_msg = f'Check number of arguments / argument types for function ' \
-                           f'{SPECIAL_ACTIONS["body_generating_function"]}'
-            demisto.debug(err_msg)
-            raise TypeError(err_msg)
+        body = SPECIAL_ACTIONS[action]['body_generating_function'](args)
     else:
         body = build_request_body_generic(args)
 
@@ -267,6 +235,27 @@ def get_action(demisto_command: str) -> str:
         err_msg: str = f'Command {demisto_command} is not of format msgraph-command'
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
+
+
+''' GLOBAL VARS '''
+
+HEADERS: dict = {
+    'raw_device': ['id', 'userId', 'deviceName', 'operatingSystem', 'osVersion', 'emailAddress',
+                   'manufacturer', 'model', 'imei', 'meid'],
+    'device': ['ID', 'User ID', 'Device Name', 'Operating System', 'OS Version', 'Email Address',
+               'Manufacturer', 'Model', 'IMEI', 'MEID']
+}
+
+SPECIAL_ACTIONS: dict = {
+    'shutdown': {
+        'camel_case_form': 'shutDown',
+        'body_generating_function': build_request_body_generic
+    },
+    'update-windows-device-account': {
+        'camel_case_form': 'updateWindowsDeviceAccount',
+        'body_generating_function': build_request_body_update_windows_device_account
+    }
+}
 
 
 ''' COMMANDS '''
