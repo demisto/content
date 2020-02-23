@@ -7,7 +7,6 @@ from gevent import spawn
 from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any, Dict, cast
 from base64 import b64decode
-from multiprocessing import Process
 
 
 class Handler:
