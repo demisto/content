@@ -311,7 +311,7 @@ inputs:
   required: false
   description: ''
   playbookInputQuery:
-    query: type:file and tags:bad
+    query: ''
     queryEntity: indicators
     results: null
     daterange:
