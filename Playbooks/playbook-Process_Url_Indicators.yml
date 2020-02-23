@@ -1576,7 +1576,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
   "83":
     id: "83"
     taskid: 15a6cb77-c07c-4fdc-80be-6d6cfba39193
@@ -2061,7 +2061,6 @@ inputs:
   description: Values will be yes or no, default is yes.
   playbookInputQuery: null
 outputs: []
-sourceplaybookid: 4dd3e7d3-3703-44e8-80d6-513874da3866
 quiet: false
 tests:
 - No test
