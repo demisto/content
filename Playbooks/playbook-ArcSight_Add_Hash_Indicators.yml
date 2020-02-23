@@ -856,7 +856,22 @@ inputs:
   required: false
   description: The name of the Active List fields to insert the Sha256 hash value
     to.
-  playbookInputQuery: null
+  playbookInputQuery:
+    query: ''
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01 00:00:00
+      todate: 0001-01-01 00:00:00
+      period:
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue: null
+        fromvalue: null
+        field: ''
+      fromdatelicenseval: 0001-01-01 00:00:00
+    runFromLastJobTime: false
 outputs: []
 quiet: true
 tests:
