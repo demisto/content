@@ -523,9 +523,11 @@ def get_file_report_command():
     threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10)
 
     response = get_file_report(file_hash, all_info)
+    if response.get('response_code', None) == -2:
+        return "The file is queued for analysis. Try again in a short while."
 
-    if (response.get('response_code', None) == 0):
-        return "A report wasn't found. Virus Total returned the following response: " + json.dumps(
+    if response.get('response_code', None) == 0:
+        return"A report wasn't found. Virus Total returned the following response: " + json.dumps(
             response.get('verbose_msg'))
 
     del response['response_code']
@@ -1115,35 +1117,42 @@ def download_file_command():
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(),))
-try:
-    handle_proxy(proxy_param_name='useProxy')
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        if check_file_behaviour(
-                '10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):  # guardrails-disable-line
-            demisto.results('ok')
-        else:
-            demisto.results('test failed')
-        pass
-    elif demisto.command() == 'vt-private-check-file-behaviour':
-        demisto.results(check_file_behaviour_command())
-    elif demisto.command() == 'vt-private-get-domain-report':
-        demisto.results(get_domain_report_command())
-    elif demisto.command() == 'vt-private-get-file-report':
-        demisto.results(get_file_report_command())
-    elif demisto.command() == 'vt-private-get-url-report':
-        demisto.results(get_url_report_command())
-    elif demisto.command() == 'vt-private-get-ip-report':
-        demisto.results(get_ip_report_command())
-    elif demisto.command() == 'vt-private-search-file':
-        demisto.results(search_file_command())
-    elif demisto.command() == 'vt-private-hash-communication':
-        demisto.results(hash_communication_command())
-    elif demisto.command() == 'vt-private-download-file':
-        demisto.results(download_file_command())
 
-except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+
+def main():
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        handle_proxy(proxy_param_name='useProxy')
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            if check_file_behaviour(
+                    '10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):  # guardrails-disable-line
+                demisto.results('ok')
+            else:
+                demisto.results('test failed')
+            pass
+        elif demisto.command() == 'vt-private-check-file-behaviour':
+            demisto.results(check_file_behaviour_command())
+        elif demisto.command() == 'vt-private-get-domain-report':
+            demisto.results(get_domain_report_command())
+        elif demisto.command() == 'vt-private-get-file-report':
+            demisto.results(get_file_report_command())
+        elif demisto.command() == 'vt-private-get-url-report':
+            demisto.results(get_url_report_command())
+        elif demisto.command() == 'vt-private-get-ip-report':
+            demisto.results(get_ip_report_command())
+        elif demisto.command() == 'vt-private-search-file':
+            demisto.results(search_file_command())
+        elif demisto.command() == 'vt-private-hash-communication':
+            demisto.results(hash_communication_command())
+        elif demisto.command() == 'vt-private-download-file':
+            demisto.results(download_file_command())
+
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
