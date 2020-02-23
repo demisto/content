@@ -183,22 +183,7 @@
         "DomainReputation"
       ],
       "formatScript": "ExtractDomainFromUrlAndEmail",
-      "fromVersion": "3.6",
-      "toVersion": "5.4.9"
-    },
-    {
-      "id": "domainRepUnified",
-      "version": -1,
-      "regex": "(?i)(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?|\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
-      "reputationCommand": "domain",
-      "details": "Domain",
-      "contextValue": "Name",
-      "contextPath": "Domain(val.Name && val.Name === obj.Name)",
-      "enhancementScriptNames": [
-        "DomainReputation"
-      ],
-      "formatScript": "ExtractDomainAndFQDNFromUrlAndEmail",
-      "fromVersion": "5.5"
+      "fromVersion": "3.6"
     }
   ]
 }
