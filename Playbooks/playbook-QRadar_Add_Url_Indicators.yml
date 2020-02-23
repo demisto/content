@@ -254,7 +254,7 @@ inputs:
 - key: QRadarUrlReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar IP reference set to insert the data to.
+  description: The name of the QRadar Url reference set to insert the data to.
   playbookInputQuery: null
 - key: ''
   value: {}
