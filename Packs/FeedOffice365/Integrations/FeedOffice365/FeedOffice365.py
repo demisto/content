@@ -97,7 +97,8 @@ class Client(BaseClient):
         return result
 
     def check_indicator_type(self, indicator):
-        """Checks the indicator type
+        """Checks the indicator type.
+           The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
 
         Args:
             indicator: indicator value
