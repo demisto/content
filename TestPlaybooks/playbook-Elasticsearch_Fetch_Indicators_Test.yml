@@ -84,7 +84,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ElasticsearchFeed.SharedIndicators.value
+              simple: ElasticsearchFeed.SharedIndicators.Indicators.value
             iscontext: true
           right:
             value:

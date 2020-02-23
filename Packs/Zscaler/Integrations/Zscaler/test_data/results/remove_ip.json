@@ -1,0 +1,32 @@
+{
+  "Type": 1,
+  "Contents": [
+    {
+      "configuredName": "Phishing-Suspected",
+      "customCategory": true,
+      "dbCategorizedUrls": [],
+      "editable": true,
+      "id": "CUSTOM_1",
+      "keywordsRetainingParentCategory": [],
+      "type": "URL_CATEGORY",
+      "urls": [
+        "https://admin.zscalertwo.net",
+        "1.22.33.4"
+      ],
+      "val": 144
+    }
+  ],
+  "ContentsFormat": "json",
+  "ReadableContentsFormat": "markdown",
+  "HumanReadable": "Removed the following IP addresses to category CUSTOM_1:\n- 1.2.3.4\n- 8.8.8.8\n",
+  "EntryContext": {
+    "Zscaler.Category(val.ID && val.ID === obj.ID)": {
+      "ID": "CUSTOM_1",
+      "CustomCategory": true,
+      "URL": [
+        "https://admin.zscalertwo.net",
+        "1.22.33.4"
+      ]
+    }
+  }
+}

@@ -168,6 +168,9 @@ def configure_integration_instance(integration, client, prints_manager):
 
     integration_configuration = __get_integration_config(client, integration_name, prints_manager)
     prints_manager.execute_thread_prints(0)
+    if not integration_configuration:
+        return None
+
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                           integration_instance_name, is_byoi)
     return module_instance
@@ -524,6 +527,7 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
             err_details += 'retrieved from the instance post installation.'
             prints_manager.add_print_job('Content Update was Unsuccessful:\n{}'.format(err_details), print_error,
                                          thread_index)
+            prints_manager.execute_thread_prints(thread_index)
             sys.exit(1)
 
 
@@ -670,7 +674,10 @@ def main():
 
         module_instances = []
         for integration in integrations_to_configure:
-            module_instances.append(configure_integration_instance(integration, testing_client, prints_manager))
+            module_instance = configure_integration_instance(integration, testing_client, prints_manager)
+            if module_instance:
+                module_instances.append(module_instance)
+
         all_module_instances.extend(module_instances)
 
     preupdate_fails = set()
@@ -712,8 +719,10 @@ def main():
     # configure instances for new integrations
     new_integration_module_instances = []
     for integration in brand_new_integrations:
-        new_integration_module_instances.append(
-            configure_integration_instance(integration, testing_client, prints_manager))
+        new_integration_module_instance = configure_integration_instance(integration, testing_client, prints_manager)
+        if new_integration_module_instance:
+            new_integration_module_instances.append(new_integration_module_instance)
+
     all_module_instances.extend(new_integration_module_instances)
 
     # After content upload has completed - test ("Test" button) integration instances

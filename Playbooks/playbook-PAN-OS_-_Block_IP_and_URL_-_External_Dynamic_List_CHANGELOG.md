@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.3] - 2020-02-18
 - Fixed issue with task inputs.
 - Added new sub-playbooks.
 

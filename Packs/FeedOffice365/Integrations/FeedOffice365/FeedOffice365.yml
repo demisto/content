@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Office365 Feed
+  id: Office 365 Feed
   version: -1
 configuration:
 - display: Fetch indicators
@@ -91,9 +91,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Office365 feed integration to get indicators from the feed.
-display: Office365 Feed
-name: Office365 Feed
+description: Use the Office 365 feed integration to get indicators from the feed.
+display: Office 365 Feed
+name: Office 365 Feed
 script:
   commands:
   - arguments:
@@ -121,7 +121,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6120
   feed: true
   isfetch: false
   longRunning: false

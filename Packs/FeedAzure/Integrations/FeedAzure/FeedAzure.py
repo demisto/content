@@ -30,7 +30,7 @@ class Client(BaseClient):
 
     def __init__(self, regions_list: list, services_list: list, polling_timeout: int = 20, insecure: bool = False,
                  proxy: bool = False):
-        super().__init__(base_url=AZUREJSON_URL, verify=insecure, proxy=proxy)
+        super().__init__(base_url=AZUREJSON_URL, verify=not insecure, proxy=proxy)
         self.regions_list = regions_list
         self.services_list = services_list
         self._polling_timeout = polling_timeout
@@ -277,7 +277,7 @@ def fetch_indicators_command(client: Client, limit: int = -1) -> Tuple[List[Dict
         indicators.append({
             'value': indicator['value'],
             'type': indicator['type'],
-            'CustomFields': {'region': indicator.get('azure_region')},
+            'fields': {'region': indicator.get('azure_region')},
             'rawJSON': indicator
         })
 
