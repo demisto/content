@@ -103,7 +103,7 @@ def test_main(mocker):
     entry = main()
     assert {} == entry['Contents'][0]['context']
 
-    args['whitelistFields'] = 'testField,status'
+    args['populateFields'] = 'testField,status'
     args['NonEmptyFields'] = 'severity'
     entry = main()
     assert set(entry['Contents'][0].keys()) == set(['testField', 'status', 'severity'])
