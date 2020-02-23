@@ -3,8 +3,10 @@ id: ArcSight Add Domain Indicators
 version: -1
 fromversion: 5.5.0
 name: ArcSight Add Domain Indicators
-description: The playbook queries indicators based on the specified tags and uploads
-  the to the ArcSight Active List in the inputs.
+description: This playbook queries indicators based on a pre-defined query and adds the found indicators to
+  a ArcSight Active list. To query indicators, go to playbook inputs, choose "from indicators" and set your query.
+  for example type:domain. Your Active List (resource) ID should also be defined in the playbook inputs.
+
 starttaskid: '0'
 tasks:
   '0':
