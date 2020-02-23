@@ -122,7 +122,7 @@ class AddressObject(object):
                 # and we want to change it to a CIDR object (10.0.0.0/24)
                 if ',' in indicator:
                     ips = indicator.split(',')
-                    indicator = str(iprange_to_cidrs(ips[0], ips[1])[0])
+                    indicator = str(iprange_to_cidrs(ips[0], ips[1])[0].cidr)
                     cidr = IPNetwork(indicator)
                     if cidr.version == 4:
                         type_ = 'CIDR'
