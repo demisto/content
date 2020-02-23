@@ -1,6 +1,36 @@
+import demistomock as demisto
+
+class MockHit:
+    def __init__(self, hit_val):
+        self._hit_val = hit_val
+
+    def to_dict(self):
+        return self._hit_val
+
 """MOCKED RESPONSES"""
 
-PARSED_INDICATOR_HIT = {
+CUSTOM_VAL_KEY = 'indicatorValue'
+
+CUSTOM_TYPE_KEY = 'indicatorType'
+
+CUSTOM_HIT = {
+    CUSTOM_VAL_KEY: '5.5.5.5',
+    CUSTOM_TYPE_KEY: 'IP'
+}
+
+PARSED_CUSTOM_HIT = {
+    'indicatorValue': '5.5.5.5',
+    'indicatorType': 'IP',
+    'value': '5.5.5.5',
+    'rawJSON': {
+        'indicatorValue': '5.5.5.5',
+        'indicatorType': 'IP',
+        'value': '5.5.5.5'
+    },
+    'type': 'IP'
+}
+
+PARSED_INSIGHT_HIT = {
     "id": "1d5920f4b44b27a802bd77c4f0536f5a",
     "version": 3,
     "modified": "2020-01-26T14:16:44.641927Z",
@@ -127,10 +157,22 @@ FEED_IOC_KEYS = (
 )
 
 
+def test_hit_to_indicator():
+    import FeedElasticsearch as es2
+    ioc = es2.hit_to_indicator(MockHit(CUSTOM_HIT), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None)
+    assert ioc == PARSED_CUSTOM_HIT
+
+    no_type_hit = dict(CUSTOM_HIT)
+    no_type_hit[CUSTOM_TYPE_KEY] = ''
+    ioc = es2.hit_to_indicator(MockHit(no_type_hit), CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, 'IP')
+    assert ioc['type'] == 'IP'
+    assert ioc[CUSTOM_TYPE_KEY] == ''
+
+
 def test_extract_indicators_from_insight_hit(mocker):
     import FeedElasticsearch as es2
-    mocker.patch.object(es2, 'results_to_indicator', return_value=dict(PARSED_INDICATOR_HIT))
-    ioc_lst, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    mocker.patch.object(es2, 'hit_to_indicator', return_value=dict(PARSED_INSIGHT_HIT))
+    ioc_lst, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INSIGHT_HIT)
     # moduleToFeedMap with isEnrichment: False should not be added to ioc_lst
     assert len(ioc_lst) == 1
     assert len(ioc_enrch_lst[0]) == 2
@@ -142,10 +184,17 @@ def test_extract_indicators_from_insight_hit(mocker):
     set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0][1])
 
 
+def test_extract_indicators_from_custom_hit(mocker):
+    import FeedElasticsearch as es2
+    mocker.patch.object(es2, 'hit_to_indicator', return_value=PARSED_CUSTOM_HIT)
+    ioc_lst = es2.extract_indicators_from_custom_hit(CUSTOM_HIT, CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None)
+    assert ioc_lst == [PARSED_CUSTOM_HIT]
+
+
 def test_create_enrichment_batches_one_indicator(mocker):
     import FeedElasticsearch as es2
-    mocker.patch.object(es2, 'results_to_indicator', return_value=PARSED_INDICATOR_HIT)
-    _, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INDICATOR_HIT)
+    mocker.patch.object(es2, 'hit_to_indicator', return_value=PARSED_INSIGHT_HIT)
+    _, ioc_enrch_lst = es2.extract_indicators_from_insight_hit(PARSED_INSIGHT_HIT)
     ioc_enrch_lst_of_lsts = es2.create_enrichment_batches(ioc_enrch_lst)
     assert len(ioc_enrch_lst_of_lsts) == 2
     assert ioc_enrch_lst_of_lsts[0][0] == ioc_enrch_lst[0][0]
@@ -165,3 +214,10 @@ def test_create_enrichment_batches_mult_indicators():
     assert ioc_enrch_lst_of_lsts[1] == [2, 5, 7]
     assert ioc_enrch_lst_of_lsts[2] == [3, 8]
     assert ioc_enrch_lst_of_lsts[3] == [9]
+
+
+def test_generic(mocker):
+    import FeedElasticsearch as es2
+    mocker.patch.object(demisto, 'getIndexHash')
+    client = es2.ElasticsearchClient(True, 'http://localhost:9200', None, None, '', 'Simple-Date', 'customer')
+    es2.get_indicators_command(client, False, 'indicatorValue', 'indicatorType', 'IP')

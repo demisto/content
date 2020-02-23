@@ -101,7 +101,8 @@ configuration:
   name: default_type
   required: false
   type: 0
-- display: Index from which to fetch incidents (CSV)
+- display: Index from which to fetch incidents
+  additionalinfo: Multiple indices may be used by separating them with a comma.
   name: fetch_index
   required: false
   type: 0
