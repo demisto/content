@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Malware Domain List Active IPs Feed",
+            "playbookID": "Malware Domain List Active IPs Feed Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Claroty",
             "playbookID": "Claroty - Test",
             "fromversion": "5.0.0"
