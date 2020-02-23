@@ -1,7 +1,7 @@
 ## How to Create the RSA Key Pair
 Before you configure the ePO server, you need to generate the RSA key pair. Make sure that **openssl** is installed.
 1. Open a new directory.
-2. Download the [sh script](https://github.com/demisto/content/raw/master/Integrations/McAfee_DXL/create_keys.sh.zip) and move it to the new directory.
+2. Download the [sh script](https://github.com/demisto/content/blob/master/Integrations/McAfee_DXL/create_keys/create_keys.sh) and move it to the new directory.
 3. Unzip the file.
 4. Complete the required fields, except the challenge password and the optional company name (leave empty).  
 The certificate (*client.crt*) is valid for 365 days (you can change the value in the script).
