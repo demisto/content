@@ -411,11 +411,11 @@ def lookup_events(args):
         }
 
         if args.get('startTime') is not None:
-            kwargs.update({'StartTime': datetime.datetime.strptime(args.get('startTime'),
+            kwargs.update({'StartTime': datetime.strptime(args.get('startTime'),
                                                                    "%Y-%m-%dT%H:%M:%S")})
         if args.get('endTime') is not None:
             kwargs.update(
-                {'EndTime': datetime.datetime.strptime(args.get('endTime'), "%Y-%m-%dT%H:%M:%S")})
+                {'EndTime': datetime.strptime(args.get('endTime'), "%Y-%m-%dT%H:%M:%S")})
 
         client.lookup_events(**kwargs)
         paginator = client.get_paginator('lookup_events')
@@ -424,8 +424,7 @@ def lookup_events(args):
                 data.append({
                     'EventId': event['EventId'],
                     'EventName': event['EventName'],
-                    'EventTime': datetime.datetime.strftime(event['EventTime'],
-                                                            '%Y-%m-%dT%H:%M:%S'),
+                    'EventTime': datetime.strptime(event['EventTime'], '%Y-%m-%dT%H:%M:%S'),
                     'EventSource': event['EventSource'],
                     'ResourceName': event['Resources'][0]['ResourceName'],
                     'ResourceType': event['Resources'][0]['ResourceType'],
