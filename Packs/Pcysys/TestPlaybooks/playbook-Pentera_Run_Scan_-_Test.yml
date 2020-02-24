@@ -1,0 +1,117 @@
+id: Pentera Run Scan - Test
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+name: Pentera Run Scan - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "20"
+    type: start
+    task:
+      id: "20"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: "21"
+    type: regular
+    task:
+      id: "21"
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: "41"
+    type: playbook
+    task:
+      id: "41"
+      version: -1
+      name: Pentera Run Scan
+      playbookName: Pentera Run Scan
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      PenteraTaskName:
+        simple: Test Template for Playbook
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
