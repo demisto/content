@@ -43,6 +43,7 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  display: ""
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ""
@@ -60,6 +61,7 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+  defaultvalue: ""
 - additionalinfo: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
   display: Discovery Service
   name: discovery_service
@@ -152,7 +154,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.5214
+  dockerimage: demisto/taxii:1.0.0.6086
   feed: true
   isfetch: false
   longRunning: false
