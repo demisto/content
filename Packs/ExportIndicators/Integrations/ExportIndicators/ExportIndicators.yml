@@ -1,0 +1,125 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ExportIndicators
+  version: -1
+configuration:
+- additionalinfo: The query to run to update its list. To view expected results, you can run the following command from the Demisto CLI
+    `!findIndicators query=<your query>`
+  display: Indicator Query
+  name: indicators_query
+  required: false
+  type: 0
+- defaultvalue: text
+  display: Outbound Format
+  hidden: false
+  name: format
+  options:
+  - text
+  - json
+  - json-seq
+  - csv
+  required: false
+  type: 15
+- additionalinfo: Maximum number of items in the export list
+  defaultvalue: '2500'
+  display: List Size
+  hidden: false
+  name: list_size
+  required: true
+  type: 0
+- additionalinfo: When selected this will prevent automatic refresh of the indicators export list
+  display: Update On-Demand Only
+  name: on_demand
+  required: false
+  type: 8
+- additionalinfo: How often to refresh the export indicators list
+  defaultvalue: 5 minutes
+  display: Refresh Rate
+  name: cache_refresh_rate
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Long Running Instance
+  name: longRunning
+  required: false
+  type: 8
+- additionalinfo: Will run the export indicators service on this port from within Cortex SOAR
+  defaultvalue: '7000'
+  display: Listen Port
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
+- additionalinfo: Ignores certificate and private key, and will run the export indicators service
+    in HTTP
+  display: HTTP Server
+  hidden: false
+  name: http_flag
+  required: false
+  type: 8
+description: Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for
+  the system indicators.
+display: Export Indicators Service
+name: ExportIndicators
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The query used to retrieve indicators from the system.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: text
+      description: The output format. Can be "text", "json", "json-seq", or "csv".
+      isArray: false
+      name: format
+      predefined:
+      - text
+      - json
+      - json-seq
+      - csv
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of entries in the output. If no value is provided, will
+        use the value specified in the List Size parameter configured in the instance configuration.
+      isArray: false
+      name: list_size
+      required: false
+      secret: false
+    - default: false
+      description: Whether to print the indicators. If set to true will print the indicators the that were saved to the export indicators service. The default value is "false".
+      isArray: false
+      name: print_indicators
+      required: true
+      defaultValue: false
+      secret: false
+      predefined:
+        - 'false'
+        - 'true'
+    deprecated: false
+    description: Updates values stored in the export indicators service (only avaialable On-Demand).
+    execution: false
+    name: eis-update
+  dockerimage: demisto/teams:1.0.0.4937
+  feed: false
+  isfetch: false
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Test_export_indicators_service
+fromversion: 5.5.0

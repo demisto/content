@@ -71,7 +71,7 @@ def test_get_reference_by_name(mocker):
     #     - There's a reference set with non-url safe chars
     # When
     #     - I fetch reference by name
-    qradar.get_reference_by_name(NON_URL_SAFE_MSG)
+    qradar.get_ref_set(NON_URL_SAFE_MSG)
     # Then
     #     - The rest API endpoint will be called with URL safe chars
     qradar.send_request.assert_called_with('GET', 'www.qradar.com/api/reference_data/sets/{}'.format(
@@ -204,6 +204,79 @@ def test_create_incident_from_offense_new_line_description():
             assert label.get('value') == '\nActivacion\n'
             description_asserted = True
     assert description_asserted
+
+
+def test_get_entry_for_object():
+    """
+    Given:
+        There's a title, obj, contents, and headers
+    When:
+        I call get_entry_for_object
+    Then:
+        get_entry_for_object will return a an entry with the given headers
+    """
+    import QRadar as qradar
+    title = "Title"
+    obj = {'id': 1, 'name': 'test', 'field_to_drop': 'sensitive data'}
+    contents = {'test': 'test'}
+    headers = u'name'
+    # single header
+    entry = qradar.get_entry_for_object(title, obj, contents, headers)
+    assert entry['HumanReadable'] == '### Title\n|name|\n|---|\n| test |\n'
+    entry = qradar.get_entry_for_object(title, obj, contents, str(headers))
+    assert entry['HumanReadable'] == '### Title\n|name|\n|---|\n| test |\n'
+    assert entry['EntryContext'] == obj
+    assert entry['Contents'] == contents
+
+    # multiple headers
+    headers = ['name', 'id']
+    entry = qradar.get_entry_for_object(title, obj, contents, headers)
+    assert 'sensitive data' not in entry['HumanReadable']
+    assert 'id' in entry['HumanReadable']
+    assert 'name' in entry['HumanReadable']
+    assert entry['EntryContext'] == obj
+    assert entry['Contents'] == contents
+
+
+def test_upload_indicators_command_indicators_found(mocker):
+    """
+    Given:
+        - There are indicators in Demisto
+    When:
+        - Need to upload indicators to QRadar reference set
+    Then:
+        - The function will upload indicators to QRadar reference set
+    """
+
+    import QRadar as qradar
+    mocker.patch.object(demisto, 'args', return_value={'ref_name': 'test_ref_set', 'limit': '20', 'page': '0'})
+    mocker.patch.object(qradar, 'check_ref_set_exist', return_value=REF_SET_DATA)
+    mocker.patch.object(qradar, 'get_indicators_list', return_value=INDICATORS_LIST)
+    mocker.patch.object(qradar, 'get_ref_set', return_value=RAW_RESPONSE)
+    mocker.patch.object(qradar, 'upload_indicators_list_request', return_value=RAW_RESPONSE)
+    mocker.patch.object(qradar, 'enrich_reference_set_result', return_value=REF_SET_DATA)
+    res = qradar.upload_indicators_command()
+    assert res[2]['name'] == 'test_ref_set'
+    assert res[2]['number_of_elements'] == 42
+    assert res[2]['element_type'] == 'ALN'
+
+
+def test_upload_indicators_command_no_indicators_found(mocker):
+    """
+    Given:
+        - There are no indicators in Demisto
+    When:
+        - Need to upload indicators to QRadar reference set
+    Then:
+        - The function will not upload indicators to QRadar reference set
+    """
+
+    import QRadar as qradar
+    mocker.patch.object(demisto, 'args', return_value={'ref_name': 'test_ref_set', 'limit': '20', 'page': '0'})
+    mocker.patch.object(qradar, 'check_ref_set_exist', return_value=REF_SET_DATA_NO_INDICATORS)
+    mocker.patch.object(qradar, 'get_indicators_list', return_value=([], []))
+    res = qradar.upload_indicators_command()
+    assert res == "No indicators found, Reference set test_ref_set didn't change"
 
 
 """ CONSTANTS """
@@ -463,4 +536,39 @@ INCIDENT_RESULT = {
                "signed_to\": \"mocker\", \"relevance\": 4, \"local_destination_address_ids\": [1234412], \"log_sour"
                "ces\": [{\"type_name\": \"EventCRE\", \"type_id\": 18, \"id\": 115, \"name\": \"Custom Rule Engine\"}, "
                "{\"type_name\": \"FortiGate\", \"type_id\": 73, \"id\": 2439, \"name\": \"FortiGate 02\"}]}"
+}
+
+INDICATORS_LIST = [{'indicator_type': 'File', 'value': 'file_test'},
+                   {'indicator_type': 'Domain', 'value': 'domain.com'}]
+
+RAW_RESPONSE = {
+    'timeout_type': 'UNKNOWN',
+    'element_type': 'ALN',
+    'creation_time': '00000',
+    'number_of_elements': 42,
+    'name': 'test_ref_set'
+}
+REF_SET_DATA = {
+    'TimeoutType': 'UNKNOWN',
+    'ElementType': 'ALN',
+    'CreationTime': '00000',
+    'NumberOfElements': 42,
+    'Name': 'test_ref_set'
+}
+
+
+REF_SET_DATA_NO_INDICATORS = {
+    'Name': 'test_ref_set',
+    'NumberOfElements': 0,
+    'ElementType': 'ALN',
+    'TimeoutType': 'UNKNOWN',
+}
+
+
+RAW_RESPONSE_NO_INDICATORS = {
+    'TimeoutType': 'UNKNOWN',
+    'ElementType': 'ALN',
+    'CreationTime': '00000',
+    'NumberOfElements': 0,
+    'Name': 'test_ref_set'
 }
