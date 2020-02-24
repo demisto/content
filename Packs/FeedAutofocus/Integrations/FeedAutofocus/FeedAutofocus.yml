@@ -31,30 +31,18 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
+  defaultvalue: true
   type: 8
-- defaultvalue: suddenDeath
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- defaultvalue: '20160'
-  name: feedExpirationInterval
-  required: false
-  type: 1
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
   options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
+    - None
+    - Good
+    - Suspicious
+    - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -70,6 +58,21 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- defaultvalue: suddenDeath
+  name: feedExpirationPolicy
+  display: ""
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
 - defaultvalue: '15'
   display: Feed Fetch Interval
   name: feedFetchInterval
