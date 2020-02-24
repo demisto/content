@@ -3,10 +3,27 @@ commonfields:
   id: AWS - CloudTrail
   version: -1
 configuration:
-- display: Default Region
+- display: AWS Default Region
   name: defaultRegion
-  required: true
-  type: 0
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  required: false
+  type: 15
 - display: Role Arn
   name: roleArn
   required: false
@@ -19,6 +36,22 @@ configuration:
   name: sessionDuration
   required: false
   type: 0
+- display: Access Key
+  name: access_key
+  required: false
+  type: 0
+- display: Secret Key
+  name: secret_key
+  required: false
+  type: 4
+- display: Trust any cert (Not Secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
 description: Amazon Web Services CloudTrail.
 display: AWS - CloudTrail
 name: AWS - CloudTrail
