@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added encodeing from UTF-8 for python 2
 
 ## [20.2.3] - 2020-02-18
 Added cveRegex to validate cve_id format.
