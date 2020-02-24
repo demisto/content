@@ -679,7 +679,7 @@
             ],
             "instance_names": "virus_total_private_api_general",
             "timeout": 500,
-            "pid_threshold": 6
+            "pid_threshold": 12
         },
         {
             "playbookID": "CutTransformerTest"
