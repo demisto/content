@@ -2,6 +2,7 @@
     "id": "registryKey",
     "version": -1,
     "fromVersion": "5.0.0",
+    "toVersion": "5.4.9",
     "modified": "2019-07-18T11:06:36.958983926Z",
     "sortValues": null,
     "commitMessage": "",
