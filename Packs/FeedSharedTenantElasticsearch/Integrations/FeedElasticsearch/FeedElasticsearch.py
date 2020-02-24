@@ -71,6 +71,9 @@ def test_command(client, demisto_shared, src_val, src_type, default_type, time_m
             return_error('Please provide a "Default Indicator Type"')
         if not time_method:
             return_error('Please provide a "Time Method"')
+        get_scan_custom_format(client)
+    else:
+        get_scan_insight_format(client)
     try:
         res = client.send_test_request()
         if res.status_code >= 400:
@@ -90,7 +93,6 @@ def test_command(client, demisto_shared, src_val, src_type, default_type, time_m
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
-    get_scan_insight_format(client)
     demisto.results('ok')
 
 
