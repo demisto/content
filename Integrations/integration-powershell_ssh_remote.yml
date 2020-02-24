@@ -113,3 +113,5 @@ script:
     execution: true
   dockerimage: demisto/powershell:6.2.3.5563
   runonce: false
+tests:
+- No test
