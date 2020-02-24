@@ -1103,7 +1103,7 @@ tasks:
       name:
         simple: demi_temp_service_test_pb7
       protocol:
-        simple: sctp
+        simple: tcp
       source_port:
         simple: "12"
       tags:
