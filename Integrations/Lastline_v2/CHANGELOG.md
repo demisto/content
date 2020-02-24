@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fix a bug that cause error in some file types.
 
 ## [20.2.3] - 2020-02-18
 #### New Integration
