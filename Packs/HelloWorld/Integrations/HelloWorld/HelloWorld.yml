@@ -26,6 +26,16 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: Score threshold for ip reputation command (0-100)
+  name: threshold_ip
+  defaultvalue: 65
+  type: 0
+  required: false
+- display: Score threshold for domain reputation command (0-100)
+  name: threshold_domain
+  defaultvalue: 65
+  type: 0
+  required: false
 - display: Fetch alerts with status (OPEN, CLOSED)
   name: alert_status
   defaultvalue: OPEN
