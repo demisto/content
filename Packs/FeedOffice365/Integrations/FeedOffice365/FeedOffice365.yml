@@ -1,13 +1,13 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Office365 Feed
+  id: Office 365 Feed
   version: -1
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: ""
-  type: 8
+  defaultvalue: true
   required: false
+  type: 8
 - defaultvalue: Worldwide
   display: Regions
   name: regions
@@ -30,23 +30,22 @@ configuration:
   - All
   required: true
   type: 16
-- display: Indicator Reputation
-  name: feedReputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: Good
-  type: 18
-  required: false
+  display: Indicator Reputation
+  name: feedReputation
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-- display: Source Reliability
-  name: feedReliability
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
-  type: 15
-  required: true
+  display: Source Reliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -54,36 +53,37 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
-- display: ""
+  required: true
+  type: 15
+- defaultvalue: suddenDeath
   name: feedExpirationPolicy
-  defaultvalue: suddenDeath
-  type: 17
-  required: false
+  display: ""
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-- display: ""
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: "feedExpirationInterval"
   name: feedExpirationInterval
-  defaultvalue: "20160"
+  required: false
   type: 1
-  required: false
-- display: Feed Fetch Interval
+- defaultvalue: '30'
+  display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "30"
+  required: false
   type: 19
-  required: false
-- display: Bypass exclusion list
-  name: feedBypassExclusionList
-  defaultvalue: ""
-  type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
-- display: Trust any certificate (not secure)
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -91,9 +91,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Office365 feed integration to get indicators from the feed.
-display: Office365 Feed
-name: Office365 Feed
+description: Use the Office 365 feed integration to get indicators from the feed.
+display: Office 365 Feed
+name: Office 365 Feed
 script:
   commands:
   - arguments:
@@ -121,7 +121,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6120
   feed: true
   isfetch: false
   longRunning: false

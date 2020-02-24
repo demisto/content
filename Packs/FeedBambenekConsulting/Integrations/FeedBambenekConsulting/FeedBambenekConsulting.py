@@ -7,26 +7,38 @@ def main():
             'fieldnames': ['value', 'description',
                            'date_created',
                            'info'],
-            'indicator_type': FeedIndicatorType.IP
+            'indicator_type': FeedIndicatorType.IP,
+            'mapping': {
+                'description': 'malwarefamily'
+            }
         },
 
         'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt': {
             'fieldnames': ['value', 'description',
                            'date_created',
                            'info'],
-            'indicator_type': FeedIndicatorType.Domain
+            'indicator_type': FeedIndicatorType.Domain,
+            'mapping': {
+                'description': 'malwarefamily'
+            }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt': {
             'fieldnames': ['value', 'description',
                            'date_created',
                            'info'],
-            'indicator_type': FeedIndicatorType.IP
+            'indicator_type': FeedIndicatorType.IP,
+            'mapping': {
+                'description': 'malwarefamily'
+            }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt': {
             'fieldnames': ['value', 'description',
                            'date_created',
                            'info'],
-            'indicator_type': FeedIndicatorType.Domain
+            'indicator_type': FeedIndicatorType.Domain,
+            'mapping': {
+                'description': 'malwarefamily'
+            }
         }
     }
 

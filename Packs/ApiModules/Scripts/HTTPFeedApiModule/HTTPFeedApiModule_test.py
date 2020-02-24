@@ -1,4 +1,4 @@
-from HTTPFeedApiModule import get_indicators_command, Client
+from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_millisecond_timestamp
 import requests_mock
 
 
@@ -100,3 +100,40 @@ def test_get_indicators_json_params():
             assert ind_type == itype
             assert ind_rawjson['value'] == ind_val
             assert ind_rawjson['type'] == ind_type
+
+
+def test_custom_fields_creator():
+    custom_fields_mapping = {
+        "old_field1": "new_field1",
+        "old_field2": "new_field2"
+    }
+    client = Client(
+        url="https://www.spamhaus.org/drop/asndrop.txt",
+        feed_url_to_config="some_stuff",
+        custom_fields_mapping=custom_fields_mapping
+    )
+
+    attributes = {
+        'old_field1': "value1",
+        'old_field2': "value2"
+    }
+
+    custom_fields = client.custom_fields_creator(attributes)
+
+    assert custom_fields.get('new_field1') == "value1"
+    assert custom_fields.get('new_field2') == "value2"
+    assert "old_field1" not in custom_fields.keys()
+    assert "old_filed2" not in custom_fields.keys()
+
+
+def test_datestring_to_millisecond_timestamp():
+    datesting1 = "2020-02-10 13:39:14"
+    datesting2 = "2020-02-10T13:39:14"
+    datesting3 = "2020-02-10 13:39:14.123"
+    datesting4 = "2020-02-10T13:39:14.123"
+    datesting5 = "2020-02-10T13:39:14Z"
+    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting1)
+    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting2)
+    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting5)
+    assert 1581341954123 == datestring_to_millisecond_timestamp(datesting3)
+    assert 1581341954123 == datestring_to_millisecond_timestamp(datesting4)

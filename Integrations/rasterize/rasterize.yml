@@ -13,6 +13,11 @@ configuration:
   defaultvalue: "0"
   type: 0
   required: false
+- display: 'Maximum time to wait for a page to load (in seconds)'
+  name: max_page_load_time
+  defaultvalue: "180"
+  type: 0
+  required: false
 - display: 'Chrome options (Advanced. See [?])'
   name: chrome_options
   defaultvalue: ""
@@ -34,6 +39,12 @@ script:
       description: Time in seconds to wait before taking a screenshot
       isArray: false
       name: wait_time
+      required: false
+      secret: false
+    - default: false
+      description: Maximum time to wait for a page to load (in seconds)
+      isArray: false
+      name: max_page_load_time
       required: false
       secret: false
     - default: true
@@ -157,7 +168,7 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.5307
+  dockerimage: demisto/chromium:1.0.0.5952
   isfetch: false
   runonce: false
   script: ''
