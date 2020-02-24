@@ -31,69 +31,108 @@ config = Config(
 """HELPER FUNCTIONS"""
 
 
-def aws_session(service='cloudtrail',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
+                rolePolicy=None):
     kwargs = {}
     if roleArn and roleSessionName is not None:
         kwargs.update({
-            'RoleArn':roleArn,
-            'RoleSessionName':roleSessionName,
-            })
-    elif AWS_roleArn and AWS_roleSessionName is not None:
+            'RoleArn': roleArn,
+            'RoleSessionName': roleSessionName,
+        })
+    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
         kwargs.update({
-            'RoleArn':AWS_roleArn,
-            'RoleSessionName':AWS_roleSessionName,
-            })
+            'RoleArn': AWS_ROLE_ARN,
+            'RoleSessionName': AWS_ROLE_SESSION_NAME,
+        })
 
     if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds':int(roleSessionDuration)})
-    elif AWS_roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds':int(AWS_roleSessionDuration)})
+        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
+    elif AWS_ROLE_SESSION_DURATION is not None:
+        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
 
     if rolePolicy is not None:
-        kwargs.update({'Policy':rolePolicy})
-    elif AWS_rolePolicy is not None:
-        kwargs.update({'Policy':AWS_rolePolicy})
+        kwargs.update({'Policy': rolePolicy})
+    elif AWS_ROLE_POLICY is not None:
+        kwargs.update({'Policy': AWS_ROLE_POLICY})
+    if kwargs and AWS_ACCESS_KEY_ID is None:
 
-    if kwargs:
-        sts_client = boto3.client('sts')
+        if AWS_ACCESS_KEY_ID is None:
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
+        sts_client = boto3.client(
+            service_name='sts',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+        kwargs.update({
+            'RoleArn': AWS_ROLE_ARN,
+            'RoleSessionName': AWS_ROLE_SESSION_NAME,
+        })
         sts_response = sts_client.assume_role(**kwargs)
+        client = boto3.client(
+            service_name=service,
+            region_name=AWS_DEFAULT_REGION,
+            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+            aws_session_token=sts_response['Credentials']['SessionToken'],
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+    else:
         if region is not None:
             client = boto3.client(
                 service_name=service,
                 region_name=region,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-                )
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                verify=VERIFY_CERTIFICATE,
+                config=config
+            )
         else:
             client = boto3.client(
                 service_name=service,
                 region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-                )
-    else:
-        if region is not None:
-            client = boto3.client(service_name=service,region_name=region)
-        else:
-            client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                verify=VERIFY_CERTIFICATE,
+                config=config
+            )
 
     return client
 
+
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
-  def default(self, obj):
-    if isinstance (obj, datetime.datetime):
-        return obj.strftime ('%Y-%m-%dT%H:%M:%S')
-    elif isinstance (obj, datetime.date):
-        return obj.strftime ('%Y-%m-%d')
-    elif isinstance(obj, datetime):
-        return obj.strftime('%Y-%m-%dT%H:%M:%S')
-    elif isinstance(obj, date):
-        return obj.strftime('%Y-%m-%d')
-    # Let the base class default method raise the TypeError
-    return json.JSONEncoder.default(self, obj)
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%S')
+        elif isinstance(obj, date):
+            return obj.strftime('%Y-%m-%d')
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
 def parse_resource_ids(resource_id):
     id_list = resource_id.replace(" ", "")
