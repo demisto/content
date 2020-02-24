@@ -30,7 +30,7 @@ class Client(BaseClient):
 
     def __init__(self, regions_list: list, services_list: list, polling_timeout: int = 20, insecure: bool = False,
                  proxy: bool = False):
-        super().__init__(base_url=AZUREJSON_URL, verify=insecure, proxy=proxy)
+        super().__init__(base_url=AZUREJSON_URL, verify=not insecure, proxy=proxy)
         self.regions_list = regions_list
         self.services_list = services_list
         self._polling_timeout = polling_timeout
