@@ -1,0 +1,193 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AzureFeed
+  version: -1
+configuration:
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Good
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: A - Completely reliable
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "5"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- defaultvalue: All
+  display: Regions
+  name: regions
+  options:
+  - All
+  - australiacentral
+  - australiacentral2
+  - australiaeast
+  - australiasoutheast
+  - brazilse
+  - brazilsouth
+  - canadacentral
+  - canadaeast
+  - centralfrance
+  - centralindia
+  - centralus
+  - centraluseuap
+  - eastasia
+  - eastus
+  - eastus2
+  - eastus2euap
+  - germanyn
+  - germanywc
+  - japaneast
+  - japanwest
+  - koreacentral
+  - koreasouth
+  - northcentralus
+  - northeurope
+  - norwaye
+  - norwayw
+  - southafricanorth
+  - southafricawest
+  - southcentralus
+  - southeastasia
+  - southfrance
+  - southindia
+  - switzerlandn
+  - switzerlandw
+  - uaecentral
+  - uaenorth
+  - uknorth
+  - uksouth
+  - uksouth2
+  - ukwest
+  - westcentralus
+  - westeurope
+  - westindia
+  - westus
+  - westus2
+  required: true
+  type: 16
+- defaultvalue: All
+  display: Services
+  name: services
+  options:
+  - All
+  - AzureAD
+  - AzureApiManagement
+  - AzureAppService
+  - AzureAppServiceManagement
+  - AzureBackup
+  - AzureConnectors
+  - AzureContainerRegistry
+  - AzureCosmosDB
+  - AzureDataLake
+  - AzureEventHub
+  - AzureFrontDoor
+  - AzureIdentity
+  - AzureIoTHub
+  - AzureKeyVault
+  - AzureMachineLearning
+  - AzureMonitor
+  - AzureSQL
+  - AzureServiceBus
+  - AzureStorage
+  - AzureTrafficManager
+  - BatchNodeManagement
+  - CognitiveServicesManagement
+  - Dynamics365ForMarketingEmail
+  - HDInsight
+  - MicrosoftContainerRegistry
+  - ServiceFabric
+  - SqlManagement
+  required: true
+  type: 16
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '20'
+  display: Request Timeout
+  hidden: false
+  name: polling_timeout
+  required: false
+  type: 0
+description: Azure.CloudIPs Feed Integration.
+display: Azure Feed
+name: AzureFeed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of indicators to return. The default value is 10.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: azure-get-indicators
+    outputs:
+  dockerimage: demisto/python3:3.8.1.5734
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- AzureFeed - Test

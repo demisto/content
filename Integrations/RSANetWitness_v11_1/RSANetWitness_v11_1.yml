@@ -44,7 +44,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: 100
+- defaultvalue: '100'
   display: 'Fetch limit: the maximum number of incidents to fetch'
   name: fetch_limit
   required: false
@@ -277,6 +277,13 @@ script:
       name: lastDays
       required: false
       secret: false
+    - default: false
+      defaultValue: '0'
+      description: The requested page number.
+      isArray: false
+      name: pageNumber
+      required: false
+      secret: false
     deprecated: false
     description: 'Get a list of incidents in a specific time frame. One of the followings
       must be specified:  since, until, lastDays'
@@ -382,6 +389,10 @@ script:
     - contextPath: NetWitness.Incidents.alertMeta.DestinationIp
       description: Unique destination IP addresses.
       type: Unknown
+    - contextPath: NetWitness.Incidents.NextPage
+      description: Next page number that wasn't fetched in the last command run (will
+        be empty if all incidents were fetched).
+      type: Number
   - arguments:
     - default: false
       description: The incident's id
@@ -619,10 +630,13 @@ script:
     - contextPath: NetWitness.Alerts.events.destination.user.adDomain
       description: An Active Directory (AD) domain
       type: Unknown
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - RSA NetWitness Test

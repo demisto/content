@@ -24,7 +24,7 @@
     "contextValue": "",
     "excludedBrands": [],
     "defaultMapping": {
-        "registrykeyname": {
+        "namefield": {
             "simple": "",
             "complex": {
                 "root": "RegistryKey",

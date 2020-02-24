@@ -19,6 +19,17 @@ EOF
 exit 0
 fi
 
+if [ "$1" == "-u" -o "$1" == "--update" ]; then
+    echo "Updating python dependencies..."
+    if [ ! -f "venv/bin/pip2" ]; then
+        echo "ERROR: It seems that venv hasn't been setup. Run $0 to fully setup the venv without the [$1] option."
+        exit 1
+    fi
+    venv/bin/pip2 install -r dev-requirements-py2.txt
+    venv/bin/pip3 install -r dev-requirements-py3.txt
+    exit 0
+fi
+
 if [ ! "$PWD" == "$(git rev-parse --show-toplevel)" ]; then
     cat >&2 <<__EOF__
 ERROR: this script must be run at the root of the source tree
@@ -56,11 +67,22 @@ else
             echo "ERROR: python2 is missing. Please make sure you have Python 2 installed on your system" 1>&2
             exit 1
         fi
-        if ! command -v python3 >/dev/null 2>&1; then
+        PY3CMD="python3"
+        if command -v python3.8 >/dev/null 2>&1; then
+            PY3CMD="python3.8"
+        elif command -v python3.7 >/dev/null 2>&1; then
+            PY3CMD="python3.7"
+        fi
+        if ! command -v $PY3CMD >/dev/null 2>&1; then
             echo "ERROR: python3 is missing. Please make sure you have Python 3 installed on your system" 1>&2
             exit 1
         fi
-        virtualenv -p python3 venv
+        echo "Using python 3 command: `command -v $PY3CMD`"
+        if ! $PY3CMD -c 'import sys;assert sys.version_info.major == 3 and sys.version_info.minor >= 7, "python version check failed for: {}".format(sys.version_info)'; then
+            echo "ERROR: python 3.7 or above version validation failed. Please make sure you have Python 3.7 (and above) installed on your system" 1>&2
+            exit 1
+        fi
+        virtualenv -p $PY3CMD venv
         virtualenv -p python2 venv
         echo "# set PIPENV_IGNORE_VIRTUALENVS=1 so when setting up pipenv environments it doesn't use this one" >> venv/bin/activate
         echo "export PIPENV_IGNORE_VIRTUALENVS=1" >> venv/bin/activate

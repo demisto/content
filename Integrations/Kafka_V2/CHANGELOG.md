@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.2.0] - 2020-02-04
+- Enhanced `kafka-fetch-partitions` description to be more descriptive. 
+
 ## [19.11.0] - 2019-11-12
 Updated the Docker image ***demisto/pykafka*** to version 1.0.0.3321 (requires Demisto 5.0).
 
