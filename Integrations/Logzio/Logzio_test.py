@@ -4,7 +4,7 @@ import Logzio
 import unittest
 import json
 
-BASE_URL = "api.logz.io/"
+BASE_URL = "https://api.logz.io/"
 SEARCH_LOGS_RESPONSE_EMPTY_BODY = {
     "hits": {
         "hits": []
@@ -13,32 +13,31 @@ SEARCH_LOGS_RESPONSE_EMPTY_BODY = {
 
 TRIGGERED_RULES_RESPONSE_BODY = {
     "results": [
-
-                    {
-                        "alertEventId": "bbbbb-ddddddddd",
-                        "severity": "HIGH",
-                        "alertId": 564789,
-                        "alertWindowEndDate": 1581418327.791,
-                        "eventDate": time.time() - (50*60),
-                        "alertWindowStartDate": 1581414727.791,
-                        "name": "Test Alert 2"
-                    },
-                    {
-                        "alertEventId": "aaaaa-vvvv-wwww-gggg-333333333",
-                        "severity": "MEDIUM",
-                        "alertId": 12345,
-                        "alertWindowEndDate": 1581418327.791,
-                        "eventDate": time.time() - (30*60),
-                        "alertWindowStartDate": 1581414727.791,
-                        "name": "Test Alert 1"
-                    }
+        {
+            "alertEventId": "bbbbb-ddddddddd",
+            "severity": "HIGH",
+            "alertId": 564789,
+            "alertWindowEndDate": 1581418327.791,
+            "eventDate": time.time() - (50 * 60),
+            "alertWindowStartDate": 1581414727.791,
+            "name": "Test Alert 2"
+        },
+        {
+            "alertEventId": "aaaaa-vvvv-wwww-gggg-333333333",
+            "severity": "MEDIUM",
+            "alertId": 12345,
+            "alertWindowEndDate": 1581418327.791,
+            "eventDate": (time.time() - (30 * 60)),
+            "alertWindowStartDate": 1581414727.791,
+            "name": "Test Alert 1"
+        }
     ]
 }
 
 TRIGGERED_RULES_EMPTY_RESPONSE_BODY = {
     "results": []
 }
-# client = Logzio.Client("api.logz.io/", "us", "ac4f3246-c684-4194-9ac9-709b33bc33a9",
+# client = Logzio.Client("https://api.logz.io/", "us", "ac4f3246-c684-4194-9ac9-709b33bc33a9",
 #                 "c9b842c7-8527-486f-82de-5bbd8fcb805a", True, False)
 # Logzio.test_module(client)
 # inc, last = Logzio.fetch_incidents(client, {}, None, ["MEDIUM", "HIGH"], '24 hours')
@@ -50,15 +49,16 @@ TRIGGERED_RULES_EMPTY_RESPONSE_BODY = {
 #     print(inc)
 #     print(last)
 #
-# args = {
-#     # "query": "*",
-#     "key1": "EPOevent.SoftwareInfo.Event.CommonFields.SourceURL",
-#     "value1": "http:",
-#     "size": 10
-#     # "from_time": 1580289841000
-#     # "to_time": 1580376254000
-# }
-#
+args = {
+    # "query": "*",
+    "key1": "EPOevent.SoftwareInfo.Event.CommonFields.SourceURL",
+    "value1": "http:",
+    "size": 10
+    # "from_time": 1580289841000
+    # "to_time": 1580376254000
+}
+
+
 # Logzio.search_logs_by_fields_command(client, args)
 
 
@@ -88,7 +88,7 @@ class TestLogzio(unittest.TestCase):
         self.assertTrue("severities" in body["filter"])
         self.assertEqual(len(body["filter"]["severities"]), 2)
         time_range = body["filter"]["timeRange"]
-        self.assertTrue(time.time() - 60*60 > time_range["fromDate"])
+        self.assertTrue((time.time() - 60 * 60) > time_range["fromDate"])
         self.assertEqual(len(inc), 2)
         self.assertTrue("eventDate" in inc[1]["rawJSON"])
         self.assertTrue("last_fetch" in next_run)
@@ -103,10 +103,8 @@ class TestLogzio(unittest.TestCase):
         self.assertEqual(len(inc), 0)
         self.assertEqual(next_run, next_run2)
 
-
     @httpretty.activate
     def test_logzio_search_logs_command(self):
-
         client = Logzio.Client(BASE_URL, "us", "fake-security-token", "fake-operational-token", False, False)
         args = {
             "query": "name:test",
@@ -117,6 +115,7 @@ class TestLogzio(unittest.TestCase):
 
         httpretty.register_uri(httpretty.POST, "{}{}".format(BASE_URL, Logzio.SEARCH_LOGS_API_SUFFIX),
                                body=json.dumps(SEARCH_LOGS_RESPONSE_EMPTY_BODY),
+
                                status=200, content_type="application/json")
         Logzio.search_logs_command(client, args)
         request = httpretty.HTTPretty.last_request
@@ -127,7 +126,24 @@ class TestLogzio(unittest.TestCase):
         time_range = body["query"]["bool"]["must"][1]["range"]["@timestamp"]
         self.assertEqual(time_range["to"], 1581174759)
         self.assertEqual(time_range["from"], 1581261159)
-# print search_logs_by_fields_command(client, args)
+
+    # print search_logs_by_fields_command(client, args)
+
+    @httpretty.activate
+    def test_logzio_get_rule_logs(self):
+        client = Logzio.Client(BASE_URL, "us", "fake-security-token", "fake-operational-token", False, False)
+        args = {
+            "id": 123
+        }
+
+        httpretty.register_uri(httpretty.POST, "{}{}".format(BASE_URL, Logzio.SEARCH_RULE_LOGS_API_SUFFIX),
+                               body=json.dumps(SEARCH_LOGS_RESPONSE_EMPTY_BODY),
+                               status=200, content_type="application/json")
+        Logzio.get_rule_logs_by_id_command(client, args)
+        request = httpretty.HTTPretty.last_request
+        body = json.loads(request.body.decode("utf-8"))
+        self.assertTrue("id" in body)
+        self.assertEqual(body["id"], 123)
 
 
 if __name__ == '__main__':
