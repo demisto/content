@@ -38,8 +38,8 @@ script:
         Creates a session to target machine using hostname, username and password
         #>
         $SecurePassword = ConvertTo-SecureString -AsPlainText -Force -String $global:PASSWORD
-        $Creds = new-object -typename System.Management.Automation.PSCredential -argumentlist $global:USERNAME,$SecurePassword
-        $Session = New-PSSession -computername $global:HOSTNAME -credential $Creds
+        $Creds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $global:USERNAME,$SecurePassword
+        $Session = New-PSSession -ComputernName $global:HOSTNAME -Credential $Creds
         return $Session
     }
 
