@@ -5,6 +5,7 @@ import json
 import requests
 import traceback
 from http.client import HTTPException
+import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -40,6 +41,7 @@ class IronDefense:
         self._configure_session_auth(self.demisto.getIntegrationContext())
 
     ''' HELPER FUNCTIONS '''
+
     def _get_jwt(self, context):
         if context is None:
             return None
@@ -107,38 +109,132 @@ class IronDefense:
 
     '''MAIN FUNCTIONS'''
 
-    # This function will be completed at a later date
-    # def fetch_incidents(self):
-    #     last_run = self.demisto.getLastRun()
-    #     now = time.time()
-    #     # update the last run time
-    #     last_run['last_run_time'] = now
-    #     self.demisto.setLastRun(last_run)
-    #     self.logger.debug('Fetching incidents...')
+    def fetch_dome_incidents(self, dome_categories=None, dome_limit=500):
+        self.logger.debug('Fetching Dome incidents...')
+        res = []
+        if dome_categories is not None:
+            dome_cats = ['DNC_' + str(cat).replace(" ", "_").upper() for cat in dome_categories]
+        else:
+            dome_cats = []
 
-    #     # last_run_time = last_run.get('last_run_time')
-    #     self.logger.debug('Last run time was: ' + str(last_run.get('last_run_time')))
+        req_body = json.dumps({
+            'limit': dome_limit
+        })
 
-    #     if last_run_time:
-    #         self.logger.debug('No new incidents')
-    #         # we already ran. This is for testing only so the integration does not flood demisto with test incidents.
-    #         # In the near future this block will be removed.
-    #         return []
-    #     else:
-    #         resp = self._http_request('GET', '/Alert')
-    #         if resp.status_code == 200:
-    #             self.logger.debug('json response is: ' + json.dumps(resp.json()))
-    #             alert = {
-    #                 'name': '',
-    #                 'details': '',
-    #                 'occurred': '',
-    #                 'rawJSON': json.dumps(resp.json())
-    #             }
-    #             self.logger.debug('1 incident fetched')
-    #             return [alert]
-    #         else:
-    #             raise Exception('Fetch failed. Status code was ' + str(resp.status_code))
-    #     return []
+        resp = self._http_request('POST', '/GetDomeNotifications', body=req_body)
+        if resp.ok:
+            # Filter notifications
+            notifs = resp.json()
+            self.logger.debug('json response is: ' + json.dumps(resp.json()))
+            for n in notifs['dome_notifications']:
+                if n['category'] not in dome_cats:
+                    notif = {
+                        "name": str(n["category"]) + " IronDome Notification",
+                        "details": "Received a {} IronDome Notification at {} from communities {}.".
+                        format(n["category"], str(datetime.datetime.now()), n["dome_tags"]),
+                        "occurred": n["created"],
+                        "rawJSON": json.dumps(n)
+                    }
+                    res.append(notif)
+        else:
+            raise Exception('Fetch for DomeNotifications failed. Status code was ' + str(resp.status_code))
+
+        self.logger.debug('{} Dome incident(s) fetched'.format(len(res)))
+        return res
+
+    def fetch_alert_incidents(self, alert_categories=None, alert_subcategories=None, alert_severity_lower=None,
+                              alert_severity_upper=None, alert_limit=500):
+        self.logger.debug('Fetching Alert incidents...')
+        res = []
+
+        if alert_categories is not None:
+            alert_cats = [str(cat).replace(" ", "_").upper() for cat in alert_categories]
+        else:
+            alert_cats = []
+
+        if alert_subcategories is not None:
+            asc = alert_subcategories.split(",")
+            alert_subcats = [str(subcat).replace(" ", "_").upper() for subcat in asc]
+        else:
+            alert_subcats = []
+
+        alert_sev_lower = int(alert_severity_lower) if alert_severity_lower is not None else 0
+        alert_sev_upper = int(alert_severity_upper) if alert_severity_upper is not None else 1000
+
+        req_body = json.dumps({
+            'limit': alert_limit
+        })
+
+        resp = self._http_request('POST', '/GetAlertNotifications', body=req_body)
+        if resp.ok:
+            # Filter notifications
+            notifs = resp.json()
+            self.logger.debug('json response is: ' + json.dumps(resp.json()))
+            for an in notifs['alert_notifications']:
+                if an['alert']:
+                    n = an['alert']
+                    if n['category'] not in alert_cats and n['sub_category'] not in alert_subcats:
+                        if alert_sev_lower <= int(n['severity']) <= alert_sev_upper:
+                            notif = {
+                                "name": str(n["category"]) + " Alert Notification",
+                                "details": "Received a {} Alert Notification at {}.".
+                                format(n["category"], str(datetime.datetime.now())),
+                                "occurred": n["created"],
+                                "rawJSON": json.dumps(n)
+                            }
+                            res.append(notif)
+        else:
+            raise Exception('Fetch for AlertNotifications failed. Status code was ' + str(resp.status_code))
+
+        self.logger.debug('{} Alert incident(s) fetched'.format(len(res)))
+        return res
+
+    def fetch_event_incidents(self, event_categories=None, event_subcategories=None, event_severity_lower=None,
+                              event_severity_upper=None, event_limit=500):
+        self.logger.debug('Fetching Event incidents...')
+        res = []
+
+        if event_categories is not None:
+            event_cats = [str(cat).replace(" ", "_").upper() for cat in event_categories]
+        else:
+            event_cats = []
+
+        if event_subcategories is not None:
+            esc = event_subcategories.split(",")
+            event_subcats = [str(subcat).replace(" ", "_").upper() for subcat in esc]
+        else:
+            event_subcats = []
+
+        event_sev_lower = int(event_severity_lower) if event_severity_lower is not None else 0
+        event_sev_upper = int(event_severity_upper) if event_severity_upper is not None else 1000
+
+        req_body = json.dumps({
+            'limit': event_limit
+        })
+
+        resp = self._http_request('POST', '/GetEventNotifications', body=req_body)
+        if resp.ok:
+            # Filter notifications
+            notifs = resp.json()
+            self.logger.debug('json response is: ' + json.dumps(resp.json()))
+            for en in notifs['event_notifications']:
+                if en['event']:
+                    n = en['event']
+                    if n['category'] not in event_cats and n['sub_category'] not in event_subcats:
+                        if event_sev_lower <= int(n['severity']) <= event_sev_upper:
+                            notif = {
+                                "name": str(n["category"]) + " Event Notification",
+                                "details": "Received a {} Event Notification at {}.".
+                                format(n["category"], str(datetime.datetime.now())),
+                                "occurred": n["created"],
+                                "rawJSON": json.dumps(n)
+                            }
+                            res.append(notif)
+        else:
+            raise Exception('Fetch for EventNotifications failed. Status code was ' + str(resp.status_code))
+
+        self.logger.debug('{} Event incident(s) fetched'.format(len(res)))
+        return res
 
     def test_module(self):
         self.logger.debug('Testing module...')
@@ -188,7 +284,7 @@ class IronDefense:
             self.logger.error('Failed to add comment to alert ({}). The response failed with status code {}. The '
                               'response was: {}'.format(alert_id, response.status_code, response.text))
             raise HTTPException('Failed to add comment to alert {} ({}): {}'.format(alert_id, response.status_code,
-                                err_msg))
+                                                                                    err_msg))
         else:
             self.logger.debug('Successfully added comment to alert ({})'.format(alert_id))
             return 'Submitted comment to IronDefense!'
@@ -209,7 +305,7 @@ class IronDefense:
             self.logger.error('Failed to set status for alert ({}). The response failed with status code {}. The '
                               'response was: {}'.format(alert_id, response.status_code, response.text))
             raise HTTPException('Failed to set status for alert {} ({}): {}'.format(alert_id, response.status_code,
-                                err_msg))
+                                                                                    err_msg))
         else:
             self.logger.debug('Successfully submitted status for alert ({})'.format(alert_id))
             return 'Submitted status to IronDefense!'
@@ -241,14 +337,230 @@ class IronDefense:
             raise HTTPException('Failed to submit observed bad activity for IP={} and Domain={} ({}): {}'
                                 .format(ip, domain, response.status_code, err_msg))
 
+    def get_event(self, event_id):
+        self.logger.debug('Retrieving Event: Event ID={}'.format(event_id))
+
+        req_body = {
+            'event_id': event_id,
+        }
+        response = self._http_request('POST', '/GetEvent', body=json.dumps(req_body))
+        if response.status_code != 200:
+            err_msg = self._get_error_msg_from_response(response)
+            self.logger.error('Failed to retrieve event with ID ({}). The response failed with status code {}. The '
+                              'response was: {}'.format(event_id, response.status_code, response.text))
+            raise HTTPException('Failed to retrieve event with ID {} ({}): {}'.format(event_id, response.status_code,
+                                                                                      err_msg))
+        else:
+            self.logger.debug('Successfully retrieved event ({})'.format(event_id))
+            event = response.json()
+            return event
+
+    def get_events(self, alert_id, limit=None, offset=None):
+        self.logger.debug('Retrieving Events: Alert ID={}, Limit={} Offset={}'.format(alert_id, limit, offset))
+
+        req_body = {
+            'alert_id': alert_id
+        }
+
+        constraint = {}
+        if limit is not None and limit != "":
+            constraint['limit'] = int(limit)
+        if offset is not None and offset != "":
+            constraint['offset'] = int(offset)
+        req_body['constraint'] = constraint
+
+        response = self._http_request('POST', '/GetEvents', body=json.dumps(req_body))
+        if response.status_code != 200:
+            err_msg = self._get_error_msg_from_response(response)
+            self.logger.error('Failed to retrieve events with alert ID ({}). The response failed with status code {}. '
+                              'The response was: {}'.format(alert_id, response.status_code, response.text))
+            raise HTTPException('Failed to retrieve event with ID {} ({}): {}'.format(alert_id, response.status_code,
+                                                                                      err_msg))
+        else:
+            self.logger.debug('Successfully retrieved events for alert ({})'.format(alert_id))
+            events = response.json()
+            return events
+
+    def get_alerts(self, alert_id=None, category=None, sub_category=None, status=None, analyst_severity=None,
+                   analyst_expectation=None, min_severity=None, max_severity=None, min_created=None, max_created=None,
+                   min_updated=None,
+                   max_updated=None, min_first_event_created=None, max_first_event_created=None,
+                   min_last_event_created=None, max_last_event_created=None, min_first_event_start_time=None,
+                   max_first_event_start_time=None, min_last_event_end_time=None, max_last_event_end_time=None,
+                   analytic_version=None,
+                   limit=None, offset=None, sort=None):
+        self.logger.debug('Getting alerts: AlertID={} Category={} SubCategory={} Status={} AnalystSeverity={} '
+                          'AnalystExpectation={} MinSeverity={} MaxSeverity={} MinCreated={} MaxCreated= {} MinUpdated={}'
+                          'MaxUpdated={} MinFirstEventCreated={} MaxFirstEventCreated={} MinLastEventCreated={}'
+                          'MaxLastEventCreated={} MinFirstEventStartTime={} MaxFirstEventStartTime={} MinLastEventEndTime={}'
+                          'MaxLastEventEndTime={} AnalyticVersion={} '
+                          'Limit={} Offset={} sort={}'.format(alert_id, category, sub_category, status, analyst_severity,
+                                                              analyst_expectation, min_severity, max_severity, min_created,
+                                                              max_created, min_updated, max_updated,
+                                                              min_first_event_created, max_first_event_created,
+                                                              min_last_event_created, max_last_event_created,
+                                                              min_first_event_start_time, max_first_event_start_time,
+                                                              min_last_event_end_time, max_last_event_end_time, analytic_version,
+                                                              limit, offset, sort))
+
+        req_body = {}
+        if alert_id:
+            req_body['alert_id'] = alert_id.split(",")
+        if category:
+            req_body['category'] = category.split(",")
+        if sub_category:
+            req_body['sub_category'] = sub_category.split(",")
+        if status:
+            req_body['status'] = status.split(",")
+        if analyst_severity:
+            req_body['analyst_severity'] = analyst_severity.split(",")
+        if analyst_expectation:
+            req_body['analyst_expectation'] = analyst_expectation.split(",")
+        if analytic_version:
+            req_body['analytic_version'] = analytic_version.split(",")
+        if sort:
+            req_body['sort'] = sort
+        if min_severity is not None and min_severity != "" and max_severity is not None and max_severity != "":
+            req_body['severity'] = {
+                "lower_bound": int(min_severity),
+                "upper_bound": int(max_severity)
+            }
+        if min_created and max_created:
+            req_body['created'] = {
+                "start": min_created,
+                "end": max_created
+            }
+        if min_updated and max_updated:
+            req_body['updated'] = {
+                "start": min_updated,
+                "end": max_updated
+            }
+        if min_first_event_created and max_first_event_created:
+            req_body['first_event_created'] = {
+                "start": min_first_event_created,
+                "end": max_first_event_created
+            }
+        if min_last_event_created and max_last_event_created:
+            req_body['last_event_created'] = {
+                "start": min_last_event_created,
+                "end": max_last_event_created
+            }
+        if min_first_event_start_time and max_first_event_start_time:
+            req_body['first_event_start_time'] = {
+                "start": min_first_event_start_time,
+                "end": max_first_event_start_time
+            }
+        if min_last_event_end_time and max_last_event_end_time:
+            req_body['last_event_end_time'] = {
+                "start": min_last_event_end_time,
+                "end": max_last_event_end_time
+            }
+        constraint = {}
+        if limit is not None and limit != "":
+            constraint['limit'] = int(limit)
+        if offset is not None and offset != "":
+            constraint['offset'] = int(offset)
+        req_body['constraint'] = constraint
+
+        response = self._http_request('POST', '/GetAlerts', body=json.dumps(req_body))
+        if response.ok:
+            self.logger.debug('Successfully retrieved alerts')
+            return response.json()
+        else:
+            err_msg = self._get_error_msg_from_response(response)
+            self.logger.error('Failed to retrieve alerts. The response failed with status code {}. The response was: {}'
+                              .format(response.status_code, err_msg))
+            raise HTTPException('Failed to retrieve alerts ({}): {}'
+                                .format(response.status_code, err_msg))
+
+    def get_alert_irondome_information(self, alert_id):
+        self.logger.debug('Retrieving Alert IronDome Information: Alert ID={}'.format(alert_id))
+
+        req_body = {
+            'alert_id': alert_id,
+        }
+        response = self._http_request('POST', '/GetAlertIronDomeInformation', body=json.dumps(req_body))
+        if response.status_code != 200:
+            err_msg = self._get_error_msg_from_response(response)
+            self.logger.error('Failed to retrieve IronDome information for alert with ID ({}). The response failed '
+                              'with status code {}. The response was: {}'.format(alert_id, response.status_code,
+                                                                                 response.text))
+            raise HTTPException('Failed to retrieve IronDome information for alert with ID {} ({}): {}'.format(alert_id,
+                                response.status_code, err_msg))
+        else:
+            self.logger.debug('Successfully retrieved IronDome information for alert ({})'.format(alert_id))
+            dome_alert_info = response.json()
+            return dome_alert_info
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-# This will be enabled at a later date.
-# def fetch_incidents_command():
-#     incidents = IRON_DEFENSE.fetch_incidents()
-#     demisto.incidents(incidents)
+def fetch_incidents_command():
+    # IronDome Notification related params
+    dome_categories = PARAMS.get('domeCategories', None)
+    dome_limit = int(PARAMS.get('domeLimit', 500))
+    disable_dome_notifs = PARAMS.get('disableDomeNotifications', False)
+    # Alert Notification related params
+    alert_categories = PARAMS.get('alertCategories', None)
+    alert_subcategories = PARAMS.get('alertSubCategories', None)
+    alert_severity_lower = PARAMS.get('alertSeverityLower', None)
+    alert_severity_upper = PARAMS.get('alertSeverityUpper', None)
+    alert_limit = int(PARAMS.get('alertLimit', 500))
+    disable_alert_notifs = PARAMS.get('disableAlertNotifications', False)
+    # Event Notification related params
+    event_categories = PARAMS.get('eventCategories', None)
+    event_subcategories = PARAMS.get('eventSubCategories', None)
+    event_severity_lower = PARAMS.get('eventSeverityLower', None)
+    event_severity_upper = PARAMS.get('eventSeverityUpper', None)
+    event_limit = int(PARAMS.get('eventLimit', 500))
+    disable_event_notifs = PARAMS.get('disableEventNotifications', False)
+
+    incidents: list = []
+    if disable_dome_notifs and disable_alert_notifs and disable_event_notifs:
+        LOGGER.debug("Ingestion of all notifications (Dome, Alert, Event) is disabled, not fetching")
+    else:
+        if disable_dome_notifs:
+            LOGGER.debug('Ingestion of Dome Notifications is disabled')
+        else:
+            incs = IRON_DEFENSE.fetch_dome_incidents(dome_categories, dome_limit)
+            incidents.extend(incs)
+            # If the limit was reached, poll again
+            poll_count = 1
+            while len(incs) == dome_limit and poll_count < 10:
+                incs = IRON_DEFENSE.fetch_dome_incidents(dome_categories, dome_limit)
+                incidents.extend(incs)
+                poll_count += 1
+
+        if disable_alert_notifs:
+            LOGGER.debug('Ingestion of Alert Notifications is disabled')
+        else:
+            incs = IRON_DEFENSE.fetch_alert_incidents(alert_categories, alert_subcategories, alert_severity_lower,
+                                                      alert_severity_upper, alert_limit)
+            incidents.extend(incs)
+            # If the limit was reached, poll again
+            poll_count = 1
+            while len(incs) == alert_limit and poll_count < 10:
+                incs = IRON_DEFENSE.fetch_alert_incidents(alert_categories, alert_subcategories, alert_severity_lower,
+                                                          alert_severity_upper, alert_limit)
+                incidents.extend(incs)
+                poll_count += 1
+
+        if disable_event_notifs:
+            LOGGER.debug('Ingestion of Event Notifications is disabled')
+        else:
+            incs = IRON_DEFENSE.fetch_event_incidents(event_categories, event_subcategories, event_severity_lower,
+                                                      event_severity_upper, event_limit)
+            incidents.extend(incs)
+            # If the limit was reached, poll again
+            poll_count = 1
+            while len(incs) == event_limit and poll_count < 10:
+                incs = IRON_DEFENSE.fetch_event_incidents(event_categories, event_subcategories, event_severity_lower,
+                                                          event_severity_upper, event_limit)
+                incidents.extend(incs)
+                poll_count += 1
+
+    demisto.incidents(incidents)
 
 
 def test_module_command():
@@ -301,14 +613,80 @@ def report_observed_bad_activity_command():
     demisto.results(results)
 
 
+def get_event_command():
+    event_id = demisto.getArg('event_id')
+    results = IRON_DEFENSE.get_event(event_id)
+    demisto.results(results)
+
+
+def get_events_command():
+    alert_id = demisto.getArg('alert_id')
+    limit = demisto.getArg('limit')
+    offset = demisto.getArg('offset')
+
+    results = IRON_DEFENSE.get_events(alert_id=alert_id, limit=limit, offset=offset)
+    demisto.results(results)
+
+
+def get_alerts_command():
+    alert_id = demisto.getArg('alert_id')
+    category = demisto.getArg('category')
+    sub_category = demisto.getArg('sub_category')
+    status = demisto.getArg('status')
+    analyst_severity = demisto.getArg('analyst_severity')
+    analyst_expectation = demisto.getArg('analyst_expectation')
+    min_severity = demisto.getArg('min_severity')
+    max_severity = demisto.getArg('max_severity')
+    min_created = demisto.getArg('min_created')
+    max_created = demisto.getArg('max_created')
+    min_updated = demisto.getArg('min_updated')
+    max_updated = demisto.getArg('max_updated')
+    min_first_event_created = demisto.getArg('min_first_event_created')
+    max_first_event_created = demisto.getArg('max_first_event_created')
+    min_last_event_created = demisto.getArg('min_last_event_created')
+    max_last_event_created = demisto.getArg('max_last_event_created')
+    min_first_event_start_time = demisto.getArg('min_first_event_start_time')
+    max_first_event_start_time = demisto.getArg('max_first_event_start_time')
+    min_last_event_end_time = demisto.getArg('min_last_event_end_time')
+    max_last_event_end_time = demisto.getArg('max_last_event_end_time')
+    analytic_version = demisto.getArg('analytic_version')
+    limit = demisto.getArg('limit')
+    offset = demisto.getArg('offset')
+    sort = demisto.getArg('sort')
+    results = IRON_DEFENSE.get_alerts(alert_id=alert_id, category=category, sub_category=sub_category, status=status,
+                                      analyst_severity=analyst_severity,
+                                      analyst_expectation=analyst_expectation, min_severity=min_severity,
+                                      max_severity=max_severity, min_created=min_created, max_created=max_created,
+                                      min_updated=min_updated, max_updated=max_updated,
+                                      min_first_event_created=min_first_event_created,
+                                      max_first_event_created=max_first_event_created,
+                                      min_last_event_created=min_last_event_created,
+                                      max_last_event_created=max_last_event_created,
+                                      min_first_event_start_time=min_first_event_start_time,
+                                      max_first_event_start_time=max_first_event_start_time,
+                                      min_last_event_end_time=min_last_event_end_time,
+                                      max_last_event_end_time=max_last_event_end_time, analytic_version=analytic_version,
+                                      limit=limit, offset=offset, sort=sort)
+    demisto.results(results)
+
+
+def get_alert_irondome_information_command():
+    alert_id = demisto.getArg('alert_id')
+    results = IRON_DEFENSE.get_alert_irondome_information(alert_id)
+    demisto.results(results)
+
+
 COMMANDS = {
     'test-module': test_module_command,
-    # For now, we will not support fetching of incidents
-    # 'fetch-incidents': fetch_incidents_command,
+    'fetch-incidents': fetch_incidents_command,
     'irondefense-rate-alert': update_analyst_ratings_command,
     'irondefense-comment-alert': add_comment_to_alert_command,
     'irondefense-set-alert-status': set_alert_status_command,
     'irondefense-report-observed-bad-activity': report_observed_bad_activity_command,
+    'irondefense-get-event': get_event_command,
+    'irondefense-get-events': get_events_command,
+    'irondefense-get-alerts': get_alerts_command,
+    'irondefense-get-alert-irondome-information': get_alert_irondome_information_command,
 }
 COOKIE_KEY = 'user_sid'
 LOG_PREFIX = 'IronDefense Integration: '
