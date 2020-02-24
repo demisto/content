@@ -11,10 +11,25 @@ import urllib3.util
 urllib3.disable_warnings()
 
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
-AWS_rolePolicy = None
+AWS_ROLE_ARN = demisto.params()['roleArn']
+AWS_ROLE_SESSION_NAME = demisto.params()['roleSessionName']
+AWS_ROLE_SESSION_DURATION = demisto.params()['sessionDuration']
+AWS_ROLE_POLICY = None
+AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
+AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
+VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+config = Config(
+    connect_timeout=1,
+    retries=dict(
+        max_attempts=5
+    ),
+    proxies=proxies
+)
+
+
+"""HELPER FUNCTIONS"""
+
 
 def aws_session(service='cloudtrail',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
     kwargs = {}
@@ -67,6 +82,7 @@ def aws_session(service='cloudtrail',region=None,roleArn=None,roleSessionName=No
     return client
 
 class DatetimeEncoder(json.JSONEncoder):
+    # pylint: disable=method-hidden
   def default(self, obj):
     if isinstance (obj, datetime.datetime):
         return obj.strftime ('%Y-%m-%dT%H:%M:%S')
