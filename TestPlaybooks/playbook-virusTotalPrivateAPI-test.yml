@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 202eec0b-d500-4619-830c-8f244cbf010f
+    taskid: 68c5fdac-085c-4dc3-8509-6e99dcb65e48
     type: start
     task:
-      id: 202eec0b-d500-4619-830c-8f244cbf010f
+      id: 68c5fdac-085c-4dc3-8509-6e99dcb65e48
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -30
+          "y": 50
         }
       }
     note: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 893a5941-58c7-4375-82ca-4e891e473550
+    taskid: ec21b629-d1b3-46bc-8492-ab7598af8236
     type: title
     task:
-      id: 893a5941-58c7-4375-82ca-4e891e473550
+      id: ec21b629-d1b3-46bc-8492-ab7598af8236
       version: -1
       name: Done
       type: title
@@ -43,7 +43,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2320
+          "y": 2820
         }
       }
     note: false
@@ -51,10 +51,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 8e45cad7-1838-4362-80aa-1ab2c3990abd
+    taskid: 548fd4b3-da94-436f-8699-6de9f36333d8
     type: regular
     task:
-      id: 8e45cad7-1838-4362-80aa-1ab2c3990abd
+      id: 548fd4b3-da94-436f-8699-6de9f36333d8
       version: -1
       name: vt-get-domain-report
       description: Retrieves a report on a given domain (including the information
@@ -84,10 +84,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: b290f1c4-052f-417b-80dc-ed7678a5e0bb
+    taskid: 2d85ea53-7449-4678-8352-d688a72c48bf
     type: condition
     task:
-      id: b290f1c4-052f-417b-80dc-ed7678a5e0bb
+      id: 2d85ea53-7449-4678-8352-d688a72c48bf
       version: -1
       name: Verify Domain Whois Contains
       description: "Checks whether substring is within string. Returns: \nyes - string
@@ -100,7 +100,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "19"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -127,10 +127,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 35055630-fa9a-4c0c-8694-fce6ac495ec1
+    taskid: 98c54a30-faab-4a47-817d-1fe8aeed0906
     type: regular
     task:
-      id: 35055630-fa9a-4c0c-8694-fce6ac495ec1
+      id: 98c54a30-faab-4a47-817d-1fe8aeed0906
       version: -1
       name: vt-get-file-report
       description: Retrieves a concluded url scan report for a given url.
@@ -152,7 +152,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1420
         }
       }
     note: false
@@ -160,10 +160,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 5747d0cb-7e7b-41d7-83f7-8b71d355e8cc
+    taskid: 7f7b221f-b2ac-4e17-8992-750ebc04955f
     type: condition
     task:
-      id: 5747d0cb-7e7b-41d7-83f7-8b71d355e8cc
+      id: 7f7b221f-b2ac-4e17-8992-750ebc04955f
       version: -1
       name: Verify File Malicious
       description: |-
@@ -193,38 +193,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: aa69bfff-d8ff-4419-8a58-99c7cae77448
-    type: regular
-    task:
-      id: aa69bfff-d8ff-4419-8a58-99c7cae77448
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
+          "y": 1595
         }
       }
     note: false
@@ -232,10 +201,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 65591055-4c3d-4d2a-8885-62b01e5635df
+    taskid: 4e320282-23e9-4e3b-88b5-fd109756d0f6
     type: regular
     task:
-      id: 65591055-4c3d-4d2a-8885-62b01e5635df
+      id: 4e320282-23e9-4e3b-88b5-fd109756d0f6
       version: -1
       name: vt-private-get-url-report
       description: Retrieves a concluded url scan report for a given url.
@@ -260,7 +229,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1945
         }
       }
     note: false
@@ -268,10 +237,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 0e44b030-1867-48e7-872b-bbb3902545fd
+    taskid: 03aabdf1-7e2d-47bc-8aa5-9eda08ddeb39
     type: regular
     task:
-      id: 0e44b030-1867-48e7-872b-bbb3902545fd
+      id: 03aabdf1-7e2d-47bc-8aa5-9eda08ddeb39
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -294,7 +263,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1770
         }
       }
     note: false
@@ -302,10 +271,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 82070893-72cd-4ab3-8fb0-533d98c4b9b7
+    taskid: 3e40e9a0-166d-4b5a-88dc-33eb1d93c50b
     type: regular
     task:
-      id: 82070893-72cd-4ab3-8fb0-533d98c4b9b7
+      id: 3e40e9a0-166d-4b5a-88dc-33eb1d93c50b
       version: -1
       name: vt-private-get-ip-report
       description: Retrieves a report on a given IP address (including the information
@@ -327,7 +296,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -335,10 +304,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: a74d2ce7-9836-458f-8707-436f3df2513c
+    taskid: 0b892b49-1289-4f4b-899c-74321fcc7e8e
     type: condition
     task:
-      id: a74d2ce7-9836-458f-8707-436f3df2513c
+      id: 0b892b49-1289-4f4b-899c-74321fcc7e8e
       version: -1
       name: Verify DBot Score of ip
       type: condition
@@ -365,7 +334,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2645
         }
       }
     note: false
@@ -373,10 +342,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 2b8b8a3a-133b-4401-833e-1d54eefe79cc
+    taskid: ea73bbf2-dccc-40d6-86c3-679c835d9360
     type: regular
     task:
-      id: 2b8b8a3a-133b-4401-833e-1d54eefe79cc
+      id: ea73bbf2-dccc-40d6-86c3-679c835d9360
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -395,7 +364,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2120
         }
       }
     note: false
@@ -403,10 +372,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 9b37088c-30fd-467a-8170-21f296771743
+    taskid: 2ee3117c-f30d-4dc8-8407-a4306fba8dc5
     type: regular
     task:
-      id: 9b37088c-30fd-467a-8170-21f296771743
+      id: 2ee3117c-f30d-4dc8-8407-a4306fba8dc5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -429,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2295
         }
       }
     note: false
@@ -437,10 +406,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: e1997659-45af-4d2b-86d9-ac52cf8cedda
+    taskid: 43c3ef08-d652-485f-8f1f-58950032f770
     type: regular
     task:
-      id: e1997659-45af-4d2b-86d9-ac52cf8cedda
+      id: 43c3ef08-d652-485f-8f1f-58950032f770
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -462,7 +431,159 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 160
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 452e6580-a221-44a9-8abc-841a2751c995
+    type: playbook
+    task:
+      id: 452e6580-a221-44a9-8abc-841a2751c995
+      version: -1
+      name: Polling an uploaded file
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${vtScanID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: resource
+      PollingCommandName:
+        simple: vt-private-get-file-report
+      Timeout:
+        simple: "10"
+      dt:
+        simple: VirusTotal(val.Status!=='Ready').Status
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: b6dec92d-adc7-4bd7-8c28-f4fcad00b10c
+    type: regular
+    task:
+      id: b6dec92d-adc7-4bd7-8c28-f4fcad00b10c
+      version: -1
+      name: Get a file to upload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      data:
+        simple: Cool data
+      entryId: {}
+      filename:
+        simple: VT_file_test.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 0fd3e26d-c1f9-44fa-8190-014df8c7b37a
+    type: regular
+    task:
+      id: 0fd3e26d-c1f9-44fa-8190-014df8c7b37a
+      version: -1
+      name: Load file to vt
+      description: Submits a file for scanning.
+      script: '|||file-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      uploadURL: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: be0e29d3-48bb-4144-8967-7a8ebaa12efc
+    type: regular
+    task:
+      id: be0e29d3-48bb-4144-8967-7a8ebaa12efc
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -473,10 +594,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2415,
+        "height": 2835,
         "width": 380,
         "x": 50,
-        "y": -30
+        "y": 50
       }
     }
   }

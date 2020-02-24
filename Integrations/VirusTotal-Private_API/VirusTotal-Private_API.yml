@@ -306,6 +306,12 @@ script:
     - contextPath: File.VirusTotal.ImpHash
       description: ImpHash of the File
       type: string
+    - contextPath: VirusTotal.ID
+      description: The ID of the file uploaded to VirusTotal. (The file hash)
+      type: String
+    - contextPath: VirusTotal.Status
+      description: The status of the queried file. Could be "Queued" or "Ready".
+      type: String
   - arguments:
     - default: false
       description: A CSV list of one or more URLs to retrieve the most recent report

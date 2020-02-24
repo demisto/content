@@ -12,4 +12,5 @@ def test_get_file_response_queued_response(mocker, requests_mock):
     vt = importlib.import_module("VirusTotal-Private_API")
 
     output = vt.get_file_report_command()
-    assert output == 'The file is queued for analysis. Try again in a short while.'
+    assert output.get('HumanReadable') == 'The file is queued for analysis. Try again in a short while.'
+    assert output.get('EntryContext', {}).get('VirusTotal(val.ID == obj.ID)', {}).get('Status') == 'Queued'
