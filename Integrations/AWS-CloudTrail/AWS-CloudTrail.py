@@ -3,6 +3,12 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import boto3
 import datetime
+from botocore.config import Config
+from botocore.parsers import ResponseParserError
+import urllib3.util
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
 AWS_roleArn = demisto.params()['roleArn']
