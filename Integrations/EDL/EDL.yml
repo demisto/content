@@ -22,7 +22,7 @@ configuration:
   name: on_demand
   required: false
   type: 8
-- additionalinfo: How often to refresh the EDL
+- additionalinfo: How often to refresh the EDL (e.g., 12 hours, 7 days, 3 months, 1 year)
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
