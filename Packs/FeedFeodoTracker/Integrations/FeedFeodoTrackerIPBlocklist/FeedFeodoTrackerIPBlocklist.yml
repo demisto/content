@@ -94,7 +94,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: feodotracker-ipblocklist-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6120
   feed: true
   isfetch: false
   longRunning: false
