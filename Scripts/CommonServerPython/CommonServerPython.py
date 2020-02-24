@@ -653,12 +653,9 @@ def b64_encode(text):
     """
     if not text:
         return ''
-    to_encode = text
-    if IS_PY3:
-        to_encode = text.encode('utf-8', 'ignore')
+    to_encode = text.encode('utf-8', 'ignore')
     res = base64.b64encode(to_encode)
-    if IS_PY3:
-        res = res.decode('utf-8')  # type: ignore
+    res = res.decode('utf-8')  # type: ignore
     return res
 
 
