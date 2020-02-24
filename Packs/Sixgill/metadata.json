@@ -1,0 +1,15 @@
+{
+	"name": "Sixgill DarkFeed Threat Intelligence",
+	"description": "The integration allow retrieving Sixgill's DarkFeed Threat Intelligence indicators and fetching alerts based on organization assets",
+	"support": "partner",
+	"beta": false,
+	"deprecated": false,
+	"serverMinVersion": "4.5.0",
+	"currentVersion": "1.0.0",
+	"author": "Sixgill - Ben Sterenson",
+	"url": "https://github.com/BenSterenson",
+	"email": "support@cybersixgill.com, dev@cybersixgill.com",
+	"categories": "Data Enrichment & Threat Intelligence",
+	"useCases": "",
+	"keywords": ""
+}

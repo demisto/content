@@ -145,7 +145,7 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
             limit = 50
-            mocker.patch.object(demisto, 'findIndicators', return_value=iocs_dict)
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit)
             assert nxt_pg == 1  # assert entered into loop
 
@@ -156,7 +156,7 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
             limit = 30
-            mocker.patch.object(demisto, 'findIndicators', return_value=iocs_dict)
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             edl.PAGE_SIZE = IOC_RES_LEN
             edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit,
                                                                  last_found_len=IOC_RES_LEN)
