@@ -7,7 +7,6 @@ from botocore.parsers import ResponseParserError
 import urllib3.util
 from datetime import datetime, date
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -368,9 +367,10 @@ def lookup_events(args):
 
     if args.get('startTime') is not None:
         kwargs.update({'StartTime': datetime.strptime(args.get('startTime'),  # type:ignore
-                                                               "%Y-%m-%dT%H:%M:%S")})
+                                                      "%Y-%m-%dT%H:%M:%S")})
     if args.get('endTime') is not None:
-        kwargs.update({'EndTime': datetime.strptime(args.get('endTime'), "%Y-%m-%dT%H:%M:%S")})  # type:ignore
+        kwargs.update(
+            {'EndTime': datetime.strptime(args.get('endTime'), "%Y-%m-%dT%H:%M:%S")})  # type:ignore
 
     client.lookup_events(**kwargs)
     paginator = client.get_paginator('lookup_events')
@@ -394,10 +394,10 @@ def lookup_events(args):
 
 
 def test_function():
-        client = aws_session()
-        response = client.describe_trails()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            demisto.results('ok')
+    client = aws_session()
+    response = client.describe_trails()
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('ok')
 
 
 '''EXECUTION BLOCK'''
