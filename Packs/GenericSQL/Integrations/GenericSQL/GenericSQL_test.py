@@ -1,16 +1,23 @@
-from GenericSQL.GenericSQL import Client, sql_query_execute, sql_command_execute, get_table_name_from_query
+from GenericSQL.GenericSQL import Client, sql_query_execute, sql_command_execute
 import pytest
-
 
 args1 = {
         'query': "select Name from city",
         'limit': 5,
         'skip': 0
-        }
+}
 
 raw1 = [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]
 
-expected_output = {'GenericSQL.sql_dialect.database(val.city && val.city === obj.city)': [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]}
+expected_output = {
+    'GenericSQL.sql_dialect.database(val.city && val.city === obj.city)':
+        [
+            {'Name': 'Kabul'},
+            {'Name': 'Qandahar'},
+            {'Name': 'Herat'},
+            {'Name': 'Mazar-e-Sharif'}
+        ]
+}
 
 
 db_name = "new_schema"
