@@ -48,11 +48,8 @@ def test_get_incidents(mocker):
     size = 100
     query = 'query'
 
-    def check_from_date(x):
-        return len(x) > 5
-
     def validate_args(command, args):
-        assert check_from_date(args.get('from'))
+        assert len(args.get('from')) > 5
         assert args['size'] == size
         assert args['query'] == query
         return [{'Type': entryTypes['note'], 'Contents': {'data': []}}]
@@ -63,8 +60,11 @@ def test_get_incidents(mocker):
     get_incidents(query, "created", size, "3 weeks ago")
     get_incidents(query, "created", size, "2020-02-16T17:45:53.179489")
 
-    def check_from_date(x):
-        return x is None
+    def validate_args_without_from(command, args):
+        assert args.get('from') is None
+        return [{'Type': entryTypes['note'], 'Contents': {'data': []}}]
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=validate_args_without_from)
 
     get_incidents(query, "modified", size, "3 weeks ago")
 
