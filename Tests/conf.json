@@ -539,8 +539,7 @@
         },
         {
             "playbookID": "Luminate-TestPlaybook",
-            "integrations": "Luminate",
-            "timeout": 1000
+            "integrations": "Luminate"
         },
         {
             "playbookID": "Palo Alto Networks - Malware Remediation Test",
