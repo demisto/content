@@ -2726,7 +2726,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
     elif 'member' in current_object:
-        current_objects_items = argToList(current_object.get('member'))
+        current_objects_items = [arg["#text"] for arg in current_object.get('member')]
 
     return current_objects_items
 
