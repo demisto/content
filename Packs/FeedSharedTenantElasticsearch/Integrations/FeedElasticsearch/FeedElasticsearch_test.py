@@ -1,11 +1,10 @@
-import demistomock as demisto
-
 class MockHit:
     def __init__(self, hit_val):
         self._hit_val = hit_val
 
     def to_dict(self):
         return self._hit_val
+
 
 """MOCKED RESPONSES"""
 
@@ -214,10 +213,3 @@ def test_create_enrichment_batches_mult_indicators():
     assert ioc_enrch_lst_of_lsts[1] == [2, 5, 7]
     assert ioc_enrch_lst_of_lsts[2] == [3, 8]
     assert ioc_enrch_lst_of_lsts[3] == [9]
-
-
-def test_generic(mocker):
-    import FeedElasticsearch as es2
-    mocker.patch.object(demisto, 'getIndexHash')
-    client = es2.ElasticsearchClient(True, 'http://localhost:9200', None, None, '', 'Simple-Date', 'customer')
-    es2.get_indicators_command(client, False, 'indicatorValue', 'indicatorType', 'IP')

@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 '''IMPORTS'''
-from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import QueryString
 from datetime import datetime
@@ -60,7 +60,7 @@ class ElasticsearchClient:
 ''' ###################### COMMANDS ###################### '''
 
 
-def test_command(client, demisto_shared, src_val, src_type, default_type, time_field, time_method, fetch_index):
+def test_command(client, demisto_shared, src_val, src_type, default_type, time_method):
     """Test instance was set up correctly"""
     if not demisto_shared:
         if not src_val:
@@ -69,12 +69,8 @@ def test_command(client, demisto_shared, src_val, src_type, default_type, time_f
             return_error('Please provide a "Source Indicator Type" or "Default Indicator Type"')
         if not default_type:
             return_error('Please provide a "Default Indicator Type"')
-        if not time_field:
-            return_error('Please provide a "Time Field"')
         if not time_method:
             return_error('Please provide a "Time Method"')
-        if not fetch_index:
-            return_error('Please provide a "Fetch Index"')
     try:
         res = client.send_test_request()
         if res.status_code >= 400:
@@ -115,8 +111,7 @@ def get_custom_indicators(search, src_val, src_type, default_type):
         hit_lst = extract_indicators_from_custom_hit(hit, src_val, src_type, default_type)
         ioc_lst.extend(hit_lst)
     hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
-    ec = {'ElasticsearchFeed.Indicators(val.value === obj.value)': ioc_lst}
-    return_outputs(hr, ec, ioc_lst)
+    return_outputs(hr, {}, ioc_lst)
 
 
 def get_demisto_indicators(search):
@@ -133,9 +128,7 @@ def get_demisto_indicators(search):
     hr = tableToMarkdown('Indicators', indicators_list, ['name'])
     for ioc_enrch_obj in ioc_enrch_lst:
         hr += tableToMarkdown('Enrichments', ioc_enrch_obj, ['value', 'sourceBrand', 'score'])
-    ec = {'ElasticsearchFeed.Indicators(val.value === obj.value)': indicators_list,
-          'ElasticsearchFeed.Enrichments(val.value === obj.value)': ioc_enrch_lst}
-    return_outputs(hr, ec, indicators_list)
+    return_outputs(hr, {}, indicators_list)
 
 
 def fetch_indicators_command(client, demisto_shared, src_val, src_type, default_type, last_fetch):
@@ -174,6 +167,8 @@ def get_scan_custom_format(client, last_fetch=None):
             last_fetch_timestamp = float(last_fetch)
     time_field = client.time_field
     fetch_index = client.fetch_index
+    if not fetch_index:
+        fetch_index = '_all'
     if time_field:
         query = QueryString(query=time_field + ':*')
         range_field = {
@@ -303,7 +298,7 @@ def main():
         last_fetch = demisto.getLastRun().get('time')
 
         if demisto.command() == 'test-module':
-            test_command(client, demisto_shared, src_val, src_type, default_type, time_field, time_method, fetch_index)
+            test_command(client, demisto_shared, src_val, src_type, default_type, time_method)
         elif demisto.command() == 'fetch-indicators':
             fetch_indicators_command(client, demisto_shared, src_val, src_type, default_type, last_fetch)
         elif demisto.command() == 'es-get-indicators':

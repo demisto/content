@@ -2139,7 +2139,13 @@
         {
             "integrations": "ElasticsearchFeed",
             "instance_names": "es_demisto_feed",
-            "playbookID": "Elasticsearch_Fetch_Indicators_Test",
+            "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_custom_feed",
+            "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
             "fromversion": "5.5.0"
         },
         {

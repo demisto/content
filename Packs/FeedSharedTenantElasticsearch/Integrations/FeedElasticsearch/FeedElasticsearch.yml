@@ -7,7 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username for server login
+- display: Username
   name: credentials
   required: false
   type: 9
@@ -83,31 +83,31 @@ configuration:
   name: demisto_shared
   required: false
   type: 8
-- additionalinfo: Source key that contains the indicator value in the index.
-  display: Source Indicator Value Key
+- additionalinfo: Source field that contains the indicator value in the index.
+  display: Indicator Value Field
   hidden: false
   name: src_val
   required: false
   type: 0
-- additionalinfo: Source key that contains the indicator type in the index.
-  display: Source Indicator Type Key
+- additionalinfo: Source field that contains the indicator type in the index.
+  display: Indicator Type Field
   hidden: false
   name: src_type
   required: false
   type: 0
-- additionalinfo: Default indicator type used in case no type was provided.
+- additionalinfo: Default indicator type used in case no type was found in the "Source Indicator Type Key".
   display: Default Indicator Type
   hidden: false
   name: default_type
   required: false
   type: 0
-- display: Index from which to fetch incidents
-  additionalinfo: Multiple indices may be used by separating them with a comma.
+- display: Index From Which To Fetch Indicators
+  additionalinfo: Multiple indices may be used by separating them with a comma. If none is provided, will search in all indices.
   name: fetch_index
   required: false
   type: 0
 - defaultvalue: Simple-Date
-  display: Time field type
+  display: Time Field Type
   name: time_method
   options:
   - Simple-Date
@@ -115,7 +115,8 @@ configuration:
   - Timestamp-Milliseconds
   required: false
   type: 15
-- display: Index time field (for sorting sort and limiting data)
+- display: Index Time Field
+  additionalinfo:  Used for sorting sort and limiting data. If left empty, no sorting will be done.
   name: time_field
   required: false
   type: 0
@@ -136,13 +137,6 @@ script:
     description: Gets indicators available in the configured Elasticsearch database.
     execution: false
     name: es-get-indicators
-    outputs:
-    - contextPath: ElasticsearchFeed.Indicators
-      description: Indicators fetched from Elasticsearch.
-      type: Unknown
-    - contextPath: ElasticsearchFeed.Enrichments
-      description: Enrichment indicators fetched from Elasticsearch.
-      type: Unknown
   dockerimage: demisto/elasticsearch:1.0.0.4677
   feed: true
   isfetch: false
