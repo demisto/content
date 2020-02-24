@@ -440,6 +440,18 @@
             "playbookID": "JSONtoCSV-Test"
         },
         {
+            "integrations": "Generic SQL",
+            "playbookID": "GenericSQL - Test",
+            "instance_names": "mysql instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
+            "playbookID": "GenericSQL - Test",
+            "instance_names": "postgreSQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",
