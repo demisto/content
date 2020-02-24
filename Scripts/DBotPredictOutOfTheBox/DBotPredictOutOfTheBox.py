@@ -15,9 +15,7 @@ def oob_model_exists():
 
 
 def load_oob_model():
-    with open(OUT_OF_THE_BOX_MODEL_PATH, 'rb') as input_file:
-        encryped_model = input_file.read()
-    encoded_model = demisto_ml.decrypt_model(encryped_model)
+    encoded_model = demisto_ml.load_oob(OUT_OF_THE_BOX_MODEL_PATH)
     res = demisto.executeCommand('createMLModel', {'modelData': encoded_model,
                                                    'modelName': OUT_OF_THE_BOX_MODEL_NAME,
                                                    'modelLabels': ['legit', 'spam', 'malicious'],
@@ -48,36 +46,20 @@ def load_oob_model():
         return_error(get_error(res))
 
 
-def predict_phishing_words(email_subject, email_body, email_body_html, min_text_length, label_threshold,
-                           word_threshold, top_word_limit, is_return_error):
+def predict_phishing_words():
     if not oob_model_exists() or True:
         load_oob_model()
-    res = demisto.executeCommand('DBotPredictPhishingWords', {'modelName': OUT_OF_THE_BOX_MODEL_NAME,
-                                                              'emailBody': email_body,
-                                                              'emailBodyHTML': email_body_html,
-                                                              'emailSubject': email_subject,
-                                                              'labelProbabilityThreshold': label_threshold,
-                                                              'minTextLength': min_text_length,
-                                                              'wordThreshold': word_threshold,
-                                                              'top_word_limit': top_word_limit,
-                                                              'returnError': is_return_error,
-                                                              'hashSeed': HASH_SEED
-                                                              })
+    dargs = demisto.args()
+    dargs['modelName'] = OUT_OF_THE_BOX_MODEL_NAME
+    dargs['hashSeed'] = '5381'
+    res = demisto.executeCommand('DBotPredictPhishingWords', dargs)
     if is_error(res):
         return_error(get_error(res))
     return res
 
 
 def main():
-    res = predict_phishing_words(demisto.args().get('emailSubject', ''),
-                                 demisto.args().get('emailBody', ''),
-                                 demisto.args().get('emailBodyHTML', ''),
-                                 int(demisto.args()['minTextLength']),
-                                 float(demisto.args().get("labelProbabilityThreshold", 0)),
-                                 float(demisto.args().get('wordThreshold', 0)),
-                                 int(demisto.args()['topWordsLimit']),
-                                 demisto.args()['returnError'] == 'true'
-                                 )
+    res = predict_phishing_words()
     return res
 
 
