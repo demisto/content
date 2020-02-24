@@ -1,5 +1,6 @@
 ## [Unreleased]
--
+Changed display name to lower case v2
+
 
 ## [19.9.0] - 2019-09-04
  - New command `!sep-identify-old-clients` which identifies endpoints with a running

@@ -1,4 +1,5 @@
 ## [Unreleased]
+Changed display name to lower case v2
 
 
 ## [19.8.2] - 2019-08-22

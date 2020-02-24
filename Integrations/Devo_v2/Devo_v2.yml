@@ -2,7 +2,7 @@ commonfields:
   id: Devo_v2
   version: -1
 name: Devo_v2
-display: Devo_v2
+display: Devo v2
 category: Analytics & SIEM
 description: Use the Devo v2 integration to query Devo for alerts, lookup tables, and to write to lookup tables.
 configuration:
