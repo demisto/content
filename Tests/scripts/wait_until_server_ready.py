@@ -144,8 +144,8 @@ def main():
         if len(instance_ips) > len(ready_ami_list):
             sleep(1)
 
-    if not is_correct_content_installed(instance_ips, content_version, api_key=api_key):
-        sys.exit(1)
+    # if not is_correct_content_installed(instance_ips, content_version, api_key=api_key):
+    #     sys.exit(1)
 
 
 if __name__ == "__main__":
