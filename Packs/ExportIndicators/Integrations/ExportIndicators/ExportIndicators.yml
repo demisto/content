@@ -22,6 +22,12 @@ configuration:
   name: list_size
   required: true
   type: 0
+- defaultvalue: '0'
+  display: The starting entry index from which to export
+  hidden: false
+  name: offset
+  required: false
+  type: 0
 - display: Update On-Demand Only
   name: on_demand
   required: false
@@ -49,8 +55,9 @@ configuration:
   name: key
   required: false
   type: 14
-- display: Username
-  additionalinfo: Enable basic authentication for accessing the EDL. If empty, no authentication is enforced. 
+- additionalinfo: Enable basic authentication for accessing the EDL. If empty, no
+    authentication is enforced.
+  display: Username
   name: credentials
   required: false
   type: 9
@@ -91,8 +98,8 @@ script:
     - default: false
       defaultValue: 'false'
       description: Whether to print the indicators. If set to "true" will print the
-        indicators that were saved to the Export Indicators Service. The default
-        value is "false".
+        indicators that were saved to the Export Indicators Service. The default value
+        is "false".
       isArray: false
       name: print_indicators
       predefined:
@@ -106,6 +113,7 @@ script:
     execution: false
     name: eis-update
   dockerimage: demisto/teams:1.0.0.4937
+  feed: false
   isfetch: false
   longRunning: true
   longRunningPort: true
