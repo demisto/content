@@ -150,7 +150,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
             new_count = 0
             for path in store:
                 with open(path, 'r') as file_obj:
-                    print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), end='')
+                    # print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), end='')
                     raw_content = file_obj.read()
                     cnt = self.load_data(raw_content)
 

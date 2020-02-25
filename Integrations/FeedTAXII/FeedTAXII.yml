@@ -67,7 +67,7 @@ configuration:
   name: discovery_service
   required: true
   type: 0
-- additionalinfo: Collection name to fetch indicators from.
+- additionalinfo: Collection name to fetch indicators from.1
   display: Collection
   name: collection
   required: true
