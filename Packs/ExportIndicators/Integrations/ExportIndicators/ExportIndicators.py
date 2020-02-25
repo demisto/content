@@ -75,13 +75,18 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
     out_dict = create_values_out_dict(iocs, out_format)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
-    save_context(now, out_dict)
+    save_context(now, limit, offset, out_format, out_dict)
     return out_dict[CTX_VALUES_KEY]
 
 
-def save_context(now: datetime, out_dict: dict):
+def save_context(now: datetime, limit: int, offset: int, out_format: str, out_dict: dict):
     """Saves export_iocs state and refresh time to context"""
-    demisto.setLastRun({'last_run': date_to_timestamp(now)})
+    demisto.setLastRun({
+        'last_run': date_to_timestamp(now),
+        'last_limit': limit,
+        'last_offset': offset,
+        'last_format': out_format
+    })
     demisto.setIntegrationContext(out_dict)
 
 
@@ -148,11 +153,15 @@ def get_outbound_mimetype() -> str:
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
-def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format='text', last_update=None,
+def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format='text', last_update_data={},
                             cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the list
     """
+    last_update = last_update_data.get('last_run')
+    last_limit = last_update_data.get('last_limit')
+    last_offset = last_update_data.get('last_offset')
+    last_format = last_update_data.get('last_format')
     # on_demand ignores cache
     if on_demand:
         values_str = get_ioc_values_str_from_context()
@@ -160,7 +169,7 @@ def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_fo
         if last_update:
             # takes the cache_refresh_rate amount of time back since run time.
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            if last_update <= cache_time:
+            if last_update <= cache_time or last_limit != limit or last_offset != offset or last_format != out_format:
                 values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
             else:
                 values_str = get_ioc_values_str_from_context()
@@ -264,7 +273,7 @@ def route_list_values() -> Response:
         on_demand=params.get('on_demand'),
         limit=limit,
         offset=offset,
-        last_update=demisto.getLastRun().get('last_run'),
+        last_update_data=demisto.getLastRun(),
         indicator_query=params.get('indicators_query'),
         cache_refresh_rate=params.get('cache_refresh_rate')
     )
