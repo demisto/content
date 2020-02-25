@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fixed an issue with ***get-incident*** when the returned sources attribute is set to "[null]" in NetWitness 11.4
 
 ## [20.2.3] - 2020-02-18
 - Fixed an issue with ***fetch-incidents*** where setting a *Fetch Limit* would drop older incidents if the number of the fetched incidents was greater than the limit.
