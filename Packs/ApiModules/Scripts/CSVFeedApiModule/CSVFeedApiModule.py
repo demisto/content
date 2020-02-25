@@ -156,6 +156,15 @@ class Client(BaseClient):
         return results
 
 
+def determine_indicator_type(conf_indicator_type, default_indicator_type, value):
+    if not conf_indicator_type:
+        indicator_type = default_indicator_type
+    if indicator_type == FeedIndicatorType.Domain and '*' in value:
+        indicator_type = FeedIndicatorType.DomainGlob
+    return indicator_type
+
+
+
 def module_test_command(client: Client, args):
     if not client.feed_url_to_config:
         indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
@@ -164,6 +173,7 @@ def module_test_command(client: Client, args):
                 FeedIndicatorType.Account,
                 FeedIndicatorType.CVE,
                 FeedIndicatorType.Domain,
+                FeedIndicatorType.DomainGlob,
                 FeedIndicatorType.Email,
                 FeedIndicatorType.File,
                 FeedIndicatorType.MD5,
@@ -198,11 +208,9 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                     value = next(iter(item.values()))
                 if value:
                     raw_json['value'] = value
-                    indicator_type = config.get(url, {}).get('indicator_type')
-                    if not indicator_type:
-                        indicator_type = default_indicator_type
+                    conf_indicator_type = config.get(url, {}).get('indicator_type')
+                    indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, value)
                     raw_json['type'] = indicator_type
-
                     indicator = {
                         'value': value,
                         'type': indicator_type,
