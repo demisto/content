@@ -2,14 +2,23 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import json
-from flask import Flask, Response
+from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any
+from typing import Callable, List, Any, cast, Dict
+from base64 import b64decode
+
+
+class Handler:
+    @staticmethod
+    def write(msg):
+        demisto.info(msg)
+
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'Export Indicators Service'
 PAGE_SIZE: int = 200
+DEMISTO_LOGGER: Handler = Handler()
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
 CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
@@ -170,6 +179,28 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     return res
 
 
+def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
+    """
+    Checks whether the authentication is valid.
+    :param headers: The headers of the http request
+    :param username: The integration's username
+    :param password: The integration's password
+    :return: Boolean which indicates whether the authentication is valid or not
+    """
+    credentials: str = headers.get('Authorization', '')
+    if not credentials or 'Basic ' not in credentials:
+        return False
+    encoded_credentials: str = credentials.split('Basic ')[1]
+    credentials: str = b64decode(encoded_credentials).decode('utf-8')
+    if ':' not in credentials:
+        return False
+    credentials_list = credentials.split(':')
+    if len(credentials_list) != 2:
+        return False
+    user, pwd = credentials_list
+    return user == username and pwd == password
+
+
 ''' ROUTE FUNCTIONS '''
 
 
@@ -179,6 +210,17 @@ def route_list_values() -> Response:
     Main handler for values saved in the integration context
     """
     params = demisto.params()
+
+    credentials = params.get('credentials') if params.get('credentials') else {}
+    username: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
+    if username and password:
+        headers: dict = cast(Dict[Any, Any], request.headers)
+        if not validate_basic_authentication(headers, username, password):
+            err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
+            demisto.debug(err_msg)
+            return Response(err_msg, status=401)
+
     values = get_outbound_ioc_values(
         out_format=params.get('format'),
         on_demand=params.get('on_demand'),
@@ -225,11 +267,12 @@ def test_module(args, params):
 
 def run_long_running(params):
     """
-    Starts the long running thread.
+    Start the long running server
+    :param params: Demisto params
+    :return: None
     """
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
-    http_server: bool = params.get('http_flag', True)
 
     certificate_path = str()
     private_key_path = str()
@@ -238,7 +281,10 @@ def run_long_running(params):
         port = get_params_port(params)
         ssl_args = dict()
 
-        if certificate and private_key and not http_server:
+        if (certificate and not private_key) or (private_key and not certificate):
+            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
+
+        if certificate and private_key:
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
             certificate_file.write(bytes(certificate, 'utf-8'))
@@ -254,7 +300,7 @@ def run_long_running(params):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args)
+        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
         server.serve_forever()
     except Exception as e:
         if certificate_path:
@@ -288,6 +334,15 @@ def main():
     Main
     """
     params = demisto.params()
+
+    credentials = params.get('credentials') if params.get('credentials') else {}
+    username: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
+    if (username and not password) or (password and not username):
+        err_msg: str = 'If using credentials, both username and password should be provided.'
+        demisto.debug(err_msg)
+        raise DemistoException(err_msg)
+
     command = demisto.command()
     demisto.debug('Command being called is {}'.format(command))
     commands = {
