@@ -20,7 +20,8 @@ class TestHelperFunctions:
             ioc_list = get_outbound_ioc_values(
                 out_format='text',
                 on_demand=True,
-                limit=50
+                limit=50,
+                offset=0
             )
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
@@ -40,6 +41,7 @@ class TestHelperFunctions:
                 out_format='text',
                 on_demand=False,
                 limit=50,
+                offset=0,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -60,6 +62,7 @@ class TestHelperFunctions:
                 out_format='text',
                 on_demand=False,
                 limit=50,
+                offset=0,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -174,8 +177,22 @@ class TestHelperFunctions:
             iocs_json = json.loads(iocs_json_f.read())
             limit = 30
             mocker.patch.object(ei, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
-            ei_vals = ei.find_indicators_with_limit(indicator_query='', limit=limit)
+            ei_vals = ei.find_indicators_with_limit(indicator_query='', limit=limit, offset=0)
             assert len(ei_vals) == limit
+
+    @pytest.mark.find_indicators_with_limit
+    def test_find_indicators_with_limit_and_offset_1(self, mocker):
+        """Test find indicators limit and offset"""
+        import ExportIndicators as ei
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            limit = 30
+            offset = 1
+            mocker.patch.object(ei, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
+            ei_vals = ei.find_indicators_with_limit(indicator_query='', limit=limit, offset=offset)
+            assert len(ei_vals) == limit
+            # check that the first value is the second on the list
+            assert ei_vals[0].get('value') == '212.115.110.19'
 
     @pytest.mark.find_indicators_with_limit_loop
     def test_find_indicators_with_limit_loop_1(self, mocker):
