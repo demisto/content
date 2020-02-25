@@ -106,7 +106,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: alienvaultotx-get-indicators
-  dockerimage: demisto/taxii:1.0.0.6086
+  dockerimage: demisto/taxii:1.0.0.6220
   feed: true
   isfetch: false
   longRunning: false
