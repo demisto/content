@@ -17,11 +17,18 @@ configuration:
   required: false
   defaultvalue: true
   type: 8
-- defaultvalue: '360'
-  display: Feed Fetch Interval
-  name: feedFetchInterval
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
-  type: 19
+  type: 18
 - defaultvalue: B - Usually reliable
   display: Source Reliability
   name: feedReliability
@@ -35,18 +42,6 @@ configuration:
   required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-  defaultvalue: Bad
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -57,11 +52,16 @@ configuration:
     - interval
     - indicatorType
     - suddenDeath
-- display: " "
+- display: ""
   name: feedExpirationInterval
   required: false
   defaultvalue: "20160"
   type: 1
+- defaultvalue: '360'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: ""
@@ -108,7 +108,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6120
   feed: true
   isfetch: false
   longRunning: false
