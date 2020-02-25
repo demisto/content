@@ -27,7 +27,7 @@ urllib3.disable_warnings()
 EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
 INTEGRATION_NAME = 'TAXII1'
 
-
+#
 class AddressObject(object):
     """
     Implements address object indicator decoding
