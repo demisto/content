@@ -474,7 +474,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: VirusTotal(val.Status!=='Ready').Status
+        simple: VirusTotal(val.Status!=='Ready').ID
     separatecontext: false
     loop:
       iscommand: false
