@@ -30,9 +30,8 @@ def parse_relative_time(datetime_str):
             kargs[unit] = int(number)
             result = datetime.now() - timedelta(**kargs)
             return result
-
     except Exception:
-        return datetime_str
+        return None
 
 
 def get_context(incident_id):
