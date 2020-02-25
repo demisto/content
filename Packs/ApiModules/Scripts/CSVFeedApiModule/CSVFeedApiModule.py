@@ -164,7 +164,6 @@ def determine_indicator_type(conf_indicator_type, default_indicator_type, value)
     return indicator_type
 
 
-
 def module_test_command(client: Client, args):
     if not client.feed_url_to_config:
         indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
