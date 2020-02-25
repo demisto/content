@@ -113,19 +113,9 @@ def sam_account():
 
 
 @pytest.fixture
-def domain():
-    return 'silverfort.io'
-
-
-@pytest.fixture
 def client(base_url):
     from Packs.Silverfort.Integrations.Silverfort.Silverfort import Client
     return Client(base_url=base_url, verify=False)
-
-
-@pytest.fixture
-def domain():
-    return 'silverfort.io'
 
 
 @pytest.fixture
