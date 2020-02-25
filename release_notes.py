@@ -199,13 +199,13 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
     def generate_release_notes(self, current_server_version, collect_beta=False):
         res = ""
-
+        beta_paths = None
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print("starting {} RN".format(self.get_header()))
 
             # Added files
             add_rn, beta_paths = self.release_notes_section(self.added_store, NEW_RN, current_server_version,
-                                                            collect_beta=False)
+                                                            collect_beta=collect_beta)
             # Modified files
             modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN, current_server_version)
 
@@ -225,6 +225,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
             if section_body:
                 res = "### {}\n".format(self.get_header())
                 res += section_body
+
         if collect_beta:
             beta_res = self.release_notes_section(beta_paths, NEW_RN, "9.9.9")
             return res, beta_res
