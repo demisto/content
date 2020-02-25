@@ -160,7 +160,7 @@ def test_search_alerts(requests_mock):
 
 def test_fetch_incidents(requests_mock):
     mock_response = testutil_load_json('test_data/search_alerts.json')
-    requests_mock.get('http://test.com/get_alerts?alert_status=ACTTIVE&max_results=50&start_time=1582584487883',
+    requests_mock.get('http://test.com/get_alerts?alert_status=ACTIVE&max_results=50&start_time=1582584487883',
                       json=mock_response)
 
     client = Client(
@@ -178,7 +178,7 @@ def test_fetch_incidents(requests_mock):
     next_run, new_incidents = fetch_incidents(
         client=client,
         last_run=last_run,
-        alert_status='ACTTIVE',
+        alert_status='ACTIVE',
         alert_type=None,
         first_fetch_time='3 days'
     )
