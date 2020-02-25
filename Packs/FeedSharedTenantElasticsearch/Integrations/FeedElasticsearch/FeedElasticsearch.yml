@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 5.5.0
 commonfields:
   id: ElasticsearchFeed
   version: -1
@@ -21,10 +20,30 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Cortex XSOAR Feed are indicators saved by demisto in an Elasticsearch
+    configured enviornment. Cortex XSOAR MT Shared Feed are indicators shared by a
+    tenant in a MT env. Generic Feed is a feed in a format dictated by the user.
+  defaultvalue: Cortex XSOAR Feed
+  display: Feed Type
+  hidden: false
+  name: feed_type
+  options:
+  - Cortex XSOAR Feed
+  - Cortex XSOAR MT Shared Feed
+  - Generic Feed (fill in configuration below)
+  required: false
+  type: 15
 - display: Fetch indicators
   name: feed
   required: false
   type: 8
+- additionalinfo: Determine how far to look back for fetched indicators (<number>
+    <time unit>, e.g., 12 hours, 7 days).
+  defaultvalue: 3 days
+  display: First Fetch Time
+  name: fetch_time
+  required: false
+  type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: feedInstanceReputationNotSet
@@ -77,15 +96,11 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Indicators shared directly from demisto.
-  defaultvalue: "true"
-  display: Demisto Shared Feed
-  hidden: false
-  name: demisto_shared
-  required: false
-  type: 8
 - additionalinfo: Source field that contains the indicator value in the index.
-  display: Indicator Value Field
+  display: |-
+    ┉┉┉┉┉ Generic Feed Configuration ┉┉┉┉┉
+
+    Indicator Value Field
   hidden: false
   name: src_val
   required: false
@@ -96,14 +111,16 @@ configuration:
   name: src_type
   required: false
   type: 0
-- additionalinfo: Default indicator type used in case no type was found in the "Source Indicator Type Key".
-  display: Default Indicator Type
+- additionalinfo: Default indicator type used in case no "Indicator Type Field" was
+    provided.
+  display: Indicator Type
   hidden: false
   name: default_type
   required: false
   type: 0
-- display: Index From Which To Fetch Indicators
-  additionalinfo: Multiple indices may be used by separating them with a comma. If none is provided, will search in all indices.
+- additionalinfo: Multiple indices may be used by separating them with a comma. If
+    none is provided, will search in all indices.
+  display: Index From Which To Fetch Indicators
   name: fetch_index
   required: false
   type: 0
@@ -116,8 +133,9 @@ configuration:
   - Timestamp-Milliseconds
   required: false
   type: 15
-- display: Index Time Field
-  additionalinfo:  Used for sorting sort and limiting data. If left empty, no sorting will be done.
+- additionalinfo: Used for sorting sort and limiting data. If left empty, no sorting
+    will be done.
+  display: Index Time Field
   name: time_field
   required: false
   type: 0
@@ -147,3 +165,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.5.0

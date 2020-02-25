@@ -183,10 +183,10 @@ def test_extract_indicators_from_insight_hit(mocker):
     set(FEED_IOC_KEYS).issubset(ioc_enrch_lst[0][1])
 
 
-def test_extract_indicators_from_custom_hit(mocker):
+def test_extract_indicators_from_generic_hit(mocker):
     import FeedElasticsearch as es2
     mocker.patch.object(es2, 'hit_to_indicator', return_value=PARSED_CUSTOM_HIT)
-    ioc_lst = es2.extract_indicators_from_custom_hit(CUSTOM_HIT, CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None)
+    ioc_lst = es2.extract_indicators_from_generic_hit(CUSTOM_HIT, CUSTOM_VAL_KEY, CUSTOM_TYPE_KEY, None)
     assert ioc_lst == [PARSED_CUSTOM_HIT]
 
 
