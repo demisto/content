@@ -1,0 +1,1792 @@
+category: Authentication
+commonfields:
+  id: OktaV2
+  version: -1
+configuration:
+- display: Okta URL (https://<domain>.okta.com)
+  name: url
+  required: true
+  type: 0
+- display: API Token (see Detailed Instructions)
+  name: apitoken
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Integration with Okta's cloud-based identity management service
+display: OktaV2
+name: OktaV2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Unlock User
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Unlocks a specific user.
+    execution: true
+    name: okta-unlock-user
+  - arguments:
+    - default: false
+      description: Deactivates speified user.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Deactivate User.
+    execution: false
+    name: okta-deactivate-user
+  - arguments:
+    - default: true
+      description: Username in Okta to activate
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Activates a specific user.
+    execution: false
+    name: okta-activate-user
+  - arguments:
+    - default: true
+      description: Username in Okta to suspend
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Suspends a user. This operation can only be performed on users with
+      an ACTIVE status. The user has a status of SUSPENDED when the process is completed
+    execution: false
+    name: okta-suspend-user
+  - arguments:
+    - default: true
+      description: Okta username you want to change to ACTIVE status.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a user to ACTIVE status. This operation can only be performed
+      on users that have a SUSPENDED status.
+    execution: false
+    name: okta-unsuspend-user
+  - arguments:
+    - default: false
+      description: Okta username.
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: User ID of the user in which to get enrolled factors.
+      isArray: false
+      name: userId
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all the enrolled facors for the specified user.
+    execution: false
+    name: okta-get-user-factors
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Factor.ID
+      description: Okta account facor ID.
+      type: String
+    - contextPath: Account.Factor.Provider
+      description: Okta account factor provider
+      type: String
+    - contextPath: Account.Factor.Profile
+      description: Okta account factor profle
+      type: String
+    - contextPath: Account.Factor.FactorType
+      description: Okta account factor type
+      type: String
+    - contextPath: Account.Factor.Status
+      description: Okta account factor status
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The user ID
+      isArray: false
+      name: userId
+      required: false
+      secret: false
+    - default: false
+      description: Okta username
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the factor to reset
+      isArray: false
+      name: factorId
+      required: true
+      secret: false
+    deprecated: false
+    description: Unnenrolls an existing factor for thr specified user. which enables
+      the user to enroll a new factor
+    execution: false
+    name: okta-reset-factor
+  - arguments:
+    - default: true
+      description: Okta username in which to set the password
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The new pssword to set for thr user
+      isArray: false
+      name: password
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets passwords without validating existing user credentials
+    execution: true
+    name: okta-set-password
+  - arguments:
+    - default: false
+      description: ID of the user to add
+      isArray: false
+      name: userId
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user to add
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: ID of the group to add the user to
+      isArray: false
+      name: groupId
+      required: false
+      secret: false
+    - default: false
+      description: Name of the group to add the user to
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a user to a group with OKTA_GROUP type
+    execution: false
+    name: okta-add-to-group
+  - arguments:
+    - default: false
+      description: ID of the user to remove
+      isArray: false
+      name: userId
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user to remove
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: ID of the group to remove the user from
+      isArray: false
+      name: groupId
+      required: false
+      secret: false
+    - default: false
+      description: Name of the group to remove the user from
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes a user from a group with OKTA_GROUP type
+    execution: false
+    name: okta-remove-from-group
+  - arguments:
+    - default: true
+      description: Username in Okta in which to get groups
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns all user groups associated with a specified user.
+    execution: false
+    name: okta-get-groups
+    outputs:
+    - contextPath: Account.Group
+      description: Okta groups in which the account is associated
+      type: Unknown
+    - contextPath: Account.ID
+      description: Okta account ID
+      type: String
+    - contextPath: Account.Type
+      description: Account type - Okta
+      type: String
+    - contextPath: Account.Group.ID
+      description: Unique key for the group
+      type: String
+    - contextPath: Account.Group.Created
+      description: Timestamp when the group was ceated
+      type: Date
+    - contextPath: Account.Group.ObjectClass
+      description: Determines the group's profile
+      type: String
+    - contextPath: Account.Group.LastUpdated
+      description: Timestamp when the group's profile was last updated
+      type: Date
+    - contextPath: Account.Group.LastMembershipUpdated
+      description: Timestamp when the group's memberships were last updated
+      type: Date
+    - contextPath: Account.Group.Type
+      description: Determines how a group's profile and emberships ae managed
+      type: String
+    - contextPath: Account.Group.Description
+      description: Description of the group
+      type: String
+    - contextPath: Account.Group.Name
+      description: Name of the group
+      type: String
+  - arguments:
+    - default: false
+      description: The id of the user to verify
+      isArray: false
+      name: userId
+      required: true
+      secret: false
+    - default: false
+      description: The push factor ID
+      isArray: false
+      name: factorId
+      required: true
+      secret: false
+    deprecated: false
+    description: Enrolls and verifies a push factor for a specified user
+    execution: false
+    name: okta-verify-push-factor
+    outputs:
+    - contextPath: Account.ID
+      description: Okta user ID
+      type: String
+    - contextPath: Account.VerifyPushResult
+      description: Okta user push factor result.
+      type: String
+  - arguments:
+    - default: true
+      description: Term in which to search this term can be a first name, last name
+        or email
+      isArray: false
+      name: term
+      required: true
+      secret: false
+    - default: false
+      description: Max number of results to return (The maximum (200) is used as a
+        default)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Returns details of users that match the found term
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for Okta users
+    execution: false
+    name: okta-search
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account IDs returned by search
+      type: String
+    - contextPath: Account.Username
+      description: Okta account usernames returned by search
+      type: String
+    - contextPath: Account.Email
+      description: Okta account emails returned by search
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account display names returned by search
+      type: String
+    - contextPath: Account.Type
+      description: Account type returned by search - Okta
+      type: String
+  - arguments:
+    - default: false
+      description: Okta username in which to get information
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: User ID of the user in which to get information
+      isArray: false
+      name: userId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetches information for a specific user. You must enter one or more
+      parameters for the command to run
+    execution: false
+    name: okta-get-user
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account username.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: String
+    - contextPath: Account.Status
+      description: Okta account status.
+      type: String
+  - arguments:
+    - default: false
+      description: First name of the user(givenName)
+      isArray: false
+      name: firstName
+      required: true
+      secret: false
+    - default: false
+      description: Family name of the user (familyName)
+      isArray: false
+      name: lastName
+      required: true
+      secret: false
+    - default: false
+      description: Primary Email address of the user
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for the user (username)
+      isArray: false
+      name: login
+      required: true
+      secret: false
+    - default: false
+      description: Secondary email address of user. Usually for account recovery.
+      isArray: false
+      name: secondEmail
+      required: false
+      secret: false
+    - default: false
+      description: Middle name(s) of the user
+      isArray: false
+      name: middleName
+      required: false
+      secret: false
+    - default: false
+      description: Honorific prefix(es) of the user, or title in most western languages.
+        Supports multiple input.
+      isArray: false
+      name: honorificPrefix
+      required: false
+      secret: false
+    - default: false
+      description: Honorific suffix(es) of the user. Supports multiple inputs.
+      isArray: false
+      name: honificSuffix
+      required: false
+      secret: false
+    - default: false
+      description: User's title. for example, Vice President.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user, suitable for display to end users.
+      isArray: false
+      name: displayName
+      required: false
+      secret: false
+    - default: false
+      description: Casual way to address the user
+      isArray: false
+      name: nickName
+      required: false
+      secret: false
+    - default: false
+      description: Url of the user online profile. For example, a web page.
+      isArray: false
+      name: profileUrl
+      required: false
+      secret: false
+    - default: false
+      description: Primary phone number of user.
+      isArray: false
+      name: primaryPhone
+      required: false
+      secret: false
+    - default: false
+      description: Mobile phone number of user.
+      isArray: false
+      name: mobilePhone
+      required: false
+      secret: false
+    - default: false
+      description: Full street address component of user's address.
+      isArray: false
+      name: streetAddress
+      required: false
+      secret: false
+    - default: false
+      description: City or locality component of user's address (locality).
+      isArray: false
+      name: city
+      required: false
+      secret: false
+    - default: false
+      description: State or region component of user's address (region).
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: Zipcode or postal code component of user's address (postalCode)
+      isArray: false
+      name: zipCode
+      required: false
+      secret: false
+    - default: false
+      description: Country name component of user's address (country).
+      isArray: false
+      name: countryCode
+      required: false
+      secret: false
+    - default: false
+      description: Mailing address component of user's address
+      isArray: false
+      name: postalAddress
+      required: false
+      secret: false
+    - default: false
+      description: User's preferred written or spoken languages
+      isArray: false
+      name: preferredLanguage
+      required: false
+      secret: false
+    - default: false
+      description: User's default location for purposes of localizing items such as
+        currency, date time frmat, numerical represetations, etc.
+      isArray: false
+      name: locale
+      required: false
+      secret: false
+    - default: false
+      description: User time zone
+      isArray: false
+      name: timezone
+      required: false
+      secret: false
+    - default: false
+      description: Used to identify the organization to user relationship such as
+        "Employee" or "Contractor".
+      isArray: false
+      name: userType
+      required: false
+      secret: false
+    - default: false
+      description: Organization or ompany assigned unique identifier for the user.
+      isArray: false
+      name: employeeNumber
+      required: false
+      secret: false
+    - default: false
+      description: Name of a cost center assigned to.
+      isArray: false
+      name: costCenter
+      required: false
+      secret: false
+    - default: false
+      description: Name of user's organiztion.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: Name of user's division.
+      isArray: false
+      name: division
+      required: false
+      secret: false
+    - default: false
+      description: Name of user's department.
+      isArray: false
+      name: department
+      required: false
+      secret: false
+    - default: false
+      description: ID of a user's manager.
+      isArray: false
+      name: managerId
+      required: false
+      secret: false
+    - default: false
+      description: Display name of the user's manager.
+      isArray: false
+      name: manager
+      required: false
+      secret: false
+    - default: false
+      description: Password for new user.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: Password question for new user
+      isArray: false
+      name: passwordQuestion
+      required: false
+      secret: false
+    - default: false
+      description: Password answer for question supplied.
+      isArray: false
+      name: passwordAnswer
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: OKTA, ACTIVE_DIRECTORY, LDAP, FEDERATION, SOCIAL
+      isArray: false
+      name: providerType
+      predefined:
+      - OKTA
+      - ACTIVE_DIRECTORY
+      - LDAP
+      - FEDERATION
+      - SOCIAL
+      required: false
+      secret: false
+    - default: false
+      description: Name of provider.
+      isArray: false
+      name: providerName
+      required: false
+      secret: false
+    - default: false
+      description: Ids of groups that user will be immediately added to at time of
+        creation (Do Not include default group).
+      isArray: false
+      name: groupIds
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Activates lifecycle operation when creating the user.
+      isArray: false
+      name: activate
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new user with an option of setting password, recovery question
+      and answer.The new user will immediately be able to login after activation with
+      the assigned password. This flow is common when developing a custom user registration
+      experience.
+    execution: true
+    name: okta-create-user
+    outputs:
+    - contextPath: Account.ID
+      description: Created okta account ID.
+      type: String
+    - contextPath: Account.Email
+      description: Created okt account Email.
+      type: String
+    - contextPath: Account.Username
+      description: Created okta account username.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Created okta account display name
+      type: String
+    - contextPath: Account.Type
+      description: Type of created account - Okta.
+      type: String
+  - arguments:
+    - default: false
+      description: First name of the user (given name).
+      isArray: false
+      name: firstName
+      required: false
+      secret: false
+    - default: false
+      description: Family name of the user.
+      isArray: false
+      name: lastName
+      required: false
+      secret: false
+    - default: false
+      description: Primary Email address of user.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: Unique identifier for the user (login).
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: Secondary email address of user - typically used for account recovery.
+      isArray: false
+      name: secondEmail
+      required: false
+      secret: false
+    - default: false
+      description: Midddle name(s) of the user
+      isArray: false
+      name: middleName
+      required: false
+      secret: false
+    - default: false
+      description: Honorific Prefix(es) of the user, or title in most western languages
+      isArray: false
+      name: honorificPrefix
+      required: false
+      secret: false
+    - default: false
+      description: Honorific suffix(es) of the user
+      isArray: false
+      name: honorificSuffix
+      required: false
+      secret: false
+    - default: false
+      description: User's title. For example, Vice President
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: Name if the user suitable for display to end-users
+      isArray: false
+      name: displayName
+      required: false
+      secret: false
+    - default: false
+      description: Casual way to address the user in real life
+      isArray: false
+      name: nickName
+      required: false
+      secret: false
+    - default: false
+      description: Url of user's online profile. (e.g.- a web page)
+      isArray: false
+      name: profileUrl
+      required: false
+      secret: false
+    - default: false
+      description: Primary phone number of user.
+      isArray: false
+      name: primaryPhone
+      required: false
+      secret: false
+    - default: false
+      description: Mobile phone number of user.
+      isArray: false
+      name: mobilePhone
+      required: false
+      secret: false
+    - default: false
+      description: Full street address component of user's address.
+      isArray: false
+      name: streetAddress
+      required: false
+      secret: false
+    - default: false
+      description: City or locality component of user's address (loclity)
+      isArray: false
+      name: city
+      required: false
+      secret: false
+    - default: false
+      description: State or region component of user's address (region)
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: Zipcode or postal code component of user's address (postalCode)
+      isArray: false
+      name: zipCode
+      required: false
+      secret: false
+    - default: false
+      description: Country name component of user's address (country)
+      isArray: false
+      name: countryCode
+      required: false
+      secret: false
+    - default: false
+      description: Mailing address component of user's address
+      isArray: false
+      name: postalSddress
+      required: false
+      secret: false
+    - default: false
+      description: User's preferred written or spoken languages.
+      isArray: false
+      name: preferredLanguage
+      required: false
+      secret: false
+    - default: false
+      description: User's default location for purposes of localizing items such as
+        currncy, date time format, numerical representations. etc.
+      isArray: false
+      name: locale
+      required: false
+      secret: false
+    - default: false
+      description: User time zone.
+      isArray: false
+      name: timezone
+      required: false
+      secret: false
+    - default: false
+      description: Used to identify the organization to user relationship such as
+        "Employee" or "Contractor"
+      isArray: false
+      name: userType
+      required: false
+      secret: false
+    - default: false
+      description: Organization or company assigned unique identifier for the user.
+      isArray: false
+      name: employeeNumber
+      required: false
+      secret: false
+    - default: false
+      description: Name of a cost center assigned to.
+      isArray: false
+      name: costCenter
+      required: false
+      secret: false
+    - default: false
+      description: Name of user's organization
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: Name of user's division
+      isArray: false
+      name: division
+      required: false
+      secret: false
+    - default: false
+      description: Name of user's department
+      isArray: false
+      name: department
+      required: false
+      secret: false
+    - default: false
+      description: ID of user's manager
+      isArray: false
+      name: managerId
+      required: false
+      secret: false
+    - default: false
+      description: Display name of user's manager
+      isArray: false
+      name: manager
+      required: false
+      secret: false
+    - default: false
+      description: New Password for the specified user
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: Password question for the speified user
+      isArray: false
+      name: passwordQuestion
+      required: false
+      secret: false
+    - default: false
+      description: Password answer for the question supplied.
+      isArray: false
+      name: passwordAnswer
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: OKTA, ACTIVE_DIRECTORY, LDAP, FEDERATION, SOCIAL
+      isArray: false
+      name: providerType
+      predefined:
+      - OKTA
+      - ACTIVE_DIRECTORY
+      - FEDERATION
+      - SOCIAL
+      required: false
+      secret: false
+    - default: false
+      description: Name of provider
+      isArray: false
+      name: providerName
+      required: false
+      secret: false
+    deprecated: false
+    description: Update user with a given login, all fields are optional, fields which
+      are not set will not be overriden.
+    execution: true
+    name: okta-update-user
+  - arguments:
+    - default: false
+      description: Id of the group
+      isArray: false
+      name: groupId
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the number of user results
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Print all details of user
+      isArray: false
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Name of the group
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    deprecated: false
+    description: Enumerates all users that are members of  a group
+    execution: false
+    name: okta-get-group-members
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email
+      type: String
+    - contextPath: Account.Username
+      description: Okta account username
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account dispay name
+      type: String
+    - contextPath: Account.Type
+      description: Account typr - Okta
+      type: String
+  - arguments:
+    - default: false
+      description: Searches the name property of groups for matching value
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: "Useful for performing structured queries where constraints on\
+        \ group attribute values can be explicitly targeted. \nThe following expressions\
+        \ are supported(among others) for groups with the filter query parameter:\
+        \ \ntype eq \"OKTA_GROUP\" - Groups that have a\_type\_of\_OKTA_GROUP; lastUpdated\
+        \ lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before\
+        \ a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\"\
+        \ - Groups with memberships last updated at a specific timestamp; id eq \"\
+        00g1emaKYZTWRYYRRTSK\" - Group with a specified id. For more information about\
+        \ filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '200'
+      description: 'Sets the number of results returned in the response (default:
+        200)'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists groups in your organization. A subset of groups can be returned
+      that match a supported filter expression or query.
+    execution: false
+    name: okta-list-groups
+    outputs:
+    - contextPath: Okta.Group.ID
+      description: Unique key for the group
+      type: String
+    - contextPath: Okta.Group.Created
+      description: Timestamp for when the group was created
+      type: Date
+    - contextPath: Okta.Group.ObjectClass
+      description: The group's profile
+      type: Unknown
+    - contextPath: Okta.Group.LastUpdated
+      description: Timestamp for when the group's profile was last updated
+      type: Date
+    - contextPath: Okta.Group.LastMembershipUpdated
+      description: Timestamp for when the group's membership were last updated
+      type: Date
+    - contextPath: Okta.Group.Type
+      description: Determines how a group's profile and membership are managed - OKTA_GROUP,
+        APP_GROUP, BUILT_IN
+      type: String
+    - contextPath: Okta.Group.Name
+      description: Name of the group
+      type: String
+    - contextPath: Okta.Group.Description
+      description: Description of the group
+      type: String
+  - arguments:
+    - default: false
+      description: 'Filers the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: 'Filers the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ASCENDING
+      description: The order of the returned events, default is ASCENDING
+      isArray: false
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      required: false
+      secret: false
+    - default: false
+      description: Sets the number of results returned in the respons. Default is
+        100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returnes Failed login events
+    execution: false
+    name: okta-get-failed-logins
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: String
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The Operation system on which the client runs. For ex. Microsoft
+        Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: 'Identifies the browser typr, if relevant. For ex: Chrome.'
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: 'Type of device that client operated from. e.g: Computer'
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address in which the client made its request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state/province encompassing in the area containing
+        the geolocation coordinates (e.g Montana, Incheon)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g France, Uganda)
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the rsult, for example- INVALID_CREDENTIALS
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sources to
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event's request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request isfrom a known proxy
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available - e.g Seeatle, San Francisco
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates - e.g Montana, Incheon
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates - e.g France, Uganda
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative ID of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display Name of a target
+      type: String
+  - arguments:
+    - default: false
+      description: "Useful for performing structured queries where constraints on\
+        \ LogEvent attribute values can be explicitly targeted.  \nThe following expressions\
+        \ are supported for events with the filter query parameter: eventType eq \"\
+        \ :eventType\" \n-Events that have a specific action; eventType target.id\
+        \ eq \":id\" \n- Events published with a specific target id; actor.id eq \"\
+        :id\"\n- Events published with a specific actor id. For more information about\
+        \ filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: "The query parameter can be used to perform keyword matching against\
+        \ a LogEvents object’s attribute values. In order to satisfy the constraint,\
+        \ all supplied keywords must be matched exactly. Note that matching is case-insensitive.\
+        \  The following are some examples of common keyword filtering: \nEvents that\
+        \ mention a specific city: query=San Francisco; \nEvents that mention a specific\
+        \ url: query=interestingURI.com; \nEvents that mention a specific person:\
+        \ query=firstName lastName."
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters the upper  time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ASCENDING
+      description: The order of the returned events, default is ASCENDING
+      isArray: false
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Sets the number of results returned in the response. Default is
+        100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get logs by providing optional filter
+    execution: false
+    name: okta-get-logs
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternattive ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: String
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operation system on which the client runs. For example, Microsoft
+        Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: 'Type of device that client operated from. e.g: Computer'
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address in which the client made its request from.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state/province encompassing in the area containing
+        the geolocation coordinates (e.g Montana, Incheon)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g France, Uganda)
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sources to
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event's request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request isfrom a known proxy
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP Address
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available - e.g Seeatle, San Francisco
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates - e.g Montana, Incheon
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates - e.g France, Uganda
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative Id of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: String
+  - arguments:
+    - default: false
+      description: Filters the lower time bound of the log event in the Internet Date\Time
+        format profile of ISO 8601. e.g. 2020-02-14T16:00:18Z
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: Filters the upper time bound of the log event in the Internet Date\Time
+        format profile of ISO 8601. e.g. 2020-02-14T16:00:18Z
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ASCENDING
+      description: The order of the returned events, default is ASCENDING
+      isArray: false
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Sets the number of results returned in the response. Default is
+        100
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for when a user added to a group
+    execution: false
+    name: okta-get-group-assignments
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternattive ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: String
+    - contextPath: Okta.Logs.Event.actor.id
+      description: ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operation system on which the client runs. For example, Microsoft
+        Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: 'Type of device that client operated from. e.g: Computer'
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address in which the client made its request from.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state/province encompassing in the area containing
+        the geolocation coordinates (e.g Montana, Incheon)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g France, Uganda)
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: Unknown
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sources to
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event's request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request isfrom a known proxy
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP Address
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available - e.g Seeatle, San Francisco
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates - e.g Montana, Incheon
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates - e.g France, Uganda
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative Id of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: String
+  - arguments:
+    - default: false
+      description: Filters the lower time bound of the log event in the Internet Date\Time
+        format profile of ISO 8601. e.g. 2020-02-14T16:00:18Z
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: Filters the upper time bound of the log event in the Internet Date\Time
+        format profile of ISO 8601. e.g. 2020-02-14T16:00:18Z
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ASCENDING
+      description: The order of the returned events, default is ASCENDING
+      isArray: false
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Sets the number of results returned in the response. Default is
+        100
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returnes events for when a user was assigned to an application
+    execution: false
+    name: okta-get-application-assignments
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternattive ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: String
+    - contextPath: Okta.Logs.Event.actor.id
+      description: ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operation system on which the client runs. For example, Microsoft
+        Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: 'Type of device that client operated from. e.g: Computer'
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address in which the client made its request from.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state/province encompassing in the area containing
+        the geolocation coordinates (e.g Montana, Incheon)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g France, Uganda)
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sources to
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event's request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request isfrom a known proxy
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available - e.g Seeatle, San Francisco
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates - e.g Montana, Incheon
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates - e.g France, Uganda
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative Id of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: String
+  - arguments:
+    - default: false
+      description: Filters the lower time bound of the log event in the Internet Date\Time
+        format profile of ISO 8601. e.g. 2020-02-14T16:00:18Z
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: Filters the upper time bound of the log event in the Internet Date\Time
+        format profile of ISO 8601. e.g. 2020-02-14T16:00:18Z
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ASCENDING
+      description: The order of the returned events, default is ASCENDING
+      isArray: false
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Sets the number of results returned in the response. Default is
+        100
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns logs using specified filters.
+    execution: false
+    name: okta-get-application-authentication
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternattive ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of actor
+      type: String
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of actor
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operation system on which the client runs. For example, Microsoft
+        Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: 'Type of device that client operated from. e.g: Computer'
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address in which the client made its request from.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available (e.g. Seattle, San Francisco)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state/province encompassing in the area containing
+        the geolocation coordinates (e.g Montana, Incheon)
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates (e.g France, Uganda)
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: 'Result of the action: SUCCESS, FAILURE, SKIPPED, UNKNOWN'
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result, for example INVALID_CREDENTIALS
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when event was published
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: 'Indicates how severe the event is: DEBUG, INFO, WARN, ERROR'
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sources to
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to sent the event's request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: The domain name associated with the IP address of the inbound event
+        request
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isProxy
+      description: Specifies whether an event's request isfrom a known proxy
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP Address
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geolocation coordinates,
+        if available - e.g Seeatle, San Francisco
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state/province encompassing the area containing
+        the geolocation coordinates - e.g Montana, Incheon
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geolocation
+        coordinates - e.g France, Uganda
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative Id of a target
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target
+      type: String
+  - arguments:
+    - default: false
+      description: Okta User ID
+      isArray: false
+      name: userId
+      required: false
+      secret: false
+    - default: false
+      description: Username of the user
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete specified user
+    execution: true
+    name: okta-delete-user
+  - arguments:
+    - default: false
+      description: Okta User ID
+      isArray: false
+      name: userId
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+      For more information and examples:
+      https://developer.okta.com/docs/reference/api/users/#user-sessions
+    execution: false
+    name: okta-clear-user-sessions
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests: OktaV2 - Test
