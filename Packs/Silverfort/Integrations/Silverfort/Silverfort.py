@@ -35,7 +35,7 @@ class Client(BaseClient):
             url_suffix='getUPN',
             params=params
         )
-        return response['user_principal_name']
+        return response
 
     def get_user_entity_risk_http_request(self, upn):
         """
@@ -91,13 +91,9 @@ class Client(BaseClient):
 
 
 def create_risk_json(args):
-    try:
-        valid_for = args.get('valid_for')
-        valid_for = int(valid_for)
-    except Exception:
-        raise Exception('@@valid_for must be a positive number greater than 1')
     risk_name = args.get('risk_name')
     severity = args.get('severity')
+    valid_for = args.get('valid_for')
     description = args.get('description')
     return {risk_name: {"severity": severity, "valid_for": valid_for, "description": description}}
 
@@ -211,17 +207,17 @@ def main():
             result = test_module(client)
             demisto.results(result)
 
-        elif demisto.command() == 'silverfort-get-user-risk':
+        elif demisto.command() == 'risks-get-user-risk':
             return_outputs(*get_user_entity_risk_command(client, demisto.args()))
 
-        elif demisto.command() == 'silverfort-get-resource-risk':
+        elif demisto.command() == 'risks-get-resource-risk':
             return_outputs(*get_resource_entity_risk_command(client, demisto.args()))
 
-        elif demisto.command() == 'silverfort-update-user-risk':
+        elif demisto.command() == 'risks-update-user-risk':
             result = update_user_entity_risk_command(client, demisto.args())
             demisto.results(result)
 
-        elif demisto.command() == 'silverfort-update-resource-risk':
+        elif demisto.command() == 'risks-update-resource-risk':
             result = update_resource_entity_risk_command(client, demisto.args())
             demisto.results(result)
     # Log exceptions
