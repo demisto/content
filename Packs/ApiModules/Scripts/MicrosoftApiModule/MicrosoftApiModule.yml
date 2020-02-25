@@ -1,16 +1,18 @@
+comment: Common Microsoft code that will be appended into each Microsoft integration
+  when it's deployed
 commonfields:
   id: MicrosoftApiModule
   version: -1
+enabled: false
 name: MicrosoftApiModule
-script: ''
-type: python
+script: '-'
 subtype: python3
+system: true
 tags:
 - infra
 - server
-comment: Common Microsoft code that will be appended into each Microsoft integration when it's deployed
-system: true
-scripttarget: 0
-dependson: {}
 timeout: 0s
+type: python
 dockerimage: demisto/crypto:1.0.0.303
+dependson: {
+  }

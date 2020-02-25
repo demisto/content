@@ -12,10 +12,6 @@ configuration:
   name: port
   required: true
   type: 0
-- display: Username
-  name: credentials
-  required: true
-  type: 9
 - defaultvalue: '10.2'
   display: 'Version: (one of 10.0, 10.1, 10.2, 10.3, 11.1)'
   name: version
@@ -53,15 +49,16 @@ configuration:
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
   name: alarm_fetch_time
-  type: 0
   required: false
+  type: 0
 - defaultvalue: '0'
   display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert
     3)
   name: timezone
   required: false
   type: 0
-description: Run queries and receive alarms from Intel Security ESM. Support version 10 and above.
+description: Run queries and receive alarms from Intel Security ESM. Support version
+  10 and above.
 display: McAfee ESM v10 and v11
 name: McAfee ESM-v10
 script:
@@ -721,7 +718,9 @@ script:
       description: Case summary
       type: string
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python

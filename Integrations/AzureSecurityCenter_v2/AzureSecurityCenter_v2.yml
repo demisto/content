@@ -159,8 +159,8 @@ script:
       secret: false
     - default: false
       defaultValue: current
-      description: Name of the Advanced Threat Detection setting. The default setting's name
-        is 'current'.
+      description: Name of the Advanced Threat Detection setting. The default setting's
+        name is 'current'.
       isArray: false
       name: setting_name
       required: false
@@ -195,8 +195,8 @@ script:
   - arguments:
     - default: true
       defaultValue: default
-      description: Name of the auto provisioning setting. The default setting's name is
-        'default'.
+      description: Name of the auto provisioning setting. The default setting's name
+        is 'default'.
       isArray: false
       name: setting_name
       required: true
@@ -382,7 +382,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Azure SecurityCenter - Test

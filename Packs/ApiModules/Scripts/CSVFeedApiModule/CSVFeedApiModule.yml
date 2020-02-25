@@ -1,16 +1,18 @@
+comment: Common code that will be appended into each CSV feed integration when it's
+  deployed
 commonfields:
   id: CSVFeedApiModule
   version: -1
+enabled: false
 name: CSVFeedApiModule
-script: ''
-type: python
+script: '-'
 subtype: python3
+system: true
 tags:
 - infra
 - server
-comment: Common code that will be appended into each CSV feed integration when it's deployed
-system: true
-scripttarget: 0
-dependson: {}
 timeout: 0s
+type: python
 dockerimage: demisto/python3:3.7.5.5420
+dependson: {
+  }

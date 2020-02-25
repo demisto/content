@@ -1,0 +1,251 @@
+category: Authentication
+commonfields:
+  id: Azure Sentinel
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Subscription ID
+  name: subscriptionID
+  required: true
+  type: 0
+- display: Resource Group Name
+  name: resourceGroupName
+  required: true
+  type: 0
+- display: Workspace Name
+  name: workspaceName
+  required: true
+  type: 0
+- display: Tenant ID
+  name: tenant_id
+  required: true
+  type: 4
+- display: Client ID
+  name: client_id
+  required: true
+  type: 4
+- display: Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- display: Authorization Code
+  name: auth_code
+  required: true
+  type: 4
+description: This is the Hello World integration for getting started.
+display: Azure Sentinel
+name: Azure Sentinel
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-get-incident-by-id
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of incidents to return.
+      isArray: false
+      name: top
+      required: false
+      secret: false
+    - default: false
+      description: Used if a previous operation returned a partial result. If a previous
+        response contains a NextToken element, its value specifies a starting point
+        to use for subsequent calls.
+      isArray: false
+      name: next_token
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-list-incidents
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The incident title.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The incident description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The incident severity.
+      isArray: false
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      - Informal
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The incident status.
+      isArray: false
+      name: status
+      predefined:
+      - New
+      - Active
+      - Closed
+      required: false
+      secret: false
+    - default: false
+      description: The incident owner's email.
+      isArray: false
+      name: owner_email
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The incident classification.
+      isArray: false
+      name: classification
+      predefined:
+      - Unknown
+      - TruePositive
+      - FalsePositive
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-update-incident
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-delete-incident
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The comment ID.
+      isArray: false
+      name: comment_id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-get-incident-comment-by-id
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      isArray: false
+      name: top
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: next_token
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-list-incident-comments
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-incident-add-comment
+  - arguments:
+    - default: false
+      description: The entity ID.
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-get-entity-by-id
+  - deprecated: false
+    execution: false
+    name: azure-sentinel-list-entities
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      isArray: false
+      name: top
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: next_token
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: azure-sentinel-get-incident-relations
+    outputs:
+    - contextPath: Incident.RelatedResourceName
+      description: The name of the incident's related resource.
+      type: String
+    - contextPath: Incident.RelatedResourceKind
+      description: The kind of the incident's related resource.
+      type: String
+  dockerimage: demisto/python3:3.7.4.2245
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
