@@ -664,7 +664,8 @@ def main():
             beta_res.append(beta_ans)
 
     release_notes = "\n---\n".join(res)
-    create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_res)
+    beta_release_notes = "\n---\n".join(beta_res)
+    create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_release_notes)
 
     if missing_release_notes:
         print_error("Error: some release notes are missing. See previous errors.")
