@@ -110,6 +110,7 @@ class FeedIndicatorType(object):
     Account = "Account"
     CVE = "CVE"
     Domain = "Domain"
+    DomainGlob = "DomainGlob"
     Email = "Email"
     File = "File"
     FQDN = "Domain"
@@ -131,6 +132,7 @@ class FeedIndicatorType(object):
             FeedIndicatorType.Account,
             FeedIndicatorType.CVE,
             FeedIndicatorType.Domain,
+            FeedIndicatorType.DomainGlob,
             FeedIndicatorType.Email,
             FeedIndicatorType.File,
             FeedIndicatorType.MD5,
