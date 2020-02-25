@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 '''GLOBALS/PARAMS'''
 
-INTEGRATION_NAME = 'cisco-fp'
+INTEGRATION_NAME = 'Cisco Fire Power'
 # lowercase with `-` dividers
 INTEGRATION_COMMAND_NAME = 'ciscofp'
 # No dividers
@@ -59,19 +59,23 @@ class Client(BaseClient):
         suffix = f'object/hosts{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_network_objects(self, data) -> Dict:
+    def create_network_objects(self, name, value, description, overridable) -> Dict:
+        data = {'name': name, 'value': value, 'description': description, 'overridable': overridable}
         suffix = f'object/networks'
         return self._http_request('POST', suffix, json_data=data)
 
-    def create_host_objects(self, data) -> Dict:
+    def create_host_objects(self, name, value, description, overridable) -> Dict:
+        data = {'name': name, 'value': value, 'description': description, 'overridable': overridable}
         suffix = f'object/hosts'
         return self._http_request('POST', suffix, json_data=data)
 
-    def update_network_objects(self, data, object_id) -> Dict:
+    def update_network_objects(self, name, value, description, overridable, object_id) -> Dict:
+        data = {'name': name, 'value': value, 'description': description, 'overridable': overridable}
         suffix = f'object/networks/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def update_host_objects(self, data, object_id) -> Dict:
+    def update_host_objects(self, name, value, description, overridable, object_id) -> Dict:
+        data = {'name': name, 'value': value, 'description': description, 'overridable': overridable}
         suffix = f'object/hosts/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
@@ -88,12 +92,22 @@ class Client(BaseClient):
         suffix = f'object/networkgroups{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_network_groups_objects(self, data) -> Dict:
+    def create_network_groups_objects(self, name, ids, values) -> Dict:
+        data = {'name': name}
+        if ids:
+            data['objects'] = [{'id': curr_id} for curr_id in argToList(ids)]
+        if values:
+            data['literals'] = [{'value': curr_value} for curr_value in argToList(values)]
         suffix = 'object/networkgroups'
         return self._http_request('POST', suffix, json_data=data)
 
-    def update_network_groups_objects(self, data) -> Dict:
-        suffix = f'object/networkgroups/{data["id"]}'
+    def update_network_groups_objects(self, name, ids, values, group_id) -> Dict:
+        data = {'name': name, 'id': group_id}
+        if ids:
+            data['objects'] = [{'id': curr_id} for curr_id in argToList(ids)]
+        if values:
+            data['literals'] = [{'value': curr_value} for curr_value in argToList(values)]
+        suffix = f'object/networkgroups/{group_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
     def delete_network_groups_objects(self, object_id) -> Dict:
@@ -105,50 +119,228 @@ class Client(BaseClient):
         suffix = f'policy/accesspolicies{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_access_policy(self, data) -> Dict:
+    def create_access_policy(self, name, action) -> Dict:
+        data = {'name': name, 'defaultAction': {'action': action}}
         suffix = 'policy/accesspolicies'
         return self._http_request('POST', suffix, json_data=data)
 
-    def update_access_policy(self, data) -> Dict:
-        suffix = f'policy/accesspolicies/{data["id"]}'
+    def update_access_policy(self, name, policy_id, action, action_id) -> Dict:
+        data = {
+            'name': name,
+            'id': policy_id,
+            'defaultAction': {
+                'action': action,
+                'id': action_id
+            }}
+        suffix = f'policy/accesspolicies/{policy_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
     def delete_access_policy(self, policy_id) -> Dict:
         suffix = f'policy/accesspolicies/{policy_id}'
         return self._http_request('DELETE', suffix)
 
+    def get_task_status(self, task_id) -> Dict:
+        suffix = f'job/taskstatuses/{task_id}'
+        return self._http_request('GET', suffix)
+
     def get_list(self, suffix) -> Dict:
         return self._http_request('GET', suffix)
 
-    def create_policy_assignments(self, data) -> Dict:
+    def create_policy_assignments(self, policy_id, device_ids, device_group_ids) -> Dict:
+        data_to_post = {'policy': {'id': policy_id}, 'type': 'PolicyAssignment'}
+        if 'device_ids':
+            data_to_post['targets'] = [{'id': curr_id, 'type': 'Device'} for curr_id in argToList(device_ids)]
+        if 'device_group_ids':
+            if 'targets' in data_to_post:
+                data_to_post['targets'].extend([{'id': curr_id, 'type': 'DeviceGroup'
+                                                 } for curr_id in argToList(device_group_ids)])
+            else:
+                data_to_post['targets'] = [{'id': curr_id, 'type': 'DeviceGroup'
+                                            } for curr_id in argToList(device_group_ids)]
         suffix = 'assignment/policyassignments'
-        return self._http_request('POST', suffix, json_data=data)
+        return self._http_request('POST', suffix, json_data=data_to_post)
 
-    def update_policy_assignments(self, data, pol_id) -> Dict:
-        suffix = f'assignment/policyassignments/{pol_id}'
-        return self._http_request('POST', suffix, json_data=data)
+    def update_policy_assignments(self, policy_id, device_ids, device_group_ids) -> Dict:
+        data_to_post = {'policy': {'id': policy_id}, 'type': 'PolicyAssignment'}
+        if 'device_ids':
+            data_to_post['targets'] = [{'id': curr_id, 'type': 'Device'} for curr_id in argToList(device_ids)]
+        if 'device_group_ids':
+            if 'targets' in data_to_post:
+                data_to_post['targets'].extend([{'id': curr_id, 'type': 'DeviceGroup'
+                                                 } for curr_id in argToList(device_group_ids)])
+            else:
+                data_to_post['targets'] = [{'id': curr_id, 'type': 'DeviceGroup'
+                                            } for curr_id in argToList(device_group_ids)]
+        suffix = f'assignment/policyassignments/{policy_id}'
+        return self._http_request('POST', suffix, json_data=data_to_post)
 
-    def get_access_rules(self, args) -> Dict:
-        limit = args.get('limit', 50)
-        offset = args.get('offset', 0)
-        policy_id = args.get('policy_id')
-        rule_id = f'?expanded=true&limit={limit}&offset={offset}' if args.get('rule_id', '') == '' \
-            else '/' + args.get('rule_id', '')
-        suffix = f'policy/accesspolicies/{policy_id}/accessrules{rule_id}'
+    def get_access_rules(self, limit, offset, policy_id, rule_id) -> Dict:
+        end_suffix = f'?expanded=true&limit={limit}&offset={offset}' if rule_id == '' else '/' + rule_id
+        suffix = f'policy/accesspolicies/{policy_id}/accessrules{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_access_rules(self, args) -> Dict:
-        policy_id = args.get('policy_id')
+    def create_access_rules(
+        self,
+        source_zone_object_ids,
+        destination_zone_object_ids,
+        vlan_tag_object_ids,
+        source_network_object_ids,
+        source_network_addresses,
+        destination_network_object_ids,
+        destination_network_addresses,
+        source_port_object_ids,
+        destination_port_object_ids,
+        source_security_group_tag_object_ids,
+        application_object_ids,
+        url_object_ids,
+        url_addresses,
+        enabled,
+        name,
+        policy_id,
+        action
+    ) -> Dict:
+        data_to_post = {'name': name, 'action': action}
+        if source_zone_object_ids:
+            data_to_post['sourceZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
+                                                        } for curr_id in argToList(source_zone_object_ids)]}
+        if destination_zone_object_ids:
+            data_to_post['destinationZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
+                                                             } for curr_id in
+                                                            argToList(destination_zone_object_ids)]}
+        if vlan_tag_object_ids:
+            data_to_post['vlanTags'] = {'objects': [{'id': curr_id, 'type': 'vlanTags'
+                                                     } for curr_id in argToList(vlan_tag_object_ids)]}
+        if source_network_object_ids:
+            data_to_post['sourceNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
+                                                           } for curr_id in
+                                                          argToList(source_network_object_ids)]}
+        if source_network_addresses:
+            if 'sourceNetworks' in data_to_post:
+                data_to_post['sourceNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
+                                                               } for curr_id in
+                                                              argToList(source_network_addresses)]
+            else:
+                data_to_post['sourceNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
+                                                                } for curr_id in
+                                                               argToList(source_network_addresses)]}
+        if destination_network_object_ids:
+            data_to_post['destinationNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
+                                                                } for curr_id in
+                                                               argToList(destination_network_object_ids)]}
+        if destination_network_addresses:
+            if 'destinationNetworks' in data_to_post:
+                data_to_post['destinationNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
+                                                                    } for curr_id in
+                                                                   argToList(destination_network_addresses)]
+            else:
+                data_to_post['destinationNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
+                                                                     } for curr_id in
+                                                                    argToList(destination_network_addresses)]}
+        if source_port_object_ids:
+            data_to_post['sourcePorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
+                                                        } for curr_id in argToList(source_port_object_ids)]}
+        if destination_port_object_ids:
+            data_to_post['destinationPorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
+                                                             } for curr_id in argToList(destination_port_object_ids)]}
+        if source_security_group_tag_object_ids:
+            data_to_post['sourceSecurityGroupTags'] = {'objects': [{'id': curr_id, 'type': 'SecurityGroupTag'
+                                                                    } for curr_id in
+                                                                   argToList(source_security_group_tag_object_ids)]}
+        if application_object_ids:
+            data_to_post['applications'] = {'applications': [{'id': curr_id, 'type': 'Application'
+                                                              } for curr_id in argToList(application_object_ids)]}
+        if url_object_ids:
+            data_to_post['urls'] = {'objects': [{'id': curr_id, 'type': 'Url'
+                                                 } for curr_id in argToList(url_object_ids)]}
+        if url_addresses:
+            if 'urls' in data_to_post:
+                data_to_post['urls']['literals'] = [{'url': curr_id, 'type': 'Url'
+                                                     } for curr_id in argToList(url_addresses)]
+            else:
+                data_to_post['urls'] = {'literals': [{'url': curr_id, 'type': 'Url'
+                                                      } for curr_id in argToList(url_addresses)]}
+        if enabled:
+            data_to_post['enabled'] = enabled
         suffix = f'policy/accesspolicies/{policy_id}/accessrules'
-        del args['policy_id']
-        return self._http_request('POST', suffix, json_data=args)
+        return self._http_request('POST', suffix, json_data=data_to_post)
 
-    def update_access_rules(self, args) -> Dict:
-        policy_id = args.get('policy_id')
-        rule_id = args.get('id')
+    def update_access_rules(
+            self,
+            source_zone_object_ids,
+            destination_zone_object_ids,
+            vlan_tag_object_ids,
+            source_network_object_ids,
+            source_network_addresses,
+            destination_network_object_ids,
+            destination_network_addresses,
+            source_port_object_ids,
+            destination_port_object_ids,
+            source_security_group_tag_object_ids,
+            application_object_ids,
+            url_object_ids,
+            url_addresses,
+            enabled,
+            name,
+            policy_id,
+            action,
+            rule_id
+        ) -> Dict:
+        data_to_post = {'name': name, 'action': action, 'id': rule_id}
+        if source_zone_object_ids:
+            data_to_post['sourceZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
+                                                        } for curr_id in argToList(source_zone_object_ids)]}
+        if destination_zone_object_ids:
+            data_to_post['destinationZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
+                                                             } for curr_id in argToList(destination_zone_object_ids)]}
+        if vlan_tag_object_ids:
+            data_to_post['vlanTags'] = {'objects': [{'id': curr_id, 'type': 'vlanTags'
+                                                     } for curr_id in argToList(vlan_tag_object_ids)]}
+        if source_network_object_ids:
+            data_to_post['sourceNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
+                                                           } for curr_id in argToList(source_network_object_ids)]}
+        if source_network_addresses:
+            if'sourceNetworks' in data_to_post:
+                data_to_post['sourceNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
+                                                       } for curr_id in argToList(source_network_addresses)]
+            else:
+                data_to_post['sourceNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
+                                                        } for curr_id in argToList(source_network_addresses)]}
+        if destination_network_object_ids:
+            data_to_post['destinationNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
+                                                            } for curr_id in argToList(destination_network_object_ids)]}
+        if destination_network_addresses:
+            if 'destinationNetworks' in data_to_post:
+                data_to_post['destinationNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
+                                                            } for curr_id in argToList(destination_network_addresses)]
+            else:
+                data_to_post['destinationNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
+                                                             } for curr_id in argToList(destination_network_addresses)]}
+        if source_port_object_ids:
+            data_to_post['sourcePorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
+                                                        } for curr_id in argToList(source_port_object_ids)]}
+        if destination_port_object_ids:
+            data_to_post['destinationPorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
+                                                             } for curr_id in argToList(destination_port_object_ids)]}
+        if source_security_group_tag_object_ids:
+            data_to_post['sourceSecurityGroupTags'] = {'objects': [{'id': curr_id, 'type': 'SecurityGroupTag'
+                                                    } for curr_id in argToList(source_security_group_tag_object_ids)]}
+        if application_object_ids:
+            data_to_post['applications'] = {'applications': [{'id': curr_id, 'type': 'Application'
+                                                              } for curr_id in argToList(application_object_ids)]}
+        if url_object_ids:
+            data_to_post['urls'] = {'objects': [{'id': curr_id, 'type': 'Url'
+                                                 } for curr_id in argToList(url_object_ids)]}
+        if url_addresses:
+            if 'urls' in data_to_post:
+                data_to_post['urls']['literals'] = [{'url': curr_id, 'type': 'Url'
+                                             } for curr_id in argToList(url_addresses)]
+            else:
+                data_to_post['urls'] = {'literals': [{'url': curr_id, 'type': 'Url'
+                                              } for curr_id in argToList(url_addresses)]}
+        if enabled:
+            data_to_post['enabled'] = enabled
         suffix = f'policy/accesspolicies/{policy_id}/accessrules/{rule_id}'
-        del args['policy_id']
-        return self._http_request('PUT', suffix, json_data=args)
+        return self._http_request('PUT', suffix, json_data=data_to_post)
 
     def delete_access_rules(self, args) -> Dict:
         policy_id = args.get('policy_id')
@@ -156,9 +348,12 @@ class Client(BaseClient):
         suffix = f'policy/accesspolicies/{policy_id}/accessrules{rule_id}'
         return self._http_request('DELETE', suffix)
 
-    def deploy_to_devices(self, data) -> Dict:
+    def deploy_to_devices(self, force_deploy, ignore_warning, version, device_ids) -> Dict:
+        data_to_post = {'forceDeploy': force_deploy, 'ignoreWarning': ignore_warning, 'version': version}
+        if 'device_ids':
+            data_to_post['deviceList'] = argToList(device_ids)
         suffix = 'deployment/deploymentrequests'
-        return self._http_request('POST', suffix, json_data=data)
+        return self._http_request('POST', suffix, json_data=data_to_post)
 
 
 ''' HELPER FUNCTIONS '''
@@ -168,6 +363,15 @@ def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
     """Receives a list of dictionaries or a dictionary,
     and if one of the keys contains a list or dictionary with lists,
     returns the size of the lists
+        Examples:
+        >>> switch_list_to_list_counter({'name': 'n', 'type': 't', 'devices': [1, 2, 3]})
+        {'name': 'name', 'type': 'type', 'devices': 3}
+
+        >>> switch_list_to_list_counter({'name': 'n', 'type': 't', 'devices': {'new': [1, 2, 3], 'old': [1, 2, 3]}}
+        {'name': 'name', 'type': 'type', 'devices': 6}
+
+        >>> switch_list_to_list_counter({'name': 'n', 'type': 't', 'devices': {'new': 'my new'}
+        {'name': 'name', 'type': 'type', 'devices': 1}
 
     :type data: ``list`` or ``dict``
     :param data:  context entry
@@ -226,7 +430,7 @@ def raw_response_to_context_network_groups(items):
                 'Type': obj.get('type')
             } for obj in items.get('objects', [])
         ],
-        'Literals': [
+        'Addresses': [
             {
                 'Name': obj.get('name'),
                 'ID': obj.get('id'),
@@ -279,7 +483,7 @@ def raw_response_to_context_ruls(items):
         'Section': items.get('metadata', {}).get('section', ''),
         'Category': items.get('metadata', {}).get('category', ''),
         'Uels': {
-            'Literals': [{
+            'Addresses': [{
                     'URL': obj.get('url', '')
                 }for obj in items.get('urls', {}).get('literals', [])
             ],
@@ -290,7 +494,7 @@ def raw_response_to_context_ruls(items):
             ]
         },
         'VlanTags': {
-            'Literals': [{
+            'Numbers': [{
                     'EndTag': obj.get('endTag', ''),
                     'StartTag': obj.get('startTag', '')
                 } for obj in items.get('vlanTags', {}).get('literals', [])
@@ -324,7 +528,7 @@ def raw_response_to_context_ruls(items):
             ]
         },
         'SourceNetworks': {
-            'Literals': [{
+            'Addresses': [{
                     'Type': obj.get('type', ''),
                     'Value': obj.get('value', '')
                 }for obj in items.get('sourceNetworks', {}).get('literals', [])
@@ -337,7 +541,7 @@ def raw_response_to_context_ruls(items):
             ]
         },
         'DestinationNetworks': {
-            'Literals': [{
+            'Addresses': [{
                     'Type': obj.get('type', ''),
                     'Value': obj.get('value', '')
                 } for obj in items.get('destinationNetworks', {}).get('literals', [])
@@ -350,7 +554,7 @@ def raw_response_to_context_ruls(items):
             ]
         },
         'SourcePorts': {
-            'Literals': [{
+            'Addresses': [{
                     'Port': obj.get('port', ''),
                     'Protocol': obj.get('protocol', '')
                 } for obj in items.get('sourcePorts', {}).get('literals', [])
@@ -364,7 +568,7 @@ def raw_response_to_context_ruls(items):
             ]
         },
         'DestinationPorts': {
-            'Literals': [{
+            'Addresses': [{
                     'Port': obj.get('port', ''),
                     'Protocol': obj.get('protocol', '')
                 } for obj in items.get('destinationPorts', {}).get('literals', [])
@@ -506,8 +710,11 @@ def get_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
 
 
 def create_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    data_to_post = args.copy()
-    raw_response = client.create_network_objects(data_to_post)
+    name = args.get('name')
+    value = args.get('value')
+    description = args.get('description', '')
+    overridable = args.get('overridable', '')
+    raw_response = client.create_network_objects(name, value, description, overridable)
     title = f'{INTEGRATION_NAME} - network object has been created.'
     list_to_output = ['id', 'name', 'value', 'overridable', 'description']
     context_entry = raw_response_to_context_list(list_to_output, raw_response)
@@ -520,8 +727,11 @@ def create_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
 
 
 def create_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    data_to_post = args.copy()
-    raw_response = client.create_host_objects(data_to_post)
+    name = args.get('name')
+    value = args.get('value')
+    description = args.get('description', '')
+    overridable = args.get('overridable', '')
+    raw_response = client.create_host_objects(name, value, description, overridable)
     title = f'{INTEGRATION_NAME} - host object has been created.'
     list_to_output = ['id', 'name', 'value', 'overridable', 'description']
     context_entry = raw_response_to_context_list(list_to_output, raw_response)
@@ -535,8 +745,11 @@ def create_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 
 def update_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     object_id = args.get('id')
-    data_to_post = args.copy()
-    raw_response = client.update_network_objects(data_to_post, object_id)
+    name = args.get('name')
+    value = args.get('value')
+    description = args.get('description', '')
+    overridable = args.get('overridable', '')
+    raw_response = client.update_network_objects(name, value, description, overridable, object_id)
     title = f'{INTEGRATION_NAME} - network object has been updated.'
     list_to_output = ['id', 'name', 'value', 'overridable', 'description']
 
@@ -551,8 +764,11 @@ def update_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
 
 def update_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     object_id = args.get('id')
-    data_to_post = args.copy()
-    raw_response = client.update_host_objects(data_to_post, object_id)
+    name = args.get('name')
+    value = args.get('value')
+    description = args.get('description', '')
+    overridable = args.get('overridable', '')
+    raw_response = client.update_host_objects(name, value, description, overridable, object_id)
     title = f'{INTEGRATION_NAME} - host object has been updated.'
     list_to_output = ['id', 'name', 'value', 'overridable', 'description']
 
@@ -608,7 +824,7 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
         }
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Addresses', 'Objects']
         entry_white_list_count = switch_list_to_list_counter(context_entry)
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
@@ -618,22 +834,17 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
 
 def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if 'id_list' or 'value_list' in args:
-        data_to_post = {'name': args.get('name')}
-        ids = args.get('id_list', '')
-        values = args.get('value_list', '')
-        if ids:
-            data_to_post['objects'] = [{'id': curr_id} for curr_id in argToList(ids)]
-        if values:
-            data_to_post['literals'] = [{'value': curr_value} for curr_value in argToList(values)]
-
-        raw_response = client.create_network_groups_objects(data_to_post)
+        name = args.get('name')
+        ids = args.get('network_objects_id_list', '')
+        values = args.get('network_address_list', '')
+        raw_response = client.create_network_groups_objects(name, ids, values)
         title = f'{INTEGRATION_NAME} - network group has been created.'
         context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
         }
 
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Addresses', 'Objects']
         entry_white_list_count = switch_list_to_list_counter(context_entry)
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
@@ -643,22 +854,19 @@ def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
 
 def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if 'id_list' or 'value_list' in args:
-        data_to_post = {'name': args.get('name'), 'id': args.get('id')}
-        ids = args.get('id_list', '')
-        values = args.get('value_list', '')
-        if ids:
-            data_to_post['objects'] = [{'id': curr_id} for curr_id in argToList(ids)]
-        if values:
-            data_to_post['literals'] = [{'value': curr_value} for curr_value in argToList(values)]
+        group_id = args.get('id')
+        name = args.get('name')
+        ids = args.get('network_objects_id_list', '')
+        values = args.get('network_address_list', '')
 
-        raw_response = client.update_network_groups_objects(data_to_post)
+        raw_response = client.update_network_groups_objects(name, ids, values, group_id)
         title = f'{INTEGRATION_NAME} - network group has been updated.'
         context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
         }
 
-        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Addresses', 'Objects']
         entry_white_list_count = switch_list_to_list_counter(context_entry)
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
@@ -674,7 +882,7 @@ def delete_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
     }
-    presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Literals', 'Objects']
+    presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Addresses', 'Objects']
     entry_white_list_count = switch_list_to_list_counter(context_entry)
     human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
     return human_readable, context, raw_response
@@ -702,12 +910,9 @@ def get_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 
 
 def create_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    data_to_post = {
-        'name': args.get('name'),
-        'defaultAction': {
-            'action': args.get('action')
-        }}
-    raw_response = client.create_access_policy(data_to_post)
+    name = args.get('name')
+    action = args.get('action')
+    raw_response = client.create_access_policy(name, action)
     title = f'{INTEGRATION_NAME} - access policy has been created.'
     context_entry = raw_response_to_context_access_policy(raw_response)
     context = {
@@ -718,14 +923,12 @@ def create_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
 
 
 def update_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    data_to_post = {
-        'name': args.get('name'),
-        'id': args.get('id'),
-        'defaultAction': {
-            'action': args.get('action'),
-            'id': args.get('default_action_id')
-        }}
-    raw_response = client.update_access_policy(data_to_post)
+    name = args.get('name')
+    policy_id = args.get('id')
+    action = args.get('action')
+    action_id = args.get('default_action_id')
+
+    raw_response = client.update_access_policy(name, policy_id, action, action_id)
     title = f'{INTEGRATION_NAME} - access policy has been updated.'
     context_entry = raw_response_to_context_access_policy(raw_response)
     context = {
@@ -750,8 +953,7 @@ def delete_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
 def list_security_group_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'object/securitygrouptags' \
-             f'?expanded=true&limit={limit}&offset={offset}'
+    suffix = f'object/securitygrouptags?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
@@ -770,8 +972,7 @@ def list_security_group_tags_command(client: Client, args: Dict) -> Tuple[str, D
 def list_ise_security_group_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'object/isesecuritygrouptags' \
-             f'?expanded=true&limit={limit}&offset={offset}'
+    suffix = f'object/isesecuritygrouptags?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
@@ -790,8 +991,7 @@ def list_ise_security_group_tags_command(client: Client, args: Dict) -> Tuple[st
 def list_vlan_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'object/vlantags' \
-             f'?expanded=true&limit={limit}&offset={offset}'
+    suffix = f'object/vlantags?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
@@ -818,8 +1018,7 @@ def list_vlan_tags_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
 def list_vlan_tags_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'object/vlangrouptags' \
-             f'?expanded=true&limit={limit}&offset={offset}'
+    suffix = f'object/vlangrouptags?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
@@ -856,8 +1055,7 @@ def list_vlan_tags_group_command(client: Client, args: Dict) -> Tuple[str, Dict,
 def list_applications_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'object/applications' \
-             f'?expanded=true&limit={limit}&offset={offset}'
+    suffix = f'object/applications?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
@@ -893,8 +1091,11 @@ def list_applications_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 
 
 def get_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-
-    raw_response = client.get_access_rules(args)
+    limit = args.get('limit', 50)
+    offset = args.get('offset', 0)
+    policy_id = args.get('policy_id')
+    rule_id = args.get('rule_id', '')
+    raw_response = client.get_access_rules(limit, offset, policy_id, rule_id)
     items = raw_response.get('items')
     if items:
         title = f'{INTEGRATION_NAME} - List of access rules:'
@@ -913,67 +1114,41 @@ def get_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
 
 
 def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    source_zone_object_ids = args.get('source_zone_object_ids', '')
+    destination_zone_object_ids = args.get('destination_zone_object_ids', '')
+    vlan_tag_object_ids = args.get('vlan_tag_object_ids', '')
+    source_network_object_ids = args.get('source_network_object_ids', '')
+    source_network_addresses = args.get('source_network_addresses', '')
+    destination_network_object_ids = args.get('destination_network_object_ids', '')
+    destination_network_addresses = args.get('destination_network_addresses', '')
+    source_port_object_ids = args.get('source_port_object_ids', '')
+    destination_port_object_ids = args.get('destination_port_object_ids', '')
+    source_security_group_tag_object_ids = args.get('source_security_group_tag_object_ids', '')
+    application_object_ids = args.get('application_object_ids', '')
+    url_object_ids = args.get('url_object_ids', '')
+    url_addresses = args.get('url_addresses', '')
+    enabled = args.get('enabled', '')
+    name = args.get('rule_name', '')
+    policy_id = args.get('policy_id', '')
+    action = args.get('action', '')
 
-    data_to_post = {}
-    if 'source_zone_object_ids' in args:
-        data_to_post['sourceZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
-                                        } for curr_id in argToList(args['source_zone_object_ids'])]}
-    if 'destination_zone_object_ids' in args:
-        data_to_post['destinationZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
-                                        } for curr_id in argToList(args['destination_zone_object_ids'])]}
-    if 'vlan_tag_object_ids' in args:
-        data_to_post['vlanTags'] = {'objects': [{'id': curr_id, 'type': 'vlanTags'
-                                    } for curr_id in argToList(args['vlan_tag_object_ids'])]}
-    if 'source_network_object_ids' in args:
-        data_to_post['sourceNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
-                                    } for curr_id in argToList(args['source_network_object_ids'])]}
-    if 'source_network_addresses' in args:
-        if 'sourceNetworks' in data_to_post:
-            data_to_post['sourceNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
-                                    } for curr_id in argToList(args['source_network_addresses'])]
-        else:
-            data_to_post['sourceNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
-                                    } for curr_id in argToList(args['source_network_addresses'])]}
-    if 'destination_network_object_ids' in args:
-        data_to_post['destinationNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
-                                    } for curr_id in argToList(args['destination_network_object_ids'])]}
-    if 'destination_network_addresses' in args:
-        if 'destinationNetworks' in data_to_post:
-            data_to_post['destinationNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
-                                    } for curr_id in argToList(args['destination_network_addresses'])]
-        else:
-            data_to_post['destinationNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
-                                    } for curr_id in argToList(args['destination_network_addresses'])]}
-    if 'source_port_object_ids' in args:
-        data_to_post['sourcePorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
-                                    } for curr_id in argToList(args['source_port_object_ids'])]}
-    if 'destination_port_object_ids' in args:
-        data_to_post['destinationPorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
-                                    } for curr_id in argToList(args['destination_port_object_ids'])]}
-    if 'source_security_group_tag_object_ids' in args:
-        data_to_post['sourceSecurityGroupTags'] = {'objects': [{'id': curr_id, 'type': 'SecurityGroupTag'
-                                    } for curr_id in argToList(args['source_security_group_tag_object_ids'])]}
-    if 'application_object_ids' in args:
-        data_to_post['applications'] =  {'applications': [{'id': curr_id, 'type': 'Application'
-                                    } for curr_id in argToList(args['application_object_ids'])]}
-    if 'url_object_ids' in args:
-        data_to_post['urls'] = {'objects': [{'id': curr_id, 'type': 'Url'
-                                    } for curr_id in argToList(args['url_object_ids'])]}
-    if 'url_addresses' in args:
-        if 'urls' in data_to_post:
-            data_to_post['urls']['literals'] =[{'url': curr_id, 'type': 'Url'
-                                    } for curr_id in argToList(args['url_addresses'])]
-        else:
-            data_to_post['urls'] = {'literals': [{'url': curr_id, 'type': 'Url'
-                                    } for curr_id in argToList(args['url_addresses'])]}
-    if 'enabled' in args:
-        data_to_post['enabled'] = args['enabled']
-
-    data_to_post['name'] = args['rule_name']
-    data_to_post['policy_id'] = args['policy_id']
-    data_to_post['action'] = args['action']
-
-    raw_response = client.create_access_rules(data_to_post)
+    raw_response = client.create_access_rules(source_zone_object_ids,
+                                                destination_zone_object_ids,
+                                                vlan_tag_object_ids,
+                                                source_network_object_ids,
+                                                source_network_addresses,
+                                                destination_network_object_ids,
+                                                destination_network_addresses,
+                                                source_port_object_ids,
+                                                destination_port_object_ids,
+                                                source_security_group_tag_object_ids,
+                                                application_object_ids,
+                                                url_object_ids,
+                                                url_addresses,
+                                                enabled,
+                                                name,
+                                                policy_id,
+                                                action)
     title = f'{INTEGRATION_NAME} - the new access rule:'
     context_entry = raw_response_to_context_ruls(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
@@ -985,73 +1160,43 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 
 
 def update_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    data_to_post = {}
-    if 'source_zone_object_ids' in args:
-        data_to_post['sourceZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
-                                                    } for curr_id in argToList(args['source_zone_object_ids'])]}
-    if 'destination_zone_object_ids' in args:
-        data_to_post['destinationZones'] = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
-                                                         } for curr_id in
-                                                        argToList(args['destination_zone_object_ids'])]}
-    if 'vlan_tag_object_ids' in args:
-        data_to_post['vlanTags'] = {'objects': [{'id': curr_id, 'type': 'vlanTags'
-                                                 } for curr_id in argToList(args['vlan_tag_object_ids'])]}
-    if 'source_network_object_ids' in args:
-        data_to_post['sourceNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
-                                                       } for curr_id in argToList(args['source_network_object_ids'])]}
-    if 'source_network_addresses' in args:
-        if 'sourceNetworks' in data_to_post:
-            data_to_post['sourceNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
-                                                           } for curr_id in argToList(args['source_network_addresses'])]
-        else:
-            data_to_post['sourceNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
-                                                            } for curr_id in
-                                                           argToList(args['source_network_addresses'])]}
-    if 'destination_network_object_ids' in args:
-        data_to_post['destinationNetworks'] = {'objects': [{'id': curr_id, 'type': 'NetworkGroup'
-                                                            } for curr_id in
-                                                           argToList(args['destination_network_object_ids'])]}
-    if 'destination_network_addresses' in args:
-        if 'destinationNetworks' in data_to_post:
-            data_to_post['destinationNetworks']['literals'] = [{'value': curr_id, 'type': 'Host'
-                                                                } for curr_id in
-                                                               argToList(args['destination_network_addresses'])]
-        else:
-            data_to_post['destinationNetworks'] = {'literals': [{'value': curr_id, 'type': 'Host'
-                                                                 } for curr_id in
-                                                                argToList(args['destination_network_addresses'])]}
-    if 'source_port_object_ids' in args:
-        data_to_post['sourcePorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
-                                                    } for curr_id in argToList(args['source_port_object_ids'])]}
-    if 'destination_port_object_ids' in args:
-        data_to_post['destinationPorts'] = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
-                                                         } for curr_id in
-                                                        argToList(args['destination_port_object_ids'])]}
-    if 'source_security_group_tag_object_ids' in args:
-        data_to_post['sourceSecurityGroupTags'] = {'objects': [{'id': curr_id, 'type': 'SecurityGroupTag'
-                                                                } for curr_id in
-                                                               argToList(args['source_security_group_tag_object_ids'])]}
-    if 'application_object_ids' in args:
-        data_to_post['applications'] = {'applications': [{'id': curr_id, 'type': 'Application'
-                                                          } for curr_id in argToList(args['application_object_ids'])]}
-    if 'url_object_ids' in args:
-        data_to_post['urls'] = {'objects': [{'id': curr_id, 'type': 'Url'
-                                             } for curr_id in argToList(args['url_object_ids'])]}
-    if 'url_addresses' in args:
-        if 'urls' in data_to_post:
-            data_to_post['urls']['literals'] = [{'url': curr_id, 'type': 'Url'
-                                                 } for curr_id in argToList(args['url_addresses'])]
-        else:
-            data_to_post['urls'] = {'literals': [{'url': curr_id, 'type': 'Url'
-                                                  } for curr_id in argToList(args['url_addresses'])]}
-    if 'enabled' in args:
-        data_to_post['enabled'] = args['enabled']
+    source_zone_object_ids = args.get('source_zone_object_ids', '')
+    destination_zone_object_ids = args.get('destination_zone_object_ids', '')
+    vlan_tag_object_ids = args.get('vlan_tag_object_ids', '')
+    source_network_object_ids = args.get('source_network_object_ids', '')
+    source_network_addresses = args.get('source_network_addresses', '')
+    destination_network_object_ids = args.get('destination_network_object_ids', '')
+    destination_network_addresses = args.get('destination_network_addresses', '')
+    source_port_object_ids = args.get('source_port_object_ids', '')
+    destination_port_object_ids = args.get('destination_port_object_ids', '')
+    source_security_group_tag_object_ids = args.get('source_security_group_tag_object_ids', '')
+    application_object_ids = args.get('application_object_ids', '')
+    url_object_ids = args.get('url_object_ids', '')
+    url_addresses = args.get('url_addresses', '')
+    enabled = args.get('enabled', '')
+    name = args.get('rule_name', '')
+    policy_id = args.get('policy_id', '')
+    action = args.get('action', '')
+    rule_id = args.get('rule_id')
 
-    data_to_post['name'] = args['rule_name']
-    data_to_post['policy_id'] = args['policy_id']
-    data_to_post['action'] = args['action']
-    data_to_post['id'] = args['rule_id']
-    raw_response = client.create_access_rules(data_to_post)
+    raw_response = client.update_access_rules(source_zone_object_ids,
+                                              destination_zone_object_ids,
+                                              vlan_tag_object_ids,
+                                              source_network_object_ids,
+                                              source_network_addresses,
+                                              destination_network_object_ids,
+                                              destination_network_addresses,
+                                              source_port_object_ids,
+                                              destination_port_object_ids,
+                                              source_security_group_tag_object_ids,
+                                              application_object_ids,
+                                              url_object_ids,
+                                              url_addresses,
+                                              enabled,
+                                              name,
+                                              policy_id,
+                                              action,
+                                              rule_id)
     title = f'{INTEGRATION_NAME} - access rule:'
     context_entry = raw_response_to_context_ruls(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
@@ -1077,8 +1222,7 @@ def delete_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 def list_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'assignment/policyassignments' \
-             f'?expanded=true&limit={limit}&offset={offset}'
+    suffix = f'assignment/policyassignments?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
@@ -1095,19 +1239,10 @@ def list_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Di
 
 
 def create_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    data_to_post = {}
-    if 'device_ids' in args:
-        data_to_post['targets'] = [{'id': curr_id, 'type': 'Device'} for curr_id in argToList(args['device_ids'])]
-    if 'device_group_ids' in args:
-        if 'targets' in data_to_post:
-            data_to_post['targets'].extend([{'id': curr_id, 'type': 'DeviceGroup'
-                                             } for curr_id in argToList(args['device_group_ids'])])
-        else:
-            data_to_post['targets'] = [{'id': curr_id, 'type': 'DeviceGroup'
-                                        } for curr_id in argToList(args['device_group_ids'])]
-    data_to_post['policy'] = {'id': args.get('policy_id')}
-    data_to_post['type'] = 'PolicyAssignment'
-    raw_response = client.create_policy_assignments(data_to_post)
+    device_ids = args.get('device_ids')
+    device_group_ids = args.get('device_group_ids')
+    policy_id = args.get('policy_id')
+    raw_response = client.create_policy_assignments(policy_id, device_ids, device_group_ids)
     title = f'{INTEGRATION_NAME} - Policy assignments has been done.'
     context_entry = raw_response_to_context_policy_assignment(raw_response)
     context = {
@@ -1119,22 +1254,10 @@ def create_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
 
 
 def update_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    data_to_post = {}
+    device_ids = args.get('device_ids')
+    device_group_ids = args.get('device_group_ids')
     policy_id = args.get('policy_id')
-    if 'device_ids' in args:
-        data_to_post['targets'] = [{'id': curr_id, 'type': 'Device'} for curr_id in argToList(args['device_ids'])]
-    if 'device_group_ids' in args:
-        if 'targets' in data_to_post:
-            data_to_post['targets'].extend([{'id': curr_id, 'type': 'DeviceGroup'
-                                             } for curr_id in argToList(args['device_group_ids'])])
-        else:
-            data_to_post['targets'] = [{'id': curr_id, 'type': 'DeviceGroup'
-                                        } for curr_id in argToList(args['device_group_ids'])]
-    data_to_post['policy'] = {'id': args.get('policy_id')}
-    data_to_post['type'] = 'PolicyAssignment'
-
-    print(data_to_post)
-    raw_response = client.update_policy_assignments(data_to_post, policy_id)
+    raw_response = client.update_policy_assignments(policy_id, device_ids, device_group_ids)
     title = f'{INTEGRATION_NAME} - policy update has been done.'
     context_entry = raw_response_to_context_policy_assignment(raw_response)
     context = {
@@ -1148,8 +1271,7 @@ def update_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
 def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'deployment/deployabledevices' \
-             f'?expanded=true&limit={limit}&offset={offset}'
+    suffix = f'deployment/deployabledevices?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
@@ -1176,8 +1298,7 @@ def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dic
 def get_device_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    suffix = f'devices/devicerecords' \
-             f'?expanded=true&limit={limit}&offset={offset}'
+    suffix = f'devices/devicerecords?expanded=true&limit={limit}&offset={offset}'
     raw_response = client.get_list(suffix)
     items = raw_response.get('items')
     if items:
@@ -1200,14 +1321,12 @@ def get_device_records_command(client: Client, args: Dict) -> Tuple[str, Dict, D
 
 
 def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    data_to_post = {}
-    if 'device_ids' in args:
-        data_to_post['deviceList'] = argToList(args['device_ids'])
-    data_to_post['forceDeploy'] = args.get('force_deploy')
-    data_to_post['ignoreWarning'] = args.get('ignore_warning')
-    data_to_post['version'] = args.get('version')
+    force_deploy = args.get('force_deploy', '')
+    ignore_warning = args.get('ignore_warning', '')
+    version = args.get('version', '')
+    device_list = args.get('device_ids', '')
 
-    raw_response = client.deploy_to_devices(data_to_post)
+    raw_response = client.deploy_to_devices(force_deploy, ignore_warning, version, device_list)
     title = f'{INTEGRATION_NAME} - devices requests to deploy.'
     context_entry = {
         'TaskID': raw_response.get('metadata', {}).get('task', {}).get('id', ''),
@@ -1226,8 +1345,7 @@ def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 
 def get_task_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     task_id = args.get('task_id')
-    suffix = f'job/taskstatuses/{task_id}'
-    raw_response = client.get_list(suffix)
+    raw_response = client.get_task_status(task_id)
     if 'status' in raw_response:
         context_entry = {
             'Status': raw_response.get('status')
@@ -1261,7 +1379,7 @@ def main():  # pragma: no cover
     try:
         if demisto.command() == 'test-module':
             return_outputs('ok')
-            # Login is performed at the beginning of each flow (line 1271) if the login fails we return an error.
+            # Login is performed at the beginning of each flow if the login fails we return an error.
         elif demisto.command() == 'ciscofp-list-zones':
             return_outputs(*list_zones_command(client, demisto.args()))
         elif demisto.command() == 'ciscofp-list-ports':

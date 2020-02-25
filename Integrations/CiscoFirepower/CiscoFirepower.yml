@@ -49,6 +49,22 @@ script:
     description: retrieves list of all security zone objects.
     execution: false
     name: ciscofp-list-zones
+    outputs:
+    - contextPath: CiscoFP.Zone.ID
+      description: Zone ID
+      type: String
+    - contextPath: CiscoFP.Zone.Name
+      description: Zone Name
+      type: String
+    - contextPath: CiscoFP.Zone.InterFaceMode
+      description: Zone Interface mode
+      type: String
+    - contextPath: CiscoFP.Zone.Interfaces.Name
+      description: Name of interfaces belonging to security zone.
+      type: String
+    - contextPath: CiscoFP.Zone.Interfaces.ID
+      description: ID of interfaces belonging to security zone.
+      type: String
   - arguments:
     - default: true
       description: |-
@@ -70,6 +86,19 @@ script:
     description: Retrieves list of all port objects.
     execution: false
     name: ciscofp-list-ports
+    outputs:
+    - contextPath: CiscoFP.Port.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Port.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Port.Protocol
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Port.Port
+      description: ''' '''
+      type: String
   - arguments:
     - default: true
       defaultValue: '50'
@@ -92,6 +121,13 @@ script:
     description: retrieves list of all url category objects.
     execution: false
     name: ciscofp-list-url-categories
+    outputs:
+    - contextPath: CiscoFP.Category.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Category.Name
+      description: ''' '''
+      type: String
   - arguments:
     - default: false
       description: id of the object you are interested, If not input ID retrieves
@@ -121,6 +157,19 @@ script:
       not input ID  retrieves list of all network objects.
     execution: false
     name: ciscofp-get-network-object
+    outputs:
+    - contextPath: CiscoFP.Network.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Network.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Network.Value
+      type: String
+    - contextPath: CiscoFP.Network.Overridable
+      type: String
+    - contextPath: CiscoFP.Network.Description
+      type: String
   - arguments:
     - default: false
       description: Set the name of the new object.
@@ -155,6 +204,19 @@ script:
     description: creats network object
     execution: false
     name: ciscofp-create-network-object
+    outputs:
+    - contextPath: CiscoFP.Network.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Network.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Network.Value
+      type: String
+    - contextPath: CiscoFP.Network.Overridable
+      type: String
+    - contextPath: CiscoFP.Network.Description
+      type: String
   - arguments:
     - default: false
       description: ID of the object to update.
@@ -194,6 +256,19 @@ script:
     description: update network object
     execution: false
     name: ciscofp-update-network-object
+    outputs:
+    - contextPath: CiscoFP.Network.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Network.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Network.Value
+      type: String
+    - contextPath: CiscoFP.Network.Overridable
+      type: String
+    - contextPath: CiscoFP.Network.Description
+      type: String
   - arguments:
     - default: false
       description: id of the object group you are interested
@@ -222,6 +297,37 @@ script:
       ID. If not input ID retrieves list of all network objects.
     execution: false
     name: ciscofp-get-network-groups-object
+    outputs:
+    - contextPath: CiscoFP.NetworkGroups.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Overridable
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Description
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.Type
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.Type
+      description: ''' '''
+      type: String
   - arguments:
     - default: false
       description: the name of the group
@@ -232,13 +338,14 @@ script:
     - default: false
       description: A comma-separated list of object id to add to the group
       isArray: false
-      name: id_list
+      name: network_objects_id_list
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of value to add the group
+      description: A comma-separated list of ip addresses or CIDR ranges to add the
+        group
       isArray: false
-      name: value_list
+      name: network_address_list
       required: false
       secret: false
     - default: false
@@ -261,6 +368,37 @@ script:
     description: create group of network objects
     execution: false
     name: ciscofp-create-network-groups-objects
+    outputs:
+    - contextPath: CiscoFP.NetworkGroups.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Overridable
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Description
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.Type
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.Type
+      description: ''' '''
+      type: String
   - arguments:
     - default: false
       description: The id of the group you want to update
@@ -271,13 +409,14 @@ script:
     - default: false
       description: A comma-separated list of object id to add the group
       isArray: false
-      name: id_list
+      name: network_objects_id_list
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of value to add group
+      description: A comma-separated list of ip addresses or CIDR ranges to add the
+        group
       isArray: false
-      name: value_list
+      name: network_address_list
       required: false
       secret: false
     - default: false
@@ -307,6 +446,37 @@ script:
     description: update group of network objects
     execution: false
     name: ciscofp-update-network-groups-objects
+    outputs:
+    - contextPath: CiscoFP.NetworkGroups.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Overridable
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Description
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.Type
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.Type
+      description: ''' '''
+      type: String
   - arguments:
     - default: false
       description: ID of the object to delete.
@@ -318,6 +488,37 @@ script:
     description: delete group of network objects
     execution: false
     name: ciscofp-delete-network-groups-objects
+    outputs:
+    - contextPath: CiscoFP.NetworkGroups.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Overridable
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Description
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Literals.Type
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.NetworkGroups.Objects.Type
+      description: ''' '''
+      type: String
   - arguments:
     - default: false
       description: id of the object you are interested
@@ -346,6 +547,19 @@ script:
       ID. If not input ID retrieves list of all network objects.
     execution: false
     name: ciscofp-get-host-object
+    outputs:
+    - contextPath: CiscoFP.Host.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Host.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Host.Value
+      type: String
+    - contextPath: CiscoFP.Host.Overridable
+      type: String
+    - contextPath: CiscoFP.Host.Description
+      type: String
   - arguments:
     - default: false
       description: Set the name of the new object
@@ -380,6 +594,19 @@ script:
     description: create host object
     execution: false
     name: ciscofp-create-host-object
+    outputs:
+    - contextPath: CiscoFP.Host.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Host.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Host.Value
+      type: String
+    - contextPath: CiscoFP.Host.Overridable
+      type: String
+    - contextPath: CiscoFP.Host.Description
+      type: String
   - arguments:
     - default: false
       description: ID of the object to update.
@@ -419,6 +646,19 @@ script:
     description: update host object
     execution: false
     name: ciscofp-update-host-object
+    outputs:
+    - contextPath: CiscoFP.Host.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Host.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Host.Value
+      type: String
+    - contextPath: CiscoFP.Host.Overridable
+      type: String
+    - contextPath: CiscoFP.Host.Description
+      type: String
   - arguments:
     - default: false
       description: ID of the object to delete.
@@ -441,6 +681,19 @@ script:
     description: delete host object
     execution: false
     name: ciscofp-delete-host-object
+    outputs:
+    - contextPath: CiscoFP.Host.ID
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Host.Name
+      description: ''' '''
+      type: String
+    - contextPath: CiscoFP.Host.Value
+      type: String
+    - contextPath: CiscoFP.Host.Overridable
+      type: String
+    - contextPath: CiscoFP.Host.Description
+      type: String
   - arguments:
     - default: false
       description: id of the access policy you are interested
