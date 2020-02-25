@@ -26,7 +26,9 @@ FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
+CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text,json,json-seq,csv'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
+CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
 
@@ -64,13 +66,13 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0) -> str:
+def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0, offset: int = 0) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
-    iocs = find_indicators_with_limit(indicator_query, limit)  # poll indicators into list from demisto
+    iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
     out_dict = create_values_out_dict(iocs, out_format)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     save_context(now, out_dict)
@@ -83,12 +85,18 @@ def save_context(now: datetime, out_dict: dict):
     demisto.setIntegrationContext(out_dict)
 
 
-def find_indicators_with_limit(indicator_query: str, limit: int) -> list:
+def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
-    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit)
-    return iocs[:limit]
+    # calculate the starting page (each page holds 200 entries)
+    next_page = int(offset / 200)
+
+    # set the offset from the starting page
+    parsed_offset = offset - (200 * next_page)
+
+    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
+    return iocs[parsed_offset:limit + parsed_offset]
 
 
 def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
@@ -140,7 +148,7 @@ def get_outbound_mimetype() -> str:
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
-def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='text', last_run=None,
+def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format='text', last_update=None,
                             cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the list
@@ -149,14 +157,15 @@ def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='te
     if on_demand:
         values_str = get_ioc_values_str_from_context()
     else:
-        if last_run:
+        if last_update:
+            # takes the cache_refresh_rate amount of time back since run time.
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            if last_run <= cache_time:
-                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit)
+            if last_update <= cache_time:
+                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
-            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit)
+            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
     return values_str
 
 
@@ -204,6 +213,33 @@ def validate_basic_authentication(headers: dict, username: str, password: str) -
 ''' ROUTE FUNCTIONS '''
 
 
+def get_request_args(params):
+    limit = request.args.get('n', None)
+    offset = request.args.get('s', None)
+    out_format = request.args.get('v', None)
+
+    if limit is None:
+        limit = try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)
+
+    else:
+        limit = try_parse_integer(limit, CTX_LIMIT_ERR_MSG)
+
+    if offset is None:
+        offset = try_parse_integer(demisto.params().get('offset'), CTX_OFFSET_ERR_MSG)
+
+    else:
+        offset = try_parse_integer(offset, CTX_OFFSET_ERR_MSG)
+
+    if out_format is None:
+        out_format = params.get('format')
+
+    else:
+        if out_format not in ['text', 'json', 'json-seq', 'csv']:
+            raise DemistoException(CTX_FORMAT_ERR_MSG)
+
+    return limit, offset, out_format
+
+
 @APP.route('/', methods=['GET'])
 def route_list_values() -> Response:
     """
@@ -221,14 +257,18 @@ def route_list_values() -> Response:
             demisto.debug(err_msg)
             return Response(err_msg, status=401)
 
+    limit, offset, out_format = get_request_args(params)
+
     values = get_outbound_ioc_values(
-        out_format=params.get('format'),
+        out_format=out_format,
         on_demand=params.get('on_demand'),
-        limit=try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG),
-        last_run=demisto.getLastRun().get('last_run'),
+        limit=limit,
+        offset=offset,
+        last_update=demisto.getLastRun().get('last_run'),
         indicator_query=params.get('indicators_query'),
         cache_refresh_rate=params.get('cache_refresh_rate')
     )
+
     mimetype = get_outbound_mimetype()
     return Response(values, status=200, mimetype=mimetype)
 
