@@ -427,18 +427,6 @@ def list_incident_relations_command(client, args):
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
-    """
-    This function will execute each interval (default is 1 minute).
-
-    Args:
-        client (Client): HelloWorld client
-        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
-
-    Returns:
-        next_run: This will be last_run in the next fetch-incidents
-        incidents: Incidents that will be created in Demisto
-
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
 
@@ -449,14 +437,14 @@ def fetch_incidents(client, last_run, first_fetch_time):
         last_fetch = dateparser.parse(last_fetch)
 
     latest_created_time = last_fetch
+    _, items, _ = list_incidents_command(client, {})  # todo: understand if list_incidents can support $filter param
     incidents = []
-    items = client.list_incidents()
-    for item in items:
-        incident_created_time = dateparser.parse(item['created_time'])
+    for incident in items['Incident(val.ID === obj.ID)']:
+        incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
         incident = {
-            'name': item['description'],
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(item)
+            'name': incident.get('description'),
+            'occurred': incident_created_time.strftime(DATE_FORMAT),
+            'rawJSON': json.dumps(incident)
         }
 
         incidents.append(incident)
@@ -467,8 +455,6 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
-    """
-    pass
 
 
 def main():
