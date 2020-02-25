@@ -1,0 +1,210 @@
+category: Authentication
+commonfields:
+  id: Silverfort
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: Generate your unique API token from the tower
+  display: API KEY
+  hidden: false
+  name: apikey
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+description: Silverfort integration
+display: Silverfort
+name: Silverfort
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: User principal name
+      isArray: false
+      name: upn
+      required: false
+      secret: false
+    - default: false
+      description: Email
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: domain
+      description: Sam account
+      isArray: false
+      name: sam_account
+      predefined:
+      - Domain
+      required: false
+      secret: false
+    - default: false
+      description: Domain
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: User risk commands - get the user entity risk
+    execution: false
+    name: risks-get-user-risk
+    outputs:
+    - contextPath: Silverfort.UserRisk.Risk
+      description: Risk level
+      type: String
+    - contextPath: Silverfort.UserRisk.Reasons
+      description: Risk reasons
+      type: Unknown
+    - contextPath: Silverfort.UserRisk.UPN
+      description: User principal name
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Hostname
+      isArray: false
+      name: resource_name
+      required: true
+      secret: false
+    - default: false
+      description: Domain
+      isArray: false
+      name: domain_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Resource risk commands - get the resource entity risk
+    execution: false
+    name: risks-get-resource-risk
+    outputs:
+    - contextPath: Silverfort.ResourceRisk.Risk
+      description: Resource risk
+      type: String
+    - contextPath: Silverfort.ResourceRisk.Reasons
+      description: Risk reasons
+      type: Unknown
+    - contextPath: Silverfort.ResourceRisk.ResourceName
+      description: Hostname
+      type: Unknown
+  - arguments:
+    - default: false
+      description: User principal name
+      isArray: false
+      name: upn
+      required: false
+      secret: false
+    - default: false
+      description: Risk name
+      isArray: false
+      name: risk_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Severity
+      isArray: false
+      name: severity
+      predefined:
+      - low
+      - ' medium'
+      - ' high'
+      - ' critical'
+      required: true
+      secret: false
+    - default: false
+      description: How many days the risk will be valid for
+      isArray: false
+      name: valid_for
+      required: true
+      secret: false
+    - default: false
+      description: Risk description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Email
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: Sam account
+      isArray: false
+      name: sam_account
+      required: false
+      secret: false
+    - default: false
+      description: Domain
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: User risk commands - update the user entity risk
+    execution: false
+    name: risks-update-user-risk
+  - arguments:
+    - default: false
+      description: Resource name
+      isArray: false
+      name: resource_name
+      required: true
+      secret: false
+    - default: false
+      description: Domain name
+      isArray: false
+      name: domain_name
+      required: true
+      secret: false
+    - default: false
+      description: Risk name
+      isArray: false
+      name: risk_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Severity
+      isArray: false
+      name: severity
+      predefined:
+      - low
+      - ' medium'
+      - ' high'
+      - ' critical'
+      required: true
+      secret: false
+    - default: false
+      description: How many days the severity will be relevant for
+      isArray: false
+      name: valid_for
+      required: true
+      secret: false
+    - default: false
+      description: Short description about the risk
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Resource risk commands - update the resource entity risk
+    execution: false
+    name: risks-update-resource-risk
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
