@@ -160,7 +160,7 @@ def analysis_to_entry(info, threshold=THRESHOLD, verbose=VERBOSE):
         timeline.append({
             'Value': ip_address,
             'Message': 'AbuseIPDB marked the indicator "{}" as *{}*'.format(ip_address, ip_rep),
-            'Category': 'Indicator Enrichment'
+            'Category': 'Integration Update'
         })
 
     return createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, timeline, title=ANALYSIS_TITLE)
