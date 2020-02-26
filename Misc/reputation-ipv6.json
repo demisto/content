@@ -215,6 +215,20 @@
                     }
                 ]
             }
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
         }
     },
     "manualMapping": null,
