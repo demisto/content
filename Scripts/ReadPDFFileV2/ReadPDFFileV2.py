@@ -198,9 +198,13 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, emails, images):
             all_pdf_data += u
 
     # Extract indicators (omitting context output, letting auto-extract work)
-    indicators_map = json.loads(demisto.executeCommand("extractIndicators", {"text": all_pdf_data})[0][u"Contents"])
-    if emails:
-        indicators_map["Email"] = emails
+    try:
+        indicators_map = demisto.executeCommand("extractIndicators", {"text": all_pdf_data})[0][u"Contents"]
+        indicators_map = json.loads(indicators_map)
+        if emails:
+            indicators_map["Email"] = emails
+    except json.JSONDecodeError:
+        pass
     ec = build_readpdf_entry_context(indicators_map)
     results.append({
         "Type": entryTypes["note"],
@@ -214,16 +218,17 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, emails, images):
 
 def build_readpdf_entry_context(indicators_map):
     ec = {}
-    if 'URL' in indicators_map:
-        ec_url = []
-        for url in indicators_map['URL']:
-            ec_url.append({'Data': url})
-        ec['URL'] = ec_url
-    if 'Email' in indicators_map:
-        ec_email = []
-        for email in indicators_map['Email']:
-            ec_email.append({'Email': email})
-        ec['Account'] = ec_email
+    if isinstance(indicators_map, dict):
+        if 'URL' in indicators_map:
+            ec_url = []
+            for url in indicators_map['URL']:
+                ec_url.append({'Data': url})
+            ec['URL'] = ec_url
+        if 'Email' in indicators_map:
+            ec_email = []
+            for email in indicators_map['Email']:
+                ec_email.append({'Email': email})
+            ec['Account'] = ec_email
     return ec
 
 

@@ -7,11 +7,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0c95889d-b306-429d-8b32-8fb8d9ca67e9
+    taskid: 04d7ca8f-6ad2-4c05-8ef5-ac1e0dc684e3
     type: start
     task:
       elasticcommonfields: {}
-      id: 0c95889d-b306-429d-8b32-8fb8d9ca67e9
+      id: 04d7ca8f-6ad2-4c05-8ef5-ac1e0dc684e3
       version: -1
       name: ""
       iscommand: false
@@ -34,11 +34,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 0df2389c-72f4-4d1d-8157-f6e87da21a4b
+    taskid: f9fb5a14-a1a6-4b37-8d95-1a1d453d49c2
     type: regular
     task:
       elasticcommonfields: {}
-      id: 0df2389c-72f4-4d1d-8157-f6e87da21a4b
+      id: f9fb5a14-a1a6-4b37-8d95-1a1d453d49c2
       version: -1
       name: 'Get corrupted file '
       scriptName: http
@@ -78,11 +78,11 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4f95e209-2c46-40cb-8837-568088cd89c5
+    taskid: 0d0d62f3-5af6-4b14-880a-6511d846fcf5
     type: regular
     task:
       elasticcommonfields: {}
-      id: 4f95e209-2c46-40cb-8837-568088cd89c5
+      id: 0d0d62f3-5af6-4b14-880a-6511d846fcf5
       version: -1
       name: Read PDF
       description: Load the contents and metadata of a PDF file into context.
@@ -115,11 +115,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5f6be460-5c94-4342-8544-2d73d8ed84d2
+    taskid: 636a560d-3658-4a58-8480-71b78ae7d6b4
     type: regular
     task:
       elasticcommonfields: {}
-      id: 5f6be460-5c94-4342-8544-2d73d8ed84d2
+      id: 636a560d-3658-4a58-8480-71b78ae7d6b4
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -151,11 +151,11 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: f066b92d-7409-4397-8eb3-2e4d88d6e130
+    taskid: 9e596d5b-6877-4ca7-8c24-21dacee14500
     type: condition
     task:
       elasticcommonfields: {}
-      id: f066b92d-7409-4397-8eb3-2e4d88d6e130
+      id: 9e596d5b-6877-4ca7-8c24-21dacee14500
       version: -1
       name: 'Check if file failed to open '
       type: condition
@@ -192,11 +192,11 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: cc6f598e-ca16-4118-85e8-9f539922468f
+    taskid: ceb07af3-74b3-4cb8-852a-8c8cadbc33b4
     type: regular
     task:
       elasticcommonfields: {}
-      id: cc6f598e-ca16-4118-85e8-9f539922468f
+      id: ceb07af3-74b3-4cb8-852a-8c8cadbc33b4
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -228,11 +228,11 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 76ea8f0a-e273-4836-8027-b44bbaa1329f
+    taskid: c3e04bbe-8d35-47b4-820d-6679a47f4d6a
     type: regular
     task:
       elasticcommonfields: {}
-      id: 76ea8f0a-e273-4836-8027-b44bbaa1329f
+      id: c3e04bbe-8d35-47b4-820d-6679a47f4d6a
       version: -1
       name: Get working PDF
       scriptName: http
@@ -272,11 +272,11 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 68d32079-8f27-4a9b-86cd-dd99b6c1645a
+    taskid: 49303bed-5b2b-4825-8253-a36196bca1d4
     type: regular
     task:
       elasticcommonfields: {}
-      id: 68d32079-8f27-4a9b-86cd-dd99b6c1645a
+      id: 49303bed-5b2b-4825-8253-a36196bca1d4
       version: -1
       name: Read PDF
       description: Load the contents and metadata of a PDF file into context.
@@ -308,11 +308,11 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: fd44fab1-cbf3-458b-884e-38f71e65e1ed
+    taskid: ff2aa6e0-f70f-460f-8877-b30abe3a39c6
     type: title
     task:
       elasticcommonfields: {}
-      id: fd44fab1-cbf3-458b-884e-38f71e65e1ed
+      id: ff2aa6e0-f70f-460f-8877-b30abe3a39c6
       version: -1
       name: End of test
       type: title
@@ -322,8 +322,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 3010
+          "x": 480,
+          "y": 2820
         }
       }
     note: false
@@ -333,11 +333,11 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 6ecc4e68-ed14-4e1e-8f71-aa97fde02053
+    taskid: af57a5dd-63a5-4c43-8533-950fc94d59ca
     type: regular
     task:
       elasticcommonfields: {}
-      id: 6ecc4e68-ed14-4e1e-8f71-aa97fde02053
+      id: af57a5dd-63a5-4c43-8533-950fc94d59ca
       version: -1
       name: 'Get encrypted file '
       scriptName: http
@@ -377,11 +377,11 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 6ba050af-dda3-4184-8687-a1ea292c4d09
+    taskid: 9927928f-aebd-4dbb-8a69-e70d3bd2a701
     type: condition
     task:
       elasticcommonfields: {}
-      id: 6ba050af-dda3-4184-8687-a1ea292c4d09
+      id: 9927928f-aebd-4dbb-8a69-e70d3bd2a701
       version: -1
       name: Check if encrypted
       type: condition
@@ -418,11 +418,11 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 1b425eb8-8961-4c79-875c-a6de999df5d8
+    taskid: 95186699-ac28-4cfa-827e-6753d2f36b5e
     type: regular
     task:
       elasticcommonfields: {}
-      id: 1b425eb8-8961-4c79-875c-a6de999df5d8
+      id: 95186699-ac28-4cfa-827e-6753d2f36b5e
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -454,11 +454,11 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 8e450680-2195-4582-8403-bbe4921bd6d2
+    taskid: c54097c1-37f8-48f7-83d3-1762f2847792
     type: regular
     task:
       elasticcommonfields: {}
-      id: 8e450680-2195-4582-8403-bbe4921bd6d2
+      id: c54097c1-37f8-48f7-83d3-1762f2847792
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -484,11 +484,11 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: e16cfd3f-6174-440e-8a7c-6456f2f664bd
+    taskid: b50fbcd8-e055-47f5-878f-6a4ce3b889bb
     type: regular
     task:
       elasticcommonfields: {}
-      id: e16cfd3f-6174-440e-8a7c-6456f2f664bd
+      id: b50fbcd8-e055-47f5-878f-6a4ce3b889bb
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -514,11 +514,11 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 39473fc6-03c9-404d-8549-11b22ae464df
+    taskid: 15c2cd9e-ebcd-4491-826a-d4276adae210
     type: regular
     task:
       elasticcommonfields: {}
-      id: 39473fc6-03c9-404d-8549-11b22ae464df
+      id: 15c2cd9e-ebcd-4491-826a-d4276adae210
       version: -1
       name: Read PDF
       description: Load the contents and metadata of a PDF file into context.
@@ -551,11 +551,11 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 77e1850c-0805-4691-83d8-57771a8895b0
+    taskid: 181d0ff9-4814-40e3-80b6-cdd7c415cbd1
     type: regular
     task:
       elasticcommonfields: {}
-      id: 77e1850c-0805-4691-83d8-57771a8895b0
+      id: 181d0ff9-4814-40e3-80b6-cdd7c415cbd1
       version: -1
       name: Get large complex pdf
       scriptName: http
@@ -595,11 +595,11 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 140ad29b-d424-40fa-838c-0eafdd9b8500
+    taskid: 4d15a704-aa59-4c1b-883b-817d9ed65ee8
     type: regular
     task:
       elasticcommonfields: {}
-      id: 140ad29b-d424-40fa-838c-0eafdd9b8500
+      id: 4d15a704-aa59-4c1b-883b-817d9ed65ee8
       version: -1
       name: Read PDF
       description: Load the contents and metadata of a PDF file into context.
@@ -609,7 +609,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "9"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
@@ -632,11 +632,11 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: cb076c9c-140c-4e22-886f-868b2323823c
+    taskid: c45e26bc-cfb1-487f-838f-f26082459551
     type: regular
     task:
       elasticcommonfields: {}
-      id: cb076c9c-140c-4e22-886f-868b2323823c
+      id: c45e26bc-cfb1-487f-838f-f26082459551
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -666,91 +666,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "19":
-    id: "19"
-    taskid: fe0fa86d-09c2-4ae7-8a80-804746634174
-    type: condition
-    task:
-      elasticcommonfields: {}
-      id: fe0fa86d-09c2-4ae7-8a80-804746634174
-      version: -1
-      name: Verify PDF Context Output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "20"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.PDFVersion
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: URL.Data
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Account.Email
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: 6e6daddf-6b63-4452-8431-f0f75db8bab5
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 6e6daddf-6b63-4452-8431-f0f75db8bab5
-      version: -1
-      name: Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Failed verifying PDF
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "21":
     id: "21"
-    taskid: 81141bdd-8055-4059-86d7-23a7f7dd36ab
+    taskid: 47c6de75-ef3c-4330-8896-6c0fee7c61b3
     type: condition
     task:
       elasticcommonfields: {}
-      id: 81141bdd-8055-4059-86d7-23a7f7dd36ab
+      id: 47c6de75-ef3c-4330-8896-6c0fee7c61b3
       version: -1
       name: Verify Output
       type: condition
@@ -785,12 +707,10 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {
-      "19_9_yes": 0.87
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3040,
+        "height": 2835,
         "width": 1025,
         "x": 50,
         "y": 50

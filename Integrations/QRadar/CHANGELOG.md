@@ -1,7 +1,7 @@
 ## [Unreleased]
-- Fixed an issue where ***qradar-get-search-results*** and ***qradar-get-search*** ignored headers argument.
-- Added to **update-reference-set-value** an option to set a list of values and not just a single value
-- Added **Upload Indicators** command which allows to add indicators from Demisto to QRadar reference set 
+- Fixed an issue where the ***qradar-get-search-results*** and ***qradar-get-search*** ignored the headers argument.
+- You can now supply a comma-separated list for the *value* argument in the ***qradar-update-reference-set-value*** command.
+- Added the ***qradar-upload-indicators*** command, which enables you to add indicators from Cortex SOAR to a QRadar reference set.
 
 ## [20.2.0] - 2020-02-04
 Added an immediate recovery for HTTP requests in case of connection error, which should help if QRadar SIEM is busy.

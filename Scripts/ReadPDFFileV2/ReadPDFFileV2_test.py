@@ -145,3 +145,11 @@ def test_get_pdf_htmls_content_without_encrypted(tmp_path):
     html_text = get_pdf_htmls_content(f'{CWD}/hyperlinks.pdf', tmp_path)
     assert 'http://www.antennahouse.com/purchase.htm' in html_text
     assert len(get_images_paths_in_path(tmp_path)) != 0, 'Failed to get images from html'
+
+
+def test_build_readpdf_entry_object_empty_extract(mocker):
+    from ReadPDFFileV2 import build_readpdf_entry_object
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{u'Contents': ''}])
+    pdf_file = {'Text': 'test'}
+    res = build_readpdf_entry_object(pdf_file, {}, '', '', '', '')
+    assert res[0]['HumanReadable'] == '### Metadata\n\n### URLs\n\n### Text\n'

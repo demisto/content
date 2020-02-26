@@ -1285,7 +1285,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The value/s to add or update in the reference set. Note: Date
+      description: ' A comma-separated list of values to add or update in the reference set. Date
         values must be represented in milliseconds since the Unix Epoch January 1st
         1970.'
       isArray: true
@@ -1312,7 +1312,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add or update a value in a reference set.
+    description: Adds or updates a value in a reference set.
     execution: false
     name: qradar-update-reference-set-value
     outputs:
@@ -1506,16 +1506,15 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The name of the reference set to add or update a value in. If you
-        would like to create a new reference set you will  need to set element type
+      description: The name of the reference set to add or update a value in. To create a new reference set, you need to set the element type.
       isArray: false
       name: ref_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The element type for the values allowed in the reference set.
-        You need to use it only for creating new reference set. The allowed values
+      description: 'The element type for the values premitted in the reference set.
+        Only required when creating a new reference set. The valid values
         are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address),
         NUM (numeric), PORT (port number) or DATE. Note that date values need to be
         represented in milliseconds since the Unix Epoch January 1st 1970.'
@@ -1532,9 +1531,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The timeout_type can be "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
-        default value is UNKNOWN. You need to use it just for creating new refernce
-        set
+      description: The timeout_type can be "FIRST_SEEN", "LAST_SEEN", or "UNKNOWN". The
+        default value is UNKNOWN. Only required for creating a new refernce
+        set.
       isArray: false
       name: timeout_type
       predefined:
@@ -1545,33 +1544,33 @@ script:
       secret: false
     - default: false
       description: 'The time to live interval, for example: "1 month" or "5 minutes".
-        You need to use it just for creating new refernce set'
+        Only required when creating a new reference set.'
       isArray: false
       name: time_to_live
       required: false
       secret: false
     - default: false
-      description: The query you would like to ask to get the indicators
+      description: The query for getting indicators.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
       defaultValue: '1000'
-      description: The amount of indicators that will appear on the screen
+      description: The maximum number of indicators to return. The default value is 1000.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: From which page to take the indicators
+      description: The page from which to get the indicators
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: Upload indicators from Demisto to Qradar. This command requires Cortex
+    description: Uploads indicators from Demisto to Qradar. This command requires Cortex
       SOAR v5.5 or later.
     execution: false
     name: qradar-upload-indicators
