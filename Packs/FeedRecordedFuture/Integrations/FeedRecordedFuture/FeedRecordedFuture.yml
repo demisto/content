@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  defaultvalue: ""
+  defaultvalue: true
   type: 8
   required: false
 - display: Indicator Reputation
@@ -20,7 +20,7 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
 - defaultvalue: A - Completely reliable
-  display: Source reliability
+  display: Source Reliability
   name: feedReliability
   options:
   - A - Completely reliable
@@ -47,8 +47,9 @@ configuration:
   defaultvalue: "20160"
   required: false
   type: 1
+  display: ""
 - defaultvalue: '60'
-  display: Fetch Interval
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
@@ -70,7 +71,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Type of the indicator in the feed.
-  display: Indicator type
+  display: Indicator Type
   hidden: false
   name: indicator_type
   options:
@@ -86,7 +87,7 @@ configuration:
   required: true
   type: 4
 - defaultvalue: connectApi
-  display: Sub Feeds
+  display: Sub-Feeds
   hidden: false
   name: sub_feeds
   options:
