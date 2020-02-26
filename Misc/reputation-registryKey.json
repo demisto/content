@@ -1,7 +1,7 @@
 {
     "id": "registryKey",
     "version": -1,
-    "fromVersion": "5.0.0",
+    "fromVersion": "5.5.0",
     "modified": "2019-07-18T11:06:36.958983926Z",
     "sortValues": null,
     "commitMessage": "",
@@ -64,6 +64,66 @@
                         "args": {}
                     }
                 ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "RegistryKey",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "RegistryKey",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
+            }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "RegistryKey",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
+            }
+        },
+        "trafficlightprotocoltlp": {
+            "simple": "",
+            "complex": {
+                "root": "RegistryKey",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
+            }
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "RegistryKey",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
             }
         }
     },
