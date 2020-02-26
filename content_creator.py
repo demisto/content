@@ -222,7 +222,7 @@ def main(circle_artifacts, content_version):
     shutil.copyfile("./Tests/id_set.json", os.path.join(circle_artifacts, "id_set.json"))
 
     shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
-    shutil.copyfile('beta_release-notes.md', os.path.join(circle_artifacts, 'beta_release-notes.md'))
+    shutil.copyfile('beta_release-notes.md', os.path.join(circle_artifacts, 'beta-release-notes.md'))
     print(f'finished create content artifact at {circle_artifacts}')
 
 
