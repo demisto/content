@@ -240,8 +240,8 @@ group_members = [
             "lastName": "Test2",
             "mobilePhone": '',
             "secondEmail": "",
-            "login": ""john@doe.com"",
-            "email": ""john@doe.com""
+            "login": "john@doe.com",
+            "email": "john@doe.com"
         },
         "credentials": {
             "provider": {
