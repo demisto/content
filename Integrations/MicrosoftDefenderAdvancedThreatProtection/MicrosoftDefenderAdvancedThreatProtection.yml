@@ -79,7 +79,7 @@ script:
       predefined:
       - Full
       - Selective
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Isolates a machine from accessing external network.
@@ -180,7 +180,7 @@ script:
     - contextPath: MicrosoftATP.Machine.LastSeen
       description: Machine last seen date
       type: string
-    - contextPath: MicrosoftATP.Machine.HelathStatus
+    - contextPath: MicrosoftATP.Machine.HealthStatus
       description: Machine health status
       type: string
     - contextPath: MicrosoftATP.Machine.IsAADJoined
@@ -746,6 +746,60 @@ script:
     description: Retrieves the files associated to a specific alert.
     execution: false
     name: microsoft-atp-get-alert-related-files
+    outputs:
+    - contextPath: MicrosoftATP.AlertFile.Files.FilePublisher
+      description: File publisher.
+      type: Unknown
+    - contextPath: MicrosoftATP.AlertFile.Files.Size
+      description: Size of the file.
+      type: Number
+    - contextPath: MicrosoftATP.AlertFile.Files.GlobalLastObserved
+      description: Last time the file was observed.
+      type: Date
+    - contextPath: MicrosoftATP.AlertFile.Files.Sha1
+      description: Sha1 hash of the file content
+      type: String
+    - contextPath: MicrosoftATP.AlertFile.Files.IsValidCertificate
+      description: Was signing certificate successfully verified by Microsoft Defender
+        ATP agent.
+      type: Number
+    - contextPath: MicrosoftATP.AlertFile.Files.Sha256
+      description: Sha256 hash of the file content
+      type: String
+    - contextPath: MicrosoftATP.AlertFile.Files.Signer
+      description: File signer.
+      type: String
+    - contextPath: MicrosoftATP.AlertFile.Files.GlobalPrevalence
+      description: File prevalence across organization
+      type: Number
+    - contextPath: MicrosoftATP.AlertFile.Files.DeterminationValue
+      description: |
+        Determination value.
+      type: Unknown
+    - contextPath: MicrosoftATP.AlertFile.Files.GlobalFirstObserved
+      description: First time the file was observed.
+      type: Date
+    - contextPath: MicrosoftATP.AlertFile.Files.FileType
+      description: Type of the file.
+      type: Unknown
+    - contextPath: MicrosoftATP.AlertFile.Files.SignerHash
+      description: Hash of the signing certificate.
+      type: String
+    - contextPath: MicrosoftATP.AlertFile.Files.Issuer
+      description: File issuer.
+      type: String
+    - contextPath: MicrosoftATP.AlertFile.Files.IsPeFile
+      description: true if the file is portable executable (e.g. "DLL", "EXE", etc.)
+      type: Number
+    - contextPath: MicrosoftATP.AlertFile.Files.DeterminationType
+      description: The determination type of the file.
+      type: String
+    - contextPath: MicrosoftATP.AlertFile.Files.FileProductName
+      description: Product name.
+      type: Unknown
+    - contextPath: MicrosoftATP.AlertFile.Files.Md5
+      description: Md5 hash of the file content
+      type: String
   - arguments:
     - default: false
       description: ID of the alert.
@@ -757,6 +811,10 @@ script:
     description: Retrieves the ips associated to a specific alert.
     execution: false
     name: microsoft-atp-get-alert-related-ips
+    outputs:
+    - contextPath: MicrosoftATP.AlertIPs.IPs.IpAddress
+      description: The address of the IP
+      type: String
   - arguments:
     - default: false
       description: ID of the alert.
@@ -768,6 +826,10 @@ script:
     description: Retrieves the domains associated to a specific alert.
     execution: false
     name: microsoft-atp-get-alert-related-domains
+    outputs:
+    - contextPath: MicrosoftATP.AlertDomain.Domains.Domain
+      description: The domain address
+      type: String
   - arguments:
     - default: false
       description: ID of the action
@@ -780,6 +842,44 @@ script:
       the info on the specific action
     execution: false
     name: microsoft-atp-list-machine-actions
+    outputs:
+    - contextPath: MicrosoftATP.MachineAction.ID
+      description: Identity of the Machine Action entity.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Type
+      description: Type of the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Scope
+      description: Scope of the action.
+      type: Unknown
+    - contextPath: MicrosoftATP.MachineAction.Requestor
+      description: Identity of the person that executed the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.RequestorComment
+      description: Comment that was written when issuing the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      description: Current status of the command.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      description: Id of the machine on which the action was executed.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+      description: Name of the machine on which the action was executed.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+      description: The date and time when the action was created.
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+      description: The last date and time when the action status was updated.
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+      description: The fileIdentifier
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+      description: 'FileIdentifierType with the possible values: "Sha1" ,"Sha256"
+        and "Md5"'
+      type: String
   - arguments:
     - default: false
       description: The machine ID
@@ -797,6 +897,44 @@ script:
     description: Collect investigation package from a machine.
     execution: false
     name: microsoft-atp-collect-investigation-package
+    outputs:
+    - contextPath: MicrosoftATP.MachineAction.ID
+      description: Identity of the Machine Action entity.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Type
+      description: Type of the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Scope
+      description: Scope of the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Requestor
+      description: Identity of the person that executed the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.RequestorComment
+      description: Comment that was written when issuing the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      description: Current status of the command.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      description: Id of the machine on which the action was executed.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+      description: Name of the machine on which the action was executed.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+      description: The date and time when the action was created.
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.LastUpdateDateTimeUtc
+      description: The last date and time when the action status was updated.
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+      description: The fileIdentifier
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+      description: 'FileIdentifierType with the possible values: "Sha1" ,"Sha256"
+        and "Md5"'
+      type: String
   - arguments:
     - default: false
       description: machine action ID
@@ -808,6 +946,10 @@ script:
     description: Get a URI that allows downloading of an Investigation package
     execution: false
     name: microsoft-atp-get-investigation-package-sas-uri
+    outputs:
+    - contextPath: MicrosoftATP.InvestigationURI.Link
+      description: Investigation package URI
+      type: String
   - arguments:
     - default: false
       description: The machine ID
@@ -826,6 +968,29 @@ script:
       set.
     execution: false
     name: microsoft-atp-restrict-app-execution
+    outputs:
+    - contextPath: MicrosoftATP.MachineAction.ID
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Type
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Scope
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Requestor
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.RequestorComment
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.LastUpdateDateTimeUtc
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo
+      type: Unknown
   - arguments:
     - default: false
       description: The machine ID
@@ -843,6 +1008,29 @@ script:
     description: Enable execution of any application on the machine.
     execution: false
     name: microsoft-atp-remove-app-restriction
+    outputs:
+    - contextPath: MicrosoftATP.MachineAction.ID
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Type
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Scope
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Requestor
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.RequestorComment
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.LastUpdateDateTimeUtc
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo
+      type: Unknown
   - arguments:
     - default: false
       description: The machine ID
@@ -866,6 +1054,29 @@ script:
     description: Stop execution of a file on a machine and delete it.
     execution: false
     name: microsoft-atp-stop-and-quarantine-file
+    outputs:
+    - contextPath: MicrosoftATP.MachineAction.ID
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Type
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Scope
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Requestor
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.RequestorComment
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.LastUpdateDateTimeUtc
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo
+      type: Unknown
   - arguments:
     - default: false
       description: ID can be the investigation ID or the investigation triggering
@@ -879,11 +1090,30 @@ script:
       by its ID
     execution: false
     name: microsoft-atp-list-investigations
+    outputs:
+    - contextPath: MicrosoftATP.Investigation.ID
+      type: String
+    - contextPath: MicrosoftATP.Investigation.StartTime
+      type: Date
+    - contextPath: MicrosoftATP.Investigation.EndTime
+      type: Unknown
+    - contextPath: MicrosoftATP.Investigation.State
+      type: String
+    - contextPath: MicrosoftATP.Investigation.CancelledBy
+      type: Unknown
+    - contextPath: MicrosoftATP.Investigation.StatusDetails
+      type: Unknown
+    - contextPath: MicrosoftATP.Investigation.MachineID
+      type: String
+    - contextPath: MicrosoftATP.Investigation.ComputerDNSName
+      type: String
+    - contextPath: MicrosoftATP.Investigation.TriggeringAlertId
+      type: String
   - arguments:
     - default: false
       description: The machine's ID
       isArray: false
-      name: machine_id
+      name: machine_id-p
       required: true
       secret: false
     - default: false
@@ -897,7 +1127,24 @@ script:
     execution: false
     name: microsoft-atp-start-investigation
     outputs:
-    - type: Unknown
+    - contextPath: MicrosoftATP.Investigation.ID
+      type: String
+    - contextPath: MicrosoftATP.Investigation.StartTime
+      type: Date
+    - contextPath: MicrosoftATP.Investigation.EndTime
+      type: Unknown
+    - contextPath: MicrosoftATP.Investigation.State
+      type: String
+    - contextPath: MicrosoftATP.Investigation.CancelledBy
+      type: Unknown
+    - contextPath: MicrosoftATP.Investigation.StatusDetails
+      type: Unknown
+    - contextPath: MicrosoftATP.Investigation.MachineID
+      type: String
+    - contextPath: MicrosoftATP.Investigation.ComputerDNSName
+      type: String
+    - contextPath: MicrosoftATP.Investigation.TriggeringAlertId
+      type: String
   - arguments:
     - default: false
       description: The domain address
@@ -909,6 +1156,15 @@ script:
     description: Retrieves the statistics on the given domain.
     execution: false
     name: microsoft-atp-get-domain-statistics
+    outputs:
+    - contextPath: MicrosoftATP.DomainStatistics.Statistics.Host
+      type: String
+    - contextPath: MicrosoftATP.DomainStatistics.Statistics.OrgPrevalence
+      type: String
+    - contextPath: MicrosoftATP.DomainStatistics.Statistics.OrgFirstSeen
+      type: Date
+    - contextPath: MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen
+      type: Date
   - arguments:
     - default: false
       description: The domain address
@@ -920,6 +1176,53 @@ script:
     description: Retrieves a collection of Alerts related to a given domain address.
     execution: false
     name: microsoft-atp-get-domain-alerts
+    outputs:
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.ID
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.IncidentID
+      type: Number
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.InvestigationID
+      type: Number
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.InvestigationState
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.AssignedTo
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Severity
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Status
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Classification
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Determination
+      type: Unknown
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.DetectionSource
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Category
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.ThreatFamilyName
+      type: Unknown
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Title
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Description
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.AlertCreationTime
+      type: Date
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.FirstEventTime
+      type: Date
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.LastEventTime
+      type: Date
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.LastUpdateTime
+      type: Date
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.ResolvedTime
+      type: Unknown
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.MachineID
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.Comment
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.CreatedBy
+      type: String
+    - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.CreatedTime
+      type: Date
   - arguments:
     - default: false
       description: The domain address
@@ -932,6 +1235,43 @@ script:
       a given domain address.
     execution: false
     name: microsoft-atp-get-domain-machines
+    outputs:
+    - contextPath: MicrosoftATP.DomainMachine.Machines.ID
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.ComputerDNSName
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.FirstSeen
+      type: Date
+    - contextPath: MicrosoftATP.DomainMachine.Machines.LastSeen
+      type: Date
+    - contextPath: MicrosoftATP.DomainMachine.Machines.OSPlatform
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.Version
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.OSProcessor
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.LastIPAddress
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.LastExternalIPAddress
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.OSBuild
+      type: Number
+    - contextPath: MicrosoftATP.DomainMachine.Machines.HealthStatus
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.RBACGroupID
+      type: Number
+    - contextPath: MicrosoftATP.DomainMachine.Machines.RBACGroupName
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.RiskScore
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.ExposureLevel
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.IsAADJoined
+      type: Number
+    - contextPath: MicrosoftATP.DomainMachine.Machines.AADDeviceId
+      type: String
+    - contextPath: MicrosoftATP.DomainMachine.Machines.MachineTags
+      type: String
   - arguments:
     - default: false
       description: File sha1 hash to get statistics on
@@ -943,6 +1283,23 @@ script:
     description: Retrieves the statistics for the given file.
     execution: false
     name: microsoft-atp-get-file-statistics
+    outputs:
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.Sha1
+      type: String
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgPrevalence
+      type: String
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgFirstSeen
+      type: Date
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.OrgLastSeen
+      type: Date
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalPrevalence
+      type: String
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalFirstObserved
+      type: Date
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.GlobalLastObserved
+      type: Date
+    - contextPath: MicrosoftATP.FileStatistics.Statistics.TopFileNames
+      type: String
   - arguments:
     - default: false
       description: File sha1 hash to get statistics on
@@ -954,6 +1311,53 @@ script:
     description: Retrieves a collection of alerts related to a given file hash.
     execution: false
     name: microsoft-atp-get-file-alerts
+    outputs:
+    - contextPath: MicrosoftATP.FileAlert.Alerts.ID
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.IncidentId
+      type: Number
+    - contextPath: MicrosoftATP.FileAlert.Alerts.InvestigationID
+      type: Number
+    - contextPath: MicrosoftATP.FileAlert.Alerts.InvestigationState
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.AssignedTo
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Severity
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Status
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Classification
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Determination
+      type: Unknown
+    - contextPath: MicrosoftATP.FileAlert.Alerts.DetectionSource
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Category
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.ThreatFamilyName
+      type: Unknown
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Title
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Description
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.AlertCreationTime
+      type: Date
+    - contextPath: MicrosoftATP.FileAlert.Alerts.FirstEventTime
+      type: Date
+    - contextPath: MicrosoftATP.FileAlert.Alerts.LastEventTime
+      type: Date
+    - contextPath: MicrosoftATP.FileAlert.Alerts.LastUpdateTime
+      type: Date
+    - contextPath: MicrosoftATP.FileAlert.Alerts.ResolvedTime
+      type: Unknown
+    - contextPath: MicrosoftATP.FileAlert.Alerts.MachineID
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Comments.Comment
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Comments.CreatedBy
+      type: String
+    - contextPath: MicrosoftATP.FileAlert.Alerts.Comments.CreatedTime
+      type: Date
   - arguments:
     - default: false
       description: The IP address
@@ -965,6 +1369,15 @@ script:
     description: Retrieves the statistics for the given IP.
     execution: false
     name: microsoft-atp-get-ip-statistics
+    outputs:
+    - contextPath: MicrosoftATP.IPStatistics.Statistics.IPAddress
+      type: String
+    - contextPath: MicrosoftATP.IPStatistics.Statistics.OrgPrevalence
+      type: String
+    - contextPath: MicrosoftATP.IPStatistics.Statistics.OrgFirstSeen
+      type: Date
+    - contextPath: MicrosoftATP.IPStatistics.Statistics.OrgLastSeen
+      type: Date
   - arguments:
     - default: false
       description: The Ip address
@@ -976,6 +1389,53 @@ script:
     description: Retrieves a collection of alerts related to a given IP address.
     execution: false
     name: microsoft-atp-get-ip-alerts
+    outputs:
+    - contextPath: MicrosoftATP.IPAlert.Alerts.ID
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.IncidentID
+      type: Number
+    - contextPath: MicrosoftATP.IPAlert.Alerts.InvestigationID
+      type: Number
+    - contextPath: MicrosoftATP.IPAlert.Alerts.InvestigationState
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.AssignedTo
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Severity
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Status
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Classification
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Determination
+      type: Unknown
+    - contextPath: MicrosoftATP.IPAlert.Alerts.DetectionSource
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Category
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.ThreatFamilyName
+      type: Unknown
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Title
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Description
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.AlertCreationTime
+      type: Date
+    - contextPath: MicrosoftATP.IPAlert.Alerts.FirstEventTime
+      type: Date
+    - contextPath: MicrosoftATP.IPAlert.Alerts.LastEventTime
+      type: Date
+    - contextPath: MicrosoftATP.IPAlert.Alerts.LastUpdateTime
+      type: Date
+    - contextPath: MicrosoftATP.IPAlert.Alerts.ResolvedTime
+      type: Unknown
+    - contextPath: MicrosoftATP.IPAlert.Alerts.MachineID
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Comments.Comment
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Comments.CreatedBy
+      type: String
+    - contextPath: MicrosoftATP.IPAlert.Alerts.Comments.CreatedTime
+      type: Date
   - arguments:
     - default: false
       description: |-
@@ -989,6 +1449,53 @@ script:
     description: Retrieves a collection of alerts related to a given user ID.
     execution: false
     name: microsoft-atp-get-user-alerts
+    outputs:
+    - contextPath: MicrosoftATP.UserAlert.Alerts.ID
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.IncidentID
+      type: Number
+    - contextPath: MicrosoftATP.UserAlert.Alerts.InvestigationID
+      type: Number
+    - contextPath: MicrosoftATP.UserAlert.Alerts.InvestigationState
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.AssignedTo
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Severity
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Status
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Classification
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Determination
+      type: Unknown
+    - contextPath: MicrosoftATP.UserAlert.Alerts.DetectionSource
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Category
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.ThreatFamilyName
+      type: Unknown
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Title
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Description
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.AlertCreationTime
+      type: Date
+    - contextPath: MicrosoftATP.UserAlert.Alerts.FirstEventTime
+      type: Date
+    - contextPath: MicrosoftATP.UserAlert.Alerts.LastEventTime
+      type: Date
+    - contextPath: MicrosoftATP.UserAlert.Alerts.LastUpdateTime
+      type: Date
+    - contextPath: MicrosoftATP.UserAlert.Alerts.ResolvedTime
+      type: Unknown
+    - contextPath: MicrosoftATP.UserAlert.Alerts.MachineID
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Comments.Comment
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Comments.CreatedBy
+      type: String
+    - contextPath: MicrosoftATP.UserAlert.Alerts.Comments.CreatedTime
+      type: Date
   - arguments:
     - default: false
       description: |-
@@ -1002,6 +1509,43 @@ script:
     description: Retrieves a collection of machines related to a given user ID.
     execution: false
     name: microsoft-atp-get-user-machines
+    outputs:
+    - contextPath: MicrosoftATP.UsernMachine.Machines.ID
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.ComputerDNSName
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.FirstSeen
+      type: Date
+    - contextPath: MicrosoftATP.UsernMachine.Machines.LastSeen
+      type: Date
+    - contextPath: MicrosoftATP.UsernMachine.Machines.OSPlatform
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.Version
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.OSProcessor
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.LastIpAddress
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.LastExternalIpAddress
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.OSBuild
+      type: Number
+    - contextPath: MicrosoftATP.UsernMachine.Machines.HealthStatus
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.RBACGroupId
+      type: Number
+    - contextPath: MicrosoftATP.UsernMachine.Machines.RBACGroupName
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.RiskScore
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.ExposureLevel
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.IsAADJoined
+      type: Number
+    - contextPath: MicrosoftATP.UsernMachine.Machines.AADDeviceId
+      type: String
+    - contextPath: MicrosoftATP.UsernMachine.Machines.MachineTags
+      type: String
   - arguments:
     - default: false
       description: The machine ID
@@ -1029,6 +1573,43 @@ script:
     description: Adds or remove tag to a specific Machine.
     execution: false
     name: microsoft-atp-add-remove-machine-tag
+    outputs:
+    - contextPath: MicrosoftATP.Machine.ID
+      type: String
+    - contextPath: MicrosoftATP.Machine.ComputerDNSName
+      type: String
+    - contextPath: MicrosoftATP.Machine.FirstSeen
+      type: Date
+    - contextPath: MicrosoftATP.Machine.LastSeen
+      type: Date
+    - contextPath: MicrosoftATP.Machine.OSPlatform
+      type: String
+    - contextPath: MicrosoftATP.Machine.Version
+      type: String
+    - contextPath: MicrosoftATP.Machine.OSProcessor
+      type: String
+    - contextPath: MicrosoftATP.Machine.LastIPAddress
+      type: String
+    - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
+      type: String
+    - contextPath: MicrosoftATP.Machine.OSBuild
+      type: Number
+    - contextPath: MicrosoftATP.Machine.HealthStatus
+      type: String
+    - contextPath: MicrosoftATP.Machine.RBACGroupID
+      type: Number
+    - contextPath: MicrosoftATP.Machine.RBACGroupName
+      type: String
+    - contextPath: MicrosoftATP.Machine.RiskScore
+      type: String
+    - contextPath: MicrosoftATP.Machine.ExposureLevel
+      type: String
+    - contextPath: MicrosoftATP.Machine.IsAADJoined
+      type: Number
+    - contextPath: MicrosoftATP.Machine.AADDeviceID
+      type: String
+    - contextPath: MicrosoftATP.Machine.MachineTags
+      type: String
   dockerimage: demisto/crypto:1.0.0.303
   feed: false
   isfetch: true
