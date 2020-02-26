@@ -498,7 +498,7 @@ class Docker:
 
     @classmethod
     def get_image_for_container_id(cls, server_ip, container_id):
-        cmd = cls._build_ssh_command(server_ip, "sudo docker inspect -f {{.Config.Image}} " + container_id, force_tty=True)
+        cmd = cls._build_ssh_command(server_ip, "sudo docker inspect -f {{.Config.Image}} " + container_id, force_tty=False)
         return run_command(cmd)
 
     @classmethod
