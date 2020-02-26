@@ -1,5 +1,5 @@
 import demistomock as demisto
-from CommonServerPython import *  # gtm [py/polluting-import]
+from CommonServerPython import *  # lgtm [py/polluting-import]
 from tld import get_tld
 from validate_email import validate_email
 from urlparse import urlparse, parse_qs
