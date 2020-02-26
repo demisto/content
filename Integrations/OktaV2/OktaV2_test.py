@@ -1,6 +1,7 @@
-from .OktaV2 import Client, get_user_command, get_group_members_command, create_user_command, \
+from OktaV2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command
 import pytest
+
 
 client = Client(base_url="demisto.com")
 

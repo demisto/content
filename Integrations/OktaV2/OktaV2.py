@@ -1,5 +1,3 @@
-import requests
-
 from CommonServerPython import *
 
 # IMPORTS
