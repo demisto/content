@@ -337,6 +337,7 @@ class PB_Status:
     COMPLETED = 'completed'
     FAILED = 'failed'
     IN_PROGRESS = 'inprogress'
+    FAILED_DOCKER_TEST = 'failed_docker_test'
 
 
 # change log regexes
