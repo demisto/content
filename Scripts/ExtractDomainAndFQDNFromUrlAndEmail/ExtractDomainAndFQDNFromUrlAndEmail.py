@@ -1,9 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *  # lgtm [py/polluting-import]
-from tld import get_tld
+from tld import get_tld, get_fld
 from validate_email import validate_email
-from urlparse import urlparse, parse_qs
-from urllib import unquote
+from urllib.parse import urlparse, parse_qs, unquote
 import re
 
 
@@ -58,7 +57,7 @@ def get_fqdn(the_input):
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
-            fqdn = "{}.{}".format(subdomain, str(domain))
+            fqdn = "{}.{}".format(subdomain, domain.fld)
 
     return fqdn
 
@@ -85,7 +84,7 @@ def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
         if is_fqdn:
             is_url = indicator = get_fqdn(the_input)
         if is_domain:
-            is_url = indicator = get_tld(the_input, fail_silently=True)
+            is_url = indicator = get_fld(the_input, fail_silently=True)
 
     # Extract domain itself from a potential subdomain
     if domain_from_mail or not is_url:
@@ -95,12 +94,10 @@ def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
         if is_fqdn:
             indicator = get_fqdn(full_domain)
         if is_domain:
-            indicator = get_tld(full_domain, fail_silently=True)
+            indicator = get_fld(full_domain, fail_silently=True)
 
     # convert None to empty string if needed
     indicator = '' if not indicator else indicator
-    if type(indicator) == unicode:
-        indicator = indicator.encode('utf-8', errors='ignore')
     return indicator
 
 
