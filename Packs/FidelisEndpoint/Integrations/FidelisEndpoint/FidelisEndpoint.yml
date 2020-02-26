@@ -1,0 +1,531 @@
+category: Authentication
+commonfields:
+  id: FidelisEndpoint
+  version: -1
+configuration:
+- display: Server URL (e.g. https://domain/endpoint)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: FidelisEndpoint
+name: FidelisEndpoint
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Index of the starting row returned. Defaults to 0.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    - default: false
+      description: Limits the number of alerts returned. Defaults to all.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Sorts the result before applying take and skip. Defaults to “CreatedDate
+        Descending”.
+        Can be any property name of the alert object.
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: A filter applied on results of the get operation. Defaults to empty
+        string.
+      isArray: false
+      name: facet_search
+      required: false
+      secret: false
+    - default: false
+      description: 'The start of the time range of returned values. For example: 0001-01-01T00:00:00Z'
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: 'The end of the time range of returned values. For example: 0001-01-01T00:00:00Z'
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: get information about alerts.
+    execution: false
+    name: fidelis-endpoint-list-alerts
+    outputs:
+    - contextPath: FidelisEndpoint.Alert.EndpointName
+      description: Endpoint name.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.IntelName
+      description: Intel name.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.HasJob
+      description: Is the alert has an open job
+      type: Boolean
+    - contextPath: FidelisEndpoint.Alert.EventTime
+      description: Alert event time.
+      type: Date
+    - contextPath: FidelisEndpoint.Alert.ActionsTaken
+      description: The actions taken for this alert
+      type: String
+    - contextPath: FidelisEndpoint.Alert.CreateDate
+      description: Alert creation date.
+      type: Date
+    - contextPath: FidelisEndpoint.Alert.ParentEventID
+      description: Parent event ID.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.Name
+      description: Alert name.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.ReportID
+      description: Report ID.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.EndpointID
+      description: Endpoint ID.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.IntelID
+      description: Intel ID.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.Name
+      description: Alert Name.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.EventType
+      description: Event Type.
+      type: Number
+    - contextPath: FidelisEndpoint.Alert.EventID
+      description: Event ID.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.SourceType
+      description: Source type.
+      type: Number
+    - contextPath: FidelisEndpoint.Alert.AgentTag
+      description: Agent tag.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.EventIndex
+      description: Event index.
+      type: Number
+    - contextPath: FidelisEndpoint.Alert.Telemetry
+      description: Telemetry.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.Source
+      description: Alert source
+      type: String
+    - contextPath: FidelisEndpoint.Alert.ID
+      description: Alert ID.
+      type: Number
+    - contextPath: FidelisEndpoint.Alert.ValidatedDate
+      description: Validate date.
+      type: Date
+    - contextPath: FidelisEndpoint.Alert.Description
+      description: Alert description.
+      type: String
+    - contextPath: FidelisEndpoint.Alert.InsertionDate
+      description: Alert insertion date.
+      type: Date
+    - contextPath: FidelisEndpoint.Alert.Severity
+      description: Alert severity.
+      type: Number
+    - contextPath: FidelisEndpoint.Alert.ArtifactName
+      description: Artifact name.
+      type: String
+  - arguments:
+    - default: false
+      description: Search for endpoints based on an IP Address
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for endpoints based on an IP Address
+    execution: false
+    name: fidelis-endpoint-host-info
+    outputs:
+    - contextPath: FidelisEndpoint.Host.AgentID
+      description: The Agent ID.
+      type: String
+    - contextPath: FidelisEndpoint.Host.ActiveDirectoryID
+      description: Active directory ID.
+      type: String
+    - contextPath: FidelisEndpoint.Host.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: FidelisEndpoint.Host.IpAddress
+      description: Endpoint IP Address.
+      type: String
+    - contextPath: FidelisEndpoint.Host.IsDeleted
+      description: Is the endpoint deleted.
+      type: Boolean
+    - contextPath: FidelisEndpoint.Host.AREnabled
+      description: ' Is AR Enabled.'
+      type: Boolean
+    - contextPath: FidelisEndpoint.Host.AVEEnabled
+      description: Is AV enabled.
+      type: Boolean
+    - contextPath: FidelisEndpoint.Host.HostName
+      description: Host name.
+      type: String
+    - contextPath: FidelisEndpoint.Host.AgentVersion
+      description: Agent version
+      type: String
+    - contextPath: FidelisEndpoint.Host.Groups
+      description: Endpoint groups
+      type: String
+    - contextPath: FidelisEndpoint.Host.CreatedDate
+      description: Host create date.
+      type: Date
+    - contextPath: FidelisEndpoint.Host.LastContactDate
+      description: Host last contact date.
+      type: Date
+    - contextPath: FidelisEndpoint.Host.ID
+      description: Host ID.
+      type: String
+    - contextPath: FidelisEndpoint.Host.Description
+      description: Host description.
+      type: String
+    - contextPath: FidelisEndpoint.Host.ProcessorName
+      description: Processor name.
+      type: String
+    - contextPath: FidelisEndpoint.Host.RamSize
+      description: Ram size.
+      type: Number
+  - arguments:
+    - default: false
+      description: The host to search the file in (for multiple hosts use (comma separated)
+      isArray: true
+      name: host
+      required: true
+      secret: false
+    - default: false
+      description: MD5 to search for (for multiple hashes use (comma separated)
+      isArray: true
+      name: md5
+      required: true
+      secret: false
+    - default: false
+      description: The file Extension
+      isArray: false
+      name: file_extension
+      required: false
+      secret: false
+    - default: false
+      description: The file path (recommended to lower the search time)
+      isArray: false
+      name: file_path
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The file size greater than.
+      isArray: false
+      name: file_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for files on multiple hosts, using file hash, extension, file
+      size, and other search criteria.
+    execution: false
+    name: fidelis-endpoint-file-search
+    outputs:
+    - contextPath: FidelisEndpoint.FileSearch.JobID
+      description: The job ID.
+      type: String
+    - contextPath: FidelisEndpoint.FileSearch.JobResultID
+      description: The job result ID.
+      type: String
+  - arguments:
+    - default: false
+      description: The job ID (find the id from the file-search command)
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      description: The job result ID (find the id from the file-search command)
+      isArray: false
+      name: job_result_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the file search job status.
+    execution: false
+    name: fidelis-endpoint-file-search-status
+    outputs:
+    - contextPath: FidelisEndpoint.FileSearchJobID
+      description: The file search job ID.
+      type: String
+    - contextPath: FidelisEndpoint.FileSearch.[0].JobResultID
+      description: Job result ID.
+      type: String
+    - contextPath: FidelisEndpoint.FileSearch.Status
+      description: Job status.
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID (get the job ID from file-search command).
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      description: Job result ID (get the job result ID from file-search command).
+      isArray: false
+      name: job_result_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the job results metadata (max 50 results)
+    execution: false
+    name: fidelis-endpoint-file-search-result-metadata
+    outputs:
+    - contextPath: FidelisEndpoint.File.AgentID
+      description: Agent ID.
+      type: String
+    - contextPath: FidelisEndpoint.File.FileName
+      description: File Name.
+      type: String
+    - contextPath: FidelisEndpoint.File.FilePath
+      description: File path.
+      type: String
+    - contextPath: FidelisEndpoint.File.FileSize
+      description: File Size.
+      type: Number
+    - contextPath: FidelisEndpoint.File.HostIP
+      description: Host IP.
+      type: String
+    - contextPath: FidelisEndpoint.File.HostName
+      description: Host Name.
+      type: String
+    - contextPath: FidelisEndpoint.File.ID
+      description: File ID.
+      type: String
+    - contextPath: FidelisEndpoint.File.MD5Hash
+      description: File MD5.
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: File.Hostname
+      description: The name of the host where the file was found.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+  - arguments:
+    - default: false
+      description: The file ID (can be found in file-search-result-metadata command)
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the file stream and download the file.
+    execution: false
+    name: fidelis-endpoint-get-file
+  - arguments:
+    - default: false
+      description: Job ID (get the job ID from file-search command).
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Removed the job to free-up space on the server.
+    execution: false
+    name: fidelis-endpoint-delete-file-search-job
+  - deprecated: false
+    description: Get a list of all script packages
+    execution: false
+    name: fidelis-endpoint-list-scripts
+    outputs:
+    - contextPath: FidelisEndpoint.Script.Description
+      description: The script description.
+      type: String
+    - contextPath: FidelisEndpoint.Script.ID
+      description: Script ID.
+      type: String
+    - contextPath: FidelisEndpoint.Script.Name
+      description: Script name.
+      type: String
+  - arguments:
+    - default: false
+      description: Script ID (get the script id from list-scripts command)
+      isArray: false
+      name: script_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the script manifest
+    execution: false
+    name: fidelis-endpoint-script-manifest
+    outputs:
+    - contextPath: FidelisEndpoint.Script.ResultColumns
+      description: The script results columns.
+      type: String
+    - contextPath: FidelisEndpoint.Script.Priority
+      description: Script priority.
+      type: String
+    - contextPath: FidelisEndpoint.Script.ImpersonationUser
+      description: Impersonation User.
+      type: String
+    - contextPath: FidelisEndpoint.Script.Name
+      description: Script name.
+      type: String
+    - contextPath: FidelisEndpoint.Script.Command
+      description: The script commands.
+      type: String
+    - contextPath: FidelisEndpoint.Script.Questions
+      description: Script questions
+      type: String
+    - contextPath: FidelisEndpoint.Script.WizardOverridePassword
+      description: Wizard Override Password
+      type: Boolean
+    - contextPath: FidelisEndpoint.Script.Platform
+      description: Scripts platforms (only true)
+      type: String
+    - contextPath: FidelisEndpoint.Script.ImpersonationPassword
+      description: Impersonation Password
+      type: String
+    - contextPath: FidelisEndpoint.Script.ID
+      description: Script ID.
+      type: String
+    - contextPath: FidelisEndpoint.Script.Description
+      description: The script description.
+      type: String
+    - contextPath: FidelisEndpoint.Script.TimeoutSeconds
+      description: Script timout in seconds
+      type: Number
+  - arguments:
+    - default: false
+      description: Endpoint IP.
+      isArray: true
+      name: endpoint_ip
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Ths system OS.
+      isArray: false
+      name: os
+      predefined:
+      - Windows
+      - Linux
+      - macOS
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '300'
+      description: Script time out in seconds
+      isArray: false
+      name: time_out
+      required: false
+      secret: false
+    deprecated: false
+    description: List all processes according to the OS system.
+    execution: false
+    name: fidelis-endpoint-list-process
+    outputs:
+    - contextPath: FidelisEndpoint.Script.JobID
+      description: Script data - Job ID
+      type: String
+    - contextPath: FidelisEndpoint.Script.ID
+      description: Script ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID (can be found in the scrip exeutions commands)
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get script job results.
+    execution: false
+    name: fidelis-endpoint-get-script-result
+    outputs:
+    - contextPath: FidelisEndpoint.ScriptResult.EndpointName
+      description: Endpoint name.
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.ParentPID
+      description: Parent process ID.
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.Path
+      description: File Path
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.SHA1
+      description: File SHA1
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.PID
+      description: Process ID.
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.Name
+      description: Process name.
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.User
+      description: Script User
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.StartTime
+      description: Script start time
+      type: Date
+    - contextPath: FidelisEndpoint.ScriptResult.EndpointID
+      description: Endpoint ID.
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.Matches
+      description: Script matches
+      type: Number
+    - contextPath: FidelisEndpoint.ScriptResult.IsHidden
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.GroupID
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.Tags
+      description: Script tags
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.ID
+      description: ID
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.WorkingDirectory
+      description: Working directory.
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.MD5
+      description: File MD5.
+      type: String
+    - contextPath: FidelisEndpoint.ScriptResult.CommandLine
+      description: Command line
+      type: String
+  dockerimage: demisto/python3:3.7.4.2245
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
