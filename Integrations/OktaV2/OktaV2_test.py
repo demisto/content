@@ -601,8 +601,8 @@ def test_create_user_command(mocker, args):
     "args, expected",
     [
         ({'groupId': 'Test Group', 'limit': 5},
-         {'ID': 'TestID2', 'Username': '"john@doe.com"', 'DisplayName': 'Test2 Test2',
-          'Email': '"john@doe.com"', 'Status': 'STAGED', 'Type': 'Okta', 'Created': "2018-07-24T20:20:04.000Z"})
+         {'ID': 'TestID2', 'Username': 'john@doe.com', 'DisplayName': 'Test2 Test2',
+          'Email': 'john@doe.com', 'Status': 'STAGED', 'Type': 'Okta', 'Created': "2018-07-24T20:20:04.000Z"})
     ])
 def test_get_group_members_command(mocker, args, expected):
     mocker.patch.object(client, 'get_group_members', return_value=group_members)
