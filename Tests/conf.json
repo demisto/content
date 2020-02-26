@@ -696,8 +696,7 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500,
-            "pid_threshold": 6
+            "timeout": 500            
         },
         {
             "playbookID": "CutTransformerTest"
@@ -995,8 +994,7 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240,
-            "pid_threshold": 18
+            "timeout": 240            
         },
         {
             "integrations": "activedir",
@@ -2023,8 +2021,7 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest",
-            "pid_threshold": 24
+            "playbookID": "RasterizeImageTest"            
         },
         {
             "integrations": "Ipstack",
@@ -2580,5 +2577,13 @@
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
         "Google Chronicle Backstory": "SDK"
+    },
+    "docker_thresholds": {
+        "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
+        "images": {
+            "demisto/chromium": {
+                "pid_threshold": 8
+            }
+        }
     }
 }
