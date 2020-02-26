@@ -272,7 +272,12 @@ def get_content_version_details(client):
     response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/installed',
                                                                         method='POST')
 
-    result_object = ast.literal_eval(response_data)
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return '', 0
+
     if status_code >= 300 or status_code < 200:
         message = result_object.get('message', '')
         msg = "Failed to check if installed content details - with status code " + str(status_code) + '\n' + message
