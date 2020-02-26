@@ -43,3 +43,12 @@ def test_fetch(mocker):
     atp.fetch_incidents()
     assert 'Windows Defender ATP Alert da637029414680409372_735564929' ==\
            demisto.incidents.call_args[0][0][0].get('name')
+
+
+def test_get_file_data(mocker):
+    import WindowsDefenderAdvancedThreatProtection as atp
+    mocker.patch.object(atp, 'get_file_data_request', return_value=([], []))
+    res = atp.()
+    assert res[0] == "No indicators found, Reference set test_ref_set didn't change"
+
+""" API RAW RESULTS """
