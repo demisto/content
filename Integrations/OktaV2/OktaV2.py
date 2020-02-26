@@ -279,7 +279,11 @@ class Client(BaseClient):
                 'DisplayName': f"{user.get('profile').get('firstName', '')} {user.get('profile').get('lastName', '')}",
                 'Email': user.get('profile').get('email'),
                 'Status': user.get('status'),
-                'Type': 'Okta'
+                'Type': 'Okta',
+                'Created': user.get('created'),
+                'Activated': user.get('activated'),
+                'StatusChanged': user.get('statusChanged'),
+                'PasswordChanged': user.get('passwordChanged')
             }
             if user.get('group'):
                 user['Group'] = user.get('group')
@@ -733,7 +737,7 @@ def search_command(client, args):
 
 
 def get_user_command(client, args):
-    if not (args.get('username') or args.get('user_id')):
+    if not (args.get('username') or args.get('userId')):
         return_error("Missing arguments for command")
     user_term = args.get('userId') if args.get('userId') else args.get('username')
     raw_response = client.get_user(user_term)
@@ -803,7 +807,7 @@ def get_group_members_command(client, args):
         'Account(val.ID && val.ID === obj.ID)': context
     }
     if args.get('verbose') == 'true':
-        return(
+        return (
             f"### Users for group: {args.get('groupName') or group_id}:\n {users_readable}",
             outputs,
             raw_members
@@ -944,7 +948,6 @@ def clear_user_sessions_command(client, args):
     return readable_output, {}, raw_response
 
 
-
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -997,7 +1000,8 @@ def main():
             'Content-Type': 'application/json',
             'Authorization': f'SSWS {apitoken}'
         },
-        proxy=proxy)
+        proxy=proxy,
+        ok_codes=(200, 204))
 
     try:
         if command in commands:

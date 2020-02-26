@@ -510,16 +510,24 @@ logs = [
             }
         ]
     }]
+
+
 @pytest.mark.parametrize(
     # Write and define the expected
     "args ,expected_context, expected_readable",
     [
-        ({"user_id": "TestID", "username": "", "verbose": 'false'},
+        ({"userId": "TestID", "username": "", "verbose": 'false'},
          {'ID': 'TestID', 'Username': 'test@this.com', 'DisplayName': 'test this', 'Email': 'test@this.com',
-          'Status': 'PROVISIONED', 'Type': 'Okta'}, 'test@this.com'),
-        ({"user_id": "", "username": "test@this.com", "verbose": 'true'},
+          'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
+          'Activated': "2020-02-20T11:44:43.000Z",
+          'StatusChanged': "2020-02-20T11:45:24.000Z",
+          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'test@this.com'),
+        ({"userId": "", "username": "test@this.com", "verbose": 'true'},
          {'ID': 'TestID', 'Username': 'test@this.com', 'DisplayName': 'test this', 'Email': 'test@this.com',
-          'Status': 'PROVISIONED', 'Type': 'Okta'}, 'Additional Data'),
+          'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
+          'Activated': "2020-02-20T11:44:43.000Z",
+          'StatusChanged': "2020-02-20T11:45:24.000Z",
+          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'Additional Data'),
     ]
 )
 def test_get_user_command(mocker, args, expected_context, expected_readable):
@@ -527,6 +535,7 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     readable, outputs, _ = get_user_command(client, args)
     assert outputs.get('Account(val.ID && val.ID === obj.ID)')[0] == expected_context
     assert expected_readable in readable
+
 
 @pytest.mark.parametrize(
     "args ,expected_context",
@@ -591,9 +600,11 @@ def test_create_user_command(mocker, args):
 
 @pytest.mark.parametrize(
     "args, expected",
-    [({'groupId': 'Test Group','limit': 5},
-      {'ID': 'TestID2', 'Username': 'test2@this.com', 'DisplayName': 'Test2 Test2',
-       'Email': 'test2@this.com', 'Status': 'STAGED', 'Type': 'Okta'})])
+    [
+        ({'groupId': 'Test Group', 'limit': 5},
+         {'ID': 'TestID2', 'Username': 'test2@this.com', 'DisplayName': 'Test2 Test2',
+          'Email': 'test2@this.com', 'Status': 'STAGED', 'Type': 'Okta', 'Created': "2018-07-24T20:20:04.000Z"})
+    ])
 def test_get_group_members_command(mocker, args, expected):
     mocker.patch.object(client, 'get_group_members', return_value=group_members)
     readable, outputs, _ = get_group_members_command(client, args)
@@ -610,7 +621,6 @@ def test_get_logs_command(mocker):
     assert logs == outputs.get('Okta.Logs.Events(val.uuid===obj.uuid)')
     assert 'Unknown browser on Unknown OS Unknown device' in readable
     assert 'Chrome on Windows Computer' in readable
-
 
 # #
 # #
