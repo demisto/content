@@ -133,7 +133,7 @@ script:
         return {body: result.Body, obj: obj, statusCode: result.StatusCode, cookies: result.Cookies};
     };
 
-    var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, byReceiptTime, sleep) {
+    var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, byReceiptTime, sleep, waitForSearchComplete) {
         var p = {query: query};
         if (from) {
             p.from = from;
@@ -156,7 +156,7 @@ script:
             for (var i=0; i<maxTimeToWaitForResults / sleep; i++) {
                 wait(sleep);
                 stat = doReq('GET', 'search/jobs/' + res.obj.id, null, res.cookies);
-                if (stat.obj.state === 'DONE GATHERING RESULTS' || stat.obj.messageCount > (offset + 1) * limit) {
+                if (stat.obj.state === 'DONE GATHERING RESULTS' || (!waitForSearchComplete && stat.obj.messageCount > (offset + 1) * limit)) {
                     done = true;
                     break;
                 }
@@ -215,7 +215,7 @@ script:
             }
 
             var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), false,
-                a2i(params.sleepBetweenChecks, defaultSleep));
+                a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
             var incidents = [];
 
             if (!params.fetchRecords && s.messages) {
@@ -260,8 +260,10 @@ script:
                 query = beforeHttp + url + afterWhitespace
             }
             var headers = 'headers' in args ? argToList(args.headers) : undefined;
+            var waitForSearchComplete = args.waitForSearchComplete == 'true';
             var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
-                a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep));
+                a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep),
+                waitForSearchComplete);
             var md = '';
             var ec = {};
             if (s.messages && s.messages.length > 0) {
@@ -322,6 +324,14 @@ script:
       - "false"
       description: If "true", the search is executed using receipt time. Default is
         "false".
+      defaultValue: "false"
+    - name: waitForSearchComplete
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If "true", the search will wait for the query to iterate over all messages before returning results.
+        This is useful when working with aggregate records, as otherwise the query may return partial values.
       defaultValue: "false"
     outputs:
     - contextPath: Search.Messages

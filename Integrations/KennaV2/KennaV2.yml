@@ -22,22 +22,18 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
+description: Use the Kenna v2 integration to search and update vulnerabilities, schedule
+  a run connector, and manage tags and attributes.
 display: Kenna v2
 name: Kennav2
 script:
   commands:
   - arguments:
-    - default: false
-      description: Vulnerability ID to search.
-      isArray: false
-      name: id
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false".
-      isArray: false
+      description: Whether to return vulnerabilities that Kenna deems a top priority
+        to fix. Can be "true" or "false".
+      isArray: true
       name: top-priority
       predefined:
       - 'true'
@@ -52,8 +48,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
-      isArray: false
+      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted",
+        or "false_positive".
+      isArray: true
       name: status
       predefined:
       - open
@@ -64,7 +61,8 @@ script:
       secret: false
     - default: false
       defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return. The default value
+        is 500.
       isArray: false
       name: limit
       required: false
@@ -72,12 +70,19 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'True'
-      description: Whether to flush to context. Can be "True" or "False". The default value is "True".
+      description: Whether to flush to context. Can be "True" or "False". The default
+        value is "True".
       isArray: false
       name: to_context
       predefined:
       - 'True'
       - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: The vulnerability ID for which to search.
+      isArray: true
+      name: id
       required: false
       secret: false
     deprecated: false
@@ -156,21 +161,22 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Executes a run of the specified connector. If file based, it will use the most recently
-      uploaded data file.
+    description: Executes a run of the specified connector. If file based, it will
+      use the most recently uploaded data file.
     execution: true
     name: kenna-run-connector
   - arguments:
     - default: false
       description: The vulnerability ID for which to search.
-      isArray: false
+      isArray: true
       name: id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false".
-      isArray: false
+      description: Whether to return vulnerabilities that Kenna deems a top priority
+        to fix. Can be "true" or "false".
+      isArray: true
       name: top-priority
       predefined:
       - 'true'
@@ -185,8 +191,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
-      isArray: false
+      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted",
+        or "false_positive".
+      isArray: true
       name: status
       predefined:
       - open
@@ -203,7 +210,8 @@ script:
       secret: false
     - default: false
       defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return. The default value
+        is 500.
       isArray: false
       name: limit
       required: false
@@ -211,7 +219,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to flush to context. Can be "True" or "False". The default value is "True".
+      description: Whether to flush to context. Can be "True" or "False". The default
+        value is "True".
       isArray: false
       name: to_context
       predefined:
@@ -247,7 +256,8 @@ script:
       description: The vulnerability ID related to the current fix.
       type: Number
     - contextPath: Kenna.Fixes.Vulnerabilities.ServiceTicketStatus
-      description: The vulnerability service ticket status related to the current fix.
+      description: The vulnerability service ticket status related to the current
+        fix.
       type: String
     - contextPath: Kenna.Fixes.Vulnerabilities.ScannerIDs
       description: The vulnerability scanner IDs related to the current fix.
@@ -293,7 +303,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
+      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted",
+        or "false_positive".
       isArray: false
       name: status
       predefined:
@@ -333,13 +344,13 @@ script:
   - arguments:
     - default: false
       description: The asset ID to search for.
-      isArray: false
+      isArray: true
       name: id
       required: false
       secret: false
     - default: false
       description: The hostname of the asset to search for.
-      isArray: false
+      isArray: true
       name: hostname
       required: false
       secret: false
@@ -351,13 +362,14 @@ script:
       secret: false
     - default: false
       description: The tags by which to search.
-      isArray: false
+      isArray: true
       name: tags
       required: false
       secret: false
     - default: false
       defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return. The default value
+        is 500.
       isArray: false
       name: limit
       required: false
@@ -365,7 +377,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to print output to context. Can be "True" or "False". The default value is "True".
+      description: Whether to print output to context. Can be "True" or "False". The
+        default value is "True".
       isArray: false
       name: to_context
       predefined:
@@ -420,13 +433,14 @@ script:
   - arguments:
     - default: false
       description: The asset ID for which to get vulnerabilities.
-      isArray: false
+      isArray: true
       name: id
       required: true
       secret: false
     - default: false
       defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return. The default value
+        is 500.
       isArray: false
       name: limit
       required: false
@@ -434,7 +448,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to print output to context. Can be "True" or "False". The default value is "True".
+      description: Whether to print output to context. Can be "True" or "False". The
+        default value is "True".
       isArray: false
       name: to_context
       predefined:
@@ -457,7 +472,8 @@ script:
       description: 'The ID of the vulnerability associated withe the asset '
       type: Number
     - contextPath: Kenna.VulnerabilitiesOfAsset.Patch
-      description: 'Whether there is a patch for the vulnerability associated with the asset. '
+      description: 'Whether there is a patch for the vulnerability associated with
+        the asset. '
       type: Boolean
     - contextPath: Kenna.VulnerabilitiesOfAsset.Status
       description: 'The status of the vulnerability associated with the asset. '

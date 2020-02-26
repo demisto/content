@@ -116,7 +116,11 @@ outputs:
 - contextPath: File.Extension
   description: The file's extension.
   type: String
+- contextPath: Account.Email
+  description: The email address of the account.
+  type: String
 script: '-'
+subtype: python3
 system: false
 tags:
 - Utility
@@ -124,7 +128,6 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/readpdf:1.0.0.299
-subtype: python3
 runas: DBotWeakRole
 runonce: false
 tests:
