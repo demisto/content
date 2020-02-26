@@ -107,6 +107,12 @@ script:
       - 'true'
       required: true
       secret: false
+    - default: false
+      description: The starting entry index from which to export the indicators.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
     deprecated: false
     description: Updates values stored in the Export Indicators Service (only avaialable
       On-Demand).
