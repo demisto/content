@@ -21,6 +21,8 @@ warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
+API_KEY = demisto.params().get('api_key')
+API_ID = demisto.params().get('api_id')
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
     400: '400 Bad Request - Incorrect or invalid parameters',
@@ -95,6 +97,15 @@ def elasticsearch_builder():
         else:
             return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
                                  http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+
+    if API_KEY:
+        if PROXY:
+            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                 api_key=(API_ID, API_KEY), verify_certs=INSECURE, proxies=handle_proxy())
+
+        else:
+            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                 api_key=(API_ID, API_KEY), verify_certs=INSECURE)
 
     else:
         if PROXY:

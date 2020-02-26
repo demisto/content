@@ -8,9 +8,21 @@ configuration:
   required: true
   type: 0
 - display: Username for server login
+  additionalinfo: Provide Username + Passoword instead of API key + API ID
   name: credentials
   required: false
   type: 9
+- display: API Key
+  additionalinfo: Provide API key + API ID instead of Username + Password
+  hidden: false
+  name: api_key
+  required: false
+  type: 4
+- display: API ID
+  hidden: false
+  name: api_id
+  required: false
+  type: 4
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure

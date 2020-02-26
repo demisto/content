@@ -33,13 +33,15 @@ FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
 
 
 class ElasticsearchClient:
-    def __init__(self, insecure, server, username, password, time_field, time_method, fetch_index, fetch_time, query):
+    def __init__(self, insecure, server, username, password, api_key, api_id, time_field, time_method, fetch_index,
+                 fetch_time, query):
         self._insecure = insecure
         self._proxy = handle_proxy()
         if not self._proxy:
             self._proxy = None
         self._server = server
         self._http_auth = (username, password) if (username and password) else None
+        self._api_key = (api_id, api_key) if (api_id and api_key) else None
 
         self.time_field = time_field
         self.time_method = time_method
@@ -51,7 +53,7 @@ class ElasticsearchClient:
     def _elasticsearch_builder(self):
         """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
         return Elasticsearch(hosts=[self._server], connection_class=RequestsHttpConnection, http_auth=self._http_auth,
-                             verify_certs=self._insecure, proxies=self._proxy)
+                             verify_certs=self._insecure, proxies=self._proxy, api_key=self._api_key)
 
     def send_test_request(self):
         headers = {
@@ -321,8 +323,10 @@ def main():
         fetch_index = params.get('fetch_index')
         fetch_time = params.get('fetch_time', '3 days')
         query = params.get('es_query')
-        client = ElasticsearchClient(insecure, server, username, password, time_field, time_method, fetch_index,
-                                     fetch_time, query)
+        api_key = params.get('api_key')
+        api_id = params.get('api_id')
+        client = ElasticsearchClient(insecure, server, username, password, api_key, api_id, time_field, time_method,
+                                     fetch_index, fetch_time, query)
         src_val = params.get('src_val')
         src_type = params.get('src_type')
         default_type = params.get('default_type')
