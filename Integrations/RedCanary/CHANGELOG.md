@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.0] - 2020-02-04
 Fixed fetch-incidents to fetch detections properly.
 
 ## [19.11.1] - 2019-11-26

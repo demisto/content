@@ -145,7 +145,7 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
             limit = 50
-            mocker.patch.object(demisto, 'findIndicators', return_value=iocs_dict)
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit)
             assert nxt_pg == 1  # assert entered into loop
 
@@ -156,7 +156,7 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
             limit = 30
-            mocker.patch.object(demisto, 'findIndicators', return_value=iocs_dict)
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             edl.PAGE_SIZE = IOC_RES_LEN
             edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit,
                                                                  last_found_len=IOC_RES_LEN)
@@ -173,3 +173,33 @@ class TestHelperFunctions:
                 iocs_txt_json = json.load(iocs_txt_f)
                 for line in text_out.split('\n'):
                     assert line in iocs_txt_json
+
+    @pytest.mark.validate_basic_authentication
+    def test_validate_basic_authentication(self):
+        """Test Authentication"""
+        from EDL import validate_basic_authentication
+        data = {
+            "empty_auth": {},
+            "basic_missing_auth": {
+                "Authorization": "missing basic"
+            },
+            "colon_missing_auth": {
+                "Authorization": "Basic bWlzc2luZ19jb2xvbg=="
+            },
+            "wrong_length_auth": {
+                "Authorization": "Basic YTpiOmM="
+            },
+            "wrong_credentials_auth": {
+                "Authorization": "Basic YTpi"
+            },
+            "right_credentials_auth": {
+                "Authorization": "Basic dXNlcjpwd2Q="
+            }
+        }
+        username, password = 'user', 'pwd'
+        assert not validate_basic_authentication(data.get('empty_auth'), username, password)
+        assert not validate_basic_authentication(data.get('basic_missing_auth'), username, password)
+        assert not validate_basic_authentication(data.get('colon_missing_auth'), username, password)
+        assert not validate_basic_authentication(data.get('wrong_length_auth'), username, password)
+        assert not validate_basic_authentication(data.get('wrong_credentials_auth'), username, password)
+        assert validate_basic_authentication(data.get('right_credentials_auth'), username, password)

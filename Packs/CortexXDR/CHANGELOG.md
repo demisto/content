@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added the missing *XDR Host Count* custom field.
   - Implemented the Cortex XDR API v2. 
   -  Added 11 Traps commands.
     - ***xdr-isolate-endpoint***

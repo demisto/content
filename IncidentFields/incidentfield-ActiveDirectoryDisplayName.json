@@ -1,6 +1,7 @@
 {
 	"id": "incident_activedirectorydisplayname",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-06T15:53:39.169972971Z",
 	"name": "Active Directory Display Name",
 	"ownerOnly": false,

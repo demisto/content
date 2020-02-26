@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 
+## [20.2.3] - 2020-02-18
+- Fixed an issue with ***fetch-incidents*** where setting a *Fetch Limit* would drop older incidents if the number of the fetched incidents was greater than the limit.
+- Added the new argument *pageNumber* to  the ***netwitness-get-incidents*** command. The new argument allows the user to get incidents from a specific page and is intended to be used with limit argument.
+
 ## [19.12.1] - 2019-12-25
   - Fixed an issue where environment proxy effects the integration when even though no proxy should be used.
 
