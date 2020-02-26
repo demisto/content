@@ -1787,4 +1787,4 @@ script:
   subtype: python3
   type: python
 tests:
-  - OktaV2 - Test
+  - OktaV2-Test
