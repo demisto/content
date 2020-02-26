@@ -978,7 +978,7 @@
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100
+            "memory_threshold": 120
         },
         {
             "integrations": "EWS v2",
