@@ -1219,11 +1219,10 @@
             "integrations": ["VirusTotal - Private API",
                             "VirusTotal"],
             "playbookID": "vt-detonate test",
-            "instance_names": 'virus_total_private_api_general',
+            "instance_names": "virus_total_private_api_general",
             "timeout": 1400,
             "nightly": true
         },
-
         {
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_preferred_vendors",
