@@ -414,7 +414,7 @@ logs = [
             "zone": "null",
             "device": "Unknown",
             "id": '',
-            "ipAddress": "31.154.166.148",
+            "ipAddress": "8.8.8.8",
             "geographicalContext": {
                 "city": "Tel Aviv",
                 "state": "Tel Aviv",
