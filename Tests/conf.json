@@ -297,7 +297,14 @@
         },
         {
             "playbookID": "HighlightWords_Test"
-
+        },
+        {
+            "integrations": "Pentera",
+            "playbookID": "Pcysys-Test"
+        },
+        {
+            "integrations": "Pentera",
+            "playbookID": "Pentera Run Scan - Test"
         },
         {
             "playbookID": "StringContainsArray_test"
@@ -2390,6 +2397,7 @@
         }
     ],
     "skipped_tests": {
+        "RasterizeTest": "Issue 20702",
         "PANW - Hunting and threat detection by indicator type Test": "Issue 22300",
         "Send Investigation Summary Reports": "Issue 22299",
         "Palo Alto Networks Cortex Test": "Issue 22298",
@@ -2399,9 +2407,6 @@
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
-        "Luminate-TestPlaybook": "Issue 22224",
-        "GetTime-ObjectVsStringTest": "Issue 22223",
-        "GetTime-Test": "Issue 22222",
         "EmailReputationTest": "Issue 22187",
         "test_Qradar": "Issue 22186",
         "IntSights Test": "Issue 22185",
