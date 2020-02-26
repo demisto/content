@@ -75,17 +75,18 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
     out_dict = create_values_out_dict(iocs, out_format)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
-    save_context(now, limit, offset, out_format, out_dict)
+    save_context(now, limit, offset, out_format, indicator_query, out_dict)
     return out_dict[CTX_VALUES_KEY]
 
 
-def save_context(now: datetime, limit: int, offset: int, out_format: str, out_dict: dict):
+def save_context(now: datetime, limit: int, offset: int, out_format: str, query: str, out_dict: dict):
     """Saves export_iocs state and refresh time to context"""
     demisto.setLastRun({
         'last_run': date_to_timestamp(now),
         'last_limit': limit,
         'last_offset': offset,
-        'last_format': out_format
+        'last_format': out_format,
+        'last_query': query
     })
     demisto.setIntegrationContext(out_dict)
 
@@ -162,6 +163,7 @@ def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_fo
     last_limit = last_update_data.get('last_limit')
     last_offset = last_update_data.get('last_offset')
     last_format = last_update_data.get('last_format')
+    last_query = last_update_data.get('last_query')
     # on_demand ignores cache
     if on_demand:
         values_str = get_ioc_values_str_from_context()
@@ -169,7 +171,8 @@ def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_fo
         if last_update:
             # takes the cache_refresh_rate amount of time back since run time.
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            if last_update <= cache_time or last_limit != limit or last_offset != offset or last_format != out_format:
+            if last_update <= cache_time or last_limit != limit or last_offset != offset or \
+                    last_format != out_format or indicator_query != last_query:
                 values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
             else:
                 values_str = get_ioc_values_str_from_context()
@@ -226,6 +229,7 @@ def get_request_args(params):
     limit = request.args.get('n', None)
     offset = request.args.get('s', None)
     out_format = request.args.get('v', None)
+    query = request.args.get('q', None)
 
     if limit is None:
         limit = try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)
@@ -246,7 +250,10 @@ def get_request_args(params):
         if out_format not in ['text', 'json', 'json-seq', 'csv']:
             raise DemistoException(CTX_FORMAT_ERR_MSG)
 
-    return limit, offset, out_format
+    if query is None:
+        query = params.get('indicators_query')
+
+    return limit, offset, out_format, query
 
 
 @APP.route('/', methods=['GET'])
@@ -266,7 +273,7 @@ def route_list_values() -> Response:
             demisto.debug(err_msg)
             return Response(err_msg, status=401)
 
-    limit, offset, out_format = get_request_args(params)
+    limit, offset, out_format, query = get_request_args(params)
 
     values = get_outbound_ioc_values(
         out_format=out_format,
@@ -274,7 +281,7 @@ def route_list_values() -> Response:
         limit=limit,
         offset=offset,
         last_update_data=demisto.getLastRun(),
-        indicator_query=params.get('indicators_query'),
+        indicator_query=query,
         cache_refresh_rate=params.get('cache_refresh_rate')
     )
 
@@ -372,7 +379,8 @@ def update_outbound_command(args, params):
     print_indicators = args.get('print_indicators')
     query = args.get('query')
     out_format = args.get('format')
-    indicators = refresh_outbound_context(query, out_format, limit=limit)
+    offset = args.get('offset')
+    indicators = refresh_outbound_context(query, out_format, limit=limit, offset=offset)
     hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
     return hr, {}, indicators
