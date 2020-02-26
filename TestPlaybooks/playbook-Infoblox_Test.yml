@@ -20,8 +20,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": -970
+          "x": 2210,
+          "y": -1150
         }
       }
     note: false
@@ -1173,7 +1173,7 @@ tasks:
       brand: Infoblox
     nexttasks:
       '#none#':
-      - "36"
+      - "43"
     scriptarguments:
       next_page_id: {}
       page_size: {}
@@ -1183,8 +1183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1960,
-          "y": -475
+          "x": 1940,
+          "y": -655
         }
       }
     note: false
@@ -1206,13 +1206,12 @@ tasks:
     nexttasks:
       '#none#':
       - "35"
-      - "40"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": -810
+          "x": 2210,
+          "y": -990
         }
       }
     note: false
@@ -1236,6 +1235,7 @@ tasks:
     nexttasks:
       '#none#':
       - "33"
+      - "40"
     scriptarguments:
       all:
         simple: "yes"
@@ -1247,8 +1247,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1960,
-          "y": -660
+          "x": 2210,
+          "y": -850
         }
       }
     note: false
@@ -1293,8 +1293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1960,
-          "y": -295
+          "x": 1940,
+          "y": -305
         }
       }
     note: false
@@ -1325,8 +1325,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1960,
-          "y": -115
+          "x": 1940,
+          "y": -125
         }
       }
     note: false
@@ -1412,15 +1412,15 @@ tasks:
       brand: Infoblox
     nexttasks:
       '#none#':
-      - "41"
+      - "42"
     scriptarguments:
       max_results: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2450,
-          "y": -660
+          "x": 2460,
+          "y": -655
         }
       }
     note: false
@@ -1430,10 +1430,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 22c72c52-3449-4dbf-862b-fc3c0cfb9588
+    taskid: e52f112b-8f73-41be-8d9e-eb9330fdf722
     type: regular
     task:
-      id: 22c72c52-3449-4dbf-862b-fc3c0cfb9588
+      id: e52f112b-8f73-41be-8d9e-eb9330fdf722
       version: -1
       name: Delete Zone
       description: Deletes a given response policy zone.
@@ -1451,7 +1451,84 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2450,
+          "x": 2460,
+          "y": -305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 365df82a-784e-4850-8c57-a552539608ae
+    type: condition
+    task:
+      id: 365df82a-784e-4850-8c57-a552539608ae
+      version: -1
+      name: Check for leftover zones
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Infoblox.ResponsePolicyZones(val.FQDN == 'infonlox.nightly.tpb.com')}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2460,
+          "y": -475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 6f9bbf6b-0f4f-41e9-84f0-7775b4b9affe
+    type: condition
+    task:
+      id: 6f9bbf6b-0f4f-41e9-84f0-7775b4b9affe
+      version: -1
+      name: Check for leftover rules
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: Infoblox
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Infoblox.ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly')
+                != -1 || val.Name.indexOf('nightly') != -1)}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1940,
           "y": -475
         }
       }
@@ -1465,10 +1542,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3120,
+        "height": 3300,
         "width": 4250,
         "x": 70,
-        "y": -970
+        "y": -1150
       }
     }
   }
