@@ -96,10 +96,15 @@ def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) ->
     Finds indicators using demisto.searchIndicators
     """
     # calculate the starting page (each page holds 200 entries)
-    next_page = int(offset / 200)
+    if offset:
+        next_page = int(offset / 200)
 
-    # set the offset from the starting page
-    parsed_offset = offset - (200 * next_page)
+        # set the offset from the starting page
+        parsed_offset = offset - (200 * next_page)
+
+    else:
+        next_page = 0
+        parsed_offset = 0
 
     iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
     return iocs[parsed_offset:limit + parsed_offset]
