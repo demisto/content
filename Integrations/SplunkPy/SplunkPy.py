@@ -78,14 +78,11 @@ def rawToDict(raw):
                 val = single_key_val[1]
                 key = single_key_val[0].strip()
 
-            alreadyThere = False
-            for dictkey, dictvalue in result.items():
-                if dictkey == key:
-                    alreadyThere = True
-                    result[dictkey] = dictvalue + "," + val
+                if key in result.keys():
+                    result[key] = result[key] + "," + val
+                else:
+                    result[key] = val
 
-            if not alreadyThere:
-                result[key] = val
     else:
         raw_response = re.split('\S,', raw)  # split by any non-whitespace character follows by
         for key_val in raw_response:
