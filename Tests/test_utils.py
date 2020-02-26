@@ -498,7 +498,7 @@ class Docker:
 
     @classmethod
     def get_image_for_container_id(cls, container_id):
-        return run_command("docker inspect -f '{{ .Config.Image }}' " + container_id)
+        return run_command("docker inspect -f {{.Config.Image}} " + container_id)
 
     @classmethod
     def get_integration_image(cls, integration_config):
