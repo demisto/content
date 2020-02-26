@@ -2,7 +2,7 @@ from .OktaV2 import Client, get_user_command, get_group_members_command, create_
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command
 import pytest
 
-client = Client(base_url="http://testush.com")
+client = Client(base_url="demisto.com")
 
 user_data = {
     "id": "TestID",
@@ -22,7 +22,7 @@ user_data = {
         "mobilePhone": 'null',
         "city": "Tel-Aviv",
         "displayName": "test1",
-        "secondEmail": "testush@this.com",
+        "secondEmail": "test@this.com",
         "login": "test@this.com",
         "email": "test@this.com"
     },
@@ -240,8 +240,8 @@ group_members = [
             "lastName": "Test2",
             "mobilePhone": '',
             "secondEmail": "",
-            "login": "test2@this.com",
-            "email": "test2@this.com"
+            "login": ""john@doe.com"",
+            "email": ""john@doe.com""
         },
         "credentials": {
             "provider": {
@@ -270,9 +270,9 @@ group_members = [
             "mobilePhone": '',
             "city": "TLV",
             "displayName": "alsotest",
-            "secondEmail": "test@that.com",
-            "login": "test@that.com",
-            "email": "test@that.com",
+            "secondEmail": "woo@demisto.com",
+            "login": "woo@demisto.com",
+            "email": "woo@demisto.com",
             "employeeNumber": "123427"
         },
         "credentials": {
@@ -601,8 +601,8 @@ def test_create_user_command(mocker, args):
     "args, expected",
     [
         ({'groupId': 'Test Group', 'limit': 5},
-         {'ID': 'TestID2', 'Username': 'test2@this.com', 'DisplayName': 'Test2 Test2',
-          'Email': 'test2@this.com', 'Status': 'STAGED', 'Type': 'Okta', 'Created': "2018-07-24T20:20:04.000Z"})
+         {'ID': 'TestID2', 'Username': '"john@doe.com"', 'DisplayName': 'Test2 Test2',
+          'Email': '"john@doe.com"', 'Status': 'STAGED', 'Type': 'Okta', 'Created': "2018-07-24T20:20:04.000Z"})
     ])
 def test_get_group_members_command(mocker, args, expected):
     mocker.patch.object(client, 'get_group_members', return_value=group_members)
