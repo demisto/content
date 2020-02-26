@@ -497,8 +497,9 @@ class Docker:
         return stdout, stderr
 
     @classmethod
-    def get_image_for_container_id(cls, container_id):
-        return run_command("docker inspect -f {{.Config.Image}} " + container_id)
+    def get_image_for_container_id(cls, server_ip, container_id):
+        cmd = cls._build_ssh_command(server_ip, "sudo docker inspect -f {{.Config.Image}} " + container_id, force_tty=True)
+        return run_command(cmd)
 
     @classmethod
     def get_integration_image(cls, integration_config):
@@ -605,7 +606,7 @@ class Docker:
             container_id = container_stat['container_id']
             memory_usage = container_stat['memory_usage']
             pids_usage = container_stat['pids']
-            image_full = cls.get_image_for_container_id(container_id)  # get the full name such as: demisto/slack:1.0.0.4978
+            image_full = cls.get_image_for_container_id(server_ip, container_id)  # get full name (ex: demisto/slack:1.0.0.4978)
             image_name = image_full.split(':')[0]  # just the name such as demisto/slack
 
             memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold')
