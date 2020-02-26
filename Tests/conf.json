@@ -2179,7 +2179,7 @@
         },
         {
             "integrations": "ElasticsearchFeed",
-            "instance_names": "es_custom_feed",
+            "instance_names": "es_generic_feed",
             "playbookID": "Elasticsearch_Fetch_Custom_Indicators_Test",
             "fromversion": "5.5.0"
         },
