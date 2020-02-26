@@ -555,18 +555,11 @@ def splunk_parse_raw_command():
 
 def test_module(service):
     if demisto.params().get('isFetch'):
-        t = datetime.utcnow() - timedelta(days=3)
+        t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
         searchquery_oneshot = demisto.params()['fetchQuery']
-        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
-        reader = results.ResultsReader(oneshotsearch_results)
-        for item in reader:
-            if item:
-                demisto.results('ok')
-
-    if len(service.jobs) >= 0:  # type: ignore
-        demisto.results('ok')
+        service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
 
 
 def main():
@@ -602,6 +595,7 @@ def main():
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         test_module(service)
+        demisto.results('ok')
     if demisto.command() == 'splunk-search':
         splunk_search_command(service)
     if demisto.command() == 'splunk-job-create':
