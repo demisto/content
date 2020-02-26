@@ -3,7 +3,6 @@ import requests
 from CommonServerPython import *
 
 # IMPORTS
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -294,7 +293,7 @@ class Client(BaseClient):
     def get_readable_users(raw_users, verbose='false'):
         raw_users = raw_users if isinstance(raw_users, list) else [raw_users]
         if verbose == 'true':
-            users = ''
+            users_verbose = ''
             for user in raw_users:
                 profile = {
                     'First Name': user.get('profile').get('firstName'),
@@ -319,7 +318,9 @@ class Client(BaseClient):
                 }
                 if user.get('group'):
                     additionalData['Group'] = user.get('group')
-                users += f"### User:{profile.get('Login')}\n{tableToMarkdown('Profile', profile)}\n {tableToMarkdown('Additional Data', additionalData)}"
+                users_verbose += f"### User:{profile.get('Login')}\n" \
+                                 f"{tableToMarkdown('Profile', profile)}\n {tableToMarkdown('Additional Data', additionalData)}"
+                return users_verbose
 
         else:
             users = []
@@ -334,7 +335,7 @@ class Client(BaseClient):
                     'Status': user.get('status')
                 }
                 users.append(user)
-        return users
+                return users
 
     def get_user(self, user_term):
         uri = f'users/{encode_string_results(user_term)}'
@@ -487,7 +488,7 @@ def test_module(client, data_args):
         'ok' if test passed, anything else will fail the test.
     """
     uri = 'users/me'
-    res = client._http_request(method='GET', url_suffix=uri)
+    client._http_request(method='GET', url_suffix=uri)
     return demisto.results('ok')
     raise ValueError('Test OktaV2 integration failed')
 
@@ -500,11 +501,10 @@ def unlock_user_command(client, args):
     raw_response = client.unlock_user(user_id)
 
     readable_output = f"### {args.get('username')} unlocked"
-    outputs = {}
 
     return (
         readable_output,
-        outputs,
+        {},
         raw_response  # raw response - the original response
     )
 
@@ -514,10 +514,9 @@ def activate_user_command(client, args):
     raw_response = client.activate_user(user_id)
 
     readable_output = f"### {args.get('username')} is active now"
-    outputs = {}
     return (
         readable_output,
-        outputs,
+        {},
         raw_response
     )
 
@@ -527,11 +526,10 @@ def deactivate_user_command(client, args):
     raw_response = client.deactivate_user(user_id)
 
     readable_output = f"### User {args.get('username')} deactivated"
-    outputs = {}
 
     return (
         readable_output,
-        outputs,
+        {},
         raw_response  # raw response - the original response
     )
 
@@ -541,10 +539,9 @@ def suspend_user_command(client, args):
     raw_response = client.suspend_user(user_id)
 
     readable_output = f"### {args.get('username')} status is Suspended"
-    outputs = {}
     return (
         readable_output,
-        outputs,
+        {},
         raw_response
     )
 
@@ -554,10 +551,9 @@ def unsuspend_user_command(client, args):
     raw_response = client.unsuspend_user(user_id)
 
     readable_output = f"### {args.get('username')} is no longer SUSPENDED"
-    outputs = {}
     return (
         readable_output,
-        outputs,
+        {},
         raw_response
     )
 
@@ -604,10 +600,9 @@ def reset_factor_command(client, args):
     raw_response = client.reset_factor(user_id, factor_id)
 
     readable_output = f"Factor: {factor_id} deleted for {args.get('username')}"
-    outputs = {}
     return (
         readable_output,
-        outputs,
+        {},
         raw_response
     )
 
@@ -618,10 +613,9 @@ def set_password_command(client, args):
 
     raw_response = client.set_password(user_id, password)
     readable_output = f"{args.get('username')} password has last changed on {raw_response.get('passwordChanged')}"
-    outputs = {}
     return (
         readable_output,
-        outputs,
+        {},
         raw_response
     )
 
@@ -638,10 +632,9 @@ def add_user_to_group_command(client, args):
         group_id = client.get_group_id(args.get('groupName'))
     raw_response = client.add_user_to_group(user_id, group_id)
     readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
-    outputs = {}
     return (
         readable_output,
-        outputs,
+        {},
         raw_response
     )
 
@@ -658,10 +651,9 @@ def remove_from_group_command(client, args):
         group_id = client.get_group_id(args.get('groupName'))
     raw_response = client.remove_user_from_group(user_id, group_id)
     readable_output = f"User: {user_id} was removed from group: {args.get('groupName')} successfully"
-    outputs = {}
     return (
         readable_output,
-        outputs,
+        {},
         raw_response)
 
 

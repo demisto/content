@@ -347,6 +347,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
+      description: Additional data.
       isArray: false
       name: verbose
       predefined:
@@ -1769,10 +1770,6 @@ script:
       name: userId
       required: true
       secret: false
-    - default: false
-      isArray: false
-      required: false
-      secret: false
     deprecated: false
     description: |-
       Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
@@ -1789,4 +1786,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests: OktaV2 - Test
+tests:
+  - OktaV2 - Test
