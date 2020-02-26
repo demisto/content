@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue where inactive indicators where taken into account
+Fixed an issue where inactive indicators were taken into account.
 
 ## [19.12.0] - 2019-12-10
   - The ***threatstream-import-indicator-with-approval*** command now works as expected.
