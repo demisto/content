@@ -518,9 +518,9 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         pids_threshold = options.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
         error_message = Docker.check_resource_usage(server_url=server_url,
                                                     docker_images=test_docker_images,
-                                                    memory_threshold=memory_threshold,
+                                                    def_memory_threshold=memory_threshold,
                                                     def_pid_threshold=pids_threshold,
-                                                    def_docker_thresholds=docker_thresholds)
+                                                    docker_thresholds=docker_thresholds)
 
         if error_message:
             prints_manager.add_print_job(error_message, print_error, thread_index)
