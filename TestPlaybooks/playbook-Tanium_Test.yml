@@ -189,17 +189,12 @@ tasks:
       iscommand: true
       brand: Tanium
     scriptarguments:
-      action_filters: {}
-      action_filters_groups: {}
-      action_group:
-        simple: Default
-      action_options: {}
-      get_results: {}
-      package:
-        simple: USB Write Protect - Set to On
-      package_args: {}
-      sensor_variables: {}
-    separatecontext: false
+      action_filters: ""
+      action_options: ""
+      get_results: ""
+      package: USB Write Protect - Set to On
+      package_args: ""
+      action_group: "Default"
     view: |-
       {
         "position": {
