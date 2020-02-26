@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added instructions how to create RSA key pairs and configure the ePO server.
 
 ## [20.2.4] - 2020-02-25
 Added certificate validation.
