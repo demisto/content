@@ -546,7 +546,7 @@ def splunk_edit_notable_event_command(proxy):
 
 
 def splunk_parse_raw_command():
-    raw = demisto.args()['raw']
+    raw = demisto.args().get('raw', '')
     rawDict = rawToDict(raw)
     ec = {}
     ec['Splunk.Raw.Parsed'] = rawDict
