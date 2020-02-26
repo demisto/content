@@ -88,7 +88,7 @@ def rawToDict(raw):
         for key_val in raw_response:
             key_value = key_val.replace('"', '').strip()
             if '=' in key_value:
-                key_and_val = key_value.split('=')
+                key_and_val = key_value.split('=', 1)
                 result[key_and_val[0]] = key_and_val[1]
     return result
 
