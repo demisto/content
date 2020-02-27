@@ -63,9 +63,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -162,9 +162,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with status of "Inactive". Default is
-        "True".
+        "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -276,9 +276,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -356,9 +356,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -534,7 +534,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The import type of the indicator. Can be datatext, file-id, or url.'
+      description: The import type of the indicator. Can be datatext, file-id, or
+        url.
       isArray: false
       name: import_type
       predefined:
@@ -545,7 +546,8 @@ script:
       secret: false
     - default: false
       description: 'The source of imported data. Can be one of the following: url,
-        datatext of file-id of uploaded file to the War Rroom. Supported file types for file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
+        datatext of file-id of uploaded file to the War Rroom. Supported file types
+        for file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
       isArray: false
       name: import_value
       required: true
@@ -553,7 +555,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: Whether to include IP mapping. Whether to include url mapping. Can be yes or no. Default is no.
+      description: Whether to include IP mapping. Whether to include url mapping.
+        Can be yes or no. Default is no.
       isArray: false
       name: ip_mapping
       predefined:
@@ -564,7 +567,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: Whether to include domain mapping. Whether to include url mapping. Can be yes or no. Default is no.
+      description: Whether to include domain mapping. Whether to include url mapping.
+        Can be yes or no. Default is no.
       isArray: false
       name: domain_mapping
       predefined:
@@ -586,7 +590,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: Whether to include email mapping. Whether to include url mapping. Can be yes or no. Default is no.
+      description: Whether to include email mapping. Whether to include url mapping.
+        Can be yes or no. Default is no.
       isArray: false
       name: email_mapping
       predefined:
@@ -597,7 +602,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: Whether to include MD5 mapping. Whether to include url mapping. Can be yes or no. Default is no.
+      description: Whether to include MD5 mapping. Whether to include url mapping.
+        Can be yes or no. Default is no.
       isArray: false
       name: md5_mapping
       predefined:
@@ -1509,9 +1515,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -1574,6 +1580,7 @@ script:
       description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
   dockerimage: demisto/python3:3.7.3.221
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false

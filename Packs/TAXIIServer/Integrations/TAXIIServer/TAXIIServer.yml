@@ -1,0 +1,64 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: TAXII Server
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Long Running Instance
+  name: longRunning
+  required: false
+  type: 8
+- additionalinfo: Will run the TAXII server on this port from within Demisto
+  defaultvalue: '7000'
+  display: Listen Port
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
+- display: Username
+  hidden: false
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: Ignores the certificate and private key, and will run the TAXII server in HTTP
+  defaultvalue: 'true'
+  display: HTTP Server
+  hidden: false
+  name: http_flag
+  required: false
+  type: 8
+- additionalinfo: JSON string of indicator query collections - dictionary of the collection
+    name as the key and the query as the value.
+  defaultvalue: |-
+    {
+       "AWS": "type:CIDR and sourceBrands:\"AWS Feed\""
+    }
+  display: Collection JSON
+  hidden: false
+  name: collections
+  required: true
+  type: 12
+description: This integration provides TAXII Services for system indicators (Outbound
+  feed).
+display: TAXII Server
+name: TAXII Server
+script:
+  dockerimage: demisto/taxii-server:1.0.0.6099
+  feed: false
+  isfetch: false
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No test
+fromversion: 5.5.0
