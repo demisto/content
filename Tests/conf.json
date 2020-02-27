@@ -2399,7 +2399,6 @@
     ],
     "skipped_tests": {
         "RasterizeTest": "Issue 20702",
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 22300",
         "Send Investigation Summary Reports": "Issue 22299",
         "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
