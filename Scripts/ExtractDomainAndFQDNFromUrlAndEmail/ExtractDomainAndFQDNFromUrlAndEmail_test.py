@@ -11,7 +11,7 @@ import pytest
                         ('hxxps://www[.]demisto[.]com', 'www.demisto.com', 'demisto.com'),
                         ('https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C', '', 'twitter.com'),  # noqa: E501 disable-secrets-detection
                         ('dummy@recipient.com', '', 'recipient.com'),
-                        ('content-test-service-acc@content-test-236508.iam.gserviceaccount.com', 'content-test-236508.iam.gserviceaccount.com', 'gserviceaccount.com'),
+                        ('content-test-service-acc@content-test-236508.iam.gserviceaccount.com', 'content-test-236508.iam.gserviceaccount.com', 'gserviceaccount.com'),  # noqa: E501
                         ('CAJaFoefy_acEKaqSMGfojbLzKoUnzfpPcnNemuD6K0oQZ2PikQ@mail.gmail.com', 'mail.gmail.com', 'gmail.com'),
                         ('5be9245893ff486d98c3640879bb2657.protect@whoisguard.com', '', 'whoisguard.com'),
                         ('test@www.bücher.de', 'www.bücher.de', 'bücher.de'),
