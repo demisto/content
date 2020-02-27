@@ -1,5 +1,3 @@
-## Overview
-
 Use the Lastline v2 integration to provide threat analysts and incident response teams with the advanced malware isolation and inspection environment needed to safely execute advanced malware samples, and understand their behavior.
 
 
@@ -17,16 +15,8 @@ Use the Lastline v2 integration to provide threat analysts and incident response
     - **Threshold**
 4. Click __Test__ to validate the URLs, token, and connection.
 
-## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. file
-2. lastline-upload-url
-3. lastline-upload-file
-4. lastline-get-report
-5. lastline-get-task-list
-6. lastline-check-status
-### 1. file
+
+### Check the reputation of a file
 ---
 Checks the file reputation of the specified file hashes. Supports MD5, SHA1, and SHA256 hashes.
 ##### Base Command
@@ -110,7 +100,7 @@ Checks the file reputation of the specified file hashes. Supports MD5, SHA1, and
 
 ##### Human Readable Output
 
-### Lastline analysis for file: 441666007e579b040967e72c13e5133b
+##### Lastline analysis for file: 441666007e579b040967e72c13e5133b
 **Score: 0**
 
 Task UUID: 2b9d578d02540010179339d362664f9b
@@ -120,7 +110,7 @@ Submission Time: 2020-02-25 06:58:19
 | 441666007e579b040967e72c13e5133b | 03bc132ee4a10f6d656fc21315fc7a65797be69a | fd977f34a9514ece503fa3ff3976ed3f305a101b3c5ff31a1293a9d0b607dfc1 | application/zip |
 
 
-### 2. lastline-upload-url
+### Submit a URL for analysis
 ---
 Submits a URL for analysis.
 ##### Base Command
@@ -190,7 +180,7 @@ Submits a URL for analysis.
 ```
 
 ##### Human Readable Output
-### Lastline analysis for url: https://www.demisto.com
+##### Lastline analysis for url: https://www.demisto.com
 **Score: 0**
 
 Task UUID: c62b15a9e3dc00101e9557a0b6a17d3f
@@ -200,7 +190,7 @@ Submission Time: 2020-02-24 07:05:33
 | https://www.demisto.com |
 
 
-### 3. lastline-upload-file
+### Upload a file for analysis
 ---
 Submits a file for analysis.
 ##### Base Command
@@ -277,7 +267,7 @@ Submits a file for analysis.
 ```
 
 ##### Human Readable Output
-### Lastline analysis for file: 441666007e579b040967e72c13e5133b
+##### Lastline analysis for file: 441666007e579b040967e72c13e5133b
 **Score: 0**
 
 Task UUID: 2b9d578d02540010179339d362664f9b
@@ -287,7 +277,7 @@ Submission Time: 2020-02-25 06:58:19
 | 441666007e579b040967e72c13e5133b | 03bc132ee4a10f6d656fc21315fc7a65797be69a | fd977f34a9514ece503fa3ff3976ed3f305a101b3c5ff31a1293a9d0b607dfc1 | application/zip |
 
 
-### 4. lastline-get-report
+### Get an analysis report
 ---
 Returns an analysis report.
 ##### Base Command
@@ -365,7 +355,7 @@ Returns an analysis report.
 ```
 
 ##### Human Readable Output
-### Lastline analysis for url: https://google.com
+##### Lastline analysis for url: https://google.com
 **Score: 0**
 
 Task UUID: b32ed21999be00100eca07d07cb7bf38
@@ -375,7 +365,7 @@ Submission Time: 2019-12-31 02:40:44
 | https://google.com |
 
 
-### 5. lastline-get-task-list
+### Get a list of tasks
 ---
 Returns a list of tasks.
 ##### Base Command
@@ -398,14 +388,14 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### tasks
+##### tasks
 |UUID|Time|Status|
 |---|---|---|
 | b32ed21999be00100eca07d07cb7bf38 | 2019-12-31T02:40:44 | Completed |
 | 6493c3fa395000101e8ee41181d70b02 | 2020-01-01T15:26:35 | Completed |
 
 
-### 6. lastline-check-status
+### Get the status of a submission
 ---
 Checks the status of a submission.
 ##### Base Command
@@ -482,7 +472,7 @@ Checks the status of a submission.
 ```
 
 ##### Human Readable Output
-### Lastline analysis for url: https://google.com
+##### Lastline analysis for url: https://google.com
 **Score: 0**
 
 Task UUID: b32ed21999be00100eca07d07cb7bf38
