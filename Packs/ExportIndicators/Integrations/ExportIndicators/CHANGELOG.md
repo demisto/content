@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added `offset` parameter for the integration and **ei-update** command.
+- Added `offset` parameter on **eis-update** command.
 - Added support for inline URL parameters:
     - n - To determine how many indicators are fetched.
     - s - The first index from which to fetch indicators.
