@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed a structural issue that caused certain tasks to run before other tasks. This could have affected the Critical Assets field to only be partially populated.
+Fixed an issue that caused the **Critical Assets** field to be populated partially or not at all.
 
 ## [19.10.1] - 2019-10-15
 Added a task that sets all found critical assets to a new incident field.
