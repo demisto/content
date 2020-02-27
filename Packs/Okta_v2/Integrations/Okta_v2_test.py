@@ -59,7 +59,7 @@ factors_data = [
         "created": "2020-02-18T11:45:14.000Z",
         "lastUpdated": "2020-02-18T11:45:14.000Z",
         "profile": {
-            "credentialId": "factor@test.com"
+            "credentialId": "woo@demisto.com"
         },
         "_links": {}
     },
@@ -290,7 +290,7 @@ logs = [
         "actor": {
             "id": "UserTestID1",
             "type": "User",
-            "alternateId": "UserTestID1@demisto.com",
+            "alternateId": "soso@demisto.com",
             "displayName": "Test1 Testush",
             "detailEntry": ''
         },
@@ -378,7 +378,7 @@ logs = [
             {
                 "id": "UserTestID2",
                 "type": "AppUser",
-                "alternateId": "Test1@test.com",
+                "alternateId": "momo@demisto.com",
                 "displayName": "Test 1 that",
                 "detailEntry": ''
             },
@@ -392,7 +392,7 @@ logs = [
             {
                 "id": "00upt1h0w93PALT9v0h7",
                 "type": "User",
-                "alternateId": "Test1@test.com",
+                "alternateId": "momo@demisto.com",
                 "displayName": "Test 1 that",
                 "detailEntry": ''
             }
@@ -490,7 +490,7 @@ logs = [
             {
                 "id": "0uapt1h0wbuz8uWvb0h7",
                 "type": "AppUser",
-                "alternateId": "Test1@test.com",
+                "alternateId": "momo@demisto.com",
                 "displayName": "Test 1 that",
                 "detailEntry": ''
             },
@@ -504,7 +504,7 @@ logs = [
             {
                 "id": "00upt1h0w93PALT9v0h7",
                 "type": "User",
-                "alternateId": "Test1@test.com",
+                "alternateId": "momo@demisto.com",
                 "displayName": "Test 1 that",
                 "detailEntry": ''
             }
@@ -541,10 +541,10 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     "args ,expected_context",
     [
         ({"userId": "TestID"}, {'ID': 'uftpt24kdrDJ7fDOq0h7', 'FactorType': 'token:software:totp', 'Provider': 'GOOGLE',
-                                'Status': 'PENDING_ACTIVATION', 'Profile': {'credentialId': 'factor@test.com'}}),
+                                'Status': 'PENDING_ACTIVATION', 'Profile': {'credentialId': 'woo@demisto.com'}}),
         ({"username": "test@this.com"},
          {'ID': 'uftpt24kdrDJ7fDOq0h7', 'FactorType': 'token:software:totp', 'Provider': 'GOOGLE',
-          'Status': 'PENDING_ACTIVATION', 'Profile': {'credentialId': 'factor@test.com'}}),
+          'Status': 'PENDING_ACTIVATION', 'Profile': {'credentialId': 'woo@demisto.com'}}),
 
     ]
 )
