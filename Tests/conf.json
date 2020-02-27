@@ -2087,7 +2087,7 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0"            
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2391,6 +2391,10 @@
             "integrations": "CounterCraft Deception Director",
             "playbookID": "CounterCraft - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "DbotPredictOufOfTheBoxTest",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
