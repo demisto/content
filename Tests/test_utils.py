@@ -499,7 +499,10 @@ class Docker:
     @classmethod
     def get_image_for_container_id(cls, server_ip, container_id):
         cmd = cls._build_ssh_command(server_ip, "sudo docker inspect -f {{.Config.Image}} " + container_id, force_tty=False)
-        return run_command(cmd)
+        stdout, stderr = cls.run_shell_command(cmd)
+        if stderr:
+            print_warning("Received stderr from docker inspect command. Additional information: {}".format(stderr))
+        return stdout or ""
 
     @classmethod
     def get_integration_image(cls, integration_config):
@@ -611,7 +614,8 @@ class Docker:
 
             memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold')
                                 or docker_thresholds.get(image_name, {}).get('memory_threshold') or def_memory_threshold)
-            print("Checking docker image: {} for memory threshold: {}".format(image_full, memory_threshold))
+            print("Checking container: {} (image: {}) for memory threshold: {}".format(container_name,
+                                                                                       image_full, memory_threshold))
             if memory_usage > memory_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the memory threshold, '
                                   'configured: {} MiB and actual memory usage is {} MiB.\n'
