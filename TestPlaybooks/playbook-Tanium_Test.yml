@@ -194,6 +194,7 @@ tasks:
       get_results: ""
       package: USB Write Protect - Set to On
       package_args: ""
+      action_group: "Default"
     view: |-
       {
         "position": {
