@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed an issue where ***fetch-incidents*** did not work as intended.
+
+## [20.2.4] - 2020-02-25
 Added support for comma-separated values in the ***splunk-parse-raw*** command.
 
 ## [20.2.3] - 2020-02-18
