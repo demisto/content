@@ -88,14 +88,14 @@ URL_TESTING_IN = '"url="https://test.com?key=val"'
 URL_TESTING_OUT = {'url': 'https://test.com?key=val'}
 
 # checking a case where the last character for each value was cut
-RESPONSE = 'NAS-IP-Address=10.24.24.2, NAS-Port=50213, NAS-Identifier=de-wilm-251littl-idf3b-s2, NAS-Port-Type=' \
-           'Ethernet, NAS-Port-Id=GigabitEthernet2/0/13'
+RESPONSE = 'NAS-IP-Address=2.2.2.2, NAS-Port=50222, NAS-Identifier=de-wilm-251littl-idf3b-s2, NAS-Port-Type=' \
+           'Ethernet, NAS-Port-Id=GigabitEthernet2/0/05'
 
 POSITIVE = {
-    "NAS-IP-Address": "10.24.24.2",
+    "NAS-IP-Address": "2.2.2.2",
     "NAS-Identifier": "de-wilm-251littl-idf3b-s2",
-    "NAS-Port": "50213",
-    "NAS-Port-Id": "GigabitEthernet2/0/13",
+    "NAS-Port": "50222",
+    "NAS-Port-Id": "GigabitEthernet2/0/05",
     "NAS-Port-Type": "Ethernet"
 }
 
