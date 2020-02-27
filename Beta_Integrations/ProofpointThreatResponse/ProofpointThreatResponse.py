@@ -193,7 +193,7 @@ def delete_indicator_command():
 
 
 def test():
-    get_list(demisto.params().get('blacklist_ip'))
+    pass
 
 
 ''' EXECUTION CODE '''
