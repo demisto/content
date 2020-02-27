@@ -1,5 +1,5 @@
 ### Prerequisites - Connect to McAfee Active Response (MAR) using the DXL MAR client.
-  - Create certificates & configure dxl. (as you can see in https://github.com/demisto/content/blob/master/Integrations/McAfee_DXL/README.md)
+  - Create certificates & configure dxl. (see: https://github.com/demisto/content/blob/master/Integrations/McAfee_DXL/README.md)
   - You must have the following files:
     - Broker CA certificates (`brokercerts.crt` file)
     - Client certificate (`client.crt` file)
@@ -14,4 +14,3 @@ MAR docs - [Here](https://kc.mcafee.com/resources/sites/MCAFEE/content/live/PROD
 ### Dependencies (Python packages) - No need to install, already installed in docker image :
 dxlclient [docs](https://opendxl.github.io/opendxl-client-python/pydoc/index.html)
 dxlmarclient [docs](https://opendxl.github.io/opendxl-mar-client-python/pydoc/)
-
