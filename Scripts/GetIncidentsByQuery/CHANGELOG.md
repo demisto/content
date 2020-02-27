@@ -1,5 +1,5 @@
 ## [Unreleased]
-Support populate specific incidents fields
+Added support for specific incidents fields population.
 
 ## [19.11.0] - 2019-11-12
 #### New Script
