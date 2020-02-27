@@ -67,7 +67,7 @@ def test_get_indicators_with_mapping():
         assert not indicators_ec
         for ind_json in raw_json:
             ind_val = ind_json.get('value')
-            ind_map = ind_json['CustomFields'].get('AAA')
+            ind_map = ind_json['fields'].get('AAA')
             ind_type = ind_json.get('type')
             ind_rawjson = ind_json.get('rawJSON')
             assert ind_val

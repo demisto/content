@@ -1,3 +1,4 @@
+elasticcommonfields: {}
 id: CSV_Feed_Test
 version: -1
 contentitemfields:
@@ -10,6 +11,7 @@ tasks:
     taskid: 629b23e0-7b34-4e9e-8709-e40d1033914a
     type: start
     task:
+      elasticcommonfields: {}
       id: 629b23e0-7b34-4e9e-8709-e40d1033914a
       version: -1
       name: ""
@@ -30,12 +32,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 32aeb9c5-9df2-4b63-8fd8-0f71dbbdc0f8
+    taskid: 98f6fb64-f10f-43bf-8036-10a293fa6916
     type: regular
     task:
-      id: 32aeb9c5-9df2-4b63-8fd8-0f71dbbdc0f8
+      elasticcommonfields: {}
+      id: 98f6fb64-f10f-43bf-8036-10a293fa6916
       version: -1
       name: Get Indicators
       description: Get the feed indicators.
@@ -47,6 +51,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      extend-context:
+        simple: CSVFeed.value=value::CSVFeed.type=type
       indicator_type:
         simple: URL
       limit:
@@ -63,12 +69,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 08488b5a-a7d0-454f-8e07-ad6a3364b560
+    taskid: 1190a77d-6173-4014-8380-21768b6146b2
     type: condition
     task:
-      id: 08488b5a-a7d0-454f-8e07-ad6a3364b560
+      elasticcommonfields: {}
+      id: 1190a77d-6173-4014-8380-21768b6146b2
       version: -1
       name: Assert Output
       description: Asserts output.
@@ -86,33 +94,19 @@ tasks:
           left:
             value:
               complex:
-                root: CSV
-                accessor: Indicator.Value
+                root: CSVFeed
+                accessor: value
             iscontext: true
       - - operator: containsGeneral
           left:
             value:
               complex:
-                root: CSV
-                accessor: Indicator.Type
+                root: CSVFeed
+                accessor: type
             iscontext: true
           right:
             value:
               simple: URL
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: CSV
-                accessor: Indicator.Rawjson.type
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: CSV
-                accessor: Indicator.Rawjson.value
-            iscontext: true
     view: |-
       {
         "position": {
@@ -124,11 +118,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 012a601e-ed7e-4091-80ee-d9071f0c9937
     type: title
     task:
+      elasticcommonfields: {}
       id: 012a601e-ed7e-4091-80ee-d9071f0c9937
       version: -1
       name: Done
@@ -148,11 +144,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
     taskid: 4e5d7a78-4f39-481d-8168-de2e970706e5
     type: regular
     task:
+      elasticcommonfields: {}
       id: 4e5d7a78-4f39-481d-8168-de2e970706e5
       version: -1
       name: Delete Context
@@ -183,6 +181,8 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
