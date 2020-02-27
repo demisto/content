@@ -1,6 +1,5 @@
 ## [Unreleased]
-    - Added a queued for analysis status for ***vt-private-get-file-report*** command. This status will be printed in the human
-    readable.
+Added the status *queued for analysis* to the ***vt-private-get-file-report*** command. The status is printed in the human-readable format in the War Room.
 
 ## [19.9.1] - 2019-09-18
     - Added context outputs to match context standards, which enables outputs to be found for field mapping.
