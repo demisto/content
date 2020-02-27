@@ -99,8 +99,14 @@ class Client(BaseClient):
             "value": item["value"],
             "type": item["type"],
             "rawJSON": item,
-            "CustomFields": {
-                "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports")
+            "fields": {
+                "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports"),
+                "firstseenbyfeed": item.get("first_seen", ""),
+                "lastseenbyfeed": item.get("last_seen", ""),
+                "feedthreattypes": {
+                    "threatcategory": item.get("category_name", ""),
+                    "threatcategoryconfidence": item.get("score", "")
+                }
             }
         }
 
