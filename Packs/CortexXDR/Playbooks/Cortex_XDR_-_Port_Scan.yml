@@ -3041,12 +3041,6 @@ inputs:
   required: false
   description: A list of comma-separated names of critical users in the organization.
     This will affect the calculated severity of the incident.
-- key: DisableUsersAndExpirePasswords
-  value:
-    simple: 'False'
-  required: false
-  description: Whether users can be disabled or have their password expired, as part
-    of the containment process.
 - key: IsolateEndpointAutomatically
   value:
     simple: 'False'
