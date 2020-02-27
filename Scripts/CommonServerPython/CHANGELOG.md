@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added encodeing from UTF-8 for python 2.
+Added encoding from UTF-8 for Python 2.
 
 ## [20.3.1] - 2020-03-04
 Added **DomainGlob** to the **FeedIndicatorType** class.
