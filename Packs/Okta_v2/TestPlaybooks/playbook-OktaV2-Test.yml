@@ -74,21 +74,21 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: "244"
+    taskid: "571"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "244"
+      id: "571"
       version: -1
       name: create user with activation
       description: Creates a new user with an option of setting password, recovery
         question and answer.The new user will immediately be able to login after activation
         with the assigned password. This flow is common when developing a custom user
         registration experience.
-      script: OktaV2|||okta-create-user
+      script: Okta v2|||okta-create-user
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "7"
@@ -162,18 +162,18 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: "252"
+    taskid: "586"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "252"
+      id: "586"
       version: -1
       name: deactivate user
       description: Deactivate User.
-      script: OktaV2|||okta-deactivate-user
+      script: Okta v2|||okta-deactivate-user
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "9"
@@ -195,25 +195,23 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: "78"
+    taskid: "576"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "78"
+      id: "576"
       version: -1
       name: add user to Demisto group
       description: Adds a user to a group with OKTA_GROUP type
-      script: OktaV2|||okta-add-to-group
+      script: Okta v2|||okta-add-to-group
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "11"
       - "10"
     scriptarguments:
-      extend-context:
-        simple: a=.
       groupId: {}
       groupName:
         simple: Demisto
@@ -235,18 +233,18 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: "535"
+    taskid: "587"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "535"
+      id: "587"
       version: -1
       name: activate user
       description: Activates a specific user.
-      script: OktaV2|||okta-activate-user
+      script: Okta v2|||okta-activate-user
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "15"
@@ -269,18 +267,18 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: "83"
+    taskid: "589"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "83"
+      id: "589"
       version: -1
       name: get Demisto group members
       description: Enumerates all users that are members of  a group
-      script: OktaV2|||okta-get-group-members
+      script: Okta v2|||okta-get-group-members
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "23"
@@ -305,18 +303,18 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: "12"
+    taskid: "577"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "12"
+      id: "577"
       version: -1
       name: get groups for user
       description: Returns all user groups associated with a specified user.
-      script: OktaV2|||okta-get-groups
+      script: Okta v2|||okta-get-groups
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "22"
@@ -338,24 +336,22 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: "258"
+    taskid: "588"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "258"
+      id: "588"
       version: -1
       name: remove from group
       description: Removes a user from a group with OKTA_GROUP type
-      script: OktaV2|||okta-remove-from-group
+      script: Okta v2|||okta-remove-from-group
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "40"
     scriptarguments:
-      extend-context:
-        simple: b=.
       groupId: {}
       groupName:
         simple: Demisto
@@ -377,19 +373,19 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: "84"
+    taskid: "581"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "84"
+      id: "581"
       version: -1
       name: update user
       description: Update user with a given login, all fields are optional, fields
         which are not set will not be overriden.
-      script: OktaV2|||okta-update-user
+      script: Okta v2|||okta-update-user
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "27"
@@ -450,20 +446,20 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: "249"
+    taskid: "578"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "249"
+      id: "578"
       version: -1
       name: suspend user
       description: Suspends a user. This operation can only be performed on users
         with an ACTIVE status. The user has a status of SUSPENDED when the process
         is completed
-      script: OktaV2|||okta-suspend-user
+      script: Okta v2|||okta-suspend-user
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "16"
@@ -485,26 +481,24 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: "245"
+    taskid: "583"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "245"
+      id: "583"
       version: -1
       name: unsuspend user
       description: Returns a user to ACTIVE status. This operation can only be performed
         on users that have a SUSPENDED status.
-      script: OktaV2|||okta-unsuspend-user
+      script: Okta v2|||okta-unsuspend-user
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "14"
       - "30"
     scriptarguments:
-      extend-context:
-        simple: a=.
       username:
         simple: Test1@test.com
     separatecontext: false
@@ -600,19 +594,19 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: "295"
+    taskid: "570"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "295"
+      id: "570"
       version: -1
       name: get-user
       description: Fetches information for a specific user. You must enter one or
         more parameters for the command to run
-      script: OktaV2|||okta-get-user
+      script: Okta v2|||okta-get-user
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "28"
@@ -676,18 +670,18 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: "257"
+    taskid: "590"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "257"
+      id: "590"
       version: -1
       name: okta-delete-user
       description: Delete specified user
-      script: OktaV2|||okta-delete-user
+      script: Okta v2|||okta-delete-user
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "39"
@@ -710,24 +704,22 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: "254"
+    taskid: "579"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "254"
+      id: "579"
       version: -1
       name: set-password
       description: Sets passwords without validating existing user credentials
-      script: OktaV2|||okta-set-password
+      script: Okta v2|||okta-set-password
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "27"
     scriptarguments:
-      extend-context:
-        simple: raw_response=true
       password:
         simple: Bb123456
       username:
@@ -747,18 +739,18 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: "241"
+    taskid: "572"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "241"
+      id: "572"
       version: -1
       name: okta-search
       description: Search for Okta users
-      script: OktaV2|||okta-search
+      script: Okta v2|||okta-search
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "35"
@@ -821,18 +813,18 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: "264"
+    taskid: "585"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "264"
+      id: "585"
       version: -1
       name: get-user-factors
       description: Returns all the enrolled facors for the specified user.
-      script: OktaV2|||okta-get-user-factors
+      script: Okta v2|||okta-get-user-factors
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "37"
@@ -888,7 +880,7 @@ tasks:
       {
         "position": {
           "x": 1145,
-          "y": 720
+          "y": 690
         }
       }
     note: false
@@ -923,18 +915,18 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: "540"
+    taskid: "584"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "540"
+      id: "584"
       version: -1
       name: okta-search
       description: Search for Okta users
-      script: OktaV2|||okta-search
+      script: Okta v2|||okta-search
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "42"
@@ -958,18 +950,18 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: "541"
+    taskid: "582"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "541"
+      id: "582"
       version: -1
       name: get Demisto group members
       description: Enumerates all users that are members of  a group
-      script: OktaV2|||okta-get-group-members
+      script: Okta v2|||okta-get-group-members
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "41"
@@ -1072,19 +1064,19 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: "543"
+    taskid: "574"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "543"
+      id: "574"
       version: -1
       name: list groups with query =de
       description: Lists groups in your organization. A subset of groups can be returned
         that match a supported filter expression or query.
-      script: OktaV2|||okta-list-groups
+      script: Okta v2|||okta-list-groups
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "44"
@@ -1147,18 +1139,18 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: "547"
+    taskid: "580"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "547"
+      id: "580"
       version: -1
       name: okta-get-failed-logins
       description: Returnes Failed login events
-      script: OktaV2|||okta-get-failed-logins
+      script: Okta v2|||okta-get-failed-logins
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "46"
@@ -1222,18 +1214,18 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: "548"
+    taskid: "573"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "548"
+      id: "573"
       version: -1
       name: get-group-assignments
       description: Get events for when a user added to a group
-      script: OktaV2|||okta-get-group-assignments
+      script: Okta v2|||okta-get-group-assignments
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "48"
@@ -1398,18 +1390,18 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: "534"
+    taskid: "575"
     type: regular
     task:
       elasticcommonfields: {}
-      id: "534"
+      id: "575"
       version: -1
       name: application-assignments
       description: Returnes events for when a user was assigned to an application
-      script: OktaV2|||okta-get-application-assignments
+      script: Okta v2|||okta-get-application-assignments
       type: regular
       iscommand: true
-      brand: OktaV2
+      brand: Okta v2
     nexttasks:
       '#none#':
       - "50"

@@ -20,8 +20,8 @@ configuration:
   required: false
   type: 8
 description: Integration with Okta's cloud-based identity management service
-display: OktaV2
-name: OktaV2
+display: Okta v2
+name: Okta v2
 script:
   commands:
   - arguments:
