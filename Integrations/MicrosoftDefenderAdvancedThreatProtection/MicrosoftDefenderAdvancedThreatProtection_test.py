@@ -41,14 +41,108 @@ def test_fetch(mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_alert_fetched_time': "2019-09-01T13:29:37.235691",
                                                              'last_ids': ['da637029413772554314_295039533']})
     atp.fetch_incidents()
-    assert 'Windows Defender ATP Alert da637029414680409372_735564929' ==\
+    assert 'Windows Defender ATP Alert da637029414680409372_735564929' == \
            demisto.incidents.call_args[0][0][0].get('name')
 
 
 def test_get_file_data(mocker):
     import WindowsDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(atp, 'get_file_data_request', return_value=([], []))
-    res = atp.()
-    assert res[0] == "No indicators found, Reference set test_ref_set didn't change"
+    mocker.patch.object(atp, 'get_file_data_request', return_value=FILE_DATA_API_RESPONSE)
+    res = atp.get_file_data("123abc")
+    assert res['Sha1'] == "123abc"
+    assert res['Size'] == 42
+
+
+def test_get_alert_related_ips_command(mocker):
+    import WindowsDefenderAdvancedThreatProtection as atp
+    mocker.patch.object(demisto, 'args', return_value={'id': '123'})
+    mocker.patch.object(atp, 'get_alert_related_ips_request', return_value=ALERT_RELATED_IPS_API_RESPONSE)
+    _, res, _ = atp.get_alert_related_ips_command()
+    assert res['MicrosoftATP.AlertIP(val.AlertID === obj.AlertID)'] == {
+        'AlertID': '123',
+        'IPs': ['1.1.1.1', '2.2.2.2']
+    }
+
+
+def test_get_alert_related_domains_command(mocker):
+    import WindowsDefenderAdvancedThreatProtection as atp
+    mocker.patch.object(demisto, 'args', return_value={'id': '123'})
+    mocker.patch.object(atp, 'get_alert_related_domains_request', return_value=ALERT_RELATED_DOMAINS_API_RESPONSE)
+    _, res, _ = atp.get_alert_related_domains_command()
+    assert res['MicrosoftATP.AlertDomain(val.AlertID === obj.AlertID)'] == {
+        'AlertID': '123',
+        'Domains': ['www.example.com', 'www.example2.com']
+    }
+
+
+def test_get_action_data(mocker):
+    import WindowsDefenderAdvancedThreatProtection as atp
+    mocker.patch.object(atp, 'get_machine_action_by_id_request', return_value=ACTION_DATA_API_RESPONSE)
+    res = atp.get_action_data("123456")
+    assert res['ID'] == "123456"
+    assert res['Status'] == "Succeeded"
+
 
 """ API RAW RESULTS """
+
+FILE_DATA_API_RESPONSE = {
+    "sha1": "123abc",
+    "sha256": "456abc",
+    "md5": "789abc",
+    "globalPrevalence": 123,
+    "globalFirstObserved": "2016-07-16T17:16:55.530433Z",
+    "globalLastObserved": "2020-02-26T14:35:12.6778604Z",
+    "size": 42,
+    "fileType": None,
+    "isPeFile": True,
+    "filePublisher": None,
+    "fileProductName": None,
+    "signer": "Microsoft Windows",
+    "issuer": "Microsoft issuer",
+    "signerHash": "147abc",
+    "isValidCertificate": True,
+    "determinationType": "Unknown",
+    "determinationValue": ""
+}
+
+ALERT_RELATED_IPS_API_RESPONSE = {
+        "value": [
+            {
+                "id": "1.1.1.1"
+            },
+            {
+                "id": "2.2.2.2"
+            }
+        ]
+    }
+
+
+ALERT_RELATED_DOMAINS_API_RESPONSE = {
+    "value": [
+        {
+            "host": "www.example.com"
+        },
+        {
+            "host": "www.example2.com"
+        }
+
+    ]
+}
+
+ACTION_DATA_API_RESPONSE = {
+    "id": "123456",
+    "type": "Unisolate",
+    "requestor": "147258",
+    "requestorComment": "Test",
+    "status": "Succeeded",
+    "machineId": "987abc",
+    "computerDnsName": "desktop-test",
+    "creationDateTimeUtc": "2020-02-26T09:23:12.5820502Z",
+    "lastUpdateDateTimeUtc": "2020-02-26T09:23:37.3018521Z",
+    "cancellationRequestor": None,
+    "cancellationComment": None,
+    "cancellationDateTimeUtc": None,
+    "errorHResult": 0,
+    "scope": None,
+    "relatedFileInfo": None
+}
