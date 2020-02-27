@@ -640,6 +640,7 @@ def get_alert_related_user_request(alert_id):
     response = http_request('GET', cmd_url)
     return response
 
+
 def get_machine_action_by_id_request(action_id):
     """Retrieves specific Machine Action by its ID.
     Args:
@@ -650,6 +651,7 @@ def get_machine_action_by_id_request(action_id):
     cmd_url = '/machineactions/{}'.format(action_id)
     response = http_request('GET', cmd_url)
     return response
+
 
 def get_machine_actions_request():
     """Retrieves all Machine Action
@@ -1064,7 +1066,7 @@ def get_file_data(file_sha1):
         dict. File's info
     """
     response = get_file_data_request(file_sha1)
-    file_data = {
+    file_data = assign_params(**{
         'Sha1': response.get('sha1'),
         'Sha256': response.get('sha256'),
         'Md5': response.get('md5'),
@@ -1082,7 +1084,7 @@ def get_file_data(file_sha1):
         'IsValidCertificate': response.get('isValidCertificate'),
         'DeterminationType': response.get('determinationType'),
         'DeterminationValue': response.get('determinationValue')
-    }
+    })
     return file_data
 
 
@@ -1094,9 +1096,8 @@ def get_alert_related_ips_command():
     alert_id = demisto.args().get('id')
     response_ips_list = get_alert_related_ips_request(alert_id)
     ips_list = []
-    headers = ['IPAddress']
     for ip in response_ips_list['value']:
-        ips_list.append({'IPAddress': ip['id']})
+        ips_list.append(ip['id'])
     context_output = {
         'AlertID': alert_id,
         'IPs': ips_list
@@ -1104,7 +1105,7 @@ def get_alert_related_ips_command():
     ec = {
         'MicrosoftATP.AlertIP(val.AlertID === obj.AlertID)': context_output
     }
-    hr = tableToMarkdown('Alert {} Related IPs:'.format(alert_id), ips_list, headers=headers)
+    hr = 'Alert {} Related IPs:'.format(alert_id), ips_list
     return hr, ec, response_ips_list
 
 
@@ -1116,9 +1117,8 @@ def get_alert_related_domains_command():
     alert_id = demisto.args().get('id')
     response_domains_list = get_alert_related_domains_request(alert_id)
     domains_list = []
-    headers = ['Domain']
     for domain in response_domains_list['value']:
-        domains_list.append({'Domain': domain['host']})
+        domains_list.append(domain['host'])
     context_output = {
         'AlertID': alert_id,
         'Domains': domains_list
@@ -1126,7 +1126,7 @@ def get_alert_related_domains_command():
     ec = {
         'MicrosoftATP.AlertDomain(val.AlertID === obj.AlertID)': context_output
     }
-    hr = tableToMarkdown('Alert {} Related Domains:'.format(alert_id), domains_list, headers=headers)
+    hr = 'Alert {} Related Domains:'.format(alert_id), domains_list
     return hr, ec, response_domains_list
 
 
@@ -1254,6 +1254,7 @@ def remove_app_restriction_command():
     }
     return hr, ec, response
 
+
 def stop_and_quarantine_file_command():
     """Stop execution of a file on a machine and delete it.
     Returns:
@@ -1273,6 +1274,7 @@ def stop_and_quarantine_file_command():
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
     return hr, ec, response
+
 
 def get_investigations_by_id_command():
     """Returns the investigation info, if investigation ID is None, return all investigations
@@ -1342,6 +1344,7 @@ def start_investigation_command():
     }
     return hr, ec, response
 
+
 def get_domain_statistics_command():
     """Retrieves the statistics on the given domain.
     Returns:
@@ -1367,6 +1370,7 @@ def get_domain_statistics_command():
     }
     return hr, ec, response
 
+
 def get_domain_alerts_command():
     """Retrieves a collection of Alerts related to a given domain address.
     Returns:
@@ -1388,6 +1392,7 @@ def get_domain_alerts_command():
         'MicrosoftATP.DomainAlert(val.Domain === obj.Domain)': context_output
     }
     return hr, ec, response
+
 
 def get_alert_data(alert_id):
     """Get investigation ID and returns the investigation info
@@ -1427,6 +1432,7 @@ def get_alert_data(alert_id):
     }
     return alert_data
 
+
 def get_domain_machine_command():
     """Retrieves a collection of Machines that have communicated to or from a given domain address.
     Returns:
@@ -1449,6 +1455,7 @@ def get_domain_machine_command():
         'MicrosoftATP.DomainMachine(val.Domain === obj.Domain)': context_output
     }
     return hr, ec, response
+
 
 def get_machine_data(machine_id):
     """Get machine ID and returns the machine's info
@@ -1508,6 +1515,7 @@ def get_file_statistics_command():
     }
     return hr, ec, response
 
+
 def get_file_alerts_command():
     """Retrieves a collection of Alerts related to a given file hash.
     Returns:
@@ -1529,6 +1537,7 @@ def get_file_alerts_command():
         'MicrosoftATP.FileAlert(val.Sha1 === obj.Sha1)': context_output
     }
     return hr, ec, response
+
 
 def get_ip_statistics_command():
     """Retrieves the statistics on the given IP.
@@ -1554,6 +1563,7 @@ def get_ip_statistics_command():
     }
     return hr, ec, response
 
+
 def get_ip_alerts_command():
     """Retrieves a collection of Alerts related to a given IP.
     Returns:
@@ -1575,6 +1585,7 @@ def get_ip_alerts_command():
         'MicrosoftATP.IPAlert(val.IPAddress === obj.IPAddress)': context_output
     })
     return hr, ec, response
+
 
 def get_user_alerts_command():
     """Retrieves a collection of Alerts related to a given user ID.
@@ -1598,6 +1609,7 @@ def get_user_alerts_command():
     }
     return hr, ec, response
 
+
 def get_user_machine_command():
     """Retrieves a collection of machines related to a given user ID.
     Returns:
@@ -1620,6 +1632,7 @@ def get_user_machine_command():
     }
     return hr, ec, response
 
+
 def add_remove_machine_tag_command():
     """Adds or remove tag to a specific Machine.
     Returns:
@@ -1632,11 +1645,12 @@ def add_remove_machine_tag_command():
     tag = demisto.args().get('tag')
     response = add_remove_machine_tag_request(machine_id, action, tag)
     machine_data = get_machine_data(machine_id)
-    hr = tableToMarkdown('Succeed to {} tag :'.format(action, machine_id), machine_data, headers=headers)
+    hr = tableToMarkdown('Succeed to {} tag to {}:'.format(action, machine_id), machine_data, headers=headers)
     ec = {
         'MicrosoftATP.Machine(val.ID === obj.ID)': machine_data
     }
     return hr, ec, response
+
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
