@@ -4,7 +4,7 @@ commonfields:
 name: Proofpoint Threat Response
 display: Proofpoint Threat Response (Beta)
 category: Email Gateway
-description: 'Use the Proofpoitn Threat Response integration to orchestrate and automate incident response.'
+description: 'Use the Proofpoint Threat Response integration to orchestrate and automate incident response.'
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url
@@ -34,19 +34,19 @@ script:
     arguments:
     - name: list-id
       required: true
-      description: ID of the list
+      description: ID of the list.
     description: Gets items for the specified list.
   - name: proofpoint-tr-add-to-list
     arguments:
     - name: list-id
       required: true
-      description: 'The list to add a member to'
+      description: 'The list to add a member to.'
     - name: indicator
       required: true
-      description: 'Could be ip,url,domain,hash. For example: "192.168.1.1,192.168.1.2"'
+      description: 'The comma-separated list of indicator values. Can be IP addresses, URLs, domains, or file hashes. For example: "192.168.1.1,192.168.1.2".'
       isArray: true
     - name: comment
-      description: Comment regarding the member
+      description: A comment about the member.
     - name: expiration
       description: Expiration of the member.
     description: Adds a member to the specified list.
@@ -58,7 +58,7 @@ script:
       description: A comma-separated list of IP addresses to blacklist.
       isArray: true
     - name: expiration
-      description: 'When the supplied IP addresses should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example:
+      description: 'Date and time when the supplied IP addresses should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example:
         2020-02-02T19:00:00Z'
     - name: blacklist_ip
       required: true
@@ -69,10 +69,10 @@ script:
     arguments:
     - name: domain
       required: true
-      description: List of domains
+      description: A comma-separated list of domains to add to the blacklist.
       isArray: true
     - name: expiration
-      description: 'When the supplied domains should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example:
+      description: 'Date and time when the supplied domains should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example:
         2020-02-02T19:00:00Z'
     - name: blacklist_domain
       required: true
@@ -82,7 +82,7 @@ script:
     arguments:
     - name: list-id
       required: true
-      description: ID of the list.
+      description: The ID of the list in which to search.
     - name: filter
       required: true
       description: The filter for the indicator search. For example, "1.1" will return [1.1.1.1,
@@ -92,10 +92,10 @@ script:
     arguments:
     - name: list-id
       required: true
-      description: ID of the list 
+      description: ID of the list from which to delete indicators.
     - name: indicator
       required: true
-      description: 'The indicator to delete from the list. Supported indicators are: IP, URL, domain, or file hash. For example: "demisto.com".'
+      description: 'The indicator value to delete from the list. Can be an IP address, URL, domain, or file hash. For example: "demisto.com".'
     description: Deletes an indicator from the specified list.
   - name: proofpoint-tr-block-url
     arguments:
@@ -104,7 +104,7 @@ script:
       description: A comma-separated list of URLs to add to the URL blacklist.
       isArray: true
     - name: expiration
-      description: 'Expiration of the URLs in format YYYY-MM-DDTHH:MM:SSZ. For example:
+      description: 'Date and time when the should be removed from the blacklist, in the format YYYY-MM-DDTHH:MM:SSZ. For example:
         2020-02-02T19:00:00Z'
     - name: blacklist_url
       required: true
@@ -117,7 +117,7 @@ script:
       description: A comma-separated list of file hashes to add to the file hash blacklist.
       isArray: true
     - name: expiration
-      description: 'When the specified file hashes should be unblocked, in format YYYY-MM-DDTHH:MM:SSZ. For example:
+      description: 'Date and time when the specified file hashes should be unblocked, in the format YYYY-MM-DDTHH:MM:SSZ. For example:
         2020-02-02T19:00:00Z'
     - name: blacklist_hash
       required: true
