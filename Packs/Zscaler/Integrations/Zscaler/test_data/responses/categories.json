@@ -1,0 +1,17 @@
+[
+  {
+    "configuredName": "Phishing-Suspected",
+    "customCategory": true,
+    "dbCategorizedUrls": [],
+    "editable": true,
+    "id": "CUSTOM_1",
+    "keywordsRetainingParentCategory": [],
+    "type": "URL_CATEGORY",
+    "urls": [
+      "demisto.com",
+      "dbot.com",
+      "www.demisto22.com"
+    ],
+    "val": 144
+  }
+]

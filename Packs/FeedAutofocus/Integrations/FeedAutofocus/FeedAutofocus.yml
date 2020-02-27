@@ -3,21 +3,18 @@ commonfields:
   id: AutoFocus Feed
   version: -1
 configuration:
-- display: Indicator feed
+- display: Fetch indicators
+  name: feed
+  required: false
+  defaultvalue: true
+  type: 8
+- display: Indicator Feed
   name: indicator_feeds
   options:
   - Daily Threat Feed
   - Custom Feed
   required: true
   type: 16
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: The AutoFocus API key
   name: api_key
   required: true
@@ -28,33 +25,15 @@ configuration:
   name: custom_feed_urls
   required: false
   type: 0
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- defaultvalue: suddenDeath
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- defaultvalue: '20160'
-  name: feedExpirationInterval
-  required: false
-  type: 1
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
   options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
+    - None
+    - Good
+    - Suspicious
+    - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -70,6 +49,21 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- defaultvalue: suddenDeath
+  name: feedExpirationPolicy
+  display: ""
+  options:
+    - never
+    - interval
+    - indicatorType
+    - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
 - defaultvalue: '15'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -80,6 +74,14 @@ configuration:
     list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
   required: false
   type: 8
 description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
@@ -107,7 +109,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6120
   feed: true
   isfetch: false
   longRunning: false
