@@ -156,8 +156,8 @@ class Client(BaseClient):
         return results
 
 
-def determine_indicator_type(conf_indicator_type, default_indicator_type, value):
-    if not conf_indicator_type:
+def determine_indicator_type(indicator_type, default_indicator_type, value):
+    if not indicator_type:
         indicator_type = default_indicator_type
     if indicator_type == FeedIndicatorType.Domain and '*' in value:
         indicator_type = FeedIndicatorType.DomainGlob
