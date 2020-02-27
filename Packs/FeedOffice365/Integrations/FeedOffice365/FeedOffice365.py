@@ -97,7 +97,8 @@ class Client(BaseClient):
         return result
 
     def check_indicator_type(self, indicator):
-        """Checks the indicator type
+        """Checks the indicator type.
+           The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
 
         Args:
             indicator: indicator value
@@ -113,8 +114,6 @@ class Client(BaseClient):
             return FeedIndicatorType.IP
         if re.match(ipv6Regex, indicator):
             return FeedIndicatorType.IPv6
-        if re.match(urlRegex, indicator):
-            return FeedIndicatorType.URL
         return FeedIndicatorType.Domain
 
 
@@ -168,6 +167,10 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     "value": value,
                     "type": type_,
                     "rawJSON": raw_data,
+                    "fields": {
+                        "port": argToList(item.get('tcpPorts', '')),
+                        "subfeed": item.get('serviceArea', '')
+                    }
                 })
 
     return indicators

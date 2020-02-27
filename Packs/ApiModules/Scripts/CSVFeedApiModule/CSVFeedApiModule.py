@@ -207,7 +207,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, **kwar
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': raw_json,
-                        'CustomFields': {field: raw_json[key] for key, field in mapping.items()}
+                        'fields': {field: raw_json[key] for key, field in mapping.items()}
                     }
                     indicators.append(indicator)
 
