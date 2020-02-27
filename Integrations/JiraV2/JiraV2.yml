@@ -306,7 +306,7 @@ script:
       description: The ID offset.
       type: string
     description: Returns the ID offset, for example, the first issue ID.
-  dockerimage: demisto/oauthlib:1.0.0.4235
+  dockerimage: demisto/oauthlib:1.0.0.4977
   isfetch: true
   runonce: false
 tests:

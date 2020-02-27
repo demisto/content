@@ -1,6 +1,7 @@
 {
 	"id": "incident_googleaccountstatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2019-12-17T18:22:44.552516714Z",
 	"name": "Google Account Status",
 	"ownerOnly": false,

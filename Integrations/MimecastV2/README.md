@@ -79,6 +79,8 @@ In order to activate them first tick "fetch incidents" box, then tick the releva
   <li><a href="#mimecast-create-remediation-incident" target="_self">Creates a new Mimecast remediation incident: mimecast-create-remediation-incident</a></li>
   <li><a href="#mimecast-get-remediation-incident" target="_self">Returns a Mimecast remediation incident: mimecast-get-remediation-incident</a></li>
   <li><a href="#mimecast-search-file-hash" target="_self">Searches for one or more file hashes in the account. Maximum is 100: mimecast-search-file-hash</a></li>
+  <li><a href="#mimecast-update-policy" target="_self">Update a Blocked Sender Policy: mimecast-update-policy</a></li>
+
 </ol>
 <h3 id="mimecast-query">1. mimecast-query</h3>
 <hr>
@@ -3198,10 +3200,159 @@ There are no context output for this command.
 
 <h5>Human Readable Output</h5>
 <p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
+<h3 id="mimecast-update-policy">28. mimecast-update-policy</h3>
+<hr>
+<p>update policy</p>
+<h5>Base Command</h5>
+<p>
+  <code>mimecast-update-policy</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>policy_id</td>
+      <td>Policy id</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>description</td>
+      <td>Policy description</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>fromType</td>
+      <td>Blocked Sender type. Most times you will have to change fromValue according to fromType</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>toType</td>
+      <td>Blocked Receiver type. Most times you will have to change fromValue according to fromType</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>option</td>
+      <td>The block option, must be one of: no_action, block_sender.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>fromValue</td>
+      <td>Blocked Sender value. FromValue depends on fromType</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>toValue</td>
+      <td>Blocked Receiver value. ToValue depends on toType</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>fromPart</td>
+      <td>Addresses based on</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Mimecast.Policy.ID</td>
+      <td>string</td>
+      <td>Policy ID</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Sender.Address</td>
+      <td>string</td>
+      <td>Block Sender by email address</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Sender.Domain</td>
+      <td>string</td>
+      <td>Block Sender by domain</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Sender.Group</td>
+      <td>string</td>
+      <td>Block Sender by group</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Bidirectional</td>
+      <td>boolean</td>
+      <td>Blocked policy is Bidirectional or not</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Receiver.Address</td>
+      <td>string</td>
+      <td>Block emails to Receiver type address</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Receiver.Domain</td>
+      <td>string</td>
+      <td>Block emails to Receiver type domain</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Receiver.Group</td>
+      <td>string</td>
+      <td>Block emails to Receiver type group</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Fromdate</td>
+      <td>date</td>
+      <td>Policy validation start date</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Todate</td>
+      <td>date</td>
+      <td>Policy expiration date</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Sender.Type</td>
+      <td>String</td>
+      <td>The sender type</td>
+    </tr>
+    <tr>
+      <td>Mimecast.Policy.Receiver.Type</td>
+      <td>String</td>
+      <td>The Receiver type</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!mimecast-update-policy policyID=XXXX toType=address_attribute_value</code>
+</p>
+
+<h5>Human Readable Output</h5>
+<img src="https://github.com/demisto/content/blob/mimecast_upgrade/Integrations/MimecastV2/mimecast-update-policy.jpg?raw=true" alt="image">

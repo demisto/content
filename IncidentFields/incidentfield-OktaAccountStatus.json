@@ -1,6 +1,7 @@
 {
 	"id": "incident_oktaaccountstatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2019-12-17T17:29:50.727316685Z",
 	"name": "Okta Account Status",
 	"ownerOnly": false,

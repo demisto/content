@@ -12,7 +12,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, encode_string_results
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    encode_string_results
 
 try:
     from StringIO import StringIO
@@ -1026,6 +1027,21 @@ class TestReturnOutputs:
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
+    def test_return_outputs_timeline(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        raw_response = {'event': 1}
+        timeline = [{'Value': 'blah', 'Message': 'test', 'Category': 'test'}]
+        return_outputs(md, outputs, raw_response, timeline)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
+        assert timeline == results['IndicatorTimeline']
+
 
 def test_argToBoolean():
     assert argToBoolean('true') is True
@@ -1083,3 +1099,16 @@ def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
     # emulates re.fullmatch from py3.4
     assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
+
+
+IP_TO_INDICATOR_TYPE_PACK = [
+    ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1/32', FeedIndicatorType.CIDR),
+    ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
+    ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
+]
+
+
+@pytest.mark.parametrize('ip, indicator_type', IP_TO_INDICATOR_TYPE_PACK)
+def test_ip_to_indicator(ip, indicator_type):
+    assert FeedIndicatorType.ip_to_indicator_type(ip) is indicator_type

@@ -28,6 +28,11 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
