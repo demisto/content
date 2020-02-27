@@ -17,9 +17,10 @@ tags:
 - indicator-format
 timeout: '0'
 type: python
-dockerimage: demisto/tld:latest
+dockerimage: demisto/tld:1.0.0.6256
 runas: DBotWeakRole
 runonce: false
 subtype: python3
+fromversion: 5.0.0
 tests:
   - ExtractDomainAndFQDNFromUrlAndEmail-Test
