@@ -1,173 +1,80 @@
-<p>
-Microsoft Graph Calendar enables you to create and manage different calendars and events according to your requirements.
-</p>
-<h2>Microsoft Graph Calendar Playbook</h2>
-<p>Populate this section with relevant playbook names.</p>
-</ul><h2>Detailed Description</h2>
-<ul>
-<li>To allow access to Microsoft Graph Calendar, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-calendar).</li>
-<li>After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.</li>
-<li></li>
-<li>Required Permissions in the MS Graph Groups App:</li>
-<li>Directory.ReadWrite.All - Delegated</li>
-<li>Directory.ReadWrite.All - Application</li>
-<li>Group.ReadWrite.All - Application</li>
-<li></li>
-<li></li>
-<li>- Calendars.Read - Delegated</li>
-<li>- Calendars.Read - Application</li>
-<li>- Calendars.ReadWrite - Delegated</li>
-<li>- Calendars.ReadWrite - Application</li>
-<li></li>
-</ul><h2>Fetch Incidents</h2>
-<p>Populate this section with Fetch incidents data</p>
-<h2>Configure Microsoft Graph Calendar on Demisto</h2>
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Microsoft Graph Calendar.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>Server URL</strong></li>
-   <li><strong>ID (received from the admin consent - see Detailed Instructions (?)</strong></li>
-   <li><strong>Token (received from the admin consent - see Detailed Instructions (?) section)</strong></li>
-   <li><strong>Key (received from the admin consent - see Detailed Instructions (?)</strong></li>
-   <li><strong>Default user</strong></li>
-   <li><strong>Trust any certificate (not secure)</strong></li>
-   <li><strong>Use system proxy settings</strong></li>
-    </ul>
-  </li>
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
-</ol>
-<h2>Commands</h2>
-<p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-  After you successfully execute a command, a DBot message appears in the War Room with the command details.
-</p>
-<ol>
-  <li><a href="#msgraph-calendar-list-calendars" target="_self">Retrieves a list of user Calendar: msgraph-calendar-list-calendars</a></li>
-  <li><a href="#msgraph-calendar-get-calendar" target="_self">Retrieves one of user's Calendars: msgraph-calendar-get-calendar</a></li>
-  <li><a href="#msgraph-calendar-list-events" target="_self">Retrieves a list of Calendar's events: msgraph-calendar-list-events</a></li>
-  <li><a href="#msgraph-calendar-get-event" target="_self">Retrieves an event by event ID: msgraph-calendar-get-event</a></li>
-  <li><a href="#msgraph-calendar-create-event" target="_self">Creates a new event: msgraph-calendar-create-event</a></li>
-  <li><a href="#msgraph-calendar-update-event" target="_self">Updates an existing event: msgraph-calendar-update-event</a></li>
-  <li><a href="#msgraph-calendar-delete-event" target="_self">Updates an existing event: msgraph-calendar-delete-event</a></li>
-</ol>
-<h3 id="msgraph-calendar-list-calendars">1. msgraph-calendar-list-calendars</h3>
-<hr>
-<p>Retrieves a list of user Calendar.</p>
-<h5>Base Command</h5>
-<p>
-  <code>msgraph-calendar-list-calendars</code>
-</p>
+Use the Microsoft Graph Calendar integration to create, and manage different calendars and events according to your requirements.
 
-<h5>Required Permissions</h5>
+## Detailed Description
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>user</td>
-      <td>User ID or userPrincipalName.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>order_by</td>
-      <td>Sorts the order of the items returned from Microsoft Graph.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>next_link</td>
-      <td>The link for the next page of results, if it exists. See docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0 for more details.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>top</td>
-      <td>Specifies the page size of the result set.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+*   To allow access to Microsoft Graph Calendar, an administrator has to approve the Demisto app using an admin consent flow, by clicking [here](https://oproxy.demisto.ninja/ms-graph-calendar).
+*   After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>MSGraphCalendar.Calendar.Name</td>
-      <td>String</td>
-      <td>The calendar name.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.CanShare</td>
-      <td>Boolean</td>
-      <td>Whether the user has the permission to share the calendar. Only the user who created the calendar can share.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.CanEdit</td>
-      <td>Boolean</td>
-      <td>Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access).</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.ChangeKey</td>
-      <td>String</td>
-      <td>Identifies the version of the calendar object. Every time the calendar is changed, the changeKey changes as well, which allows the exchange to apply changes to the correct version of the object. Read-only.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.Owner</td>
-      <td>Unknown</td>
-      <td>The user who created or added the calendar.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.ID</td>
-      <td>String</td>
-      <td>The unique ID of the calendar. Read-only.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.CanViewPrivateItems</td>
-      <td>Boolean</td>
-      <td>Whether the user can read calendar items that have been marked private.</td>
-    </tr>
-  </tbody>
-</table>
+## Required Permissions in the MS Graph Groups App:
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!msgraph-calendar-list-calendars user=someemail@domain.com</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+*   Directory.ReadWrite.All - Delegated
+*   Directory.ReadWrite.All - Application
+*   Group.ReadWrite.All - Application
+    *   Calendars.Read - Delegated
+    *   Calendars.Read - Application
+    *   Calendars.ReadWrite - Delegated
+    *   Calendars.ReadWrite - Application
+
+## Configure Microsoft Graph Calendar on Demisto
+
+1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
+2.  Search for Microsoft Graph Calendar.
+3.  Click **Add instance** to create and configure a new integration instance.
+
+   | **Parameter** | **Description** | **Example** |
+   | ---------             | -----------           | -------            |
+   | Name | A meaningful name for the integration instance. | Microsoft Graph Calendar_instance_1 |
+   | Server URL | The URL to the FireEye server, including the scheme. | https:/<span>/graph.microsoft.com |
+   | ID | The ID used to gain access to the integration. | N/A |
+   | Token  | The private token granting access to the integration. | N/A  |
+   | Key  | The key used for authentication.   | N/A  |
+   | Default User | | |
+   | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
+   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span>/proxyserver.com |
+
+4.  Click **Test** to validate the new instance.
+
+## Commands
+
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### Get all calendars for a user
+
+* * *
+
+Gets all calendars of a user.
+
+##### Base Command
+
+`msgraph-calendar-list-calendars`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The user ID or `userPrincipalName`. | Optional |
+| order_by | Sorts the order of the returned items from Microsoft Graph. | Optional |
+| next_link | The link for the next page of results, if it exists. Follow this [link](docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0%20) for more details. | Optional |
+| top | Specifies the page size of the result set. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphCalendar.Calendar.Name | String | The name of the calendar. |
+| MSGraphCalendar.Calendar.CanShare | Boolean | Whether the user has permission to share the calendar. Only the user who created the calendar can share. |
+| MSGraphCalendar.Calendar.CanEdit | Boolean | Whether the user can write to the calendar (this is true for the user who created the calendar and for a user who has been granted access to a shared calendar). |
+| MSGraphCalendar.Calendar.ChangeKey | String | Identifies the version of the calendar object. Every time the calendar is changed, the `changeKey` changes as well. This allows the exchange to apply changes to the correct version of the object. Read-only. |
+| MSGraphCalendar.Calendar.Owner | Unknown | The user who created or added the calendar. |
+| MSGraphCalendar.Calendar.ID | String | The unique ID of the calendar. Read-only. |
+| MSGraphCalendar.Calendar.CanViewPrivateItems | Boolean | Whether the user can read calendar items that have been marked private. |
+
+##### Command Example
+
+`!msgraph-calendar-list-calendars user=someemail@domain.com`
+
+##### Context Example
+```
 {
     "MSGraphCalendar.Calendar": [
         {
@@ -208,509 +115,151 @@ Microsoft Graph Calendar enables you to create and manage different calendars an
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Calendar:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Name</strong></th>
-      <th><strong>Owner Name</strong></th>
-      <th><strong>Owner Address</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> Calendar </td>
-      <td> User Name </td>
-      <td> someemail@domain.com </td>
-      <td> Some_ID </td>
-    </tr>
-    <tr>
-      <td> United States holidays </td>
-      <td> User Name </td>
-      <td> someemail@domain.com </td>
-      <td> Some_ID </td>
-    </tr>
-    <tr>
-      <td> Birthdays </td>
-      <td> User Name </td>
-      <td> someemail@domain.com </td>
-      <td> Some_ID </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+##### Human Readable Output
 
-<h3 id="msgraph-calendar-get-calendar">2. msgraph-calendar-get-calendar</h3>
-<hr>
-<p>Retrieves one of user's Calendars.</p>
-<h5>Base Command</h5>
-<p>
-  <code>msgraph-calendar-get-calendar</code>
-</p>
+##### Calendar:
 
-<h5>Required Permissions</h5>
+| **Name** | **Owner Name** | **Owner Address** | **ID** |
+| --- | --- | --- | --- |
+| Calendar | User Name | someemail<span>@domain.com | Some_ID |
+| United States holidays | User Name | someemail<span>@domain.com | Some_ID |
+| Birthdays | User Name | someemail<span>@domain.com | Some_ID |
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>user</td>
-      <td>The user ID or the userPrincipalName.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>calendar_id</td>
-      <td>The calendar ID or name. If not specified, it retrieves the user's default calendar.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Get one user's calendar
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>MSGraphCalendar.Calendar.Name</td>
-      <td>String</td>
-      <td>The name of the calendar.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.CanShare</td>
-      <td>Boolean</td>
-      <td>Whether the user has the permission to share the calendar. Only the user who created the calendar can share it.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.CanEdit</td>
-      <td>Boolean</td>
-      <td>Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access).</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.ChangeKey</td>
-      <td>String</td>
-      <td>Identifies the version of the calendar object. Every time the calendar is changed, the changeKey changes as well, which allows the Exchange to apply changes to the correct version of the object. Read-only.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.Owner</td>
-      <td>Unknown</td>
-      <td>The user who created or added the calendar.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.ID</td>
-      <td>String</td>
-      <td>The unique ID of the calendar. Read-only.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Calendar.CanViewPrivateItems</td>
-      <td>unknown</td>
-      <td>Whether the user can read calendar items that have been marked private.</td>
-    </tr>
-  </tbody>
-</table>
+* * *
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!msgraph-calendar-get-calendar</code>
-</p>
+Returns a specific user's calendar.
 
-<h5>Human Readable Output</h5>
-<p>
+##### Base Command
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+`msgraph-calendar-get-calendar`
 
-<h3 id="msgraph-calendar-list-events">3. msgraph-calendar-list-events</h3>
-<hr>
-<p>Retrieves a list of Calendar's events.</p>
-<h5>Base Command</h5>
-<p>
-  <code>msgraph-calendar-list-events</code>
-</p>
+##### Input
 
-<h5>Required Permissions</h5>
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The user's ID or the `userPrincipalName`. | Optional |
+| calendar_id | The calendar's ID or name. If not specified, it retrieves the user's default calendar. | Optional |
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>user</td>
-      <td>The User ID or userPrincipalName.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>calendar_id</td>
-      <td>The calendar ID or name. If not provided, the default calendar is used.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>order_by</td>
-      <td>Sorts the order of the items returned from Microsoft Graph.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>next_link</td>
-      <td>Link for the next page of results, if it exists. See docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0 for more details.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>top</td>
-      <td>Specifies the page size of the result set.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>filter_by</td>
-      <td>Filter Results. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+##### Context Output
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>MSGraphCalendar.ID</td>
-      <td>Unknown</td>
-      <td>User's ID.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.DisplayName</td>
-      <td>Unknown</td>
-      <td>The display name of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.GivenName</td>
-      <td>Unknown</td>
-      <td>The given name of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.BusinessPhones</td>
-      <td>Unknown</td>
-      <td>The business phone numbers of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.JobTitle</td>
-      <td>Unknown</td>
-      <td>The job title of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Mail</td>
-      <td>Unknown</td>
-      <td>The mail address of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.MobilePhone</td>
-      <td>Unknown</td>
-      <td>The mobile phone number of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.OfficeLocation</td>
-      <td>Unknown</td>
-      <td>The office location of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.PreferredLanguage</td>
-      <td>Unknown</td>
-      <td>The preferred language of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Surname</td>
-      <td>Unknown</td>
-      <td>The surname of the user.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.UserPrincipalName</td>
-      <td>Unknown</td>
-      <td>The principal name of the user.</td>
-    </tr>
-  </tbody>
-</table>
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphCalendar.Calendar.Name | String | The calendar's name. |
+| MSGraphCalendar.Calendar.CanShare | Boolean | Whether the user has permission to share the calendar. Only the user who created the calendar can share it. |
+| MSGraphCalendar.Calendar.CanEdit | Boolean | Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access). |
+| MSGraphCalendar.Calendar.ChangeKey | String | Identifies the version of the calendar object. Every time the calendar is changed, the `changeKey` changes as well. This allows the exchange to apply changes to the correct version of the object. Read-only. |
+| MSGraphCalendar.Calendar.Owner | Unknown | The user who created or added the calendar. |
+| MSGraphCalendar.Calendar.ID | String | The unique ID of the calendar. Read-only. |
+| MSGraphCalendar.Calendar.CanViewPrivateItems | unknown | Whether the user can read calendar items that have been marked private. |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!msgraph-calendar-list-events</code>
-</p>
+##### Command Example
 
-<h5>Human Readable Output</h5>
-<p>
+`!msgraph-calendar-get-calendar`
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+##### Human Readable Output
 
-<h3 id="msgraph-calendar-get-event">4. msgraph-calendar-get-event</h3>
-<hr>
-<p>Retrieves an event by event ID.</p>
-<h5>Base Command</h5>
-<p>
-  <code>msgraph-calendar-get-event</code>
-</p>
+### Get a calendar's list of events
 
-<h5>Required Permissions</h5>
+* * *
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>user</td>
-      <td>The user ID or the userPrincipalName.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>event_id</td>
-      <td>The event ID.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+Returns a list of events from a calendar.
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>MSGraphCalendar.Event.OriginalStartTimeZone</td>
-      <td>String</td>
-      <td>The start time zone when the event was created.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.HasAttachments</td>
-      <td>Boolean</td>
-      <td>Whether the event has attachments.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ResponseRequested</td>
-      <td>Boolean</td>
-      <td>Whether the sender requests a response when the event is accepted or declined.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.WebLink</td>
-      <td>String</td>
-      <td>The URL to open the event in Outlook on the web.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Recurrence</td>
-      <td>Unknown</td>
-      <td>The recurrence pattern for the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Start</td>
-      <td>Unknown</td>
-      <td>The date, time, and time zone that the event starts. By default, the start time is in UTC.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.End</td>
-      <td>Unknown</td>
-      <td>The date, time, and time zone that the event ends. By default, the end time is in UTC.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Location</td>
-      <td>Unknown</td>
-      <td>The location of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Attendees</td>
-      <td>Unknown</td>
-      <td>The collection of attendees for the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Type</td>
-      <td>String</td>
-      <td>The event type. For example, singleInstance, occurrence, exception, seriesMaster. Read-only.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ResponseStatus.response</td>
-      <td>Unknown</td>
-      <td>Indicates the type of response sent in response to an event message.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Importance</td>
-      <td>String</td>
-      <td>The importance of the event. For example, low, normal, high.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ICalUId</td>
-      <td>String</td>
-      <td>A unique identifier that is shared by all instances of an event across different calendars.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsCancelled</td>
-      <td>Boolean</td>
-      <td>Whether the event has been canceled.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsAllDay</td>
-      <td>Boolean</td>
-      <td>Whether the event lasts all day.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ReminderMinutesBeforeStart</td>
-      <td>Number</td>
-      <td>The number of minutes before the event start time of the reminder alert.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.LastModifiedDateTime</td>
-      <td>String</td>
-      <td>The last time the event was modified, using ISO 8601 format in in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.OriginalEndTimeZone</td>
-      <td>String</td>
-      <td>The end time zone when the event was created.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.CreatedDateTime</td>
-      <td>String</td>
-      <td>The date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 would be: '2014-01-01T00:00:00Z'</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ChangeKey</td>
-      <td>String</td>
-      <td>Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ID</td>
-      <td>String</td>
-      <td>The ID of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsOrganizer</td>
-      <td>Boolean</td>
-      <td>Whether the message sender is also the organizer.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Sensitivity</td>
-      <td>String</td>
-      <td>The sensitivity of the event. Possible values are: normal, personal, private, confidential.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsReminderOn</td>
-      <td>Boolean</td>
-      <td>Whether an alert is set to remind the user of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Organizer</td>
-      <td>Unknown</td>
-      <td>The organizer of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Subject</td>
-      <td>String</td>
-      <td>The text of the event's subject line.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.OnlineMeetingUrl</td>
-      <td>Unknown</td>
-      <td>A URL for an online meeting, which is used when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only.</td>
-    </tr>
-  </tbody>
-</table>
+##### Base Command
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!msgraph-calendar-get-event user="someemail@domain.com" event_id=Some_ID</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+`msgraph-calendar-list-events`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The user's ID or `userPrincipalName`. | Optional |
+| calendar_id | The calendar ID or name. If not provided, the default calendar is used. | Optional |
+| order_by | Sorts the order of the items returned from Microsoft Graph. | Optional |
+| next_link | Link for the next page of results, if it exists. Follow this [link](docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0) for more details. | Optional |
+| top | Specifies the page size of the result set. | Optional |
+| filter_by | Filter Results. Follow this [link](https://docs.microsoft.com/en-us/graph/query-parameters#filter-parameter) for more details. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphCalendar.ID | Unknown | The user's ID. |
+| MSGraphCalendar.DisplayName | Unknown | The display name of the user. |
+| MSGraphCalendar.GivenName | Unknown | The given name of the user. |
+| MSGraphCalendar.BusinessPhones | Unknown | The business phone numbers of the user. |
+| MSGraphCalendar.JobTitle | Unknown | The job title of the user. |
+| MSGraphCalendar.Mail | Unknown | The mail address of the user. |
+| MSGraphCalendar.MobilePhone | Unknown | The mobile phone number of the user. |
+| MSGraphCalendar.OfficeLocation | Unknown | The location of the office of the user. |
+| MSGraphCalendar.PreferredLanguage | Unknown | The user's preferred language. |
+| MSGraphCalendar.Surname | Unknown | The user's surname. |
+| MSGraphCalendar.UserPrincipalName | Unknown | The user's principal name. |
+
+##### Command Example
+
+`!msgraph-calendar-list-events`
+
+##### Human Readable Output
+
+### Get an event by ID
+
+* * *
+
+Returns an event based on its ID.
+
+##### Base Command
+
+`msgraph-calendar-get-event`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The user's ID or the `userPrincipalName`. | Optional |
+| event_id | The ID of the event. | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphCalendar.Event.OriginalStartTimeZone | String | The start time zone that was set when the event was created. |
+| MSGraphCalendar.Event.HasAttachments | Boolean | Whether the event has attachments. |
+| MSGraphCalendar.Event.ResponseRequested | Boolean | Whether the sender requests a response when the event is accepted or declined. |
+| MSGraphCalendar.Event.WebLink | String | The URL used to open the event in Outlook on the web. |
+| MSGraphCalendar.Event.Recurrence | Unknown | The recurrence pattern for the event. |
+| MSGraphCalendar.Event.Start | Unknown | The starting date, time, and time zone of the event. The default for the start time is UTC. |
+| MSGraphCalendar.Event.End | Unknown | The date, time, and time zone that the event ends. The default for the end time is UTC. |
+| MSGraphCalendar.Event.Location | Unknown | The location of the event. |
+| MSGraphCalendar.Event.Attendees | Unknown | The list of attendees for the event. |
+| MSGraphCalendar.Event.Type | String | The event type. For example, "singleInstance", "occurrence", "exception", or "seriesMaster". Read-only. |
+| MSGraphCalendar.Event.ResponseStatus.response | Unknown | Indicates the response type sent in response to an event message. |
+| MSGraphCalendar.Event.Importance | String | The importance of the event. For example, "low", "normal", or "high". |
+| MSGraphCalendar.Event.ICalUId | String | A unique identifier that is shared by all instances of an event across different calendars. |
+| MSGraphCalendar.Event.IsCancelled | Boolean | Whether the event has been canceled. |
+| MSGraphCalendar.Event.IsAllDay | Boolean | Whether the event lasts all day. |
+| MSGraphCalendar.Event.ReminderMinutesBeforeStart | Number | The number of minutes before the event start time of the reminder alert. |
+| MSGraphCalendar.Event.LastModifiedDateTime | String | The last time the event was modified, using ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". |
+| MSGraphCalendar.Event.OriginalEndTimeZone | String | The end time zone that was set when the event was created. |
+| MSGraphCalendar.Event.CreatedDateTime | String | The date the event was created using ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 would be: '2014-01-01T00:00:00Z'". |
+| MSGraphCalendar.Event.ChangeKey | String | Identifies the version of the event object. Every time the event is changed, the `ChangeKey` changes as well. This allows the Exchange to apply changes to the correct version of the object. |
+| MSGraphCalendar.Event.ID | String | The ID of the event. |
+| MSGraphCalendar.Event.IsOrganizer | Boolean | Whether the message sender is also the organizer. |
+| MSGraphCalendar.Event.Sensitivity | String | The sensitivity of the event. Possible values are: "normal", "personal", "private", or "confidential". |
+| MSGraphCalendar.Event.IsReminderOn | Boolean | Whether an alert is set to remind the user of the event. |
+| MSGraphCalendar.Event.Organizer | Unknown | The organizer of the event. |
+| MSGraphCalendar.Event.Subject | String | The text of the event's subject line. |
+| MSGraphCalendar.Event.OnlineMeetingUrl | Unknown | A URL for an online meeting, which is used when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only. |
+
+##### Command Example
+
+`!msgraph-calendar-get-event user="someemail@domain.com" event_id=Some_ID`
+
+##### Context Example
+```
 {
     "MSGraphCalendar.Event": [
         {
@@ -729,354 +278,87 @@ Microsoft Graph Calendar enables you to create and manage different calendars an
                 }
             ],
             "Body": {
-                "content": "<html><head><meta name=\"Generator\" content="Microsoft Exchange Server">\r\n<!-- converted from text -->\r\n<style><!-- .EmailQuote { margin-left: 1pt; padding-left: 4pt; border-left: #800000 2px solid; } --></style></head>\r\n<body>\r\n<font size=\"2\"><span style=\"font-size:11pt;\"><div class=\"PlainText\">This event was created by MSGraph integration</div></span></font>\r\n</body>\r\n</html>\r\n",
-                "contentType": "html"
-            },
-            "BodyPreview": "This event was created by MSGraph integration",
-            "Categories": [],
-            "ChangeKey": "Some_Change_Key",
-            "CreatedDateTime": "2019-12-30T14:16:47.4108451Z",
-            "End": {
-                "dateTime": "2022-11-11T15:30:00.0000000",
-                "timeZone": "UTC"
-            },
-            "HasAttachments": false,
-            "ICalUId": "040000008200E00074C5B7101A82E00800000000373066C51BBFD501000000000000000010000000D3EB65FAAFB082478A64C036CFE6783A",
-            "ID": "Some_ID",
-            "Importance": "normal",
-            "IsAllDay": false,
-            "IsCancelled": false,
-            "IsOrganizer": true,
-            "IsReminderOn": true,
-            "LastModifiedDateTime": "2019-12-30T14:16:48.5891688Z",
-            "Location": {
-                "displayName": "Tel Aviv",
-                "locationType": "default",
-                "uniqueId": "Tel Aviv",
-                "uniqueIdType": "private"
-            },
-            "Locations": [
-                {
-                    "displayName": "Tel Aviv",
-                    "locationType": "default",
-                    "uniqueId": "Tel Aviv",
-                    "uniqueIdType": "private"
-                }
-            ],
-            "OnlineMeetingUrl": null,
-            "Organizer": {
-                "emailAddress": {
-                    "address": "someemail@domain.com",
-                    "name": "User Name"
-                }
-            },
-            "OriginalEndTimeZone": "Asia/Jerusalem",
-            "OriginalStartTimeZone": "Asia/Jerusalem",
-            "Recurrence": null,
-            "ReminderMinutesBeforeStart": 15,
-            "ResponseRequested": true,
-            "ResponseStatus": {
-                "response": "organizer",
-                "time": "0001-01-01T00:00:00Z"
-            },
-            "Sensitivity": "normal",
-            "SeriesMasterId": null,
-            "ShowAs": "busy",
-            "Start": {
-                "dateTime": "2022-11-11T15:00:00.0000000",
-                "timeZone": "UTC"
-            },
-            "Subject": "test - delete",
-            "Type": "singleInstance",
-            "WebLink": "https://outlook.office365.com/owa/?itemid=AAMkADMzZWNjMjBkLTE2ZGQtNDE1NS05OTg3LTI5ZTRlY2Q5YjFiMgBGAAAAAACtWsHs6cTlRYm91jJyqUgDBwCPVsAqlO3YRKNF6ZoON8u7AAAAAAENAACPVsAqlO3YRKNF6ZoON8u7AACqxAGGAAA%3D&exvsurl=1&path=/calendar/item"
-        }
-    ]
-}
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Event - test - delete</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Subject</strong></th>
-      <th><strong>Organizer</strong></th>
-      <th><strong>Attendees</strong></th>
-      <th><strong>Start</strong></th>
-      <th><strong>End</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> test - delete </td>
-      <td> User Name </td>
-      <td> User Name </td>
-      <td> 2022-11-11T15:00:00.0000000 </td>
-      <td> 2022-11-11T15:30:00.0000000 </td>
-      <td> Some_ID </td>
-    </tr>
-  </tbody>
-</table>
+                "content": "\r\n\r\n\r\n\r\n
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+This event was created by MSGraph integration
+```
+\r\n\r\n\r\n", "contentType": "html" }, "BodyPreview": "This event was created by MSGraph integration", "Categories": [], "ChangeKey": "Some_Change_Key", "CreatedDateTime": "2019-12-30T14:16:47.4108451Z", "End": { "dateTime": "2022-11-11T15:30:00.0000000", "timeZone": "UTC" }, "HasAttachments": false, "ICalUId": "040000008200E00074C5B7101A82E00800000000373066C51BBFD501000000000000000010000000D3EB65FAAFB082478A64C036CFE6783A", "ID": "Some_ID", "Importance": "normal", "IsAllDay": false, "IsCancelled": false, "IsOrganizer": true, "IsReminderOn": true, "LastModifiedDateTime": "2019-12-30T14:16:48.5891688Z", "Location": { "displayName": "Tel Aviv", "locationType": "default", "uniqueId": "Tel Aviv", "uniqueIdType": "private" }, "Locations": [ { "displayName": "Tel Aviv", "locationType": "default", "uniqueId": "Tel Aviv", "uniqueIdType": "private" } ], "OnlineMeetingUrl": null, "Organizer": { "emailAddress": { "address": "someemail@domain.com", "name": "User Name" } }, "OriginalEndTimeZone": "Asia/Jerusalem", "OriginalStartTimeZone": "Asia/Jerusalem", "Recurrence": null, "ReminderMinutesBeforeStart": 15, "ResponseRequested": true, "ResponseStatus": { "response": "organizer", "time": "0001-01-01T00:00:00Z" }, "Sensitivity": "normal", "SeriesMasterId": null, "ShowAs": "busy", "Start": { "dateTime": "2022-11-11T15:00:00.0000000", "timeZone": "UTC" }, "Subject": "test - delete", "Type": "singleInstance", "WebLink": "https://outlook.office365.com/owa/?itemid=AAMkADMzZWNjMjBkLTE2ZGQtNDE1NS05OTg3LTI5ZTRlY2Q5YjFiMgBGAAAAAACtWsHs6cTlRYm91jJyqUgDBwCPVsAqlO3YRKNF6ZoON8u7AAAAAAENAACPVsAqlO3YRKNF6ZoON8u7AACqxAGGAAA%3D&exvsurl=1&path=/calendar/item" } ] }
+```
 
-<h3 id="msgraph-calendar-create-event">5. msgraph-calendar-create-event</h3>
-<hr>
-<p>Creates a new event.</p>
-<h5>Base Command</h5>
-<p>
-  <code>msgraph-calendar-create-event</code>
-</p>
+##### Human Readable Output
 
-<h5>Required Permissions</h5>
+##### Event - test - delete
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>user</td>
-      <td>The user ID or userPrincipalName.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>calendar_id</td>
-      <td>The unique ID of the Calendar or name. If not provided, the default calendar is used.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>attendees</td>
-      <td>The collection of attendees for the event.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>body</td>
-      <td>The body of the message associated with the event in HTML or text format.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>subject</td>
-      <td>The text of the event's subject line.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>location</td>
-      <td>The location of the event for an online meeting, such as a Skype meeting. Read-only.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>end</td>
-      <td>The date and time the event ends. For example, '2017-05-28T12:00:00'. By default, the start time is in UTC.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>original_end_time_zone</td>
-      <td>The end time zone when the event was created.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>original_start</td>
-      <td>The original start time of the calendar item using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>start</td>
-      <td>The date and time the event starts at, for example '2017-05-28T12:00:00'. By default, the start time is in UTC.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>time_zone</td>
-      <td>Represents a time zone. For example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>original_start_time_zone</td>
-      <td>The start time zone when the event was created.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+| **Subject** | **Organizer** | **Attendees** | **Start** | **End** | **ID** |
+| --- | --- | --- | --- | --- | --- |
+| test - delete | User Name | User Name | 2022-11-11T15:00:00.0000000 | 2022-11-11T15:30:00.0000000 | Some_ID |
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>MSGraphCalendar.Event.OriginalStartTimeZone</td>
-      <td>String</td>
-      <td>The start time zone when the event was created.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.HasAttachments</td>
-      <td>Boolean</td>
-      <td>Whether the event has attachments.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ResponseRequested</td>
-      <td>Boolean</td>
-      <td>Whether the sender would like a response when the event is accepted or declined.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.WebLink</td>
-      <td>String</td>
-      <td>The URL to open the event in Outlook on the web.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Recurrence</td>
-      <td>Unknown</td>
-      <td>The recurrence pattern for the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Start</td>
-      <td>Unknown</td>
-      <td>The date, time, and time zone that the event starts. By default, the start time is in UTC.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.End</td>
-      <td>Unknown</td>
-      <td>The date, time, and time zone that the event ends. By default, the end time is in UTC.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Location</td>
-      <td>Unknown</td>
-      <td>The location of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Attendees</td>
-      <td>Unknown</td>
-      <td>The collection of attendees for the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Type</td>
-      <td>String</td>
-      <td>The event type. For example, singleInstance, occurrence, exception, seriesMaster. Read-only.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ResponseStatus.response</td>
-      <td>Unknown</td>
-      <td>Indicates the type of response sent in response to an event message.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Importance</td>
-      <td>String</td>
-      <td>The importance of the event. For example, low, normal, high.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ICalUId</td>
-      <td>String</td>
-      <td>A unique identifier that is shared by all instances of an event across different calendars.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsCancelled</td>
-      <td>Boolean</td>
-      <td>Whether the event has been canceled.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsAllDay</td>
-      <td>Boolean</td>
-      <td>Whether the event lasts all day.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ReminderMinutesBeforeStart</td>
-      <td>Number</td>
-      <td>The number of minutes before the event start time of the reminder alert.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.LastModifiedDateTime</td>
-      <td>String</td>
-      <td>Last modified time and date of the event using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.OriginalEndTimeZone</td>
-      <td>String</td>
-      <td>The end time zone when the event was created.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.CreatedDateTime</td>
-      <td>String</td>
-      <td>The time and date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ChangeKey</td>
-      <td>String</td>
-      <td>Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ID</td>
-      <td>String</td>
-      <td>Event's ID.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsOrganizer</td>
-      <td>Boolean</td>
-      <td>Whether the message sender is also the organizer.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Sensitivity</td>
-      <td>String</td>
-      <td>The sensitivity of the event. Possible values are: normal, personal, private, confidential.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsReminderOn</td>
-      <td>Boolean</td>
-      <td>Whether an alert is set to remind the user of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Organizer</td>
-      <td>Unknown</td>
-      <td>The organizer of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Subject</td>
-      <td>String</td>
-      <td>The text of the event's subject line.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.OnlineMeetingUrl</td>
-      <td>Unknown</td>
-      <td>A URL for an online meeting, which is used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only.</td>
-    </tr>
-  </tbody>
-</table>
+### Create a new event
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!msgraph-calendar-create-event user="someemail@domain.com" calendar_id="Calendar" attendees="someemail@domain.com" body="This event was created by MSGraph integration" subject="test - delete" location="Tel Aviv" end="2022-12-11T17:30:00" start="2022-12-11T17:00:00" time_zone="Asia/Jerusalem"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+* * *
+
+Creates a new event.
+
+##### Base Command
+
+`msgraph-calendar-create-event`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The user's ID or `userPrincipalName`. | Optional |
+| calendar_id | The unique ID of the calendar or name. If not provided, the default calendar is used. | Optional |
+| attendees | The collection of attendees for the event. | Optional |
+| body | The body of the message associated with the event in HTML or text format. | Optional |
+| subject | The text of the event's subject line. | Optional |
+| location | The location of the event for an online meeting, such as a Skype meeting. Read-only. | Optional |
+| end | The date and time the event ends. For example, "'2017-05-28T12:00:00'". The default start time is UTC. | Optional |
+| original_end_time_zone | The end time zone that was set when the event was created. | Optional |
+| original_start | The original start time of the calendar item using ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". | Optional |
+| start | The date and time the event starts at. For example, "'2017-05-28T12:00:00'". The default start time is UTC. | Optional |
+| time_zone | Represents a time zone. For example, "Pacific Standard Time". Follow this [link](https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0) for more information. | Optional |
+| original_start_time_zone | The start time zone that was set when the event was created. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphCalendar.Event.OriginalStartTimeZone | String | The start time zone that was set when the event was created. |
+| MSGraphCalendar.Event.HasAttachments | Boolean | Whether the event has attachments. |
+| MSGraphCalendar.Event.ResponseRequested | Boolean | Whether the sender would like a response when the event is accepted or declined. |
+| MSGraphCalendar.Event.WebLink | String | The URL used to open the event in Outlook on the web. |
+| MSGraphCalendar.Event.Recurrence | Unknown | The recurrence pattern for the event. |
+| MSGraphCalendar.Event.Start | Unknown | The date, time, and time zone that the event starts. The default start time is UTC. |
+| MSGraphCalendar.Event.End | Unknown | The starting date, time, and time zone of the event. The default start time is UTC. |
+| MSGraphCalendar.Event.Location | Unknown | The location of the event. |
+| MSGraphCalendar.Event.Attendees | Unknown | The collection of attendees for the event. |
+| MSGraphCalendar.Event.Type | String | The event type. For example, "singleInstance", "occurrence", "exception", or "seriesMaster". Read-only. |
+| MSGraphCalendar.Event.ResponseStatus.response | Unknown | Indicates the type of response sent in response to an event message. |
+| MSGraphCalendar.Event.Importance | String | The importance of the event. For example, "low", "normal", or "high". |
+| MSGraphCalendar.Event.ICalUId | String | A unique identifier that is shared by all instances of an event across different calendars. |
+| MSGraphCalendar.Event.IsCancelled | Boolean | Whether the event has been canceled. |
+| MSGraphCalendar.Event.IsAllDay | Boolean | Whether the event lasts all day. |
+| MSGraphCalendar.Event.ReminderMinutesBeforeStart | Number | The number of minutes before the event start time of the reminder alert. |
+| MSGraphCalendar.Event.LastModifiedDateTime | String | Last modified time and date of the event using ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". |
+| MSGraphCalendar.Event.OriginalEndTimeZone | String | The end time zone that was set when the event was created. |
+| MSGraphCalendar.Event.CreatedDateTime | String | The time and date the event was created using ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". |
+| MSGraphCalendar.Event.ChangeKey | String | Identifies the version of the event object. Every time the event is changed, the `ChangeKey` changes as well. This allows the exchange to apply changes to the correct version of the object. |
+| MSGraphCalendar.Event.ID | String | The event's ID. |
+| MSGraphCalendar.Event.IsOrganizer | Boolean | Whether the message sender is also the organizer. |
+| MSGraphCalendar.Event.Sensitivity | String | The sensitivity of the event. Possible values are: "normal", "personal", "private", or "confidential". |
+| MSGraphCalendar.Event.IsReminderOn | Boolean | Whether an alert is set to remind the user of the event. |
+| MSGraphCalendar.Event.Organizer | Unknown | The organizer of the event. |
+| MSGraphCalendar.Event.Subject | String | The text of the event's subject line. |
+| MSGraphCalendar.Event.OnlineMeetingUrl | Unknown | A URL for an online meeting, which is used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only. |
+
+##### Command Example
+
+`!msgraph-calendar-create-event user="someemail@domain.com" calendar_id="Calendar" attendees="someemail@domain.com" body="This event was created by MSGraph integration" subject="test - delete" location="Tel Aviv" end="2022-12-11T17:30:00" start="2022-12-11T17:00:00" time_zone="Asia/Jerusalem"`
+
+##### Context Example
+```
 {
     "MSGraphCalendar.Event": [
         {
@@ -1158,291 +440,81 @@ Microsoft Graph Calendar enables you to create and manage different calendars an
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Event was created successfully:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Subject</strong></th>
-      <th><strong>Organizer</strong></th>
-      <th><strong>Attendees</strong></th>
-      <th><strong>Start</strong></th>
-      <th><strong>End</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> test - delete </td>
-      <td> User Name </td>
-      <td> User Name </td>
-      <td> 2022-12-11T17:00:00.0000000 </td>
-      <td> 2022-12-11T17:30:00.0000000 </td>
-      <td> Some_ID </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+##### Human Readable Output
 
-<h3 id="msgraph-calendar-update-event">6. msgraph-calendar-update-event</h3>
-<hr>
-<p>Updates an existing event.</p>
-<h5>Base Command</h5>
-<p>
-  <code>msgraph-calendar-update-event</code>
-</p>
+##### Event was created successfully:
 
-<h5>Required Permissions</h5>
+| **Subject** | **Organizer** | **Attendees** | **Start** | **End** | **ID** |
+| --- | --- | --- | --- | --- | --- |
+| test - delete | User Name | User Name | 2022-12-11T17:00:00.0000000 | 2022-12-11T17:30:00.0000000 | Some_ID |
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>user</td>
-      <td>The user ID or userPrincipalName.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>event_id</td>
-      <td>The event ID.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>attendees</td>
-      <td>The collection of attendees for the event.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>body</td>
-      <td>The body of the message associated with the event. It can be in HTML or text format.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>subject</td>
-      <td>The text of the event's subject line.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>location</td>
-      <td>The location of the event for an online meeting, such as a Skype meeting. Read-only.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>end</td>
-      <td>The date and time the event ends. For example '2017-05-28T12:00:00'. By default, the start time is in UTC.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>original_end_time_zone</td>
-      <td>The end time zone when the event was created.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>start</td>
-      <td>The date and time the event starts. For example '2017-05-28T12:00:00'. By default, the start time is in UTC.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>time_zone</td>
-      <td>Represents a time zone, for example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>original_start</td>
-      <td>The original start time of the calendar item, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>original_start_time_zone</td>
-      <td>The start time zone when the event was created.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Update an existing event
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>MSGraphCalendar.Event.OriginalStartTimeZone</td>
-      <td>String</td>
-      <td>The start time zone when the event was created.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.HasAttachments</td>
-      <td>Boolean</td>
-      <td>Whether the event has attachments.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ResponseRequested</td>
-      <td>Boolean</td>
-      <td>Whether the sender requests a response when the event is accepted or declined.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.WebLink</td>
-      <td>String</td>
-      <td>The URL to open the event in Outlook on the web.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Recurrence</td>
-      <td>Unknown</td>
-      <td>The recurrence pattern for the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Start</td>
-      <td>Unknown</td>
-      <td>The date, time, and time zone that the event starts. By default, the start time is in UTC.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.End</td>
-      <td>Unknown</td>
-      <td>The date, time, and time zone that the event ends. By default, the end time is in UTC.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Location</td>
-      <td>Unknown</td>
-      <td>The location of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Attendees</td>
-      <td>Unknown</td>
-      <td>The collection of attendees for the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Type</td>
-      <td>String</td>
-      <td>The event type. For example, singleInstance, occurrence, exception, seriesMaster. Read-only.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ResponseStatus.response</td>
-      <td>Unknown</td>
-      <td>Indicates the type of response sent in response to an event message.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Importance</td>
-      <td>String</td>
-      <td>The importance of the event. For example, low, normal, high.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ICalUId</td>
-      <td>String</td>
-      <td>A unique identifier that is shared by all instances of an event across different calendars.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsCancelled</td>
-      <td>Boolean</td>
-      <td>Whether the event has been canceled.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsAllDay</td>
-      <td>Boolean</td>
-      <td>Whether the event lasts all day.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ReminderMinutesBeforeStart</td>
-      <td>Number</td>
-      <td>The number of minutes before the event start time of the reminder alert.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.LastModifiedDateTime</td>
-      <td>String</td>
-      <td>The last time and date the event was modified using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.OriginalEndTimeZone</td>
-      <td>String</td>
-      <td>The end time zone that was set when the event was created.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.CreatedDateTime</td>
-      <td>String</td>
-      <td>The date and time the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ChangeKey</td>
-      <td>String</td>
-      <td>Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows Exchange to apply changes to the correct version of the object.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ID</td>
-      <td>String</td>
-      <td>The ID of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsOrganizer</td>
-      <td>Boolean</td>
-      <td>Whether the message sender is also the organizer.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Sensitivity</td>
-      <td>String</td>
-      <td>The sensitvity of the event. Possible values are: normal, personal, private, confidential.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsReminderOn</td>
-      <td>Boolean</td>
-      <td>Whether an alert is set to remind the user of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Organizer</td>
-      <td>Unknown</td>
-      <td>The organizer of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Subject</td>
-      <td>String</td>
-      <td>The text of the event's subject line.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.OnlineMeetingUrl</td>
-      <td>Unknown</td>
-      <td>A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only.</td>
-    </tr>
-  </tbody>
-</table>
+* * *
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!msgraph-calendar-update-event user="someemail@domain.com" event_id=Some_ID subject="updated"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+Updates an existing event.
+
+##### Base Command
+
+`msgraph-calendar-update-event`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The user's ID or `userPrincipalName`. | Optional |
+| event_id | The event's ID. | Required |
+| attendees | The collection of attendees for the event. | Optional |
+| body | The body of the message associated with the event. It can be in HTML or text format. | Optional |
+| subject | The text of the event's subject line. | Optional |
+| location | The location of the event for an online meeting, such as a Skype meeting. Read-only. | Optional |
+| end | The date and time the event ends. For example "'2017-05-28T12:00:00'". The default end time is UTC. | Optional |
+| original_end_time_zone | The end time zone when the event was created. | Optional |
+| start | The date and time the event starts. For example '2017-05-28T12:00:00'. The default start time is UTC. | Optional |
+| time_zone | Represents a time zone, for example, "Pacific Standard Time". For more information, clich [here](https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0) | Optional |
+| original_start | The original start time of the calendar item, using ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". | Optional |
+| original_start_time_zone | The start time zone when the event was created. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphCalendar.Event.OriginalStartTimeZone | String | The start time zone that was set when the event was created. |
+| MSGraphCalendar.Event.HasAttachments | Boolean | Whether the event has attachments. |
+| MSGraphCalendar.Event.ResponseRequested | Boolean | Whether the sender requests a response when the event is accepted or declined. |
+| MSGraphCalendar.Event.WebLink | String | The URL used to open the event in Outlook on the web. |
+| MSGraphCalendar.Event.Recurrence | Unknown | The recurrence pattern for the event. |
+| MSGraphCalendar.Event.Start | Unknown | The date, time, and time zone that the event starts. The default start time is UTC. |
+| MSGraphCalendar.Event.End | Unknown | The date, time, and time zone that the event ends. The default end time is UTC. |
+| MSGraphCalendar.Event.Location | Unknown | The location of the event. |
+| MSGraphCalendar.Event.Attendees | Unknown | The collection of attendees for the event. |
+| MSGraphCalendar.Event.Type | String | The event type. For example, "singleInstance", "occurrence", "exception", or "seriesMaster". Read-only. |
+| MSGraphCalendar.Event.ResponseStatus.response | Unknown | Indicates the type of response sent in response to an event message. |
+| MSGraphCalendar.Event.Importance | String | The importance of the event. For example, "low", "normal", or "high". |
+| MSGraphCalendar.Event.ICalUId | String | A unique identifier that is shared by all instances of an event across different calendars. |
+| MSGraphCalendar.Event.IsCancelled | Boolean | Whether the event has been canceled. |
+| MSGraphCalendar.Event.IsAllDay | Boolean | Whether the event lasts all day. |
+| MSGraphCalendar.Event.ReminderMinutesBeforeStart | Number | The number of minutes before the event start time of the reminder alert. |
+| MSGraphCalendar.Event.LastModifiedDateTime | String | The last time and date the event was modified using ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". |
+| MSGraphCalendar.Event.OriginalEndTimeZone | String | The end time zone that was set when the event was created. |
+| MSGraphCalendar.Event.CreatedDateTime | String | The date and time the event was created using ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". |
+| MSGraphCalendar.Event.ChangeKey | String | Identifies the version of the event object. Every time the event is changed, the `ChangeKey` changes as well. This allows the exchange to apply changes to the correct version of the object. |
+| MSGraphCalendar.Event.ID | String | The ID of the event. |
+| MSGraphCalendar.Event.IsOrganizer | Boolean | Whether the message sender is also the organizer. |
+| MSGraphCalendar.Event.Sensitivity | String | The sensitivity of the event. Possible values are, "normal", "personal", "private", or "confidential". |
+| MSGraphCalendar.Event.IsReminderOn | Boolean | Whether an alert is set to remind the user of the event. |
+| MSGraphCalendar.Event.Organizer | Unknown | The organizer of the event. |
+| MSGraphCalendar.Event.Subject | String | The text of the event's subject line. |
+| MSGraphCalendar.Event.OnlineMeetingUrl | Unknown | A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only. |
+
+##### Command Example
+
+`!msgraph-calendar-update-event user="someemail@domain.com" event_id=Some_ID subject="updated"`
+
+##### Context Example
+```
 {
     "MSGraphCalendar": [
         {
@@ -1515,241 +587,71 @@ Microsoft Graph Calendar enables you to create and manage different calendars an
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Event:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Subject</strong></th>
-      <th><strong>Organizer</strong></th>
-      <th><strong>Attendees</strong></th>
-      <th><strong>Start</strong></th>
-      <th><strong>End</strong></th>
-      <th><strong>ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> updated </td>
-      <td> User Name </td>
-      <td> None </td>
-      <td> 2022-11-11T15:00:00.0000000 </td>
-      <td> 2022-11-11T15:30:00.0000000 </td>
-      <td> Some_ID </td>
-    </tr>
-  </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+##### Human Readable Output
 
-<h3 id="msgraph-calendar-delete-event">7. msgraph-calendar-delete-event</h3>
-<hr>
-<p>Updates an existing event.</p>
-<h5>Base Command</h5>
-<p>
-  <code>msgraph-calendar-delete-event</code>
-</p>
+##### Event:
 
-<h5>Required Permissions</h5>
+| **Subject** | **Organizer** | **Attendees** | **Start** | **End** | **ID** |
+| --- | --- | --- | --- | --- | --- |
+| updated | User Name | None | 2022-11-11T15:00:00.0000000 | 2022-11-11T15:30:00.0000000 | Some_ID |
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>user</td>
-      <td>The user ID or userPrincipalName.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>event_id</td>
-      <td>The event ID.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Delete an existing event
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>MSGraphCalendar.Event.OriginalStartTimeZone</td>
-      <td>String</td>
-      <td>The start time zone when the event was created.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.HasAttachments</td>
-      <td>Boolean</td>
-      <td>Whether the event has attachments.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ResponseRequested</td>
-      <td>Boolean</td>
-      <td>Whether the sender receives a response when the event is accepted or declined.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.WebLink</td>
-      <td>String</td>
-      <td>The URL to open the event in Outlook on the web.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Recurrence</td>
-      <td>Unknown</td>
-      <td>The recurrence pattern for the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Start</td>
-      <td>Unknown</td>
-      <td>The date, time, and time zone that the event starts. By default, the start time is in UTC.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.End</td>
-      <td>Unknown</td>
-      <td>The date, time, and time zone that the event ends. By default, the end time is in UTC.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Location</td>
-      <td>Unknown</td>
-      <td>The location of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Attendees</td>
-      <td>Unknown</td>
-      <td>The collection of attendees for the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Type</td>
-      <td>String</td>
-      <td>The event type. For example, singleInstance, occurrence, exception, seriesMaster. Read-only.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ResponseStatus.response</td>
-      <td>Unknown</td>
-      <td>Indicates the type of response sent in response to an event message.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Importance</td>
-      <td>String</td>
-      <td>The importance of the event. For example, low, normal, high.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ICalUId</td>
-      <td>String</td>
-      <td>A unique identifier that is shared by all instances of an event across different calendars.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsCancelled</td>
-      <td>Boolean</td>
-      <td>Whether the event has been canceled.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsAllDay</td>
-      <td>Boolean</td>
-      <td>Whether the event lasts all day.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ReminderMinutesBeforeStart</td>
-      <td>Number</td>
-      <td>The number of minutes before the event start time of the reminder alert.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.LastModifiedDateTime</td>
-      <td>String</td>
-      <td>The time and date the event was last modified using the ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.OriginalEndTimeZone</td>
-      <td>String</td>
-      <td>The end time zone that was set when the event was created.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.CreatedDateTime</td>
-      <td>String</td>
-      <td>The time and date the event was created using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ChangeKey</td>
-      <td>String</td>
-      <td>Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.ID</td>
-      <td>String</td>
-      <td>The ID of the Event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsOrganizer</td>
-      <td>Boolean</td>
-      <td>Whether the message sender is also the organizer.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Sensitivity</td>
-      <td>String</td>
-      <td>The sensitivity of the event. Possible values are: normal, personal, private, confidential.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.IsReminderOn</td>
-      <td>Boolean</td>
-      <td>Whether an alert is set to remind the user of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Organizer</td>
-      <td>Unknown</td>
-      <td>The organizer of the event.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.Subject</td>
-      <td>String</td>
-      <td>The text of the event's subject line.</td>
-    </tr>
-    <tr>
-      <td>MSGraphCalendar.Event.OnlineMeetingUrl</td>
-      <td>Unknown</td>
-      <td>A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only.</td>
-    </tr>
-  </tbody>
-</table>
+* * *
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!msgraph-calendar-delete-event user="someemail@domain.com" event_id=Some_ID</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+Deletes an existing event.
+
+##### Base Command
+
+`msgraph-calendar-delete-event`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | The user ID or `userPrincipalName`. | Optional |
+| event_id | The event ID. | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphCalendar.Event.OriginalStartTimeZone | String | The start time zone that was set when the event was created. |
+| MSGraphCalendar.Event.HasAttachments | Boolean | Whether the event has attachments. |
+| MSGraphCalendar.Event.ResponseRequested | Boolean | Whether the sender receives a response when the event is accepted or declined. |
+| MSGraphCalendar.Event.WebLink | String | The URL used to open the event in Outlook on the web. |
+| MSGraphCalendar.Event.Recurrence | Unknown | The recurrence pattern for the event. |
+| MSGraphCalendar.Event.Start | Unknown | The date, time, and time zone that the event starts. The default start time is UTC. |
+| MSGraphCalendar.Event.End | Unknown | The date, time, and time zone that the event ends. The default end time is UTC. |
+| MSGraphCalendar.Event.Location | Unknown | The location of the event. |
+| MSGraphCalendar.Event.Attendees | Unknown | The collection of attendees for the event. |
+| MSGraphCalendar.Event.Type | String | The event type. For example, "singleInstance", "occurrence", "exception", or "seriesMaster". Read-only. |
+| MSGraphCalendar.Event.ResponseStatus.response | Unknown | Indicates the type of response sent in response to an event message. |
+| MSGraphCalendar.Event.Importance | String | The importance of the event. For example, "low", "normal", or "high". |
+| MSGraphCalendar.Event.ICalUId | String | A unique identifier that is shared by all instances of an event across different calendars. |
+| MSGraphCalendar.Event.IsCancelled | Boolean | Whether the event has been canceled. |
+| MSGraphCalendar.Event.IsAllDay | Boolean | Whether the event lasts all day. |
+| MSGraphCalendar.Event.ReminderMinutesBeforeStart | Number | The number of minutes before the event start time of the reminder alert. |
+| MSGraphCalendar.Event.LastModifiedDateTime | String | The time and date the event was last modified using the ISO 8601 format in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". |
+| MSGraphCalendar.Event.OriginalEndTimeZone | String | The end time zone that was set when the event was created. |
+| MSGraphCalendar.Event.CreatedDateTime | String | The time and date the event was created using ISO 8601 format and is always in UTC time. For example, "midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'". |
+| MSGraphCalendar.Event.ChangeKey | String | Identifies the version of the event object. Every time the event is changed, the `ChangeKey` changes as well. This allows the exchange to apply changes to the correct version of the object. |
+| MSGraphCalendar.Event.ID | String | The ID of the Event. |
+| MSGraphCalendar.Event.IsOrganizer | Boolean | Whether the message sender is also the organizer. |
+| MSGraphCalendar.Event.Sensitivity | String | The sensitivity of the event. Possible values are: "normal", "personal", "private", or "confidential". |
+| MSGraphCalendar.Event.IsReminderOn | Boolean | Whether an alert is set to remind the user of the event. |
+| MSGraphCalendar.Event.Organizer | Unknown | The organizer of the event. |
+| MSGraphCalendar.Event.Subject | String | The text of the event's subject line. |
+| MSGraphCalendar.Event.OnlineMeetingUrl | Unknown | A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only. |
+
+##### Command Example
+
+`!msgraph-calendar-delete-event user="someemail@domain.com" event_id=Some_ID`
+
+##### Context Example
+```
 {
     "MSGraphCalendar.Event": {
         "@Odata.Context": "https://graph.microsoft.com/v1.0/$metadata#users('oren%40demistodev.onmicrosoft.com')/calendars('Calendar')/events/$entity",
@@ -1830,15 +732,7 @@ Microsoft Graph Calendar enables you to create and manage different calendars an
         "WebLink": "https://outlook.office365.com/owa/?itemid=AAMkADMzZWNjMjBkLTE2ZGQtNDE1NS05OTg3LTI5ZTRlY2Q5YjFiMgBGAAAAAACtWsHs6cTlRYm91jJyqUgDBwCPVsAqlO3YRKNF6ZoON8u7AAAAAAENAACPVsAqlO3YRKNF6ZoON8u7AACqxAGGAAA%3D&exvsurl=1&path=/calendar/item"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
+```
+##### Human Readable Output
+
 Event was deleted successfully.
-</p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
