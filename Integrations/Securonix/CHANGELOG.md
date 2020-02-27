@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.2.3] - 2020-02-18
+Fixed an issue where the integration failed to fetch incidents.
+
 ## [20.2.0] - 2020-02-04
   - Added the *Host* parameter, which if supplied overrides the default hostname.
   - Added 4 commands.
