@@ -1151,7 +1151,6 @@ def main():
                 demisto.results('ok')
             else:
                 demisto.results('test failed')
-            pass
         elif demisto.command() == 'vt-private-check-file-behaviour':
             demisto.results(check_file_behaviour_command())
         elif demisto.command() == 'vt-private-get-domain-report':
@@ -1170,9 +1169,7 @@ def main():
             demisto.results(download_file_command())
 
     except Exception as e:
-        LOG(e.message)
-        LOG.print_log()
-        raise
+        return_error(str(e))
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
