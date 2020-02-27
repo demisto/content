@@ -1,14 +1,23 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from flask import Flask, Response
+from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any
+from typing import Callable, List, Any, Dict, cast
+from base64 import b64decode
+
+
+class Handler:
+    @staticmethod
+    def write(msg):
+        demisto.info(msg)
+
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
 PAGE_SIZE: int = 200
+DEMISTO_LOGGER: Handler = Handler()
 APP: Flask = Flask('demisto-edl')
 EDL_VALUES_KEY: str = 'dmst_edl_values'
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
@@ -51,7 +60,7 @@ def get_params_port(params: dict = demisto.params()) -> int:
 
 def refresh_edl_context(indicator_query: str, limit: int = 0) -> str:
     """
-    Refresh the cache values and format using an indicator_query to call demisto.findIndicators
+    Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
@@ -69,7 +78,7 @@ def save_context(now: datetime, out_dict: dict):
 
 def find_indicators_to_limit(indicator_query: str, limit: int) -> list:
     """
-    Finds indicators using demisto.findIndicators
+    Finds indicators using demisto.searchIndicators
     """
     iocs, _ = find_indicators_to_limit_loop(indicator_query, limit)
     return iocs[:limit]
@@ -78,13 +87,13 @@ def find_indicators_to_limit(indicator_query: str, limit: int) -> list:
 def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
                                   last_found_len: int = PAGE_SIZE):
     """
-    Finds indicators using while loop with demisto.findIndicators, and returns result and last page
+    Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
     """
     iocs: List[dict] = []
     if not last_found_len:
         last_found_len = total_fetched
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = demisto.findIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
@@ -142,6 +151,28 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     return res
 
 
+def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
+    """
+    Checks whether the authentication is valid.
+    :param headers: The headers of the http request
+    :param username: The integration's username
+    :param password: The integration's password
+    :return: Boolean which indicates whether the authentication is valid or not
+    """
+    credentials: str = headers.get('Authorization', '')
+    if not credentials or 'Basic ' not in credentials:
+        return False
+    encoded_credentials: str = credentials.split('Basic ')[1]
+    credentials: str = b64decode(encoded_credentials).decode('utf-8')
+    if ':' not in credentials:
+        return False
+    credentials_list = credentials.split(':')
+    if len(credentials_list) != 2:
+        return False
+    user, pwd = credentials_list
+    return user == username and pwd == password
+
+
 ''' ROUTE FUNCTIONS '''
 
 
@@ -151,6 +182,17 @@ def route_edl_values() -> Response:
     Main handler for values saved in the integration context
     """
     params = demisto.params()
+
+    credentials = params.get('credentials') if params.get('credentials') else {}
+    username: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
+    if username and password:
+        headers: dict = cast(Dict[Any, Any], request.headers)
+        if not validate_basic_authentication(headers, username, password):
+            err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
+            demisto.debug(err_msg)
+            return Response(err_msg, status=401)
+
     values = get_edl_ioc_values(
         on_demand=params.get('on_demand'),
         limit=try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG),
@@ -195,11 +237,10 @@ def test_module(args, params):
 
 def run_long_running(params):
     """
-    Starts the long running thread.
+    Start the long running server
     """
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
-    http_server: bool = params.get('http_flag', True)
 
     certificate_path = str()
     private_key_path = str()
@@ -208,7 +249,10 @@ def run_long_running(params):
         port = get_params_port(params)
         ssl_args = dict()
 
-        if certificate and private_key and not http_server:
+        if (certificate and not private_key) or (private_key and not certificate):
+            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
+
+        if certificate and private_key:
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
             certificate_file.write(bytes(certificate, 'utf-8'))
@@ -224,7 +268,7 @@ def run_long_running(params):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args)
+        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
         server.serve_forever()
     except Exception as e:
         if certificate_path:
@@ -257,6 +301,15 @@ def main():
     Main
     """
     params = demisto.params()
+
+    credentials = params.get('credentials') if params.get('credentials') else {}
+    username: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
+    if (username and not password) or (password and not username):
+        err_msg: str = 'If using credentials, both username and password should be provided.'
+        demisto.debug(err_msg)
+        raise DemistoException(err_msg)
+
     command = demisto.command()
     demisto.debug('Command being called is {}'.format(command))
     commands = {

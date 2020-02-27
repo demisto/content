@@ -1,6 +1,7 @@
 {
 	"id": "incident_activedirectoryaccountstatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-05T15:54:10.11675933Z",
 	"name": "Active Directory Account Status",
 	"ownerOnly": false,
