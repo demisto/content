@@ -84,6 +84,9 @@ EXPECTED = {
     "website": "2.2.2.2"
 }
 
+URL_TESTING_IN = '"url="https://test.com?key=val"'
+URL_TESTING_OUT = {'url': 'https://test.com?key=val'}
+
 
 def test_raw_to_dict():
     from SplunkPy import rawToDict
@@ -91,9 +94,13 @@ def test_raw_to_dict():
     response = rawToDict(actual_raw)
     list_response = rawToDict(LIST_RAW)
     raw_message = rawToDict(RAW_WITH_MESSAGE)
+    empty = rawToDict('')
+    url_test = rawToDict(URL_TESTING_IN)
 
     assert EXPECTED == response
     assert {} == list_response
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
     assert isinstance(raw_message, dict)
+    assert empty == {}
+    assert URL_TESTING_OUT == url_test
