@@ -75,20 +75,21 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
     out_dict = create_values_out_dict(iocs, out_format)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
-    save_context(now, limit, offset, out_format, indicator_query, out_dict)
+    save_context(now, limit, offset, out_format, indicator_query, iocs, out_dict)
     return out_dict[CTX_VALUES_KEY]
 
 
-def save_context(now: datetime, limit: int, offset: int, out_format: str, query: str, out_dict: dict):
+def save_context(now: datetime, limit: int, offset: int, out_format: str, query: str, iocs: list, out_dict: dict):
     """Saves export_iocs state and refresh time to context"""
-    demisto.setLastRun({
+    demisto.setIntegrationContext({
+        "last_output": out_dict,
         'last_run': date_to_timestamp(now),
         'last_limit': limit,
         'last_offset': offset,
         'last_format': out_format,
-        'last_query': query
+        'last_query': query,
+        'current_iocs': iocs
     })
-    demisto.setIntegrationContext(out_dict)
 
 
 def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
@@ -107,6 +108,11 @@ def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) ->
         offset_in_page = 0
 
     iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
+
+    # if offset in page is bigger than the amount of results returned return empty list
+    if len(iocs) <= offset_in_page:
+        return []
+
     return iocs[offset_in_page:limit + offset_in_page]
 
 
@@ -155,11 +161,11 @@ def create_values_out_dict(iocs: list, out_format: str) -> dict:
 
 def get_outbound_mimetype() -> str:
     """Returns the mimetype of the export_iocs"""
-    ctx = demisto.getIntegrationContext()
+    ctx = demisto.getIntegrationContext().get('last_output')
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
-def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format='text', last_update_data={},
+def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format=FORMAT_TEXT, last_update_data={},
                             cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the list
@@ -169,29 +175,50 @@ def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_fo
     last_offset = last_update_data.get('last_offset')
     last_format = last_update_data.get('last_format')
     last_query = last_update_data.get('last_query')
+    current_iocs = last_update_data.get('current_iocs')
+
     # on_demand ignores cache
     if on_demand:
-        values_str = get_ioc_values_str_from_context()
+        if out_format != last_format or limit != last_limit or offset != last_offset:
+            values_str = get_ioc_values_str_from_context(current_iocs, out_format, limit, offset)
+
+        else:
+            values_str = get_ioc_values_str_from_context()
+
     else:
         if last_update:
             # takes the cache_refresh_rate amount of time back since run time.
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            if last_update <= cache_time or last_limit != limit or last_offset != offset or \
-                    last_format != out_format or indicator_query != last_query:
+            if last_update <= cache_time or last_limit != limit or \
+                    last_offset != offset or last_format != out_format or indicator_query != last_query:
                 values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
             values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
+
     return values_str
 
 
-def get_ioc_values_str_from_context() -> str:
+def get_ioc_values_str_from_context(iocs=None, new_format: str = FORMAT_TEXT,
+                                    limit: int = 10000, offset: int = 0) -> str:
     """
     Extracts output values from cache
     """
-    cache_dict = demisto.getIntegrationContext()
-    return cache_dict.get(CTX_VALUES_KEY, '')
+    if iocs:
+        if offset > len(iocs):
+            return ''
+
+        iocs = iocs[offset: limit + offset]
+        returned_dict = create_values_out_dict(iocs, new_format)
+        current_cache = demisto.getIntegrationContext()
+        current_cache['last_output'] = returned_dict
+        demisto.setIntegrationContext(current_cache)
+
+    else:
+        returned_dict = demisto.getIntegrationContext().get('last_output')
+
+    return returned_dict.get(CTX_VALUES_KEY, '')
 
 
 def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
@@ -231,8 +258,8 @@ def validate_basic_authentication(headers: dict, username: str, password: str) -
 
 
 def get_request_args(params):
-    limit = try_parse_integer(request.args.get('n', params.get('list_size', 2500)), CTX_LIMIT_ERR_MSG)
-    offset = try_parse_integer(request.args.get('s', params.get('offset', 0)), CTX_OFFSET_ERR_MSG)
+    limit = try_parse_integer(request.args.get('n', params.get('list_size', 10000)), CTX_LIMIT_ERR_MSG)
+    offset = try_parse_integer(request.args.get('s', 0), CTX_OFFSET_ERR_MSG)
     out_format = request.args.get('v', params.get('format', 'text'))
     query = request.args.get('q', params.get('indicators_query'))
 
@@ -247,32 +274,36 @@ def route_list_values() -> Response:
     """
     Main handler for values saved in the integration context
     """
-    params = demisto.params()
+    try:
+        params = demisto.params()
 
-    credentials = params.get('credentials') if params.get('credentials') else {}
-    username: str = credentials.get('identifier', '')
-    password: str = credentials.get('password', '')
-    if username and password:
-        headers: dict = cast(Dict[Any, Any], request.headers)
-        if not validate_basic_authentication(headers, username, password):
-            err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
-            demisto.debug(err_msg)
-            return Response(err_msg, status=401)
+        credentials = params.get('credentials') if params.get('credentials') else {}
+        username: str = credentials.get('identifier', '')
+        password: str = credentials.get('password', '')
+        if username and password:
+            headers: dict = cast(Dict[Any, Any], request.headers)
+            if not validate_basic_authentication(headers, username, password):
+                err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
+                demisto.debug(err_msg)
+                return Response(err_msg, status=401)
 
-    limit, offset, out_format, query = get_request_args(params)
+        limit, offset, out_format, query = get_request_args(params)
 
-    values = get_outbound_ioc_values(
-        out_format=out_format,
-        on_demand=params.get('on_demand'),
-        limit=limit,
-        offset=offset,
-        last_update_data=demisto.getLastRun(),
-        indicator_query=query,
-        cache_refresh_rate=params.get('cache_refresh_rate')
-    )
+        values = get_outbound_ioc_values(
+            out_format=out_format,
+            on_demand=params.get('on_demand'),
+            limit=limit,
+            offset=offset,
+            last_update_data=demisto.getIntegrationContext(),
+            indicator_query=query,
+            cache_refresh_rate=params.get('cache_refresh_rate')
+        )
 
-    mimetype = get_outbound_mimetype()
-    return Response(values, status=200, mimetype=mimetype)
+        mimetype = get_outbound_mimetype()
+        return Response(values, status=200, mimetype=mimetype)
+
+    except Exception as e:
+        return Response(str(e), status=500, mimetype='text/plain')
 
 
 ''' COMMAND FUNCTIONS '''
