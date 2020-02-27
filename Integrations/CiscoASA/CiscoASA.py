@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 import urllib3
 
@@ -10,7 +10,12 @@ from CommonServerUserPython import *
 urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES'''
+
 INTEGRATION_COMMAND = "cisco-asa"
+OBJECT_TYPES_DICT = {
+    'IPv4': 'IPv4Address',
+    'IP-Network': 'IPv4Network'
+}
 
 '''Client'''
 
@@ -156,6 +161,26 @@ class Client(BaseClient):
 
     def restore(self, data: dict):
         self._http_request("POST", "/api/restore", json_data=data, resp_type='response')
+
+    def get_network_obejcts(self):
+        obj_res = self._http_request('GET', '/api/objects/networkobjects')
+        return obj_res.get('items', [])
+
+    def create_object(self, obj_name, obj_type, obj_value):
+        data = {
+                  "kind": "object#NetworkObj",
+                  "name": obj_name,
+                  "host": {
+                    "kind": OBJECT_TYPES_DICT.get(obj_type),
+                    "value": obj_value
+                  }
+                }
+        try:
+            return self._http_request('POST', '/api/objects/networkobjects', json_data=data, ok_codes=(200,201,204),
+                                  resp_type='response')
+        except Exception:
+            raise ValueError("This network object already exists.")
+
 
 
 '''HELPER COMMANDS'''
@@ -462,6 +487,33 @@ def edit_rule_command(client: Client, args):
         else:
             raise e
 
+@logger
+def list_objects_command(client: Client, args: dict):
+    objects = client.get_network_obejcts()
+    obj_names = argToList(args.get('object_name'))
+    obj_ids = argToList(args.get('object_id'))
+    formated_objects = []
+    for object in objects:
+        if (not obj_names and not obj_ids) or object.get('name') in obj_names or object.get('objectId') in obj_ids:
+            object.pop('selfLink')
+            object.pop('kind')
+            formated_obj = camelize(object)
+            formated_obj['ID'] = formated_obj.pop('Objectid')
+            formated_objects.append(formated_obj)
+    ec = {'CiscoASA.NetworkObject(val.ID == obj.ID)': formated_objects}
+    hr = tableToMarkdown("Network Objects", formated_objects, headers=['ID', 'Name', 'Host', 'Description'])
+    return hr, ec, json.dumps(formated_objects)
+
+
+def create_object_command(client: Client, args: dict):
+    obj_type = args.get('object_type')
+    obj_name = args.get('object_name')
+    obj_value = args.get('object_value')
+    if obj_type not in OBJECT_TYPES_DICT.keys():
+        raise ValueError("Please enter an object type from the given dropdown list.")
+    client.create_object(obj_name, obj_type, obj_value)
+    return list_objects_command(client, {'object_name': obj_name})
+
 
 @logger
 def test_command(client: Client):
@@ -495,7 +547,9 @@ def main():
         f'{INTEGRATION_COMMAND}-get-rule-by-id': rule_by_id_command,
         f'{INTEGRATION_COMMAND}-create-rule': create_rule_command,
         f'{INTEGRATION_COMMAND}-delete-rule': delete_rule_command,
-        f'{INTEGRATION_COMMAND}-edit-rule': edit_rule_command
+        f'{INTEGRATION_COMMAND}-edit-rule': edit_rule_command,
+        f'{INTEGRATION_COMMAND}-list-network-objects': list_objects_command,
+        f'{INTEGRATION_COMMAND}-create-network-object': create_object_command
     }
 
     LOG(f'Command being called is {demisto.command()}')
@@ -517,5 +571,6 @@ def main():
         raise
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+

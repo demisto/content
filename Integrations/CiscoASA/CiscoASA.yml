@@ -25,7 +25,6 @@ configuration:
   name: isASAv
   required: false
   type: 8
-  additionalinfo: If you are using a virtual ASA (ASAv) and not a physical one, check this box.
 description: Manage Cisco ASA
 display: Cisco ASA
 name: Cisco ASA
@@ -439,9 +438,78 @@ script:
     - contextPath: CiscoASA.Rules.SourceService
       description: The source service.
       type: String
+  - arguments:
+    - default: false
+      description: Get a specific network object by name. Could be a list of names.
+      isArray: true
+      name: object_name
+      required: false
+      secret: false
+    - default: false
+      description: Get a specific network object by ID. Could be a list of IDs.
+      isArray: true
+      name: object_id
+      required: false
+      secret: false
+    deprecated: false
+    description: List all configured ntework objects.
+    execution: false
+    name: cisco-asa-list-network-objects
+    outputs:
+    - contextPath: CiscoASA.NetworkObject.ID
+      description: The ID of the network object.
+      type: String
+    - contextPath: CiscoASA.NetworkObject.Host
+      description: The host information of the network object.
+      type: String
+    - contextPath: CiscoASA.NetworkObject.Description
+      description: A description of the network object, if exists.
+      type: String
+    - contextPath: CiscoASA.NetworkObject.Name
+      description: The name of the network object.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of network object to create.
+      isArray: false
+      name: object_type
+      predefined:
+      - IPv4
+      - IP-Network
+      required: true
+      secret: false
+    - default: false
+      description: The name of the object to create.
+      isArray: false
+      name: object_name
+      required: true
+      secret: false
+    - default: false
+      description: The value of the network object to create.
+      isArray: false
+      name: object_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Create network object.
+    execution: false
+    name: cisco-asa-create-network-object
+    outputs:
+    - contextPath: CiscoASA.NetworkObject.ID
+      description: The ID of the network object.
+      type: String
+    - contextPath: CiscoASA.NetworkObject.Host
+      description: The host information of the network object.
+      type: String
+    - contextPath: CiscoASA.NetworkObject.Description
+      description: A description of the network object, if exists.
+      type: String
+    - contextPath: CiscoASA.NetworkObject.Name
+      description: The name of the network object.
+      type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
