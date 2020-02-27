@@ -76,6 +76,7 @@ configuration:
   - all
   - ip
   - domain
+  - domainGlob
   required: true
   type: 15
 - display: Trust any certificate (not secure)
@@ -111,6 +112,7 @@ script:
       - all
       - domain
       - ip
+      - domainGlob
       required: false
       secret: false
     deprecated: false

@@ -25,3 +25,18 @@ def test_fetch_domains(requests_mock):
     )
     indicators = fetch_indicators_command(client, client.DOMAIN_TYPE)
     assert 9 == len(indicators)
+    # making sure all domains are not of type domain glob
+    assert all(['*' not in indicator.get('value') for indicator in indicators])
+
+
+def test_fetch_domain_globs(requests_mock):
+    ip_path = "./TestData/detalied-domainrepdata.txt"
+    with open(ip_path) as f:
+        data = f.read()
+    requests_mock.get(
+        "https://example.com/cool/reputation/detailed-domainrepdata.txt", text=data
+    )
+    indicators = fetch_indicators_command(client, client.DOMAIN_GLOB_TYPE)
+    assert 3 == len(indicators)
+    # making sure all domains are of type domain glob
+    assert all(['*' in indicator.get('value') for indicator in indicators])

@@ -19,11 +19,12 @@ class Client(BaseClient):
         super().__init__(base_url, **kwargs)
 
     DOMAIN_TYPE = "domain"
+    DOMAIN_GLOB_TYPE = "domainGlob"
     IP_TYPE = "ip"
     IP_URL = "detailed-iprepdata.txt"
     DOMAIN_URL = "detailed-domainrepdata.txt"
     ALL_TYPE = "all"
-    TYPES = (DOMAIN_TYPE, IP_TYPE, ALL_TYPE)
+    TYPES = (DOMAIN_TYPE, DOMAIN_GLOB_TYPE, IP_TYPE, ALL_TYPE)
     indicator_types_to_endpoint = {
         IP_TYPE: [IP_URL],
         DOMAIN_TYPE: [DOMAIN_URL],
@@ -87,6 +88,10 @@ class Client(BaseClient):
                 # add type/value to item.
                 if "domain" in item:
                     item["type"] = FeedIndicatorType.Domain
+                    # As part of the domain feed, also DomainGlob indicators will be returned, so we are checking if the
+                    # domain has '*' in their value
+                    if '*' in str(item.get("domain")):
+                        item["type"] = FeedIndicatorType.DomainGlob
                     item["value"] = item.get("domain")
                 elif "ip" in item:
                     item["type"] = FeedIndicatorType.IP
@@ -136,7 +141,19 @@ class Client(BaseClient):
         """
         return [
             self._process_item(item)
-            for item in self._build_iterator_domain()
+            for item in self._build_iterator_domain() if item.get('type') == FeedIndicatorType.Domain
+        ]
+
+    def get_indicators_domain_glob(self) -> List[dict]:
+        """ Gets indicator's dict of domainGlobs
+        The same feed is used for both domains and domainGlobs
+
+        Returns:
+            list of indicators
+        """
+        return [
+            self._process_item(item)
+            for item in self._build_iterator_domain() if item.get('type') == FeedIndicatorType.DomainGlob
         ]
 
     def get_indicators_ip(self) -> List[dict]:
@@ -204,6 +221,8 @@ def fetch_indicators_command(client: Client, indicator_type: Optional[str]):
     """
     if indicator_type == client.IP_TYPE:
         return client.get_indicators_ip()
+    elif indicator_type == client.DOMAIN_GLOB_TYPE:
+        return client.get_indicators_domain_glob()
     elif indicator_type == client.DOMAIN_TYPE:
         return client.get_indicators_domain()
     else:
