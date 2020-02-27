@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: OktaV2
+  id: Okta v2
   version: -1
 configuration:
 - display: Okta URL (https://<domain>.okta.com)
@@ -1787,4 +1787,4 @@ script:
   subtype: python3
   type: python
 tests:
-  - OktaV2-Test
+- OktaV2-Test
