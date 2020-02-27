@@ -978,13 +978,13 @@
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100
+            "memory_threshold": 120
         },
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100
+            "memory_threshold": 120
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -1265,7 +1265,8 @@
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
-            "timeout": 1200
+            "timeout": 1200,
+            "pid_threshold": 10
         },
         {
             "integrations": "Recorded Future",
@@ -2506,7 +2507,6 @@
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
 
 
