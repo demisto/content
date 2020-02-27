@@ -97,17 +97,17 @@ def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) ->
     """
     # calculate the starting page (each page holds 200 entries)
     if offset:
-        next_page = int(offset / 200)
+        next_page = int(offset / PAGE_SIZE)
 
         # set the offset from the starting page
-        parsed_offset = offset - (200 * next_page)
+        offset_in_page = offset - (PAGE_SIZE * next_page)
 
     else:
         next_page = 0
-        parsed_offset = 0
+        offset_in_page = 0
 
     iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
-    return iocs[parsed_offset:limit + parsed_offset]
+    return iocs[offset_in_page:limit + offset_in_page]
 
 
 def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
@@ -231,32 +231,13 @@ def validate_basic_authentication(headers: dict, username: str, password: str) -
 
 
 def get_request_args(params):
-    limit = request.args.get('n', None)
-    offset = request.args.get('s', None)
-    out_format = request.args.get('v', None)
-    query = request.args.get('q', None)
+    limit = try_parse_integer(request.args.get('n', params.get('list_size', 2500)), CTX_LIMIT_ERR_MSG)
+    offset = try_parse_integer(request.args.get('s', params.get('offset', 0)), CTX_OFFSET_ERR_MSG)
+    out_format = request.args.get('v', params.get('format', 'text'))
+    query = request.args.get('q', params.get('indicators_query'))
 
-    if limit is None:
-        limit = try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)
-
-    else:
-        limit = try_parse_integer(limit, CTX_LIMIT_ERR_MSG)
-
-    if offset is None:
-        offset = try_parse_integer(demisto.params().get('offset'), CTX_OFFSET_ERR_MSG)
-
-    else:
-        offset = try_parse_integer(offset, CTX_OFFSET_ERR_MSG)
-
-    if out_format is None:
-        out_format = params.get('format')
-
-    else:
-        if out_format not in ['text', 'json', 'json-seq', 'csv']:
-            raise DemistoException(CTX_FORMAT_ERR_MSG)
-
-    if query is None:
-        query = params.get('indicators_query')
+    if out_format not in ['text', 'json', 'json-seq', 'csv']:
+        raise DemistoException(CTX_FORMAT_ERR_MSG)
 
     return limit, offset, out_format, query
 
