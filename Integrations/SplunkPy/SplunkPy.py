@@ -1,3 +1,5 @@
+from splunklib.binding import HTTPError
+
 import demistomock as demisto
 from CommonServerPython import *
 import splunklib.client as client
@@ -559,7 +561,10 @@ def test_module(service):
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
         searchquery_oneshot = demisto.params()['fetchQuery']
-        service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+        try:
+            service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+        except HTTPError as error:
+            return_error(str(error))
 
 
 def main():
