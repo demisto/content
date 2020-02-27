@@ -16,7 +16,7 @@ class TestHelperFunctions:
         from ExportIndicators import get_outbound_ioc_values
         with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
-            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
             ioc_list = get_outbound_ioc_values(
                 out_format='text',
                 on_demand=True,
@@ -34,7 +34,7 @@ class TestHelperFunctions:
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
-            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
             ioc_list = ei.get_outbound_ioc_values(
@@ -55,7 +55,7 @@ class TestHelperFunctions:
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
-            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
             ioc_list = ei.get_outbound_ioc_values(

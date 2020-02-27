@@ -17,16 +17,10 @@ configuration:
   - csv
   required: false
   type: 15
-- defaultvalue: '2500'
+- defaultvalue: '10000'
   display: List Size
   name: list_size
   required: true
-  type: 0
-- defaultvalue: '0'
-  display: The starting entry index from which to export
-  hidden: false
-  name: offset
-  required: false
   type: 0
 - display: Update On-Demand Only
   name: on_demand
