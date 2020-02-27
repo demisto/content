@@ -2583,7 +2583,8 @@
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
-                "pid_threshold": 8
+                "pid_threshold": 11,
+                "memory_threshold": 20
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
