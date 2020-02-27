@@ -502,7 +502,8 @@ class Docker:
         stdout, stderr = cls.run_shell_command(cmd)
         if stderr:
             print_warning("Received stderr from docker inspect command. Additional information: {}".format(stderr))
-        return stdout or ""
+        res = stdout or ""
+        return res.strip()
 
     @classmethod
     def get_integration_image(cls, integration_config):
@@ -614,8 +615,10 @@ class Docker:
 
             memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold')
                                 or docker_thresholds.get(image_name, {}).get('memory_threshold') or def_memory_threshold)
-            print("Checking container: {} (image: {}) for memory threshold: {}".format(container_name,
-                                                                                       image_full, memory_threshold))
+            pid_threshold = (docker_thresholds.get(image_full, {}).get('pid_threshold')
+                             or docker_thresholds.get(image_name, {}).get('pid_threshold') or def_pid_threshold)
+            print("Checking container: {} (image: {}) for memory: {} pid: {} thresholds ...".format(
+                  container_name, image_full, memory_threshold, pid_threshold))
             if memory_usage > memory_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the memory threshold, '
                                   'configured: {} MiB and actual memory usage is {} MiB.\n'
@@ -623,9 +626,6 @@ class Docker:
                                   'in conf.json with value that is greater than {}\n'
                                   .format(container_name, memory_threshold, memory_usage, memory_usage))
                 failed_memory_test = True
-            pid_threshold = (docker_thresholds.get(image_full, {}).get('pid_threshold')
-                             or docker_thresholds.get(image_name, {}).get('pid_threshold') or def_pid_threshold)
-            print("Checking docker image: {} for pid threshold: {}".format(image_full, pid_threshold))
             if pids_usage > pid_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the pids threshold, '
                                   'configured: {} and actual pid number is {}.\n'
