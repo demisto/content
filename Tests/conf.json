@@ -945,7 +945,7 @@
             "timeout": 240
         },
         {
-            "integrations": "OktaV2",
+            "integrations": "Okta v2",
             "playbookID": "OktaV2-Test",
             "nightly": true,
             "timeout": 240
