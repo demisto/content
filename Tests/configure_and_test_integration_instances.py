@@ -165,12 +165,18 @@ def configure_integration_instance(integration, client, prints_manager):
     integration_instance_name = integration.get('instance_name', '')
     integration_params = integration.get('params')
     is_byoi = integration.get('byoi', True)
+    validate_test = integration.get('validate_test', True)
 
     integration_configuration = __get_integration_config(client, integration_name, prints_manager)
     prints_manager.execute_thread_prints(0)
     if not integration_configuration:
         return None
 
+    # In the integration configuration in content-test-conf conf.json, the test_validate flag was set to false
+    if not validate_test:
+        print_warning(
+            "Skipping configuration for integration: {} (it has test_validate set to false)".format(integration_name))
+        return None
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                           integration_instance_name, is_byoi)
     return module_instance
@@ -339,6 +345,7 @@ def set_integration_params(integrations, secret_params, instance_names):
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
+            integration['validate_test'] = matched_integration_params.get('validate_test', True)
 
     return True
 
