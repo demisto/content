@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-Code42 provides simple, fast detection & response to everyday data loss from insider threats by focusing on customer data on endpoints and the cloud to answer questions like:
+Code42 provides simple, fast detection and response to everyday data loss from insider threats by focusing on customer data on endpoints and the cloud to answer questions like:
 
 * Where is my data?
 * Where has my data been?
