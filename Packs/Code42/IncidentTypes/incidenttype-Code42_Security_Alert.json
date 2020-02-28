@@ -1,0 +1,23 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#fe5723",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Code42 Security Alert",
+	"locked": false,
+	"name": "Code42 Security Alert",
+	"playbookId": "49e57919-bcd8-4e9a-8e6a-384c7c411b64",
+	"preProcessingScript": "",
+	"readonly": false,
+	"reputationCalc": 1,
+	"sortValues": null,
+	"system": false,
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

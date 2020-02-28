@@ -1,0 +1,290 @@
+commonfields:
+  id: Code42
+  version: -1
+name: Code42
+display: Code42
+category: Data Enrichment & Threat Intelligence
+description: Code42 identifies potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
+configuration:
+- display: ""
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Code42 Console URL for the pod your Code42 instance is running in
+  name: console_url
+  defaultvalue: console.us.code42.com
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Alert severities to fetch when fetching incidents
+  name: alert_severity
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - High
+  - Medium
+  - Low
+- display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: fetch_time
+  defaultvalue: 24 hours
+  type: 0
+  required: false
+- display: Alerts to fetch per run; note that increasing this value may result in
+    slow performance if too many results are returned at once
+  name: fetch_limit
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Include the list of files in returned incidents.
+  name: include_files
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: code42-securitydata-search
+    arguments:
+    - name: json
+      description: JSON query payload using Code42 query syntax
+    - name: hash
+      description: MD5 or SHA256 hash of file to search for
+    - name: username
+      description: Username to search for
+    - name: hostname
+      description: Hostname to search for
+    - name: exposure
+      auto: PREDEFINED
+      predefined:
+      - RemovableMedia
+      - ApplicationRead
+      - CloudStorage
+      - IsPublic
+      - SharedViaLink
+      - SharedViaDomain
+      description: Exposure types to search for
+      isArray: true
+    - name: results
+      description: Number of results to return, default is 100
+      defaultValue: "100"
+    outputs:
+    - contextPath: Code42.SecurityData.EventTimestamp
+      description: Timestamp for event
+      type: date
+    - contextPath: Code42.SecurityData.FileCreated
+      description: File creation date
+      type: date
+    - contextPath: Code42.SecurityData.EndpointID
+      description: Code42 device ID
+      type: string
+    - contextPath: Code42.SecurityData.DeviceUsername
+      description: Username that device is associated with in Code42
+      type: string
+    - contextPath: Code42.SecurityData.EmailFrom
+      description: Sender email address for email exfiltration events
+      type: string
+    - contextPath: Code42.SecurityData.EmailTo
+      description: Recipient emial address for email exfiltration events
+      type: string
+    - contextPath: Code42.SecurityData.EmailSubject
+      description: Email subject line for email exfiltration events
+      type: string
+    - contextPath: Code42.SecurityData.EventID
+      description: Security Data event ID
+      type: string
+    - contextPath: Code42.SecurityData.EventType
+      description: Type of Security Data event
+      type: string
+    - contextPath: Code42.SecurityData.FileCategory
+      description: Type of file as determined by Code42 engine
+      type: string
+    - contextPath: Code42.SecurityData.FileOwner
+      description: Owner of file
+      type: string
+    - contextPath: Code42.SecurityData.FileName
+      description: File name
+      type: string
+    - contextPath: Code42.SecurityData.FilePath
+      description: Path to file
+      type: string
+    - contextPath: Code42.SecurityData.FileSize
+      description: Size of file in bytes
+      type: number
+    - contextPath: Code42.SecurityData.FileModified
+      description: File modification date
+      type: date
+    - contextPath: Code42.SecurityData.FileMD5
+      description: MD5 hash of file
+      type: string
+    - contextPath: Code42.SecurityData.FileHostname
+      description: Hostname where file event was captured
+      type: string
+    - contextPath: Code42.SecurityData.DevicePrivateIPAddress
+      description: Private IP addresses of device where event was captured
+      type: string
+    - contextPath: Code42.SecurityData.DevicePublicIPAddress
+      description: Public IP address of device where event was captured
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaType
+      description: Type of removate media
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaCapacity
+      description: Total capacity of removable media in bytes
+      type: number
+    - contextPath: Code42.SecurityData.RemovableMediaMediaName
+      description: Full name of removable media
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaName
+      description: Name of removable media
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaSerialNumber
+      description: Serial number for removable medial device
+      type: string
+    - contextPath: Code42.SecurityData.RemovableMediaVendor
+      description: Vendor name for removable device
+      type: string
+    - contextPath: Code42.SecurityData.FileSHA256
+      description: SHA256 hash of file
+      type: string
+    - contextPath: Code42.SecurityData.FileShared
+      description: Whether file is shared using cloud file service
+      type: boolean
+    - contextPath: Code42.SecurityData.FileSharedWith
+      description: Accounts that file is shared with on cloud file service
+      type: string
+    - contextPath: Code42.SecurityData.Source
+      description: Source of file event, Cloud or Endpoint
+      type: string
+    - contextPath: Code42.SecurityData.ApplicationTabURL
+      description: URL associated with application read event
+      type: string
+    - contextPath: Code42.SecurityData.ProcessName
+      description: Process name for application read event
+      type: string
+    - contextPath: Code42.SecurityData.ProcessOwner
+      description: Process owner for application read event
+      type: string
+    - contextPath: Code42.SecurityData.WindowTitle
+      description: Process name for application read event
+      type: string
+    - contextPath: Code42.SecurityData.FileURL
+      description: URL of file on cloud file service
+      type: string
+    - contextPath: Code42.SecurityData.Exposure
+      description: Exposure type for event
+      type: string
+    - contextPath: Code42.SecurityData.SharingTypeAdded
+      description: Type of sharing added to file
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.Path
+      description: File path
+      type: string
+    - contextPath: File.Size
+      description: File size in bytes
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of file
+      type: string
+    - contextPath: File.SHA256
+      description: FSHA256 hash of file
+      type: string
+    - contextPath: File.Hostname
+      description: Hostname where file event was captured
+      type: string
+    description: Search for a file in Security Data by JSON query, hash, username,
+      device hostname, exfiltration type, or a combination of parameters. At least
+      one parameter must be passed to the command. If a JSON parameter is passed,
+      it will be used to the exclusion of other parameters, otherwise parameters will
+      be combined with an AND clause.
+  - name: code42-alert-get
+    arguments:
+    - name: id
+      required: true
+      description: Alert ID to retrieve
+    outputs:
+    - contextPath: Code42.SecurityAlert.Username
+      description: Username associated with alert
+      type: string
+    - contextPath: Code42.SecurityAlert.Occurred
+      description: Alert timestamp
+      type: date
+    - contextPath: Code42.SecurityAlert.Description
+      description: Description of alert
+      type: string
+    - contextPath: Code42.SecurityAlert.ID
+      description: Alert ID
+      type: string
+    - contextPath: Code42.SecurityAlert.Name
+      description: Alert rule name that generated alert
+      type: string
+    - contextPath: Code42.SecurityAlert.State
+      description: Alert state
+      type: string
+    - contextPath: Code42.SecurityAlert.Type
+      description: Type of alert
+      type: string
+    - contextPath: Code42.SecurityAlert.Severity
+      description: Severity of alert
+      type: string
+    description: Retrieve alert details by alert ID
+  - name: code42-departingemployee-add
+    arguments:
+    - name: username
+      required: true
+      description: Username to add to the Departing Employee Lens
+    - name: departuredate
+      description: Departure date for the employee in YYYY-MM-DD format
+    - name: note
+      description: Note to attach to Departing Employee
+    outputs:
+    - contextPath: Code42.DepartingEmployee.CaseID
+      description: Internal Code42 Case ID for Departing Employee
+      type: string
+    - contextPath: Code42.DepartingEmployee.Username
+      description: Username for Departing Employee
+      type: string
+    - contextPath: Code42.DepartingEmployee.Note
+      description: Note associated with Departing Employee
+      type: string
+    - contextPath: Code42.DepartingEmployee.DepartureDate
+      description: Departure date for Departing Employee
+    description: Add a user to the Departing Employee Lens
+  - name: code42-departingemployee-remove
+    arguments:
+    - name: username
+      description: Username to remove from the Departing Employee Lens
+    outputs:
+    - contextPath: Code42.DepartingEmployee.CaseID
+      description: Internal Code42 Case ID for Departing Employee
+    - contextPath: Code42.DepartingEmployee.Username
+      description: Username for Departing Employee
+    description: Remove a user from the Departing Employee Lens
+  - name: code42-alert-resolve
+    arguments:
+    - name: id
+      required: true
+      description: Alert ID to resolve
+    outputs:
+    - contextPath: Code42.SecurityAlert.ID
+      description: Alert ID
+      type: string
+    description: Resolve a Code42 Security alert
+  dockerimage: demisto/py42
+  isfetch: true
+  runonce: false
+  subtype: python3
