@@ -5,7 +5,7 @@
 		"TypeName": "",
 		"id": "Code42 Security Alert",
 		"kind": "details",
-		"modified": "2020-02-27T23:14:42.262541528Z",
+		"modified": "2020-02-28T16:54:37.432056818Z",
 		"name": "",
 		"system": false,
 		"tabs": [
@@ -120,7 +120,7 @@
 						"name": "Linked Incidents",
 						"static": false,
 						"type": "linkedIncidents",
-						"w": 3,
+						"w": 1,
 						"x": 0,
 						"y": 9
 					},
@@ -133,8 +133,8 @@
 						"static": false,
 						"type": "childInv",
 						"w": 1,
-						"x": 2,
-						"y": 2
+						"x": 1,
+						"y": 9
 					},
 					{
 						"displayType": "ROW",
@@ -151,7 +151,7 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 4,
 						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
 						"items": [
 							{
@@ -237,8 +237,8 @@
 						"name": "Closing Information",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 4
+						"x": 2,
+						"y": 2
 					},
 					{
 						"displayType": "CARD",
@@ -363,7 +363,7 @@
 			}
 		],
 		"typeId": "Code42 Security Alert",
-		"version": 6
+		"version": 7
 	},
 	"typeId": "Code42 Security Alert",
 	"version": -1
