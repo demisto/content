@@ -284,7 +284,7 @@ script:
       description: Alert ID
       type: string
     description: Resolve a Code42 Security alert
-  dockerimage: demisto/py42
+  dockerimage: demisto/py42:1.0.0.6301
   isfetch: true
   runonce: false
   subtype: python3
