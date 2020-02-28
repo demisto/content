@@ -1,2 +1,2 @@
 ## [Unreleased]
-Improved display for integration params.
+Improved display of integration parameters.
