@@ -1,0 +1,22 @@
+commonfields:
+  id: 40bf81ea-b0da-4ba4-809b-42b7fcee160b
+  version: 14
+name: PopulateExfiltratedFilesList
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: exfiltratedfiles
+  required: true
+  default: true
+  description: List of exfiltrated files with which to populated the Exfiltrated Files
+    List
+  isArray: true
+outputs:
+- {}
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.1.6120
+runas: DBotWeakRole
