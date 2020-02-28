@@ -1,4 +1,5 @@
 import json
+from py42.sdk import SDK
 from Code42 import (
     Code42Client,
     build_query_payload,
@@ -760,6 +761,7 @@ def test_alert_get_command(requests_mock):
     create_alert_mocks(requests_mock)
     requests_mock.post(MOCK_URL + '/svc/api/v1/query-details', json=MOCK_ALERT_DETAILS_RESPONSE[0])
     client = Code42Client(
+        sdk=SDK,
         base_url=MOCK_URL,
         auth=("123", "123"),
         verify=False,
@@ -773,6 +775,7 @@ def test_alert_resolve_command(requests_mock):
     create_alert_mocks(requests_mock)
     requests_mock.post(MOCK_URL + '/svc/api/v1/resolve-alert', json={'dummyresponse': True})
     client = Code42Client(
+        sdk=SDK,
         base_url=MOCK_URL,
         auth=("123", "123"),
         verify=False,
@@ -790,6 +793,7 @@ def test_departingemployee_remove_command(requests_mock):
                        json={'username': 'user1@example.com', 'caseId': 123, 'tenantId': '123'})
     requests_mock.post(MOCK_URL + '/svc/api/v1/departingemployee/resolve')
     client = Code42Client(
+        sdk=SDK,
         base_url=MOCK_URL,
         auth=("123", "123"),
         verify=False,
@@ -803,6 +807,7 @@ def test_departingemployee_add_command(requests_mock):
     create_departingemployee_mocks(requests_mock)
     requests_mock.post(MOCK_URL + '/svc/api/v1/departingemployee/create', json={'caseId': 123})
     client = Code42Client(
+        sdk=SDK,
         base_url=MOCK_URL,
         auth=("123", "123"),
         verify=False,
@@ -817,6 +822,7 @@ def test_securitydata_search_command(requests_mock):
     create_securitydata_mocks(requests_mock)
     requests_mock.post(MOCK_URL + '/forensic-search/queryservice/api/v1/fileevent', json=MOCK_SECURITY_EVENT_RESPONSE)
     client = Code42Client(
+        sdk=SDK,
         base_url=MOCK_URL,
         auth=("123", "123"),
         verify=False,
@@ -832,6 +838,7 @@ def test_fetch_incidents_first_run(requests_mock, mocker):
     requests_mock.post(MOCK_URL + '/svc/api/v1/query-details', json=MOCK_ALERT_DETAILS_RESPONSE[0])
     requests_mock.post(MOCK_URL + '/forensic-search/queryservice/api/v1/fileevent', json=MOCK_SECURITY_EVENT_RESPONSE)
     client = Code42Client(
+        sdk=SDK,
         base_url=MOCK_URL,
         auth=("123", "123"),
         verify=False,
@@ -858,6 +865,7 @@ def test_fetch_incidents_next_run(requests_mock, mocker):
     requests_mock.post(MOCK_URL + '/svc/api/v1/query-details', json=MOCK_ALERT_DETAILS_RESPONSE[0])
     requests_mock.post(MOCK_URL + '/forensic-search/queryservice/api/v1/fileevent', json=MOCK_SECURITY_EVENT_RESPONSE)
     client = Code42Client(
+        sdk=SDK,
         base_url=MOCK_URL,
         auth=("123", "123"),
         verify=False,
@@ -884,6 +892,7 @@ def test_fetch_incidents_fetch_limit(requests_mock, mocker):
     requests_mock.post(MOCK_URL + '/svc/api/v1/query-details', json=MOCK_ALERT_DETAILS_RESPONSE[0])
     requests_mock.post(MOCK_URL + '/forensic-search/queryservice/api/v1/fileevent', json=MOCK_SECURITY_EVENT_RESPONSE)
     client = Code42Client(
+        sdk=SDK,
         base_url=MOCK_URL,
         auth=("123", "123"),
         verify=False,

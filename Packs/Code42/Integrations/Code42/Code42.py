@@ -96,10 +96,10 @@ class Code42Client(BaseClient):
     Should do requests and return data
     """
 
-    def __init__(self, base_url, auth, verify=True, proxy=False):
+    def __init__(self, sdk, base_url, auth, verify=True, proxy=False):
         super().__init__(base_url, verify=True, proxy=False)
         # Create the Code42 SDK instnace
-        self._sdk = SDK.create_using_local_account(base_url, auth[0], auth[1])
+        self._sdk = sdk.create_using_local_account(base_url, auth[0], auth[1])
         py42.settings.set_user_agent_suffix("Demisto")
 
     def add_user_to_departing_employee(self, username, departure_epoch=None, note=None):
@@ -419,6 +419,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Code42Client(
+            sdk=SDK,
             base_url=base_url,
             auth=(username, password),
             verify=verify_certificate,
