@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue in ***jira-create-issue*** and ***jira-edit-issue*** where due date was not set correctly.
+Fixed an issue in the ***jira-create-issue*** and ***jira-edit-issue*** commands where the due date was not set correctly.
 
 ## [20.2.0] - 2020-02-04
 Fixed an issue in ***jira-get-issue*** where trying to get the attachment of the issue would fail.
