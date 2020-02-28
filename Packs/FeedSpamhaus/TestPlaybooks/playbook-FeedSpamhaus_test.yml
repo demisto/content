@@ -1,0 +1,177 @@
+id: Spamhaus_Feed_Test
+version: -1
+name: Spamhaus_Feed_Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: e0aff3ab-2115-441d-8b1f-580a4c4dafb2
+    type: start
+    task:
+      id: e0aff3ab-2115-441d-8b1f-580a4c4dafb2
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 0c4670d9-2240-4b58-879a-f18f8bd5e730
+    type: regular
+    task:
+      id: 0c4670d9-2240-4b58-879a-f18f8bd5e730
+      version: -1
+      name: Get Indicators
+      description: ''
+      script: SpamhausFeed|||spamhaus-get-indicators
+      type: regular
+      iscommand: true
+      brand: SpamhausFeed
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      extend-context:
+        simple: first_object=.[0]
+      indicator_type:
+        simple: IP
+      limit:
+        simple: '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 97cdfd3c-3076-4086-8f00-7d6e0b08104d
+    type: condition
+    task:
+      id: 97cdfd3c-3076-4086-8f00-7d6e0b08104d
+      version: -1
+      name: Assert Output
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: first_object.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 46243dc9-5489-4a7e-8f7b-a8edcbfe5dbd
+    type: title
+    task:
+      id: 46243dc9-5489-4a7e-8f7b-a8edcbfe5dbd
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: e33eb837-7041-4581-887b-ff9c9f9234fd
+    type: regular
+    task:
+      id: e33eb837-7041-4581-887b-ff9c9f9234fd
+      version: -1
+      name: Delete Context
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Spamhaus_Feed_Test
+description: ''
+fromversion: 5.5.0

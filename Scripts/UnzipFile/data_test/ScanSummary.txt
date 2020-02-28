@@ -1,0 +1,12 @@
+
+ScanType: Custom Path Scan
+Scan Time: 2020-01-22T14:14:56Z
+Scan Result: Completed
+
+Objects Scanned: 918858
+
+Malicious items detected: 0
+
+Non-malicious items detected: 0
+
+Time Elapsed: 4 hr, 54 min, 49 sec

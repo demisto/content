@@ -1,5 +1,8 @@
 ## [Unreleased]
+-
 
+## [20.2.0] - 2020-02-04
+-
 
 ## [19.12.0] - 2019-12-10
   - Fixed an issue where mirrored investigations contained mismatched user names.

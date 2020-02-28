@@ -4,6 +4,7 @@ import json
 import ast
 import argparse
 import time
+import re
 from time import sleep
 import datetime
 import requests
@@ -13,7 +14,7 @@ import demisto_client.demisto_api
 from typing import List, AnyStr
 import urllib3.util
 
-from Tests.test_utils import print_error, print_color, LOG_COLORS
+from Tests.test_utils import run_command, print_warning, print_error, print_color, LOG_COLORS
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,7 +25,16 @@ SETUP_TIMEOUT = 30 * 60
 SLEEP_TIME = 45
 
 
-def get_username_password():
+def is_release_branch():
+    """Check if we are working on a release branch."""
+    diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
+    if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
+        return True
+
+    return False
+
+
+def get_apikey_and_contentversion():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-c', '--confPath', help='The path for the secret conf file', required=True)
     parser.add_argument('-v', '--contentVersion', help='Content version to install', required=True)
@@ -34,9 +44,6 @@ def get_username_password():
 
     with open(conf_path, 'r') as conf_file:
         conf = json.load(conf_file)
-
-    if options.non_ami:
-        return conf['temp_apikey'], options.contentVersion
 
     return conf['temp_apikey'], options.contentVersion
 
@@ -74,9 +81,12 @@ def is_correct_content_installed(ips, content_version, api_key):
             notes = resp_json.get("releaseNotes")
             installed = resp_json.get("installed")
             if not (release and content_version in release and notes and installed):
-                print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
-                            "".format(ami_instance_name, release, content_version))
-                return False
+                if is_release_branch():
+                    print_warning('On a release branch - ignoring content mismatch.')
+                else:
+                    print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
+                                "".format(ami_instance_name, release, content_version))
+                    return False
             else:
                 print_color("Instance [{instance_name}] content verified with version [{content_version}]".format(
                     instance_name=ami_instance_name, content_version=release),
@@ -89,7 +99,6 @@ def is_correct_content_installed(ips, content_version, api_key):
                 err_msg += "Server response: {}".format(resp_json)
             print_error(err_msg)
             return False
-    print_color("Content was installed successfully on all of the instances! :)", LOG_COLORS.GREEN)
     return True
 
 
@@ -101,7 +110,7 @@ def exit_if_timed_out(loop_start_time, current_time):
 
 
 def main():
-    api_key, content_version = get_username_password()
+    api_key, content_version = get_apikey_and_contentversion()
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where the ***fetch-incidents*** was fetching the same incident repeatedly.
 
 ## [19.10.0] - 2019-10-03
 -
