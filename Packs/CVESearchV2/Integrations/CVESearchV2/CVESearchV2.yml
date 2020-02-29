@@ -4,7 +4,7 @@ commonfields:
 name: CVE Search v2
 display: CVE Search v2
 category: Vulnerability Management
-description: Search CVE Information - powered by circl.lu
+description: Searches for CVE information using circl.lu.
 configuration:
   - display: Server URL
     name: url
@@ -27,7 +27,7 @@ script:
         - name: limit
           required: false
           default: false
-          description: 'The amount of CVEs to display'
+          description: 'The maximum number of CVEs to display.'
       outputs:
         - contextPath: CVE.ID
           description: The ID of the CVE.
@@ -39,7 +39,7 @@ script:
           description: The date the CVE was published.
           type: Date
         - contextPath: CVE.Modified
-          description: When CVE was last modified.
+          description: The date that the CVE was last modified.
           type: Date
         - contextPath: CVE.Description
           description: The description of the CVE.
@@ -50,7 +50,7 @@ script:
         - name: cve_id
           required: true
           default: true
-          description: 'CVE ID, example: CVE-2014-1234'
+          description: 'The CVE ID. For example: CVE-2014-1234.'
       outputs:
         - contextPath: CVE.ID
           description: The ID of the CVE.
@@ -62,7 +62,7 @@ script:
           description: The date the CVE was published.
           type: Date
         - contextPath: CVE.Modified
-          description: The date the CVE was last modified.
+          description: The date that the CVE was last modified.
           type: Date
         - contextPath: CVE.Description
           description: The description of the CVE.
