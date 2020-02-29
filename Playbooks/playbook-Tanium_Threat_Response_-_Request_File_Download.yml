@@ -5,7 +5,7 @@ contentitemfields:
   propagationLabels:
   - all
 name: Tanium Threat Response - Request File Download
-description: Request file download from Tanium.
+description: Requests a file download from Tanium.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       id: 37898cab-ef34-4cb2-8120-77459d73ec0a
       version: -1
       name: tanium-tr-request-file-download
-      description: Request a new file download
+      description: Request a new file download.
       script: Tanium Threat Response|||tanium-tr-request-file-download
       type: regular
       iscommand: true
