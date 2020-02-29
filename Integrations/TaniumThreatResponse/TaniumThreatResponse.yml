@@ -3,7 +3,7 @@ commonfields:
   id: Tanium Threat Response
   version: -1
 configuration:
-- display: Hostname, IP address, or server URL.
+- display: Hostname, IP address, or server URL
   name: url
   required: true
   type: 0
@@ -37,7 +37,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a intel document object based on ID.
+    description: Returns an intel document object based on ID.
     execution: false
     name: tanium-tr-get-intel-doc-by-id
     outputs:
@@ -70,7 +70,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
-      description: The maximum number of intel documents to return.
+      description: The maximum number of intel documents to return. The default value is 5.
       isArray: false
       name: limit
       required: false
@@ -109,7 +109,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
-      description: The maximum number of alerts to return.
+      description: The maximum number of alerts to return. The default value is 5.
       isArray: false
       name: limit
       required: false
@@ -121,7 +121,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter alerts by the specified computer IP Addresses.
+      description: Filter alerts by the specified computer IP addresses.
       isArray: false
       name: computer-ip-address
       required: false
@@ -164,7 +164,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter alerts by the specified state.
+      description: Filter alerts by the specified state. Can be "Unresolved", "In Progress", "Ignored", or "Resolved".
       isArray: false
       name: state
       predefined:
@@ -196,21 +196,19 @@ script:
       type: Date
     - contextPath: Tanium.Alert.State
       description: The current state of the alert. For example, "unresolved", "inprogress",
-        etc.
+        and so on.
       type: String
     - contextPath: Tanium.Alert.ComputerIpAddress
       description: The IP address of the computer that generated the alert.
       type: String
     - contextPath: Tanium.Alert.Type
-      description: The type name of the alert. For example, "detect.endpoint.match",
-        etc.
+      description: The name of the alert type. For example, "detect.endpoint.match".
       type: String
     - contextPath: Tanium.Alert.ID
-      description: The type name of the alert. For example, "detect.endpoint.match",
-        etc.
+      description: The ID of the alert. For example, "123".
       type: Number
     - contextPath: Tanium.Alert.CreatedAt
-      description: The moment that the alert was received by the Detect product.
+      description: The date when the alert was received by the Detect product.
       type: Date
     - contextPath: Tanium.Alert.IntelDocId
       description: The intel document revision, if intelDocId is present.
@@ -226,7 +224,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns alert object based on ID.
+    description: Returns an alert object based on alert ID.
     execution: false
     name: tanium-tr-get-alert-by-id
     outputs:
@@ -240,28 +238,25 @@ script:
       description: A globally unique identifier for this alert in the customer environment.
       type: String
     - contextPath: Tanium.Alert.AlertedAt
-      description: The moment that the alert was generated.
+      description: The date when the alert was generated.
       type: Date
     - contextPath: Tanium.Alert.UpdatedAt
-      description: The last time the alert state was updated.
+      description: The date when the alert state was last updated.
       type: Date
     - contextPath: Tanium.Alert.State
-      description: The current state of the alert. For example, "unresolved", "inprogress",
-        etc.
+      description: The current state of the alert. For example, "unresolved", "inprogress".
       type: String
     - contextPath: Tanium.Alert.ComputerIpAddress
       description: The IP address of the computer that generated the alert.
       type: String
     - contextPath: Tanium.Alert.Type
-      description: The type name of the alert. For example, "detect.endpoint.match",
-        etc.
+      description: The name of the alert type. For example, "detect.endpoint.match".
       type: String
     - contextPath: Tanium.Alert.ID
-      description: The type name of the alert. For example, "detect.endpoint.match",
-        etc.
+      description: The ID of the alert. For example, "123".
       type: Number
     - contextPath: Tanium.Alert.CreatedAt
-      description: The moment that the alert was received by the Detect product.
+      description: The date when the alert was received by the Detect product.
       type: Date
     - contextPath: Tanium.Alert.IntelDocId
       description: The intel document revision, if intelDocId is present.
@@ -278,7 +273,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The new state for the alert.
+      description: The new state for the alert. Can be "Unresolved", "In Progress", "Ignored", or "Resolved".
       isArray: false
       name: state
       predefined:
@@ -289,7 +284,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update the state of a single alert.
+    description: Updates the state of a single alert.
     execution: false
     name: tanium-tr-alert-update-state
     outputs:
@@ -303,28 +298,25 @@ script:
       description: A globally unique identifier for this alert in the customer environment.
       type: String
     - contextPath: Tanium.Alert.AlertedAt
-      description: The moment that the alert was generated.
+      description: The date when the alert was generated.
       type: Date
     - contextPath: Tanium.Alert.UpdatedAt
-      description: The last time the alert state was updated.
+      description: The date when the alert state was last updated.
       type: Date
     - contextPath: Tanium.Alert.State
-      description: The current state of the alert. For example, "unresolved", "inprogress",
-        etc.
+      description: The current state of the alert. For example, "unresolved", "inprogress".
       type: String
     - contextPath: Tanium.Alert.ComputerIpAddress
       description: The IP address of the computer that generated the alert.
       type: String
     - contextPath: Tanium.Alert.Type
-      description: The type name of the alert. For example, "detect.endpoint.match",
-        etc.
+      description: The name of the alert type. For example, "detect.endpoint.match".
       type: String
     - contextPath: Tanium.Alert.ID
-      description: The type name of the alert. For example, "detect.endpoint.match",
-        etc.
+      description: The ID of the alert. For example, "123".
       type: Number
     - contextPath: Tanium.Alert.CreatedAt
-      description: The moment that the alert was received by the Detect product.
+      description: The date when the alert was received by the Detect product.
       type: Date
     - contextPath: Tanium.Alert.IntelDocId
       description: The intel document revision, if intelDocId is present.
@@ -335,7 +327,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
-      description: The maximin number of snapshots to return.
+      description: The maximin number of snapshots to return. The default value is 5.
       isArray: false
       name: limit
       required: false
@@ -355,7 +347,7 @@ script:
       description: The snapshot file name.
       type: String
     - contextPath: Tanium.Snapshot.Started
-      description: The moment that the snapshot was created.
+      description: The date when the snapshot was created.
       type: Date
     - contextPath: Tanium.Snapshot.State
       description: The current state of the snapshot.
@@ -368,7 +360,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Capture a new snapshot by connection ID.
+    description: Captures a new snapshot by connection ID.
     execution: false
     name: tanium-tr-create-snapshot
   - arguments:
@@ -385,13 +377,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a snapshot by connection ID and snapshot ID.
+    description: Deletes a snapshot by connection ID and snapshot ID.
     execution: false
     name: tanium-tr-delete-snapshot
   - arguments:
     - default: false
       defaultValue: '5'
-      description: The maximin number of local snapshots to return.
+      description: The maximum number of local snapshots to return. The default value is 5.
       isArray: false
       name: limit
       required: false
@@ -421,13 +413,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a local snapshot by directory name and file name.
+    description: Deletes a local snapshot by directory name and file name.
     execution: false
     name: tanium-tr-delete-local-snapshot
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of connections to return.
+      description: The maximum number of connections to return. The default value is 50.
       isArray: false
       name: limit
       required: false
@@ -444,11 +436,11 @@ script:
       description: The connection name.
       type: String
     - contextPath: Tanium.Connection.Remote
-      description: True if remote connection.
+      description: Whether it is a remote connection.
       type: Boolean
     - contextPath: Tanium.Connection.State
-      description: Current connection state ('closed', 'pending', 'active', 'timeout',
-        'migrating').
+      description: Current connection state. Can be "closed", "pending", "active", "timeout", or
+        "migrating".
       type: String
   - arguments:
     - default: false
@@ -458,7 +450,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a connection object based on name.
+    description: Returns a connection object based on connection name.
     execution: false
     name: tanium-tr-get-connection-by-name
     outputs:
@@ -469,16 +461,16 @@ script:
       description: The connection name.
       type: String
     - contextPath: Tanium.Connection.Remote
-      description: True if remote connection.
+      description: Whether it is a remote connection.
       type: Boolean
     - contextPath: Tanium.Connection.State
-      description: Current connection state ('closed', 'pending', 'active', 'timeout',
-        'migrating').
+      description: Current connection state. Can be "closed", "pending", "active", "timeout", or
+        "migrating".
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: True if remote connection.
+      description: Whether it is a remote connection. Can be "True" or "False".
       isArray: false
       name: remote
       predefined:
@@ -488,7 +480,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of destination: ip_address or computer_name.'
+      description: Type of destination. Can be "ip_address" or "computer_name".
       isArray: false
       name: destination-type
       predefined:
@@ -497,14 +489,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: computer name or IP address.
+      description: Computer name or IP address.
       isArray: false
       name: destination
       required: true
       secret: false
     - default: false
       defaultValue: '30000'
-      description: connection timeout, in milliseconds.
+      description: connection timeout, in milliseconds. The default value is 30000.
       isArray: false
       name: connection-timeout
       required: false
@@ -521,13 +513,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a connection by connection name.
+    description: Deletes a connection by connection name.
     execution: false
     name: tanium-tr-delete-connection
   - arguments:
     - default: false
       defaultValue: '5'
-      description: The maximin number of labels to return.
+      description: The maximum number of labels to return. The default value is 5.
       isArray: false
       name: limit
       required: false
@@ -538,7 +530,7 @@ script:
     name: tanium-tr-list-labels
     outputs:
     - contextPath: Tanium.Label.CreatedAt
-      description: The date this label was created.
+      description: The date when this label was created.
       type: Date
     - contextPath: Tanium.Label.Description
       description: An extended description of the label.
@@ -557,7 +549,7 @@ script:
       description: The number of Tanium Signal documents associated with this label.
       type: Number
     - contextPath: Tanium.Label.UpdatedAt
-      description: The date this label was last updated, not including the intel and
+      description: The date when this label was last updated, not including the intel and
         signal counts.
       type: Date
   - arguments:
@@ -568,12 +560,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns label object based on ID.
+    description: Returns a label object based on label ID.
     execution: false
     name: tanium-tr-get-label-by-id
     outputs:
     - contextPath: Tanium.Label.CreatedAt
-      description: The date this label was created.
+      description: The date when this label was created.
       type: Date
     - contextPath: Tanium.Label.Description
       description: An extended description of the label.
@@ -598,20 +590,20 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximin number of files to return.
+      description: The maximum number of files to return. The default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset to start getting file downloads.
+      description: Offset to start getting file downloads. The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: Filter by host.
+      description: Filter downloaded files by host.
       isArray: false
       name: host
       required: false
@@ -628,13 +620,13 @@ script:
       description: The path of the file.
       type: String
     - contextPath: Tanium.FileDownload.Downloaded
-      description: The date this file was downloaded.
+      description: The date when this file was downloaded.
       type: Date
     - contextPath: Tanium.FileDownload.Host
-      description: The hostname of the dowloaded file.
+      description: The hostname of the downloaded file.
       type: String
     - contextPath: Tanium.FileDownload.Created
-      description: The file creation timestamp.
+      description: The date when the file was created.
       type: Date
     - contextPath: Tanium.FileDownload.Hash
       description: The file hash.
@@ -646,22 +638,22 @@ script:
       description: The downloaded file ID.
       type: Number
     - contextPath: Tanium.FileDownload.LastModified
-      description: The date that the file was last modified.
+      description: The date when the file was last modified.
       type: Date
     - contextPath: Tanium.FileDownload.CreatedBy
-      description: User that created this file.
+      description: The user that created this file.
       type: String
     - contextPath: Tanium.FileDownload.CreatedByProc
       description: The process path that created this file.
       type: String
     - contextPath: Tanium.FileDownload.LastModifiedBy
-      description: The last user that modified this file.
+      description: The user that last modified this file.
       type: String
     - contextPath: Tanium.FileDownload.LastModifiedByProc
       description: The process path that modified this file.
       type: String
     - contextPath: Tanium.FileDownload.Comments
-      description: The downloaded file comments.
+      description: Additional comments for the downloaded file.
       type: String
     - contextPath: Tanium.FileDownload.Tags
       description: The downloaded file tags.
@@ -674,7 +666,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the actual content of a downloaded file by file ID.
+    description: Gets the actual content of a downloaded file by file ID.
     execution: false
     name: tanium-tr-get-downloaded-file
   - arguments:
@@ -687,7 +679,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: combined
-      description: The type of event.
+      description: The type of event. Can be "File", "Network", "Registry", "Process", "Driver", "SID", "Combined", "DNS", or "Image". The default is "Combined".
       isArray: false
       name: event-type
       predefined:
@@ -704,20 +696,20 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximin number of events to return.
+      description: The maximum number of events to return. The default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset into the result set.
+      description: Offset to start getting the result set. The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: 'Advanced search by filtering according to event fields. For example:
+      description: 'Advanced search that filters according to event fields. For example:
         [[''process_id'', ''gt'', ''30''], [''username'', ''ne'', ''administrator'']].
         Optional fields: process_id, process_name, process_hash, process_command_line,
         username, process_name, create_time (UTC). Optional operators: eq (equals),
@@ -731,8 +723,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: If you filter the search results, choose whether the results should
-        fit all of the constrains or to at least one of them.
+      description: Whether the results should fit all filters or at least one filter.
       isArray: false
       name: match
       predefined:
@@ -741,7 +732,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of fields to sort on prefixed by +/- for
+      description: 'A comma-separated list of fields to sort on prefixed by +/- for
         ascending or descending and ordered by priority left to right. Optional fields:
         process_id, process_name, process_hash, process_command_line, username, process_name,
         create_time (UTC).'
@@ -750,7 +741,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of fields to search on. Optional fields:
+      description: 'A comma-separated list of fields on which to search. Optional fields:
         process_id, process_name, process_hash, process_command_line, username, process_name,
         create_time.'
       isArray: false
@@ -781,16 +772,16 @@ script:
       description: The ID of the process table.
       type: Number
     - contextPath: Tanium.Event.Timestamp
-      description: The moment that the event was created.
+      description: The date when the event was created.
       type: Date
     - contextPath: Tanium.Event.Username
-      description: The username of the event.
+      description: The username associated with the event.
       type: String
     - contextPath: Tanium.Event.DestinationAddress
-      description: The network event destinetion address.
+      description: The network event destination address.
       type: String
     - contextPath: Tanium.Event.DestinationPort
-      description: The network event destinetion port.
+      description: The network event destination port.
       type: Number
     - contextPath: Tanium.Event.SourceAddress
       description: The network event source address.
@@ -829,7 +820,7 @@ script:
       description: The signature of the driver.
       type: String
     - contextPath: Tanium.Event.Signed
-      description: If the value is true, The driver is signed.
+      description: Whether the driver is signed.
       type: Boolean
     - contextPath: Tanium.Event.EventId
       description: The ID of the event.
@@ -851,7 +842,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The hostname of the dowloaded file.
+      description: The hostname of the downloaded file.
       isArray: false
       name: host
       required: true
@@ -869,8 +860,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get file download metadata. At least one of the arguments `path`
-      or `id` must be set in order to run the command successfully.
+    description: Gets the metadata of a file download. You must supply either the `path`
+      or `id` agument for the command to run successfully.
     execution: false
     name: tanium-tr-get-file-download-info
     outputs:
@@ -881,13 +872,13 @@ script:
       description: The path of the file.
       type: String
     - contextPath: Tanium.FileDownload.Downloaded
-      description: The date this file was downloaded.
+      description: The date when this file was downloaded.
       type: Date
     - contextPath: Tanium.FileDownload.Host
-      description: The hostname of the dowloaded file.
+      description: The hostname of the downloaded file.
       type: String
     - contextPath: Tanium.FileDownload.Created
-      description: The file creation timestamp.
+      description: The date when the file was created.
       type: Date
     - contextPath: Tanium.FileDownload.Hash
       description: The file hash.
@@ -899,16 +890,16 @@ script:
       description: The downloaded file ID.
       type: Number
     - contextPath: Tanium.FileDownload.LastModified
-      description: The date that the file was last modified.
+      description: The date when the file was last modified.
       type: Date
     - contextPath: Tanium.FileDownload.CreatedBy
-      description: User that created this file.
+      description: The user that created this file.
       type: String
     - contextPath: Tanium.FileDownload.CreatedByProc
       description: The process path that created this file.
       type: String
     - contextPath: Tanium.FileDownload.LastModifiedBy
-      description: The last user that modified this file.
+      description: The user that last modified this file.
       type: String
     - contextPath: Tanium.FileDownload.LastModifiedByProc
       description: The process path that modified this file.
@@ -979,13 +970,13 @@ script:
       secret: false
     - default: false
       defaultValue: '5'
-      description: The maximin number of events to return.
+      description: The maximum number of events to return. The default value is 5.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Get events for a process.
+    description: Gets the events for a process.
     execution: false
     name: tanium-tr-get-events-by-process
     outputs:
@@ -1018,7 +1009,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get children of this process instance.
+    description: Gets the children of this process instance.
     execution: false
     name: tanium-tr-get-process-children
     outputs:
@@ -1051,7 +1042,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get parent process information.
+    description: Gets information for the parent process.
     execution: false
     name: tanium-tr-get-parent-process
     outputs:
@@ -1096,7 +1087,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get parent process tree for process instance.
+    description: Gets the parent process tree for the process instance.
     execution: false
     name: tanium-tr-get-parent-process-tree
     outputs:
@@ -1132,7 +1123,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get process tree for process instance.
+    description: Gets the process tree for the process instance.
     execution: false
     name: tanium-tr-get-process-tree
     outputs:
@@ -1157,21 +1148,21 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of evidences to return.
+      description: The maximum number of evidences to return. The default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset into the evidence results
+      description: Offset to start getting the events result set. The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of fields to sort by with +/- prefixes for
-        ascending/descending, in order of priority left to right
+      description: A comma-separated list of fields by which to sort, using +/- prefixes for
+        ascending/descending, in order of priority (left to right).
       isArray: false
       name: sort
       required: false
@@ -1226,7 +1217,7 @@ script:
       secret: false
     deprecated: false
     execution: false
-    description: Retrive the evidence by it's ID.
+    description: Gets evidence by evidence ID.
     name: tanium-tr-get-evidence-by-id
     outputs:
     - contextPath: Tanium.Evidence.ID
@@ -1286,7 +1277,7 @@ script:
       secret: false
     deprecated: false
     execution: false
-    description: Create an evidence.
+    description: Creates an evidence.
     name: tanium-tr-create-evidence
   - arguments:
     - default: false
@@ -1313,15 +1304,15 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Request a new file download
+    description: Requests a new file download.
     execution: false
     name: tanium-tr-request-file-download
     outputs:
     - contextPath: Tanium.FileDownload.Path
-      description: File download path.
+      description: The file download path.
       type: String
     - contextPath: Tanium.FileDownload.Host
-      description: File download host.
+      description: The file download host.
       type: String
     - contextPath: Tanium.FileDownload.Downloaded
       description: Date of the download request.
@@ -1340,12 +1331,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a file download.
+    description: Deletes a file download.
     execution: false
     name: tanium-tr-delete-file-download
   - arguments:
     - default: false
-      description: Path to directory.
+      description: Path to the directory.
       isArray: false
       name: path
       required: true
@@ -1358,25 +1349,25 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Max number of files to return.
+      description: The maximum number of files to return. The default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset to start getting files.
+      description: Offset to start getting files. The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: List files in the given directory.
+    description: Gets a list of files in the given directory.
     execution: false
     name: tanium-tr-list-files-in-directory
     outputs:
     - contextPath: Tanium.File.Created
-      description: The file creation time.
+      description: Time the file was created.
       type: Date
     - contextPath: Tanium.File.Size
       description: The file size.
@@ -1409,7 +1400,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get information about file from a remote connection.
+    description: Gets information about a file from a remote connection.
     execution: false
     name: tanium-tr-get-file-info
     outputs:
@@ -1439,7 +1430,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete file from endpoint
+    description: Deletes a file from the given endpoint.
     execution: false
     name: tanium-tr-delete-file-from-endpoint
   - arguments:
@@ -1457,7 +1448,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Select category of events to retrieve.
+      description: The event categories to retrieve. Can be "File", "DNS", "Registry", "Network", "Image", or "Process".
       isArray: false
       name: category
       predefined:
@@ -1471,20 +1462,20 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Max number of events to return.
+      description: The maximum number of events to return. The default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset to start getting events.
+      description: Offset to start getting the events. The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Get process timeline.
+    description: Gets the process timeline.
     execution: false
     name: tanium-tr-get-process-timeline
     outputs:
@@ -1498,14 +1489,14 @@ script:
       description: Events date of the process.
       type: Date
     - contextPath: Tanium.ProcessTimeline.Event
-      description: Event of the process
+      description: Event of the process.
       type: String
     - contextPath: Tanium.ProcessTimeline.Category
-      description: The event category of the process
+      description: The event category of the process.
       type: String
   - arguments:
     - default: false
-      description: 'Date of the download file request, For example: 2019-09-23T12:55:08.622'
+      description: 'Date of the download file request, or example: 2019-09-23T12:55:08.622'.
       isArray: false
       name: request-date
       required: true
@@ -1523,7 +1514,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get the status of the download file request.
+    description: Gets the status of the download file request.
     execution: false
     name: tanium-tr-get-download-file-request-status
     outputs:
