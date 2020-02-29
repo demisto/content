@@ -5,7 +5,7 @@ contentitemfields:
   propagationLabels:
   - all
 name: Tanium Threat Response - Create Connection
-description: Create a connection to a remote destination from Tanium.
+description: Creates a connection to a remote destination from Tanium.
 starttaskid: "0"
 tasks:
   "0":
