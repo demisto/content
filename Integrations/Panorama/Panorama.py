@@ -653,25 +653,26 @@ def panorama_push_status_command():
     Check jobID of push status
     """
     result = panorama_push_status()
-    if result['response']['result']['job']['type'] != 'CommitAll':
+    job = result.get('response', {}).get('result', {}).get('job', {})
+    if job.get('type', '') != 'CommitAll':
         raise Exception('JobID given is not of a Push.')
 
-    push_status_output = {'JobID': result['response']['result']['job']['id']}
-    if result['response']['result']['job']['status'] == 'FIN':
-        if result['response']['result']['job']['result'] == 'OK':
+    push_status_output = {'JobID': job.get('id')}
+    if job.get('status', '') == 'FIN':
+        if job.get('result', '') == 'OK':
             push_status_output['Status'] = 'Completed'
         else:
             # result['response']['job']['result'] == 'FAIL'
             push_status_output['Status'] = 'Failed'
 
-        devices = result['response']['result']['job']['devices']['entry']
+        devices = job.get('devices', {}).get('entry')
         if isinstance(devices, list):
             devices_details = [device.get('status') for device in devices]
             push_status_output['Details'] = devices_details
         elif isinstance(devices, dict):
             push_status_output['Details'] = devices.get('status')
 
-    if result['response']['result']['job']['status'] == 'PEND':
+    if job.get('status') == 'PEND':
         push_status_output['Status'] = 'Pending'
 
     demisto.results({
