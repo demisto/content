@@ -78,7 +78,7 @@ class Client(BaseClient):
         file_params = demisto.getFilePath(entry_id)
         self.command_params['md5'] = file_hash(file_params.get('path'))
         result = self.http_request('/analysis/submit/file',
-                                   files=file_params.get('path'))
+                                   file=file_params.get('path'))
         human_readable, context_entry = report_generator(result)
         return human_readable, context_entry, result
 
@@ -112,12 +112,12 @@ class Client(BaseClient):
             task_list.append([uuid, task_time.replace(' ', 'T'), status])
         return task_list
 
-    def http_request(self, path: str, headers=None, files=None) -> Dict:
-        if files:
-            with open(files, 'rb') as _file:
-                files = {'file': (files, _file.read())}
+    def http_request(self, path: str, headers=None, file=None) -> Dict:
+        if file:
+            with open(file, 'rb') as _file:
+                file = {'file': (file, _file.read())}
 
-        result: Dict = self._http_request('POST', path, params=self.command_params, headers=headers, files=files)
+        result: Dict = self._http_request('POST', path, params=self.command_params, headers=headers, files=file)
         lastline_exception_handler(result)
         return result
 
