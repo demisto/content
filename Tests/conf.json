@@ -707,8 +707,7 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500,
-            "pid_threshold": 6
+            "timeout": 500            
         },
         {
             "playbookID": "CutTransformerTest"
@@ -817,8 +816,7 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 150
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
@@ -981,14 +979,12 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 120
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 120
+            "instance_names": "ewv2_regular"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -1006,8 +1002,7 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240,
-            "pid_threshold": 18
+            "timeout": 240            
         },
         {
             "integrations": "activedir",
@@ -1187,14 +1182,12 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 200
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewsv2_separate_process",
-            "memory_threshold": 150
+            "instance_names": "ewsv2_separate_process"
         },
         {
             "integrations": "remedy_sr_beta",
@@ -2035,8 +2028,7 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest",
-            "pid_threshold": 24
+            "playbookID": "RasterizeImageTest"            
         },
         {
             "integrations": "Ipstack",
@@ -2221,8 +2213,7 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular",
-          "memory_threshold": 65
+          "instance_names": "ewv2_regular"
         },
         {
           "integrations": "QRadar",
@@ -2592,5 +2583,16 @@
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
         "Google Chronicle Backstory": "SDK"
+    },
+    "docker_thresholds": {
+        "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
+        "images": {
+            "demisto/chromium": {
+                "pid_threshold": 11
+            },
+            "demisto/py-ews:2.0": {
+                "memory_threshold": 150
+            }
+        }
     }
 }
