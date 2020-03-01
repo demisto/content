@@ -197,17 +197,19 @@ class Content(object):  # pylint: disable=useless-object-inheritance
             return res, beta_rn_paths
         return res
 
-    def generate_release_notes(self, current_server_version, collect_beta=False):
+    def generate_release_notes(self, current_server_version, collect_beta=True):
         res = ""
         beta_paths = None
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print("starting {} RN".format(self.get_header()))
 
             # Added files
-            add_rn, beta_paths = self.release_notes_section(self.added_store, NEW_RN, current_server_version,
-                                                            collect_beta=collect_beta)
+            add_rn, add_beta_paths = self.release_notes_section(self.added_store, NEW_RN, current_server_version,
+                                                                collect_beta=collect_beta)
             # Modified files
-            modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN, current_server_version)
+            modified_rn, mod_beta_paths = self.release_notes_section(self.modified_store, MODIFIED_RN,
+                                                                     current_server_version,
+                                                                     collect_beta=collect_beta)
 
             if add_rn is None or modified_rn is None:
                 return None
@@ -226,9 +228,11 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                 res = "### {}\n".format(self.get_header())
                 res += section_body
 
-        if collect_beta:
-            beta_res = self.release_notes_section(beta_paths, NEW_RN, "9.9.9")
-            return res, beta_res
+            if collect_beta:
+                print("Collecting beta rn")
+                add_beta_res = self.release_notes_section(add_beta_paths, NEW_RN, "9.9.9")
+                mod_beta_res = self.release_notes_section(mod_beta_paths, MODIFIED_RN, "9.9.9")
+                return res, add_beta_res + mod_beta_res
         return res
 
 
@@ -614,11 +618,11 @@ def create_content_descriptor(version, asset_id, res, github_token, beta_rn=None
     with open('release-notes.md', 'w') as outfile:
         outfile.write(release_notes)
 
-    if beta_rn:
-        with open('beta_release_notes.md', 'w') as outfile:
-            beta_release_notes = '## Demisto Content Beta Release Notes for version {} ({})\n'.format("5.5.0", asset_id)
-            beta_release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"), beta_rn)
-            outfile.write(beta_rn)
+    with open('beta-release-notes.md', 'w') as outfile:
+        beta_release_notes = '## Demisto Content Beta Release Notes for version {} ({})\n'.format("5.5.0", asset_id)
+        beta_release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"),
+                                                                 beta_rn)
+        outfile.write(beta_rn)
 
 
 def main():
