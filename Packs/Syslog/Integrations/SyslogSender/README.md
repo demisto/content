@@ -11,7 +11,9 @@ Use the Syslog Sender integration to send messages and mirror incident War Room 
 
 ## Configure Syslog Sender on Demisto
 ---
-To allow sending messages to syslog via Demisto, the following lines have to be in the Syslog configuration:
+
+### Usage example for rsyslog
+To allow sending messages to rsyslog via Demisto, the following lines have to be in the rsyslog configuration:
 
 For TCP:
 ```
@@ -24,6 +26,8 @@ For UDP:
 module(load="imudp")
 input(type="imudp" port="<port>")
 ```
+
+### Integration configuration
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Syslog Sender.
