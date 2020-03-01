@@ -143,8 +143,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -169,7 +168,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return the message body. Can ge "true" or "false".
+      description: Whether to return the message body. Can ge "true" or "false". 
       isArray: false
       name: get_body
       predefined:
@@ -247,8 +246,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -271,8 +269,7 @@ script:
     name: msgraph-mail-delete-email
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -311,8 +308,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -372,8 +368,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -410,8 +405,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -454,8 +448,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -497,8 +490,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -540,8 +532,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -570,8 +561,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -592,8 +582,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (usually an email address in the format
-        someuser@example.com).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -649,7 +638,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python
+  subtype: python3
 tests:
 - MicrosoftGraphMail-Test

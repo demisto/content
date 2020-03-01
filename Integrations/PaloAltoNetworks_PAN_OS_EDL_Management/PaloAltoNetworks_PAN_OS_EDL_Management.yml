@@ -279,8 +279,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to print the updated remote file to the War Room. Can ve
-        "true" or "false". Default is "false".
+      description: Whether to print the updated remote file to the War Room. Can ve "true" or "false". Default is "false".
       isArray: false
       name: verbose
       predefined:
@@ -291,8 +290,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: add
-      description: Whether to add to, or remove from the list. Can be "add" or "remove".
-        Default is "add".
+      description: Whether to add to, or remove from the list. Can be "add" or "remove". Default is "add".
       isArray: false
       name: add_or_remove
       predefined:
@@ -321,8 +319,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to add to, or remove from the list. Can be "add" or "remove".
-        Default is "add".
+      description: Whether to add to, or remove from the list. Can be "add" or "remove". Default is "add".
       isArray: false
       name: verbose
       predefined:
@@ -340,7 +337,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python
+  subtype: python3
 tests:
 - PAN OS EDL Management - Test

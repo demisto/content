@@ -45,9 +45,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Terminates a user's session from all Office 365 applications, and prevents sign in.
-      Permissions: - User.ReadWrite (Delegated & Application)
+    description: "Terminates a user's session from all Office 365 applications, and
+      prevents sign in.
+
+      Permissions:
+      - User.ReadWrite (Delegated & Application)
+      "
     execution: false
     name: msgraph-user-terminate-session
   - arguments:
@@ -75,9 +78,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Updates the properties of a user object.
-      Permissions: - User.ReadWrite (Delegated & Application)
+    description: "Updates the properties of a user object.
+
+    Permissions:
+    - User.ReadWrite (Delegated & Application)"
     execution: false
     name: msgraph-user-update
     outputs:
@@ -122,9 +126,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Deletes an existing user.
-      Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)
+    description: "Deletes an existing user.
+
+    Permissions:
+    - Directory.AccessAsUser.All (Delegated)
+    - User.ReadWrite.All (Application)"
     execution: true
     name: msgraph-user-delete
   - arguments:
@@ -177,9 +183,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Creates a new user.
-      Permissions: - User.ReadWrite.All (Delegated & Application)
+    description: "Creates a new user.
+
+    Permissions:
+    - User.ReadWrite.All (Delegated & Application)"
     execution: false
     name: msgraph-user-create
     outputs:
@@ -225,9 +232,13 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: |-
-      Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.
-      Permissions: - User.Read (Delegated) - User.Read.All (Application)
+    description: "Deprecated. This command only returns a single page.
+    Use the msgraph-user-list command instead, which gets newly created, updated, or
+    deleted users without performing a full read of the entire user collection.
+
+    Permissions:
+    - User.Read (Delegated)
+    - User.Read.All (Application)"
     execution: false
     name: msgraph-user-get-delta
     outputs:
@@ -279,9 +290,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-      Permissions: - User.Read (Delegated) - User.Read.All (Application)
+    description: "Retrieves the properties and relationships of a user object. For more
+      information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+
+      Permissions:
+    - User.Read (Delegated)
+    - User.Read.All (Application)"
     execution: false
     name: msgraph-user-get
     outputs:
@@ -333,9 +347,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Retrieves a list of user objects.
-      Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
+    description: "Retrieves a list of user objects.
+
+    Permissions:
+    - User.ReadBasic.All (Delegated)
+    - User.Read.All (Application)"
     execution: false
     name: msgraph-user-list
     outputs:
@@ -373,8 +389,7 @@ script:
       description: User's principal name.
       type: Unknown
     - contextPath: MSGraphUser.NextPage
-      description: A token to pass to the next list command to retrieve additional
-        results.
+      description: A token to pass to the next list command to retrieve additional results.
       type: String
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
@@ -382,7 +397,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python
+  subtype: python3
 tests:
 - Microsoft Graph - Test

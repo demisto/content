@@ -448,7 +448,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python
+  subtype: python3
 tests:
 - Azure Compute - Test
