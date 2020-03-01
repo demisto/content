@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added **DomainGlob** to the **FeedIndicatorType** class.
 Added the *timeline* argument to the ***return_outputs*** convenience function.
 
 ## [20.2.3] - 2020-02-18
