@@ -1,38 +1,46 @@
 id: calculate_severity_-_critical_assets_-_test
 version: -1
+contentitemfields:
+  propagationLabels: []
 name: Calculate Severity - Critical assets - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d9768422-6f4e-470e-8d2a-33e202ca1b37
+    taskid: e43fd77e-bfd4-4c0a-8dae-2e2eb07bc227
     type: start
     task:
-      id: d9768422-6f4e-470e-8d2a-33e202ca1b37
+      id: e43fd77e-bfd4-4c0a-8dae-2e2eb07bc227
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 3d9f1530-4a65-46d2-84a0-ffafb4223042
+    taskid: aa03a1ce-5bb0-4e69-8c6e-5510c6c96285
     type: playbook
     task:
-      id: 3d9f1530-4a65-46d2-84a0-ffafb4223042
+      id: aa03a1ce-5bb0-4e69-8c6e-5510c6c96285
       version: -1
       name: Calculate Severity - Critical assets
+      description: "Determines if a critical assest is associated with the invesigation.
+        The playbook returns a severity level of \"Critical\" if a critical asset
+        is associated with the investigation.\n\nThis playbook verifies if a user
+        account or an endpoint is part of a critical list or a critical AD group. "
       playbookName: Calculate Severity - Critical assets
       type: playbook
       iscommand: false
@@ -48,7 +56,8 @@ tasks:
       CriticalGroups:
         simple: CN=Discovery Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int,
           CN=Organization Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int
-      CriticalUsers: {}
+      CriticalUsers:
+        simple: demistoadmin
       Endpoint:
         complex:
           root: Endpoint
@@ -60,17 +69,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 265,
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 80e56848-2efb-43aa-8356-f86a57b91158
+    taskid: 0137adfd-0b9c-408f-832c-0f576e249229
     type: regular
     task:
-      id: 80e56848-2efb-43aa-8356-f86a57b91158
+      id: 0137adfd-0b9c-408f-832c-0f576e249229
       version: -1
       name: ADGetUser
       description: |-
@@ -100,47 +111,57 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 265,
+          "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 9c0f7e3f-c0b9-4a8e-8a31-5ee5caea8502
-    type: regular
+    taskid: 05f82ada-8cbf-4f24-89b2-c8062547fb84
+    type: condition
     task:
-      id: 9c0f7e3f-c0b9-4a8e-8a31-5ee5caea8502
+      id: 05f82ada-8cbf-4f24-89b2-c8062547fb84
       version: -1
       name: Verify Context
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
+      - "6"
+      "yes":
       - "4"
-    scriptarguments:
-      expectedValue:
-        simple: critical
-      fields: {}
-      path:
-        simple: Severity
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Severity
+            iscontext: true
+          right:
+            value:
+              simple: critical
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 0687c44e-4c0f-420d-8067-e3c20966057a
+    taskid: 9e8e32f3-903a-4b4d-8ad9-c189ef3ca84c
     type: title
     task:
-      id: 0687c44e-4c0f-420d-8067-e3c20966057a
+      id: 9e8e32f3-903a-4b4d-8ad9-c189ef3ca84c
       version: -1
       name: Done
       type: title
@@ -151,17 +172,80 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 910
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 44b7a914-5080-4b05-8d9a-812f2e4f6c1d
+    type: regular
+    task:
+      id: 44b7a914-5080-4b05-8d9a-812f2e4f6c1d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: f4079974-1450-4d7c-83c8-f15d55f04529
+    type: regular
+    task:
+      id: f4079974-1450-4d7c-83c8-f15d55f04529
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Severity is not in the context
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 380,
+        "height": 940,
+        "width": 810,
         "x": 50,
         "y": 50
       }

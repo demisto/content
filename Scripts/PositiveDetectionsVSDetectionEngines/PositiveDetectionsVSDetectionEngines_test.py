@@ -116,6 +116,24 @@ positive_zero = {
     'version': 3
 }
 
+positive_missing = {
+    'CustomFields': {
+        'detectionengines': 71,
+    }
+}
+
+detectengines_missing_1 = {
+    'CustomFields': {
+        'positivedetections': 71,
+    }
+}
+
+detectengines_missing_2 = {
+    'CustomFields': {
+        'positivedetections': 0,
+    }
+}
+
 no_engines_data = {
     'CustomFields': {},  # type: dict[any: any]
     'ManuallyEditedFields': None,
@@ -163,6 +181,30 @@ def test_zero_not_treated_as_none(indicator_data, expected_result):
 
 @pytest.mark.parametrize('indicator_data', [no_engines_data])
 def test_no_engines_data(indicator_data):
-    with pytest.raises(SystemExit) as exc:
-        extract_engines_data_from_indicator(indicator_data)
-        assert exc.value.code == 0
+    res = extract_engines_data_from_indicator(indicator_data)
+    stats = res['Contents']['stats']
+    assert stats[0]['data'][0] == 0
+    assert stats[1]['data'][0] == 0
+
+
+def test_missing_fields_detection_engines():
+    res = extract_engines_data_from_indicator(detectengines_missing_2)
+    stats = res['Contents']['stats']
+    assert stats[0]['data'][0] == 0
+    assert stats[1]['data'][0] == 0
+
+
+def test_missing_fields_positive_detections():
+    res = extract_engines_data_from_indicator(positive_missing)
+    stats = res['Contents']['stats']
+    assert stats[0]['data'][0] == 0
+    assert stats[1]['data'][0] == 71
+
+
+def test_detection_engines_greater_than_positive_detections():
+    err_raised = False
+    try:
+        extract_engines_data_from_indicator(detectengines_missing_1)
+    except ValueError:
+        err_raised = True
+    assert err_raised

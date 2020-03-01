@@ -75,7 +75,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
       add_or_remove:
         simple: add
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 755
+          "y": 1090
         }
       }
     note: false
@@ -162,7 +162,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 930
+          "y": 1260
         }
       }
     note: false
@@ -207,10 +207,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: eccab26b-ebbf-42ba-84b1-b5bce9805d8e
+    taskid: fcd76346-8f56-4df1-82cd-9bb40e24abda
     type: playbook
     task:
-      id: eccab26b-ebbf-42ba-84b1-b5bce9805d8e
+      id: fcd76346-8f56-4df1-82cd-9bb40e24abda
       version: -1
       name: PAN-OS EDL Setup
       description: Sets up an external dynamic list in PAN-OS.\n If the file exists on
@@ -246,11 +246,13 @@ tasks:
                   simple: inputs.LogForwarding
                 iscontext: true
       pre-post-rulebase:
-        simple: pre-rulebase
+        complex:
+          root: inputs.pre-post-rulebase
       relative-rule-name: {}
       rule-name: {}
       rule-position:
-        simple: Top
+        complex:
+          root: inputs.rule-position
       web-server-ip:
         complex:
           root: inputs.EDLServerIP
@@ -324,15 +326,108 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 38da7cf3-84fe-4d4d-85cb-9850815a20d3
+    type: condition
+    task:
+      id: 38da7cf3-84fe-4d4d-85cb-9850815a20d3
+      version: -1
+      name: Is the instance type Panorama?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 25857a23-4e34-425c-868e-310fdc1a7a5f
+    type: regular
+    task:
+      id: 25857a23-4e34-425c-868e-310fdc1a7a5f
+      version: -1
+      name: Fetch instance info
+      description: Run any command supported in the API.
+      script: '|||panorama'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
+      dst: {}
+      element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "11_9_#default#": 0.44,
-      "14_9_#default#": 0.84
+      "11_9_#default#": 0.19,
+      "14_9_#default#": 0.21
     },
     "paper": {
       "dimensions": {
-        "height": 1205,
+        "height": 1535,
         "width": 952.5,
         "x": 387.5,
         "y": -210
@@ -377,6 +472,20 @@ inputs:
     This input establishes whether to commit the configuration automatically.
     Yes - Commit automatically.
     No - Commit manually.
+- key: pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Enter pre-rulebase or post-rulebase, according to the rule structure.
+- key: rule-position
+  value: {}
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
 outputs: []
 tests:
   - No test

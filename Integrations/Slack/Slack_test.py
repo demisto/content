@@ -1449,7 +1449,7 @@ async def test_handle_dm_create_demisto_user(mocker):
             return 'sup'
 
     @asyncio.coroutine
-    def fake_translate(demisto_user, message):
+    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
@@ -1470,9 +1470,14 @@ async def test_handle_dm_create_demisto_user(mocker):
     # Assert
     assert Slack.translate_create.call_count == 6
 
-    demisto_user = Slack.translate_create.call_args[0][0]
-    incident_string = Slack.translate_create.call_args[0][1]
+    incident_string = Slack.translate_create.call_args[0][0]
+    user_name = Slack.translate_create.call_args[0][1]
+    user_email = Slack.translate_create.call_args[0][2]
+    demisto_user = Slack.translate_create.call_args[0][3]
+
     assert demisto_user == {'id': 'demisto_id'}
+    assert user_name == 'spengler'
+    assert user_email == 'spengler@ghostbusters.example.com'
     assert incident_string == 'create incident name=abc type=Access'
 
 
@@ -1483,7 +1488,7 @@ async def test_handle_dm_nondemisto_user_shouldnt_create(mocker):
     # Set
 
     @asyncio.coroutine
-    def fake_translate(demisto_user, message):
+    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
     @asyncio.coroutine
@@ -1520,7 +1525,7 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
     # Set
 
     @asyncio.coroutine
-    def fake_translate(demisto_user, message):
+    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
     @asyncio.coroutine
@@ -1545,7 +1550,7 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
     # Assert
     assert Slack.translate_create.call_count == 1
 
-    demisto_user = Slack.translate_create.call_args[0][0]
+    demisto_user = Slack.translate_create.call_args[0][3]
     assert demisto_user is None
 
 
@@ -1651,8 +1656,8 @@ async def test_handle_dm_create_with_error(mocker):
     # Assert
     assert Slack.translate_create.call_count == 1
 
-    demisto_user = Slack.translate_create.call_args[0][0]
-    incident_string = Slack.translate_create.call_args[0][1]
+    demisto_user = Slack.translate_create.call_args[0][3]
+    incident_string = Slack.translate_create.call_args[0][0]
     calls = slack.WebClient.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
     message_args = chat_call[0][1]['json']
@@ -1668,7 +1673,7 @@ async def test_translate_create(mocker):
     import Slack
 
     @asyncio.coroutine
-    def this_doesnt_create_incidents(demisto_user, incidents_json):
+    def this_doesnt_create_incidents(incidents_json, user_name, email, demisto_id):
         return {
             'id': 'new_incident',
             'name': 'New Incident'
@@ -1690,18 +1695,24 @@ async def test_translate_create(mocker):
                       ' View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident'
 
     # Arrange
-    json_data = await Slack.translate_create(demisto_user, json_message)
-    wrong_json_data = await Slack.translate_create(demisto_user, wrong_json_message)
-    name_data = await Slack.translate_create(demisto_user, name_message)
-    name_type_data = await Slack.translate_create(demisto_user, name_type_message)
-    type_name_data = await Slack.translate_create(demisto_user, type_name_message)
-    type_data = await Slack.translate_create(demisto_user, type_message)
+    json_data = await Slack.translate_create(json_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                             demisto_user)
+    wrong_json_data = await Slack.translate_create(wrong_json_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                                   demisto_user)
+    name_data = await Slack.translate_create(name_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                             demisto_user)
+    name_type_data = await Slack.translate_create(name_type_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                                  demisto_user)
+    type_name_data = await Slack.translate_create(type_name_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                                  demisto_user)
+    type_data = await Slack.translate_create(type_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                             demisto_user)
 
     create_args = Slack.create_incidents.call_args_list
-    json_args = create_args[0][0][1]
-    name_args = create_args[1][0][1]
-    name_type_args = create_args[2][0][1]
-    type_name_args = create_args[3][0][1]
+    json_args = create_args[0][0][0]
+    name_args = create_args[1][0][0]
+    name_type_args = create_args[2][0][0]
+    type_name_args = create_args[3][0][0]
 
     # Assert
 
@@ -1726,7 +1737,7 @@ async def test_translate_create_newline_json(mocker):
     import Slack
 
     @asyncio.coroutine
-    def this_doesnt_create_incidents(demisto_user, incidents_json):
+    def this_doesnt_create_incidents(incidents_json, user_name, email, demisto_id):
         return {
             'id': 'new_incident',
             'name': 'New Incident'
@@ -1749,10 +1760,11 @@ async def test_translate_create_newline_json(mocker):
                       ' View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident'
 
     # Arrange
-    json_data = await Slack.translate_create(demisto_user, json_message)
+    json_data = await Slack.translate_create(json_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                             demisto_user)
 
     create_args = Slack.create_incidents.call_args
-    json_args = create_args[0][1]
+    json_args = create_args[0][0]
 
     # Assert
 
@@ -1761,6 +1773,58 @@ async def test_translate_create_newline_json(mocker):
     assert json_args == [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
 
     assert json_data == success_message
+
+
+@pytest.mark.asyncio
+async def test_create_incidents_no_labels(mocker):
+    from Slack import create_incidents
+
+    # Set
+    mocker.patch.object(demisto, 'createIncidents', return_value='nice')
+
+    incidents = [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
+
+    incidents_with_labels = [{'name': 'xyz', 'details': '1.1.1.1,8.8.8.8',
+                              'labels': [{'type': 'Reporter', 'value': 'spengler'},
+                                         {'type': 'ReporterEmail', 'value': 'spengler@ghostbusters.example.com'},
+                                         {'type': 'Source', 'value': 'Slack'}]}]
+
+    # Arrange
+    data = await create_incidents(incidents, 'spengler', 'spengler@ghostbusters.example.com', 'demisto_user')
+
+    incident_arg = demisto.createIncidents.call_args[0][0]
+    user_arg = demisto.createIncidents.call_args[1]['userID']
+
+    assert incident_arg == incidents_with_labels
+    assert user_arg == 'demisto_user'
+    assert data == 'nice'
+
+
+@pytest.mark.asyncio
+async def test_create_incidents_with_labels(mocker):
+    from Slack import create_incidents
+
+    # Set
+    mocker.patch.object(demisto, 'createIncidents', return_value='nice')
+
+    incidents = [{'name': 'xyz', 'details': '1.1.1.1,8.8.8.8',
+                  'labels': [{'type': 'Reporter', 'value': 'spengler'},
+                             {'type': 'ReporterEmail', 'value': 'spengler@ghostbusters.example.com'}]}]
+
+    incidents_with_labels = [{'name': 'xyz', 'details': '1.1.1.1,8.8.8.8',
+                              'labels': [{'type': 'Reporter', 'value': 'spengler'},
+                                         {'type': 'ReporterEmail', 'value': 'spengler@ghostbusters.example.com'},
+                                         {'type': 'Source', 'value': 'Slack'}]}]
+
+    # Arrange
+    data = await create_incidents(incidents, 'spengler', 'spengler@ghostbusters.example.com', 'demisto_user')
+
+    incident_arg = demisto.createIncidents.call_args[0][0]
+    user_arg = demisto.createIncidents.call_args[1]['userID']
+
+    assert incident_arg == incidents_with_labels
+    assert user_arg == 'demisto_user'
+    assert data == 'nice'
 
 
 @pytest.mark.asyncio
@@ -1857,7 +1921,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
     mocker.patch.object(demisto, 'handleEntitlementForUser')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     mocker.patch.object(Slack, 'add_info_headers')
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
@@ -1870,6 +1934,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -1877,7 +1942,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -1907,7 +1972,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={'payload': PAYLOAD_JSON}
@@ -1919,6 +1984,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -1926,7 +1992,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -1952,7 +2018,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         [{'json': {}, 'status_code': 200},
@@ -1967,6 +2033,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -1974,6 +2041,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -1981,6 +2049,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -1988,7 +2057,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -2008,6 +2077,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }, {
@@ -2015,9 +2085,25 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }])
+
+
+@pytest.mark.parametrize('sent, expected_minutes', [(None, 1), ('2019-09-26 18:37:25', 1), ('2019-09-26 18:10:25', 2),
+                                                    ('2019-09-26 17:38:24', 5), ('2019-09-25 18:10:25', 5)])
+def test_get_poll_minutes(sent, expected_minutes):
+    from Slack import get_poll_minutes
+
+    # Set
+    current = datetime.datetime(2019, 9, 26, 18, 38, 25)
+
+    # Arrange
+    minutes = get_poll_minutes(current, sent)
+
+    # Assert
+    assert minutes == expected_minutes
 
 
 def test_check_for_answers_no_answer(mocker, requests_mock):
@@ -2028,7 +2114,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={}
@@ -2040,6 +2126,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -2047,6 +2134,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -2054,7 +2142,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     # Assert
 
@@ -2066,6 +2154,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }, {
@@ -2073,6 +2162,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }])
@@ -2086,7 +2176,7 @@ def test_check_for_answers_no_answer_expires(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={}
@@ -2112,7 +2202,7 @@ def test_check_for_answers_no_answer_expires(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -2145,7 +2235,7 @@ def test_check_for_answers_error(mocker, requests_mock):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json='error',
@@ -2168,7 +2258,7 @@ def test_check_for_answers_error(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     # Assert
 
@@ -2200,7 +2290,7 @@ def test_check_for_answers_handle_entitlement_error(mocker, requests_mock):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={'payload': PAYLOAD_JSON},
@@ -2218,7 +2308,7 @@ def test_check_for_answers_handle_entitlement_error(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     # Assert
 
@@ -2580,12 +2670,13 @@ def test_send_request_with_entitlement(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 
@@ -2645,12 +2736,13 @@ def test_send_request_with_entitlement_blocks(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 
@@ -2711,12 +2803,13 @@ def test_send_request_with_entitlement_blocks_message(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 

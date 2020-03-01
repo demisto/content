@@ -43,6 +43,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Maximum Number Of Incidents To Fetch
+  name: rows
+  defaultvalue: "10"
+  type: 0
+  required: false
 script:
   script: |-
     "use strict";
@@ -175,7 +180,7 @@ script:
         let defaultRunTime = (new Date().getTime()) - (24 * 60 * 60 * 1000); // Decrease one day if it's the first run, to get some alerts.
         let defaultRunTimeStr = unixToString(defaultRunTime);
         let lastRunStr = (lastRun.time) ? unixToString(lastRun.time + 1000) : defaultRunTimeStr;
-        let result = getAlertsRequest(`alert_severity:[${fetchAlertsSeverityThreshold} TO *] and created_time:[${lastRunStr} TO *]`);
+        let result = getAlertsRequest(`alert_severity:[${fetchAlertsSeverityThreshold} TO *] and created_time:[${lastRunStr} TO *]`, params.rows);
 
         let latestTime = 0;
         let incidents = result.map(curAlert => {

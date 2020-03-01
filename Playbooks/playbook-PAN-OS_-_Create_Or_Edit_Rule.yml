@@ -341,10 +341,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 479277f1-e37f-445b-87c0-4b5b996e4f65
+    taskid: 05eecf81-1e2f-4b18-825f-b7d27e0647d4
     type: regular
     task:
-      id: 479277f1-e37f-445b-87c0-4b5b996e4f65
+      id: 05eecf81-1e2f-4b18-825f-b7d27e0647d4
       version: -1
       name: Move the rule into its position
       description: Changes the location of a policy rule.
@@ -371,6 +371,12 @@ tasks:
       where:
         complex:
           root: inputs.rule-position
+          transformers:
+          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
+            args:
+              defaultValue:
+                value:
+                  simple: bottom
     separatecontext: false
     view: |-
       {
@@ -494,18 +500,20 @@ inputs:
   description: The server address to which to forward logs.
 - key: rule-position
   value: {}
-  required: true
+  required: false
   description: |-
     The position of the rule in the ruleset. Valid values are:
       * Top
       * Bottom
       * Before
       * After
+
+    The default is 'Bottom'
 - key: relative-rule-name
   value: {}
   required: false
-  description:  'If the rule-position that is chosen is before or after,
-    specify the rule name to which it is related.'
+  description: If the rule-position that is chosen is before or after, specify the
+    rule name to which it is related.
 - key: inbound-or-outbound-rule
   value: {}
   required: false

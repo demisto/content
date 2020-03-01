@@ -109,17 +109,17 @@ view: |-
 inputs:
 - key: SHA256
   value:
-    simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0
+    simple: 37972f57e2d8dd4a808bee0f8355ce5bd11d25e922f5e325a5e23fbfd806f7f9
   required: false
   description: Test SHA256 hash.
 - key: SHA1
   value:
-    simple: 5a0d2c73d4bdda6267f85e2530fe43b18ccb888e
+    simple: 1242814afcd7ddafa5b42e52e2fb0915c491f634
   required: false
   description: Test SHA1 hash.
 - key: MD5
   value:
-    simple: 024cdc5a095c3698edd978e4564e42b6
+    simple: 85a94aa9eb4cef9ad81150fe2bf0de37
   required: false
   description: Test MD5 hash.
 outputs: []

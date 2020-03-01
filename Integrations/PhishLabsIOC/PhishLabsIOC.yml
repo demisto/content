@@ -38,7 +38,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Get live feeds of IOC data from PhishLabs.
+description: Get indicators of compromise from PhishLabs.
 display: PhishLabs IOC
 name: PhishLabs IOC
 script:
@@ -452,10 +452,12 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.7.5.4328
+  dockerimage45: demisto/python3:3.7.3.221
   isfetch: true
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - PhishLabsIOC TestPlaybook
