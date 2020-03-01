@@ -7,7 +7,7 @@ def markdownify_command(args):
     html = args.get('html')
     markdown = md(html)
     outputs = {
-        "Markdownify": {
+        "'Markdownify(val.Original == obj.Original)'": {
             "Original": str(html),
             "Result": str(markdown)
         }

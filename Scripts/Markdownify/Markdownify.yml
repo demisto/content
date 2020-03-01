@@ -1,21 +1,30 @@
+args:
+- default: true
+  description: HTML to convert to Markdown
+  isArray: false
+  name: html
+  required: true
+  secret: false
+comment: Converts HTML into Markdown.
 commonfields:
   id: Markdownify
   version: -1
-name: Markdownify
-comment: Converts HTML into Markdown.
-script: ''
-type: python
-tags: []
 enabled: true
-args:
-- name: html
-  required: true
-  default: true
-  description: "HTML to convert to Markdown"
-scripttarget: 0
-subtype: python3
-runonce: false
+name: Markdownify
+outputs:
+- contextPath: Markdownify.Original
+  description: The original HTML which was converted.
+  type: String
+- contextPath: Markdownify.Result
+  description: The Markdown which was converted from HTML.
+  type: String
+script: '-'
+system: false
+timeout: '0'
+type: python
 dockerimage: demisto/btfl-soup:1.0.1.6233
 runas: DBotWeakRole
+runonce: false
 tests:
 - Test_Markdownify
+subtype: python3
