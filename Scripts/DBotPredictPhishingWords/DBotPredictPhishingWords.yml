@@ -24,6 +24,12 @@ args:
   required: false
   secret: false
 - default: false
+  description: HTML body of the email. Only use this field if the emailBody argument is empty.
+  isArray: false
+  name: emailBodyHTML
+  required: false
+  secret: false
+- default: false
   defaultValue: '20'
   description: 'Maximum number of positive/negative words to return for the model
     decision. '
@@ -109,4 +115,4 @@ timeout: '0'
 type: python
 dockerimage: demisto/dl:1.3
 tests:
-  - Create Phishing Classifier V2 ML Test
+- Create Phishing Classifier V2 ML Test

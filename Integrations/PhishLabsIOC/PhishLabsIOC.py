@@ -92,7 +92,7 @@ def http_request(method: str, path: str, params: dict = None, data: dict = None)
     try:
         return res.json()
     except Exception:
-        error_message = 'Failed parsing the response from PhishLabs IOC API: {}'.format(res.content)
+        error_message = 'Failed parsing the response from PhishLabs IOC API: {!r}'.format(res.content)
         if RAISE_EXCEPTION_ON_ERROR:
             raise Exception(error_message)
         else:

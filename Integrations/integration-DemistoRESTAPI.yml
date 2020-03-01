@@ -19,14 +19,14 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
-- display: User system proxy settings
+- display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
   required: false
 script:
@@ -243,3 +243,5 @@ script:
     description: Delete Demisto incidents
     execution: true
   runonce: false
+tests:
+  - No test

@@ -6,8 +6,10 @@ TestData/EmailWithNonUnicodeAttachmentName.eml
 TestData/EmailWithNonUnicodeSubject.eml
 *.pyc
 .pytest_cache
-
+.python-version
 CommonServerPython.py
+*Module.py
+!Packs/ApiModules/Scripts/*/*Module.py
 !Scripts/CommonServerPython/CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py
@@ -17,7 +19,9 @@ Tests/id_set.json
 Scripts/*/*_unified.yml
 Integrations/*/*_unified.yml
 Beta_Integrations/*/*_unified.yml
+Packs/*/*/*/*_unified.yml
 conftest.py
 !Tests/scripts/dev_envs/pytest/conftest.py
 venv
 failed_unittests.txt
+.python-version
