@@ -612,6 +612,7 @@ def create_content_descriptor(version, asset_id, res, github_token, beta_rn=None
     with open('release-notes.md', 'w') as outfile:
         outfile.write(release_notes)
 
+     print("saving beta release notes")
     with open('beta-release-notes.md', 'w') as outfile:
         beta_release_notes = '## Demisto Content Beta Release Notes for version {} ({})\n'.format("5.5.0", asset_id)
         beta_release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"),
