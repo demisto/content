@@ -1,9 +1,9 @@
 {
-    "TypeName": "domainRep",
+    "TypeName": "domainRepUnified",
     "kind": "indicatorsDetails",
     "layout": {
         "TypeName": "",
-        "id": "domainRep",
+        "id": "domainRepUnified",
         "kind": "indicatorsDetails",
         "modified": "2020-02-18T14:53:42.949168053Z",
         "name": "",
@@ -513,10 +513,10 @@
                 "type": "custom"
             }
         ],
-        "typeId": "domainRep",
+        "typeId": "domainRepUnified",
         "version": -1
     },
-    "typeId": "domainRep",
+    "typeId": "domainRepUnified",
     "version": -1,
     "fromVersion": "5.5.0"
 }
