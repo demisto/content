@@ -369,7 +369,7 @@ class LayoutContent(Content):
         return json.loads(data)
 
     def get_header(self):
-        return "Incident Layouts"
+        return "Layouts"
 
     def get_release_notes(self, file_path, data):
         release_note = super(LayoutContent, self).get_release_notes(file_path, data)
