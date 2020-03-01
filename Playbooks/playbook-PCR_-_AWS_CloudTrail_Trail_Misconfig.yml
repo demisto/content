@@ -46,10 +46,10 @@ tasks:
       name: Get CloudTrail detail
       description: Retrieves settings for the trail associated with the current region
         for your account.
-      script: AWS - CloudTrail--DEV|||aws-cloudtrail-describe-trails
+      script: AWS - CloudTrail|||aws-cloudtrail-describe-trails
       type: regular
       iscommand: true
-      brand: AWS - CloudTrail--DEV
+      brand: AWS - CloudTrail
     nexttasks:
       '#none#':
       - "8"
@@ -125,10 +125,10 @@ tasks:
       name: Update CloudTrail LogValidation
       description: Updates the settings that specify delivery of log files. Changes
         to a trail do not require stopping the CloudTrail service.
-      script: AWS - CloudTrail--DEV|||aws-cloudtrail-update-trail
+      script: AWS - CloudTrail|||aws-cloudtrail-update-trail
       type: regular
       iscommand: true
-      brand: AWS - CloudTrail--DEV
+      brand: AWS - CloudTrail
     nexttasks:
       '#none#':
       - "3"
@@ -281,10 +281,10 @@ tasks:
       name: Update CloudTrail MultiRegion
       description: Updates the settings that specify delivery of log files. Changes
         to a trail do not require stopping the CloudTrail service.
-      script: AWS - CloudTrail--DEV|||aws-cloudtrail-update-trail
+      script: AWS - CloudTrail|||aws-cloudtrail-update-trail
       type: regular
       iscommand: true
-      brand: AWS - CloudTrail--DEV
+      brand: AWS - CloudTrail
     nexttasks:
       '#none#':
       - "3"

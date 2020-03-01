@@ -240,10 +240,10 @@ tasks:
       name: Update CloudTrail
       description: Updates the settings that specify delivery of log files. Changes
         to a trail do not require stopping the CloudTrail service.
-      script: AWS - CloudTrail--DEV|||aws-cloudtrail-update-trail
+      script: AWS - CloudTrail|||aws-cloudtrail-update-trail
       type: regular
       iscommand: true
-      brand: AWS - CloudTrail--DEV
+      brand: AWS - CloudTrail
     nexttasks:
       '#none#':
       - "3"
