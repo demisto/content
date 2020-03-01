@@ -8,7 +8,7 @@ from logging.handlers import SysLogHandler
 from distutils.util import strtobool
 from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
 from socket import SOCK_STREAM
-from typing import Union, Tuple, Dict, Any
+from typing import Union, Tuple, Dict, Any, Generator
 
 ''' CONSTANTS '''
 
@@ -52,6 +52,10 @@ SEVERITY_DICT = {
     'Critical': 4
 }
 
+TCP = 'tcp'
+UDP = 'udp'
+PROTOCOLS = {TCP, UDP}
+
 ''' Syslog Manager '''
 
 
@@ -71,7 +75,7 @@ class SyslogManager:
         self.facility = facility
 
     @contextmanager  # type: ignore[misc, arg-type]
-    def get_logger(self) -> Logger:
+    def get_logger(self) -> Generator:
         """
         Get a new instance of a syslog logger.
         :return: syslog logger
@@ -94,7 +98,7 @@ class SyslogManager:
             'facility': self.facility
         }
 
-        if self.protocol == 'tcp':
+        if self.protocol == TCP:
             kwargs['socktype'] = SOCK_STREAM
         elif self.protocol == 'unix':
             address = self.address
@@ -127,13 +131,13 @@ def init_manager(params: dict) -> SyslogManager:
     """
     address = params.get('address', '')
     port = int(params.get('port', 514))
-    protocol = params.get('protocol', 'udp').lower()
+    protocol = params.get('protocol', UDP).lower()
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
     logging_level = LOGGING_LEVEL_DICT.get(params.get('logging_level', 'LOG_INFO'), INFO)
 
     if not address:
         raise ValueError('A Syslog server address must be provided.')
-    if not port and protocol in {'TCP', 'UDP'}:
+    if not port and protocol in PROTOCOLS:
         raise ValueError('A port must be provided in TCP or UDP protocols.')
 
     return SyslogManager(address, port, protocol, logging_level, facility)
