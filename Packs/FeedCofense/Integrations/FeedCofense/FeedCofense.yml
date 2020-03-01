@@ -50,7 +50,6 @@ configuration:
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
-  hidden: true
   type: 1
   required: false
 - defaultvalue: '60'
