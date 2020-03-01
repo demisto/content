@@ -144,7 +144,6 @@ class Client(BaseClient):
             for item in self._build_iterator_domain()
         ]
 
-
     def get_indicators_ip(self) -> List[dict]:
         """ Gets indicator's dict of ips
 
