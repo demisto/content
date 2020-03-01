@@ -93,7 +93,7 @@ class Client:
                     "range": {"@timestamp": time_filter}
                 }
             )
-        print(json.dumps(payload))
+        # print(json.dumps(payload))
 
         headers = {
             'Content-Type': 'application/json',
@@ -113,8 +113,6 @@ class Client:
         payload = {
             "id": id
         }
-
-        print(json.dumps(payload))
 
         headers = {
             'Content-Type': 'application/json',
@@ -232,8 +230,12 @@ def fetch_incidents(client, last_run, search, severities, first_fetch_time):
         next_run["last_fetch"] = max(start_query_time, time.time() - ONE_HOUR)
     raw_events = client.fetch_triggered_rules(search=search, severities=severities,
                                               start_time=start_query_time)
-    # print(json.dumps(raw_events['results']))
-    for event in raw_events['results']:
+    # print(raw_events)
+    for event in raw_events["results"]:
+        if "groupBy" in event:
+            for field in event["groupBy"]:
+                event[field] = event["groupBy"][field]
+            del event["groupBy"]
         event_date = datetime.fromtimestamp(event["eventDate"])
         event_date_string = event_date.strftime(DATE_FORMAT)
         incident = {
