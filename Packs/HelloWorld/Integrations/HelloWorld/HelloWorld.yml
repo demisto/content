@@ -48,9 +48,11 @@ script:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
+  dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.7.4.2245
+  type: python

@@ -10,45 +10,67 @@ import dateparser
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# CONSTANTS
+''' CONSTANTS '''
+
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
 API_VERSION = '2019-01-01-preview'
 
-INCIDENT_HEADERS = ['ID', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName', 'AssigneeEmail', 'Labels',
-                    'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC', 'CreatedTimeUTC',
-                    'IncidentNumber', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
+AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
+                          'The response from the server did not contain the expected content.'
+
+INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName',
+                    'AssigneeEmail', 'Labels', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
+                    'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
                     'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
 
-COMMENT_HEADERS = ['ID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
+COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
 
 
 class Client(BaseClient):
-    def __init__(self, tenant_id, client_id, client_secret, auth_code,
+    def __init__(self, url, tenant_id, client_id, client_secret, auth_code,
                  subscription_id, resource_group_name, workspace_name, **kwargs):
+        self.base_url = f'{url}/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/' \
+            f'Microsoft.OperationalInsights/workspaces/{workspace_name}/providers/Microsoft.SecurityInsights'
         self.tenant_id = tenant_id
         self.client_id = client_id
         self.client_secret = client_secret
         self.auth_code = auth_code
-        # self.access_token = self.get_access_token()
-        self.access_token = ''
-        self.base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
-            f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}/' \
-            f'providers/Microsoft.SecurityInsights'
+        self.access_token = self.get_access_token()
         super(Client, self).__init__(self.base_url, **kwargs)
 
     def get_access_token(self):
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
         refresh_token = integration_context.get('refresh_token')
-        access_token_expiration_time = integration_context.get('access_token_expiration_time')
+        access_token_expiration_time = dateparser.parse(integration_context.get('access_token_expiration_time', '0'))
 
-        if access_token is None or datetime.now() - access_token_expiration_time > timedelta(seconds=-5):
+        if not access_token or datetime.now() - access_token_expiration_time > timedelta(seconds=-5):
             access_token = self.make_access_token_request(refresh_token)
 
         return access_token
 
-    def make_access_token_request(self, refresh_token=None):
-        params = {
+    def make_access_token_request(self, refresh_token=None, retry=False):
+        data = self.get_access_token_request_data(refresh_token)
+        res = requests.post(f'https://login.microsoftonline.com/{self.tenant_id}/oauth2/token',
+                            headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                            data=data)
+
+        if res.status_code != 200:  # Refresh token has expired
+            if not retry:  # Try again using auth_code
+                return self.make_access_token_request(refresh_token=None, retry=True)
+            else:
+                raise Exception(AUTHORIZATION_ERROR_MSG)
+
+        try:
+            res_json = res.json()
+            self.update_tokens_in_context(res_json)
+            return res_json.get('access_token')
+        except ValueError:
+            raise Exception(AUTHORIZATION_ERROR_MSG)
+
+    def get_access_token_request_data(self, refresh_token=None):
+        data = {
             'client_id': self.client_id,
             'client_secret': self.client_secret,
             'redirect_uri': 'https://localhost/myapp',
@@ -56,118 +78,204 @@ class Client(BaseClient):
         }
 
         if refresh_token:
-            params['grant_type'] = 'refresh_token'
-            params['refresh_token'] = refresh_token
+            data['grant_type'] = 'refresh_token'
+            data['refresh_token'] = refresh_token
         else:
-            params['grant_type'] = 'authorization_code'
-            params['code'] = self.auth_code
+            data['grant_type'] = 'authorization_code'
+            data['code'] = self.auth_code
 
-        res = requests.post(f'https://login.microsoftonline.com/{self.tenant_id}/oauth2/token',
-                            headers={'Content-Type': 'application/x-www-form-urlencoded'},
-                            params=params)
-
-        if res.status_code != 200:
-            # Refresh token has expired, try again using auth_code
-            return self.make_access_token_request(refresh_token=None)
-
-        try:
-            res_json = res.json()
-            self.update_tokens_in_context(res_json)
-            return res_json['access_token']
-
-        except ValueError:
-            raise Exception(
-                'There was a problem in retrieving an updated access token.\n'
-                'The response from the server did not contain the expected content.'
-            )
+        return data
 
     def update_tokens_in_context(self, res):
         integration_context = {
-            'access_token': res['access_token'],
-            'refresh_token': res['refresh_token'],
-            'access_token_expiration_time': datetime.fromtimestamp(res['expires_on'])
+            'access_token': res.get('access_token'),
+            'refresh_token': res.get('refresh_token'),
+            'access_token_expiration_time': res.get('expires_on', '0')
         }
-
         demisto.setIntegrationContext(integration_context)
 
-    def http_request(self, method, url_suffix, params=None, data=None, resp_type='response'):
-        self.update_access_token()
-
+    def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
         if not params:
             params = {}
-        params['api-version'] = API_VERSION
+        if not full_url:
+            params['api-version'] = API_VERSION
 
         res = self._http_request(method=method,
                                  url_suffix=url_suffix,
+                                 full_url=full_url,
                                  headers={'Authorization': 'Bearer ' + self.access_token},
                                  json_data=data,
                                  params=params,
-                                 resp_type=resp_type,
-                                 ok_codes=(200, 201, 202, 204, 400, 403, 404))
-        return res
+                                 resp_type='response',
+                                 ok_codes=(200, 201, 202, 204, 400, 401, 403, 404))
+        res_json = res.json()
 
-    def update_access_token(self):
-        self.access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkhsQzBSMTJza3hOWjFXUXdtak9GXzZ0X3RERSIsImtpZCI6IkhsQzBSMTJza3hOWjFXUXdtak9GXzZ0X3RERSJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldCIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0L2ViYWMxYTE2LTgxYmYtNDQ5Yi04ZDQzLTU3MzJjM2MxZDk5OS8iLCJpYXQiOjE1ODI2NTkyNDAsIm5iZiI6MTU4MjY1OTI0MCwiZXhwIjoxNTgyNjYzMTQwLCJhY3IiOiIxIiwiYWlvIjoiQVNRQTIvOE9BQUFBcDlDcWJjdnlZT3Q4bE1GQXU0aCtPRWhQSmZEcG80cnJmMWtoTStsbHZNZz0iLCJhbXIiOlsicHdkIl0sImFwcGlkIjoiOTRiNDUyMjUtYjZhNS00NTNlLTljYmMtMmU3MjJkYmMyZmQzIiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJCcmFuZGVpcyIsImdpdmVuX25hbWUiOiJBdmlzaGFpIiwiZ3JvdXBzIjpbIjJhZGYxNGM2LWMyMGUtNDNlOC05OTgwLWU2NzEyNWZmNGM2MiIsImM2NTY3YWU0LWVkZjUtNDZiNS05ZDNlLWVhNjYwY2VhZDYxMCIsIjg0YTE5OTkwLTE1ZmYtNGVhNy1iMzM5LTZmMmM3NjE5MjgxOSJdLCJpcGFkZHIiOiIzNC45OS4yMzEuMjQxIiwibmFtZSI6IkF2aXNoYWkgQnJhbmRlaXMiLCJvaWQiOiIzZmE5ZjI4Yi1lYjBlLTQ2M2EtYmE3Yi04MDg5ZmU5OTkxZTIiLCJwdWlkIjoiMTAwMzAwMDA5QUJDMjg3OCIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInN1YiI6InJTdWlVUnV4NkctSWtpLXZyNUticHU4QmtkZk15aUpmVmgtNndqaFdYNXMiLCJ0aWQiOiJlYmFjMWExNi04MWJmLTQ0OWItOGQ0My01NzMyYzNjMWQ5OTkiLCJ1bmlxdWVfbmFtZSI6ImF2aXNoYWlAZGVtaXN0b2Rldi5vbm1pY3Jvc29mdC5jb20iLCJ1cG4iOiJhdmlzaGFpQGRlbWlzdG9kZXYub25taWNyb3NvZnQuY29tIiwidXRpIjoiamRDOUtXZjR0MHltdWlxN3NBc0RBQSIsInZlciI6IjEuMCIsIndpZHMiOlsiM2EyYzYyZGItNTMxOC00MjBkLThkNzQtMjNhZmZlZTVkOWQ1IiwiNjJlOTAzOTQtNjlmNS00MjM3LTkxOTAtMDEyMTc3MTQ1ZTEwIl19.SXmeO_SLSkkIJJC8k_NSZdSR6SWTr2BZMKx7A8g7EkgWihsI51bCIyIG_l96bhuWj4qr4kjWBJw1ZFKV8pFZgW9T2qYtIuJXr0x0OoYCit7zMbLMuNBFwnr60PXqVDctFsVqtp1RpkRPAot80i6dZN-d3pgy8QXzy6BwVwPXNNhTliqkBc11YeZSuU8iluvf5cLq3w5y7e1JULMJfIR5Y-ij8MbDxTzo9U6k99U0AAlVYBEm2u9CelVEoX6nJuKCx7HUBXbr_o30QMi1ZRr6fTX3ZaYPfRfW5d1XC4yHQb76-Y6L5EQw-RudIWphQk9mCWWMxARJHS-3cw0_fuZA7Q"
+        if res.status_code in (400, 401, 403, 404):
+            code = res_json.get('error', {}).get('code', 'Error')
+            error_msg = res_json.get('error', {}).get('message', res_json)
+            raise ValueError(
+                f'[{code} {res.status_code}] {error_msg}'
+            )
+
+        return res_json
 
 
-def get_response_next_token(next_link):
-    match = re.search(r'\$skipToken=([^&]*)', next_link)
-    if match:
-        return match.group(1)
-    return None
+''' INTEGRATION HELPER METHODS '''
+
+
+def format_date(date):
+    return dateparser.parse(date).strftime(DATE_FORMAT)
 
 
 def incident_data_to_demisto_format(inc_data):
-    inc_properties = inc_data.get('properties', {})
+    properties = inc_data.get('properties', {})
 
     formatted_data = {
         'ID': inc_data.get('name'),
-        'Title': inc_properties.get('title'),
-        'Description': inc_properties.get('description'),
-        'Severity': inc_properties.get('severity'),
-        'Status': inc_properties.get('status'),
-        'AssigneeName': inc_properties.get('owner', {}).get('assignedTo'),
-        'AssigneeEmail': inc_properties.get('owner', {}).get('email'),
-        'Labels': [{
+        'IncidentNumber': properties.get('incidentNumber'),
+        'Title': properties.get('title'),
+        'Description': properties.get('description'),
+        'Severity': properties.get('severity'),
+        'Status': properties.get('status'),
+        'AssigneeName': properties.get('owner', {}).get('assignedTo'),
+        'AssigneeEmail': properties.get('owner', {}).get('email'),
+        'Label': [{
             'Name': label.get('name'),
             'Type': label.get('type')
-            } for label in inc_properties.get('labels', [])
-        ],
-        'FirstActivityTimeUTC': inc_properties.get('firstActivityTimeUtc'),
-        'LastActivityTimeUTC': inc_properties.get('lastActivityTimeUtc'),
-        'LastModifiedTimeUTC': inc_properties.get('lastModifiedTimeUtc'),
-        'CreatedTimeUTC': inc_properties.get('createdTimeUtc'),
-        'IncidentNumber': inc_properties.get('incidentNumber'),
-        'AlertsCount': inc_properties.get('additionalData', {}).get('alertsCount'),
-        'BookmarksCount': inc_properties.get('additionalData', {}).get('bookmarksCount'),
-        'CommentsCount': inc_properties.get('additionalData', {}).get('commentsCount'),
-        'AlertProductNames': inc_properties.get('additionalData', {}).get('alertProductNames'),
-        'Tactics': inc_properties.get('tactics'),
-        'FirstActivityTimeGenerated': inc_properties.get('firstActivityTimeGenerated'),
-        'LastActivityTimeGenerated': inc_properties.get('lastActivityTimeGenerated')
+        } for label in properties.get('labels', [])],
+        'FirstActivityTimeUTC': format_date(properties.get('firstActivityTimeUtc')),
+        'LastActivityTimeUTC': format_date(properties.get('lastActivityTimeUtc')),
+        'LastModifiedTimeUTC': format_date(properties.get('lastModifiedTimeUtc')),
+        'CreatedTimeUTC': format_date(properties.get('createdTimeUtc')),
+        'AlertsCount': properties.get('additionalData', {}).get('alertsCount'),
+        'BookmarksCount': properties.get('additionalData', {}).get('bookmarksCount'),
+        'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
+        'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
+        'Tactics': properties.get('tactics'),
+        'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
+        'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated'))
     }
     return formatted_data
 
 
-def comment_data_to_demisto_format(comment_data):
-    inc_properties = comment_data.get('properties', {})
+def comment_data_to_demisto_format(comment_data, inc_id):
+    properties = comment_data.get('properties', {})
 
     formatted_data = {
         'ID': comment_data.get('name'),
-        'Message': inc_properties.get('message'),
-        'AuthorName': inc_properties.get('author', {}).get('assignedTo'),
-        'AuthorEmail': inc_properties.get('author', {}).get('email'),
-        'CreatedTimeUTC': inc_properties.get('createdTimeUtc')
+        'IncidentID': inc_id,
+        'Message': properties.get('message'),
+        'AuthorName': properties.get('author', {}).get('assignedTo'),
+        'AuthorEmail': properties.get('author', {}).get('email'),
+        'CreatedTimeUTC': format_date(properties.get('createdTimeUtc'))
     }
     return formatted_data
 
 
+def related_resource_data_to_demisto_format(resource_data, inc_id):
+    properties = resource_data.get('properties', {})
+
+    formatted_data = {
+        'ID': properties.get('relatedResourceName'),
+        'Kind': properties.get('relatedResourceKind'),
+        'IncidentID': inc_id
+    }
+    return formatted_data
+
+
+def flatten_entity_attributes(attributes):
+    # This method flattens a GET entity response json.
+    flattened_results = attributes.get('properties', {})
+    flattened_results['ID'] = attributes.get('name')
+    flattened_results['Kind'] = attributes.get('kind')
+    return flattened_results
+
+
+def severity_to_level(severity):
+    if severity == 'Informational':
+        return 0.5
+    elif severity == 'Low':
+        return 1
+    elif severity == 'Medium':
+        return 2
+    elif severity == 'High':
+        return 3
+    return 0
+
+
+''' INTEGRATION COMMANDS '''
+
+
 def test_module(client):
+    # todo: in the current method of authorization we can't test the instance - can't use the auth_code twice
+    list_incidents_command(client, {'top': '1'})
     return 'ok'
 
 
+def get_incident_by_id_command(client, args):
+    inc_id = args.get('incident_id')
+    url_suffix = f'incidents/{inc_id}'
+
+    result = client.http_request('GET', url_suffix)
+
+    incident = incident_data_to_demisto_format(result)
+
+    outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incident}
+
+    readable_output = tableToMarkdown(f'Incident {inc_id} details', incident,
+                                      headers=INCIDENT_HEADERS,
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return (
+        readable_output,
+        outputs,
+        result
+    )
+
+
+def list_incidents_command(client, args, is_fetch_incidents=False):
+    filter_expression = args.get('filter')
+    top = None if is_fetch_incidents else min(50, int(args.get('top')))
+    next_link = args.get('next_link')
+
+    if next_link:
+        result = client.http_request('GET', full_url=next_link)
+    else:
+        url_suffix = 'incidents'
+        params = {
+            '$top': top,
+            '$filter': filter_expression
+        }
+        remove_nulls_from_dictionary(params)
+
+        result = client.http_request('GET', url_suffix, params=params)
+
+    incidents = [incident_data_to_demisto_format(inc) for inc in result.get('value')]
+
+    if is_fetch_incidents:
+        return None, incidents, {}
+
+    outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incidents}
+
+    next_link = result.get('nextLink')
+    if next_link:
+        outputs['AzureSentinel.NextLink'] = next_link
+
+    readable_output = tableToMarkdown(f'Incidents List ({len(incidents)} results)', incidents,
+                                      headers=INCIDENT_HEADERS,
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return (
+        readable_output,
+        outputs,
+        result
+    )
+
+
 def update_incident_command(client, args):
-    # todo: request is broken
+    # todo: API request is failing
     inc_id = args.get('incident_id')
     inc_data = {
         'properties': {
@@ -176,22 +284,21 @@ def update_incident_command(client, args):
             'severity': args.get('severity'),
             'status': args.get('status'),
             # 'enum': args.get('classification'),  # todo: enum not in preview api version
-            'owner': {
-                'email': args.get('owner_email')  # todo: I don't think this will work
-            }
         }
     }
-
-    # todo: beautify when possible
-    remove_nulls_from_dictionary(inc_data['properties']['owner'])
     remove_nulls_from_dictionary(inc_data['properties'])
 
     url_suffix = f'incidents/{inc_id}'
 
-    result = client.http_request('PUT', url_suffix, data=inc_data, resp_type='json')
-    outputs = incident_data_to_demisto_format(result)
+    result = client.http_request('PUT', url_suffix, data=inc_data)
+    incident = incident_data_to_demisto_format(result)
 
-    readable_output = tableToMarkdown(f'Updated incidents {inc_id} details', outputs)
+    outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incident}
+
+    readable_output = tableToMarkdown(f'Updated incidents {inc_id} details', incident,
+                                      headers=INCIDENT_HEADERS,
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
 
     return (
         readable_output,
@@ -211,103 +318,29 @@ def delete_incident_command(client, args):
     )
 
 
-def get_incident_by_id_command(client, args):
-    inc_id = args.get('incident_id')
-    url_suffix = f'incidents/{inc_id}'
-
-    result = client.http_request('GET', url_suffix, resp_type='json')
-    outputs = incident_data_to_demisto_format(result)
-
-    readable_output = tableToMarkdown(f'Incident {inc_id} details', outputs,
-                                      headers=COMMENT_HEADERS,
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True)
-
-    return (
-        readable_output,
-        outputs,
-        result
-    )
-
-
-def list_incidents_command(client, args):
-    top = int(args.get('top'))
-    next_token = args.get('next_token')
-    url_suffix = 'incidents'
-
-    params = {}
-    if top:
-        params['$top'] = top
-    if next_token:
-        params['$skipToken'] = next_token
-
-    result = client.http_request('GET', url_suffix, params, resp_type='json')
-
-    incidents = [incident_data_to_demisto_format(inc) for inc in result.get('value')]
-    next_token = get_response_next_token(result.get('nextLink'))
-
-    outputs = {
-        'Incident(val.ID === obj.ID)': incidents,
-        'NextToken': next_token
-    }
-
-    readable_output = tableToMarkdown(f'Incidents List ({len(incidents)} results)', incidents,
-                                      metadata=f'Next Token: {next_token}',
-                                      headers=INCIDENT_HEADERS,
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True)
-
-    return (
-        readable_output,
-        outputs,
-        result
-    )
-
-
-def get_incident_comment_by_id_command(client, args):
-    inc_id = args.get('incident_id')
-    comment_id = args.get('comment_id')
-    url_suffix = f'incidents/{inc_id}/comments/{comment_id}'
-
-    result = client.http_request('GET', url_suffix, resp_type='json')
-    outputs = comment_data_to_demisto_format(result)
-
-    readable_output = tableToMarkdown(f'Incident {inc_id} details', outputs,
-                                      headers=COMMENT_HEADERS,
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True)
-
-    return (
-        readable_output,
-        outputs,
-        result
-    )
-
-
 def list_incident_comments_command(client, args):
     inc_id = args.get('incident_id')
-    top = int(args.get('top'))
-    next_token = args.get('next_token')
-    url_suffix = f'incidents/{inc_id}/comments'
+    top = min(50, int(args.get('top')))
+    next_link = args.get('next_link')
 
-    params = {}
-    if top:
-        params['$top'] = top
-    if next_token:
-        params['$skipToken'] = next_token
+    if next_link:
+        result = client.http_request('GET', full_url=next_link)
+    else:
+        url_suffix = f'incidents/{inc_id}/comments'
+        params = {'$top': top}
+        remove_nulls_from_dictionary(params)
 
-    result = client.http_request('GET', url_suffix, params, resp_type='json')
+        result = client.http_request('GET', url_suffix, params=params)
 
-    comments = [comment_data_to_demisto_format(inc) for inc in result.get('value')]
-    next_token = get_response_next_token(result.get('nextLink'))
+    comments = [comment_data_to_demisto_format(inc, inc_id) for inc in result.get('value')]
 
-    outputs = {
-        f'Incident(ID === {inc_id}).Comment': comments,
-        'NextToken': next_token
-    }
+    outputs = {f'AzureSentinel.IncidentComment(val.ID === obj.ID && val.IncidentID === {inc_id})': comments}
+
+    next_link = result.get('nextLink')
+    if next_link:
+        outputs['AzureSentinel.NextToken'] = next_link
 
     readable_output = tableToMarkdown(f'Incident {inc_id} Comments ({len(comments)} results)', comments,
-                                      metadata=f'Next Token: {next_token}',
                                       headers=COMMENT_HEADERS,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
@@ -325,15 +358,19 @@ def incident_add_comment_command(client, args):
     inc_id = args.get('incident_id')
     url_suffix = f'incidents/{inc_id}/comments/{str(random.getrandbits(128))}'
     comment_data = {
-        'properties': {  # todo: can't define author - depends on user (token)
+        'properties': {
             'message': args.get('message')
         }
     }
 
     result = client.http_request('PUT', url_suffix, data=comment_data)
-    outputs = comment_data_to_demisto_format(result)
+    comment = comment_data_to_demisto_format(result, inc_id)
 
-    readable_output = tableToMarkdown(f'Incident {inc_id} details', outputs,
+    outputs = {
+        f'AzureSentinel.IncidentComment(val.ID === obj.ID && val.IncidentID === {inc_id})': comment
+    }
+
+    readable_output = tableToMarkdown(f'Incident {inc_id} new comment details', comment,
                                       headers=COMMENT_HEADERS,
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
@@ -351,39 +388,37 @@ def get_entity_by_id_command(client, args):
 
     result = client.http_request('GET', url_suffix)
 
-    readable_output = tableToMarkdown(f'Entity {entity_id} details', result,
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True)
+    flattened_result = flatten_entity_attributes(result)
+
+    readable_output = tableToMarkdown(f'Entity {entity_id} details', flattened_result, removeNull=True)
+
+    outputs = {
+        'AzureSentinel.Entity(val.ID === obj.ID)': flattened_result
+    }
 
     return (
         readable_output,
-        result,
+        outputs,
         result
     )
 
 
 def list_entities_command(client, args):
-    top = int(args.get('top'))
-    next_token = args.get('next_token')
+    # todo: only 20 elements are returned, no skipToken, while there are more (can be found by id).
+    # limit = int(args.get('limit'))
+    # offset = int(args.get('offset'))
     url_suffix = 'entities'
 
-    params = {}
-    if top:
-        params['$top'] = top
-    if next_token:
-        params['$skipToken'] = next_token
+    result = client.http_request('GET', url_suffix)
 
-    result = client.http_request('GET', url_suffix, params, resp_type='json')
-    next_token = get_response_next_token(result.get('nextLink'))
+    flattened_results = [flatten_entity_attributes(entity) for entity in result.get('value', [])]
+
     outputs = {
-        'RawResponse': result,
-        'NextToken': next_token
+        'AzureSentinel.Entity(val.ID === obj.ID)': flattened_results
     }
 
-    readable_output = tableToMarkdown(f'Entities List ({len(result)} results)', result,
-                                      metadata=f'Next Token: {next_token}',
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True)
+    # todo: if we don't have $top param, I will do a manual pagination (currently waiting for a session w microsoft guy)
+    readable_output = tableToMarkdown(f'Entities details', flattened_results, removeNull=True)
 
     return (
         readable_output,
@@ -394,28 +429,38 @@ def list_entities_command(client, args):
 
 def list_incident_relations_command(client, args):
     inc_id = args.get('incident_id')
-    top = int(args.get('top'))
-    next_token = args.get('next_token')
-    url_suffix = f'incidents/{inc_id}/relations'
+    top = min(50, int(args.get('top')))
+    next_link = args.get('next_link')
+    entity_kinds = args.get('entity_kinds')
+    filter_expression = args.get('filter', '')
 
-    params = {}
-    if top:
-        params['$top'] = top
-    if next_token:
-        params['$skipToken'] = next_token
+    if next_link:
+        result = client.http_request('GET', full_url=next_link)
+    else:
+        # Handle entity kinds to filter by
+        if entity_kinds:
+            if filter_expression:
+                filter_expression += ' and '
+            filter_expression += f"search.in(properties/relatedResourceKind, '{entity_kinds}', ',')"
 
-    result = client.http_request('GET', url_suffix, params, resp_type='json')
+        url_suffix = f'incidents/{inc_id}/relations'
+        params = {
+            '$top': top,
+            '$filter': filter_expression
+        }
+        remove_nulls_from_dictionary(params)
 
-    relations = [comment_data_to_demisto_format(inc) for inc in result.get('value')]
-    next_token = get_response_next_token(result.get('nextLink'))
+        result = client.http_request('GET', url_suffix, params=params)
 
-    outputs = {
-        f'Incident(ID === {inc_id}).Relation': relations,
-        'NextToken': next_token
-    }
+    relations = [related_resource_data_to_demisto_format(resource, inc_id) for resource in result.get('value')]
+
+    outputs = {f'AzureSentinel.IncidentRelatedResource(val.ID === obj.ID && val.IncidentID == {inc_id})': relations}
+
+    next_link = result.get('nextLink')
+    if next_link:
+        outputs['AzureSentinel.NextLink'] = next_link
 
     readable_output = tableToMarkdown(f'Incident {inc_id} Relations ({len(relations)} results)', relations,
-                                      metadata=f'Next Token: {next_token}',
                                       headerTransform=pascalToSpace,
                                       removeNull=True)
 
@@ -427,33 +472,46 @@ def list_incident_relations_command(client, args):
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
+    # Get the last fetch details, if exist
+    last_fetch_time = last_run.get('last_fetch_time')
+    last_fetch_ids = last_run.get('last_fetch_ids', [])
 
     # Handle first time fetch
-    if last_fetch is None:
-        last_fetch, _ = dateparser.parse(first_fetch_time)
+    if last_fetch_time is None:
+        last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
+        last_fetch_time = datetime.strptime(last_fetch_time_str, DATE_FORMAT)
     else:
-        last_fetch = dateparser.parse(last_fetch)
+        last_fetch_time = datetime.strptime(last_fetch_time, DATE_FORMAT)
 
-    latest_created_time = last_fetch
-    _, items, _ = list_incidents_command(client, {})  # todo: understand if list_incidents can support $filter param
+    latest_created_time = last_fetch_time
+    latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
+    command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
+    _, items, _ = list_incidents_command(client, command_args, is_fetch_incidents=True)
     incidents = []
-    for incident in items['Incident(val.ID === obj.ID)']:
-        incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-        incident = {
-            'name': incident.get('description'),
-            'occurred': incident_created_time.strftime(DATE_FORMAT),
-            'rawJSON': json.dumps(incident)
-        }
+    current_fetch_ids = []
 
-        incidents.append(incident)
+    for incident in items:
+        # fetch only incidents that weren't fetched in the last run
+        if incident.get('ID') not in last_fetch_ids:
+            incident_created_time = datetime.strptime(incident.get('CreatedTimeUTC'), DATE_FORMAT)
+            incident = {
+                'name': '[Azure Sentinel] ' + incident.get('Title'),
+                'occurred': incident.get('CreatedTimeUTC'),
+                'severity': severity_to_level(incident.get('Severity')),
+                'rawJSON': json.dumps(incident)
+            }
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
+            incidents.append(incident)
+            current_fetch_ids.append(incident.get('ID'))
 
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
+            # Update last run to the latest fetch time
+            if incident_created_time > latest_created_time:
+                latest_created_time = incident_created_time
+
+    next_run = {
+        'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
+        'last_fetch_ids': current_fetch_ids
+    }
     return next_run, incidents
 
 
@@ -469,6 +527,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
+            url=params['url'],
             tenant_id=params['tenant_id'],
             client_id=params['client_id'],
             client_secret=params['client_secret'],
@@ -485,7 +544,6 @@ def main():
             'azure-sentinel-list-incidents': list_incidents_command,
             'azure-sentinel-update-incident': update_incident_command,
             'azure-sentinel-delete-incident': delete_incident_command,
-            'azure-sentinel-get-incident-comment-by-id': get_incident_comment_by_id_command,
             'azure-sentinel-list-incident-comments': list_incident_comments_command,
             'azure-sentinel-incident-add-comment': incident_add_comment_command,
             'azure-sentinel-get-entity-by-id': get_entity_by_id_command,
@@ -509,7 +567,7 @@ def main():
             demisto.incidents(incidents)
 
         elif demisto.command() in commands:
-            return_outputs(*commands[demisto.command()](client, demisto.args()))
+            return_outputs(*commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     # Log exceptions
     except Exception as e:

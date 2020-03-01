@@ -7,28 +7,18 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Subscription ID
-  name: subscriptionID
-  required: true
-  type: 0
-- display: Resource Group Name
-  name: resourceGroupName
-  required: true
-  type: 0
-- display: Workspace Name
-  name: workspaceName
+- defaultvalue: https://management.azure.com
+  display: Server base URL
+  name: url
   required: true
   type: 0
 - display: Tenant ID
@@ -43,10 +33,30 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- display: Authorization Code
+- display: Authorization Code (Click on the integration tips button on the top of the window ('?') for details)
   name: auth_code
   required: true
   type: 4
+- display: Subscription ID
+  name: subscriptionID
+  required: true
+  type: 0
+- display: Resource Group Name
+  name: resourceGroupName
+  required: true
+  type: 0
+- display: Workspace Name
+  name: workspaceName
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: This is the Hello World integration for getting started.
 display: Azure Sentinel
 name: Azure Sentinel
@@ -62,25 +72,164 @@ script:
     deprecated: false
     execution: false
     name: azure-sentinel-get-incident-by-id
+    outputs:
+    - contextPath: AzureSentinel.Incident.ID
+      description: The incident ID.
+      type: String
+    - contextPath: AzureSentinel.Incident.Title
+      description: The incident's title.
+      type: String
+    - contextPath: AzureSentinel.Incident.Description
+      description: Description about the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Severity
+      description: The incident's severity.
+      type: String
+    - contextPath: AzureSentinel.Incident.Status
+      description: The status of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeName
+      description: The assignee name of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeEmail
+      description: The assignee email of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Label.Name
+      description: The label's name of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Label.Type
+      description: The label's type of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
+      description: The incident's first activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastActivityTimeUTC
+      description: The incident's last activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastModifiedTimeUTC
+      description: The incident's last modification time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.CreatedTimeUTC
+      description: The incident's creation time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.IncidentNumber
+      description: The incident's number.
+      type: Number
+    - contextPath: AzureSentinel.Incident.AlertsCount
+      description: Number of the alerts in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.BookmarkCount
+      description: Number of bookmarks in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.CommentCount
+      description: Number of comments in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.AlertProductNames
+      description: Alert product names of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Tactics
+      description: The incident's tactics.
+      type: String
+    - contextPath: AzureSentinel.Incident.FirstActivityTimeGenerated
+      description: The incident's generated first activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastActivityTimeGenerated
+      description: The incident's generated last activity time.
+      type: Date
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return.
+      description: The maximum number of incidents to return. Maximum value is 50.
       isArray: false
       name: top
       required: false
       secret: false
     - default: false
-      description: Used if a previous operation returned a partial result. If a previous
-        response contains a NextToken element, its value specifies a starting point
-        to use for subsequent calls.
+      description: Use OData syntax to filter your results (e.g `properties/createdTimeUtc
+        gt 2020-02-02T14:00:00Z`). For further information, visit https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter
       isArray: false
-      name: next_token
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: A link that specifies a strating point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.
+      isArray: false
+      name: next_link
       required: false
       secret: false
     deprecated: false
     execution: false
     name: azure-sentinel-list-incidents
+    outputs:
+    - contextPath: AzureSentinel.Incident.ID
+      description: The incident ID.
+      type: String
+    - contextPath: AzureSentinel.Incident.Title
+      description: The incident's title.
+      type: String
+    - contextPath: AzureSentinel.Incident.Description
+      description: Description about the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Severity
+      description: The incident's severity.
+      type: String
+    - contextPath: AzureSentinel.Incident.Status
+      description: The status of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeName
+      description: The assignee name of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeEmail
+      description: The assignee email of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Label.Name
+      description: The label's name of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Label.Type
+      description: The label's type of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
+      description: The incident's first activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastActivityTimeUTC
+      description: The incident's last activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastModifiedTimeUTC
+      description: The incident's last modification time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.CreatedTimeUTC
+      description: The incident's creation time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.IncidentNumber
+      description: The incident's number.
+      type: Number
+    - contextPath: AzureSentinel.Incident.AlertsCount
+      description: Number of the alerts in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.BookmarkCount
+      description: Number of bookmarks in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.CommentCount
+      description: Number of comments in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.AlertProductNames
+      description: Alert product names of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Tactics
+      description: The incident's tactics.
+      type: String
+    - contextPath: AzureSentinel.Incident.FirstActivityTimeGenerated
+      description: The incident's generated first activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastActivityTimeGenerated
+      description: The incident's generated last activity time.
+      type: Date
+    - contextPath: AzureSentinel.NextLink
+      description: Used if an operation returns a partial result. If a response contains
+        a NextLink element, its value specifies a starting point to use for subsequent
+        calls.
+      type: String
   - arguments:
     - default: false
       description: The incident ID.
@@ -95,14 +244,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: The incident description.
+      description: The incident's description.
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The incident severity.
+      description: The incident's severity.
       isArray: false
       name: severity
       predefined:
@@ -114,14 +263,14 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The incident status.
+      description: The incident's status.
       isArray: false
       name: status
       predefined:
       - New
       - Active
       - Closed
-      required: false
+      required: true
       secret: false
     - default: false
       description: The incident owner's email.
@@ -131,7 +280,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The incident classification.
+      description: The incident's classification.
       isArray: false
       name: classification
       predefined:
@@ -143,6 +292,70 @@ script:
     deprecated: false
     execution: false
     name: azure-sentinel-update-incident
+    outputs:
+    - contextPath: AzureSentinel.Incident.ID
+      description: The incident ID.
+      type: String
+    - contextPath: AzureSentinel.Incident.Title
+      description: The incident's title.
+      type: String
+    - contextPath: AzureSentinel.Incident.Description
+      description: Description about the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Severity
+      description: The incident's severity.
+      type: String
+    - contextPath: AzureSentinel.Incident.Status
+      description: The status of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeName
+      description: The assignee name of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.AssigneeEmail
+      description: The assignee email of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Label.Name
+      description: The label's name of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Label.Type
+      description: The label's type of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.FirstActivityTimeUTC
+      description: The incident's first activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastActivityTimeUTC
+      description: The incident's last activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastModifiedTimeUTC
+      description: The incident's last modification time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.CreatedTimeUTC
+      description: The incident's creation time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.IncidentNumber
+      description: The incident's number.
+      type: Number
+    - contextPath: AzureSentinel.Incident.AlertsCount
+      description: Number of the alerts in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.BookmarkCount
+      description: Number of bookmarks in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.CommentCount
+      description: Number of comments in the incident.
+      type: Number
+    - contextPath: AzureSentinel.Incident.AlertProductNames
+      description: Alert product names of the incident.
+      type: String
+    - contextPath: AzureSentinel.Incident.Tactics
+      description: The incident's tactics.
+      type: String
+    - contextPath: AzureSentinel.Incident.FirstActivityTimeGenerated
+      description: The incident's generated first activity time.
+      type: Date
+    - contextPath: AzureSentinel.Incident.LastActivityTimeGenerated
+      description: The incident's generated last activity time.
+      type: Date
   - arguments:
     - default: false
       description: The incident ID.
@@ -161,35 +374,45 @@ script:
       required: true
       secret: false
     - default: false
-      description: The comment ID.
-      isArray: false
-      name: comment_id
-      required: false
-      secret: false
-    deprecated: false
-    execution: false
-    name: azure-sentinel-get-incident-comment-by-id
-  - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
-      name: incident_id
-      required: true
-      secret: false
-    - default: false
       defaultValue: '50'
       isArray: false
       name: top
       required: false
       secret: false
     - default: false
+      description: A link that specifies a strating point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.
       isArray: false
-      name: next_token
+      name: next_link
       required: false
       secret: false
     deprecated: false
     execution: false
     name: azure-sentinel-list-incident-comments
+    outputs:
+    - contextPath: AzureSentinel.IncidentComment.ID
+      description: Incident comment's ID.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.IncidentID
+      description: Incident ID.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.Message
+      description: The incident comment.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.AuthorName
+      description: Comment's author name.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.AuthorEmail
+      description: Comment's author email.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.CreatedTimeUTC
+      description: Comment's creation time.
+      type: Date
+    - contextPath: AzureSentinel.NextLink
+      description: Used if an operation returns a partial result. If a response contains
+        a NextLink element, its value specifies a starting point to use for subsequent
+        calls.
+      type: String
   - arguments:
     - default: false
       description: The incident ID.
@@ -197,9 +420,34 @@ script:
       name: incident_id
       required: true
       secret: false
+    - default: false
+      description: The comment message.
+      isArray: false
+      name: message
+      required: true
+      secret: false
     deprecated: false
     execution: false
     name: azure-sentinel-incident-add-comment
+    outputs:
+    - contextPath: AzureSentinel.IncidentComment.ID
+      description: Incident comment's ID.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.IncidentID
+      description: Incident ID.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.Message
+      description: The incident comment.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.AuthorName
+      description: Comment's author name.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.AuthorEmail
+      description: Comment's author email.
+      type: String
+    - contextPath: AzureSentinel.IncidentComment.CreatedTimeUTC
+      description: Comment's creation time.
+      type: Date
   - arguments:
     - default: false
       description: The entity ID.
@@ -222,24 +470,52 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
+      description: The maximum number of relations to return.
       isArray: false
       name: top
       required: false
       secret: false
     - default: false
+      description: A link that specifies a strating point to use for subsequent calls.
+        Using this argument overrides all of the other command arguments.
       isArray: false
-      name: next_token
+      name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Comma-separated list of entity kinds to filter by. By default, the result won't be filtered by kind.
+        The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark.
+      isArray: true
+      name: entity_kinds
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Use OData syntax to filter your results (e.g `properties/createdTimeUtc
+        gt 2020-02-02T14:00:00Z`). For further information, visit https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter
+      isArray: false
+      name: filter
       required: false
       secret: false
     deprecated: false
     execution: false
-    name: azure-sentinel-get-incident-relations
+    name: azure-sentinel-list-incident-relations
     outputs:
-    - contextPath: Incident.RelatedResourceName
-      description: The name of the incident's related resource.
+    - contextPath: AzureSentinel.IncidentRelatedResource.ID
+      description: The ID of the incident's related resource.
       type: String
-    - contextPath: Incident.RelatedResourceKind
+    - contextPath: AzureSentinel.IncidentRelatedResource.Kind
       description: The kind of the incident's related resource.
+      type: String
+    - contextPath: AzureSentinel.NextLink
+      description: Used if an operation returns a partial result. If a response contains
+        a NextLink element, its value specifies a starting point to use for subsequent
+        calls.
+      type: String
+    - contextPath: AzureSentinel.IncidentRelatedResource.IncidentID
+      description: The incident ID.
       type: String
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
