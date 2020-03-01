@@ -70,12 +70,20 @@ class Client(BaseClient):
         return self._http_request('POST', suffix, json_data=data)
 
     def update_network_objects(self, name, value, description, overridable, object_id) -> Dict:
-        data = {'name': name, 'value': value, 'description': description, 'overridable': overridable}
+        data = {'id': object_id, 'name': name, 'value': value}
+        if description:
+            data['description'] = description
+        if overridable:
+            data['overridable'] = overridable
         suffix = f'object/networks/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
     def update_host_objects(self, name, value, description, overridable, object_id) -> Dict:
-        data = {'name': name, 'value': value, 'description': description, 'overridable': overridable}
+        data = {'id': object_id, 'name': name, 'value': value}
+        if description:
+            data['description'] = description
+        if overridable:
+            data['overridable'] = overridable
         suffix = f'object/hosts/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
@@ -432,8 +440,7 @@ def raw_response_to_context_network_groups(items):
         ],
         'Addresses': [
             {
-                'Name': obj.get('name'),
-                'ID': obj.get('id'),
+                'value': obj.get('value'),
                 'Type': obj.get('type')
             } for obj in items.get('literals', [])
         ]
@@ -465,8 +472,7 @@ def raw_response_to_context_access_policy(items):
     return {
         'Name': items.get('name'),
         'ID': items.get('id'),
-        'DefaultActionID':  items.get('defaultAction', {}).get('id', ''),
-        'Action':  items.get('defaultAction', {}).get('action', '')
+        'DefaultActionID': items.get('defaultAction', {}).get('id', '')
     }
 
 
@@ -482,7 +488,7 @@ def raw_response_to_context_ruls(items):
         'RuleIndex': items.get('metadata', {}).get('ruleIndex', ''),
         'Section': items.get('metadata', {}).get('section', ''),
         'Category': items.get('metadata', {}).get('category', ''),
-        'Uels': {
+        'Urls': {
             'Addresses': [{
                     'URL': obj.get('url', '')
                 }for obj in items.get('urls', {}).get('literals', [])
@@ -606,7 +612,7 @@ def list_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         context_entry = [{
                 'ID': item.get('id', ''),
                 'Name': item.get('name', ''),
-                'InterFaceMode': item.get('interfaceMode', ''),
+                'InterfaceMode': item.get('interfaceMode', ''),
                 'Interfaces': [{
                         'Name': obj.get('name', ''),
                         'ID': obj.get('id' '')
@@ -1029,7 +1035,7 @@ def list_vlan_tags_group_command(client: Client, args: Dict) -> Tuple[str, Dict,
                 'ID': item.get('id'),
                 'Overridable': item.get('overridable'),
                 'Description': item.get('description'),
-                'objects': [
+                'Objects': [
                     {
                         'Name': obj.get('name'),
                         'ID': obj.get('id'),
@@ -1042,7 +1048,7 @@ def list_vlan_tags_group_command(client: Client, args: Dict) -> Tuple[str, Dict,
             } for item in items
         ]
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.VlanTags_group(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.VlanTagsGroup(val.ID && val.ID === obj.ID)': context_entry
         }
         entry_white_list_count = switch_list_to_list_counter(context_entry)
         presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Objects']
@@ -1278,7 +1284,7 @@ def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dic
         context_entry = [{
                 'CanBeDeployed': item.get('canBeDeployed', ''),
                 'UpToDate': item.get('upToDate', ''),
-                'DeviceId': item.get('device', {}).get('id', ''),
+                'DeviceID': item.get('device', {}).get('id', ''),
                 'DeviceName': item.get('device', {}).get('name', ''),
                 'DeviceType': item.get('device', {}).get('type', ''),
                 'Version': item.get('version', '')
