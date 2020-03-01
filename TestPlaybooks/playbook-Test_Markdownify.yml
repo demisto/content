@@ -44,7 +44,7 @@ tasks:
       - "2"
     scriptarguments:
       html:
-        simple: '[Demisto](http://demisto.com)'
+        simple: '<a href="http://demisto.com">Demisto</a>'
     separatecontext: false
     view: |-
       {
