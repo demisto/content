@@ -158,13 +158,13 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                     from_version = cnt.get("fromversion") or cnt.get("fromVersion")
                     to_version = cnt.get("toversion") or cnt.get("toVersion")
                     if from_version is not None and server_version_compare(current_server_version, from_version) < 0:
-                        print(f'Skipped because from version: {from_version}'
+                        print(f'{path}: Skipped because from version: {from_version}'
                               f' is greater than current server version: {current_server_version}')
                         beta_rn_paths.append(path)
                         print("added to rn paths")
                         continue
                     if to_version is not None and server_version_compare(to_version, current_server_version) < 0:
-                        print(f'Skipped because of to version" {to_version}'
+                        print(f'{path}: Skipped because of to version" {to_version}'
                               f' is smaller: than current server version: {current_server_version}')
                         continue
                     if title_prefix == NEW_RN:
@@ -183,9 +183,6 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                     elif ans:
                         new_count += 1
                         new_str += ans
-                        print("Success")
-                    else:
-                        print("Skipped")
 
             if new_str:
                 if self.show_secondary_header:
@@ -195,7 +192,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
                     res = "\n#### %s %s %s\n" % (count_str, title_prefix, self.get_header())
                 res += new_str
-            print("Collected {} beta notes".format(len(beta_rn_paths)))
+        print("Collected {} beta notes".format(len(beta_rn_paths)))
         return res, beta_rn_paths
 
     def generate_release_notes(self, current_server_version):
