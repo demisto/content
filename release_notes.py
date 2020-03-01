@@ -199,7 +199,6 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
     def generate_release_notes(self, current_server_version, collect_beta=True):
         res = ""
-        beta_paths = None
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print("starting {} RN".format(self.get_header()))
 
