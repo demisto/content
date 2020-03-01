@@ -1,4 +1,7 @@
 ## [Unreleased]
+-
+
+## [20.2.4] - 2020-02-25
 Fixed default value for the ***PREDEFINED*** argument in the ***misp-search*** command.
 
 ## [19.12.0] - 2019-12-10
