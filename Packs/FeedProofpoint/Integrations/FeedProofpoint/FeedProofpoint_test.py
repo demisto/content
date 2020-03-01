@@ -33,4 +33,3 @@ def test_fetch_domains(requests_mock):
     assert len(domains) == 3
     assert all(['*' not in ind.get('value') for ind in domains])
     assert all(['*' in ind.get('value') for ind in domain_globs])
-
