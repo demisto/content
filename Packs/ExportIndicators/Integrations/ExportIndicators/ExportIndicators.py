@@ -26,6 +26,7 @@ FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
+FORMAT_MGW: str = 'mgw'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
@@ -108,13 +109,33 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
     return iocs, next_page
 
 
-def create_values_out_dict(iocs: list, out_format: str) -> dict:
+def create_mgw_out_format(iocs: list, mgw_type) -> dict:
+    formatted_indicators = []
+    for indicator in iocs:
+        value = "\"" + indicator.get('value') + "\""
+        sources = indicator.get('sourceBrands')
+        if sources:
+            sources_string = "\"" + ','.join(sources) + "\""
+
+        else:
+            sources_string = "\"from CORTEX XSOAR\""
+
+        formatted_indicators.append(value + " " + sources_string)
+
+    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
+
+
+def create_values_out_dict(iocs: list, out_format: str, mgw_type: str ="string") -> dict:
     """
     Create a dictionary for output values using the selected format (json, json-seq, text, csv)
     """
+    if out_format == FORMAT_MGW:
+        return create_mgw_out_format(iocs, mgw_type)
+
     if out_format == FORMAT_JSON:  # handle json separately
         iocs_list = [ioc for ioc in iocs]
         return {CTX_VALUES_KEY: json.dumps(iocs_list)}
+
     else:
         formatted_indicators = []
         if out_format == FORMAT_CSV and len(iocs) > 0:  # add csv keys as first item
