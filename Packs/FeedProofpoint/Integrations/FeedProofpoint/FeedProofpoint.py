@@ -19,12 +19,11 @@ class Client(BaseClient):
         super().__init__(base_url, **kwargs)
 
     DOMAIN_TYPE = "domain"
-    DOMAIN_GLOB_TYPE = "domainGlob"
     IP_TYPE = "ip"
     IP_URL = "detailed-iprepdata.txt"
     DOMAIN_URL = "detailed-domainrepdata.txt"
     ALL_TYPE = "all"
-    TYPES = (DOMAIN_TYPE, DOMAIN_GLOB_TYPE, IP_TYPE, ALL_TYPE)
+    TYPES = (DOMAIN_TYPE, IP_TYPE, ALL_TYPE)
     indicator_types_to_endpoint = {
         IP_TYPE: [IP_URL],
         DOMAIN_TYPE: [DOMAIN_URL],

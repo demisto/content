@@ -1,4 +1,5 @@
 from FeedProofpoint import Client, fetch_indicators_command
+from CommonServerPython import *
 
 url = "https://example.com"
 auth_code = "cool"
@@ -24,19 +25,12 @@ def test_fetch_domains(requests_mock):
         "https://example.com/cool/reputation/detailed-domainrepdata.txt", text=data
     )
     indicators = fetch_indicators_command(client, client.DOMAIN_TYPE)
-    assert 9 == len(indicators)
+    assert 12 == len(indicators)
     # making sure all domains are not of type domain glob
-    assert all(['*' not in indicator.get('value') for indicator in indicators])
+    domains = [ind for ind in indicators if ind.get('type') == FeedIndicatorType.Domain]
+    domain_globs = [ind for ind in indicators if ind.get('type') == FeedIndicatorType.DomainGlob]
+    assert len(domains) == 9
+    assert len(domains) == 3
+    assert all(['*' not in ind.get('value') for ind in domains])
+    assert all(['*' in ind.get('value') for ind in domain_globs])
 
-
-def test_fetch_domain_globs(requests_mock):
-    ip_path = "./TestData/detalied-domainrepdata.txt"
-    with open(ip_path) as f:
-        data = f.read()
-    requests_mock.get(
-        "https://example.com/cool/reputation/detailed-domainrepdata.txt", text=data
-    )
-    indicators = fetch_indicators_command(client, client.DOMAIN_GLOB_TYPE)
-    assert 3 == len(indicators)
-    # making sure all domains are of type domain glob
-    assert all(['*' in indicator.get('value') for indicator in indicators])
