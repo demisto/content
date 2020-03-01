@@ -2087,7 +2087,7 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0"            
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2393,13 +2393,16 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "DbotPredictOufOfTheBoxTest",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "ExtractDomainAndFQDNFromUrlAndEmail-Test",
             "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
         "RasterizeTest": "Issue 20702",
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 22300",
         "Send Investigation Summary Reports": "Issue 22299",
         "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
@@ -2442,7 +2445,8 @@
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
-        "C2sec-Test": "Issue #21633"
+        "C2sec-Test": "Issue #21633",
+        "TAXII_Feed_Test": "Issue #22423"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
