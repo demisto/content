@@ -30,6 +30,6 @@ def test_fetch_domains(requests_mock):
     domains = [ind for ind in indicators if ind.get('type') == FeedIndicatorType.Domain]
     domain_globs = [ind for ind in indicators if ind.get('type') == FeedIndicatorType.DomainGlob]
     assert len(domains) == 9
-    assert len(domains) == 3
+    assert len(domain_globs) == 3
     assert all(['*' not in ind.get('value') for ind in domains])
     assert all(['*' in ind.get('value') for ind in domain_globs])
