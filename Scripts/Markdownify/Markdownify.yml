@@ -22,6 +22,7 @@ script: '-'
 system: false
 timeout: '0'
 type: python
+tags: []
 dockerimage: demisto/btfl-soup:1.0.1.6233
 runas: DBotWeakRole
 runonce: false
