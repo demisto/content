@@ -360,6 +360,10 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
+            "integrations": "CVE Search v2",
+            "playbookID": "CVE Search v2 - Test"
+        },
+        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
@@ -978,13 +982,13 @@
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100
+            "memory_threshold": 120
         },
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100
+            "memory_threshold": 120
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -1265,7 +1269,8 @@
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
-            "timeout": 1200
+            "timeout": 1200,
+            "pid_threshold": 10
         },
         {
             "integrations": "Recorded Future",
@@ -2392,6 +2397,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "DbotPredictOufOfTheBoxTest",
+            "fromversion": "4.5.0"
+        },
+        {
            "integrations": "AlienVault OTX TAXII Feed",
             "playbookID": "playbook-feedalienvaultotx_test",
             "fromversion": "5.5.0"
@@ -2399,17 +2408,13 @@
     ],
     "skipped_tests": {
         "RasterizeTest": "Issue 20702",
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 22300",
         "Send Investigation Summary Reports": "Issue 22299",
         "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
-        "okta_test_playbook": "Issue 22235",
         "Test-VulnDB": "Issue 22232",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
-        "GetTime-ObjectVsStringTest": "Issue 22223",
-        "GetTime-Test": "Issue 22222",
         "EmailReputationTest": "Issue 22187",
         "test_Qradar": "Issue 22186",
         "IntSights Test": "Issue 22185",
@@ -2445,7 +2450,8 @@
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
-        "C2sec-Test": "Issue #21633"
+        "C2sec-Test": "Issue #21633",
+        "TAXII_Feed_Test": "Issue #22423"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2513,7 +2519,6 @@
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
 
 

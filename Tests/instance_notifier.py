@@ -60,14 +60,15 @@ def test_instances(secret_conf_path, server, username, password):
         product_description = integration.get('product_description', '')
         is_byoi = integration.get('byoi', True)
         has_integration = integration.get('has_integration', True)
+        validate_test = integration.get('validate_test', True)
 
         if has_integration:
             instance_id, failure_message, _ = __create_integration_instance(
-                c, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager
-            )
+                c, integration_name, integration_instance_name, integration_params, is_byoi, prints_manager,
+                validate_test=validate_test)
             if failure_message == 'No configuration':
-                print_warning("Warning: The integration {} exists in content-test-conf conf.json but not "
-                              "in content repo".format(integration_instance_name))
+                print_warning("Warning: skipping {} as it exists in content-test-conf conf.json but not "
+                              "in content repo".format(integration_name))
                 continue
             if not instance_id:
                 print_error(
