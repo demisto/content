@@ -303,7 +303,7 @@ def route_list_values() -> Response:
         return Response(values, status=200, mimetype=mimetype)
 
     except Exception as e:
-        return Response(str(e), status=500, mimetype='text/plain')
+        return Response(str(e), status=400, mimetype='text/plain')
 
 
 ''' COMMAND FUNCTIONS '''
