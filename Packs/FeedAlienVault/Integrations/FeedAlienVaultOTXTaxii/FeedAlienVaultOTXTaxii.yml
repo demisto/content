@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Alien Vault OTX TAXII Feed
+  id: AlienVault OTX TAXII Feed
   version: -1
 configuration:
 - defaultvalue: true
@@ -69,7 +69,7 @@ configuration:
 - additionalinfo: Support a CSV of collections.
   display: The Collections to Fetch From
   hidden: false
-  name: collection
+  name: collections
   required: true
   type: 0
 - display: Trust any certificate (not secure)
@@ -89,8 +89,8 @@ configuration:
   type: 8
 description: This integration fetches indicators from AlienVault OTX using a TAXII
   client.
-display: Alien Vault OTX TAXII Feed
-name: Alien Vault OTX TAXII Feed
+display: AlienVault OTX TAXII Feed
+name: AlienVault OTX TAXII Feed
 script:
   commands:
   - arguments:
