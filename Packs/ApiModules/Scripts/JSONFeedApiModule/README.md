@@ -1,7 +1,7 @@
 To use the common JSON feed API logic, run the following command to import the `JSONFeedApiModule`.
 The module expects the feed to be configured with the following parameters:
 
-Per sub-feed name:
+Per service name:
 * URL
 * `jmespath` extractor
 * indicator name

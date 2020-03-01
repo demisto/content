@@ -3,7 +3,7 @@ commonfields:
   id: abuse.ch SSL Blacklist Feed
   version: -1
 configuration:
-- display: Sub-Feeds
+- display: Services
   name: url
   options:
   - https://sslbl.abuse.ch/blacklist/sslipblacklist.csv
@@ -37,7 +37,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: True
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
 - defaultvalue: indicatorType

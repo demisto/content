@@ -3,7 +3,7 @@ commonfields:
   id: Bambenek Consulting Feed
   version: -1
 configuration:
-- display: Sub-Feeds
+- display: Services
   name: url
   options:
   - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
@@ -39,7 +39,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: True
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
 - display: ""
