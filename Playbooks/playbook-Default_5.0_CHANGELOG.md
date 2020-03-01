@@ -1,2 +1,2 @@
 ## [Unreleased]
-The Default playbook starting in 5.0 uses newer automations and playbooks.
+Starting with Demisto 5.0, the Default playbook has been updated to use newer automations and playbooks.
