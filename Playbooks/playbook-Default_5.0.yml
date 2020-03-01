@@ -2,7 +2,7 @@ id: playbook0
 version: -1
 fromversion: 5.0.0
 name: Default
-description: The default playbook. Enriches indicators in an incident using one or
+description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or
   more integrations.
 starttaskid: '0'
 tasks:
@@ -141,7 +141,7 @@ tasks:
     task:
       id: 4a2366db-81b0-41b5-8c8f-41b09e83a215
       version: -1
-      name: Manually review the incident. Can it be closed?
+      name: Manually review the incident.
       description: Manually review and investigate this incident.
       type: condition
       iscommand: false
@@ -206,9 +206,9 @@ tasks:
       id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
       version: -1
       name: Extract indicators from incident
-      description: Extracts all indicators according to server indicators configuration.
-        This will also calculate reputation for those indicators, using all "!indicator"
-        commands, as the Autoextract setting of this task is set to "Inline".
+      description: Extracts all indicators that match the regex for the indicator type, and enriches the repuration using
+           the reputation command defined for the indicator type. 
+        
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -333,7 +333,7 @@ inputs:
   value:
     simple: 'True'
   required: false
-  description: Determines whether to preform enrichment on all indicators in the incident.
+  description: Determines whether to enrich all indicators in the incident.
 outputs: []
 tests:
   - Default - Test
