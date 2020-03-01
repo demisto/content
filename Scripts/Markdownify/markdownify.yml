@@ -1,7 +1,8 @@
 commonfields:
-  id: markdownify
+  id: Markdownify
   version: -1
-name: markdownify
+name: Markdownify
+comment: Converts HTML into Markdown.
 script: ''
 type: python
 tags: []
@@ -16,3 +17,5 @@ subtype: python3
 runonce: false
 dockerimage: demisto/btfl-soup:1.0.1.6233
 runas: DBotWeakRole
+tests:
+- Test_Markdownify
