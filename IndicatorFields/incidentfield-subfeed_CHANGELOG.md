@@ -1,3 +1,3 @@
 ## [Unreleased]
 
-Changed the name of the *subfeed* field to *feedservice*.
+Changed the name of the *subfeed* field to *sourceservice*.
