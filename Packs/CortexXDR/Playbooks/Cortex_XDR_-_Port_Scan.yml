@@ -73,8 +73,7 @@ tasks:
       id: dd99e02f-59f3-403d-86ed-0c56428cd7ad
       version: -1
       name: Check if attacker is internal or external
-      description: Returns yes if the IP is in one of the ranges provided, returns
-        no otherwise.
+      description: Uses an automated script to determine if the IP used in the incident is in one of the ranges provided.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -197,7 +196,7 @@ tasks:
       version: -1
       name: Has there been a successful login to the scanned host?
       description: Manually check if there has been a successful login to the scanned
-        host, following the port scan.
+        host following the port scan.
       type: condition
       iscommand: false
       brand: ''
@@ -225,7 +224,7 @@ tasks:
       id: 5ade44c2-fea8-45bf-81fd-a1f00699998a
       version: -1
       name: Block ports used for exploitation on the scanned host
-      description: Manually block the port/s that are associated with vulnerable services
+      description: Manually block the port/s associated with vulnerable services
         or that allowed the attacker to gain unauthorized access to the target machine.
       type: regular
       iscommand: false
@@ -375,9 +374,7 @@ tasks:
       id: 21793aba-c2ca-4961-85e9-10b3ff85b818
       version: -1
       name: Save file artifacts
-      description: Saves file artifacts associated with the port scan incident, but
-        those files may be associated with other types of alerts that are stitched
-        to this incident, such as with lateral movement.
+      description: Saves file artifacts associated with the incident.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -881,8 +878,7 @@ tasks:
       id: 564342aa-8759-4b57-81c9-f8251f7362b7
       version: -1
       name: Save involved hostnames to endpoint objects
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+      description: Saves hostnames related to this incident in the Endpoint.Hostname context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -958,7 +954,7 @@ tasks:
       version: -1
       name: Can the incident be auto-escalated to a higher tier?
       description: Checks whether a role from which analysts can be assigned to the
-        incident, was configured in RoleForEscalation playbook input.
+        incident was configured in the RoleForEscalation playbook input.
       type: condition
       iscommand: false
       brand: ''
@@ -1104,7 +1100,7 @@ tasks:
       id: da2051e1-6927-4981-8029-bb62d9aa8b3b
       version: -1
       name: Can the external IPs be blocked automatically?
-      description: Checks whether the external IPs associated with the malware's SHA256
+      description: Checks whether the external IPs associated with the malware's SHA256 hash
         can be blocked automatically.
       type: condition
       iscommand: false
@@ -1324,7 +1320,7 @@ tasks:
       version: -1
       name: Can a host compromise notification be sent via email?
       description: Checks whether any email addresses to notify were configured, and
-        whether any mail sender integration is enabled.
+        whether any mail sender integrations are enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -1399,9 +1395,9 @@ tasks:
     task:
       id: b9dc1315-c732-4365-8561-999d8662de3d
       version: -1
-      name: Notify emails about compromise
+      name: Send notification emails about compromise
       description: Sends an email to the email addresses configured in the playbook
-        inputs, telling them that a host was compromised.
+        inputs telling them that a host was compromised.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1600,11 +1596,11 @@ tasks:
       id: 11521065-d8aa-4e7e-8b53-2c77657f6ba7
       version: -1
       name: Sync XDR event
-      description: Syncs a single incident between Demisto and XDR. This script always
+      description: Syncs a single incident between Demisto and XDR. This script 
         uses the xdr-get-incident-extra-data command and outputs to the context the
         entire incident JSON. When the incident is updated in XDR, the Demisto incident
-        will be updated accordingly and the default playbook will rerun. When an incident
-        is updated in Demisto, the script will execute the xdr-update-incident command
+        will be updated accordingly. When an incident
+        is updated in Demisto, the script executes the xdr-update-incident command
         and update the incident in XDR.
       scriptName: XDRSyncScript
       type: regular
@@ -1743,8 +1739,8 @@ tasks:
     task:
       id: 0c124ca8-5d37-4e19-83a1-53f67beef180
       version: -1
-      name: Close Cortex XSOAR investigation
-      description: Close the current incident in Cortex XSOAR.
+      name: Close Demisto investigation
+      description: Close the current incident in Demisto.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -2932,8 +2928,7 @@ tasks:
       id: 1fc18b5e-5f11-47f6-8f94-f8bad97fc719
       version: -1
       name: Save XDR endpoints
-      description: Checks if the specified value exists in context. If the value exists,
-        it will be set in context, otherwise no value will be set in context.
+      description: Saves the XDR endpoints under the PaloAltoNetworksXDREndpoint context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3050,7 +3045,7 @@ inputs:
 - key: InternalIPRanges
   value: {}
   required: false
-  description: 'A list of IP ranges to check the IP in. The list should be provided
+  description: 'A list of IP ranges to check the IP against. The list should be provided
     in CIDR notation, separated by commas. An example of a list of ranges would be:
     "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
     will use default list provided in the IsIPInRanges script (the known IPv4 private
@@ -3065,7 +3060,7 @@ inputs:
   value: {}
   required: false
   description: The name of the Demisto role of the users that the incident can be
-    escalated to, in case of developments like lateral movement.
+    escalated to in case of developments like lateral movement.
 - key: BlockMaliciousFiles
   value:
     simple: 'False'
