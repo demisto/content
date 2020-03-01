@@ -116,11 +116,11 @@ script:
         description: Logs found content
     description: Search raw logs from your Logz.io account by up to 3 fields
   - name: logzio-get-rule-logs-by-id
-  arguments:
-   - name: id
-     required: true
-     description: ID of the rule to search for
-  description: Returns the raw logs of a rule by id
+    arguments:
+     - name: id
+       required: true
+       description: ID of the rule to search for
+    description: Returns the raw logs of a rule by id
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: true
   runonce: false
