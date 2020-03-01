@@ -13,10 +13,10 @@ client = Client("https://www.threathq.com", ("username", "password"))
 
 class TestFetchIndicators:
     process_items_params = [
-        # (threats[0], "http://example.com/mal.exe", FeedIndicatorType.URL, 0, 5),
+        (threats[0], "http://example.com/mal.exe", FeedIndicatorType.URL, 0, 5),
         (threats[0], "example.com", FeedIndicatorType.Domain, 3, 5),
         (threats[0], "*example.com", FeedIndicatorType.DomainGlob, 4, 5),
-        # ({}, "", "", 0),
+        ({}, "", "", 0, 0),
     ]
 
     @pytest.mark.parametrize("threat, value, _type, indicator_index, length", process_items_params)
@@ -39,6 +39,7 @@ class TestFetchIndicators:
                 "5.5.5.111",
                 "https://example.com/raw/malp",
                 "example.com",
+                "*example.com",
                 "user@example.com",
             ],
             [
@@ -46,6 +47,7 @@ class TestFetchIndicators:
                 FeedIndicatorType.IP,
                 FeedIndicatorType.URL,
                 FeedIndicatorType.Domain,
+                FeedIndicatorType.DomainGlob,
                 FeedIndicatorType.Email,
             ],
             None,
