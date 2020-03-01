@@ -141,20 +141,9 @@ class Client(BaseClient):
         """
         return [
             self._process_item(item)
-            for item in self._build_iterator_domain() if item.get('type') == FeedIndicatorType.Domain
+            for item in self._build_iterator_domain()
         ]
 
-    def get_indicators_domain_glob(self) -> List[dict]:
-        """ Gets indicator's dict of domainGlobs
-        The same feed is used for both domains and domainGlobs
-
-        Returns:
-            list of indicators
-        """
-        return [
-            self._process_item(item)
-            for item in self._build_iterator_domain() if item.get('type') == FeedIndicatorType.DomainGlob
-        ]
 
     def get_indicators_ip(self) -> List[dict]:
         """ Gets indicator's dict of ips
@@ -221,8 +210,6 @@ def fetch_indicators_command(client: Client, indicator_type: Optional[str]):
     """
     if indicator_type == client.IP_TYPE:
         return client.get_indicators_ip()
-    elif indicator_type == client.DOMAIN_GLOB_TYPE:
-        return client.get_indicators_domain_glob()
     elif indicator_type == client.DOMAIN_TYPE:
         return client.get_indicators_domain()
     else:

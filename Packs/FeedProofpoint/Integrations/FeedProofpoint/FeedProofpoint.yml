@@ -76,7 +76,6 @@ configuration:
   - all
   - ip
   - domain
-  - domainGlob
   required: true
   type: 15
 - display: Trust any certificate (not secure)
