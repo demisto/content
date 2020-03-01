@@ -338,7 +338,6 @@ script:
     execution: true
     description: Assign security profile to host
   - name: trendmicro-anti-malware-event-retrieve
-    description: Retrive anti malware event
     arguments:
     - name: rangeFrom
       description: Time interval start
