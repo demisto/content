@@ -161,6 +161,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                         print(f'Skipped because from version: {from_version}'
                               f' is greater than current server version: {current_server_version}')
                         beta_rn_paths.append(path)
+                        print("added to rn paths")
                         continue
                     if to_version is not None and server_version_compare(to_version, current_server_version) < 0:
                         print(f'Skipped because of to version" {to_version}'
