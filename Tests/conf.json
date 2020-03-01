@@ -1238,8 +1238,7 @@
             "instance_names": "virus_total_private_api_general",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "timeout": 1400,
-            "nightly": true,
-            "pid_threshold": 12
+            "nightly": true
         },
         {
             "integrations": "VirusTotal - Private API",
