@@ -12,7 +12,6 @@ def markdownify_command(args):
             "Result": str(markdown)
         }
     }
-    print(repr(markdown))
 
     return (
         markdown,
