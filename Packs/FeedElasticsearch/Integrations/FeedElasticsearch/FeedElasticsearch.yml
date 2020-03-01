@@ -8,18 +8,18 @@ configuration:
   required: true
   type: 0
 - display: Username
-  additionalinfo: Authentication via Username + Password
+  additionalinfo: Provide Username + Passoword instead of API key + API ID
   name: credentials
   required: false
   type: 9
 - display: API Key
-  additionalinfo: Authentication via API key + API ID
+  additionalinfo: Provide API key + API ID instead of Username + Password
   hidden: false
   name: api_key
   required: false
   type: 4
 - display: API ID
-  additionalinfo: Authentication via API key + API ID
+  additionalinfo: Provide API key + API ID instead of Username + Password
   hidden: false
   name: api_id
   required: false
@@ -34,8 +34,8 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Cortex XSOAR Feed are indicators saved by Cortex XSOAR in an Elasticsearch
-    configured enviornment. Cortex XSOAR MT Shared Feed are indicators shared by a
-    tenant in a MT env. Generic Feed is a feed in a format dictated by the user
+    configured environment. Cortex XSOAR MT Shared Feed are indicators shared by a
+    tenant account in a multi-tenant environment. Generic Feed is a feed in a format dictated by the user
   defaultvalue: Cortex XSOAR Feed
   display: Feed Type
   hidden: false
@@ -43,7 +43,7 @@ configuration:
   options:
   - Cortex XSOAR Feed
   - Cortex XSOAR MT Shared Feed
-  - Generic Feed (fill in configuration below)
+  - Generic Feed (requires additional configurations)
   required: false
   type: 15
 - display: Fetch indicators
@@ -131,9 +131,9 @@ configuration:
   name: default_type
   required: false
   type: 0
-- additionalinfo: Multiple indices may be used by separating them with a comma. If
-    none is provided, will search in all indices
-  display: Index From Which To Fetch Indicators
+- additionalinfo: A comma-separated list of indexes. If
+    empty, searches all indexes.
+  display: Index from Which To Fetch Indicators
   name: fetch_index
   required: false
   type: 0
@@ -146,13 +146,12 @@ configuration:
   - Timestamp-Milliseconds
   required: false
   type: 15
-- additionalinfo: Used for sorting sort and limiting data. If left empty, no sorting
-    will be done
+- additionalinfo: Used for sorting and limiting data. If empty, results are not sorted.
   display: Index Time Field
   name: time_field
   required: false
   type: 0
-- additionalinfo: Elasticsearch query to be executed when fetching indicators from
+- additionalinfo: Elasticsearch query to execute when fetching indicators from
     Elasticsearch
   defaultvalue: '*'
   display: Query
@@ -160,7 +159,7 @@ configuration:
   name: es_query
   required: false
   type: 0
-description: Fetch indicators stored in an Elasticsearch database.
+description: Fetches indicators stored in an Elasticsearch database.
 display: Elasticsearch Feed
 name: ElasticsearchFeed
 script:
@@ -168,7 +167,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of indicators to fetch.
+      description: The maximum number of indicators to fetch. The default is 50.
       isArray: false
       name: limit
       required: true
