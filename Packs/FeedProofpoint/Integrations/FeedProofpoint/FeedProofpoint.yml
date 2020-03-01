@@ -56,7 +56,7 @@ configuration:
 - defaultvalue: "60"
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: true
+  required: false
   type: 19
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
