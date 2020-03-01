@@ -198,18 +198,18 @@ class Content(object):  # pylint: disable=useless-object-inheritance
             return res, beta_rn_paths
         return res
 
-    def generate_release_notes(self, current_server_version, collect_beta=True):
+    def generate_release_notes(self, current_server_version, collect_beta=False):
         res = ""
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print("starting {} RN".format(self.get_header()))
 
             # Added files
             add_rn, add_beta_paths = self.release_notes_section(self.added_store, NEW_RN, current_server_version,
-                                                                collect_beta=collect_beta)
+                                                                collect_beta=True)
             # Modified files
             modified_rn, mod_beta_paths = self.release_notes_section(self.modified_store, MODIFIED_RN,
                                                                      current_server_version,
-                                                                     collect_beta=collect_beta)
+                                                                     collect_beta=True)
 
             if add_rn is None or modified_rn is None:
                 return None
