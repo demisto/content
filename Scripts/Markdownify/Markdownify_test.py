@@ -9,5 +9,4 @@ def test_markdownify_command():
     readable_output, outputs, raw_response = markdownify_command(args)
 
     assert readable_output == '[Demisto](http://demisto.com)'
-    assert outputs['Markdownify']['Result'] == '[Demisto](http://demisto.com)'
     assert raw_response == '[Demisto](http://demisto.com)'
