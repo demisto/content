@@ -1,4 +1,4 @@
-from Markdownify import markdownify
+from Markdownify import markdownify_command
 
 
 def test_markdownify_command():
