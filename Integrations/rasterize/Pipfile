@@ -13,6 +13,9 @@ pytest-asyncio = "*"
 [packages]
 selenium = "*"
 webdriver-manager = "*"
+pypdf2 = "*"
+pdf2image = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.7"

@@ -7,8 +7,6 @@ import requests
 import base64
 import os
 import json
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from datetime import timezone
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -45,67 +43,6 @@ EMAIL_DATA_MAPPING = {
 }
 
 ''' HELPER FUNCTIONS '''
-
-
-def epoch_seconds(d=None):
-    """
-    Return the number of seconds for given date. If no date, return current.
-
-    :type d: ``datetime``
-    :param d: Datetime
-
-    :return: Timestamp in epoch
-    :rtype: ``int``
-    """
-    if not d:
-        d = datetime.now(tz=timezone.utc)
-    return int((d - datetime.fromtimestamp(0, tz=timezone.utc)).total_seconds())
-
-
-def get_encrypted(content, key):
-    """
-    Encrypts content with encryption key.
-
-    :type content: ``str``
-    :param content: Content to encrypt
-
-    :type key: ``str``
-    :param key: encryption key from Oproxy
-
-    :return: Encrypted content
-    :rtype: ``timestamp``
-    """
-
-    def create_nonce():
-        return os.urandom(12)
-
-    def encrypt(string, enc_key):
-        """
-        Encrypts string input with encryption key.
-
-        :type string: ``str``
-        :param string: String to encrypt
-
-        :type enc_key: ``str``
-        :param enc_key: Encryption key
-
-        :return: Encrypted value
-        :rtype: ``bytes``
-        """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct)
-
-    now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
-    return encrypted
 
 
 def get_now_utc():
@@ -159,7 +96,7 @@ def upload_file(filename, content, attachments_list):
 
     attachments_list.append({
         'path': file_result['FileID'],
-        'name': file_result['File'],
+        'name': file_result['File']
     })
 
 
@@ -226,7 +163,7 @@ def prepare_args(command, args):
 ''' MICROSOFT GRAPH MAIL CLIENT '''
 
 
-class MsGraphClient(BaseClient):
+class MsGraphClient:
     """
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
@@ -235,98 +172,12 @@ class MsGraphClient(BaseClient):
     CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)'
     CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
 
-    def __init__(self, refresh_token, auth_id, enc_key, token_retrieval_url, app_name,
-                 mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._refresh_token = refresh_token
-        self._auth_id = auth_id
-        self._enc_key = enc_key
-        self._token_retrieval_url = token_retrieval_url
-        self._app_name = app_name
+    def __init__(self, ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+        self.ms_client = ms_client
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
-
-    def _get_access_token(self):
-        """
-        Obtains access and refresh token from Oprxoy server. Access token is used and stored in the integration context
-        until expiration time. After expiration, new refresh token and access token are obtained and stored in the
-        integration context.
-
-        :return: Access token that will be added to authorization header
-        :rtype: ``str``
-        """
-        integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('access_token')
-        valid_until = integration_context.get('valid_until')
-        if access_token and valid_until:
-            if epoch_seconds() < valid_until:
-                return access_token
-
-        oproxy_response = requests.post(
-            self._token_retrieval_url,
-            json={
-                'app_name': self._app_name,
-                'registration_id': self._auth_id,
-                'encrypted_token': get_encrypted(self._refresh_token, self._enc_key)
-            },
-            verify=self._verify
-        )
-
-        if oproxy_response.status_code not in {200, 201}:
-            msg = 'Error in authentication. Try checking the credentials you entered.'
-            try:
-                demisto.info('Authentication failure from server: {} {} {}'.format(
-                    oproxy_response.status_code, oproxy_response.reason, oproxy_response.text))
-                err_response = oproxy_response.json()
-                server_msg = err_response.get('message')
-                if not server_msg:
-                    title = err_response.get('title')
-                    detail = err_response.get('detail')
-                    if title:
-                        server_msg = f'{title}. {detail}'
-                if server_msg:
-                    msg += ' Server message: {}'.format(server_msg)
-            except Exception as ex:
-                demisto.error('Failed parsing error response - Exception: {}'.format(ex))
-            raise Exception(msg)
-        try:
-            gcloud_function_exec_id = oproxy_response.headers.get('Function-Execution-Id')
-            demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
-            parsed_response = oproxy_response.json()
-        except ValueError:
-            raise Exception(
-                'There was a problem in retrieving an updated access token.\n'
-                'The response from the Oproxy server did not contain the expected content.'
-            )
-        access_token = parsed_response.get('access_token')
-        expires_in = parsed_response.get('expires_in', 3595)
-        current_refresh_token = parsed_response.get('refresh_token')
-        time_now = epoch_seconds()
-        time_buffer = 5  # seconds by which to shorten the validity period
-        if expires_in - time_buffer > 0:
-            # err on the side of caution with a slightly shorter access token validity period
-            expires_in = expires_in - time_buffer
-
-        demisto.setIntegrationContext({
-            'access_token': access_token,
-            'valid_until': time_now + expires_in,
-            'current_refresh_token': current_refresh_token
-        })
-        return access_token
-
-    def _http_request(self, *args, **kwargs):
-        """
-        Overrides Base client request function, retrieves and adds to headers access token before sending the request.
-        """
-        token = self._get_access_token()
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore
 
     def _get_root_folder_children(self, user_id):
         """
@@ -341,7 +192,7 @@ class MsGraphClient(BaseClient):
         rtype: ``list``
         """
         suffix_endpoint = f'users/{user_id}/mailFolders/msgfolderroot/childFolders?$top=250'
-        root_folder_children = self._http_request('GET', suffix_endpoint).get('value', None)
+        root_folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', None)
         if not root_folder_children:
             raise Exception("No folders found under Top Of Information Store folder")
 
@@ -361,7 +212,7 @@ class MsGraphClient(BaseClient):
         :rtype: ``list``
         """
         suffix_endpoint = f'users/{user_id}/mailFolders/{folder_id}/childFolders?$top=250'
-        folder_children = self._http_request('GET', suffix_endpoint).get('value', [])
+        folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])
         return folder_children
 
     def _get_folder_info(self, user_id, folder_id):
@@ -381,7 +232,7 @@ class MsGraphClient(BaseClient):
         """
 
         suffix_endpoint = f'users/{user_id}/mailFolders/{folder_id}'
-        folder_info = self._http_request('GET', suffix_endpoint)
+        folder_info = self.ms_client.http_request('GET', suffix_endpoint)
         if not folder_info:
             raise Exception(f'No info found for folder {folder_id}')
         return folder_info
@@ -462,7 +313,7 @@ class MsGraphClient(BaseClient):
         suffix_endpoint = (f"users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
                            f"?$filter=lastModifiedDateTime ge {target_modified_time}"
                            f"&$orderby=lastModifiedDateTime &$top={self._emails_fetch_limit}&select=*")
-        fetched_emails = self._http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
+        fetched_emails = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
             fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
@@ -743,7 +594,7 @@ class MsGraphClient(BaseClient):
         :rtype: ``str``
         """
         suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/$value'
-        mime_content = self._http_request('GET', suffix_endpoint, resp_type='text')
+        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text')
 
         return mime_content
 
@@ -760,7 +611,7 @@ class MsGraphClient(BaseClient):
 
         attachment_results = []  # type: ignore
         suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
-        attachments = self._http_request('Get', suffix_endpoint).get('value', [])
+        attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
 
         for attachment in attachments:
             attachment_type = attachment.get('@odata.type', '')
@@ -858,7 +709,7 @@ class MsGraphClient(BaseClient):
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages'
         draft = MsGraphClient._build_message(**kwargs)
 
-        created_draft = self._http_request('POST', suffix_endpoint, json_data=draft)
+        created_draft = self.ms_client.http_request('POST', suffix_endpoint, json_data=draft)
         parsed_draft = MsGraphClient._parse_item_as_dict(created_draft)
         human_readable = tableToMarkdown(f'Created draft with id: {parsed_draft.get("ID", "")}', parsed_draft)
         ec = {self.CONTEXT_DRAFT_PATH: parsed_draft}
@@ -871,8 +722,8 @@ class MsGraphClient(BaseClient):
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/sendMail'
         message_content = MsGraphClient._build_message(**kwargs)
-        self._http_request('POST', suffix_endpoint, json_data={'message': message_content},
-                           resp_type="text")
+        self.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content},
+                                    resp_type="text")
 
         message_content.pop('attachments', None)
         message_content.pop('internet_message_headers', None)
@@ -899,7 +750,7 @@ class MsGraphClient(BaseClient):
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/reply'
         reply = MsGraphClient._build_reply(to_recipients, comment)
-        self._http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
+        self.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
         return f'### Replied to: {", ".join(to_recipients)} with comment: {comment}'
 
@@ -914,7 +765,7 @@ class MsGraphClient(BaseClient):
         :rtype: ``str``
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{draft_id}/send'
-        self._http_request('POST', suffix_endpoint, resp_type="text")
+        self.ms_client.http_request('POST', suffix_endpoint, resp_type="text")
 
         return f'### Draft with: {draft_id} id was sent successfully.'
 
@@ -926,7 +777,7 @@ class MsGraphClient(BaseClient):
         rtype: ``str`` or Exception
         """
         suffix_endpoint = f'users/{self._mailbox_to_fetch}'
-        user_response = self._http_request('GET', suffix_endpoint)
+        user_response = self.ms_client.http_request('GET', suffix_endpoint)
 
         if user_response.get('mail') != '' and user_response.get('id') != '':
             return_outputs('```✅ Success!```')
@@ -938,35 +789,39 @@ def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
 
-    # params related to oproxy
-    auth_id_and_token_retrieval_url = params.get('auth_id', '').split('@')
-    auth_id = auth_id_and_token_retrieval_url[0]
-    if len(auth_id_and_token_retrieval_url) != 2:
-        token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-    else:
-        token_retrieval_url = auth_id_and_token_retrieval_url[1]
-    # In case the script is running for the first time, refresh token is retrieved from integration parameters,
-    # in other case it's retrieved from integration context.
-    refresh_token = demisto.getIntegrationContext().get('current_refresh_token') or params.get('refresh_token', '')
-    enc_key = params.get('enc_key')
-    app_name = 'ms-graph-mail-listener'
+    self_deployed = params.get('self_deployed', False)
 
     # params related to common instance configuration
     base_url = 'https://graph.microsoft.com/v1.0/'
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    ok_codes = (200, 201, 202)
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
     folder_to_fetch = params.get('folder_to_fetch', 'Inbox')
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
-    ok_codes = (200, 201, 202)
 
-    client = MsGraphClient(refresh_token, auth_id, enc_key, token_retrieval_url, app_name, mailbox_to_fetch,
-                           folder_to_fetch, first_fetch_interval, emails_fetch_limit, base_url=base_url, verify=verify,
-                           proxy=proxy, ok_codes=ok_codes)
-
+    if self_deployed:
+        tenant_id = params.get('refresh_token')
+        app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
+        ms_client = MicrosoftClient.from_self_deployed(tenant_id, params.get('auth_id'),
+                                                       params.get('enc_key'), app_url=app_url,
+                                                       scope='https://graph.microsoft.com/.default',
+                                                       base_url=base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
+    else:
+        # params related to oproxy
+        # In case the script is running for the first time, refresh token is retrieved from integration parameters,
+        # in other case it's retrieved from integration context.
+        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token')
+                         or params.get('refresh_token', ''))
+        enc_key = params.get('enc_key')
+        app_name = 'ms-graph-mail-listener'
+        ms_client = MicrosoftClient.from_oproxy(params.get('auth_id', ''), enc_key, app_name,
+                                                refresh_token=refresh_token,
+                                                base_url=base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
+    client = MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())
@@ -995,6 +850,9 @@ def main():
             return_outputs(human_readable, ec)
     except Exception as e:
         return_error(str(e))
+
+
+from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

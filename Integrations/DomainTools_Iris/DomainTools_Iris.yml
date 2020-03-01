@@ -29,7 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: A threat, intelligence, and investigation platform for domain names, IP addresses Email addresses, Name Severs, 
+description: A threat intelligence and investigation platform for domain names, IP addresses, email addresses, name servers
   and so on.
 display: DomainTools Iris
 name: DomainTools Iris
@@ -364,7 +364,6 @@ script:
     description: Displays DomainTools Analytic data in a markdown format table.
     execution: false
     name: domaintoolsiris-analytics
-    outputs:
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain.

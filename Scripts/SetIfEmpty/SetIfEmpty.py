@@ -1,21 +1,24 @@
+from CommonServerPython import *
 import demistomock as demisto
+from distutils.util import strtobool
 
 
 def get_value_to_set(args):
     value = args.get('value')
-    apply_if_empty = True if args.get('applyIfEmpty', '').lower() == 'true' else False
+    apply_if_empty = strtobool(args.get('applyIfEmpty', 'false'))
 
     if value is None or (apply_if_empty and is_value_empty(value)):
         value = args.get('defaultValue')
 
-    return value
+    return encode_string_results(value)
 
 
 def is_value_empty(value):
-    if len(value) == 1:
+    if hasattr(value, '__iter__') and len(value) == 1 and not isinstance(value, dict):
         value = value[0]
 
-    return value is None or len(value) == 0
+    value_is_string_null = isinstance(value, basestring) and value.lower() in ["none", "null", ""]  # type: ignore
+    return value is None or (hasattr(value, '__iter__') and len(value) == 0) or value_is_string_null
 
 
 def main(args):

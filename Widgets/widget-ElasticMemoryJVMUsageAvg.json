@@ -1,0 +1,31 @@
+{
+  "id": "es-jvm-memory-current-usage",
+  "version": -1,
+  "fromVersion": "5.5.0",
+  "name": "Elastic JVM Memory Current Usage",
+  "dataType": "system",
+  "widgetType": "number",
+  "query": "es-jvm-memory.usedPercent",
+  "isPredefined": true,
+  "params": {
+    "currencySign": "%",
+    "signAlignment": "right",
+    "colors": {
+      "isEnabled": true,
+      "items": {
+        "#FF1B15": {
+          "value": 90
+        },
+        "#FAC100": {
+          "value": 70
+        },
+        "#00CD33": {
+          "value": -1
+        }
+      },
+      "type": "above"
+    }
+  },
+  "size": 0,
+  "description": "Elastic JVM Memory Current Usage %"
+}

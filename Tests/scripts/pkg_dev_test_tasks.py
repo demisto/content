@@ -227,6 +227,7 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_
     if no_lint:
         run_params.extend(['-e', 'PYLINT_SKIP=1'])
     run_params.extend(['-e', 'CPU_NUM={}'.format(cpu_num)])
+    run_params.extend(['-e', 'CI={}'.format(os.getenv("CI", "false"))])
     run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
     try:
@@ -260,6 +261,16 @@ def run_mypy(project_dir, py_num):
     print("mypy completed")
 
 
+def run_bandit(project_dir, py_num):
+    lint_files = get_lint_files(project_dir)
+    print("========= Running bandit on: {} ===============".format(lint_files))
+    python_exe = 'python2' if py_num < 3 else 'python3'
+    print_v('Using: {} to run bandit'.format(python_exe))
+    sys.stdout.flush()
+    subprocess.check_call([python_exe, '-m', 'bandit', '-lll', '-iii', '-q', lint_files], cwd=project_dir)
+    print("bandit completed")
+
+
 def setup_dev_files(project_dir):
     # copy demistomock and common server
     shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
@@ -271,8 +282,8 @@ def setup_dev_files(project_dir):
 
 
 def main():
-    description = """Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run within the docker image
-of an integration/script.
+    description = """Run lintings (flake8, mypy, pylint), security checks (bandit) and pytest. pylint and pytest will
+run within the docker image of an integration/script.
 Meant to be used with integrations/scripts that use the folder (package) structure.
 Will lookup up what docker image to use and will setup the dev dependencies and file in the target folder. """
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -281,6 +292,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     parser.add_argument("--no-mypy", help="Do NOT run mypy static type checking", action='store_true')
     parser.add_argument("--no-flake8", help="Do NOT run flake8 linter", action='store_true')
     parser.add_argument("--no-test", help="Do NOT test (skip pytest)", action='store_true')
+    parser.add_argument("--no-bandit", help="Do NOT run bandit security checks", action='store_true')
     parser.add_argument("-r", "--root", help="Run pytest container with root user", action='store_true')
     parser.add_argument("-k", "--keep-container", help="Keep the test container", action='store_true')
     parser.add_argument("-v", "--verbose", help="Verbose output", action='store_true')
@@ -292,7 +304,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
 
     args = parser.parse_args()
 
-    if args.no_test and args.no_pylint and args.no_flake8 and args.no_mypy:
+    if args.no_test and args.no_pylint and args.no_flake8 and args.no_mypy and args.no_bandit:
         raise ValueError("Nothing to run as all --no-* options specified.")
 
     global LOG_VERBOSE
@@ -325,6 +337,8 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
                     run_flake8(project_dir, py_num)
                 if not args.no_mypy:
                     run_mypy(project_dir, py_num)
+                if not args.no_bandit:
+                    run_bandit(project_dir, py_num)
                 if not args.no_test or not args.no_pylint:
                     requirements = get_dev_requirements(py_num)
                     docker_image_created = docker_image_create(docker, requirements)

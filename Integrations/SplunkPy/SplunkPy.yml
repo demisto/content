@@ -41,8 +41,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Timezone of the Splunk server, in minutes. For example, GMT is gmt +3, set +180 (set only
-    if different than Demisto server). Relevant only for fetching notable events.
+- display: Timezone of the Splunk server, in minutes. For example, GMT is gmt +3,
+    set +180 (set only if different than Demisto server). Relevant only for fetching
+    notable events.
   name: timezone
   required: false
   type: 0
@@ -51,8 +52,7 @@ configuration:
   name: parseNotableEventsRaw
   required: false
   type: 8
-- display: Extract Fields - CSV fields that will be parsed out of _raw
-    notable events
+- display: Extract Fields - CSV fields that will be parsed out of _raw notable events
   name: extractFields
   required: false
   type: 12
@@ -61,28 +61,34 @@ configuration:
   name: useSplunkTime
   required: false
   type: 8
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
-- display: Earliest time to fetch (the name of the Splunk field whose value defines the query's
-    earliest time to fetch)
+- defaultvalue: index_earliest
+  display: Earliest time to fetch (the name of the Splunk field whose value defines
+    the query's earliest time to fetch)
   name: earliest_fetch_time_fieldname
-  defaultvalue: index_earliest
-  type: 0
   required: false
-- display: Latest time to fetch (the name of the Splunk field whose value defines the query's
-    latest time to fetch)
+  type: 0
+- defaultvalue: index_latest
+  display: Latest time to fetch (the name of the Splunk field whose value defines
+    the query's latest time to fetch)
   name: latest_fetch_time_fieldname
-  defaultvalue: index_latest
-  type: 0
   required: false
+  type: 0
 - display: The app context of the namespace
   name: app
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
+- display: HEC Token (HTTP Event Collector)
+  name: hec_token
+  required: false
+  type: 4
+- display: 'HEC URL (e.g: https://localhost:8088).'
+  name: hec_url
+  required: false
+  type: 0
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -96,7 +102,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
+    description: Returns the results of a previous Splunk search. You can use this
+      command in conjunction with the splunk-job-create command.
     execution: false
     name: splunk-results
   - arguments:
@@ -126,9 +133,41 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of events to return. Default is 100. If "0", all results are returned.
+      description: Maximum number of events to return. Default is 100. If "0", all
+        results are returned.
       isArray: false
       name: event_limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '25000'
+      description: The maximum number of returned results to  process at a time. For
+        example, if 100 results are returned, and you specify a batch_limit of 10,
+        the results will be processed 10 at a time over 10 iterations. This does not
+        effect the search or the context and outputs returned. In some cases, specifying
+        a batch_size enhances search performance. If you think that the search execution
+        is suboptimal, we recommend trying several batch_size values to determine
+        which works best for your search. Default is 25,000.
+      isArray: false
+      name: batch_limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Determines whether the results will be entered into the context.
+      isArray: false
+      name: update_context
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: A string that contains the application namespace in which to restrict
+        searches.
+      isArray: false
+      name: app
       required: false
       secret: false
     deprecated: false
@@ -137,13 +176,13 @@ script:
     name: splunk-search
     outputs:
     - contextPath: Splunk.Result
-      description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk
-        event.
+      description: The results of the Splunk search. The results are a JSON array,
+        in which each item is a Splunk event.
       type: Unknown
   - arguments:
     - default: false
-      description: Splunk index to which to push data. Run the splunk-get-indexes command to get all
-        indexes.
+      description: Splunk index to which to push data. Run the splunk-get-indexes
+        command to get all indexes.
       isArray: false
       name: index
       required: true
@@ -176,7 +215,7 @@ script:
     name: splunk-get-indexes
   - arguments:
     - default: false
-      description: 'A CSV list of event IDs of notable events.s'
+      description: A comma-separated list of event IDs of notable events.
       isArray: false
       name: eventIDs
       required: true
@@ -207,8 +246,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In
-        Progress, 3 - Pending, 4 - Resolved, 5 - Closed.
+      description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress,
+        3 - Pending, 4 - Resolved, 5 - Closed.
       isArray: false
       name: status
       required: false
@@ -219,11 +258,18 @@ script:
     name: splunk-notable-event-edit
   - arguments:
     - default: false
-      description: 'The Splunk search language string to execute. For example :"index=*
-        | head 3".'
+      description: The Splunk search language string to execute. For example :"index=*
+        | head 3".
       isArray: false
       name: query
       required: true
+      secret: false
+    - default: false
+      description: A string that contains the application namespace in which to restrict
+        searches.
+      isArray: false
+      name: app
+      required: false
       secret: false
     deprecated: false
     description: Creates a new search job in Splunk.
@@ -249,9 +295,64 @@ script:
     - contextPath: Splunk.Raw.Parsed
       description: The raw event data (parsed).
       type: unknown
+  - arguments:
+    - default: false
+      description: |-
+        Event payload key-value.
+        String example: "event": "Access log test message."
+      isArray: false
+      name: event
+      required: true
+      secret: false
+    - default: false
+      description: Fields for indexing that do not occur in the event payload itself.
+        Accepts multiple comma separated fields.
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: The index name.
+      isArray: false
+      name: index
+      required: false
+      secret: false
+    - default: false
+      description: The hostname.
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: User-defined event source type.
+      isArray: false
+      name: source_type
+      required: false
+      secret: false
+    - default: false
+      description: User-defined event source.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: Epoch-formatted time
+      isArray: false
+      name: time
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends events to an HTTP Event Collector using the Splunk platform
+      JSON event protocol.
+    execution: false
+    name: splunk-submit-event-hec
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
   subtype: python2
+tests:
+  - SplunkPy-Test-V2

@@ -46,12 +46,6 @@ This integration was integrated and tested with version xx of Exabeam11
   <code>exabeam-get-notable-users</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>

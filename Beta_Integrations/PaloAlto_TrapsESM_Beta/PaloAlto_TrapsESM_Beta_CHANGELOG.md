@@ -1,6 +1,6 @@
 ## [Unreleased]
 
 
-## [19.9.1] - 2019-09-18
+## [19.12.1] - 2019-12-25
 #### New Integration
 Palo Alto Traps ESM beta integration.
