@@ -25,6 +25,6 @@ type: python
 dockerimage: demisto/btfl-soup:1.0.1.6233
 runas: DBotWeakRole
 runonce: false
+subtype: python3
 tests:
 - Test_Markdownify
-subtype: python3
