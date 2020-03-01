@@ -1,7 +1,7 @@
 id: PANW - Hunting and threat detection by indicator type Test
 version: -1
 name: PANW - Hunting and threat detection by indicator type Test
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -36,11 +36,11 @@ tasks:
     task:
       id: 3c7cfe31-0237-4f9d-84da-1c7f7b9ed41b
       version: -1
-      name: PANW - Hunting and threat detection by indicator type
+      name: PANW - Hunting and threat detection by indicator type V2
       description: |-
         Integrations list: Cortex (Traps, PAN-OS, Analytics)
         This is a multipurpose playbook used for hunting and threat detection. The playbook received inputs based on hashes, ip's or domain names provided manually or from outputs by other playbooks. With the received indicators the playbook leverages Palo Alto Cortex data received by products such as Traps, Analytics and Pan-OS to search for ips and hosts related to that specific hash. The output provided by the Playbook allows to pivot searches for possibly affected hosts, ip's or users.
-      playbookName: PANW - Hunting and threat detection by indicator type
+      playbookName: PANW - Hunting and threat detection by indicator type V2
       type: playbook
       iscommand: false
       brand: ""
@@ -48,22 +48,17 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      Domain:
-        simple: ${Domain.Name}
-      IP addresses:
+      IPAddresses:
         simple: ${IP.Address}
+      InternalRange: {}
       MD5:
-        complex:
-          root: File
-          accessor: MD5
+        simple: ${File.MD5}
       SHA1:
-        complex:
-          root: File
-          accessor: SHA1
+        simple: ${File.SHA1}
       SHA256:
-        complex:
-          root: File
-          accessor: SHA256
+        simple: ${File.SHA256}
+      URLDomain:
+        simple: ${Domain.Name}
     separatecontext: true
     loop:
       iscommand: false

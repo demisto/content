@@ -47,7 +47,7 @@ tasks:
       historicListName:
         simple: test_phishing_historic_data
       numberOfIncidents:
-        simple: "20"
+        simple: "100"
     separatecontext: false
     view: |-
       {

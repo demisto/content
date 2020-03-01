@@ -1,0 +1,145 @@
+id: Splunk Indicator Hunting Test
+version: -1
+fromversion: 5.0.0
+name: Splunk Indicator Hunting Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: fbdee7b8-76eb-4c1b-8a52-34227516bc62
+    type: start
+    task:
+      id: fbdee7b8-76eb-4c1b-8a52-34227516bc62
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: c4ed11c5-ff85-4e72-80db-2f85581a67f6
+    type: regular
+    task:
+      id: c4ed11c5-ff85-4e72-80db-2f85581a67f6
+      version: -1
+      name: Delect Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 363d6d62-a171-4715-8545-03dc7eadd939
+    type: playbook
+    task:
+      id: 363d6d62-a171-4715-8545-03dc7eadd939
+      version: -1
+      name: Splunk Indicator Hunting
+      description: ''
+      playbookName: Splunk Indicator Hunting
+      type: playbook
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      IPAddress:
+        simple: 1.1.1.1
+      IndexName:
+        simple: '*'
+      InternalDomainName:
+        simple: test.com
+      InternalHostRegex:
+        simple: ACME\-.*
+      InternalIPRange: {}
+      HostFieldsToReturn:
+        simple: ComputerName
+      IPFieldsToReturn:
+        simple: dest_ip,src_ip,src,dst
+      UserFieldsToReturn:
+        simple: user_identity
+      MD5:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
+      SHA1:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c,xxxxxx8920ba0ddebaf5ea234987592834759834275
+      SHA256:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
+      SelectFields: {}
+      SplunkIPField:
+        simple: dest_ip,src_ip,src,dst
+      SplunkMD5Field:
+        simple: Caller_MD5,file_hash
+      SplunkSHA1Field:
+        simple: file_hash
+      SplunkSHA256Field: {}
+      SplunkURLDomainField: {}
+      URLDomain:
+        simple: goo,wall
+      earliest_time:
+        simple: -1d
+      event_limit:
+        simple: '100'
+      latest_time: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

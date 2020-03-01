@@ -1,0 +1,43 @@
+{
+	"id": "incident_emailautoreply",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"modified": "2020-01-02T16:22:20.100411032Z",
+	"name": "Email Auto-reply",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "Whether an auto-reply message was configured for the user. Can be either \"Set\" or \"Unchanged\".",
+	"cliName": "emailautoreply",
+	"type": "singleSelect",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"script": "",
+	"fieldCalcScript": "",
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"selectValues": [
+		"Unchanged",
+		"Set"
+	],
+	"validationRegex": "",
+	"useAsKpi": true,
+	"locked": false,
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Employee Offboarding"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+	"breachScript": ""
+}

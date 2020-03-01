@@ -188,3 +188,12 @@ def test_prettify_static_route():
     expected = {'Name': 'name1', 'Destination': '1.2.3.4', 'Metric': 10,
                 'NextHop': 'demisto.com', 'VirtualRouter': 'my_virtual_router'}
     assert response == expected
+
+
+def test_validate_search_time():
+    from Panorama import validate_search_time
+    assert validate_search_time('2019/12/26')
+    assert validate_search_time('2019/12/26 00:00:00')
+    with pytest.raises(Exception):
+        assert validate_search_time('219/12/26 00:00:00')
+        assert validate_search_time('219/10/35')
