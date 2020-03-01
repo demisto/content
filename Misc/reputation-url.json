@@ -97,6 +97,66 @@
           }
         ]
       }
+    },
+    "associations": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "Associations",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "reportedby": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "ReportedBy",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "threattypes": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "ThreatTypes",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "trafficlightprotocoltlp": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "TrafficLightProtocol",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "tags": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "Tags",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
     }
   },
   "manualMapping": null,
