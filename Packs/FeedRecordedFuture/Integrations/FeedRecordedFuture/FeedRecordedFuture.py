@@ -299,11 +299,16 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
             raw_json['type'] = get_indicator_type(indicator_type, item)
             raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
             raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(item['Risk'])
+            lower_case_evidence_details_keys = []
+            for rule in evidence_details:
+                rule = dict((k.lower(), v) for k, v in rule.items())
+                lower_case_evidence_details_keys.append(rule)
+
             indicators.append({
                 "value": value,
                 "type": raw_json['type'],
                 "rawJSON": raw_json,
-                "fields": {'recordedfutureevidencedetails': evidence_details},
+                "fields": {'recordedfutureevidencedetails': lower_case_evidence_details_keys},
                 "score": score
             })
 
