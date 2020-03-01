@@ -32,7 +32,7 @@
 	"type": "shortText",
 	"unmapped": false,
 	"unsearchable": false,
-	"useAsKpi": false,
+	"useAsKpi": true,
 	"validationRegex": "",
 	"version": -1,
 	"fromVersion": "5.0.0"
