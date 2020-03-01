@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added field association to Cortex XDR Port Scan incident type.
+Associated the XDR Alert Count field to the Cortex XDR Port Scan incident type.
