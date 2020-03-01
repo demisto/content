@@ -18,6 +18,7 @@ from Tests.scripts.validate_files import FilesValidator
 
 CONTENT_LIB_PATH = "./"
 
+NEXT_VERSION = "5.5.0"
 NEW_RN = "New"
 MODIFIED_RN = "Improved"
 IGNORE_RN = '-'
@@ -143,7 +144,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
         return
 
     # create a release notes section for store (add or modified) - return None if found missing release notes
-    def release_notes_section(self, store, title_prefix, current_server_version, collect_beta=False):
+    def release_notes_section(self, store, title_prefix, current_server_version):
         res = ""
         beta_rn_paths = list()
         if store:
@@ -193,29 +194,27 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
                     res = "\n#### %s %s %s\n" % (count_str, title_prefix, self.get_header())
                 res += new_str
-        if collect_beta:
             print("Collected {} beta notes".format(len(beta_rn_paths)))
-            return res, beta_rn_paths
-        return res
+        return res, beta_rn_paths
 
-    def generate_release_notes(self, current_server_version, collect_beta=False):
+    def generate_release_notes(self, current_server_version):
         res = ""
+        beta_res = ""
+        add_beta_paths = []
+        mod_beta_paths = []
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print("starting {} RN".format(self.get_header()))
 
             # Added files
-            add_rn, add_beta_paths = self.release_notes_section(self.added_store, NEW_RN, current_server_version,
-                                                                collect_beta=True)
+            add_rn, add_beta_paths = self.release_notes_section(self.added_store, NEW_RN, current_server_version,)
             # Modified files
             modified_rn, mod_beta_paths = self.release_notes_section(self.modified_store, MODIFIED_RN,
-                                                                     current_server_version,
-                                                                     collect_beta=True)
-
-            if add_rn is None or modified_rn is None:
-                return None
+                                                                     current_server_version)
+            add_beta_res, _ = self.release_notes_section(add_beta_paths, NEW_RN, NEXT_VERSION)
+            mod_beta_res, _ = self.release_notes_section(mod_beta_paths, MODIFIED_RN, NEXT_VERSION)
 
             section_body = add_rn + modified_rn
-
+            beta_section_body = add_beta_res + mod_beta_res
             # Deleted files
             if self.deleted_store:
                 section_body += "\n##### Removed {}\n".format(self.get_header())
@@ -227,13 +226,10 @@ class Content(object):  # pylint: disable=useless-object-inheritance
             if section_body:
                 res = "### {}\n".format(self.get_header())
                 res += section_body
+                beta_res = "### {}\n".format(self.get_header())
+                beta_res += beta_section_body
 
-            if collect_beta:
-                print("Collecting beta rn")
-                add_beta_res = self.release_notes_section(add_beta_paths, NEW_RN, "9.9.9")
-                mod_beta_res = self.release_notes_section(mod_beta_paths, MODIFIED_RN, "9.9.9")
-                return res, add_beta_res + mod_beta_res
-        return res
+        return res, beta_res
 
 
 class ScriptContent(Content):
@@ -659,7 +655,7 @@ def main():
     missing_release_notes = False
     for key in RELEASE_NOTES_ORDER:
         value = RELEASE_NOTE_GENERATOR[key]
-        ans, beta_ans = value.generate_release_notes(args.server_version, collect_beta=True)
+        ans, beta_ans = value.generate_release_notes(args.server_version)
         if ans is None or value.is_missing_release_notes:
             missing_release_notes = True
         if ans:
