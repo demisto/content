@@ -1,36 +1,45 @@
 ## Overview
 ---
 
-Fetch Indicators shared by other tenants in a Multi Tenant Elasticsearch environment.
+Fetch indicators stored in an Elasticsearch database. 
+1. Cortex XSOAR Feed saved by Cortex XSOAR in an Elasticsearch configured enviornment. 
+2. Cortex XSOAR MT Shared Feed shared by a tenant in a multi-tenant enviornment. 
+3. Generic Feed is a feed in a format dictated by the user.
 
-## SharedTenantElasticsearchFeed Playbook
----
-
-## Configure SharedTenantElasticsearchFeed on Demisto
+## Configure ElasticsearchFeed on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for SharedTenantElasticsearchFeed.
 3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Server URL__
-    * __Username for server login__
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-    * __Fetch indicators__
-    * __Indicator Reputation__
-    * __Source Reliability__
-    * __feedExpirationPolicy__
-    * __feedExpirationInterval__
-    * __Feed Fetch Interval__
-    * __Bypass exclusion list__
+    * __Server URL__: Elasticsearch database URL. 
+    * __Username__: Used for authentication via Username + Password.
+    * __Password__: Used for authentication via Username + Password.
+    * __API Key__: Used for authentication via API ID + API Key.
+    * __API ID__: Used for authentication via API ID + API Key.
+    * __Trust any certificate (not secure)__: Ignore HTTPS certificates.
+    * __Use system proxy settings__: Enable/Disable
+    * __Feed Type__: Choose the feed type saved into the Elasticsearch database. Cortex XSOAR Feed are indicators saved by Cortex XSOAR in an Elasticsearch
+        configured enviornment. Cortex XSOAR MT Shared Feed are indicators shared by a
+        tenant in a MT env. Generic Feed is a feed in a format dictated by the user
+    * __Fetch indicators__: Enable/Disable
+    * __First Fetch Time__: Determine how far to look back for fetched indicators (<number> <time unit>, e.g., 12 hours, 7 days).
+    * __Indicator Reputation__: Indicators from this integration instance will be marked with this reputation.
+    * __Source Reliability__: Reliability of the source providing the intelligence data.
+    * __Indicator Value Field__: Source field that contains the indicator value in the index.
+    * __Indicator Type Field__: Source field that contains the indicator type in the index.
+    * __Indicator Type__: Default indicator type used in case no "Indicator Type Field" was provided
+    * __Index From Which To Fetch Indicators__: Multiple indices may be used by separating them with a comma. If none is provided, will search in all indices
+    * __Time Field Type__: Time field type used in the database.
+    * __Index Time Field__: Used for sorting sort and limiting data. If left empty, no sorting will be done.
+    * __Query__: Elasticsearch query to be executed when fetching indicators from Elasticsearch.
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. get-shared-indicators
 ### 1. get-shared-indicators

@@ -8,17 +8,18 @@ configuration:
   required: true
   type: 0
 - display: Username
-  additionalinfo: Provide Username + Passoword instead of API key + API ID
+  additionalinfo: Authentication via Username + Password
   name: credentials
   required: false
   type: 9
 - display: API Key
-  additionalinfo: Provide API key + API ID instead of Username + Password
+  additionalinfo: Authentication via API key + API ID
   hidden: false
   name: api_key
   required: false
   type: 4
 - display: API ID
+  additionalinfo: Authentication via API key + API ID
   hidden: false
   name: api_id
   required: false
@@ -32,7 +33,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Cortex XSOAR Feed are indicators saved by demisto in an Elasticsearch
+- additionalinfo: Cortex XSOAR Feed are indicators saved by Cortex XSOAR in an Elasticsearch
     configured enviornment. Cortex XSOAR MT Shared Feed are indicators shared by a
     tenant in a MT env. Generic Feed is a feed in a format dictated by the user
   defaultvalue: Cortex XSOAR Feed
