@@ -181,9 +181,6 @@ def main(circle_artifacts, content_version):
     update_content_version(content_version)
     branch_name = update_branch()
     print(f'Updating CommonServerPython with branch {branch_name} and content version {content_version}')
-    print("Copying release notes")
-    shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
-    shutil.copyfile('beta-release-notes.md', os.path.join(circle_artifacts, 'beta-release-notes.md'))
     print('Starting to create content artifact...')
     print('creating dir for bundles...')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
@@ -224,6 +221,7 @@ def main(circle_artifacts, content_version):
     shutil.copyfile(ZIP_TEST + '.zip', os.path.join(circle_artifacts, ZIP_TEST + '.zip'))
     shutil.copyfile("./Tests/id_set.json", os.path.join(circle_artifacts, "id_set.json"))
 
+    shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
     print(f'finished create content artifact at {circle_artifacts}')
 
 
