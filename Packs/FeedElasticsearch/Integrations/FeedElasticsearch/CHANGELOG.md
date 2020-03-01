@@ -1,3 +1,3 @@
 ## [Unreleased]
 #### New Integration
-Fetch indicators stored in an Elasticsearch database.
+Fetches indicators stored in an Elasticsearch database.
