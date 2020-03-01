@@ -14,5 +14,5 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/btfl-soup:1.0.1.4581
+dockerimage: demisto/btfl-soup:1.0.1.6117
 runas: DBotWeakRole
