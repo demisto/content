@@ -3,12 +3,14 @@ commonfields:
   id: CSVFeed
   version: -1
 configuration:
-- defaultvalue: 'true'
-  display: Fetch indicators
+- display: Fetch indicators
   name: feed
+  defaultvalue: true
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -18,7 +20,8 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: F - Reliability cannot be judged
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
   options:
@@ -31,6 +34,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
+  display: ""
   name: feedExpirationPolicy
   options:
   - never
@@ -40,8 +44,8 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ''
   name: feedExpirationInterval
+  display: ""
   required: false
   type: 1
 - defaultvalue: '240'
@@ -49,55 +53,75 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- display: Indicator Type
-  name: indicator_type
-  required: false
-  type: 0
-- display: Bypass exclusion list
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
+  defaultvalue: ""
+- additionalinfo: Type of the indicator in the feed.
+  display: Indicator Type
+  name: indicator_type
+  required: false
+  type: 0
 - display: URL
   name: url
   required: true
   type: 0
-- defaultvalue: '20'
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: Time (in seconds) before HTTP requests timeout.
+  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
   type: 0
-- display: Ignore Regex
+- additionalinfo: Python regular expression for lines to ignore.
+  display: Ignore Regex
   name: ignore_regex
   required: false
   type: 0
-- defaultvalue: value
+- additionalinfo: The names to apply to the fields in the CSV feed. The name for the field containing the indicator should be "value".
+  defaultvalue: value
   display: Field Names
   name: fieldnames
   required: false
   type: 0
-- defaultvalue: ','
+- additionalinfo: A one-character string used to separate fields. For example, a comma
+    ",".
+  defaultvalue: ','
   display: Delimiter
   name: delimiter
   required: false
   type: 0
-- display: Double quote
+- additionalinfo: Controls how instances of quotechar in a field should themselves
+    be quoted. When True, the character is doubled.
+  display: Double quote
   name: doublequote
   required: false
   type: 8
-- display: Escape character
+- additionalinfo: A one-character string used by the writer to escape the delimiter.
+  display: Escape character
   name: escapechar
   required: false
   type: 0
-- defaultvalue: '"'
+- additionalinfo: A one-character string used to quote fields containing special characters.
+  defaultvalue: '"'
   display: Quote Character
   name: quotechar
   required: false
   type: 0
-- display: Skip Initial Space
+- additionalinfo: When "True", whitespace immediately following the delimiter is ignored.
+  display: Skip Initial Space
   name: skipinitialspace
   required: false
   type: 8
-- display: Trust any certificate (not secure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -138,7 +162,8 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6120
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false

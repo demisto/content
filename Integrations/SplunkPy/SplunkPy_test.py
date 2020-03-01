@@ -84,6 +84,21 @@ EXPECTED = {
     "website": "2.2.2.2"
 }
 
+URL_TESTING_IN = '"url="https://test.com?key=val"'
+URL_TESTING_OUT = {'url': 'https://test.com?key=val'}
+
+# checking a case where the last character for each value was cut
+RESPONSE = 'NAS-IP-Address=2.2.2.2, NAS-Port=50222, NAS-Identifier=de-wilm-251littl-idf3b-s2, NAS-Port-Type=' \
+           'Ethernet, NAS-Port-Id=GigabitEthernet2/0/05'
+
+POSITIVE = {
+    "NAS-IP-Address": "2.2.2.2",
+    "NAS-Identifier": "de-wilm-251littl-idf3b-s2",
+    "NAS-Port": "50222",
+    "NAS-Port-Id": "GigabitEthernet2/0/05",
+    "NAS-Port-Type": "Ethernet"
+}
+
 
 def test_raw_to_dict():
     from SplunkPy import rawToDict
@@ -91,9 +106,15 @@ def test_raw_to_dict():
     response = rawToDict(actual_raw)
     list_response = rawToDict(LIST_RAW)
     raw_message = rawToDict(RAW_WITH_MESSAGE)
+    empty = rawToDict('')
+    url_test = rawToDict(URL_TESTING_IN)
+    character_check = rawToDict(RESPONSE)
 
     assert EXPECTED == response
     assert {} == list_response
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
     assert isinstance(raw_message, dict)
+    assert empty == {}
+    assert URL_TESTING_OUT == url_test
+    assert POSITIVE == character_check
