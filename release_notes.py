@@ -67,7 +67,8 @@ def add_dot(text):
         return '\n'.join(formatted_text)
 
     # single record release notes
-    return text[0].upper() if text.endswith('.') else text[0].upper() + '.'
+    text[0] = text[0].upper()
+    return text if text.endswith('.') else text + '.'
 
 
 def release_notes_item(header, body):
