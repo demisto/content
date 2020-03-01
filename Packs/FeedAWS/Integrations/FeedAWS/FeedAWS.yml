@@ -77,7 +77,6 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  hidden: true
   name: feedExpirationPolicy
   display: ""
   required: false
@@ -87,8 +86,7 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
-- hidden: true
-  name: feedExpirationInterval
+- name: feedExpirationInterval
   required: false
   display: ""
   type: 1
