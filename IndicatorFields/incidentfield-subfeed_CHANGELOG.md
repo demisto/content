@@ -1,3 +1,3 @@
 ## [Unreleased]
 
-Changed field name from subfeed to feedservice.
+Changed the name of the *subfeed* field to *feedservice*.
