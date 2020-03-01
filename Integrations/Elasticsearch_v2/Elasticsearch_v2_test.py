@@ -414,3 +414,34 @@ def test_format_to_iso():
     assert format_to_iso(date_string_2) == iso_format
     assert format_to_iso(date_string_3) == iso_format
     assert format_to_iso(iso_format) == iso_format
+
+
+@patch("Elasticsearch_v2.USERNAME", "mock")
+@patch("Elasticsearch_v2.PASSWORD", "demisto")
+def test_elasticsearch_builder_called_with_username_password(mocker):
+    from elasticsearch import Elasticsearch
+    from Elasticsearch_v2 import elasticsearch_builder
+    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
+    elasticsearch_builder()
+    assert es_mock.call_args[1].get('http_auth') == ('mock', 'demisto')
+    assert es_mock.call_args[1].get('api_key') is None
+
+
+@patch("Elasticsearch_v2.API_KEY", "demisto")
+@patch("Elasticsearch_v2.API_ID", "mock")
+def test_elasticsearch_builder_called_with_api_key(mocker):
+    from elasticsearch import Elasticsearch
+    from Elasticsearch_v2 import elasticsearch_builder
+    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
+    elasticsearch_builder()
+    assert es_mock.call_args[1].get('http_auth') is None
+    assert es_mock.call_args[1].get('api_key') == ('mock', 'demisto')
+
+
+def test_elasticsearch_builder_called_with_no_creds(mocker):
+    from elasticsearch import Elasticsearch
+    from Elasticsearch_v2 import elasticsearch_builder
+    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
+    elasticsearch_builder()
+    assert es_mock.call_args[1].get('http_auth') is None
+    assert es_mock.call_args[1].get('api_key') is None

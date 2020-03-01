@@ -33,10 +33,11 @@ FEED_TYPE_CORTEX_MT = 'Cortex XSOAR MT Shared Feed'
 
 
 class ElasticsearchClient:
-    def __init__(self, insecure, server, username, password, api_key, api_id, time_field, time_method, fetch_index,
-                 fetch_time, query):
+    def __init__(self, insecure=None, server=None, username=None, password=None, api_key=None, api_id=None,
+                 time_field=None, time_method=None, fetch_index=None, fetch_time=None, query=None):
         self._insecure = insecure
         self._proxy = handle_proxy()
+        # _elasticsearch_builder expects _proxy to be None if empty
         if not self._proxy:
             self._proxy = None
         self._server = server
@@ -115,10 +116,16 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     now = datetime.now()
     if feed_type == FEED_TYPE_GENERIC:
         search = get_scan_generic_format(client, now)
-        get_generic_indicators(search, src_val, src_type, default_type)
+        ioc_lst = get_generic_indicators(search, src_val, src_type, default_type)
+        hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
     else:
         search = get_scan_insight_format(client, now, feed_type=feed_type)
-        get_demisto_indicators(search)
+        ioc_lst, ioc_enrch_lst = get_demisto_indicators(search)
+        hr = tableToMarkdown('Indicators', list(set(map(lambda ioc: ioc.get('name'), ioc_lst))), 'Name')
+        if ioc_enrch_lst:
+            for ioc_enrch in ioc_enrch_lst:
+                hr += tableToMarkdown('Enrichment', ioc_enrch, ['value', 'sourceBrand', 'score'])
+    return_outputs(hr, {}, ioc_lst)
 
 
 def get_generic_indicators(search, src_val, src_type, default_type):
@@ -127,51 +134,50 @@ def get_generic_indicators(search, src_val, src_type, default_type):
     for hit in search.scan():
         hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type)
         ioc_lst.extend(hit_lst)
-    hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
-    return_outputs(hr, {}, ioc_lst)
+    return ioc_lst
 
 
 def get_demisto_indicators(search):
     """Implements get indicators in insight format"""
     limit = int(demisto.args().get('limit', FETCH_SIZE))
-    indicators_list: list = []
+    ioc_lst: list = []
     ioc_enrch_lst: list = []
     for hit in search.scan():
         hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
-        indicators_list.extend(hit_lst)
+        ioc_lst.extend(hit_lst)
         ioc_enrch_lst.extend(hit_enrch_lst)
-        if len(indicators_list) >= limit:
+        if len(ioc_lst) >= limit:
             break
-    hr = tableToMarkdown('Indicators', list(set(map(lambda ioc: ioc.get('name'), indicators_list))), 'Name')
-    if ioc_enrch_lst:
-        for ioc_enrch in ioc_enrch_lst:
-            hr += tableToMarkdown('Enrichment', ioc_enrch, ['value', 'sourceBrand', 'score'])
-    return_outputs(hr, {}, indicators_list)
+    return ioc_lst, ioc_enrch_lst
 
 
 def fetch_indicators_command(client, feed_type, src_val, src_type, default_type, last_fetch):
     """Implements fetch-indicators command"""
     last_fetch_timestamp = get_last_fetch_timestamp(last_fetch, client.time_method, client.fetch_time)
-    if feed_type != FEED_TYPE_GENERIC:
-        now_ts = fetch_and_create_indicators_insight_format(client, last_fetch_timestamp)
-    else:
-        now_ts = fetch_and_create_indicators_generic_format(client, src_val, src_type, default_type,
-                                                            last_fetch_timestamp)
-    demisto.setLastRun({'time': now_ts})
-
-
-def fetch_and_create_indicators_generic_format(client, src_val, src_type, default_type, last_fetch_timestamp):
-    """Fetches hits in generic format and then creates indicators from them"""
     now = datetime.now()
-    search = get_scan_generic_format(client, now, last_fetch_timestamp)
     ioc_lst: list = []
-    for hit in search.scan():
-        hit_lst = extract_indicators_from_generic_hit(hit, src_val, src_type, default_type)
-        ioc_lst.extend(hit_lst)
+    ioc_enrch_lst: list = []
+    if feed_type != FEED_TYPE_GENERIC:
+        search = get_scan_insight_format(client, now, last_fetch_timestamp)
+        for hit in search.scan():
+            hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
+            ioc_lst.extend(hit_lst)
+            ioc_enrch_lst.extend(hit_enrch_lst)
+    else:
+        search = get_scan_generic_format(client, now, last_fetch_timestamp)
+        for hit in search.scan():
+            ioc_lst.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type))
+
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
-    return int(now.timestamp() * 1000)
+    if ioc_enrch_lst:
+        ioc_enrch_batches = create_enrichment_batches(ioc_enrch_lst)
+        for enrch_batch in ioc_enrch_batches:
+            # ensure batch sizes don't exceed 2000
+            for b in batch(enrch_batch, batch_size=2000):
+                demisto.createIndicators(b)
+    demisto.setLastRun({'time': now.timestamp() * 1000})
 
 
 def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):
@@ -213,28 +219,6 @@ def extract_indicators_from_generic_hit(hit, src_val, src_type, default_type):
     if ioc.get('value'):
         ioc_lst.append(ioc)
     return ioc_lst
-
-
-def fetch_and_create_indicators_insight_format(client, last_fetch_timestamp):
-    """Fetches hits in insight format and then creates indicators from them"""
-    now = datetime.now()
-    search = get_scan_insight_format(client, now, last_fetch_timestamp)
-    ioc_lst: list = []
-    ioc_enrch_lst: list = []
-    for hit in search.scan():
-        hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
-        ioc_lst.extend(hit_lst)
-        ioc_enrch_lst.extend(hit_enrch_lst)
-    if ioc_lst:
-        for b in batch(ioc_lst, batch_size=2000):
-            demisto.createIndicators(b)
-    if ioc_enrch_lst:
-        ioc_enrch_batches = create_enrichment_batches(ioc_enrch_lst)
-        for enrch_batch in ioc_enrch_batches:
-            # ensure batch sizes don't exceed 2000
-            for b in batch(enrch_batch, batch_size=2000):
-                demisto.createIndicators(b)
-    return int(now.timestamp() * 1000)
 
 
 def get_scan_insight_format(client, now, last_fetch_timestamp=None, feed_type=None):
@@ -339,7 +323,7 @@ def main():
         elif demisto.command() == 'es-get-indicators':
             get_indicators_command(client, feed_type, src_val, src_type, default_type)
     except Exception as e:
-        return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
+        return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)))
 
 
 main()
