@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Renamed "sub-feed" to "service".
 
 ## [20.2.4] - 2020-02-25
 -
