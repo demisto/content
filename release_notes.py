@@ -43,7 +43,7 @@ RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR
 
 
 def add_dot(text):
-    if not text:
+    if not text or len(text) < 2:
         return ''
 
     text = text.rstrip().replace('```', '***').replace('`', '*')
