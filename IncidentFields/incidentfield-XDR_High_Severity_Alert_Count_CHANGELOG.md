@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added field association to Cortex XDR Port Scan incident type.
+Associated the XDR High Severity Alert Count field to the Cortex XDR Port Scan incident type.
 
 ## [19.10.2] - 2019-10-29
 - 
