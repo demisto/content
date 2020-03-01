@@ -585,6 +585,7 @@ def parse_indicators(sub_indicator_list, full_indicator_list):
     """
     parsed_indicator_list = []  # type: List
     for indicator in sub_indicator_list:
+        # If the indicator was already seen, skip it.
         if indicator['indicator'] in full_indicator_list:
             continue
 
@@ -627,6 +628,9 @@ def fetch_indicators_command(client: Client, limit=None):
         only_indicator_list = []  # type:List
         for raw_response in taxii_iter:
             _, res = client.decode_indicators(raw_response.content)
+            # the only_indicator_list is a list containing only the indicators themselves.
+            # it is used to prevent duplicated indicators from being created in the system.
+            # this is because AlienVault OTX can return the same indicator several times from the same collection.
             parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list)
             indicator_list.extend(parsed_list)
             if limit:
@@ -640,7 +644,7 @@ def fetch_indicators_command(client: Client, limit=None):
 def main():
     params = demisto.params()
 
-    client = Client(params.get('api_key'), params.get('collection'), params.get('insecure'), params.get('proxy'),
+    client = Client(params.get('api_key'), params.get('collections'), params.get('insecure'), params.get('proxy'),
                     params.get('all_collections'))
 
     command = demisto.command()
