@@ -1,7 +1,7 @@
 {
   "id": "urlRep",
   "version": -1,
-  "fromVersion": "5.0.0",
+  "fromVersion": "5.5.0",
   "modified": "2019-07-18T08:14:49.85543843Z",
   "sortValues": null,
   "commitMessage": "",
@@ -26,6 +26,7 @@
   "contextPath": "URL(val.Data \u0026\u0026 val.Data === obj.Data)",
   "contextValue": "Data",
   "excludedBrands": [],
+  "expiration": 43200,
   "defaultMapping": {
     "blocked": {
       "simple": "",
@@ -95,6 +96,66 @@
             "args": {}
           }
         ]
+      }
+    },
+    "associations": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "Associations",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "reportedby": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "ReportedBy",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "threattypes": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "ThreatTypes",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "trafficlightprotocoltlp": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "TrafficLightProtocol",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
+      }
+    },
+    "tags": {
+      "simple": "",
+      "complex": {
+        "root": "URL",
+        "filters": [],
+        "accessor": "Tags",
+        "transformers": [{
+          "operator": "uniq",
+          "args": {}
+        }]
       }
     }
   },

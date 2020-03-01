@@ -92,9 +92,12 @@ def test_contents_user_info():
     (get_asset_data, {'asset_name': 'dummmy'}, RESPONSE_ASSET_DATA, EXPECTED_ASSET_DATA)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
+    import requests
+    requests.packages.urllib3.disable_warnings()
+
     mocker.patch.object(Client, '_login')
-    client = Client('http://exabeam.com/api/auth/login', verify=True, username='user',
-                    password='1234', proxies={}, headers={})
+    client = Client('http://exabeam.com/api/auth/login', verify=False, username='user',
+                    password='1234', proxy=False, headers={})
 
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)

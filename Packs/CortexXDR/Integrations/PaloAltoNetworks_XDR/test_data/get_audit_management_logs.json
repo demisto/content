@@ -1,0 +1,55 @@
+{
+    "reply": {
+        "result_count": 3,
+        "data": [
+            {
+                "AUDIT_ID": 1,
+                "AUDIT_OWNER_NAME": "Woo Woo",
+                "AUDIT_OWNER_EMAIL": "woo@demisto.com",
+                "AUDIT_ASSET_JSON": "{}",
+                "AUDIT_ASSET_NAMES": "",
+                "AUDIT_HOSTNAME": null,
+                "AUDIT_RESULT": "SUCCESS",
+                "AUDIT_REASON": null,
+                "AUDIT_DESCRIPTION": null,
+                "AUDIT_ENTITY": "AUTH",
+                "AUDIT_ENTITY_SUBTYPE": "Login",
+                "AUDIT_SESSION_ID": null,
+                "AUDIT_CASE_ID": null,
+                "AUDIT_INSERT_TIME": 1575795170425
+            },
+            {
+                "AUDIT_ID": 2,
+                "AUDIT_OWNER_NAME": "Woo Woo",
+                "AUDIT_OWNER_EMAIL": "woo@demisto.com",
+                "AUDIT_ASSET_JSON": "{}",
+                "AUDIT_ASSET_NAMES": "",
+                "AUDIT_HOSTNAME": null,
+                "AUDIT_RESULT": "SUCCESS",
+                "AUDIT_REASON": null,
+                "AUDIT_DESCRIPTION": null,
+                "AUDIT_ENTITY": "AUTH",
+                "AUDIT_ENTITY_SUBTYPE": "Login",
+                "AUDIT_SESSION_ID": null,
+                "AUDIT_CASE_ID": null,
+                "AUDIT_INSERT_TIME": 1575795411175
+            },
+            {
+                "AUDIT_ID": 3,
+                "AUDIT_OWNER_NAME": "Moo Moo",
+                "AUDIT_OWNER_EMAIL": "moo@demisto.com",
+                "AUDIT_ASSET_JSON": "{}",
+                "AUDIT_ASSET_NAMES": "",
+                "AUDIT_HOSTNAME": null,
+                "AUDIT_RESULT": "SUCCESS",
+                "AUDIT_REASON": null,
+                "AUDIT_DESCRIPTION": "Created a Windows Standalone installer installation package 'Windows Server 2016' with agent version 7.0.0.27797",
+                "AUDIT_ENTITY": "DISTRIBUTIONS",
+                "AUDIT_ENTITY_SUBTYPE": "Create",
+                "AUDIT_SESSION_ID": null,
+                "AUDIT_CASE_ID": null,
+                "AUDIT_INSERT_TIME": 1575795537242
+            }
+        ]
+    }
+}

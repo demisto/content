@@ -29,6 +29,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use a self deployed Azure Application
+  name: self_deployed
+  required: false
+  type: 8
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
 display: Microsoft Graph Mail
@@ -43,13 +47,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' A CSV list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). '
+      description: ' A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). '
       isArray: false
       name: folder_id
       required: false
       secret: false
     - default: false
-      description: Add an OData query.
+      description: An OData query.
       isArray: false
       name: odata
       required: false
@@ -63,95 +67,95 @@ script:
       secret: false
     - default: true
       defaultValue: '1'
-      description: 'The number of pages of emails to pull (maximum is 10 emails per
-        page).'
+      description: The number of pages of emails to return (maximum is 10 emails per
+        page).
       isArray: false
       name: pages_to_pull
       required: false
       secret: false
     deprecated: false
-    description: Gets properties of mails.
+    description: Gets the properties of returned emails.
     execution: false
     name: msgraph-mail-list-emails
     outputs:
     - contextPath: MSGraphMail.ID
-      description: ID of email.
+      description: The ID of the email.
       type: String
     - contextPath: MSGraphMail.Created
-      description: Time of email creation.
+      description: The time the email was created.
       type: Date
     - contextPath: MSGraphMail.LastModifiedTime
-      description: Time of last modified.
+      description: The time the email was last modified.
       type: Date
     - contextPath: MSGraphMail.ReceivedTime
-      description: Time of email receiving.
+      description: The time the email was received.
       type: Date
     - contextPath: MSGraphMail.SendTime
-      description: Time of sending email.
+      description: The time the email was sent.
       type: Date
     - contextPath: MSGraphMail.Categories
-      description: Categories of email.
+      description: Categories of the email.
       type: String
     - contextPath: MSGraphMail.HasAttachments
-      description: If there're any attachments in the email
+      description: Whether the email has attachments.
       type: Boolean
     - contextPath: MSGraphMail.Subject
-      description: Subject of email.
+      description: The subject of email.
       type: String
     - contextPath: MSGraphMail.IsDraft
-      description: If the email is draft
+      description: Whether the email is a draft.
       type: Boolean
     - contextPath: MSGraphMail.Body
-      description: Body of email
+      description: The content (body) of the email.
       type: String
     - contextPath: MSGraphMail.Sender.Name
-      description: Name of sender
+      description: The name of sender.
       type: String
     - contextPath: MSGraphMail.Sender.Address
-      description: Email address of sender
+      description: The email address of the sender.
       type: String
     - contextPath: MSGraphMail.From.Name
-      description: Name of from
+      description: The name of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.From.Address
-      description: Email address of from
+      description: The email address of the user in the 'from' field of the email
       type: String
     - contextPath: MSGraphMail.CCRecipients.Name
-      description: Name of ccRecipients
+      description: The names of the CC recipients.
       type: String
     - contextPath: MSGraphMail.CCRecipients.Address
-      description: Email address of ccRecipients
+      description: The email address of the user in the 'cc' field of the email.
       type: String
     - contextPath: MSGraphMail.BCCRecipients.Name
-      description: Name of bccRecipients
+      description: The names of the users in the 'bcc' field of the email.
       type: String
     - contextPath: MSGraphMail.BCCRecipients.Address
-      description: Email address of bccRecipients
+      description: The email address of the user in the 'bcc' field of the email.
       type: String
     - contextPath: MSGraphMail.ReplyTo.Name
-      description: Name of replyTo
+      description: The name in the 'replyTo' field of the email.
       type: String
     - contextPath: MSGraphMail.ReplyTo.Address
-      description: Email address of replyTo
+      description: The email address in the 'replyTo' field of the email.
       type: String
     - contextPath: MSGraphMail.UserID
-      description: ID of user
+      description: The ID of the user.
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: Message ID.
+      description: The message ID.
       isArray: false
       name: message_id
       required: true
       secret: false
     - default: false
-      description: Folder ID.
+      description: The folder ID.
       isArray: false
       name: folder_id
       required: false
@@ -164,7 +168,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the message body should be returned.
+      description: Whether to return the message body. Can ge "true" or "false". 
       isArray: false
       name: get_body
       predefined:
@@ -173,76 +177,76 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the properties of an email.
+    description: Returns the properties of an email.
     execution: false
     name: msgraph-mail-get-email
     outputs:
     - contextPath: MSGraphMail.ID
-      description: ID of email.
+      description: The ID of the email.
       type: String
     - contextPath: MSGraphMail.Created
-      description: Time of email creation.
+      description: The time the email was created.
       type: Date
     - contextPath: MSGraphMail.LastModifiedTime
-      description: Time of last modified.
+      description: The time the email was last modified.
       type: Date
     - contextPath: MSGraphMail.ReceivedTime
-      description: Time of email receiving.
+      description: The time the email was received.
       type: Date
     - contextPath: MSGraphMail.SendTime
-      description: Time of sending email.
+      description: The time the email was sent.
       type: Date
     - contextPath: MSGraphMail.Categories
-      description: Categories of email.
+      description: Categories of the email.
       type: String
     - contextPath: MSGraphMail.HasAttachments
-      description: If there're any attachments in the email
+      description: Whether the email has attachments.
       type: Boolean
     - contextPath: MSGraphMail.Subject
-      description: Subject of email.
+      description: The subject of email.
       type: String
     - contextPath: MSGraphMail.IsDraft
-      description: If the email is draft
+      description: Whether the email is a draft.
       type: Boolean
     - contextPath: MSGraphMail.Body
-      description: Body of email
+      description: The content (body) of the email.
       type: String
     - contextPath: MSGraphMail.Sender.Name
-      description: Name of sender
+      description: The name of sender.
       type: String
     - contextPath: MSGraphMail.Sender.Address
-      description: Email address of sender
+      description: The email address of the sender.
       type: String
     - contextPath: MSGraphMail.From.Name
-      description: Name of from
+      description: The name of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.From.Address
-      description: Email address of from
+      description: The email address of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.CCRecipients.Name
-      description: Name of ccRecipients
+      description: The names of the users in the 'cc' field of the email.
       type: String
     - contextPath: MSGraphMail.CCRecipients.Address
-      description: Email address of ccRecipients
+      description: The email address of the user in the 'cc' field of the email.
       type: String
     - contextPath: MSGraphMail.BCCRecipients.Name
-      description: Name of bccRecipients
+      description: The names of the users in the 'bcc' field of the email.
       type: String
     - contextPath: MSGraphMail.BCCRecipients.Address
-      description: Email address of bccRecipients
+      description: The email address of the user in the 'bcc' field of the email.
       type: String
     - contextPath: MSGraphMail.ReplyTo.Name
-      description: Name of replyTo
+      description: The name in the 'replyTo' field of the email.
       type: String
     - contextPath: MSGraphMail.ReplyTo.Address
-      description: Email address of replyTo
+      description: The email address in the 'replyTo' field of the email.
       type: String
     - contextPath: MSGraphMail.UserID
-      description: ID of user
+      description: The ID of the user.
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -254,7 +258,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
+      description: A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders.
       isArray: false
       name: folder_id
       required: false
@@ -265,7 +269,7 @@ script:
     name: msgraph-mail-delete-email
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -277,7 +281,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
+      description: ' A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). '
       isArray: false
       name: folder_id
       required: false
@@ -288,23 +292,23 @@ script:
     name: msgraph-mail-list-attachments
     outputs:
     - contextPath: MSGraphMailAttachment.ID
-      description: Email ID.
+      description: The email ID.
       type: String
     - contextPath: MSGraphMailAttachment.Attachment.ID
-      description: ID of attachment.
+      description: The ID of the attachment.
       type: String
     - contextPath: MSGraphMailAttachment.Attachment.Name
-      description: Name of attachment.
+      description: The name of the attachment.
       type: String
     - contextPath: MSGraphMailAttachment.Attachment.Type
-      description: Type of attachment.
+      description: The attachment type.
       type: String
     - contextPath: MSGraphMailAttachment.UserID
-      description: ID of user
+      description: The ID of the user.
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -316,7 +320,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
+      description: 'A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).'
       isArray: false
       name: folder_id
       required: false
@@ -333,45 +337,45 @@ script:
     name: msgraph-mail-get-attachment
     outputs:
     - contextPath: File.Size
-      description: Size of file
+      description: The size of the file.
       type: Number
     - contextPath: File.SHA1
-      description: File's SHA1
+      description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: File's SHA256
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.Name
-      description: File's name
+      description: The name of the file.
       type: String
     - contextPath: File.SSDeep
-      description: File's SSDeep
+      description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
-      description: File's entry id
+      description: The entry ID of the file.
       type: String
     - contextPath: File.Info
-      description: File's info
+      description: File information.
       type: String
     - contextPath: File.Type
-      description: File's type
+      description: The file type.
       type: String
     - contextPath: File.MD5
-      description: File's MD5
+      description: The MD5 hash of the file.
       type: String
     - contextPath: File.Extension
-      description: File's Extension
+      description: The file extension.
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of mail folder lists to return.
+      description: The maximum number of mail folder lists to return. Default is 20.
       isArray: false
       name: limit
       required: false
@@ -401,7 +405,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -414,7 +418,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of mail folder lists to return.
+      description: The maximum number of mail folder lists to return. Default is 20.
       isArray: false
       name: limit
       required: false
@@ -444,7 +448,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -486,7 +490,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -528,7 +532,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -557,7 +561,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
@@ -568,7 +572,7 @@ script:
     name: msgraph-mail-move-email
     outputs:
     - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
-      description: The folder to where the email message was moved.
+      description: The folder where the email message was moved.
       type: String
     - contextPath: MSGraphMail.MovedEmails.ID
       description: The new ID of the moved email message.
@@ -578,19 +582,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID (usually an email address in the format someuser@example.com).
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: Message ID.
+      description: The message ID.
       isArray: false
       name: message_id
       required: true
       secret: false
     deprecated: false
-    description: Retrieves an email message by message ID and uploads the content as an EML file.
+    description: Retrieves an email message by message ID and uploads the content
+      as an EML file.
     execution: false
     name: msgraph-mail-get-email-as-eml
     outputs:
@@ -633,7 +638,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python
+  subtype: python3
 tests:
 - MicrosoftGraphMail-Test
