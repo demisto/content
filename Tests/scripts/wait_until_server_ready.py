@@ -21,7 +21,7 @@ urllib3.disable_warnings()
 
 MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
-SETUP_TIMEOUT = 30 * 60
+SETUP_TIMEOUT = 45 * 60
 SLEEP_TIME = 45
 
 
@@ -65,15 +65,21 @@ def is_correct_content_installed(ips, content_version, api_key):
         host = "https://{}".format(ami_instance_ip)
 
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
+        resp_json = None
         try:
-            resp_json = None
             try:
                 resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
                                                            method='POST', accept='application/json',
                                                            content_type='application/json')
-                resp_json = ast.literal_eval(resp[0])
+                try:
+                    resp_json = ast.literal_eval(resp[0])
+                except ValueError as err:
+                    print_error(
+                        'failed to parse response from demisto. response is {}.\nError:\n{}'.format(resp[0], err))
+                    return False
             except ApiException as err:
                 print(err)
+
             if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
@@ -144,8 +150,8 @@ def main():
         if len(instance_ips) > len(ready_ami_list):
             sleep(1)
 
-    if not is_correct_content_installed(instance_ips, content_version, api_key=api_key):
-        sys.exit(1)
+    # if not is_correct_content_installed(instance_ips, content_version, api_key=api_key):
+    #     sys.exit(1)
 
 
 if __name__ == "__main__":
