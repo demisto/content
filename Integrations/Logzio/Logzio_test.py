@@ -1,7 +1,5 @@
 import time
-import httpretty
 import Logzio
-import unittest
 import json
 
 BASE_URL = "https://api.logz.io/"
@@ -60,18 +58,11 @@ args = {
 
 
 # Logzio.search_logs_by_fields_command(client, args)
+class TestLogzio:
 
-
-class TestLogzio(unittest.TestCase):
-
-    # @httpretty.activate
-    # def test_logzio_get_api_url(self):
-
-    @httpretty.activate
-    def test_logzio_fetch_incidents(self):
-        httpretty.register_uri(httpretty.POST, "{}{}".format(BASE_URL, Logzio.TRIGGERED_RULES_API_SUFFIX),
-                               body=json.dumps(TRIGGERED_RULES_RESPONSE_BODY),
-                               status=200, content_type="application/json")
+    def test_logzio_fetch_incidents(self, requests_mock):
+        requests_mock.post("{}{}".format(BASE_URL, Logzio.TRIGGERED_RULES_API_SUFFIX),
+                           json=TRIGGERED_RULES_RESPONSE_BODY)
         client = Logzio.Client(BASE_URL, "us", "fake-security-token", "fake-operational-token", False, False)
         search = "Test"
         severities = ["HIGH", "MEDIUM"]
@@ -79,32 +70,30 @@ class TestLogzio(unittest.TestCase):
 
         # First fetch checks
         inc, next_run = Logzio.fetch_incidents(client, {}, search, severities, first_fetch_time)
-        request = httpretty.HTTPretty.last_request
-        body = json.loads(request.body.decode("utf-8"))
+        request_body = requests_mock.request_history[0].json()
 
-        self.assertTrue("searchTerm" in body["filter"])
-        self.assertEqual(body["filter"]["searchTerm"], "Test")
-        self.assertTrue("timeRange" in body["filter"])
-        self.assertTrue("severities" in body["filter"])
-        self.assertEqual(len(body["filter"]["severities"]), 2)
-        time_range = body["filter"]["timeRange"]
-        self.assertTrue((time.time() - 60 * 60) > time_range["fromDate"])
-        self.assertEqual(len(inc), 2)
-        self.assertTrue("eventDate" in inc[1]["rawJSON"])
-        self.assertTrue("last_fetch" in next_run)
+        assert "searchTerm" in request_body["filter"]
+        assert request_body["filter"]["searchTerm"] == "Test"
+        assert "timeRange" in request_body["filter"]
+        assert "severities" in request_body["filter"]
+        assert len(request_body["filter"]["severities"]) == 2
+        time_range = request_body["filter"]["timeRange"]
+        assert (time.time() - 60 * 60) > time_range["fromDate"]
+        assert len(inc) == 2
+        assert "eventDate" in inc[1]["rawJSON"]
+        assert "last_fetch" in next_run
         raw_json = json.loads(inc[1]["rawJSON"])
-        self.assertEqual(next_run["last_fetch"], raw_json["eventDate"] + 0.1)
+        assert next_run["last_fetch"] == raw_json["eventDate"] + 0.1
 
         # Second fetch checks
-        httpretty.register_uri(httpretty.POST, "{}{}".format(BASE_URL, Logzio.TRIGGERED_RULES_API_SUFFIX),
-                               body=json.dumps(TRIGGERED_RULES_EMPTY_RESPONSE_BODY),
-                               status=200, content_type="application/json")
+        requests_mock.post("{}{}".format(BASE_URL, Logzio.TRIGGERED_RULES_API_SUFFIX),
+                           json=TRIGGERED_RULES_EMPTY_RESPONSE_BODY)
         inc, next_run2 = Logzio.fetch_incidents(client, next_run, search, severities, first_fetch_time)
-        self.assertEqual(len(inc), 0)
-        self.assertEqual(next_run, next_run2)
 
-    @httpretty.activate
-    def test_logzio_search_logs_command(self):
+        assert len(inc) == 0
+        assert next_run == next_run2
+
+    def test_logzio_search_logs_command(self, requests_mock):
         client = Logzio.Client(BASE_URL, "us", "fake-security-token", "fake-operational-token", False, False)
         args = {
             "query": "name:test",
@@ -113,38 +102,31 @@ class TestLogzio(unittest.TestCase):
             "to_time": 1581174759
         }
 
-        httpretty.register_uri(httpretty.POST, "{}{}".format(BASE_URL, Logzio.SEARCH_LOGS_API_SUFFIX),
-                               body=json.dumps(SEARCH_LOGS_RESPONSE_EMPTY_BODY),
-
-                               status=200, content_type="application/json")
+        requests_mock.post("{}{}".format(BASE_URL, Logzio.SEARCH_LOGS_API_SUFFIX), json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
         Logzio.search_logs_command(client, args)
-        request = httpretty.HTTPretty.last_request
-        body = json.loads(request.body.decode("utf-8"))
-        self.assertEqual(body["size"], 20)
-        self.assertTrue("query" in body["query"]["bool"]["must"][0]["query_string"])
-        self.assertEqual(body["query"]["bool"]["must"][0]["query_string"]["query"], "name:test")
-        time_range = body["query"]["bool"]["must"][1]["range"]["@timestamp"]
-        self.assertEqual(time_range["to"], 1581174759)
-        self.assertEqual(time_range["from"], 1581261159)
+        request_body = requests_mock.request_history[0].json()
 
-    # print search_logs_by_fields_command(client, args)
+        assert request_body["size"] == 20
+        assert "query" in request_body["query"]["bool"]["must"][0]["query_string"]
+        assert request_body["query"]["bool"]["must"][0]["query_string"]["query"] == "name:test"
+        time_range = request_body["query"]["bool"]["must"][1]["range"]["@timestamp"]
+        assert time_range["to"] == 1581174759
+        assert time_range["from"] == 1581261159
+#
+# # print search_logs_by_fields_command(client, args)
 
-    @httpretty.activate
-    def test_logzio_get_rule_logs(self):
+    def test_logzio_get_rule_logs(self, requests_mock):
         client = Logzio.Client(BASE_URL, "us", "fake-security-token", "fake-operational-token", False, False)
         args = {
             "id": 123
         }
 
-        httpretty.register_uri(httpretty.POST, "{}{}".format(BASE_URL, Logzio.SEARCH_RULE_LOGS_API_SUFFIX),
-                               body=json.dumps(SEARCH_LOGS_RESPONSE_EMPTY_BODY),
-                               status=200, content_type="application/json")
+        requests_mock.post("{}{}".format(BASE_URL, Logzio.SEARCH_RULE_LOGS_API_SUFFIX),
+                           json=SEARCH_LOGS_RESPONSE_EMPTY_BODY)
+
         Logzio.get_rule_logs_by_id_command(client, args)
-        request = httpretty.HTTPretty.last_request
-        body = json.loads(request.body.decode("utf-8"))
-        self.assertTrue("id" in body)
-        self.assertEqual(body["id"], 123)
+        request_body = requests_mock.request_history[0].json()
 
+        assert "id" in request_body
+        assert request_body["id"] == 123
 
-if __name__ == '__main__':
-    unittest.main()
