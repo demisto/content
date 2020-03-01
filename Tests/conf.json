@@ -360,6 +360,10 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
+            "integrations": "CVE Search v2",
+            "playbookID": "CVE Search v2 - Test"
+        },
+        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
