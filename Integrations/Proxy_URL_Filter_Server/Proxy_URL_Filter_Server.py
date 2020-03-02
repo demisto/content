@@ -48,7 +48,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self.check_auth():
             return
-        print('passed auth')
+
         self.send_response(200)
         self.send_header('Content-type', 'text')
         self.end_headers()
@@ -117,7 +117,7 @@ def run_long_running(port):
         if demisto.command() != 'test-module':
             httpd.serve_forever()
     except Exception as e:
-        print(str(e))
+        demisto.error(str(e))
         httpd.shutdown()
         raise
 
@@ -148,7 +148,7 @@ def main():
             run_long_running(demisto.getParam('longRunningPort'))
 
     except Exception as ex:
-        print(str(ex))
+        demisto.error(str(ex))
         return_error(f'Failed to run {demisto.command()}. Error: {str(ex)}', ex)
         raise
 
