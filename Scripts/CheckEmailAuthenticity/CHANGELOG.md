@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.0] - 2019-12-10
   - Fixed an issue where the script did not properly determine authenticity of some emails.
   - Fixed an issue in which DKIM Signing-Domain was not identified.
 

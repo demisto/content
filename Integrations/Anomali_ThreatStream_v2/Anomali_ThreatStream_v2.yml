@@ -43,7 +43,7 @@ script:
   - arguments:
     - default: true
       description: The IP to check.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -63,9 +63,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -142,7 +142,7 @@ script:
   - arguments:
     - default: true
       description: The domain name to check.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -162,9 +162,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with status of "Inactive". Default is
-        "True".
+        "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -256,7 +256,7 @@ script:
   - arguments:
     - default: true
       description: The MD5 hash of file to check.
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
@@ -276,9 +276,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -356,9 +356,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -521,8 +521,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: low
-      description: Gauges the potential impact of the indicator type the observable
-        is thought to be associated with. Default is "low".
+      description: The potential impact of the indicator type with which the observable
+        is thought to be associated. Default is "low".
       isArray: false
       name: severity
       predefined:
@@ -534,7 +534,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The import type of the indicator. '
+      description: The import type of the indicator. Can be datatext, file-id, or
+        url.
       isArray: false
       name: import_type
       predefined:
@@ -545,11 +546,70 @@ script:
       secret: false
     - default: false
       description: 'The source of imported data. Can be one of the following: url,
-        datatext of file-id of uploaded file to the War Rroom. Supported formats in
-        case of file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
+        datatext of file-id of uploaded file to the War Rroom. Supported file types
+        for file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
       isArray: false
       name: import_value
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include IP mapping. Whether to include url mapping.
+        Can be yes or no. Default is no.
+      isArray: false
+      name: ip_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include domain mapping. Whether to include url mapping.
+        Can be yes or no. Default is no.
+      isArray: false
+      name: domain_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include url mapping. Can be yes or no. Default is no.
+      isArray: false
+      name: url_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include email mapping. Whether to include url mapping.
+        Can be yes or no. Default is no.
+      isArray: false
+      name: email_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to include MD5 mapping. Whether to include url mapping.
+        Can be yes or no. Default is no.
+      isArray: false
+      name: md5_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
       secret: false
     deprecated: false
     description: 'Imports indicators (observables) into ThreatStream. Approval of
@@ -1435,7 +1495,7 @@ script:
   - arguments:
     - default: true
       description: The URL to check.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -1455,9 +1515,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'False'
       description: Whether to include results with the status "Inactive". Default
-        is "True".
+        is "False".
       isArray: false
       name: include_inactive
       predefined:
@@ -1520,6 +1580,7 @@ script:
       description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
   dockerimage: demisto/python3:3.7.3.221
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false

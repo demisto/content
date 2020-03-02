@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import requests
 from distutils.util import strtobool
@@ -9,7 +10,7 @@ from gevent.pywsgi import WSGIServer
 import jwt
 import time
 from threading import Thread
-from typing import Match, Union, Optional, cast, Dict, Any, List
+from typing import Match, Union, Optional, cast, Dict, Any, List, Tuple
 import re
 from jwt.algorithms import RSAAlgorithm
 from tempfile import NamedTemporaryFile
@@ -31,6 +32,7 @@ INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 URL_REGEX: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[:/$_@.&+#-]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
+MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
 ENTRY_FOOTER: str = 'From Microsoft Teams'
 
 MESSAGE_TYPES: dict = {
@@ -228,7 +230,7 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
             if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '')}:
                 return team_member.get('id')
 
-    raise ValueError('Team member was not found')
+    raise ValueError(f'Team member {requested_team_member} was not found')
 
 
 def create_adaptive_card(body: list, actions: list = None) -> dict:
@@ -530,7 +532,6 @@ def http_request(
 
 
 def integration_health():
-
     bot_framework_api_health = 'Operational'
     graph_api_health = 'Operational'
 
@@ -712,6 +713,44 @@ def get_users() -> list:
     return users.get('value', [])
 
 
+def add_user_to_channel(team_aad_id: str, channel_id: str, user_id: str):
+    """
+    Request for adding user to channel
+    """
+    url: str = f'{GRAPH_BASE_URL}/beta/teams/{team_aad_id}/channels/{channel_id}/members'
+    requestjson_: dict = {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        'roles': [],
+        'user@odata.bind': f'https://graph.microsoft.com/beta/users/{user_id}'  # disable-secrets-detection
+    }
+    http_request('POST', url, json_=requestjson_)
+
+
+def add_user_to_channel_command():
+    """
+    Add user to channel (private channel only as still in beta mode)
+    """
+    channel_name: str = demisto.args().get('channel', '')
+    team_name: str = demisto.args().get('team', '')
+    member = demisto.args().get('member', '')
+    users: list = get_users()
+    user_id: str = str()
+    found_member: bool = False
+    for user in users:
+        if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
+            found_member = True
+            user_id = user.get('id', '')
+            break
+    if not found_member:
+        raise ValueError(f'User {member} was not found')
+
+    team_aad_id = get_team_aad_id(team_name)
+    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id=None)
+    add_user_to_channel(team_aad_id, channel_id, user_id)
+
+    demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
+
+
 # def create_group_request(
 #         display_name: str, mail_enabled: bool, mail_nickname: str, security_enabled: bool,
 #         owners_ids: list, members_ids: list = None
@@ -812,6 +851,17 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
     channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
     channel_id: str = channel_data.get('id', '')
     return channel_id
+
+
+def create_channel_command():
+    channel_name: str = demisto.args().get('channel_name', '')
+    channel_description: str = demisto.args().get('description', '')
+    team_name: str = demisto.args().get('team', '')
+    team_aad_id = get_team_aad_id(team_name)
+
+    channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+    if channel_id:
+        demisto.results(f'The channel "{channel_name}" was created successfully')
 
 
 def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = None) -> str:
@@ -969,6 +1019,31 @@ def send_message_request(service_url: str, channel_id: str, conversation: dict):
     http_request('POST', url, json_=conversation, api='bot')
 
 
+def process_mentioned_users_in_message(message: str) -> Tuple[list, str]:
+    """
+    Processes the message to include all mentioned users in the right format. For example:
+    Input: 'good morning @Demisto'
+    Output (Formatted message): 'good morning <at>@Demisto</at>'
+    :param message: The message to be processed
+    :return: A list of the mentioned users, The processed message
+    """
+    mentioned_users: list = [''.join(user) for user in re.findall(MENTION_REGEX, message)]
+    for user in mentioned_users:
+        message = message.replace(f'@{user};', f'<at>@{user}</at>')
+    return mentioned_users, message
+
+
+def mentioned_users_to_entities(mentioned_users: list, integration_context: dict) -> list:
+    """
+    Returns a list of entities built from the mentioned users
+    :param mentioned_users: A list of mentioned users in the message
+    :param integration_context: Cached object to retrieve relevant data from
+    :return: A list of entities
+    """
+    return [{'type': 'mention', 'mentioned': {'id': get_team_member_id(user, integration_context), 'name': user},
+             'text': f'<at>@{user}</at>'} for user in mentioned_users]
+
+
 def send_message():
     message_type: str = demisto.args().get('messageType', '')
     original_message: str = demisto.args().get('originalMessage', '')
@@ -1038,9 +1113,13 @@ def send_message():
         else:
             # Sending regular message
             formatted_message: str = urlify_hyperlinks(message)
+            mentioned_users, formatted_message_with_mentions = process_mentioned_users_in_message(formatted_message)
+            entities = mentioned_users_to_entities(mentioned_users, integration_context)
+            demisto.info(f'msg: {formatted_message_with_mentions}, ent: {entities}')
             conversation = {
                 'type': 'message',
-                'text': formatted_message
+                'text': formatted_message_with_mentions,
+                'entities': entities
             }
     else:  # Adaptive card
         conversation = {
@@ -1487,7 +1566,9 @@ def main():
         'send-notification': send_message,
         'mirror-investigation': mirror_investigation,
         'close-channel': close_channel,
-        'microsoft-teams-integration-health': integration_health
+        'microsoft-teams-integration-health': integration_health,
+        'create-channel': create_channel_command,
+        'add-user-to-channel': add_user_to_channel_command,
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
     }

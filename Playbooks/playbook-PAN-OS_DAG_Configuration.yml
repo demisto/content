@@ -239,7 +239,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "19"
     scriptarguments:
       addresses: {}
       description: {}
@@ -357,12 +357,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "18":
-    id: "18"
-    taskid: b00ee451-174f-413c-8abb-8ade578bb706
+  "19":
+    id: "19"
+    taskid: e320a1b1-3c5e-421e-8b91-c6c379f3813f
     type: playbook
     task:
-      id: b00ee451-174f-413c-8abb-8ade578bb706
+      id: e320a1b1-3c5e-421e-8b91-c6c379f3813f
       version: -1
       name: PAN-OS - Create Or Edit Rule
       description: ""
@@ -398,6 +398,12 @@ tasks:
       rule-position:
         complex:
           root: inputs.rule-position
+          transformers:
+          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
+            args:
+              defaultValue:
+                value:
+                  simple: top
       rule_name:
         complex:
           root: inputs.rule_name
@@ -410,7 +416,7 @@ tasks:
       {
         "position": {
           "x": 810,
-          "y": 890
+          "y": 880
         }
       }
     note: false
@@ -436,29 +442,25 @@ view: |-
   }
 inputs:
 - key: tag_name
-  value:
-    simple: DavidTag5
+  value: {}
   required: true
   description: The name of the tag to add to PAN-OS.
 - key: ip_list
   value:
-    simple: 192.168.1.12
+    simple: 7.7.7.6
   required: true
   description: The list of the IP addresses to block.
 - key: address_group_name
-  value:
-    simple: DavidAG5
+  value: {}
   required: true
   description: The name of the group that will be created if the tag does not exist.
 - key: rule_name
-  value:
-    simple: meshi-rule
+  value: {}
   required: false
   description: The name of the rule to update, or the name of the rule that will be
     created.
 - key: auto_commit
-  value:
-    simple: "Yes"
+  value: {}
   required: false
   description: Whether the rule will be committed automatically.
 - key: log-forwarding-object-name
@@ -466,29 +468,27 @@ inputs:
   required: false
   description: The server address to which to forward logs.
 - key: rule-position
-  value:
-    simple: before
-  required: true
+  value: {}
+  required: false
   description: |-
     The position of the rule in the ruleset. Valid values are:
       * Top
       * Bottom
       * Before
       * After
+
+    The default position is 'Top'
 - key: relative-rule-name
-  value:
-    simple: pan-os-edl-test-edl-rule
+  value: {}
   required: false
   description: If the rule-position that is chosen is before or after, specify the
     rule name to which it is related.
 - key: inbound-or-outbound-rule
-  value:
-    simple: outbound
+  value: {}
   required: false
   description: Determines if the rule is inbound or outbound.
 - key: action-type
-  value:
-    simple: drop
+  value: {}
   required: false
   description: |-
     The action that will be defined in the rule. Valid values are:
@@ -496,8 +496,7 @@ inputs:
     * deny
     * drop
 - key: pre-post-rulebase
-  value:
-    simple: pre-rulebase
+  value: {}
   required: true
   description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
     according to the rule structure. Exists only in panorama!

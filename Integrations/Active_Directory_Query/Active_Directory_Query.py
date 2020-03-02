@@ -38,7 +38,7 @@ DEFAULT_PERSON_ATTRIBUTES = [
     'displayName',
     'memberOf',
     'mail',
-    'samAccountName',
+    'sAMAccountName',
     'manager',
     'userAccountControl'
 ]
@@ -91,7 +91,7 @@ def account_entry(person_object, custome_attributes):
         'Type': 'AD',
         'ID': person_object.get('dn'),
         'Email': person_object.get('mail'),
-        'Username': person_object.get('samAccountName'),
+        'Username': person_object.get('sAMAccountName'),
         'DisplayName': person_object.get('displayName'),
         'Managr': person_object.get('manager'),
         'Manager': person_object.get('manager'),
@@ -414,7 +414,7 @@ def search_computers(default_base_dn, page_size):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
         query = "(&(objectClass=user)(objectCategory=computer)({}={}))".format(
-            args['custom-field-type'], args['ustom-field-data'])
+            args['custom-field-type'], args['custom-field-data'])
 
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")
@@ -514,7 +514,7 @@ def create_user():
     password = args.get("password")
     custome_attributes = args.get('custom-attributes')
     attributes = {
-        "samAccountName": username
+        "sAMAccountName": username
     }
 
     # set common user attributes
@@ -609,6 +609,41 @@ def create_contact():
         'ContentsFormat': formats['text'],
         'Type': entryTypes['note'],
         'Contents': "Created contact with DN: {}".format(contact_dn)
+    }
+    demisto.results(demisto_entry)
+
+
+def create_group():
+    assert conn is not None
+    args = demisto.args()
+
+    object_classes = ["top", "group"]
+    dn = args.get('dn')
+    group_name = args.get('name')
+    group_type_map = {"security": "2147483650", "distribution": "2"}
+    group_type = group_type_map[args.get("group-type")]
+    if args.get('members'):
+        members = args.get('members')
+        attributes = {
+            "samAccountName": group_name,
+            "groupType": group_type,
+            "member": members
+        }
+    else:
+        attributes = {
+            "samAccountName": group_name,
+            "groupType": group_type
+        }
+
+    # create group
+    success = conn.add(dn, object_classes, attributes)
+    if not success:
+        raise Exception("Failed to create group")
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': "Created group with DN: {}".format(dn)
     }
     demisto.results(demisto_entry)
 
@@ -893,6 +928,25 @@ def delete_user():
     demisto.results(demisto_entry)
 
 
+def delete_group():
+    assert conn is not None
+    args = demisto.args()
+
+    dn = args.get('dn')
+
+    # delete group
+    success = conn.delete(dn)
+    if not success:
+        raise Exception("Failed to delete group")
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': "Deleted group with DN: {}".format(dn)
+    }
+    demisto.results(demisto_entry)
+
+
 '''
     TEST CONFIGURATION
     authenticate user credentials while initializing connection wiith AD server
@@ -1026,6 +1080,12 @@ def main():
 
         if demisto.command() == 'ad-get-group-members':
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+
+        if demisto.command() == 'ad-create-group':
+            create_group()
+
+        if demisto.command() == 'ad-delete-group':
+            delete_group()
 
     except Exception as e:
         message = str(e)

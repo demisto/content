@@ -2387,46 +2387,85 @@ script:
         })
     }
 
-    function getGroupIDFromGroupName(groupsDataFromArcher, desiredGroupName) {
+    function getGroupIDFromGroupName(groupsDataFromArcher, userSuppliedGroupName) {
         var desiredGroupID = -1;
         for (var i=0; i<groupsDataFromArcher.length; i++){
-            var currentGroupData = groupsDataFromArcher[i].RequestedObject;
-            var currentGroupName = currentGroupData.Name;
-            if (currentGroupName.trim() === desiredGroupName.trim()){
-                desiredGroupID = currentGroupData.Id;
+            var currentArcherGroupData = groupsDataFromArcher[i].RequestedObject;
+            var currentArcherGroupName = currentArcherGroupData.Name;
+            if (currentArcherGroupName.trim().toLowerCase() === userSuppliedGroupName.trim().toLowerCase()){
+                desiredGroupID = currentArcherGroupData.Id;
             }
         }
         return desiredGroupID;
     }
 
+
+    function getUserIDFromUserName(allUsersArcherData, userSuppliedUserName) {
+        var desiredUserID = -1;
+        for (var i=0; i<allUsersArcherData.length; i++){
+            var currentArcherUserData = allUsersArcherData[i].RequestedObject;
+            var currentArcherUserName = currentArcherUserData.UserName;
+            if (currentArcherUserName.trim().toLowerCase() === userSuppliedUserName.trim().toLowerCase()){
+                desiredUserID = currentArcherUserData.Id;
+            }
+        }
+        return desiredUserID;
+    }
+
+
     function getGroupData() {
-        var groupsData = sendRestRequest("/api/core/system/group", 'archer-create-record', '', true)
+        var groupsData = sendRestRequest("/api/core/system/group", 'archer-create-record', '', true);
         return groupsData;
     }
 
+    function getUserData() {
+        var userData = sendRestRequest("/api/core/system/user", 'archer-create-record', '', true);
+        return userData;
+    }
+
+
     // integration commands functions
-    function replaceMultiselectNameWithID(fieldsToValues, fieldMapping) {
+    function replaceMultiselectNameWithID(fieldsToValues, createRecordMapping) {
         var modifiedfieldsToValues = fieldsToValues;
         var allGroupsArcherData = getGroupData();
+        var allUsersArcherData = getUserData();
         for (var fieldName in fieldsToValues) {
-            if (fieldMapping[fieldName] !== undefined) {
-                var fieldValue = fieldsToValue[fieldName];
-                var fieldNameMapping = fieldMapping[fieldName];
+            if (createRecordMapping[fieldName]) {
+                var fieldValue = fieldsToValues[fieldName];
+                var fieldNameMapping = createRecordMapping[fieldName];
                 var fieldType = fieldNameMapping.Type;
                 var isFieldTypeMultiselect = fieldType === 8;
+
                 if (isFieldTypeMultiselect) {
                     fieldValue = (typeof fieldValue === "string") ? JSON.parse(fieldValue) : fieldValue;
                     var groupsFromUser = fieldValue.groups;
-                    var groupsWithIDsInsteadOfNames = [];
-                    for (var groupIndex = 0; groupIndex < groupsFromUser.length; groupIndex++) {
-                        var currentGroup = groupsFromUser[groupIndex];
-                        var currentGroupData = currentGroup.RequestedObject;
-                        var currentGroupName = currentGroupData.Name;
-                        var currentGroupID = getGroupIDFromGroupName(allGroupsArcherData, currentGroupName)
-                        groupsWithIDsInsteadOfNames.push(currentGroupID)
+                    var usersListFromUser = fieldValue.users;
+
+                    if (!(groupsFromUser == null)) {
+                        var groupsWithIDsInsteadOfNames = [];
+                        for (var groupIndex = 0; groupIndex < groupsFromUser.length; groupIndex++) {
+                            var currentUserSuppliedGroupName = groupsFromUser[groupIndex];
+                            var currentGroupID = getGroupIDFromGroupName(allGroupsArcherData, currentUserSuppliedGroupName)
+
+                            groupsWithIDsInsteadOfNames.push(currentGroupID);
+                        }
+
+                        fieldValue['groups'] = groupsWithIDsInsteadOfNames;
+                        modifiedfieldsToValues[fieldName] = fieldValue;
                     }
-                    fieldValue["groups"] = groupsWithIDsInsteadOfNames;
-                    modifiedfieldsToValues[fieldName] = fieldValue;
+
+                    if (!(usersListFromUser == null)) {
+                        var usersWithIDsInsteadOfNames = [];
+                        for (var userIndex = 0; userIndex < usersListFromUser.length; userIndex++) {
+                            var currentUserSuppliedUserName = usersListFromUser[userIndex];
+                            var currentUserID = getUserIDFromUserName(allUsersArcherData, currentUserSuppliedUserName);
+
+                            usersWithIDsInsteadOfNames.push(currentUserID);
+                        }
+
+                        fieldValue['users'] = usersWithIDsInsteadOfNames;
+                        modifiedfieldsToValues[fieldName] = fieldValue;
+                    }
                 }
             }
         }
@@ -3289,6 +3328,9 @@ script:
             }
         }
         var fileName = dq(invContext, "File(val.EntryID == '" + entryId + "').Name");
+        if (fileName === null) {
+            fileName = dq(invContext, "InfoFile(val.EntryID == '" + entryId + "').Name");
+        }
         if (Array.isArray(fileName)) {
             if (fileName.length > 0) {
                 fileName = fileName[0];

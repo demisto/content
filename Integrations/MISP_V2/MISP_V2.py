@@ -31,7 +31,8 @@ MISP_URL = demisto.params().get('url')
 USE_SSL = not demisto.params().get('insecure')
 proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
-MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
+MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
+DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
 
 """
 dict format :
@@ -231,6 +232,25 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
     return obj_to_build
 
 
+def remove_unselected_context_keys(context_data):
+    for attribute in context_data['Attribute']:
+        for key in list(attribute.keys()):
+            if key not in DATA_KEYS_TO_SAVE:
+                del attribute[key]
+
+
+def arrange_context_according_to_user_selection(context_data):
+    if not DATA_KEYS_TO_SAVE:
+        return
+
+    # each event has it's own attributes
+    remove_unselected_context_keys(context_data[0])
+
+    # each related event has it's own attributes
+    for obj in context_data[0]['Object']:
+        remove_unselected_context_keys(obj)
+
+
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
     """
     Gets a MISP's response and building it to be in context. If missing key, will return the one written.
@@ -306,6 +326,7 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
                 {'Name': tag.get('name')} for tag in events[i].get('Tag')
             ]
     events = replace_keys(events)  # type: ignore
+    arrange_context_according_to_user_selection(events)  # type: ignore
     return events  # type: ignore
 
 
@@ -349,7 +370,13 @@ def get_dbot_level(threat_level_id: str) -> int:
     return 0
 
 
-def check_file():
+def get_files_events():
+    files = argToList(demisto.args().get('file'), ',')
+    for file_hash in files:
+        check_file(file_hash)
+
+
+def check_file(file_hash):
     """
     gets a file_hash and entities dict, returns MISP events
 
@@ -358,7 +385,6 @@ def check_file():
     Returns:
         dict: MISP's output formatted to demisto:
     """
-    file_hash = demisto.args().get('file')
     # hashFormat will be used only in output
     hash_format = get_hash_type(file_hash).upper()
     if hash_format == 'Unknown':
@@ -427,12 +453,17 @@ def check_file():
         demisto.results(f"No events found in MISP for hash {file_hash}")
 
 
-def check_ip():
+def get_ips_events():
+    ips = argToList(demisto.args().get('ip'), ',')
+    for ip in ips:
+        check_ip(ip)
+
+
+def check_ip(ip):
     """
     Gets a IP and returning its reputation (if exists)
     ip (str): IP to check
     """
-    ip = demisto.args().get('ip')
     if not is_ip_valid(ip):
         return_error("IP isn't valid")
 
@@ -689,8 +720,14 @@ def download_file():
         demisto.results(fileResult(filename, file_buffer))  # type: ignore
 
 
-def check_url():
-    url = demisto.args().get('url')
+def get_urls_events():
+    urls = argToList(demisto.args().get('url'), ',')
+    demisto.results(urls)
+    for url in urls:
+        check_url(url)
+
+
+def check_url(url):
     response = MISP.search(value=url, type_attribute='url')
 
     if response:
@@ -980,7 +1017,7 @@ def add_events_from_feed():
         )
         if not_added_counter:
             human_readable = f'{human_readable}\n' \
-                f'{not_added_counter} events were not added. Might already been added earlier.'
+                             f'{not_added_counter} events were not added. Might already been added earlier.'
 
         return_outputs(human_readable, outputs=entry_context)
     except ValueError:
@@ -1000,9 +1037,9 @@ def add_object(event_id: str, obj: MISPObject):
         error_string = str()
         for err in errors:
             error_string += f'' \
-                f'\n\tError code: {err["code"]} ' \
-                f'\n\tMessage: {err["message"]}' \
-                f'\n\tErrors: {err["errors"]}\n'
+                            f'\n\tError code: {err["code"]} ' \
+                            f'\n\tMessage: {err["message"]}' \
+                            f'\n\tErrors: {err["errors"]}\n'
         return_error(f'Error in `{command}` command: {error_string}')
     for ref in obj.ObjectReference:
         response = MISP.add_object_reference(ref)
@@ -1171,11 +1208,11 @@ def main():
         elif command == 'misp-add-events-from-feed':
             add_events_from_feed()
         elif command == 'file':
-            check_file()
+            get_files_events()
         elif command == 'url':
-            check_url()
+            get_urls_events()
         elif command == 'ip':
-            check_ip()
+            get_ips_events()
         #  Object commands
         elif command == 'misp-add-email-object':
             add_email_object()

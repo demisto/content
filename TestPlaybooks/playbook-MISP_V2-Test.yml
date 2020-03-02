@@ -1334,18 +1334,6 @@ tasks:
     conditions:
     - label: "Yes"
       condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: MISP
-                accessor: Event
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "1"
       - - operator: isEqualString
           left:
             value:

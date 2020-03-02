@@ -187,7 +187,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 4490
+          "y": 4350
         }
       }
     note: false
@@ -476,7 +476,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 4310
+          "y": 4170
         }
       }
     note: false
@@ -1076,7 +1076,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "50"
     separatecontext: false
     view: |-
       {
@@ -1363,10 +1363,10 @@ tasks:
     ignoreworker: false
   "50":
     id: "50"
-    taskid: d7751869-2b0a-4803-827e-d99e22faeec6
+    taskid: 7fff0fec-281a-4eea-81d2-ed0f3b9514a1
     type: title
     task:
-      id: d7751869-2b0a-4803-827e-d99e22faeec6
+      id: 7fff0fec-281a-4eea-81d2-ed0f3b9514a1
       version: -1
       name: Post-Incident Activity
       description: ""
@@ -1381,387 +1381,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3335
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "51":
-    id: "51"
-    taskid: 96d28f63-f281-46d7-844e-788af6b48e79
-    type: regular
-    task:
-      id: 96d28f63-f281-46d7-844e-788af6b48e79
-      version: -1
-      name: Set severity to low
-      description: Set the incident severity to low.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "50"
-    scriptarguments:
-      Crowdstrikefamily: {}
-      Crowdstrikescore: {}
-      account: {}
-      accountdisplayname: {}
-      accountgroups: {}
-      accountid: {}
-      accountmanager: {}
-      accounttype: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      agentversion: {}
-      analysis: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentitem: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      awsfindingid: {}
-      awsfindingtype: {}
-      awsinstanceid: {}
-      awsinstancename: {}
-      backupowner: {}
-      bdcontactemail: {}
-      bdcontactname: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      clicktime: {}
-      closeNotes: {}
-      closeReason: {}
-      cluster: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      compliancemetadata: {}
-      contactaddress: {}
-      contactname: {}
-      containmenteradicationandrecovery: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      currentip: {}
-      customFields: {}
-      customidstring: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      daysbetweenreportcreation: {}
-      deleteEmptyField: {}
-      demoautomatedcondition: {}
-      demomanualcondition: {}
-      description: {}
-      dest: {}
-      desthostname: {}
-      destinationip: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectid: {}
-      detection: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      detectname: {}
-      detectorid: {}
-      detecttime: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailrecipient: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      endpointgrid: {}
-      eventid: {}
-      eventtype: {}
-      exactlywhathappenedandatwhattimes: {}
-      executableswritten: {}
-      exposedport: {}
-      externalip: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      falconhostlink: {}
-      falses: {}
-      fetchid: {}
-      fetchtype: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      findingid: {}
-      firstseen: {}
-      groupid: {}
-      guid: {}
-      hadasanothershorttext: {}
-      hadasanothertest: {}
-      hostname: {}
-      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
-      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
-      id: {}
-      important: {}
-      importantfield: {}
-      indicatorsofinterest: {}
-      infected: {}
-      infectedhosts: {}
-      internalip: {}
-      involvedusers: {}
-      ioctype: {}
-      iocvalue: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      licenseexpirydate: {}
-      likelyimpact: {}
-      localip: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      malwarescore: {}
-      md5string: {}
-      mdtest: {}
-      measurestomitigate: {}
-      messageparts: {}
-      messagetime: {}
-      mnda: {}
-      mndadone: {}
-      myfield: {}
-      myhtml: {}
-      mymultiselect: {}
-      myrequiredtext: {}
-      name: {}
-      nextsteps: {}
-      notes: {}
-      objective: {}
-      occurred: {}
-      offset: {}
-      operator: {}
-      osname: {}
-      ostype: {}
-      osversion: {}
-      owner: {}
-      parantprocessname: {}
-      parentprocessid: {}
-      parentprocessname: {}
-      participants: {}
-      partnercontacts: {}
-      partnerproduct: {}
-      patterndispositiondescription: {}
-      patterndispositionflags: {}
-      patterndispositionvalue: {}
-      phase: {}
-      phishingconfirmationstatus: {}
-      phishingsubtype: {}
-      phishscore: {}
-      pid: {}
-      platform: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyname: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyroutes: {}
-      policyseverity: {}
-      policytype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      postincidentactivity: {}
-      preparation: {}
-      previouscoordinates: {}
-      previousip: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      processendtime: {}
-      processid: {}
-      processname: {}
-      processstarttime: {}
-      qid: {}
-      quarantined: {}
-      quarantinefolder: {}
-      quarantinerule: {}
-      rating: {}
-      rawparticipants: {}
-      redlockalertid: {}
-      redlockpolicyname: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteduser: {}
-      reporteremailaddress: {}
-      reportingdepartment: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      samaccountname: {}
-      screenshot: {}
-      screenshot2: {}
-      sectorofaffectedparty: {}
-      securitygroupid: {}
-      selector: {}
-      sensorid: {}
-      severity:
-        simple: low
-      severityname: {}
-      sha1: {}
-      sha256: {}
-      signature: {}
-      signindatetime: {}
-      single: {}
-      single2: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      solutionbrief: {}
-      source: {}
-      sourceip: {}
-      spamscore: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      systemdefault: {}
-      systems: {}
-      tactic: {}
-      technique: {}
-      telephoneno: {}
-      terminatedaction: {}
-      test: {}
-      test2: {}
-      testfield: {}
-      testfieldhadas: {}
-      threatactor: {}
-      threatinfomap: {}
-      threattime: {}
-      ticketnumber: {}
-      timeassignedtolevel2: {}
-      timefield1: {}
-      timelevel1: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      useragent: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      version: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
-      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
-      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
-      whatinformationwasneededsooner: {}
-      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
-      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
-      whereisdatahosted: {}
-      wildfiresubtype: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhighseverityalerts: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrincidentmarkdown: {}
-      xdrlowseverityalertcount: {}
-      xdrlowseverityalerts: {}
-      xdrmanualseverity: {}
-      xdrmediumseverityalertcount: {}
-      xdrmediumseverityalerts: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 660,
-          "y": 3160
+          "y": 3165
         }
       }
     note: false
@@ -1796,7 +1416,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 4140
+          "y": 4000
         }
       }
     note: false
@@ -2584,7 +2204,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3650
+          "y": 3490
         }
       }
     note: false
@@ -2610,7 +2230,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3970
+          "y": 3820
         }
       }
     note: false
@@ -2636,7 +2256,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3830
+          "y": 3670
         }
       }
     note: false
@@ -2994,7 +2614,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3480
+          "y": 3310
         }
       }
     note: false
@@ -3015,7 +2635,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "50"
     scriptarguments:
       IP:
         complex:
@@ -3040,10 +2660,10 @@ tasks:
     ignoreworker: false
   "75":
     id: "75"
-    taskid: 8b7b5f9e-7858-45b5-8969-82723f8df3f4
+    taskid: 0b6df0c2-d26f-4b7a-85d3-996435d53162
     type: playbook
     task:
-      id: 8b7b5f9e-7858-45b5-8969-82723f8df3f4
+      id: 0b6df0c2-d26f-4b7a-85d3-996435d53162
       version: -1
       name: IP Enrichment - Generic v2
       playbookName: IP Enrichment - Generic v2
@@ -3058,14 +2678,9 @@ tasks:
       IP:
         complex:
           root: inputs.DstIP
-      InternalRange:
-        complex:
-          root: inputs.InternalRange
-          transformers:
-          - operator: uniq
+      InternalRange: {}
       ResolveIP:
-        complex:
-          root: inputs.ResolveIP
+        simple: "True"
     separatecontext: true
     loop:
       iscommand: false
@@ -3083,10 +2698,10 @@ tasks:
     ignoreworker: false
   "76":
     id: "76"
-    taskid: 5ef7befc-d0c6-4b9b-8d21-ea90799a48aa
+    taskid: 248e1c1c-9bc4-4497-8bf0-ad7c38fe3573
     type: playbook
     task:
-      id: 5ef7befc-d0c6-4b9b-8d21-ea90799a48aa
+      id: 248e1c1c-9bc4-4497-8bf0-ad7c38fe3573
       version: -1
       name: IP Enrichment - Generic v2
       playbookName: IP Enrichment - Generic v2
@@ -3101,14 +2716,9 @@ tasks:
       IP:
         complex:
           root: inputs.SrcIP
-      InternalRange:
-        complex:
-          root: inputs.InternalRange
-          transformers:
-          - operator: uniq
+      InternalRange: {}
       ResolveIP:
-        complex:
-          root: inputs.ResolveIP
+        simple: "True"
     separatecontext: true
     loop:
       iscommand: false
@@ -3195,7 +2805,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5615,
+        "height": 5475,
         "width": 1420,
         "x": 60,
         "y": -1060

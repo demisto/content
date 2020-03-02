@@ -1,0 +1,43 @@
+{
+	"id": "incident_globaldirectoryvisibility",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"modified": "2020-01-05T15:49:35.636717915Z",
+	"name": "Global Directory Visibility",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "Is the user visible in G-Suite Global Directory. Can either be \"Visible\" or \"Hidden\".",
+	"cliName": "globaldirectoryvisibility",
+	"type": "singleSelect",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"script": "",
+	"fieldCalcScript": "",
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"selectValues": [
+		"Visible",
+		"Hidden"
+	],
+	"validationRegex": "",
+	"useAsKpi": true,
+	"locked": false,
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Employee Offboarding"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+	"breachScript": ""
+}

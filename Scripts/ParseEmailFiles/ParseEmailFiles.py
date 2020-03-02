@@ -3293,6 +3293,7 @@ def save_attachments(attachments, root_email_file_name, max_depth):
     for attachment in attachments:
         if attachment.data is not None:
             display_name = attachment.DisplayName if attachment.DisplayName else attachment.AttachFilename
+            display_name = display_name if display_name else ''
             demisto.results(fileResult(display_name, attachment.data))
             name_lower = display_name.lower()
             if max_depth > 0 and (name_lower.endswith(".eml") or name_lower.endswith('.p7m')):
@@ -3611,6 +3612,15 @@ def create_email_output(email_data, attached_emails):
     return res
 
 
+def is_email_data_populated(email_data):
+    # checks if email data has any item populated to it
+    if email_data:
+        for key, val in email_data.iteritems():
+            if val:
+                return True
+    return False
+
+
 def main():
     file_type = ''
     entry_id = demisto.args()['entryid']
@@ -3639,7 +3649,7 @@ def main():
         if is_error(result):
             return_error(get_error(result))
 
-        file_type = result[0]['FileMetadata']['info']
+        file_type = result[0]['FileMetadata'].get('info', '')
 
     except Exception as ex:
         return_error(
@@ -3664,20 +3674,33 @@ def main():
                 with open(file_path, 'rb') as f:
                     file_contents = f.read()
 
-                if 'Content-Type:'.lower() in file_contents.lower():
+                if file_contents and 'Content-Type:'.lower() in file_contents.lower():
                     email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
                                                              parse_only_headers=parse_only_headers, max_depth=max_depth)
                     output = create_email_output(email_data, attached_emails)
                 else:
                     # Try a base64 decode
                     b64decode(file_contents)
-                    if 'Content-Type:'.lower() in file_contents.lower():
+                    if file_contents and 'Content-Type:'.lower() in file_contents.lower():
                         email_data, attached_emails = handle_eml(file_path, b64=True, file_name=file_name,
                                                                  parse_only_headers=parse_only_headers,
                                                                  max_depth=max_depth)
                         output = create_email_output(email_data, attached_emails)
                     else:
-                        return_error("Could not extract email from file. Base64 decode did not include rfc 822 strings")
+                        try:
+                            # Try to open
+                            email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
+                                                                     parse_only_headers=parse_only_headers,
+                                                                     max_depth=max_depth)
+                            is_data_populated = is_email_data_populated(email_data)
+                            if not is_data_populated:
+                                raise DemistoException("No email_data found")
+                            output = create_email_output(email_data, attached_emails)
+                        except Exception as e:
+                            demisto.debug("ParseEmailFiles failed with {}".format(str(e)))
+                            return_error("Could not extract email from file. Possible reasons for this error are:\n"
+                                         "- Base64 decode did not include rfc 822 strings.\n"
+                                         "- Email contained no Content-Type and no data.")
 
             except Exception as e:
                 return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"

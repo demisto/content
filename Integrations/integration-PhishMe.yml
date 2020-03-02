@@ -645,5 +645,6 @@ script:
     description: Check the reputation of an email address.
   runonce: false
 hidden: false
+deprecated: true
 tests:
   - No test - Replaced by Cofense Integration

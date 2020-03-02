@@ -43,7 +43,7 @@ tasks:
       - "2"
     scriptarguments:
       domain:
-        simple: facebook.com
+        simple: facebook
     separatecontext: false
     view: |-
       {

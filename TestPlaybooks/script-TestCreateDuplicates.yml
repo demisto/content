@@ -1,6 +1,6 @@
 commonfields:
-  id: a18ff76e-c462-4daa-8be2-6a1b5308713f
-  version: 13
+  id: TestCreateDuplicates
+  version: -1
 name: TestCreateDuplicates
 script: |-
   from datetime import timedelta, datetime

@@ -2,7 +2,10 @@ id: PhishingDemo-Onboarding
 version: -1
 name: PhishingDemo-Onboarding
 fromversion: 4.1.0
-description: "This playbook is part of the on-boarding experience, and focuses on phishing scenarios. To use this playbook, you'll need to enable the `on-boarding` integration and configure incidents of type `Phishing`. For more information, refer to the on-boarding walkthroughs in the help section."
+description: This playbook is part of the on-boarding experience, and focuses on phishing
+  scenarios. To use this playbook, you'll need to enable the `on-boarding` integration
+  and configure incidents of type `Phishing`. For more information, refer to the on-boarding
+  walkthroughs in the help section.
 starttaskid: "0"
 tasks:
   "0":
@@ -59,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 195
         }
       }
@@ -90,7 +93,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 370
         }
       }
@@ -201,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -226,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1770
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -262,8 +265,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 480,
+          "y": 1420
         }
       }
     note: false
@@ -293,7 +296,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 545
         }
       }
@@ -324,7 +327,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 720
         }
       }
@@ -355,7 +358,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 895
         }
       }
@@ -363,75 +366,13 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: f4ab78fe-aa1a-48d0-8c6c-6754f3b73cf7
+    taskid: 26314fdf-bc84-4f5b-8629-b61387be5130
     type: regular
     task:
-      id: f4ab78fe-aa1a-48d0-8c6c-6754f3b73cf7
+      id: 26314fdf-bc84-4f5b-8629-b61387be5130
       version: -1
-      name: demo-file (MD5 hashes) (Get Reputation)
+      name: demo-file (Get Reputation)
       description: Gets the simulated reputation of the MD5 hash.
-      script: OnboardingIntegration|||demo-file
-      type: regular
-      iscommand: true
-      brand: OnboardingIntegration
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      file:
-        complex:
-          root: ExtractedIndicators
-          accessor: File_MD5
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-  "12":
-    id: "12"
-    taskid: 1cd3da3e-fa82-4741-8783-6b2557e60f41
-    type: regular
-    task:
-      id: 1cd3da3e-fa82-4741-8783-6b2557e60f41
-      version: -1
-      name: demo-file (SHA-1 hashes) (Get Reputation)
-      description: Gets the simulated reputation of the SHA-1 hash.
-      script: OnboardingIntegration|||demo-file
-      type: regular
-      iscommand: true
-      brand: OnboardingIntegration
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      file:
-        complex:
-          root: ExtractedIndicators
-          accessor: File_SHA-1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-  "13":
-    id: "13"
-    taskid: b08f45a8-b9d9-435b-82d0-abfdc1688950
-    type: regular
-    task:
-      id: b08f45a8-b9d9-435b-82d0-abfdc1688950
-      version: -1
-      name: demo-file (SHA-256 hashes) (Get Reputation)
-      description: Gets the simulated reputation of the SHA-256 hash.
       script: OnboardingIntegration|||demo-file
       type: regular
       iscommand: true
@@ -443,13 +384,13 @@ tasks:
       file:
         complex:
           root: ExtractedIndicators
-          accessor: File_SHA-256
+          accessor: File
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -471,17 +412,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 1610,
         "width": 810,
         "x": 50,
         "y": 50
