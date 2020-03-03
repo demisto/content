@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 
+## [20.1.2] - 2020-01-22
+Added machine-learning prediction section.
+
+## [19.10.2] - 2019-10-29
+Tweaked multiple layout widgets including their size and location.
+
 ## [19.10.1] - 2019-10-15
 - Reorganized some elements of the layout.
 - Added a field that displays the result for email authenticity check.

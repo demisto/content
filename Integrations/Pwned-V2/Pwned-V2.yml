@@ -40,8 +40,8 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The email address to check.
-      isArray: false
+      description: The email address to check (CSV supported).
+      isArray: true
       name: email
       required: true
       secret: false
@@ -81,8 +81,8 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The domain to check.
-      isArray: false
+      description: The domain to check (CSV supported).
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -121,8 +121,8 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The email address to check.
-      isArray: false
+      description: The email address to check (CSV supported).
+      isArray: true
       name: email
       required: true
       secret: false
@@ -155,15 +155,15 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: Vendor used to calculate the score
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
   - arguments:
     - default: true
-      description: The domain to check.
-      isArray: false
+      description: The domain to check (CSV supported).
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -195,13 +195,15 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: Vendor used to calculate the score
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python

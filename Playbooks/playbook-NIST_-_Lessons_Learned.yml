@@ -1,0 +1,383 @@
+id: NIST - Lessons Learned2
+version: -1
+name: NIST - Lessons Learned
+fromversion: 5.0.0
+description: |-
+  This playbook assists in processing an incident after it occurs and facilitates the lessons learned stage.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5c5af7c5-e4b3-45a5-8fe0-0c1185cff8dc
+    type: start
+    task:
+      id: 5c5af7c5-e4b3-45a5-8fe0-0c1185cff8dc
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: eaf8299b-9d89-4d11-8abc-0d3d4ef7fcf8
+    type: collection
+    task:
+      id: eaf8299b-9d89-4d11-8abc-0d3d4ef7fcf8
+      version: -1
+      name: Lessons Learned - Data Collection
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.Email
+      subject:
+        simple: Please answer the attached survey questions as a part of your post
+          incident activity.
+      body: {}
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Exactly what happened, and at what times?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: How well did staff and management perform in dealing with the incident?
+            Were the documented procedures followed? Were they adequate?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: What information was needed sooner?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Were any steps or actions taken that might have inhibited the recovery?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: What would the staff and management do differently the next time
+            a similar incident occurs?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: How could information sharing with other organizations have been
+            improved?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          simple: What corrective actions can prevent similar incidents in the future?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          simple: What precursors or indicators should be watched for in the future
+            to detect similar incidents?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "8"
+        label: ""
+        labelarg:
+          simple: What additional tools or resources are needed to detect, analyze,
+            and mitigate future incidents?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: NIST - Lessons Learned
+      description: "One of the most important parts of incident response is also the
+        most often omitted: learning and improving. Each incident response team should
+        evolve to reflect new threats, improved technology, and lessons learned. \nThis
+        provides a chance to achieve closure with respect to an incident by reviewing
+        what occurred, what was done to intervene, and how well intervention worked.
+        \nQuestions to be answered include:"
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "2":
+    id: "2"
+    taskid: 352639b0-c2b1-4621-8ec4-274325fbea8a
+    type: title
+    task:
+      id: 352639b0-c2b1-4621-8ec4-274325fbea8a
+      version: -1
+      name: 3.4.1 - Lessons Learned
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: ed01162f-793d-4a26-8119-85e330858f25
+    type: title
+    task:
+      id: ed01162f-793d-4a26-8119-85e330858f25
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 45e84869-8920-4130-80da-983a6d782064
+    type: condition
+    task:
+      id: 45e84869-8920-4130-80da-983a6d782064
+      version: -1
+      name: Send data collection task?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.DataCollection
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 74d8b5c2-dd37-438b-824c-cf1f3f4082a0
+    type: regular
+    task:
+      id: 74d8b5c2-dd37-438b-824c-cf1f3f4082a0
+      version: -1
+      name: Hold a “lessons learned” meeting with all involved parties
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: DataCollection
+  value:
+    simple: "True"
+  required: false
+  description: Use a data collection task to answer lessons learned questions based
+    on NIST. Specify 'True' to automatically send the communication task, and 'False'  to
+    prevent it.
+- key: Email
+  value: {}
+  required: false
+  description: Email address to which to send the questions.
+outputs:
+- contextPath: NIST - Lessons Learned.Answers.0
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.1
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.2
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.3
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.4
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.5
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.6
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.7
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.8
+  type: shortText
+  description: Answer to communication task.
+- contextPath: NIST - Lessons Learned.Answers.name
+  description: Provided username or email address
+tests:
+  - No test

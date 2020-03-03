@@ -27,13 +27,13 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: Use system proxy
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -1337,6 +1337,9 @@ script:
     - contextPath: Uptycs.ProcessEvents.cwd
       description: process current working directory
       type: string
+    - contextPath: Uptycs.ProcessEvents.ancestor_list
+      description: list of ancestor processes (parent, grandparent, etc.)
+      type: string
   - arguments:
     - default: false
       description: Only return assets with this asset id.  Do not use arguments "asset_id"
@@ -1391,6 +1394,9 @@ script:
       type: string
     - contextPath: Uptycs.ProcEvent.cwd
       description: process current working directory
+      type: string
+    - contextPath: Uptycs.ProcEvent.ancestor_list
+      description: list of ancestor processes (parent, grandparent, etc.)
       type: string
   - arguments:
     - default: false
@@ -1527,6 +1533,12 @@ script:
       isArray: false
       name: parent
       required: true
+      secret: false
+    - default: false
+      description: List of ancestor processes for specified child process
+      isArray: false
+      name: child_ancestor_list
+      required: false
       secret: false
     deprecated: false
     description: find information for parent process events which are running or have
@@ -1779,3 +1791,4 @@ script:
   runonce: true
   script: '-'
   type: python
+  subtype: python3

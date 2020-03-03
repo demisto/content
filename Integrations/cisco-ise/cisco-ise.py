@@ -9,7 +9,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
-BASE_URL = re.sub("/[\/]+$/", "", demisto.params().get('serverURL'))
+BASE_URL = re.sub(r"/+$", "", demisto.params().get('serverURL'))
 SERVER_PORT = demisto.params().get('serverPort')
 SERVER_URL = BASE_URL + ':' + SERVER_PORT
 

@@ -44,9 +44,12 @@ class WordParser:
         # Requires office-utils docker image
         output_file_name = self.file_name[0:self.file_name.rfind('.')] + '.docx'
         self.file_path = self.file_path + ".docx"
-        with open(self.file_path, 'rb') as f:
-            f_data = f.read()
-            self.res = fileResult(output_file_name, f_data)
+        try:
+            with open(self.file_path, 'rb') as f:
+                f_data = f.read()
+                self.res = fileResult(output_file_name, f_data)
+        except IOError:
+            return_error("Error: was not able to convert the input file to docx format.")
 
     def extract_indicators(self):
         try:
@@ -55,12 +58,12 @@ class WordParser:
             self.all_data += self.get_tables(document)
             self.all_data += self.get_core_properties(document)
             self.all_data += self.get_hyperlinks(document)
-        except PackageNotFoundError as e:
+        except PackageNotFoundError:
             self.errEntry["Contents"] = "Input file is not a valid docx/doc file."
-            self.res = self.errEntry
+            self.res = self.errEntry  # type: ignore
         except BaseException as e:
             self.errEntry["Contents"] = "Error occurred while parsing input file.\nException info: " + str(e)
-            self.res = self.errEntry
+            self.res = self.errEntry  # type: ignore
 
     def get_paragraphs(self, document):
         return '\n'.join([para.text for para in document.paragraphs])

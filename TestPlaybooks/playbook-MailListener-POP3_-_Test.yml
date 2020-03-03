@@ -47,7 +47,7 @@ tasks:
     scriptarguments:
       add_to_context: {}
       brand_name:
-        simple: MailListener - POP3
+        simple: MailListener - POP3 Beta
       error_msg_in_incident:
         simple: error_msg_in_incident
       expect_data: {}

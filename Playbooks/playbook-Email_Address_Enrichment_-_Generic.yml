@@ -617,4 +617,4 @@ outputs:
   description: The DBot score
   type: number
 tests:
-  - email_test
+  - No test - deprecated. use V2.1 instead.

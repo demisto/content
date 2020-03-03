@@ -1,13 +1,19 @@
+from __future__ import print_function
 import os
 import signal
 import string
 import time
 import unicodedata
+import urllib3
+import demisto_client.demisto_api
 from subprocess import call, Popen, PIPE, check_call, check_output
 
 VALID_FILENAME_CHARS = '-_.() %s%s' % (string.ascii_letters, string.digits)
 PROXY_PROCESS_INIT_TIMEOUT = 20
 PROXY_PROCESS_INIT_INTERVAL = 1
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
 def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' ()'):
@@ -151,7 +157,7 @@ class MITMProxy:
     """Manager for MITM Proxy and the mock file structure.
 
     Attributes:
-        demisto_client (demisto.DemistoClient): Wrapper for demisto API.
+        demisto_api_key: API key for demisto API.
         public_ip (string): The IP of the AMI instance.
         repo_folder (string): path to the local clone of the content-test-data git repo.
         tmp_folder (string): path to a temporary folder for log/mock files before pushing to git.
@@ -167,9 +173,8 @@ class MITMProxy:
     MOCKS_TMP_PATH = '/tmp/Mocks/'
     MOCKS_GIT_PATH = 'content-test-data/'
 
-    def __init__(self, demisto_client, public_ip,
+    def __init__(self, public_ip,
                  repo_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
-        self.demisto_client = demisto_client
         self.public_ip = public_ip
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
@@ -183,7 +188,9 @@ class MITMProxy:
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    def configure_proxy_in_demisto(self, proxy=''):
+    def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
+        client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
+                                          verify_ssl=False)
         http_proxy = https_proxy = proxy
         if proxy:
             http_proxy = 'http://' + proxy
@@ -196,7 +203,10 @@ class MITMProxy:
                 },
             'version': -1
         }
-        return self.demisto_client.req('POST', '/system/config', data)
+        response = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                       method='POST', body=data)
+        # client.api_client.pool.close()
+        return response
 
     def get_mock_file_size(self, filepath):
         return self.ami.check_output(['stat', '-c', '%s', filepath]).strip()
@@ -217,33 +227,37 @@ class MITMProxy:
         """Set the temp folder as the current folder (the one used to store mock and log files)."""
         self.current_folder = self.tmp_folder
 
-    def move_mock_file_to_repo(self, playbook_id):
+    def move_mock_file_to_repo(self, playbook_id, thread_index=0, prints_manager=None):
         """Move the mock and log files of a (successful) test playbook run from the temp folder to the repo folder
 
         Args:
             playbook_id (string): ID of the test playbook of which the files should be moved.
+            thread_index (int): Index of the relevant thread, to make printing readable.
+            prints_manager (ParallelPrintsManager): Prints manager to synchronize parallel prints.
         """
         src_filepath = os.path.join(self.tmp_folder, get_mock_file_path(playbook_id))
         src_files = os.path.join(self.tmp_folder, get_folder_path(playbook_id) + '*')
         dst_folder = os.path.join(self.repo_folder, get_folder_path(playbook_id))
 
         if not self.has_mock_file(playbook_id):
-            print 'Mock file not created!'
+            prints_manager.add_print_job('Mock file not created!', print, thread_index)
         elif self.get_mock_file_size(src_filepath) == '0':
-            print 'Mock file is empty, ignoring.'
+            prints_manager.add_print_job('Mock file is empty, ignoring.', print, thread_index)
             self.empty_files.append(playbook_id)
         else:
             # Move to repo folder
             self.ami.call(['mkdir', '--parents', dst_folder])
             self.ami.call(['mv', src_files, dst_folder])
 
-    def start(self, playbook_id, path=None, record=False):
+    def start(self, playbook_id, path=None, record=False, thread_index=0, prints_manager=None):
         """Start the proxy process and direct traffic through it.
 
         Args:
             playbook_id (string): ID of the test playbook to run.
             path (string): path override for the mock/log files.
             record (bool): Select proxy mode (record/playback)
+            thread_index (int): Index of the relevant thread, to make printing readable.
+            prints_manager (ParallelPrintsManager): Prints manager to synchronize parallel prints.
         """
         if self.process:
             raise Exception("Cannot start proxy - already running.")
@@ -280,7 +294,8 @@ class MITMProxy:
         if not log_file_exists:
             self.stop()
             raise Exception("Proxy process took to long to go up.")
-        print('Proxy process up and running. Took {} seconds'.format(seconds_since_init))
+        proxy_up_message = 'Proxy process up and running. Took {} seconds'.format(seconds_since_init)
+        prints_manager.add_print_job(proxy_up_message, print, thread_index)
 
     def stop(self):
         if not self.process:
@@ -291,8 +306,8 @@ class MITMProxy:
 
         # Handle logs
         if self.debug:
-            print "proxy outputs:"
-            print self.process.stdout.read()
-            print self.process.stderr.read()
+            print("proxy outputs:")
+            print(self.process.stdout.read())
+            print(self.process.stderr.read())
 
         self.process = None

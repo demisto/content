@@ -3,6 +3,11 @@ commonfields:
   version: -1
 name: SimpleRequestExecutor
 script: |-
+  from urllib3 import disable_warnings
+
+  # disable insecure warnings
+  disable_warnings()
+
   res = []
 
   cmd_args = {'debug-mode': 'True'}

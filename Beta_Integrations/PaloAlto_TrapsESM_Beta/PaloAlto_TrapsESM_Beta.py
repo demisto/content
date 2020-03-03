@@ -7,8 +7,8 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from base64 import b64decode, b64encode
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_v1_5
+from Crypto.PublicKey import RSA  # nosec
+from Crypto.Cipher import PKCS1_v1_5  # nosec
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()

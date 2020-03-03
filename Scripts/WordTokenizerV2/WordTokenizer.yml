@@ -154,7 +154,7 @@ system: false
 tags:
 - phishing
 - ml
-timeout: '0'
+timeout: 60µs
 type: python
 dockerimage: demisto/dl:1.2
 runas: DBotWeakRole

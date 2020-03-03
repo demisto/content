@@ -1,0 +1,71 @@
+category: Case Management
+commonfields:
+  id: CaseManagement
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+display: CaseManagement
+name: CaseManagement
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The ID of the ticket to return.
+      isArray: false
+      name: ticket_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a ticket from the integration.
+    execution: false
+    name: case-management-get-ticket
+    outputs:
+    - contextPath: CaseManagement.Ticket.ID
+      description: The ID of the ticket.
+      type: String
+    - contextPath: CaseManagement.Ticket.Title
+      description: The title of the ticket.
+      type: String
+    - contextPath: CaseManagement.Ticket.CreatedAt
+      description: The time that the ticket was created.
+      type: Date
+    - contextPath: CaseManagement.Ticket.Description
+      description: The description of the ticket.
+      type: String
+  - deprecated: false
+    description: Lists all tickets.
+    execution: false
+    name: case-management-list-tickets
+  - deprecated: false
+    description: Creates a new ticket.
+    execution: false
+    name: case-management-create-ticket
+  - deprecated: false
+    description: Closes a ticket.
+    execution: false
+    name: case-management-close-ticket
+  - deprecated: false
+    description: Assigns a ticket to the specified user.
+    execution: false
+    name: case-management-assign-ticket
+  dockerimage: demisto/python3:3.7.5.3066
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

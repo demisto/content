@@ -70,7 +70,7 @@ script: |-
   });
 
   if (sent.length > 0) {
-      entries.push('Successfuly sent ' + medium + ' message to ' + sent.join(','));
+      entries.push('Successfully sent ' + medium + ' message to ' + sent.join(','));
   }
 
   return entries;

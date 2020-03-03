@@ -1,0 +1,1530 @@
+category: Endpoint
+commonfields:
+  id: Tanium v2
+  version: -1
+configuration:
+- display: Hostname, IP address, or server URL.
+  name: url
+  required: true
+  type: 0
+- display: Domain
+  name: domain
+  required: false
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Tanium endpoint security and systems management
+display: Tanium v2
+name: Tanium v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of the package. 
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The package ID. Package ID or package name
+        is required. When both exist, ID is used.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a package object based on name or ID. 
+    execution: false
+    name: tn-get-package
+    outputs:
+    - contextPath: TaniumPackage.Command
+      description: The command to run.
+      type: String
+    - contextPath: TaniumPackage.CommandTimeout
+      description: Timeout in seconds for the command execution.
+      type: Number
+    - contextPath: TaniumPackage.ContentSet.Id
+      description: The ID of the content set to associate with the package.
+      type: Number
+    - contextPath: TaniumPackage.ContentSet.Name
+      description: The name of the content set to associate with the package.
+      type: String
+    - contextPath: TaniumPackage.CreationTime
+      description: The time and date when this object was created in the database.
+      type: String
+    - contextPath: TaniumPackage.DisplayName
+      description: The name of the package that displays in the user interface.
+      type: String
+    - contextPath: TaniumPackage.ExpireSeconds
+      description: Timeout in seconds for the action.
+      type: Number
+    - contextPath: TaniumPackage.Files.Hash
+      description: The SHA-256 hash of the contents of the file.
+      type: String
+    - contextPath: TaniumPackage.Files.Id
+      description: The unique ID of the package_file object.
+      type: Number
+    - contextPath: TaniumPackage.Files.Name
+      description: The unique name of the package_file object.
+      type: String
+    - contextPath: TaniumPackage.ID
+      description: The unique ID of the package_spec object.
+      type: Number
+    - contextPath: TaniumPackage.LastModifiedBy
+      description: The user who most recently modified this object.
+      type: String
+    - contextPath: TaniumPackage.LastUpdate
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: TaniumPackage.ModUser.Domain
+      description: The domain of the user who most recently modified this object
+      type: String
+    - contextPath: TaniumPackage.ModUser.Id
+      description: The ID of the user who most recently modified this object
+      type: Number
+    - contextPath: TaniumPackage.ModUser.Name
+      description: The name of the user who most recently modified this object
+      type: String
+    - contextPath: TaniumPackage.ModificationTime
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: TaniumPackage.Name
+      description: The unique name of the package_spec object.
+      type: String
+    - contextPath: TaniumPackage.Parameters.Values
+      description: The parameter values.
+      type: String
+    - contextPath: TaniumPackage.Parameters.Label
+      description: Parameter description.
+      type: String
+    - contextPath: TaniumPackage.Parameters.Key
+      description: The attribute name of the parameter.
+      type: String
+    - contextPath: TaniumPackage.Parameters.ParameterType
+      description: The type of parameter.
+      type: String
+    - contextPath: TaniumPackage.SourceId
+      description: The ID of the package into which the parameters are substituted.
+      type: Number
+    - contextPath: TaniumPackage.VerifyExpireSeconds
+      description: A verification failure timeout. The time begins with the start
+        of the action. If the action cannot be verified by the timeout, the action
+        status is reported as failed.
+      type: Number
+  - arguments:
+    - default: false
+      description: The question text.
+      isArray: false
+      name: question-text
+      required: true
+      secret: false
+    - default: false
+      description: The question parameters. For example, sensor1{key1=val1,key2=val2},sensor2{key1=val1}.
+      isArray: false
+      name: parameters
+      required: false
+      secret: false
+    deprecated: false
+    description: Asks the server to parse the question text and choose the first parsed
+      result as the question to run.
+    execution: false
+    name: tn-ask-question
+    outputs:
+    - contextPath: Tanium.Question.ID
+      description: The unique ID of the question object.
+      type: Number
+  - arguments:
+    - default: false
+      description: The question ID.
+      isArray: false
+      name: question-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the question result based on question ID.
+    execution: false
+    name: tn-get-question-result
+    outputs:
+    - contextPath: Tanium.QuestionResult.QuestionID
+      description: The unique ID of the question object.
+      type: Number
+    - contextPath: Tanium.QuestionResult.Results
+      description: The question results.
+      type: Unknown
+    - contextPath: Tanium.QuestionResult.Status
+      description: 'The status of the question request. Can be: "Completed" or "Pending".'
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: The maximum number of sensors to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of all sensors.
+    execution: false
+    name: tn-list-sensors
+    outputs:
+    - contextPath: TaniumSensor.Category
+      description: The category that includes this sensor.
+      type: String
+    - contextPath: TaniumSensor.ContentSetId
+      description: The ID of the content set to associate with the sensor.
+      type: Number
+    - contextPath: TaniumSensor.ContentSetName
+      description: The name of the content set to associate with the sensor.
+      type: String
+    - contextPath: TaniumSensor.CreationTime
+      description: The time and date when this object was created in the database.
+      type: String
+    - contextPath: TaniumSensor.Description
+      description: A description for the sensor.
+      type: String
+    - contextPath: TaniumSensor.Hash
+      description: The hash ID of the sensor.
+      type: String
+    - contextPath: TaniumSensor.ID
+      description: The unique ID of the sensor object.
+      type: Number
+    - contextPath: TaniumSensor.IgnoreCaseFlag
+      description: Whether to ignore the case flag of the sensor. Default is 1, which means the case flag is ignored.
+      type: Boolean
+    - contextPath: TaniumSensor.KeepDuplicatesFlag
+      description: Whether to keep duplicate values in the sensor results. Default is 1 which keeps duplicate values
+        instead of returning each unique value once.
+      type: Boolean
+    - contextPath: TaniumSensor.LastModifiedBy
+      description: The name of the user who last modified this object.
+      type: String
+    - contextPath: TaniumSensor.MaxAgeSeconds
+      description: The maximum age in seconds a sensor result is invalid. When results
+        are half this value, the sensor is re-evaluated.
+      type: Number
+    - contextPath: TaniumSensor.ModUserDomain
+      description: The domain of the user who most recently modified this object.
+      type: String
+    - contextPath: TaniumSensor.ModUserId
+      description: The ID of the user who most recently modified this object.
+      type: Number
+    - contextPath: TaniumSensor.ModUserName
+      description: The name of user who most recently modified this object.
+      type: String
+    - contextPath: TaniumSensor.ModificationTime
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: TaniumSensor.Name
+      description: The name of the sensor.
+      type: String
+    - contextPath: TaniumSensor.SourceId
+      description: The ID of the sensor into which the parameters are substituted.
+        If specified, source_hash may be omitted.
+      type: Number
+  - arguments:
+    - default: false
+      description: The sensor ID.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The name of the sensor.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns detailed information about a sensor object based on name or ID.   
+    execution: false
+    name: tn-get-sensor
+    outputs:
+    - contextPath: TaniumSensor.Category
+      description: The category that includes this sensor.
+      type: String
+    - contextPath: TaniumSensor.ContentSetId
+      description: The ID of the content_set to associate with the sensor.
+      type: Number
+    - contextPath: TaniumSensor.ContentSetName
+      description: The name of the content_set to associate with the sensor.
+      type: String
+    - contextPath: TaniumSensor.CreationTime
+      description: The date and time when this object was created in the database.
+      type: String
+    - contextPath: TaniumSensor.Description
+      description: A description for the sensor.
+      type: String
+    - contextPath: TaniumSensor.Hash
+      description: The hash id of the sensor
+      type: String
+    - contextPath: TaniumSensor.ID
+      description: The unique ID of the sensor object.
+      type: Number
+    - contextPath: TaniumSensor.IgnoreCaseFlag
+      description: Ignore the case flag. Default is 1, which means the case flag is ignored.
+      type: Boolean
+    - contextPath: TaniumSensor.KeepDuplicatesFlag
+      description: Keep duplicates flag in the sensor results. Default is 1, which preserves duplicate values in sensor results
+        instead of only returning each unique value once.
+      type: Boolean
+    - contextPath: TaniumSensor.LastModifiedBy
+      description: The name of the user who last modified this object.
+      type: String
+    - contextPath: TaniumSensor.MaxAgeSeconds
+      description: The maximum age in seconds of a sensor result before it is invalid. When results
+        are half this value, the sensor is re-evaluated.
+      type: Number
+    - contextPath: TaniumSensor.ModUserDomain
+      description: The domain of the user who most recently modified this object.
+      type: String
+    - contextPath: TaniumSensor.ModUserId
+      description: The ID of the user who most recently modified this object.
+      type: Number
+    - contextPath: TaniumSensor.ModUserName
+      description: The name of the user who most recently modified this object.
+      type: String
+    - contextPath: TaniumSensor.ModificationTime
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: TaniumSensor.Name
+      description: The name of the sensor.
+      type: String
+    - contextPath: TaniumSensor.Parameters.Key
+      description: The attribute name of the parameter.
+      type: String
+    - contextPath: TaniumSensor.Parameters.Label
+      description: The description of the parameter.
+      type: String
+    - contextPath: TaniumSensor.Parameters.Values
+      description: The values of the parameter.
+      type: String
+    - contextPath: TaniumSensor.Parameters.ParameterType
+      description: The type of parameter.
+      type: String
+    - contextPath: TaniumSensor.SourceId
+      description: The ID of the sensor into which the parameters are substituted.
+        If specified, source_hash may be omitted.
+      type: Number
+  - arguments:
+    - default: false
+      description: The question ID.
+      isArray: false
+      name: question-id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the saved question to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a saved question object.
+    execution: false
+    name: tn-create-saved-question
+    outputs:
+    - contextPath: Tanium.SavedQuestion.ID
+      description: The ID of the saved question.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.Name
+      description: The name of the saved question.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: The maximum number of saved questions to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all saved questions.
+    execution: false
+    name: tn-list-saved-questions
+    outputs:
+    - contextPath: Tanium.SavedQuestion.ArchiveEnabledFlag
+      description: Whether archiving is enabled for the saved question.
+      type: Boolean
+    - contextPath: Tanium.SavedQuestion.ArchiveOwner
+      description: The name of the user that owns the archive. Archives can be shared between
+        users with identical management rights groups.
+      type: String
+    - contextPath: Tanium.SavedQuestion.ExpireSeconds
+      description: The duration in seconds before each question expires.
+        Default value is 600.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.ID
+      description: The unique ID of the question object.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.IssueSeconds
+      description: The time in seconds to reissue the question when active. Default
+        value is 120.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.IssueSecondsNeverFlag
+      description: Whether the question is not reissued automatically. Default is 1 (not reissued).
+      type: Boolean
+    - contextPath: Tanium.SavedQuestion.KeepSeconds
+      description: The number of seconds to save the data results in the archive.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.ModTime
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: Tanium.SavedQuestion.ModUserDomain
+      description: The domain of the user who most recently modified this object.
+      type: String
+    - contextPath: Tanium.SavedQuestion.ModUserId
+      description: The ID of the user who most recently modified this object.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.ModUserName
+      description: The name of user who most recently modified this object.
+      type: String
+    - contextPath: Tanium.SavedQuestion.MostRecentQuestionId
+      description: The ID of the most recently issued question object generated by
+        the saved question.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.Name
+      description: The name of the saved question object.
+      type: String
+    - contextPath: Tanium.SavedQuestion.QueryText
+      description: The textual representation of the question.
+      type: String
+    - contextPath: Tanium.SavedQuestion.QuestionId
+      description: The ID of the question from which to create the saved question.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.RowCountFlag
+      description: If the value is true, only the row count data is saved when archiving
+        this question.
+      type: Boolean
+    - contextPath: Tanium.SavedQuestion.SortColumn
+      description: The default sort column, if no sort order is
+        specified.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.UserId
+      description: The ID of the user who owns this object.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.UserName
+      description: The name of the user who owns this object.
+      type: String
+  - arguments:
+    - default: false
+      description: The saved question ID.
+      isArray: false
+      name: question-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the saved question result based on the saved question ID.
+    execution: false
+    name: tn-get-saved-question-result
+    outputs:
+    - contextPath: Tanium.SavedQuestionResult.SavedQuestionID
+      description: The ID of the saved question.
+      type: Number
+    - contextPath: Tanium.SavedQuestionResult.Results
+      description: The saved question results.
+      type: Unknown
+    - contextPath: Tanium.SavedQuestionResult.Status
+      description: 'Status of the question request. Can be: "Completed" or "Pending".'
+      type: String
+  - deprecated: false
+    description: Returns all client details.
+    execution: false
+    name: tn-get-system-status
+    outputs:
+    - contextPath: Tanium.Client.ComputerId
+      description: The computer ID of the client.
+      type: Number
+    - contextPath: Tanium.Client.FullVersion
+      description: The Tanium Client version.
+      type: String
+    - contextPath: Tanium.Client.HostName
+      description: The computer hostname.
+      type: String
+    - contextPath: Tanium.Client.IpAddressClient
+      description: The IP address of the client returned from a sensor on the client.
+      type: String
+    - contextPath: Tanium.Client.IpAddressServer
+      description: The IP address of the client that was recorded on the server during
+        the last registration.
+      type: String
+    - contextPath: Tanium.Client.LastRegistration
+      description: The most recent time that the client registered with the server.
+      type: Date
+    - contextPath: Tanium.Client.Status
+      description: 'The status of the client. Can be: "Blocked", "Leader" "Normal", "Slow link".'
+      type: String
+  - arguments:
+    - default: false
+      description: The command to execute.
+      isArray: false
+      name: command
+      required: true
+      secret: false
+    - default: false
+      description: The name of the package to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a package object.
+    execution: false
+    name: tn-create-package
+    outputs:
+    - contextPath: TaniumPackage.Command
+      description: The command to run.
+      type: String
+    - contextPath: TaniumPackage.CommandTimeout
+      description: Timeout in seconds for the command execution.
+      type: Number
+    - contextPath: TaniumPackage.ContentSet.Id
+      description: The ID of the content set to associate with the package.
+      type: Number
+    - contextPath: TaniumPackage.ContentSet.Name
+      description: The name of the content set to associate with the package.
+      type: String
+    - contextPath: TaniumPackage.CreationTime
+      description: The time and date when this object was created in the database.
+      type: String
+    - contextPath: TaniumPackage.DisplayName
+      description: The name of the package that displays in the user interface.
+      type: String
+    - contextPath: TaniumPackage.ExpireSeconds
+      description: Timeout in seconds for the action expiry.
+      type: Number
+    - contextPath: TaniumPackage.ID
+      description: The unique ID of the package_spec object.
+      type: Number
+    - contextPath: TaniumPackage.LastModifiedBy
+      description: The user who most recently modified this object.
+      type: String
+    - contextPath: TaniumPackage.LastUpdate
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: TaniumPackage.ModUser.Domain
+      description: The domain of the user who most recently modified this object.
+      type: String
+    - contextPath: TaniumPackage.ModUser.Id
+      description: The ID of the user who most recently modified this object
+      type: Number
+    - contextPath: TaniumPackage.ModUser.Name
+      description: The name of the user who most recently modified this object
+      type: String
+    - contextPath: TaniumPackage.ModificationTime
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: TaniumPackage.Name
+      description: The unique name of the package_spec object.
+      type: String
+    - contextPath: TaniumPackage.SourceId
+      description: The ID of the package into which the parameters are substituted.
+      type: Number
+    - contextPath: TaniumPackage.VerifyExpireSeconds
+      description: A verification failure timeout. The time begins with the start
+        of the action. If the action cannot be verified by the timeout, the action
+        status is reported as failed.
+      type: Number
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: The maximum number of packages to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all package information.
+    execution: false
+    name: tn-list-packages
+    outputs:
+    - contextPath: TaniumPackage.Command
+      description: The command to run.
+      type: String
+    - contextPath: TaniumPackage.CommandTimeout
+      description: Timeout in seconds for the command execution.
+      type: Number
+    - contextPath: TaniumPackage.ContentSet.Id
+      description: The ID of the content set to associate with the package.
+      type: Number
+    - contextPath: TaniumPackage.ContentSet.Name
+      description: The name of the content set to associate with the package.
+      type: String
+    - contextPath: TaniumPackage.CreationTime
+      description: The time and date when this object was created in the database.
+      type: String
+    - contextPath: TaniumPackage.DisplayName
+      description: The name of the package that displays in the user interface.
+      type: String
+    - contextPath: TaniumPackage.ExpireSeconds
+      description: Timeout in seconds for the action expiry.
+      type: Number
+    - contextPath: TaniumPackage.ID
+      description: The unique ID of the package_spec object.
+      type: Number
+    - contextPath: TaniumPackage.LastModifiedBy
+      description: The user who most recently modified this object.
+      type: String
+    - contextPath: TaniumPackage.LastUpdate
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: TaniumPackage.ModUser.Domain
+      description: The domain of the user who most recently modified this object.
+      type: String
+    - contextPath: TaniumPackage.ModUser.Id
+      description: The ID of the user who most recently modified this object.
+      type: Number
+    - contextPath: TaniumPackage.ModUser.Name
+      description: The name of the user who most recently modified this object.
+      type: String
+    - contextPath: TaniumPackage.ModificationTime
+      description: The most recent time and date when this object was modified.
+      type: String
+    - contextPath: TaniumPackage.Name
+      description: The unique name of the package_spec object.
+      type: String
+    - contextPath: TaniumPackage.SourceId
+      description: The ID of the package into which the parameters are substituted.
+      type: Number
+    - contextPath: TaniumPackage.VerifyExpireSeconds
+      description: A verification failure timeout. The time begins with the start
+        of the action. If the action cannot be verified by the timeout, the action
+        status is reported as failed.
+      type: Number
+  - arguments:
+    - default: false
+      description: The question ID.
+      isArray: false
+      name: question-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a question object based on question ID.
+    execution: false
+    name: tn-get-question-metadata
+    outputs:
+    - contextPath: Tanium.Question.ID
+      description: The unique ID of the question object.
+      type: Number
+    - contextPath: Tanium.Question.Expiration
+      description: The date the question expires.
+      type: Date
+    - contextPath: Tanium.Question.ExpireSeconds
+      description: The number of seconds before the question expires. Default is 600.
+      type: Number
+    - contextPath: Tanium.Question.ForceComputerIdFlag
+      description: Whether to force the question to be a counting question
+        if only one selection is present. Default is not to force. If the question object is an instance of a
+        saved question, this field is derived from the saved question
+      type: Boolean
+    - contextPath: Tanium.Question.IsExpired
+      description: Whether the question has expired.
+      type: Boolean
+    - contextPath: Tanium.Question.QueryText
+      description: The textual representation of the question.
+      type: String
+    - contextPath: Tanium.Question.SavedQuestionId
+      description: The ID of the saved question derived from this question.
+      type: Number
+    - contextPath: Tanium.Question.UserId
+      description: The ID of the user who created / issued this question.
+      type: Number
+    - contextPath: Tanium.Question.UserName
+      description: The name of the user who created / issued this question.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: The maximin number of saved actions to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all saved actions.
+    execution: false
+    name: tn-list-saved-actions
+    outputs:
+    - contextPath: Tanium.SavedAction.ActionGroupId
+      description: The ID of the group of clients to target.
+      type: Number
+    - contextPath: Tanium.SavedAction.ApprovedFlag
+      description: Whether the saved action is approved. True is approved.
+      type: Boolean
+    - contextPath: Tanium.SavedAction.ApproverId
+      description: The ID of the user to approve the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.ApproverName
+      description: The name of the user to approve the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.CreationTime
+      description: The time and date when this object was created in the database.
+      type: Date
+    - contextPath: Tanium.SavedAction.EndTime
+      description: The time and date to stop issuing actions.
+      type: Date
+    - contextPath: Tanium.SavedAction.ExpireSeconds
+      description: The duration from the start time before the action expires.
+      type: Number
+    - contextPath: Tanium.SavedAction.ID
+      description: The unique ID of the saved action object.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastActionId
+      description: The ID of the action object that was issued last.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastActionStartTime
+      description: The start time and date of the action object that was issued last.
+      type: Date
+    - contextPath: Tanium.SavedAction.LastAaction.TargetGroupId
+      description: The target group of the action object that was issued last.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastStartTime
+      description: The most recent date and time that the action started.
+      type: Date
+    - contextPath: Tanium.SavedAction.Name
+      description: The name of the saved_action object.
+      type: String
+    - contextPath: Tanium.SavedAction.NextStartTime
+      description: The next time and date when the action will start.
+      type: Date
+    - contextPath: Tanium.SavedAction.PackageId
+      description: The ID of the package deployed by the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.PackageName
+      description: The name of the package deployed by the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.PackageSourceHash
+      description: The source hash of the package deployed by the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.StartTime
+      description: The time and date when the action became active. An empty string
+        or null starts immediately.
+      type: Date
+    - contextPath: Tanium.SavedAction.Status
+      description: 'The status of the saved action. Can be: "0" for
+        Enabled, "1" for Disabled, or "2" for Deleted.'
+      type: Number
+    - contextPath: Tanium.SavedAction.TargetGroupId
+      description: The group of machines to target.
+      type: Number
+    - contextPath: Tanium.SavedAction.UserId
+      description: The ID of the user who created the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.UserName
+      description: The ID of the user who created the saved action.
+      type: String
+  - arguments:
+    - default: false
+      description: The saved action ID.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The saved action name.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a saved action object based on name or ID. 
+    execution: false
+    name: tn-get-saved-action
+    outputs:
+    - contextPath: Tanium.SavedAction.ActionGroupId
+      description: The ID of the group of clients to target.
+      type: Number
+    - contextPath: Tanium.SavedAction.ApprovedFlag
+      description: Whether the saved action is approved. True is approved.
+      type: Boolean
+    - contextPath: Tanium.SavedAction.ApproverId
+      description: The ID of the user to approve the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.ApproverName
+      description: The name of the user to approve the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.CreationTime
+      description: The time and date when this object was created in the database.
+      type: Date
+    - contextPath: Tanium.SavedAction.EndTime
+      description: The time and date to stop issuing actions.
+      type: Date
+    - contextPath: Tanium.SavedAction.ExpireSeconds
+      description: The duration from the start time before the action expires.
+      type: Number
+    - contextPath: Tanium.SavedAction.ID
+      description: The unique ID of the saved_action object.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastActionId
+      description: The ID of the action object that was issued last.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastActionStartTime
+      description: The start time and date of the action object that was issued last.
+      type: Date
+    - contextPath: Tanium.SavedAction.LastAaction.TargetGroupId
+      description: The target group of the action object that was issued last.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastStartTime
+      description: The most recent date and time that the action started.
+      type: Date
+    - contextPath: Tanium.SavedAction.Name
+      description: The name of the saved action object.
+      type: String
+    - contextPath: Tanium.SavedAction.NextStartTime
+      description: The next time and date when the action will start.
+      type: Date
+    - contextPath: Tanium.SavedAction.PackageId
+      description: The ID of the package deployed by the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.PackageName
+      description: The name of the package deployed by the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.PackageSourceHash
+      description: The source hash of the package deployed by the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.StartTime
+      description: The time amd date when the action became active. An empty string
+        or null starts immediately.
+      type: Date
+    - contextPath: Tanium.SavedAction.Status
+      description: 'The status of the saved action. Can be: "0" for
+        Enabled, "1" for Disabled, or "2" for Deleted.'
+      type: Number
+    - contextPath: Tanium.SavedAction.TargetGroupId
+      description: The group of machines to target.
+      type: Number
+    - contextPath: Tanium.SavedAction.UserId
+      description: The ID of the user who created the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.UserName
+      description: The ID of the user who created the saved action.
+      type: String
+  - arguments:
+    - default: false
+      description: The saved question ID.
+      isArray: false
+      name: question-id
+      required: false
+      secret: false
+    - default: false
+      description: The saved question name.
+      isArray: false
+      name: question-name
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a saved question object based on name or ID.
+    execution: false
+    name: tn-get-saved-question-metadata
+    outputs:
+    - contextPath: Tanium.SavedQuestion.ArchiveEnabledFlag
+      description: Whether to enable archiving.
+      type: Boolean
+    - contextPath: Tanium.SavedQuestion.ArchiveOwner
+      description: The name of the user that owns the archive. Archives can be shared between
+        users with identical management rights groups.
+      type: String
+    - contextPath: Tanium.SavedQuestion.ExpireSeconds
+      description: The duration in seconds before each question expires.
+        Default value is 600.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.ID
+      description: The unique ID of the saved_question object.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.IssueSeconds
+      description: The number of seconds to reissue the question when active. Default
+        value is 120.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.IssueSecondsNeverFlag
+      description: Whether the question is reissued automatically. If value is 1, the question is not reissued automatically.
+      type: Boolean
+    - contextPath: Tanium.SavedQuestion.KeepSeconds
+      description: The number of seconds to save the data results in the archive.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.ModTime
+      description: The most recent time and date when the object was modified.
+      type: String
+    - contextPath: Tanium.SavedQuestion.ModUserDomain
+      description: The domain of the user who most recently modified this object.
+      type: String
+    - contextPath: Tanium.SavedQuestion.ModUserId
+      description: The ID of the user who most recently modified this object.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.ModUserName
+      description: The name of user who most recently modified this object.
+      type: String
+    - contextPath: Tanium.SavedQuestion.MostRecentQuestionId
+      description: The ID of the most recently issued question object generated by
+        this saved_question.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.Name
+      description: The name of the saved_question object.
+      type: String
+    - contextPath: Tanium.SavedQuestion.QueryText
+      description: The textual representation of the question.
+      type: String
+    - contextPath: Tanium.SavedQuestion.QuestionId
+      description: The ID of the question from which to create the saved question.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.RowCountFlag
+      description: Whether the row count data is saved when archiving
+        this question.
+      type: Boolean
+    - contextPath: Tanium.SavedQuestion.SortColumn
+      description: The column to use as the default sort column, if no sort order is
+        specified.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.UserId
+      description: The ID of the user who owns this object.
+      type: Number
+    - contextPath: Tanium.SavedQuestion.UserName
+      description: The name of the user who owns this object.
+      type: String
+  - arguments:
+    - default: false
+      description: The action group ID.
+      isArray: false
+      name: action-group-id
+      required: true
+      secret: false
+    - default: false
+      description: The package ID.
+      isArray: false
+      name: package-id
+      required: true
+      secret: false
+    - default: false
+      description: The name of the action.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a saved action object.
+    execution: false
+    name: tn-create-saved-action
+    outputs:
+    - contextPath: Tanium.SavedAction.ActionGroupId
+      description: The ID of the group of clients to target.
+      type: Number
+    - contextPath: Tanium.SavedAction.ApprovedFlag
+      description: Whether the saved action is approved. True is approved.
+      type: Boolean
+    - contextPath: Tanium.SavedAction.ApproverId
+      description: The ID of the user to approve the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.ApproverName
+      description: The name of the user to approve the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.CreationTime
+      description: The date and time when this object was created in the database.
+      type: Date
+    - contextPath: Tanium.SavedAction.EndTime
+      description: The date and time to stop issuing actions.
+      type: Date
+    - contextPath: Tanium.SavedAction.ExpireSeconds
+      description: The duration from the start time before the action expires.
+      type: Number
+    - contextPath: Tanium.SavedAction.ID
+      description: The unique ID of the saved_action object.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastActionId
+      description: The ID of the action object that was issued last.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastActionStartTime
+      description: The start time of the action object that was issued last.
+      type: Date
+    - contextPath: Tanium.SavedAction.LastAaction.TargetGroupId
+      description: The target group of the action object that was issued last.
+      type: Number
+    - contextPath: Tanium.SavedAction.LastStartTime
+      description: The most recent date and time that the action started.
+      type: Date
+    - contextPath: Tanium.SavedAction.Name
+      description: The name of the saved action object.
+      type: String
+    - contextPath: Tanium.SavedAction.NextStartTime
+      description: The next date and time when the action will start.
+      type: Date
+    - contextPath: Tanium.SavedAction.PackageId
+      description: The ID of the package deployed by the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.PackageName
+      description: The name of the package deployed by the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.PackageSourceHash
+      description: The source hash of the package deployed by the saved action.
+      type: String
+    - contextPath: Tanium.SavedAction.StartTime
+      description: The date and time when the action became active. An empty string
+        or null starts immediately.
+      type: Date
+    - contextPath: Tanium.SavedAction.Status
+      description: 'The status of the saved action. Can be: "0" for
+        Enabled, "1" for Disabled, or "2" for Deleted.'
+      type: Number
+    - contextPath: Tanium.SavedAction.TargetGroupId
+      description: The group of machines to target.
+      type: Number
+    - contextPath: Tanium.SavedAction.UserId
+      description: The ID of the user who created the saved action.
+      type: Number
+    - contextPath: Tanium.SavedAction.UserName
+      description: The ID of the user who created the saved action.
+      type: String
+  - arguments:
+    - default: false
+      description: The package ID.
+      isArray: false
+      name: package-id
+      required: false
+      secret: false
+    - default: false
+      description: The package name.
+      isArray: false
+      name: package-name
+      required: false
+      secret: false
+    - default: false
+      description: The package parameters. For example, $1=Value1;$2=Value2;$3=Value3.
+      isArray: false
+      name: parameters
+      required: false
+      secret: false
+    - default: false
+      description: The target group ID to deploy the package.
+      isArray: false
+      name: target-group-id
+      required: false
+      secret: false
+    - default: false
+      description: The target group name to deploy the package. Target
+         group and action group ID are required. Target group can passed by name or ID.
+         Note - the target group should be different than "All Computers" or "Default".
+      isArray: false
+      name: target-group-name
+      required: false
+      secret: false
+    - default: false
+      description: The action group ID to deploy the package.
+      isArray: false
+      name: action-group-id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: via Demisto API
+      description: The action name.
+      isArray: false
+      name: action-name
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an action object based on the package name or the package ID. 
+    execution: false
+    name: tn-create-action
+    outputs:
+    - contextPath: Tanium.Action.ActionGroupId
+      description: The id of the parent group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.ActionGroupName
+      description: The name of the parent group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.ApproverId
+      description: The id of the approver of this action.
+      type: Number
+    - contextPath: Tanium.Action.ApproverName
+      description: The name of the approver of this action.
+      type: String
+    - contextPath: Tanium.Action.CreationTime
+      description: The date and time when this object was created in the database.
+      type: Date
+    - contextPath: Tanium.Action.ExpirationTime
+      description: The date and time when the action expires.
+      type: Date
+    - contextPath: Tanium.Action.ExpireSeconds
+      description: The timeout in seconds for the action expiry. 
+      type: Number
+    - contextPath: Tanium.Action.HistorySavedQuestionId
+      description: The ID of the saved question that tracks the results of the action.
+      type: Number
+    - contextPath: Tanium.Action.ID
+      description: The unique ID of the action object.
+      type: Number
+    - contextPath: Tanium.Action.Name
+      description: The action name.
+      type: String
+    - contextPath: Tanium.Action.PackageId
+      description: The ID of the package deployed by this action.
+      type: Number
+    - contextPath: Tanium.Action.PackageName
+      description: The name of the package deployed by this action.
+      type: String
+    - contextPath: Tanium.Action.SavedActionId
+      description: The ID of the saved action that this action was issued from, if
+        any.
+      type: Number
+    - contextPath: Tanium.Action.StartTime
+      description: The date and time when the action became active.
+      type: String
+    - contextPath: Tanium.Action.Status
+      description: 'The status of the action. Can be: "Pending", "Active", "Stopped",
+        or "Expired".'
+      type: String
+    - contextPath: Tanium.Action.StoppedFlag
+      description: Whether an action stop has been issued for this action. A value
+        of true indicates an action stop was issued.
+      type: Boolean
+    - contextPath: Tanium.Action.TargetGroupId
+      description: The ID of the group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.TargetGroupName
+      description: The name of the group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.UserDomain
+      description: The domain of the user who issued this action.
+      type: String
+    - contextPath: Tanium.Action.UserId
+      description: The ID of the user who issued this action.
+      type: Number
+    - contextPath: Tanium.Action.UserName
+      description: The name of the user who issued this action.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: The maximum number of actions to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all actions.
+    execution: false
+    name: tn-list-actions
+    outputs:
+    - contextPath: Tanium.Action.ActionGroupId
+      description: The ID of the parent group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.ActionGroupName
+      description: The name of the parent group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.ApproverId
+      description: The ID of the approver of this action.
+      type: Number
+    - contextPath: Tanium.Action.ApproverName
+      description: The name of the approver of this action.
+      type: String
+    - contextPath: Tanium.Action.CreationTime
+      description: The date and time when this object was created in the database.
+      type: Date
+    - contextPath: Tanium.Action.ExpirationTime
+      description: The date and time when the action expires.
+      type: Date
+    - contextPath: Tanium.Action.ExpireSeconds
+      description: The timeout in seconds for the action expiry.
+      type: Number
+    - contextPath: Tanium.Action.HistorySavedQuestionId
+      description: The ID of the saved question that tracks the results of the action.
+      type: Number
+    - contextPath: Tanium.Action.ID
+      description: The unique ID of the action object.
+      type: Number
+    - contextPath: Tanium.Action.Name
+      description: The action name.
+      type: String
+    - contextPath: Tanium.Action.PackageId
+      description: The ID of the package deployed by this action.
+      type: Number
+    - contextPath: Tanium.Action.PackageName
+      description: The name of the package deployed by this action.
+      type: String
+    - contextPath: Tanium.Action.SavedActionId
+      description: The ID of the saved action that this action was issued from, if
+        any.
+      type: Number
+    - contextPath: Tanium.Action.StartTime
+      description: The date and time when the action became active.
+      type: String
+    - contextPath: Tanium.Action.Status
+      description: 'The status of the action. Can be: "Pending", "Active", "Stopped",
+        or "Expired".'
+      type: String
+    - contextPath: Tanium.Action.StoppedFlag
+      description: Whether an action stop has been issued for this action. A value
+        of true indicates an action stop was issued.
+      type: Boolean
+    - contextPath: Tanium.Action.TargetGroupId
+      description: The ID of the group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.TargetGroupName
+      description: The name of the group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.UserDomain
+      description: The domain of the user who issued this action.
+      type: String
+    - contextPath: Tanium.Action.UserId
+      description: The ID of the user who issued this action.
+      type: Number
+    - contextPath: Tanium.Action.UserName
+      description: The name of the user who issued this action.
+      type: String
+  - arguments:
+    - default: false
+      description: The action ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns an action object based on ID.
+    execution: false
+    name: tn-get-action
+    outputs:
+    - contextPath: Tanium.Action.ActionGroupId
+      description: The ID of the parent group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.ActionGroupName
+      description: The name of the parent group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.ApproverId
+      description: The ID of the approver of this action.
+      type: Number
+    - contextPath: Tanium.Action.ApproverName
+      description: The name of the approver of this action.
+      type: String
+    - contextPath: Tanium.Action.CreationTime
+      description: The date and time when this object was created in the database.
+      type: Date
+    - contextPath: Tanium.Action.ExpirationTime
+      description: The date and time when the action expires.
+      type: Date
+    - contextPath: Tanium.Action.ExpireSeconds
+      description: The timeout in seconds for the action expiry.        
+      type: Number
+    - contextPath: Tanium.Action.HistorySavedQuestionId
+      description: The ID of the saved question that tracks the results of the action.
+      type: Number
+    - contextPath: Tanium.Action.ID
+      description: The unique ID of the action object.
+      type: Number
+    - contextPath: Tanium.Action.Name
+      description: The action name.
+      type: String
+    - contextPath: Tanium.Action.PackageId
+      description: The ID of the package deployed by this action.
+      type: Number
+    - contextPath: Tanium.Action.PackageName
+      description: The name of the package deployed by this action.
+      type: String
+    - contextPath: Tanium.Action.SavedActionId
+      description: The ID of the saved action that this action was issued from, if
+        any.
+      type: Number
+    - contextPath: Tanium.Action.StartTime
+      description: The date and time when the action became active.
+      type: String
+    - contextPath: Tanium.Action.Status
+      description: 'The status of the action. Can be: "Pending", "Active", "Stopped",
+        or "Expired".'
+      type: String
+    - contextPath: Tanium.Action.StoppedFlag
+      description: Whether an action stop has been issued for this action. A value
+        of true indicates an action stop was issued.
+      type: Boolean
+    - contextPath: Tanium.Action.TargetGroupId
+      description: The ID of the group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.TargetGroupName
+      description: The name of the group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.UserDomain
+      description: The domain of the user who issued this action.
+      type: String
+    - contextPath: Tanium.Action.UserId
+      description: The ID of the user who issued this action.
+      type: Number
+    - contextPath: Tanium.Action.UserName
+      description: The name of the user who issued this action.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: The maximum number of saved actions to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves all saved action approval definitions on the server.
+    execution: false
+    name: tn-list-saved-actions-pending-approval
+    outputs:
+    - contextPath: Tanium.PendingSavedAction.ApprovedFlag
+      description: Whether the saved action is approved. True is approved.
+      type: Boolean
+    - contextPath: Tanium.PendingSavedAction.ID
+      description: The unique ID of the saved action object.
+      type: Number
+    - contextPath: Tanium.PendingSavedAction.Name
+      description: The name of the saved action object.
+      type: String
+    - contextPath: Tanium.PendingSavedAction.OwnerUserId
+      description: The ID of the user who owns this object.
+      type: Number
+  - arguments:
+    - default: false
+      description: The group ID.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name of group.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a group object based on ID or name.
+    execution: false
+    name: tn-get-group
+    outputs:
+    - contextPath: Tanium.Group.ID
+      description: The unique ID of the group object.
+      type: Unknown
+    - contextPath: Tanium.Group.Name
+      description: The name of the group.
+      type: String
+    - contextPath: Tanium.Group.Text
+      description: A description of the clients that this group represents.
+      type: String
+    - contextPath: Tanium.Group.Type
+      description: The type of the group.
+      type: String
+    - contextPath: Tanium.Group.Deleted
+      description: Whether the group is deleted. True if deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the group to create.
+      isArray: false
+      name: group-name
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of hosts. For example, Host1,Host2.
+      isArray: false
+      name: computer-names
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of IP addresses. For example, 12.12.12.12,10.1.1.1.
+      isArray: false
+      name: ip-addresses
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a group object based on computers or IP addresses list.
+    execution: false
+    name: tn-create-manual-group
+    outputs:
+    - contextPath: Tanium.Group.ID
+      description: The unique ID of the group object.
+      type: Number
+  - arguments:
+    - default: false
+      description: The text filter-based computer group. For example, operating system
+        contains windows.
+      isArray: false
+      name: text-filter
+      required: true
+      secret: false
+    - default: false
+      description: Name of the group to create.
+      isArray: false
+      name: group-name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a group object based on text filter.
+    execution: false
+    name: tn-create-filter-based-group
+    outputs:
+    - contextPath: Tanium.Group.ID
+      description: The unique ID of the group object.
+      type: Number
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: The maximum number of groups to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all groups.
+    execution: false
+    name: tn-list-groups
+    outputs:
+    - contextPath: Tanium.Group.ID
+      description: The unique ID of the group object.
+      type: Number
+    - contextPath: Tanium.Group.Name
+      description: The name of the group.
+      type: String
+    - contextPath: Tanium.Group.Text
+      description: A description of the clients that this group represents.
+      type: String
+    - contextPath: Tanium.Group.Type
+      description: The type of the group.
+      type: String
+    - contextPath: Tanium.Group.Deleted
+      description: whether the group is deleted. True if deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The group ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a group object.
+    execution: false
+    name: tn-delete-group
+  - arguments:
+    - default: false
+      description: The package ID. 
+      isArray: false
+      name: package-id
+      required: false
+      secret: false
+    - default: false
+      description: The package name. Target group is required and can passed by name
+        or ID. When both exist, the ID is used. Note the target group
+        should be different than "All Computers" or "Default".
+      isArray: false
+      name: package-name
+      required: false
+      secret: false
+    - default: false
+      description: Package parameters. For example, $1=Value1;$2=Value2;$3=Value3.
+      isArray: false
+      name: parameters
+      required: false
+      secret: false
+    - default: false
+      description: The action group ID to deploy the package.
+      isArray: false
+      name: action-group-id
+      required: true
+      secret: false
+    - default: false
+      description: The hostname to deploy the package. Hostname or IP address is required.
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the host to deploy the package.
+      isArray: false
+      name: ip-address
+      required: false
+      secret: false
+    - default: false
+      defaultValue: via Demisto API
+      description: The action name.
+      isArray: false
+      name: action-name
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an action object, based on a package name or package ID.  
+    execution: false
+    name: tn-create-action-by-host
+    outputs:
+    - contextPath: Tanium.Action.ActionGroupId
+      description: The id of the parent group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.ActionGroupName
+      description: The name of the parent group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.ApproverId
+      description: The id of the approver of this action.
+      type: Number
+    - contextPath: Tanium.Action.ApproverName
+      description: The name of the approver of this action.
+      type: String
+    - contextPath: Tanium.Action.CreationTime
+      description: The date and time when this object was created in the database.
+      type: Date
+    - contextPath: Tanium.Action.ExpirationTime
+      description: The date and time when the action expires.
+      type: Date
+    - contextPath: Tanium.Action.ExpireSeconds
+      description: The timeout in seconds for the action expiry.
+      type: Number
+    - contextPath: Tanium.Action.HistorySavedQuestionId
+      description: The ID of the saved question that tracks the results of the action.
+      type: Number
+    - contextPath: Tanium.Action.ID
+      description: The unique ID of the action object.
+      type: Number
+    - contextPath: Tanium.Action.Name
+      description: The action name.
+      type: String
+    - contextPath: Tanium.Action.PackageId
+      description: The ID of the package deployed by this action.
+      type: Number
+    - contextPath: Tanium.Action.PackageName
+      description: The name of the package deployed by this action.
+      type: String
+    - contextPath: Tanium.Action.SavedActionId
+      description: The ID of the saved action that this action was issued from, if
+        any.
+      type: Number
+    - contextPath: Tanium.Action.StartTime
+      description: The date and time when the action became active.
+      type: String
+    - contextPath: Tanium.Action.Status
+      description: 'The status of the action. Can be: "Pending", "Active", "Stopped",
+        or "Expired".'
+      type: String
+    - contextPath: Tanium.Action.StoppedFlag
+      description: Whether an action stop has been issued for this action. A value
+        of true indicates an action stop was issued.
+      type: Boolean
+    - contextPath: Tanium.Action.TargetGroupId
+      description: The ID of the group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.TargetGroupName
+      description: The name of the group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.UserDomain
+      description: The domain of the user who issued this action.
+      type: String
+    - contextPath: Tanium.Action.UserId
+      description: The ID of the user who issued this action.
+      type: Number
+    - contextPath: Tanium.Action.UserName
+      description: The name of the user who issued this action.
+      type: String
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- Tanium v2 - Test

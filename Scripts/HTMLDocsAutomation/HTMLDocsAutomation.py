@@ -48,7 +48,7 @@ PERMISSIONS_HEADER: str = '''<h2>Permissions</h2>
     <li>permission 2</li>
 </ul>'''
 
-COMMAND_LIST: str = '  <li>{command_hr}: {command}</li>'
+COMMAND_LIST: str = '  <li><a href="#{command}" target="_self">{command_hr}: {command}</a></li>'
 
 PERMISSIONS_PER_COMMAND: str = '''
 <h5>Required Permissions</h5>
@@ -58,7 +58,7 @@ PERMISSIONS_PER_COMMAND: str = '''
     <li>permission 2</li>
 </ul>'''
 
-SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
+SINGLE_COMMAND: str = '''<h3 id="{command_hr}">{index}. {command_hr}</h3>
 <hr>
 <p>{command_description}</p>
 <h5>Base Command</h5>
@@ -369,7 +369,8 @@ def generate_commands_section(yaml_data, example_dict, should_include_permission
     command_sections: list = []
 
     commands = [cmd for cmd in yaml_data['script']['commands'] if not cmd.get('deprecated')]
-    command_list = [COMMAND_LIST.format(command_hr=cmd['name'], command=cmd['name']) for cmd in commands]
+    command_list = [COMMAND_LIST.format(command_hr=cmd['description'].rstrip('.'), command=cmd['name'])
+                    for cmd in commands]
 
     for i, cmd in enumerate(commands):
         cmd_section, cmd_errors = generate_single_command_section(i + 1, cmd, example_dict, should_include_permissions)
@@ -503,7 +504,7 @@ def generate_html_docs(args, yml_data, example_dict, errors):
 
 def main():
     args: dict = demisto.args()
-    yml_data: dict = get_yaml_obj(args['entryID'])
+    yml_data: dict = get_yaml_obj(args.get('entryID'))
     command_examples, errors = get_command_examples(args.get('commands'))
     example_dict, build_errors = build_example_dict(command_examples)
     errors.extend(build_errors)

@@ -110,6 +110,7 @@ USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
 IS_FETCH = demisto.params()['isFetch']
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
+FETCH_LIMIT = int(demisto.params().get('fetch_limit', '100'))
 TOKEN = None
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json;charset=UTF-8',
@@ -163,7 +164,7 @@ def http_request(method, url, body=None, headers=None, url_params=None):
     )
     # handle timeout (token expired): renew token and try again
     if response.status_code == 408:
-        LOG('Timeout detected -  renwing token')
+        LOG('Timeout detected -  renewing token')
         TOKEN = get_token()
         headers['NetWitness-Token'] = TOKEN
         response = requests.request(
@@ -272,18 +273,21 @@ def get_incidents_request(since=None, until=None, page_number=None, page_size=10
     return response
 
 
-def get_all_incidents(since=None, until=None, limit=None):
+def get_all_incidents(since=None, until=None, limit=None, page_number=0):
     """
 
-    returns all/up to limit incidents in a time window
+    returns
+    1. all/up to limit incidents in a time window
+    2. has_next
+    3. next_page
 
     """
 
     # if limit is None, set to infinity
     if not limit:
         limit = float('inf')
+    page_size = 10 if limit > 10 else limit
     has_next = True
-    page_number = 0
     incidents = []  # type: list
     LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s=since or 'not specified',
                                                                      u=until or 'not specified'))
@@ -295,7 +299,8 @@ def get_all_incidents(since=None, until=None, limit=None):
         response_body = get_incidents_request(
             since=since,
             until=until,
-            page_number=page_number
+            page_number=page_number,
+            page_size=page_size
         )
         incidents.extend(response_body.get('items'))
         has_next = response_body.get('hasNext')
@@ -303,9 +308,53 @@ def get_all_incidents(since=None, until=None, limit=None):
 
     # if incidents list larger then limit - fit to limit
     if len(incidents) > limit:
-        incidents[limit - 1: -1] = []
+        incidents = incidents[:limit]
 
-    return incidents
+    return incidents, has_next, page_number
+
+
+def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_number=0, last_fetched_id=None):
+    """
+
+    returns
+    1. all/up to limit incidents in a time window
+    2. has_next
+    3. next_page
+
+    """
+    # if limit is None, set to infinity
+    if not limit:
+        limit = float('inf')
+    has_next = True
+    incidents_result = []  # type: list
+    continue_loop = True
+    LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s=since or 'not specified',
+                                                                     u=until or 'not specified'))
+    while has_next and continue_loop:
+        # call get_incidents_request(), given user arguments
+        # returns the response body on success
+        # raises an exception on failed request
+        LOG('Requesting for page {}'.format(page_number))
+        response_body = get_incidents_request(
+            since=since,
+            until=until,
+            page_number=page_number
+        )
+        incidents = response_body.get('items')
+        # clear incidents after last_fetched_id
+        for inc in incidents:
+            if inc.get('id') == last_fetched_id:
+                continue_loop = False
+                break
+            incidents_result.append(inc)
+        has_next = response_body.get('hasNext')
+        page_number += 1
+
+    incidents_result.reverse()
+    # if incidents list larger then limit - fit to limit
+    if len(incidents_result) > limit:
+        return incidents_result[:limit]
+    return incidents_result
 
 
 def get_incidents():
@@ -335,11 +384,15 @@ def get_incidents():
     # parse limit argument to int
     if limit:
         limit = int(limit)
+    page_number = args.get('pageNumber')
+    if page_number:
+        page_number = int(page_number)
 
-    incidents = get_all_incidents(
+    incidents, has_next, next_page = get_all_incidents(
         since=args.get('since'),
         until=args.get('until'),
-        limit=limit
+        limit=limit,
+        page_number=page_number
     )
 
     md_content = create_incidents_list_md_table(incidents)
@@ -355,6 +408,8 @@ def get_incidents():
             "NetWitness.Incidents(obj.id==val.id)": incidents
         }
     }
+    if has_next:
+        entry['HumanReadable'] += '\n### Not all incidents were fetched. Next page: {}'.format(next_page)
     demisto.results(entry)
 
 
@@ -372,7 +427,7 @@ def update_incident_request(incident_id, assignee=None, status=None):
         - response body does not contain valid json (ValueError)
 
     """
-    LOG('Requestig to update incident ' + incident_id)
+    LOG('Requesting to update incident ' + incident_id)
 
     body = {
         'assignee': assignee,
@@ -596,22 +651,25 @@ def get_timestamp(timestamp):
 
 def fetch_incidents():
     """
-    fetch is limited to 100 results
+    By default, fetch is limited to 100 results, however it is user configurable.
     """
     last_run = demisto.getLastRun()
 
     # if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
     if last_run and last_run.get('timestamp'):
         timestamp = last_run.get('timestamp')
+        last_fetched_id = last_run.get('last_fetched_id')
     else:
         last_fetch, _ = parse_date_range(FETCH_TIME)
         # convert to ISO 8601 format and add Z suffix
         timestamp = last_fetch.isoformat() + 'Z'
+        last_fetched_id = None
 
     LOG('Fetching incidents since {}'.format(timestamp))
-    netwitness_incidents = get_all_incidents(
+    netwitness_incidents = get_all_incidents_from_beginning(
         since=timestamp,
-        limit=100
+        limit=FETCH_LIMIT,
+        last_fetched_id=last_fetched_id
     )
 
     demisto_incidents = []
@@ -629,7 +687,10 @@ def fetch_incidents():
             continue
 
         # parse timestamp to datetime format to be able to compare with last_incident_datetime
-        incident_datetime = datetime.strptime(incident_timestamp, iso_format)
+        try:
+            incident_datetime = datetime.strptime(incident_timestamp, iso_format)
+        except ValueError:
+            incident_datetime = datetime.strptime(incident_timestamp, "%Y-%m-%dT%H:%M:%SZ")
         if incident_datetime > last_incident_datetime:
             # update last_incident_datetime
             last_incident_datetime = incident_datetime
@@ -644,7 +705,11 @@ def fetch_incidents():
         demisto_incidents.append(parse_incident(incident))
 
     demisto.incidents(demisto_incidents)
-    demisto.setLastRun({'timestamp': last_incident_timestamp})
+    last_run = {'timestamp': last_incident_timestamp}
+    if netwitness_incidents:
+        last_run['last_fetched_id'] = netwitness_incidents[-1].get('id')
+    demisto.setLastRun(last_run)
+    return demisto_incidents
 
 
 def parse_incident(netwitness_incident):
@@ -946,7 +1011,7 @@ def test_module():
     since = datetime.now() - timedelta(days=int(10))
     timestamp = since.isoformat() + 'Z'
 
-    incidents = get_all_incidents(
+    incidents, _, __ = get_all_incidents(
         since=timestamp,
         until=None,
         limit=100
@@ -964,10 +1029,10 @@ EXECUTION
 
 def main():
     global TOKEN
-    TOKEN = get_token()
     command = demisto.command()
     try:
-        handle_proxy()
+        handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+        TOKEN = get_token()
         if command == 'test-module':
             demisto.results(test_module())
         elif command == 'fetch-incidents':

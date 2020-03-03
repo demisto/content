@@ -17,15 +17,15 @@ configuration:
     defaultvalue: ""
     type: 4
     required: true
-  - display: Trust any certificate (unsecure)
+  - display: Trust any certificate (not secure)
     name: unsecure
-    defaultvalue: "true"
+    defaultvalue: ""
     type: 8
     required: false
   - display: Use system proxy settings
     name: proxy
     defaultvalue: ""
-    type: 0
+    type: 8
     required: false
   - display: Fetch incidents
     name: isFetch
@@ -307,6 +307,7 @@ script:
         90 days old are not available.
   isfetch: true
   runonce: false
+  subtype: python2
 tests:
   - No Test
 

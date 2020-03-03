@@ -243,6 +243,15 @@
           "status",
           "dueDate"
         ],
+        "readableHeaders": {
+          "name": "Name",
+          "occurred": "Occurred",
+          "type": "Type",
+          "owner": "Owner",
+          "severity": "Severity",
+          "status": "Status",
+          "dueDate": "Due Date"
+        },
         "classes": "striped stackable small very compact",
         "i": "14558e70-005d-11e8-831f-e7429aff1c69",
         "rowPos": 6,

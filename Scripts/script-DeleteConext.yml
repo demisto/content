@@ -14,6 +14,15 @@ script: |
   var fieldsToDelete;
   var shouldDeleteAll = (args.all === 'yes');
   var isSubPlaybookKey = (args.subplaybook === 'yes');
+  if (args.subplaybook === 'auto') {
+      var res = executeCommand('Print', { value: 'id=${currentPlaybookID}' });
+      if (res && res[0].Contents && res[0].Contents.startsWith('id=')) {
+         var idArr = res[0].Contents.split('=');
+         if (idArr.length === 2 && idArr[1]) {
+             isSubPlaybookKey = true;
+         }
+      }
+  }
   if (!shouldDeleteAll && !args.key) {
       return {Contents: 'You must specify key or all=yes',
                       ContentsFormat: formats.text,
@@ -117,7 +126,10 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: Choose yes if the context key is inside a sub-playbook
+  - "auto"
+  description: Specify "yes" if the context key is inside of a sub-playbook. 
+    Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or
+    from the global context (if the playbook is the top playbook).
 - name: keysToKeep
   description: Context keys to keep when deleting all context. Supports comma separated
     values and nested objects, e.g. URL.Data,IP.Address

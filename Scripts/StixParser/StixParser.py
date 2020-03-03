@@ -6,6 +6,12 @@ import tempfile
 from datetime import datetime
 
 from stix.core import STIXPackage
+import warnings
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'VocabList' object.")
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'str' object.")
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'datetime' object.")
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'StructuredTextList' object.")
+
 
 """ GLOBAL PARAMS """
 PATTERNS_DICT = {
@@ -274,12 +280,26 @@ def extract_indicators(data):
             Second dict contains indicators value to STIX object defining them
 
     """
-
-    # Check if is `objects` keyword exists
-    if isinstance(data, dict) and "objects" in data:
-        # Create objects
-        objects = data.get("objects")
-
+    must_have_in_stix = [
+        "created",
+        "id",
+        "labels",
+        "modified",
+        "pattern",
+        "score",
+        "source",
+        "type",
+        "valid_from"
+    ]
+    if isinstance(data, dict):
+        # Check if is `objects` keyword exists
+        if "objects" in data:
+            objects = data.get("objects")
+        # If its STIX
+        elif all(key in data for key in must_have_in_stix):
+            objects = data
+        else:
+            return_error("No STIX2 object could be parsed")
         # Use regex to extract indicators
         patterns_lists, entries_dict = get_indicators(objects)
 

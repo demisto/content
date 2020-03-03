@@ -1,4 +1,30 @@
 ## [Unreleased]
+- Fixed an issue where ***fetch-incidents*** did not work as intended.
+- Fixed an issue where ***splunk-parse-raw*** cut the last character of parsed fields.
+
+## [20.2.4] - 2020-02-25
+Added support for comma-separated values in the ***splunk-parse-raw*** command.
+
+## [20.2.3] - 2020-02-18
+Added the *app* argument to the ***splunk-job-create*** and ***splunk-search*** commands.
+
+## [20.2.0] - 2020-02-04
+- The Test button now tests the fetch incidents function when the *Fetch incidents* option is selected.
+- Fixed an issue in the *Splunk notable events ES query* parameter where the time parameter was not passed to the table in Splunk.
+
+## [20.1.2] - 2020-01-22
+Added the ***splunk-submit-event-hec*** command.
+
+## [20.1.0] - 2020-01-07
+Fixed an issue with the access to a non-existing key when fetching non-ES events.
+
+## [19.12.1] - 2019-12-25
+Enhanced the execution speed of the ***splunk-search*** command.
+
+## [19.11.0] - 2019-11-12
+Increased the maximum fetch limit for Splunk.
+
+## [19.10.2] - 2019-10-29
   - Improved handling of the *app context* parameter.
   - Fixed handling of arrays when converting notable events to incidents.
 

@@ -5,10 +5,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92650d23-ccc0-4751-869f-221b3f6ede61
+    taskid: 13c20a25-5761-4ac4-802a-36b7eea981fe
     type: start
     task:
-      id: 92650d23-ccc0-4751-869f-221b3f6ede61
+      elasticcommonfields: {}
+      id: 13c20a25-5761-4ac4-802a-36b7eea981fe
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +28,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 4be42011-eea1-4203-8021-b82246c8a698
+    taskid: b0345c06-91de-403d-803f-94b52d58e87b
     type: regular
     task:
-      id: 4be42011-eea1-4203-8021-b82246c8a698
+      elasticcommonfields: {}
+      id: b0345c06-91de-403d-803f-94b52d58e87b
       version: -1
       name: Create test user
       description: Creates a new user.
@@ -42,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "2"
     scriptarguments:
       account_enabled: {}
       display_name:
@@ -55,25 +59,28 @@ tasks:
       password:
         simple: Aa123456
       user_principal_name:
-        simple: graph@demistodev.onmicrosoft.com
+        simple: ${GeneratedUUID}@demistodev.onmicrosoft.com
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: bc7abcda-80b5-49c0-80e6-28eb6a27ba9e
+    taskid: 706e3ab4-c436-4af1-8a2f-fe9acc947133
     type: regular
     task:
-      id: bc7abcda-80b5-49c0-80e6-28eb6a27ba9e
+      elasticcommonfields: {}
+      id: 706e3ab4-c436-4af1-8a2f-fe9acc947133
       version: -1
       name: Get User
       description: Retrieve the properties and relationships of user object. [link](https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)
@@ -93,18 +100,21 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: f3f61e01-d5b7-4b9c-84b0-0a3b40364440
+    taskid: e9aafe90-f409-4ba6-8bad-03f03c163d83
     type: regular
     task:
-      id: f3f61e01-d5b7-4b9c-84b0-0a3b40364440
+      elasticcommonfields: {}
+      id: e9aafe90-f409-4ba6-8bad-03f03c163d83
       version: -1
       name: Update user phone number
       description: Update the properties of a user object.
@@ -125,18 +135,21 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 0e5d845f-1cd1-4614-8646-23477bab990d
+    taskid: cedd7aa3-8bed-4425-837c-ebd16032258f
     type: regular
     task:
-      id: 0e5d845f-1cd1-4614-8646-23477bab990d
+      elasticcommonfields: {}
+      id: cedd7aa3-8bed-4425-837c-ebd16032258f
       version: -1
       name: Get Delta (mobilePhone)
       description: Get newly created, updated, or deleted users without having to
@@ -156,18 +169,21 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 602a4dd5-0ada-4be4-800a-e31b991c757e
+    taskid: 78d50c5f-34b2-4ea0-8180-04dac1eb8a46
     type: regular
     task:
-      id: 602a4dd5-0ada-4be4-800a-e31b991c757e
+      elasticcommonfields: {}
+      id: 78d50c5f-34b2-4ea0-8180-04dac1eb8a46
       version: -1
       name: Block user
       description: Terminate users session from all Office 365 and prevents it from
@@ -187,18 +203,21 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: fde6ec66-bda3-4773-86c8-977abfebc00e
+    taskid: b8ac87b0-c8da-4edd-832d-ce390ee50ac7
     type: regular
     task:
-      id: fde6ec66-bda3-4773-86c8-977abfebc00e
+      elasticcommonfields: {}
+      id: b8ac87b0-c8da-4edd-832d-ce390ee50ac7
       version: -1
       name: Sleep for 30 seconds
       description: Sleep for X seconds
@@ -217,18 +236,21 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 9bd71149-2f35-480e-8f8e-0f7855a80b28
+    taskid: d59f153a-b4ae-4c17-8829-3662bf0d9405
     type: regular
     task:
-      id: 9bd71149-2f35-480e-8f8e-0f7855a80b28
+      elasticcommonfields: {}
+      id: d59f153a-b4ae-4c17-8829-3662bf0d9405
       version: -1
       name: Unblock User
       description: Unblock a user.
@@ -238,7 +260,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       user:
         simple: oren@demistodev.onmicrosoft.com
@@ -247,18 +269,21 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: 7f75e82f-e39f-480d-8ee8-f07dca29e684
+    taskid: 7c03661c-4905-45d9-8553-1b82ca8767c2
     type: regular
     task:
-      id: 7f75e82f-e39f-480d-8ee8-f07dca29e684
+      elasticcommonfields: {}
+      id: 7c03661c-4905-45d9-8553-1b82ca8767c2
       version: -1
       name: Delete user
       description: Deletes an exsiting user.
@@ -271,24 +296,27 @@ tasks:
       - "4"
     scriptarguments:
       user:
-        simple: graph@demistodev.onmicrosoft.com
+        simple: ${GeneratedUUID}@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 61bd9d72-9808-4314-8bd5-9c2018877967
+    taskid: 5e97172f-3717-4fe5-8f4f-8beb05667f94
     type: title
     task:
-      id: 61bd9d72-9808-4314-8bd5-9c2018877967
+      elasticcommonfields: {}
+      id: 5e97172f-3717-4fe5-8f4f-8beb05667f94
       version: -1
       name: Done!
       type: title
@@ -299,18 +327,21 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: dce27583-52ed-4350-8b11-b774d6b2df19
+    taskid: f9498ca5-cb17-4a98-8c7c-d661e090d435
     type: regular
     task:
-      id: dce27583-52ed-4350-8b11-b774d6b2df19
+      elasticcommonfields: {}
+      id: f9498ca5-cb17-4a98-8c7c-d661e090d435
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -320,7 +351,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "18"
     scriptarguments:
       all:
         simple: "yes"
@@ -339,116 +370,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
-    taskid: b63962b6-7499-40f2-8506-5fb7188169cc
-    type: condition
-    task:
-      id: b63962b6-7499-40f2-8506-5fb7188169cc
-      version: -1
-      name: If failed - try delete and creating again
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "2"
-      "yes":
-      - "12"
-    scriptarguments:
-      entryId:
-        simple: ${lastCompletedTaskEntries}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 58b7c879-848c-46f3-856a-f1805d785f77
-    type: regular
-    task:
-      id: 58b7c879-848c-46f3-856a-f1805d785f77
-      version: -1
-      name: Delete the duplicated user
-      description: Deletes an exsiting user.
-      script: '|||msgraph-user-delete'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      user:
-        simple: graph@demistodev.onmicrosoft.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: f80a140b-dfc6-4064-8dba-243d3808bb83
-    type: regular
-    task:
-      id: f80a140b-dfc6-4064-8dba-243d3808bb83
-      version: -1
-      name: Create test user again
-      description: Creates a new user.
-      script: '|||msgraph-user-create'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      account_enabled: {}
-      display_name:
-        simple: Graph Test - DELETE
-      mail_nickname:
-        simple: graph
-      on_premises_immutable_id: {}
-      other_properties:
-        simple: jobTitle=Test,city=Tel Aviv
-      password:
-        simple: Aa123456
-      user_principal_name:
-        simple: graph@demistodev.onmicrosoft.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: c1094d50-6bd3-4fc6-8d2d-0f78ea281adc
+    taskid: 3874956d-dede-4ae1-852b-b9f33122b31f
     type: regular
     task:
-      id: c1094d50-6bd3-4fc6-8d2d-0f78ea281adc
+      elasticcommonfields: {}
+      id: 3874956d-dede-4ae1-852b-b9f33122b31f
       version: -1
       name: List Users
       description: Retrieve a list of user objects.
@@ -467,21 +397,161 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 50b9bbb2-6d75-475d-8758-43546b8fe682
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 50b9bbb2-6d75-475d-8758-43546b8fe682
+      version: -1
+      name: Create test user with no "Other_properties"
+      description: Creates a new user.
+      script: '|||msgraph-user-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      account_enabled: {}
+      display_name:
+        simple: Test User
+      mail_nickname:
+        simple: Test
+      on_premises_immutable_id: {}
+      other_properties: {}
+      password:
+        simple: password123123!
+      user_principal_name:
+        simple: ${GeneratedUUID}test@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 7a06aa7a-3a05-4f6f-825d-d77a9bd20b1d
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 7a06aa7a-3a05-4f6f-825d-d77a9bd20b1d
+      version: -1
+      name: Get User
+      description: 'Retrieves the properties and relationships of user object. for
+        more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      properties: {}
+      user:
+        simple: ${GeneratedUUID}test@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 5cc40dac-a4ef-4d9d-8bdb-9e7c3f735325
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 5cc40dac-a4ef-4d9d-8bdb-9e7c3f735325
+      version: -1
+      name: Delete User
+      description: Deletes an exsiting user.
+      script: '|||msgraph-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      user:
+        simple: ${GeneratedUUID}test@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 2295
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: a7ecbfaf-160b-41ea-88e2-10ae7bc547bc
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: a7ecbfaf-160b-41ea-88e2-10ae7bc547bc
+      version: -1
+      name: Generate UUID for user principal name
+      description: Generates random UUID
+      scriptName: GenerateUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {
-      "11_2_no": 0.1
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
-        "width": 492.5,
+        "height": 2660,
+        "width": 380,
         "x": 50,
         "y": 50
       }

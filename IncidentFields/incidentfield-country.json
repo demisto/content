@@ -5,7 +5,7 @@
 	"name": "Country",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "",
+	"description": "The country from which the user logged in.",
 	"cliName": "country",
 	"type": "shortText",
 	"closeForm": false,
@@ -19,11 +19,12 @@
 	"useAsKpi": false,
 	"locked": false,
 	"system": false,
-	"content": false,
+	"content": true,
 	"group": 0,
 	"hidden": false,
 	"associatedTypes": [
-		"GDPR Data Breach"
+		"GDPR Data Breach",
+		"Impossible Traveler"
 	],
 	"systemAssociatedTypes": null,
 	"associatedToAll": false,

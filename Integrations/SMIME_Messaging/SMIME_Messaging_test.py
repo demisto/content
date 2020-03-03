@@ -1,4 +1,4 @@
-from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body
+from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt
 import demistomock as demisto
 
 
@@ -40,6 +40,15 @@ def test_decrypt(mocker):
 
     decrypted, _ = decrypt_email_body(client, {})
     assert 'Hello world' in decrypted
+
+
+def test_sign_and_encrypt(mocker):
+
+    mocker.patch.object(demisto, 'args', return_value={'message': 'testing message'})
+    sign_encrypt, _ = sign_and_encrypt(client, {})
+    assert 'MIME-Version: 1.0\nContent-Disposition: attachment; filename="smime.p7m"\n' \
+           'Content-Type: application/x-pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"\n' \
+           'Content-Transfer-Encoding: base64' in sign_encrypt
 
 
 def test_test_module(mocker):

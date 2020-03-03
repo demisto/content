@@ -1,0 +1,97 @@
+category: Data Enrichment & Threat Intelligence
+fromversion: 5.0.0
+commonfields:
+  id: Sixgill
+  version: -1
+configuration:
+- display: Sixgill API client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Sixgill API client secret
+  name: client_secret
+  required: true
+  type: 4
+- defaultvalue: '20'
+  display: Max number of incidents that can be fetched
+  name: maxIncidents
+  required: false
+  type: 0
+- display: Filter by alert template severity
+  name: severity
+  options:
+  - low
+  - med
+  - high
+  required: false
+  type: 15
+- display: Filter by alert threat level
+  name: threat_level
+  options:
+  - imminent
+  - emerging
+  required: false
+  type: 15
+- display: Filter by alert threat type
+  name: threat_type
+  options:
+  - Brand Protection
+  - Data Leak
+  - Malware
+  - Phishing
+  - Fraud
+  - Vulnerability Exploit
+  - Insider Threat
+  - Defacement
+  - Compromised Accounts
+  - DDoS Attack
+  - Web Attack
+  - Trend Anomaly
+  required: false
+  type: 15
+description: Fetching Sixgill's alerts as incidents, Sixgill provides alerts that
+  are based on organization assets, enabling you to take proactive steps to eliminate
+  and mitigate your threats.
+display: Sixgill
+name: Sixgill
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '100'
+      description: Max number of indicators that can be fetched
+      isArray: false
+      name: maxIndicators
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetching Sixgill's DarkFeed Threat Intelligence indicators
+    execution: false
+    name: sixgill-get-indicators
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file
+      type: Unknown
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the report file
+      type: String
+  dockerimage: demisto/sixgill:1.0.0.5676
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

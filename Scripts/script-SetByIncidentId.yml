@@ -1,6 +1,6 @@
 commonfields:
-  id: 46e2109c-b735-458e-884f-030229a20830
-  version: 209
+  id: SetByIncidentId
+  version: -1
 name: SetByIncidentId
 script: |-
   incident_id = demisto.args()['id'] if 'id' in demisto.args() else demisto.incidents()[0]['id']

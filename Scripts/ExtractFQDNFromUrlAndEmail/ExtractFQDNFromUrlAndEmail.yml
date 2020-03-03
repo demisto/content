@@ -1,0 +1,25 @@
+args:
+- default: true
+  description: The URLs or emails to process.
+  isArray: true
+  name: input
+  required: false
+  secret: false
+comment: Extracts FQDNs from URLs and emails.
+commonfields:
+  id: ExtractFQDNFromUrlAndEmail
+  version: -1
+enabled: true
+name: ExtractFQDNFromUrlAndEmail
+script: '-'
+system: false
+tags:
+- indicator-format
+timeout: '0'
+type: python
+dockerimage: demisto/tld
+runas: DBotWeakRole
+runonce: false
+subtype: python3
+tests:
+  - ExtractFQDNFromUrlAndEmail-Test

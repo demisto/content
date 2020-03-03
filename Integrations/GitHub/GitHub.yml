@@ -1,4 +1,4 @@
-category: Authentication
+category: Utilities
 commonfields:
   id: GitHub
   version: -1

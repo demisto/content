@@ -1,7 +1,7 @@
 {
     "id": "hostRep",
     "version": -1,
-    "fromVersion": "5.0.0",
+    "fromVersion": "5.5.0",
     "modified": "2019-07-18T08:56:16.883284512Z",
     "sortValues": null,
     "commitMessage": "",
@@ -94,7 +94,7 @@
                 ]
             }
         },
-        "id": {
+        "indicatoridentification": {
             "simple": "",
             "complex": {
                 "root": "Host",
@@ -226,6 +226,66 @@
                         "args": {}
                     }
                 ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "Host",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "Host",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
+            }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "Host",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
+            }
+        },
+        "trafficlightprotocoltlp": {
+            "simple": "",
+            "complex": {
+                "root": "Host",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
+            }
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "Host",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [{
+                    "operator": "uniq",
+                    "args": {}
+                }]
             }
         }
     },

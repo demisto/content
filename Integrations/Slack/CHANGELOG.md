@@ -1,6 +1,20 @@
 ## [Unreleased]
 
 
+## [20.2.3] - 2020-02-18
+-
+
+## [20.2.0] - 2020-02-04
+-
+
+## [19.12.0] - 2019-12-10
+  - Fixed an issue where mirrored investigations contained mismatched user names.
+  - Added reporter and reporter email as labels to incidents that are created by direct messages.
+
+## [19.11.1] - 2019-11-26
+Added Slack API rate limit call handling.
+Added an optional parameter to specify a proxy URL to use with the Slack API. 
+
 ## [19.10.1] - 2019-10-15
 Added support for changing the display name and icon for the Demisto bot in Slack.
 
