@@ -269,11 +269,9 @@ class MyTestCase(unittest.TestCase):
         with open("./TestData/host_finding_resp.json", encoding='utf-8') as f:
             expected_res = json.load(f)
         mocker_res.return_value = expected_res
-
         hr, ec, resp = get_closed_host_findings_command(self.client, {})
         with open("./TestData/host_finding_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
-
         assert expected_res == resp
         assert expected_ec == ec
 
@@ -312,7 +310,6 @@ class MyTestCase(unittest.TestCase):
         mocker_res.return_value = expected_res
 
         hr, ec, resp = get_apps_command(self.client, {})
-
         with open("./TestData/apps_ec.json") as f:
             expected_ec = json.load(f)
 
@@ -352,7 +349,6 @@ class MyTestCase(unittest.TestCase):
         mocker_res.return_value = expected_res
 
         hr, ec, resp = get_host_finding_detail_command(self.client, {})
-
         with open("./TestData/host_finding_details_ec.json") as f:
             expected_ec = json.load(f)
 

@@ -120,21 +120,21 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: Application.Id
+                accessor: Application.ID
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
                 root: RiskSense
-                accessor: Application.GroupId
+                accessor: Application.GroupID
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
                 root: RiskSense
-                accessor: Application.ClientId
+                accessor: Application.ClientID
             iscontext: true
       - - operator: isExists
           left:
@@ -211,7 +211,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: Application.Network.Id
+                accessor: Application.Network.ID
             iscontext: true
       - - operator: isExists
           left:

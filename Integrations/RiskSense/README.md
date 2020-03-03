@@ -67,22 +67,22 @@ Look up the host details. The host details can be searched based on input parame
 | Host.ID | string | The unique ID within the tool retrieving the host. | 
 | Host.IP | string | The IP address of the host. | 
 | Host.OS | string | The operating system of the host. | 
-| RiskSense.Host.Id | number | The unique identifier of the host. | 
-| RiskSense.Host.ClientId | number | The client id of the host. | 
-| RiskSense.Host.GroupId | number | The id of the group belonging to the host. | 
+| RiskSense.Host.ID | number | The unique identifier of the host. | 
+| RiskSense.Host.ClientID | number | The client id of the host. | 
+| RiskSense.Host.GroupID | number | The id of the group belonging to the host. | 
 | RiskSense.Host.GroupName | string | The name of the group belonging to the host. | 
 | RiskSense.Host.Groups | Unknown | The list of groups. | 
 | RiskSense.Host.Rs3 | number | The asset security score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
 | RiskSense.Host.Xrs3 | string | The asset security score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
 | RiskSense.Host.Criticality | number | The asset importance using a scale of 1 (lowest importance) to 5 (highest importance). | 
-| RiskSense.Host.Tag.Id | number | The ID of the tag. | 
+| RiskSense.Host.Tag.ID | number | The ID of the tag. | 
 | RiskSense.Host.Tag.Name | string | The name of the tag. | 
 | RiskSense.Host.Tag.Category | string | The category of the tag. | 
 | RiskSense.Host.Tag.Description | string | The description of the tag. | 
 | RiskSense.Host.Tag.Created | string | The time when the tag was created. | 
 | RiskSense.Host.Tag.Updated | string | The time when the tag was last updated. | 
 | RiskSense.Host.Tag.Color | string | The color code of the tag. | 
-| RiskSense.Host.NetworkId | number | The Network ID of the host. | 
+| RiskSense.Host.NetworkID | number | The Network ID of the host. | 
 | RiskSense.Host.NetworkName | string | The name of the network used by the host. | 
 | RiskSense.Host.NetworkType | string | The type of the network used by the host. | 
 | RiskSense.Host.DiscoveredOn | string | The time when the host was discovered. | 
@@ -100,12 +100,12 @@ Look up the host details. The host details can be searched based on input parame
 | RiskSense.Host.CMDB.Value | string | The CMDB value identifier of the host. | 
 | RiskSense.Host.CMDB.Label | string | The CMDB label identifier of the host. | 
 | RiskSense.Host.Services | string | The name of the services thar are used by the host. | 
-| RiskSense.Host.Note.UserId | string | The User ID of the user who added a note for the host. | 
+| RiskSense.Host.Note.UserID | string | The User ID of the user who added a note for the host. | 
 | RiskSense.Host.Note.UserName | string | The Username of the user who added a note for the host. | 
 | RiskSense.Host.Note.Note | string | The notes that are added by the user for the host. | 
 | RiskSense.Host.Note.Date | string | The time when note is added by the user for the host. | 
 | RiskSense.Host.Source.Name | string | The name of the source associated with the host. | 
-| RiskSense.Host.Source.Uuid | string | The unique ID of the source associated with the host. | 
+| RiskSense.Host.Source.UuID | string | The unique ID of the source associated with the host. | 
 | RiskSense.Host.Source.ScannerType | string | The type of scanner that discovered the host. | 
 | RiskSense.Host.Ticket.TicketNumber | string | The number of the ticket associated with the host. | 
 | RiskSense.Host.Ticket.TicketStatus | string | The status of the ticket associated with the host. | 
@@ -125,7 +125,8 @@ Look up the host details. The host details can be searched based on input parame
 | RiskSense.Host.Medium | number | The number of open findings of the host with medium severity. | 
 | RiskSense.Host.Low | number | The number of open findings of the host with low severity. | 
 | RiskSense.Host.Info | number | The number of open findings of the host with info severity. | 
-
+| Ticket.ID|string| The ID of the ticket associated with the host.
+| Ticket.State|string|The state of the ticket associated with the host.     
 
 ##### Command Example
 ```
@@ -137,22 +138,22 @@ Look up the host details. The host details can be searched based on input parame
 {
     "RiskSense.Host": [
         {
-            "NetworkId": 78038, 
+            "NetworkID": 78038, 
             "OldestOpenFindingWithThreatDiscoveredOn": "2017-09-14", 
             "HostName": "iz0.y2.gov", 
             "Group": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
-            "ClientId": 747, 
+            "ClientID": 747, 
             "Note": [], 
             "Source": [
                 {
                     "ScannerType": null, 
                     "Name": "QUALYS", 
-                    "Uuid": "QUALYS_SCANNER"
+                    "UuID": "QUALYS_SCANNER"
                 }
             ], 
             "Critical": 86, 
@@ -171,7 +172,7 @@ Look up the host details. The host details can be searched based on input parame
                     "Name": "Linux_Team_2", 
                     "Created": "2019-04-24T21:39:59", 
                     "Color": "#78a19b", 
-                    "Id": 215554, 
+                    "ID": 215554, 
                     "Description": ""
                 }, 
                 {
@@ -180,7 +181,7 @@ Look up the host details. The host details can be searched based on input parame
                     "Name": "Data_Center_2", 
                     "Created": "2019-04-24T21:37:06", 
                     "Color": "#dd8361", 
-                    "Id": 215552, 
+                    "ID": 215552, 
                     "Description": ""
                 }
             ], 
@@ -344,33 +345,33 @@ Look up the host details. The host details can be searched based on input parame
                 "Family": "Linux", 
                 "Name": "Red Hat Enterprise Linux Server 6.1"
             }, 
-            "GroupId": 7990, 
+            "GroupID": 7990, 
             "High": 166, 
             "Href": "http://platform.risksense.com/api/v1/client/747/host/search?page=0&size=2&sort=findingsDistribution.total,desc", 
             "LastFoundOn": "2007-06-14", 
             "NetworkType": "IP", 
             "Total": 418, 
             "NetworkName": "IP Network", 
-            "Id": 3570259, 
+            "ID": 3570259, 
             "Rs3": 514
         }, 
         {
-            "NetworkId": 78038, 
+            "NetworkID": 78038, 
             "OldestOpenFindingWithThreatDiscoveredOn": "2015-02-10", 
             "HostName": "ftpserver", 
             "Group": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
-            "ClientId": 747, 
+            "ClientID": 747, 
             "Note": [], 
             "Source": [
                 {
                     "ScannerType": null, 
                     "Name": "QUALYS", 
-                    "Uuid": "QUALYS_SCANNER"
+                    "UuID": "QUALYS_SCANNER"
                 }
             ], 
             "Critical": 50, 
@@ -389,7 +390,7 @@ Look up the host details. The host details can be searched based on input parame
                     "Name": "Linux_Team_2", 
                     "Created": "2019-04-24T21:39:59", 
                     "Color": "#78a19b", 
-                    "Id": 215554, 
+                    "ID": 215554, 
                     "Description": ""
                 }, 
                 {
@@ -398,7 +399,7 @@ Look up the host details. The host details can be searched based on input parame
                     "Name": "Data_Center_2", 
                     "Created": "2019-04-24T21:37:06", 
                     "Color": "#dd8361", 
-                    "Id": 215552, 
+                    "ID": 215552, 
                     "Description": ""
                 }
             ], 
@@ -562,14 +563,14 @@ Look up the host details. The host details can be searched based on input parame
                 "Family": "Linux", 
                 "Name": "Red Hat Enterprise Linux Server 5.4"
             }, 
-            "GroupId": 7990, 
+            "GroupID": 7990, 
             "High": 92, 
             "Href": "http://platform.risksense.com/api/v1/client/747/host/search?page=0&size=2&sort=findingsDistribution.total,desc", 
             "LastFoundOn": "2006-12-06", 
             "NetworkType": "IP", 
             "Total": 291, 
             "NetworkName": "IP Network", 
-            "Id": 3571622, 
+            "ID": 3571622, 
             "Rs3": 528
         }
     ], 
@@ -578,13 +579,13 @@ Look up the host details. The host details can be searched based on input parame
             "IP": "45.19.214.161", 
             "Hostname": "iz0.y2.gov", 
             "OS": "Red Hat Enterprise Linux Server 6.1", 
-            "ID": 3570259
+            "ID": "3570259"
         }, 
         {
             "IP": "34.17.197.127", 
             "Hostname": "ftpserver", 
             "OS": "Red Hat Enterprise Linux Server 5.4", 
-            "ID": 3571622
+            "ID": "3571622"
         }
     ]
 }
@@ -593,7 +594,7 @@ Look up the host details. The host details can be searched based on input parame
 ##### Human Readable Output
 ### Total hosts found: 1970		Page: 0/984		Client: The Demo Client
 ### RiskSense host(s) details:
-|Rs3|HostName|Total Findings|Critical Findings|High Findings|Medium Findings|Low Findings|Info Findings|Id|OS|Tags|Notes|XRs3|Criticality|IpAddress|Network|Group|
+|Rs3|HostName|Total Findings|Critical Findings|High Findings|Medium Findings|Low Findings|Info Findings|ID|OS|Tags|Notes|XRs3|Criticality|IpAddress|Network|Group|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 514 | iz0.y2.gov | 418 | 86 | 166 | 148 | 18 | 0 | 3570259 | Red Hat Enterprise Linux Server 6.1 | 2 | 0 |  | 5 | 45.19.214.161 | IP Network | 1 |
 | 528 | ftpserver | 291 | 50 | 92 | 127 | 22 | 0 | 3571622 | Red Hat Enterprise Linux Server 5.4 | 2 | 0 |  | 5 | 34.17.197.127 | IP Network | 1 |
@@ -610,7 +611,7 @@ Look up single host details in depth. This command accepts either hostname or ho
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | The host ID is unique for the host. Host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.Id) or in human-readable output of 'risksense-get-hosts' command. | Optional | 
+| host_id | The host ID is unique for the host. Host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in human-readable output of 'risksense-get-hosts' command. | Optional | 
 | host | The host is identified by hostname. Host name is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in human-readable output of 'risksense-get-hosts' command. | Optional | 
 
 
@@ -622,22 +623,22 @@ Look up single host details in depth. This command accepts either hostname or ho
 | Host.ID | String | The unique ID within the tool retrieving the host. | 
 | Host.IP | String | The IP address of the host. | 
 | Host.OS | String | The operating system of the host. | 
-| RiskSense.Host.Id | Number | The unique identifier of the host. | 
-| RiskSense.Host.ClientId | Number | The client id of the host. | 
-| RiskSense.Host.GroupId | Number | The id of the group belonging to the host. | 
+| RiskSense.Host.ID | Number | The unique identifier of the host. | 
+| RiskSense.Host.ClientID | Number | The client id of the host. | 
+| RiskSense.Host.GroupID | Number | The id of the group belonging to the host. | 
 | RiskSense.Host.GroupName | String | The name of the group belonging to the host. | 
 | RiskSense.Host.Groups | Unknown | The list of the groups. | 
 | RiskSense.Host.Rs3 | Number | The asset security score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
 | RiskSense.Host.Xrs3 | String | The asset security score calculated by the RiskSense platform. | 
 | RiskSense.Host.Criticality | Number | The asset importance using a scale of 1 (lowest importance) to 5 (highest importance). | 
-| RiskSense.Host.Tag.Id | Number | The ID of the tag. | 
+| RiskSense.Host.Tag.ID | Number | The ID of the tag. | 
 | RiskSense.Host.Tag.Name | String | The Name of the tag. | 
 | RiskSense.Host.Tag.Category | String | The category of the tag. | 
 | RiskSense.Host.Tag.Description | String | The description of the tag. | 
 | RiskSense.Host.Tag.Created | String | The time when the tag was created. | 
 | RiskSense.Host.Tag.Updated | String | The time when the tag was last updated. | 
 | RiskSense.Host.Tag.Color | String | The color code of the tag. | 
-| RiskSense.Host.NetworkId | Number | The network ID of the host. | 
+| RiskSense.Host.NetworkID | Number | The network ID of the host. | 
 | RiskSense.Host.NetworkName | String | The name of the network used by the host. | 
 | RiskSense.Host.NetworkType | String | The type of the network used by the host. | 
 | RiskSense.Host.DiscoveredOn | String | The time when the host was discovered. | 
@@ -655,12 +656,12 @@ Look up single host details in depth. This command accepts either hostname or ho
 | RiskSense.Host.CMDB.Value | String | The CMDB value identifier of the host. | 
 | RiskSense.Host.CMDB.Label | String | The CMDB label identifier of the host. | 
 | RiskSense.Host.Services | String | The name of the services that are used by the host. | 
-| RiskSense.Host.Note.UserId | String | The User ID of the user who added a note for the host. | 
+| RiskSense.Host.Note.UserID | String | The User ID of the user who added a note for the host. | 
 | RiskSense.Host.Note.UserName | String | The Username of the user who added a note for the host. | 
 | RiskSense.Host.Note.Note | String | The notes that are added by the user for the host. | 
 | RiskSense.Host.Note.Date | String | The time when note is added by the user for the host. | 
 | RiskSense.Host.Source.Name | String | The name of the source associated with the host. | 
-| RiskSense.Host.Source.Uuid | String | The unique ID of the source associated with the host. | 
+| RiskSense.Host.Source.UuID | String | The unique ID of the source associated with the host. | 
 | RiskSense.Host.Source.ScannerType | String | The type of scanner that discovered the host. | 
 | RiskSense.Host.Ticket.TicketNumber | String | The number of the ticket associated with the host. | 
 | RiskSense.Host.Ticket.TicketStatus | String | The status of the ticket associated with the host. | 
@@ -680,6 +681,8 @@ Look up single host details in depth. This command accepts either hostname or ho
 | RiskSense.Host.Medium | Number | The number of open findings of the host with medium severity. | 
 | RiskSense.Host.Low | Number | The number of open findings of the host with low severity. | 
 | RiskSense.Host.Info | Number | The number of open findings of the host with info severity. | 
+| Ticket.ID|string| The ID of the ticket associated with the host.
+| Ticket.State|string|The state of the ticket associated with the host.     
 
 
 ##### Command Example
@@ -693,9 +696,15 @@ Look up single host details in depth. This command accepts either hostname or ho
         "Host": [
             {
                 "Hostname": "united-78c957c5",
-                "ID": 3571259,
+                "ID": "3571259",
                 "IP": "53.132.37.52",
                 "OS": "Windows 2008/7"
+            }
+        ],
+        "Ticket": [
+            {
+                "ID": "JINT-525",
+                "State": "To Do"
             }
         ],
         "RiskSense.Host": [
@@ -846,27 +855,27 @@ Look up single host details in depth. This command accepts either hostname or ho
                         "Value": ""
                     }
                 ],
-                "ClientId": 747,
+                "ClientID": 747,
                 "Critical": 2,
                 "Criticality": 5,
                 "DiscoveredByRS": false,
                 "DiscoveredOn": "2007-01-23",
                 "Group": [
                     {
-                        "Id": 7990,
+                        "ID": 7990,
                         "Name": "Default Group"
                     },
                     {
-                        "Id": 8002,
+                        "ID": 8002,
                         "Name": "BU2_Other_Devices"
                     }
                 ],
-                "GroupId": 7990,
+                "GroupID": 7990,
                 "GroupName": "Default Group",
                 "High": 0,
                 "HostName": "united-78c957c5",
                 "Href": "http://platform.risksense.com/api/v1/client/747/host/search?page=0&size=20&sort=id,asc",
-                "Id": 3571259,
+                "ID": 3571259,
                 "Info": 0,
                 "IpAddress": "53.132.37.52",
                 "LastFoundOn": "2007-01-23",
@@ -875,20 +884,20 @@ Look up single host details in depth. This command accepts either hostname or ho
                 "LastVulnTrendingOn": null,
                 "Low": 0,
                 "Medium": 0,
-                "NetworkId": 78038,
+                "NetworkID": 78038,
                 "NetworkName": "IP Network",
                 "NetworkType": "IP",
                 "Note": [
                     {
                         "Date": "2019-12-30T11:35:41",
                         "Note": "Testing note\n",
-                        "UserId": 5969,
+                        "UserID": 5969,
                         "UserName": "Ravindra Sojitra"
                     },
                     {
                         "Date": "2019-12-30T11:38:25",
                         "Note": "This is second note for testing",
-                        "UserId": 5969,
+                        "UserID": 5969,
                         "UserName": "Ravindra Sojitra"
                     }
                 ],
@@ -906,7 +915,7 @@ Look up single host details in depth. This command accepts either hostname or ho
                     {
                         "Name": "QUALYS",
                         "ScannerType": null,
-                        "Uuid": "QUALYS_SCANNER"
+                        "UuID": "QUALYS_SCANNER"
                     }
                 ],
                 "Tag": [
@@ -915,7 +924,7 @@ Look up single host details in depth. This command accepts either hostname or ho
                         "Color": "#dd8361",
                         "Created": "2019-04-24T21:37:06",
                         "Description": "",
-                        "Id": 215552,
+                        "ID": 215552,
                         "Name": "Data_Center_2",
                         "Updated": "2019-04-24T21:37:06"
                     },
@@ -924,7 +933,7 @@ Look up single host details in depth. This command accepts either hostname or ho
                         "Color": "#78a19b",
                         "Created": "2019-04-24T21:42:34",
                         "Description": "",
-                        "Id": 215557,
+                        "ID": 215557,
                         "Name": "Windows_Server_Team_1",
                         "Updated": "2019-04-24T21:42:34"
                     },
@@ -933,7 +942,7 @@ Look up single host details in depth. This command accepts either hostname or ho
                         "Color": "#648d9f",
                         "Created": "2019-10-29T20:22:25",
                         "Description": "",
-                        "Id": 229865,
+                        "ID": 229865,
                         "Name": "Dev_Servers",
                         "Updated": "2019-10-29T20:22:25"
                     },
@@ -942,7 +951,7 @@ Look up single host details in depth. This command accepts either hostname or ho
                         "Color": "#648d9f",
                         "Created": "2019-12-30T11:27:57",
                         "Description": "",
-                        "Id": 232940,
+                        "ID": 232940,
                         "Name": "Test Ticket for host",
                         "Updated": "2019-12-30T11:28:00"
                     }
@@ -1024,7 +1033,7 @@ Lookup vulnerability details per host finding with its base score.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostFindingId | The unique host finding ID.HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.Id) after executing 'risksense-get-open-host-findings' or 'risksense-get-close-host-findings' command. | Required | 
+| hostFindingId | The unique host finding ID.HostFindingID is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-open-host-findings' or 'risksense-get-close-host-findings' command. | Required | 
 
 
 ##### Context Output
@@ -1042,6 +1051,9 @@ Lookup vulnerability details per host finding with its base score.
 | RiskSense.HostFinding.Vulnerability.AvailabilityImpact | String | The Availability refers to the accessibility of network resources. | 
 | RiskSense.HostFinding.Vulnerability.Trending | Boolean | Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers in the wild based on activity in hacker forums, Twitter feeds as well as analysis of 3rd party threat intelligence sources. | 
 | RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn | String | The Last trending date of vulnerability. | 
+| CVE.ID|string|Common Vulnerabilities and Exposures ID.
+| CVE.Description|string|Description about CVE.
+| CVE.CVSS|string|The CVSS represents Severity(informational, low, medium, high, critical) of risk.
 
 
 ##### Command Example
@@ -1051,7 +1063,14 @@ Lookup vulnerability details per host finding with its base score.
 
 ##### Context Example
 ```
- {
+ {      
+        "CVE": [
+            {
+                "ID": "CVE-2007-0882",
+                "CVSS": "10",
+                "Description": "Argument injection vulnerability in the telnet daemon (in.telnetd) in Solaris 10 and 11 (SunOS 5.10 and 5.11) misinterprets certain client "-f" sequences as valid requests for the login program to skip authentication, which allows remote attackers to log into certain accounts, as demonstrated by the bin account."
+            }
+        ],
         "RiskSense.HostFinding.Vulnerability": [
             {
                 "AccessComplexity": "Low",
@@ -1108,7 +1127,7 @@ This command is used to find unique open host findings.The open findings can be 
 | RiskSense.UniqueHostFinding.Severity | Number | Similar to risk rating, the severity of a vulnerability conveys the potential threat posed. | 
 | RiskSense.UniqueHostFinding.HostCount | Number | The total number of the host found in unique host finding. | 
 | RiskSense.UniqueHostFinding.Source | String | The name of the source associated with the unique host finding. | 
-| RiskSense.UniqueHostFinding.SourceId | String | The unique ID of the source. | 
+| RiskSense.UniqueHostFinding.SourceID | String | The unique ID of the source. | 
 | RiskSense.UniqueHostFinding.Href | String | Reference API link of unique host finding search. | 
 
 
@@ -1124,7 +1143,7 @@ This command is used to find unique open host findings.The open findings can be 
         {
             "Severity": 10, 
             "Title": "Solaris 10 and Solaris 11 (SolarisExpress) Remote Access Telnet Daemon Flaw", 
-            "SourceId": "QUALYS38574", 
+            "SourceID": "QUALYS38574", 
             "HostCount": 22, 
             "Source": "QUALYS", 
             "Href": "http://platform.risksense.com/api/v1/client/747/uniqueHostFinding/search?page=0&size=3&sort=severity,desc"
@@ -1132,7 +1151,7 @@ This command is used to find unique open host findings.The open findings can be 
         {
             "Severity": 10, 
             "Title": "FreeBSD Telnetd Code Execution Vulnerability (FreeBSD-SA-11:08)", 
-            "SourceId": "QUALYS119834", 
+            "SourceID": "QUALYS119834", 
             "HostCount": 17, 
             "Source": "QUALYS", 
             "Href": "http://platform.risksense.com/api/v1/client/747/uniqueHostFinding/search?page=0&size=3&sort=severity,desc"
@@ -1140,7 +1159,7 @@ This command is used to find unique open host findings.The open findings can be 
         {
             "Severity": 10, 
             "Title": "Microsoft SMB Server Remote Code Execution Vulnerability (MS17-010) and Shadow Brokers", 
-            "SourceId": "QUALYS91345", 
+            "SourceID": "QUALYS91345", 
             "HostCount": 140, 
             "Source": "QUALYS", 
             "Href": "http://platform.risksense.com/api/v1/client/747/uniqueHostFinding/search?page=0&size=3&sort=severity,desc"
@@ -1152,7 +1171,7 @@ This command is used to find unique open host findings.The open findings can be 
 ##### Human Readable Output
 ### Total unique open findings: 3949		 Page: 0/1316		 Client: The Demo Client
 ### Unique open finding(s) details:
-|Title|Severity|Asset Count|Source|Source Id|
+|Title|Severity|Asset Count|Source|Source ID|
 |---|---|---|---|---|
 | Solaris 10 and Solaris 11 (SolarisExpress) Remote Access Telnet Daemon Flaw | 10.0 | 22 | QUALYS | QUALYS38574 |
 | FreeBSD Telnetd Code Execution Vulnerability (FreeBSD-SA-11:08) | 10.0 | 17 | QUALYS | QUALYS119834 |
@@ -1183,26 +1202,26 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RiskSense.HostFinding.Id | string | The unique ID of the host finding. | 
+| RiskSense.HostFinding.ID | string | The unique ID of the host finding. | 
 | RiskSense.HostFinding.Source | string | Host discovered by the scanner. | 
-| RiskSense.HostFinding.SourceId | string | Scanner Id of discovered scanner. | 
+| RiskSense.HostFinding.SourceID | string | Scanner Id of discovered scanner. | 
 | RiskSense.HostFinding.Title | string | The title of the host finding. | 
 | RiskSense.HostFinding.Port | integer | The port number of the host finding. | 
 | RiskSense.HostFinding.GroupCount | integer | The total number of groups for host finding. | 
-| RiskSense.HostFinding.Group.Id | integer | The unique ID of the group associated with the host finding. | 
+| RiskSense.HostFinding.Group.ID | integer | The unique ID of the group associated with the host finding. | 
 | RiskSense.HostFinding.Group.Name | string | The name of the group associated with the host finding. | 
-| RiskSense.HostFinding.Host.HostId | integer | The unique ID of the host associated with the host finding. | 
+| RiskSense.HostFinding.Host.HostID | integer | The unique ID of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.HostName | string | The Hostname of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.IpAddress | string | The IP Address of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Criticality | integer | The criticality of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.External | boolean | To identify if the host is external or internal. | 
-| RiskSense.HostFinding.Host.Port.Id | integer | The unique ID of the Host(s) Port associated with the host finding. | 
+| RiskSense.HostFinding.Host.Port.ID | integer | The unique ID of the Host(s) Port associated with the host finding. | 
 | RiskSense.HostFinding.Host.Port.Number | integer | The port number of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Rs3 | integer | The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
-| RiskSense.HostFinding.Network.Id | integer | The network ID of the host finding. | 
+| RiskSense.HostFinding.Network.ID | integer | The network ID of the host finding. | 
 | RiskSense.HostFinding.Network.Name | string | The name of the network used by the host finding. | 
 | RiskSense.HostFinding.Network.Type | string | The type of the network used by the host finding. | 
-| RiskSense.HostFinding.Assessment.Id | integer | The assessment ID of the host finding. | 
+| RiskSense.HostFinding.Assessment.ID | integer | The assessment ID of the host finding. | 
 | RiskSense.HostFinding.Assessment.Name | String | The name of the assessment associated with the host finding. | 
 | RiskSense.HostFinding.Assessment.Date | String | The time when the assessment is created. | 
 | RiskSense.HostFinding.Vulnerability.Cve | String | The name of the Common Vulnerabilities and Exposures associated with the host finding. | 
@@ -1230,7 +1249,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
 | RiskSense.HostFinding.Patch.Name | String | The patch name of the host finding. | 
 | RiskSense.HostFinding.Patch.Url | String | The patch url of the host finding. | 
 | RiskSense.HostFinding.TagCount | integer | The total number of tags associated with host finding. | 
-| RiskSense.HostFinding.Tag.Id | integer | The Tag identifier of the host finding. | 
+| RiskSense.HostFinding.Tag.ID | integer | The Tag identifier of the host finding. | 
 | RiskSense.HostFinding.Tag.Name | String | The tag name of the host finding. | 
 | RiskSense.HostFinding.Tag.Category | String | The tag category of the host finding. | 
 | RiskSense.HostFinding.Tag.Description | String | The tag description of the host finding. | 
@@ -1238,7 +1257,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
 | RiskSense.HostFinding.Tag.Updated | String | The time when the tag is last updated. | 
 | RiskSense.HostFinding.Tag.Color | String | The color of the tag. | 
 | RiskSense.HostFinding.TagAssetCount | integer | The total number of tag assets. | 
-| RiskSense.HostFinding.TagAsset.Id | integer | The ID of the tag asset. | 
+| RiskSense.HostFinding.TagAsset.ID | integer | The ID of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Name | String | The name of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Category | String | The category of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Description | String | The description of the tag asset. | 
@@ -1264,7 +1283,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
 | RiskSense.HostFinding.ResolvedOn | String | The time when the host finding was resolved. | 
 | RiskSense.HostFinding.ScannerName | String | The name of the scanner of the host finding. | 
 | RiskSense.HostFinding.FindingType | String | The finding type of the host finding. | 
-| RiskSense.HostFinding.MachineId | String | The machine ID of the host finding. | 
+| RiskSense.HostFinding.MachineID | String | The machine ID of the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.State | String | The current state of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.StateName | String | The state name of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.StateDescription | String | The state description of embedded status associated with the host finding. | 
@@ -1273,7 +1292,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
 | RiskSense.HostFinding.StatusEmbedded.DueDate | String | The due date of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.ExpirationDate | String | The time when status is expired associated with the host findin.. | 
 | RiskSense.HostFinding.ManualFindingReportCount | integer | The total number of manual finding reports associated with the host finding. | 
-| RiskSense.HostFinding.ManualFindingReport.Id | integer | The ID of manual finding reports associated with the host finding. | 
+| RiskSense.HostFinding.ManualFindingReport.ID | integer | The ID of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Title | String | The title of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Label | String | The label of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Pii | String | The pii number of manual finding reports associated with the host finding. | 
@@ -1283,15 +1302,23 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
 | RiskSense.HostFinding.NoteCount | integer | Number of notes found. | 
 | RiskSense.HostFinding.Note.Date | String | The time when note is added by the user for the host finding. | 
 | RiskSense.HostFinding.Note.Note | String | The notes that are added by the user for the host finding. | 
-| RiskSense.HostFinding.Note.UserId | integer | The User ID of the user who added a note for the host finding. | 
+| RiskSense.HostFinding.Note.UserID | integer | The User ID of the user who added a note for the host finding. | 
 | RiskSense.HostFinding.Note.UserName | String | The Username of the user who added a note for the host finding. | 
-| RiskSense.HostFinding.Assignment.Id | integer | The unique ID of the assignment associated with the host finding. | 
+| RiskSense.HostFinding.Assignment.ID | integer | The unique ID of the assignment associated with the host finding. | 
 | RiskSense.HostFinding.Assignment.FirstName | String | The first name of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.LastName | String | The last name of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.ReceiveEmails | boolean | Indicates whether email is received or not. | 
 | RiskSense.HostFinding.Assignment.Email | string | The email of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.Username | string | The username of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Services | string | The name of the services for the host finding. | 
+| Ticket.ID|string| The ID of the ticket associated with the host finding.
+| Ticket.State|string|The state of the ticket associated with the host finding.     
+| Host.Hostname|string|The hostname of the host.
+| Host.ID|string|The unique ID within the tool retrieving the host.
+| Host.IP|string|The IP address of the host.
+| CVE.ID|string|Common Vulnerabilities and Exposures ID.
+| CVE.Description|string|Description about CVE.
+| CVE.CVSS|string|The CVSS represents Severity(informational, low, medium, high, critical) of risk.
 
 
 ##### Command Example
@@ -1301,19 +1328,33 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
 
 ##### Context Example
 ```
-{
+{   
+    "CVE": [
+        {
+            "ID": "CVE-2009-4565",
+            "CVSS": "7.5",
+            "Description": "sendmail before 8.14.4 does not properly handle a '\\0' character in a Common Name (CN) field of an X.509 certificate, which (1) allows man-in-the-middle attackers to spoof arbitrary SSL-based SMTP servers via a crafted server certificate issued by a legitimate Certification Authority, and (2) allows remote attackers to bypass intended access restrictions via a crafted client certificate issued by a legitimate Certification Authority, a related issue to CVE-2009-2408."
+        }
+    ],
+    "Host": [
+        {
+            "ID": "3569982",
+            "Hostname": "loz.xg.mil",
+            "IP": "116.145.139.179"
+        }
+    ],
     "RiskSense.HostFinding": [
         {
             "ResolvedOn": "", 
             "Group": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
             "Network": {
                 "Type": "IP", 
-                "Id": 78038, 
+                "ID": 78038, 
                 "Name": "IP Network"
             }, 
             "StatusEmbedded": {
@@ -1326,7 +1367,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                 "DueDate": "2019-12-01T00:00:00"
             }, 
             "Title": "Sendmail SSL Certificate NULL Character Spoofing Vulnerability", 
-            "SourceId": "QUALYS74240", 
+            "SourceID": "QUALYS74240", 
             "GroupCount": 1, 
             "Note": [], 
             "Source": "QUALYS", 
@@ -1344,7 +1385,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
             "Assessment": [
                 {
                     "Date": "2019-04-23", 
-                    "Id": 67442, 
+                    "ID": 67442, 
                     "Name": "First Assessment"
                 }
             ], 
@@ -1360,7 +1401,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "Data_Center_1", 
                     "Created": "2019-04-24T21:35:12", 
                     "Color": "#dd8361", 
-                    "Id": 215551
+                    "ID": 215551
                 }, 
                 {
                     "Category": "People", 
@@ -1368,96 +1409,96 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "Linux_Team_2", 
                     "Created": "2019-04-24T21:39:59", 
                     "Color": "#78a19b", 
-                    "Id": 215554
+                    "ID": 215554
                 }
             ], 
             "Host": {
-                "HostId": 3569982, 
+                "HostID": 3569982, 
                 "Criticality": 5, 
                 "HostName": "loz.xg.mil", 
                 "External": true, 
                 "IpAddress": "116.145.139.179", 
                 "Port": [
                     {
-                        "Id": 42841210, 
+                        "ID": 42841210, 
                         "Number": 21
                     }, 
                     {
-                        "Id": 42841323, 
+                        "ID": 42841323, 
                         "Number": 22
                     }, 
                     {
-                        "Id": 42841347, 
+                        "ID": 42841347, 
                         "Number": 23
                     }, 
                     {
-                        "Id": 42841183, 
+                        "ID": 42841183, 
                         "Number": 25
                     }, 
                     {
-                        "Id": 42841178, 
+                        "ID": 42841178, 
                         "Number": 111
                     }, 
                     {
-                        "Id": 42841312, 
+                        "ID": 42841312, 
                         "Number": 123
                     }, 
                     {
-                        "Id": 42841336, 
+                        "ID": 42841336, 
                         "Number": 587
                     }, 
                     {
-                        "Id": 42841279, 
+                        "ID": 42841279, 
                         "Number": 852
                     }, 
                     {
-                        "Id": 42841222, 
+                        "ID": 42841222, 
                         "Number": 6112
                     }, 
                     {
-                        "Id": 42841168, 
+                        "ID": 42841168, 
                         "Number": 7100
                     }, 
                     {
-                        "Id": 42841236, 
+                        "ID": 42841236, 
                         "Number": 8005
                     }, 
                     {
-                        "Id": 42841197, 
+                        "ID": 42841197, 
                         "Number": 8007
                     }, 
                     {
-                        "Id": 42841329, 
+                        "ID": 42841329, 
                         "Number": 32771
                     }, 
                     {
-                        "Id": 42841246, 
+                        "ID": 42841246, 
                         "Number": 32772
                     }, 
                     {
-                        "Id": 42841259, 
+                        "ID": 42841259, 
                         "Number": 32775
                     }, 
                     {
-                        "Id": 42841269, 
+                        "ID": 42841269, 
                         "Number": 32776
                     }, 
                     {
-                        "Id": 42841361, 
+                        "ID": 42841361, 
                         "Number": 32777
                     }, 
                     {
-                        "Id": 42841370, 
+                        "ID": 42841370, 
                         "Number": 32778
                     }, 
                     {
-                        "Id": 42841172, 
+                        "ID": 42841172, 
                         "Number": 32779
                     }
                 ], 
                 "Rs3": 644
             }, 
-            "MachineId": "", 
+            "MachineID": "", 
             "Services": "smtp", 
             "ThreatCount": 0, 
             "Xrs3Impact": null, 
@@ -1487,29 +1528,10 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
             "Threat": [], 
             "Output": "220 lOz.Xg.mil ESMTP Sendmail lna.To.us+Sun/lna.To.us; Fri, 23 Nov 2012 00:54:14 -0500 (EST)", 
             "ManualFindingReport": [], 
-            "TagAssetCount": [
-                {
-                    "category": "Location", 
-                    "updated": "2019-06-19T19:23:08", 
-                    "description": "", 
-                    "created": "2019-04-24T21:35:12", 
-                    "color": "#dd8361", 
-                    "id": 215551, 
-                    "name": "Data_Center_1"
-                }, 
-                {
-                    "category": "People", 
-                    "updated": "2019-04-24T21:39:59", 
-                    "description": "", 
-                    "created": "2019-04-24T21:39:59", 
-                    "color": "#78a19b", 
-                    "id": 215554, 
-                    "name": "Linux_Team_2"
-                }
-            ], 
+            "TagAssetCount": 2,
             "ManualFindingReportCount": 0, 
             "FindingType": "Auth/Unauthenticated", 
-            "Id": 115469577, 
+            "ID": 115469577, 
             "Tag": [
                 {
                     "Category": "Location", 
@@ -1517,7 +1539,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "Data_Center_1", 
                     "Created": "2019-04-24T21:35:12", 
                     "Color": "#dd8361", 
-                    "Id": 215551, 
+                    "ID": 215551, 
                     "Description": ""
                 }, 
                 {
@@ -1526,7 +1548,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "Linux_Team_2", 
                     "Created": "2019-04-24T21:39:59", 
                     "Color": "#78a19b", 
-                    "Id": 215554, 
+                    "ID": 215554, 
                     "Description": ""
                 }, 
                 {
@@ -1535,7 +1557,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "State Assigned  Unassigned", 
                     "Created": "2019-08-28T17:27:15", 
                     "Color": "#648d9f", 
-                    "Id": 225744, 
+                    "ID": 225744, 
                     "Description": ""
                 }, 
                 {
@@ -1544,7 +1566,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "PCI Assets", 
                     "Created": "2019-08-28T18:50:30", 
                     "Color": "#648d9f", 
-                    "Id": 225750, 
+                    "ID": 225750, 
                     "Description": ""
                 }
             ], 
@@ -1556,13 +1578,13 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
             "ResolvedOn": "", 
             "Group": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
             "Network": {
                 "Type": "IP", 
-                "Id": 78038, 
+                "ID": 78038, 
                 "Name": "IP Network"
             }, 
             "StatusEmbedded": {
@@ -1575,7 +1597,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                 "DueDate": "2019-12-01T00:00:00"
             }, 
             "Title": "Sendmail SSL Certificate NULL Character Spoofing Vulnerability", 
-            "SourceId": "QUALYS74240", 
+            "SourceID": "QUALYS74240", 
             "GroupCount": 1, 
             "Note": [], 
             "Source": "QUALYS", 
@@ -1593,7 +1615,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
             "Assessment": [
                 {
                     "Date": "2019-04-23", 
-                    "Id": 67442, 
+                    "ID": 67442, 
                     "Name": "First Assessment"
                 }
             ], 
@@ -1609,7 +1631,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "Data_Center_1", 
                     "Created": "2019-04-24T21:35:12", 
                     "Color": "#dd8361", 
-                    "Id": 215551
+                    "ID": 215551
                 }, 
                 {
                     "Category": "People", 
@@ -1617,96 +1639,96 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "Linux_Team_2", 
                     "Created": "2019-04-24T21:39:59", 
                     "Color": "#78a19b", 
-                    "Id": 215554
+                    "ID": 215554
                 }
             ], 
             "Host": {
-                "HostId": 3569982, 
+                "HostID": 3569982, 
                 "Criticality": 5, 
                 "HostName": "loz.xg.mil", 
                 "External": true, 
                 "IpAddress": "116.145.139.179", 
                 "Port": [
                     {
-                        "Id": 42841210, 
+                        "ID": 42841210, 
                         "Number": 21
                     }, 
                     {
-                        "Id": 42841323, 
+                        "ID": 42841323, 
                         "Number": 22
                     }, 
                     {
-                        "Id": 42841347, 
+                        "ID": 42841347, 
                         "Number": 23
                     }, 
                     {
-                        "Id": 42841183, 
+                        "ID": 42841183, 
                         "Number": 25
                     }, 
                     {
-                        "Id": 42841178, 
+                        "ID": 42841178, 
                         "Number": 111
                     }, 
                     {
-                        "Id": 42841312, 
+                        "ID": 42841312, 
                         "Number": 123
                     }, 
                     {
-                        "Id": 42841336, 
+                        "ID": 42841336, 
                         "Number": 587
                     }, 
                     {
-                        "Id": 42841279, 
+                        "ID": 42841279, 
                         "Number": 852
                     }, 
                     {
-                        "Id": 42841222, 
+                        "ID": 42841222, 
                         "Number": 6112
                     }, 
                     {
-                        "Id": 42841168, 
+                        "ID": 42841168, 
                         "Number": 7100
                     }, 
                     {
-                        "Id": 42841236, 
+                        "ID": 42841236, 
                         "Number": 8005
                     }, 
                     {
-                        "Id": 42841197, 
+                        "ID": 42841197, 
                         "Number": 8007
                     }, 
                     {
-                        "Id": 42841329, 
+                        "ID": 42841329, 
                         "Number": 32771
                     }, 
                     {
-                        "Id": 42841246, 
+                        "ID": 42841246, 
                         "Number": 32772
                     }, 
                     {
-                        "Id": 42841259, 
+                        "ID": 42841259, 
                         "Number": 32775
                     }, 
                     {
-                        "Id": 42841269, 
+                        "ID": 42841269, 
                         "Number": 32776
                     }, 
                     {
-                        "Id": 42841361, 
+                        "ID": 42841361, 
                         "Number": 32777
                     }, 
                     {
-                        "Id": 42841370, 
+                        "ID": 42841370, 
                         "Number": 32778
                     }, 
                     {
-                        "Id": 42841172, 
+                        "ID": 42841172, 
                         "Number": 32779
                     }
                 ], 
                 "Rs3": 644
             }, 
-            "MachineId": "", 
+            "MachineID": "", 
             "Services": "smtp, submission", 
             "ThreatCount": 0, 
             "Xrs3Impact": null, 
@@ -1736,29 +1758,10 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
             "Threat": [], 
             "Output": "220 lOz.Xg.mil ESMTP Sendmail lna.To.us+Sun/lna.To.us; Fri, 23 Nov 2012 00:58:04 -0500 (EST)", 
             "ManualFindingReport": [], 
-            "TagAssetCount": [
-                {
-                    "category": "Location", 
-                    "updated": "2019-06-19T19:23:08", 
-                    "description": "", 
-                    "created": "2019-04-24T21:35:12", 
-                    "color": "#dd8361", 
-                    "id": 215551, 
-                    "name": "Data_Center_1"
-                }, 
-                {
-                    "category": "People", 
-                    "updated": "2019-04-24T21:39:59", 
-                    "description": "", 
-                    "created": "2019-04-24T21:39:59", 
-                    "color": "#78a19b", 
-                    "id": 215554, 
-                    "name": "Linux_Team_2"
-                }
-            ], 
+            "TagAssetCount": 2, 
             "ManualFindingReportCount": 0, 
             "FindingType": "Auth/Unauthenticated", 
-            "Id": 115469699, 
+            "ID": 115469699, 
             "Tag": [
                 {
                     "Category": "Location", 
@@ -1766,7 +1769,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "Data_Center_1", 
                     "Created": "2019-04-24T21:35:12", 
                     "Color": "#dd8361", 
-                    "Id": 215551, 
+                    "ID": 215551, 
                     "Description": ""
                 }, 
                 {
@@ -1775,7 +1778,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "Linux_Team_2", 
                     "Created": "2019-04-24T21:39:59", 
                     "Color": "#78a19b", 
-                    "Id": 215554, 
+                    "ID": 215554, 
                     "Description": ""
                 }, 
                 {
@@ -1784,7 +1787,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "State Assigned  Unassigned", 
                     "Created": "2019-08-28T17:27:15", 
                     "Color": "#648d9f", 
-                    "Id": 225744, 
+                    "ID": 225744, 
                     "Description": ""
                 }, 
                 {
@@ -1793,7 +1796,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
                     "Name": "PCI Assets", 
                     "Created": "2019-08-28T18:50:30", 
                     "Color": "#648d9f", 
-                    "Id": 225750, 
+                    "ID": 225750, 
                     "Description": ""
                 }
             ], 
@@ -1808,7 +1811,7 @@ A detailed open host finding view with the severity level. Displays vulnerabilit
 ##### Human Readable Output
 ### Total open host findings: 13		 Page: 0/6		 Client: The Demo Client
 ### Open host finding(s) details:
-|Id|Hostname|IP Address|Title|Risk|Threats|Rs3|Criticality|Severity|Groups|Port|State|Assignments|Tags|Asset Tags|Note|Manual Finding Report Count|
+|ID|Hostname|IP Address|Title|Risk|Threats|Rs3|Criticality|Severity|Groups|Port|State|Assignments|Tags|Asset Tags|Note|Manual Finding Report Count|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 115469577 | loz.xg.mil | 116.145.139.179 | Sendmail SSL Certificate NULL Character Spoofing Vulnerability | 5.67 | 0 | 644 | 5 | 7.5 | 1 | 25 | UNASSIGNED |  | 4 | 2 | 0 | 0 |
 | 115469699 | loz.xg.mil | 116.145.139.179 | Sendmail SSL Certificate NULL Character Spoofing Vulnerability | 5.67 | 0 | 644 | 5 | 7.5 | 1 | 587 | UNASSIGNED |  | 4 | 2 | 0 | 0 |
@@ -1838,26 +1841,26 @@ A detail of close host finding with its severity level divided into Critical, Hi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RiskSense.HostFinding.Id | string | The unique ID of the host finding. | 
+| RiskSense.HostFinding.ID | string | The unique ID of the host finding. | 
 | RiskSense.HostFinding.Source | string | Host discovered by the scanner. | 
-| RiskSense.HostFinding.SourceId | string | Scanner Id of discovered scanner. | 
+| RiskSense.HostFinding.SourceID | string | Scanner Id of discovered scanner. | 
 | RiskSense.HostFinding.Title | string | The title of the host finding. | 
 | RiskSense.HostFinding.Port | integer | The port number of the host finding. | 
 | RiskSense.HostFinding.GroupCount | integer | The total number of groups for host finding. | 
-| RiskSense.HostFinding.Group.Id | integer | The unique ID of the group associated with the host finding. | 
+| RiskSense.HostFinding.Group.ID | integer | The unique ID of the group associated with the host finding. | 
 | RiskSense.HostFinding.Group.Name | string | The name of the group associated with the host finding. | 
-| RiskSense.HostFinding.Host.HostId | integer | The unique ID of the host associated with the host finding. | 
+| RiskSense.HostFinding.Host.HostID | integer | The unique ID of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.HostName | string | The Hostname of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.IpAddress | string | The IP Address of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Criticality | integer | The criticality of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.External | boolean | To identify if the host is external or internal. | 
-| RiskSense.HostFinding.Host.Port.Id | integer | The unique ID of the Host(s) Port associated with the host finding. | 
+| RiskSense.HostFinding.Host.Port.ID | integer | The unique ID of the Host(s) Port associated with the host finding. | 
 | RiskSense.HostFinding.Host.Port.Number | integer | The port number of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Rs3 | integer | The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
-| RiskSense.HostFinding.Network.Id | integer | The network ID of the host finding. | 
+| RiskSense.HostFinding.Network.ID | integer | The network ID of the host finding. | 
 | RiskSense.HostFinding.Network.Name | string | The name of the network used by the host finding. | 
 | RiskSense.HostFinding.Network.Type | string | The type of the network used by the host finding. | 
-| RiskSense.HostFinding.Assessment.Id | integer | The assessment ID of the host finding. | 
+| RiskSense.HostFinding.Assessment.ID | integer | The assessment ID of the host finding. | 
 | RiskSense.HostFinding.Assessment.Name | String | The name of the assessment associated with the host finding. | 
 | RiskSense.HostFinding.Assessment.Date | String | The time when the assessment is created. | 
 | RiskSense.HostFinding.Vulnerability.Cve | String | The name of the Common Vulnerabilities and Exposures associated with the host finding. | 
@@ -1885,7 +1888,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
 | RiskSense.HostFinding.Patch.Name | String | The patch name of the host finding. | 
 | RiskSense.HostFinding.Patch.Url | String | The patch url of the host finding. | 
 | RiskSense.HostFinding.TagCount | integer | The total number of tags associated with host finding. | 
-| RiskSense.HostFinding.Tag.Id | integer | The Tag identifier of the host finding. | 
+| RiskSense.HostFinding.Tag.ID | integer | The Tag identifier of the host finding. | 
 | RiskSense.HostFinding.Tag.Name | String | The tag name of the host finding. | 
 | RiskSense.HostFinding.Tag.Category | String | The tag category of the host finding. | 
 | RiskSense.HostFinding.Tag.Description | String | The tag description of the host finding. | 
@@ -1893,7 +1896,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
 | RiskSense.HostFinding.Tag.Updated | String | The time when the tag is last updated. | 
 | RiskSense.HostFinding.Tag.Color | String | The color of the tag. | 
 | RiskSense.HostFinding.TagAssetCount | integer | The total number of tag assets. | 
-| RiskSense.HostFinding.TagAsset.Id | integer | The ID of the tag asset. | 
+| RiskSense.HostFinding.TagAsset.ID | integer | The ID of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Name | String | The name of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Category | String | The category of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Description | String | The description of the tag asset. | 
@@ -1919,7 +1922,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
 | RiskSense.HostFinding.ResolvedOn | String | The time when the host finding was resolved. | 
 | RiskSense.HostFinding.ScannerName | String | The name of the scanner of the host finding. | 
 | RiskSense.HostFinding.FindingType | String | The finding type of the host finding. | 
-| RiskSense.HostFinding.MachineId | String | The machine ID of the host finding. | 
+| RiskSense.HostFinding.MachineID | String | The machine ID of the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.State | String | The current state of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.StateName | String | The state name of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.StateDescription | String | The state description of embedded status associated with the host finding. | 
@@ -1928,7 +1931,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
 | RiskSense.HostFinding.StatusEmbedded.DueDate | String | The due date of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.ExpirationDate | String | The time when status is expired associated with the host finding | 
 | RiskSense.HostFinding.ManualFindingReportCount | integer | The total number of manual finding reports associated with the host finding. | 
-| RiskSense.HostFinding.ManualFindingReport.Id | integer | The ID of manual finding reports associated with the host finding. | 
+| RiskSense.HostFinding.ManualFindingReport.ID | integer | The ID of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Title | String | The title of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Label | String | The label of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Pii | String | The pii number of manual finding reports associated with the host finding. | 
@@ -1938,16 +1941,23 @@ A detail of close host finding with its severity level divided into Critical, Hi
 | RiskSense.HostFinding.NoteCount | integer | Number of notes found. | 
 | RiskSense.HostFinding.Note.Date | String | The time when note is added by the user for the host finding. | 
 | RiskSense.HostFinding.Note.Note | String | The notes that are added by the user for the host finding. | 
-| RiskSense.HostFinding.Note.UserId | integer | The User ID of the user who added a note for the host finding. | 
+| RiskSense.HostFinding.Note.UserID | integer | The User ID of the user who added a note for the host finding. | 
 | RiskSense.HostFinding.Note.UserName | String | The Username of the user who added a note for the host finding. | 
-| RiskSense.HostFinding.Assignment.Id | integer | The unique ID of the assignment associated with the host finding. | 
+| RiskSense.HostFinding.Assignment.ID | integer | The unique ID of the assignment associated with the host finding. | 
 | RiskSense.HostFinding.Assignment.FirstName | String | The first name of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.LastName | String | The last name of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.ReceiveEmails | boolean | Indicates whether email is received or not. | 
 | RiskSense.HostFinding.Assignment.Email | string | The email of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.Username | string | The username of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Services | string | The name of the services for the host finding. | 
-
+| Ticket.ID|string| The ID of the ticket associated with the host finding.
+| Ticket.State|string|The state of the ticket associated with the host finding.     
+| Host.Hostname|string|The hostname of the host.
+| Host.ID|string|The unique ID within the tool retrieving the host.
+| Host.IP|string|The IP address of the host.
+| CVE.ID|string|Common Vulnerabilities and Exposures ID.
+| CVE.Description|string|Description about CVE.
+| CVE.CVSS|string|The CVSS represents Severity(informational, low, medium, high, critical) of risk.
 
 ##### Command Example
 ```
@@ -1956,19 +1966,38 @@ A detail of close host finding with its severity level divided into Critical, Hi
 
 ##### Context Example
 ```
-{
+{   
+    "CVE": [
+        {
+            "ID": "CVE-2012-1180",
+            "CVSS": "5",
+            "Description": "Use-after-free vulnerability in nginx before 1.0.14 and 1.1.x before 1.1.17 allows remote HTTP servers to obtain sensitive information from process memory via a crafted backend response, in conjunction with a client request."
+        },
+        {
+            "ID": "CVE-2013-2070",
+            "CVSS": "5.8",
+            "Description": "http/modules/ngx_http_proxy_module.c in nginx 1.1.4 through 1.2.8 and 1.3.0 through 1.4.0, when proxy_pass is used with untrusted HTTP servers, allows remote attackers to cause a denial of service (crash) and obtain sensitive information from worker process memory via a crafted proxy response, a similar vulnerability to CVE-2013-2028."
+        }
+    ],
+    "Host": [
+        {
+                "ID": 3889301, 
+                "Hostname": "platform.risksense.com", 
+                "IP": "96.127.56.194"
+        }
+    ],
     "RiskSense.HostFinding": [
         {
             "ResolvedOn": "2019-11-07", 
             "Group": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
             "Network": {
                 "Type": "IP", 
-                "Id": 116086, 
+                "ID": 116086, 
                 "Name": "SRS IP"
             }, 
             "StatusEmbedded": {
@@ -1981,7 +2010,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                 "DueDate": ""
             }, 
             "Title": "Vulnerability: CVE-2012-1180", 
-            "SourceId": "SRS-CVE-2012-1180", 
+            "SourceID": "SRS-CVE-2012-1180", 
             "GroupCount": 1, 
             "Note": [], 
             "Source": "SRS", 
@@ -1999,7 +2028,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
             "Assessment": [
                 {
                     "Date": "2019-11-06", 
-                    "Id": 91199, 
+                    "ID": 91199, 
                     "Name": "RC_1573018389"
                 }
             ], 
@@ -2015,11 +2044,11 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "SRS:Parent Asset:risksense.com", 
                     "Created": "2020-01-07T06:58:03", 
                     "Color": "", 
-                    "Id": 233429
+                    "ID": 233429
                 }
             ], 
             "Host": {
-                "HostId": 3889301, 
+                "HostID": 3889301, 
                 "Criticality": 1, 
                 "HostName": "platform.risksense.com", 
                 "External": true, 
@@ -2027,7 +2056,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                 "Port": [], 
                 "Rs3": null
             }, 
-            "MachineId": "", 
+            "MachineID": "", 
             "Services": "", 
             "ThreatCount": 0, 
             "Xrs3Impact": 1, 
@@ -2052,20 +2081,10 @@ A detail of close host finding with its severity level divided into Critical, Hi
             "Threat": [], 
             "Output": null, 
             "ManualFindingReport": [], 
-            "TagAssetCount": [
-                {
-                    "category": "Connector", 
-                    "updated": "2020-01-07T06:58:03", 
-                    "description": "SRS:Parent Asset:risksense.com", 
-                    "created": "2020-01-07T06:58:03", 
-                    "color": "", 
-                    "id": 233429, 
-                    "name": "SRS:Parent Asset:risksense.com"
-                }
-            ], 
+            "TagAssetCount": 1, 
             "ManualFindingReportCount": 0, 
             "FindingType": "Auth/Unauthenticated", 
-            "Id": 127065628, 
+            "ID": 127065628, 
             "Tag": [
                 {
                     "Category": "Connector", 
@@ -2073,7 +2092,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "SRS:Category:Application Security", 
                     "Created": "2019-11-06T05:34:06", 
                     "Color": "", 
-                    "Id": 230265, 
+                    "ID": 230265, 
                     "Description": "SRS:Category:Application Security"
                 }, 
                 {
@@ -2082,7 +2101,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "SRS:Subcategory:WEB-APPLICATION-FRAMEWORK", 
                     "Created": "2019-11-06T05:34:06", 
                     "Color": "", 
-                    "Id": 230269, 
+                    "ID": 230269, 
                     "Description": "SRS:Subcategory:WEB-APPLICATION-FRAMEWORK"
                 }, 
                 {
@@ -2091,7 +2110,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "SRS:Solution Type:Patch Deployment", 
                     "Created": "2019-11-06T05:34:07", 
                     "Color": "", 
-                    "Id": 230274, 
+                    "ID": 230274, 
                     "Description": "SRS:Solution Type:Patch Deployment"
                 }, 
                 {
@@ -2100,7 +2119,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "CVSS_Sev_Crit_Test", 
                     "Created": "2019-11-19T23:40:40", 
                     "Color": "#648d9f", 
-                    "Id": 230966, 
+                    "ID": 230966, 
                     "Description": "CVSS Crits"
                 }, 
                 {
@@ -2109,7 +2128,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "RR_Crit_Test", 
                     "Created": "2019-11-19T23:41:36", 
                     "Color": "#648d9f", 
-                    "Id": 230967, 
+                    "ID": 230967, 
                     "Description": "Risk Rating Crit Test"
                 }
             ], 
@@ -2121,13 +2140,13 @@ A detail of close host finding with its severity level divided into Critical, Hi
             "ResolvedOn": "2019-11-07", 
             "Group": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
             "Network": {
                 "Type": "IP", 
-                "Id": 116086, 
+                "ID": 116086, 
                 "Name": "SRS IP"
             }, 
             "StatusEmbedded": {
@@ -2140,7 +2159,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                 "DueDate": ""
             }, 
             "Title": "Vulnerability: CVE-2013-2070", 
-            "SourceId": "SRS-CVE-2013-2070", 
+            "SourceID": "SRS-CVE-2013-2070", 
             "GroupCount": 1, 
             "Note": [], 
             "Source": "SRS", 
@@ -2158,7 +2177,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
             "Assessment": [
                 {
                     "Date": "2019-11-06", 
-                    "Id": 91199, 
+                    "ID": 91199, 
                     "Name": "RC_1573018389"
                 }
             ], 
@@ -2174,11 +2193,11 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "SRS:Parent Asset:risksense.com", 
                     "Created": "2020-01-07T06:58:03", 
                     "Color": "", 
-                    "Id": 233429
+                    "ID": 233429
                 }
             ], 
             "Host": {
-                "HostId": 3889301, 
+                "HostID": 3889301, 
                 "Criticality": 1, 
                 "HostName": "platform.risksense.com", 
                 "External": true, 
@@ -2186,7 +2205,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                 "Port": [], 
                 "Rs3": null
             }, 
-            "MachineId": "", 
+            "MachineID": "", 
             "Services": "", 
             "ThreatCount": 0, 
             "Xrs3Impact": 1, 
@@ -2211,20 +2230,10 @@ A detail of close host finding with its severity level divided into Critical, Hi
             "Threat": [], 
             "Output": null, 
             "ManualFindingReport": [], 
-            "TagAssetCount": [
-                {
-                    "category": "Connector", 
-                    "updated": "2020-01-07T06:58:03", 
-                    "description": "SRS:Parent Asset:risksense.com", 
-                    "created": "2020-01-07T06:58:03", 
-                    "color": "", 
-                    "id": 233429, 
-                    "name": "SRS:Parent Asset:risksense.com"
-                }
-            ], 
+            "TagAssetCount": 1, 
             "ManualFindingReportCount": 0, 
             "FindingType": "Auth/Unauthenticated", 
-            "Id": 127065637, 
+            "ID": 127065637, 
             "Tag": [
                 {
                     "Category": "Connector", 
@@ -2232,7 +2241,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "SRS:Category:Application Security", 
                     "Created": "2019-11-06T05:34:06", 
                     "Color": "", 
-                    "Id": 230265, 
+                    "ID": 230265, 
                     "Description": "SRS:Category:Application Security"
                 }, 
                 {
@@ -2241,7 +2250,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "SRS:Subcategory:WEB-APPLICATION-FRAMEWORK", 
                     "Created": "2019-11-06T05:34:06", 
                     "Color": "", 
-                    "Id": 230269, 
+                    "ID": 230269, 
                     "Description": "SRS:Subcategory:WEB-APPLICATION-FRAMEWORK"
                 }, 
                 {
@@ -2250,7 +2259,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "SRS:Solution Type:Patch Deployment", 
                     "Created": "2019-11-06T05:34:07", 
                     "Color": "", 
-                    "Id": 230274, 
+                    "ID": 230274, 
                     "Description": "SRS:Solution Type:Patch Deployment"
                 }, 
                 {
@@ -2259,7 +2268,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "CVSS_Sev_Crit_Test", 
                     "Created": "2019-11-19T23:40:40", 
                     "Color": "#648d9f", 
-                    "Id": 230966, 
+                    "ID": 230966, 
                     "Description": "CVSS Crits"
                 }, 
                 {
@@ -2268,7 +2277,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
                     "Name": "RR_Crit_Test", 
                     "Created": "2019-11-19T23:41:36", 
                     "Color": "#648d9f", 
-                    "Id": 230967, 
+                    "ID": 230967, 
                     "Description": "Risk Rating Crit Test"
                 }
             ], 
@@ -2283,7 +2292,7 @@ A detail of close host finding with its severity level divided into Critical, Hi
 ##### Human Readable Output
 ### Total closed host findings: 19		 Page: 0/9		 Client: The Demo Client
 ### Closed host Finding(s) Details:
-|Id|Hostname|IP Address|Title|Risk|Threats|Rs3|Criticality|Severity|Groups|Port|State|Assignments|Tags|Asset Tags|Note|Manual Finding Report Count|
+|ID|Hostname|IP Address|Title|Risk|Threats|Rs3|Criticality|Severity|Groups|Port|State|Assignments|Tags|Asset Tags|Note|Manual Finding Report Count|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 127065628 | platform.risksense.com | 96.127.56.194 | Vulnerability: CVE-2012-1180 | 10.0 | 0 |  | 1 | 10.0 | 1 |  | REVIEWED_BY_SCAN |  | 5 | 1 | 0 | 0 |
 | 127065637 | platform.risksense.com | 96.127.56.194 | Vulnerability: CVE-2013-2070 | 10.0 | 0 |  | 1 | 10.0 | 1 |  | REVIEWED_BY_SCAN |  | 5 | 1 | 0 | 0 |
@@ -2313,15 +2322,15 @@ Look up the application details. The application details can be searched based o
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RiskSense.Application.Id | Number | The unique ID within the tool retrieving the application. | 
-| RiskSense.Application.GroupId | Number | The group ID of the application. | 
+| RiskSense.Application.ID | Number | The unique ID within the tool retrieving the application. | 
+| RiskSense.Application.GroupID | Number | The group ID of the application. | 
 | RiskSense.Application.GroupName | String | The group name of the application. | 
 | RiskSense.Application.Groups | Unknown | The list of groups. | 
-| RiskSense.Application.Network.Id | Number | The network ID of the application. | 
+| RiskSense.Application.Network.ID | Number | The network ID of the application. | 
 | RiskSense.Application.Network.Name | String | The network name of the application. | 
 | RiskSense.Application.Network.Type | String | The network type of the application. | 
-| RiskSense.Application.ClientId | Number | The client ID of the application. | 
-| RiskSense.Application.HostId | Number | The host ID of the application. | 
+| RiskSense.Application.ClientID | Number | The client ID of the application. | 
+| RiskSense.Application.HostID | Number | The host ID of the application. | 
 | RiskSense.Application.Uri | String | The reference uri of the application. | 
 | RiskSense.Application.Name | String | The name of the application. | 
 | RiskSense.Application.Description | String | The detailed description of the application. | 
@@ -2347,7 +2356,7 @@ Look up the application details. The application details can be searched based o
 | RiskSense.Application.CMDB.OwnedBy | String | The CMDB entity name that owned the application. | 
 | RiskSense.Application.CMDB.SupportedBy | String | The CMDB entity name that supported the application | 
 | RiskSense.Application.CMDB.SupportGroup | String | The CMDB supporting group of the application. | 
-| RiskSense.Application.CMDB.SysId | String | The CMDB system ID of the application. | 
+| RiskSense.Application.CMDB.SysID | String | The CMDB system ID of the application. | 
 | RiskSense.Application.CMDB.OperatingSystem | String | The CMDB Operating system of the application. | 
 | RiskSense.Application.CMDB.LastScanDate | String | The CMDB last scan date of the application. | 
 | RiskSense.Application.CMDB.FerpaComplianceAsset | Boolean | The Family Educational Rights and Privacy Act. | 
@@ -2360,19 +2369,21 @@ Look up the application details. The application details can be searched based o
 | RiskSense.Application.Ticket.DetailedStatus | String | The detailed status of ticket associated with the application. | 
 | RiskSense.Application.Ticket.DeepLink | String | The deeplink associated with the ticket associated with the application. | 
 | RiskSense.Application.Source.Name | String | The name of the source associated with the application. | 
-| RiskSense.Application.Source.Uuid | String | The unique ID of the source associated with the application. | 
+| RiskSense.Application.Source.UuID | String | The unique ID of the source associated with the application. | 
 | RiskSense.Application.Source.ScannerType | String | The type of scanner of the source associated with the application.. | 
-| RiskSense.Application.Note.UserId | String | The user ID of the user who added a note for the application. | 
+| RiskSense.Application.Note.UserID | String | The user ID of the user who added a note for the application. | 
 | RiskSense.Application.Note.UserName | String | The user name of the user who added a note for the application. | 
 | RiskSense.Application.Note.Note | String | The notes that are added by the user for the application. | 
 | RiskSense.Application.Note.Date | String | The time when note is added by the user for the application. | 
-| RiskSense.Application.Tag.Id | integer | The ID of the tag. | 
+| RiskSense.Application.Tag.ID | integer | The ID of the tag. | 
 | RiskSense.Application.Tag.Name | String | The name of the tag. | 
 | RiskSense.Application.Tag.Category | String | The category of the tag. | 
 | RiskSense.Application.Tag.Description | String | The description of the tag. | 
 | RiskSense.Application.Tag.Created | String | The time when the tag was created. | 
 | RiskSense.Application.Tag.Updated | String | The time when the tag was last updated. | 
 | RiskSense.Application.Tag.Color | String | The color code of the tag of the application. | 
+| Ticket.ID|string| The ID of the ticket associated with the application.
+| Ticket.State|string|The state of the ticket associated with the application.     
 
 
 ##### Command Example
@@ -2387,15 +2398,15 @@ Look up the application details. The application details can be searched based o
         {
             "Network": {
                 "Type": "IP", 
-                "Id": 91502, 
+                "ID": 91502, 
                 "Name": "App-data"
             }, 
-            "ClientId": 747, 
+            "ClientID": 747, 
             "Note": [
                 {
                     "Date": "2020-01-28T12:21:06", 
                     "Note": "Hiiii", 
-                    "UserId": 5969, 
+                    "UserID": 5969, 
                     "UserName": "Ravindra Sojitra"
                 }
             ], 
@@ -2403,7 +2414,7 @@ Look up the application details. The application details can be searched based o
                 {
                     "ScannerType": "SAST", 
                     "Name": "VERACODESAST", 
-                    "Uuid": "VERACODESAST"
+                    "UuID": "VERACODESAST"
                 }
             ], 
             "Critical": 2, 
@@ -2414,7 +2425,7 @@ Look up the application details. The application details can be searched based o
             "Tag": [], 
             "Groups": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
@@ -2474,7 +2485,7 @@ Look up the application details. The application details can be searched based o
             "CMDB": {
                 "MacAddress": null, 
                 "SupportGroup": null, 
-                "SysId": null, 
+                "SysID": null, 
                 "HipaaComplianceAsset": false, 
                 "OperatingSystem": null, 
                 "ManufacturedBy": null, 
@@ -2488,27 +2499,27 @@ Look up the application details. The application details can be searched based o
                 "PciComplianceAsset": false
             }, 
             "UrlCount": 74, 
-            "HostId": null, 
-            "GroupId": 7990, 
+            "HostID": null, 
+            "GroupID": 7990, 
             "High": 20, 
             "Href": "http://platform.risksense.com/api/v1/client/747/application/search?page=0&size=3&sort=findingsDistribution.total,desc", 
             "LastFoundOn": "2019-06-11", 
             "Total": 325, 
-            "Id": 19391
+            "ID": 19391
         }, 
         {
             "Network": {
                 "Type": "IP", 
-                "Id": 91502, 
+                "ID": 91502, 
                 "Name": "App-data"
             }, 
-            "ClientId": 747, 
+            "ClientID": 747, 
             "Note": [], 
             "Source": [
                 {
                     "ScannerType": "DAST", 
                     "Name": "HPWEBINSPECT", 
-                    "Uuid": "HPWEBINSPECT"
+                    "UuID": "HPWEBINSPECT"
                 }
             ], 
             "Critical": 19, 
@@ -2519,7 +2530,7 @@ Look up the application details. The application details can be searched based o
             "Tag": [], 
             "Groups": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
@@ -2611,7 +2622,7 @@ Look up the application details. The application details can be searched based o
             "CMDB": {
                 "MacAddress": null, 
                 "SupportGroup": null, 
-                "SysId": null, 
+                "SysID": null, 
                 "HipaaComplianceAsset": false, 
                 "OperatingSystem": null, 
                 "ManufacturedBy": null, 
@@ -2625,27 +2636,27 @@ Look up the application details. The application details can be searched based o
                 "PciComplianceAsset": false
             }, 
             "UrlCount": 152, 
-            "HostId": null, 
-            "GroupId": 7990, 
+            "HostID": null, 
+            "GroupID": 7990, 
             "High": 0, 
             "Href": "http://platform.risksense.com/api/v1/client/747/application/search?page=0&size=3&sort=findingsDistribution.total,desc", 
             "LastFoundOn": "2019-06-11", 
             "Total": 184, 
-            "Id": 19396
+            "ID": 19396
         }, 
         {
             "Network": {
                 "Type": "IP", 
-                "Id": 91502, 
+                "ID": 91502, 
                 "Name": "App-data"
             }, 
-            "ClientId": 747, 
+            "ClientID": 747, 
             "Note": [], 
             "Source": [
                 {
                     "ScannerType": "DAST", 
                     "Name": "IBMAPPSCANENTERPRISE", 
-                    "Uuid": "IBMAPPSCANENTERPRISE"
+                    "UuID": "IBMAPPSCANENTERPRISE"
                 }
             ], 
             "Critical": 28, 
@@ -2656,7 +2667,7 @@ Look up the application details. The application details can be searched based o
             "Tag": [], 
             "Groups": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
@@ -2676,7 +2687,7 @@ Look up the application details. The application details can be searched based o
             "CMDB": {
                 "MacAddress": null, 
                 "SupportGroup": null, 
-                "SysId": null, 
+                "SysID": null, 
                 "HipaaComplianceAsset": false, 
                 "OperatingSystem": null, 
                 "ManufacturedBy": null, 
@@ -2690,13 +2701,13 @@ Look up the application details. The application details can be searched based o
                 "PciComplianceAsset": false
             }, 
             "UrlCount": 33, 
-            "HostId": null, 
-            "GroupId": 7990, 
+            "HostID": null, 
+            "GroupID": 7990, 
             "High": 0, 
             "Href": "http://platform.risksense.com/api/v1/client/747/application/search?page=0&size=3&sort=findingsDistribution.total,desc", 
             "LastFoundOn": "2019-06-11", 
             "Total": 41, 
-            "Id": 19395
+            "ID": 19395
         }
     ]
 }
@@ -2705,7 +2716,7 @@ Look up the application details. The application details can be searched based o
 ##### Human Readable Output
 ### Total applications: 7		Page: 0/2		Client: The Demo Client
 ### RiskSense application(s) details:
-|Id|Address|Name|Network|Total Findings|Critical Findings|High Findings|Medium Findings|Low Findings|Info Findings|Groups|URLs|Tags|Notes|
+|ID|Address|Name|Network|Total Findings|Critical Findings|High Findings|Medium Findings|Low Findings|Info Findings|Groups|URLs|Tags|Notes|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 19391 | RS TestApp 1 | RS TestApp 1 | App-data | 325 | 2 | 20 | 281 | 21 | 1 | 1 | 74 | 0 | 1 |
 | 19396 | http://zero.webappsecurity.com:80 | http://zero.webappsecurity.com:80 | App-data | 184 | 19 | 0 | 8 | 157 | 0 | 1 | 152 | 0 | 0 |
@@ -2722,33 +2733,33 @@ This command is used to lookup single host finding details in depth. Command acc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostfinding_id | The unique host finding ID.HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.Id) after executing 'risksense-get-open-host-findings' or 'risksense-get-close-host-findings' command. | Required | 
+| hostfinding_id | The unique host finding ID.HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-open-host-findings' or 'risksense-get-close-host-findings' command. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RiskSense.HostFinding.Id | string | The unique ID of the host finding. | 
+| RiskSense.HostFinding.ID | string | The unique ID of the host finding. | 
 | RiskSense.HostFinding.Source | string | Host discovered by the scanner. | 
-| RiskSense.HostFinding.SourceId | string | Scanner Id of discovered scanner. | 
+| RiskSense.HostFinding.SourceID | string | Scanner Id of discovered scanner. | 
 | RiskSense.HostFinding.Title | string | The title of the host finding. | 
 | RiskSense.HostFinding.Port | integer | The port number of the host finding. | 
 | RiskSense.HostFinding.GroupCount | integer | The total number of groups for host finding. | 
-| RiskSense.HostFinding.Group.Id | integer | The unique ID of the group associated with the host finding. | 
+| RiskSense.HostFinding.Group.ID | integer | The unique ID of the group associated with the host finding. | 
 | RiskSense.HostFinding.Group.Name | string | The name of the group associated with the host finding. | 
-| RiskSense.HostFinding.Host.HostId | integer | The unique ID of the host associated with the host finding. | 
+| RiskSense.HostFinding.Host.HostID | integer | The unique ID of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.HostName | string | The Hostname of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.IpAddress | string | The IP Address of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Criticality | integer | The criticality of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.External | boolean | To identify if the host is external or internal. | 
-| RiskSense.HostFinding.Host.Port.Id | integer | The unique ID of the Host(s) Port associated with the host finding. | 
+| RiskSense.HostFinding.Host.Port.ID | integer | The unique ID of the Host(s) Port associated with the host finding. | 
 | RiskSense.HostFinding.Host.Port.Number | integer | The port number of the host associated with the host finding. | 
 | RiskSense.HostFinding.Host.Rs3 | integer | The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications). | 
-| RiskSense.HostFinding.Network.Id | integer | The network ID of the host finding. | 
+| RiskSense.HostFinding.Network.ID | integer | The network ID of the host finding. | 
 | RiskSense.HostFinding.Network.Name | string | The name of the network used by the host finding. | 
 | RiskSense.HostFinding.Network.Type | string | The type of the network used by the host finding. | 
-| RiskSense.HostFinding.Assessment.Id | integer | The assessment ID of the host finding. | 
+| RiskSense.HostFinding.Assessment.ID | integer | The assessment ID of the host finding. | 
 | RiskSense.HostFinding.Assessment.Name | String | The name of the assessment associated with the host finding. | 
 | RiskSense.HostFinding.Assessment.Date | String | The time when the assessment is created. | 
 | RiskSense.HostFinding.Vulnerability.Cve | String | The name of the Common Vulnerabilities and Exposures associated with the host finding. | 
@@ -2776,7 +2787,7 @@ This command is used to lookup single host finding details in depth. Command acc
 | RiskSense.HostFinding.Patch.Name | String | The patch name of the host finding. | 
 | RiskSense.HostFinding.Patch.Url | String | The patch url of the host finding. | 
 | RiskSense.HostFinding.TagCount | integer | The total number of tags associated with host finding. | 
-| RiskSense.HostFinding.Tag.Id | integer | The Tag identifier of the host finding. | 
+| RiskSense.HostFinding.Tag.ID | integer | The Tag identifier of the host finding. | 
 | RiskSense.HostFinding.Tag.Name | String | The tag name of the host finding. | 
 | RiskSense.HostFinding.Tag.Category | String | The tag category of the host finding. | 
 | RiskSense.HostFinding.Tag.Description | String | The tag description of the host finding. | 
@@ -2784,7 +2795,7 @@ This command is used to lookup single host finding details in depth. Command acc
 | RiskSense.HostFinding.Tag.Updated | String | The time when the tag is last updated. | 
 | RiskSense.HostFinding.Tag.Color | String | The color of the tag. | 
 | RiskSense.HostFinding.TagAssetCount | integer | The total number of tag assets. | 
-| RiskSense.HostFinding.TagAsset.Id | integer | The ID of the tag asset. | 
+| RiskSense.HostFinding.TagAsset.ID | integer | The ID of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Name | String | The name of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Category | String | The category of the tag asset. | 
 | RiskSense.HostFinding.TagAsset.Description | String | The description of the tag asset. | 
@@ -2810,7 +2821,7 @@ This command is used to lookup single host finding details in depth. Command acc
 | RiskSense.HostFinding.ResolvedOn | String | The time when the host finding was resolved. | 
 | RiskSense.HostFinding.ScannerName | String | The name of the scanner of the host finding. | 
 | RiskSense.HostFinding.FindingType | String | The finding type of the host finding. | 
-| RiskSense.HostFinding.MachineId | String | The machine ID of the host finding. | 
+| RiskSense.HostFinding.MachineID | String | The machine ID of the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.State | String | The current state of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.StateName | String | The state name of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.StateDescription | String | The state description of embedded status associated with the host finding. | 
@@ -2819,7 +2830,7 @@ This command is used to lookup single host finding details in depth. Command acc
 | RiskSense.HostFinding.StatusEmbedded.DueDate | String | The due date of embedded status associated with the host finding. | 
 | RiskSense.HostFinding.StatusEmbedded.ExpirationDate | String | The time when status is expired associated with the host finding | 
 | RiskSense.HostFinding.ManualFindingReportCount | integer | The total number of manual finding reports associated with the host finding. | 
-| RiskSense.HostFinding.ManualFindingReport.Id | integer | The ID of manual finding reports associated with the host finding. | 
+| RiskSense.HostFinding.ManualFindingReport.ID | integer | The ID of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Title | String | The title of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Label | String | The label of manual finding reports associated with the host finding. | 
 | RiskSense.HostFinding.ManualFindingReport.Pii | String | The pii number of manual finding reports associated with the host finding. | 
@@ -2829,15 +2840,23 @@ This command is used to lookup single host finding details in depth. Command acc
 | RiskSense.HostFinding.NoteCount | integer | Number of notes found. | 
 | RiskSense.HostFinding.Note.Date | String | The time when note is added by the user for the host finding. | 
 | RiskSense.HostFinding.Note.Note | String | The notes that are added by the user for the host finding. | 
-| RiskSense.HostFinding.Note.UserId | integer | The User ID of the user who added a note for the host finding. | 
+| RiskSense.HostFinding.Note.UserID | integer | The User ID of the user who added a note for the host finding. | 
 | RiskSense.HostFinding.Note.UserName | String | The Username of the user who added a note for the host finding. | 
-| RiskSense.HostFinding.Assignment.Id | integer | The unique ID of the assignment associated with the host finding. | 
+| RiskSense.HostFinding.Assignment.ID | integer | The unique ID of the assignment associated with the host finding. | 
 | RiskSense.HostFinding.Assignment.FirstName | String | The first name of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.LastName | String | The last name of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.ReceiveEmails | boolean | Indicates whether email is received or not. | 
 | RiskSense.HostFinding.Assignment.Email | string | The email of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Assignment.Username | string | The username of the assigned user for the host finding. | 
 | RiskSense.HostFinding.Services | string | The name of the services for the host finding. | 
+| Ticket.ID|string| The ID of the ticket associated with the host finding.
+| Ticket.State|string|The state of the ticket associated with the host finding.     
+| Host.Hostname|string|The hostname of the host.
+| Host.ID|string|The unique ID within the tool retrieving the host.
+| Host.IP|string|The IP address of the host.
+| CVE.ID|string|Common Vulnerabilities and Exposures ID.
+| CVE.Description|string|Description about CVE.
+| CVE.CVSS|string|The CVSS represents Severity(informational, low, medium, high, critical) of risk.
 
 
 ##### Command Example
@@ -2848,12 +2867,26 @@ This command is used to lookup single host finding details in depth. Command acc
 ##### Context Example
 ```
 {
+        "CVE": [
+            {
+                "ID": "CVE-2007-0882",
+                "CVSS": "10",
+                "Description": "Argument injection vulnerability in the telnet daemon (in.telnetd) in Solaris 10 and 11 (SunOS 5.10 and 5.11) misinterprets certain client "-f" sequences as valid requests for the login program to skip authentication, which allows remote attackers to log into certain accounts, as demonstrated by the bin account."       
+            }
+        ],
+        "Host": [
+            {
+                "Hostname": "lmd.ql.nl",
+                "ID": "3569980",
+                "IP": "31.207.62.145"
+            }
+        ],
         "RiskSense.HostFinding": [
             {
                 "Assessment": [
                     {
                         "Date": "2019-04-23",
-                        "Id": 67442,
+                        "ID": 67442,
                         "Name": "First Assessment"
                     }
                 ],
@@ -2862,7 +2895,7 @@ This command is used to lookup single host finding details in depth. Command acc
                 "FindingType": "Auth/Unauthenticated",
                 "Group": [
                     {
-                        "Id": 7990,
+                        "ID": 7990,
                         "Name": "Default Group"
                     }
                 ],
@@ -2870,108 +2903,108 @@ This command is used to lookup single host finding details in depth. Command acc
                 "Host": {
                     "Criticality": 5,
                     "External": true,
-                    "HostId": 3569980,
+                    "HostID": 3569980,
                     "HostName": "lmd.ql.nl",
                     "IpAddress": "31.207.62.145",
                     "Port": [
                         {
-                            "Id": 42841324,
+                            "ID": 42841324,
                             "Number": 21
                         },
                         {
-                            "Id": 42841352,
+                            "ID": 42841352,
                             "Number": 22
                         },
                         {
-                            "Id": 42841261,
+                            "ID": 42841261,
                             "Number": 23
                         },
                         {
-                            "Id": 42841311,
+                            "ID": 42841311,
                             "Number": 25
                         },
                         {
-                            "Id": 42841250,
+                            "ID": 42841250,
                             "Number": 111
                         },
                         {
-                            "Id": 42841211,
+                            "ID": 42841211,
                             "Number": 123
                         },
                         {
-                            "Id": 42841239,
+                            "ID": 42841239,
                             "Number": 587
                         },
                         {
-                            "Id": 42841345,
+                            "ID": 42841345,
                             "Number": 852
                         },
                         {
-                            "Id": 42841176,
+                            "ID": 42841176,
                             "Number": 4045
                         },
                         {
-                            "Id": 42841331,
+                            "ID": 42841331,
                             "Number": 6112
                         },
                         {
-                            "Id": 42841226,
+                            "ID": 42841226,
                             "Number": 6481
                         },
                         {
-                            "Id": 42841297,
+                            "ID": 42841297,
                             "Number": 7100
                         },
                         {
-                            "Id": 42841170,
+                            "ID": 42841170,
                             "Number": 8400
                         },
                         {
-                            "Id": 42841182,
+                            "ID": 42841182,
                             "Number": 8402
                         },
                         {
-                            "Id": 42841359,
+                            "ID": 42841359,
                             "Number": 32771
                         },
                         {
-                            "Id": 42841189,
+                            "ID: 42841189,
                             "Number": 32772
                         },
                         {
-                            "Id": 42841340,
+                            "ID": 42841340,
                             "Number": 32775
                         },
                         {
-                            "Id": 42841196,
+                            "ID": 42841196,
                             "Number": 32776
                         },
                         {
-                            "Id": 42841476,
+                            "ID": 42841476,
                             "Number": 32777
                         },
                         {
-                            "Id": 42841287,
+                            "ID": 42841287,
                             "Number": 32778
                         },
                         {
-                            "Id": 42841363,
+                            "ID": 42841363,
                             "Number": 32780
                         },
                         {
-                            "Id": 42841302,
+                            "ID": 42841302,
                             "Number": 32794
                         }
                     ],
                     "Rs3": 600
                 },
-                "Id": 115469504,
+                "ID": 115469504,
                 "LastFoundOn": "2010-07-22",
-                "MachineId": "",
+                "MachineID": "",
                 "ManualFindingReport": [],
                 "ManualFindingReportCount": 0,
                 "Network": {
-                    "Id": 78038,
+                    "ID": 78038,
                     "Name": "IP Network",
                     "Type": "IP"
                 },
@@ -2997,7 +3030,7 @@ This command is used to lookup single host finding details in depth. Command acc
                     "StateName": null
                 },
                 "Source": "QUALYS",
-                "SourceId": "QUALYS38574",
+                "SourceID": "QUALYS38574",
                 "StatusEmbedded": {
                     "DueDate": "2019-12-01T00:00:00",
                     "DurationInDays": "3246",
@@ -3013,7 +3046,7 @@ This command is used to lookup single host finding details in depth. Command acc
                         "Color": "#dd8361",
                         "Created": "2019-04-24T21:35:12",
                         "Description": "",
-                        "Id": 215551,
+                        "ID": 215551,
                         "Name": "Data_Center_1",
                         "Updated": "2019-06-19T19:23:08"
                     },
@@ -3022,7 +3055,7 @@ This command is used to lookup single host finding details in depth. Command acc
                         "Color": "#78a19b",
                         "Created": "2019-04-24T21:39:59",
                         "Description": "",
-                        "Id": 215554,
+                        "ID": 215554,
                         "Name": "Linux_Team_2",
                         "Updated": "2019-04-24T21:39:59"
                     },
@@ -3031,7 +3064,7 @@ This command is used to lookup single host finding details in depth. Command acc
                         "Color": "#648d9f",
                         "Created": "2019-08-28T18:50:30",
                         "Description": "",
-                        "Id": 225750,
+                        "ID": 225750,
                         "Name": "PCI Assets",
                         "Updated": "2019-10-31T03:40:55"
                     },
@@ -3040,7 +3073,7 @@ This command is used to lookup single host finding details in depth. Command acc
                         "Color": "#648d9f",
                         "Created": "2019-11-19T23:40:40",
                         "Description": "CVSS Crits",
-                        "Id": 230966,
+                        "ID": 230966,
                         "Name": "CVSS_Sev_Crit_Test",
                         "Updated": "2019-11-19T23:40:40"
                     },
@@ -3049,7 +3082,7 @@ This command is used to lookup single host finding details in depth. Command acc
                         "Color": "#648d9f",
                         "Created": "2019-11-19T23:41:36",
                         "Description": "Risk Rating Crit Test",
-                        "Id": 230967,
+                        "ID": 230967,
                         "Name": "RR_Crit_Test",
                         "Updated": "2019-11-19T23:41:36"
                     }
@@ -3059,7 +3092,7 @@ This command is used to lookup single host finding details in depth. Command acc
                         "Category": "Location",
                         "Color": "#dd8361",
                         "Created": "2019-04-24T21:35:12",
-                        "Id": 215551,
+                        "ID": 215551,
                         "Name": "Data_Center_1",
                         "Updated": "2019-06-19T19:23:08"
                     },
@@ -3067,31 +3100,12 @@ This command is used to lookup single host finding details in depth. Command acc
                         "Category": "People",
                         "Color": "#78a19b",
                         "Created": "2019-04-24T21:39:59",
-                        "Id": 215554,
+                        "ID": 215554,
                         "Name": "Linux_Team_2",
                         "Updated": "2019-04-24T21:39:59"
                     }
                 ],
-                "TagAssetCount": [
-                    {
-                        "category": "Location",
-                        "color": "#dd8361",
-                        "created": "2019-04-24T21:35:12",
-                        "description": "",
-                        "id": 215551,
-                        "name": "Data_Center_1",
-                        "updated": "2019-06-19T19:23:08"
-                    },
-                    {
-                        "category": "People",
-                        "color": "#78a19b",
-                        "created": "2019-04-24T21:39:59",
-                        "description": "",
-                        "id": 215554,
-                        "name": "Linux_Team_2",
-                        "updated": "2019-04-24T21:39:59"
-                    }
-                ],
+                "TagAssetCount": 2,
                 "TagCount": 5,
                 "Threat": [
                     {
@@ -3266,22 +3280,22 @@ This command is used to lookup single application details in depth. Command acce
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| application_id | The application ID is unique for the application. Application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.Id) or in the human-readable output of 'risksense-get-apps' command. | Required | 
+| application_id | The application ID is unique for the application. Application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.ID) or in the human-readable output of 'risksense-get-apps' command. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RiskSense.Application.Id | Number | The unique ID within the tool retrieving the application. | 
-| RiskSense.Application.GroupId | Number | The group ID of the application. | 
+| RiskSense.Application.ID | Number | The unique ID within the tool retrieving the application. | 
+| RiskSense.Application.GroupID | Number | The group ID of the application. | 
 | RiskSense.Application.GroupName | String | The group name of the application. | 
 | RiskSense.Application.Groups | Unknown | The list of groups. | 
-| RiskSense.Application.Network.Id | Number | The network ID of the application. | 
+| RiskSense.Application.Network.ID | Number | The network ID of the application. | 
 | RiskSense.Application.Network.Name | String | The network name of the application. | 
 | RiskSense.Application.Network.Type | String | The network type of the application. | 
-| RiskSense.Application.ClientId | Number | The client ID of the application. | 
-| RiskSense.Application.HostId | Number | The host ID of the application. | 
+| RiskSense.Application.ClientID | Number | The client ID of the application. | 
+| RiskSense.Application.HostID | Number | The host ID of the application. | 
 | RiskSense.Application.Uri | String | The reference uri of the application. | 
 | RiskSense.Application.Name | String | The name of the application. | 
 | RiskSense.Application.Description | String | The detailed description of the application. | 
@@ -3307,7 +3321,7 @@ This command is used to lookup single application details in depth. Command acce
 | RiskSense.Application.CMDB.OwnedBy | String | The CMDB entity name that owned the application. | 
 | RiskSense.Application.CMDB.SupportedBy | String | The CMDB entity name that supported the application | 
 | RiskSense.Application.CMDB.SupportGroup | String | The CMDB supporting group of the application. | 
-| RiskSense.Application.CMDB.SysId | String | The CMDB system ID of the application. | 
+| RiskSense.Application.CMDB.SysID | String | The CMDB system ID of the application. | 
 | RiskSense.Application.CMDB.OperatingSystem | String | The CMDB Operating system of the application. | 
 | RiskSense.Application.CMDB.LastScanDate | String | The CMDB last scan date of the application. | 
 | RiskSense.Application.CMDB.FerpaComplianceAsset | Boolean | The Family Educational Rights and Privacy Act. | 
@@ -3320,19 +3334,21 @@ This command is used to lookup single application details in depth. Command acce
 | RiskSense.Application.Ticket.DetailedStatus | String | The detailed status of ticket associated with the application. | 
 | RiskSense.Application.Ticket.DeepLink | String | The deeplink associated with the ticket associated with the application. | 
 | RiskSense.Application.Source.Name | String | The name of the source associated with the application. | 
-| RiskSense.Application.Source.Uuid | String | The unique ID of the source associated with the application. | 
+| RiskSense.Application.Source.UuID | String | The unique ID of the source associated with the application. | 
 | RiskSense.Application.Source.ScannerType | String | The type of scanner of the source associated with the application.. | 
-| RiskSense.Application.Note.UserId | String | The user ID of the user who added a note for the application. | 
+| RiskSense.Application.Note.UserID | String | The user ID of the user who added a note for the application. | 
 | RiskSense.Application.Note.UserName | String | The user name of the user who added a note for the application. | 
 | RiskSense.Application.Note.Note | String | The notes that are added by the user for the application. | 
 | RiskSense.Application.Note.Date | String | The time when note is added by the user for the application. | 
-| RiskSense.Application.Tag.Id | integer | The ID of the tag. | 
+| RiskSense.Application.Tag.ID | integer | The ID of the tag. | 
 | RiskSense.Application.Tag.Name | String | The name of the tag. | 
 | RiskSense.Application.Tag.Category | String | The category of the tag. | 
 | RiskSense.Application.Tag.Description | String | The description of the tag. | 
 | RiskSense.Application.Tag.Created | String | The time when the tag was created. | 
 | RiskSense.Application.Tag.Updated | String | The time when the tag was last updated. | 
 | RiskSense.Application.Tag.Color | String | The color code of the tag of the application. | 
+| Ticket.ID|string| The ID of the ticket associated with the application.
+| Ticket.State|string|The state of the ticket associated with the application.
 
 
 ##### Command Example
@@ -3345,27 +3361,27 @@ This command is used to lookup single application details in depth. Command acce
         {
             "Network": {
                 "Type": "IP", 
-                "Id": 91502, 
+                "ID": 91502, 
                 "Name": "App-data"
             }, 
-            "ClientId": 747, 
+            "ClientID": 747, 
             "Note": [
                 {
                     "Date": "2020-01-15T23:16:12", 
                     "Note": "Add note to app", 
-                    "UserId": 2222, 
+                    "UserID": 2222, 
                     "UserName": "Natalia Donaldson"
                 }, 
                 {
                     "Date": "2020-01-15T23:26:43", 
                     "Note": "Add note to app", 
-                    "UserId": 2222, 
+                    "UserID": 2222, 
                     "UserName": "Natalia Donaldson"
                 }, 
                 {
                     "Date": "2020-01-17T05:00:12", 
                     "Note": "Add note to app", 
-                    "UserId": 2222, 
+                    "UserID": 2222, 
                     "UserName": "Natalia Donaldson"
                 }
             ], 
@@ -3373,7 +3389,7 @@ This command is used to lookup single application details in depth. Command acce
                 {
                     "ScannerType": "DAST", 
                     "Name": "IBMAPPSCANENTERPRISE", 
-                    "Uuid": "IBMAPPSCANENTERPRISE"
+                    "UuID": "IBMAPPSCANENTERPRISE"
                 }
             ], 
             "Critical": 0, 
@@ -3388,13 +3404,13 @@ This command is used to lookup single application details in depth. Command acce
                     "Name": "PCI Orch Test ", 
                     "Created": "2020-01-17T23:59:22", 
                     "Color": "#af3a29", 
-                    "Id": 234039, 
+                    "ID": 234039, 
                     "Description": "PCI Orch Test"
                 }
             ], 
             "Groups": [
                 {
-                    "Id": 7990, 
+                    "ID": 7990, 
                     "Name": "Default Group"
                 }
             ], 
@@ -3414,7 +3430,7 @@ This command is used to lookup single application details in depth. Command acce
             "CMDB": {
                 "MacAddress": null, 
                 "SupportGroup": null, 
-                "SysId": null, 
+                "SysID": null, 
                 "HipaaComplianceAsset": false, 
                 "OperatingSystem": null, 
                 "ManufacturedBy": null, 
@@ -3428,13 +3444,13 @@ This command is used to lookup single application details in depth. Command acce
                 "PciComplianceAsset": false
             }, 
             "UrlCount": 15, 
-            "HostId": null, 
-            "GroupId": 7990, 
+            "HostID": null, 
+            "GroupID": 7990, 
             "High": 0, 
             "Href": "http://platform.risksense.com/api/v1/client/747/application/search?page=0&size=20&sort=id,asc", 
             "LastFoundOn": "2019-06-11", 
             "Total": 15, 
-            "Id": 19394
+            "ID": 19394
         }
     ]
 }

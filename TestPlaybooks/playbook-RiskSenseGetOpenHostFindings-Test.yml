@@ -182,7 +182,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Group.Id
+                accessor: HostFinding.Group.ID
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -191,7 +191,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Tag.Id
+                accessor: HostFinding.Tag.ID
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -200,7 +200,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.TagAsset.Id
+                accessor: HostFinding.TagAsset.ID
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -209,7 +209,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Host.HostId
+                accessor: HostFinding.Host.HostID
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -218,7 +218,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.SourceId
+                accessor: HostFinding.SourceID
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -227,7 +227,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Network.Id
+                accessor: HostFinding.Network.ID
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -236,7 +236,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Assessment.Id
+                accessor: HostFinding.Assessment.ID
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -290,7 +290,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Id
+                accessor: HostFinding.ID
                 transformers:
                 - operator: uniq
             iscontext: true

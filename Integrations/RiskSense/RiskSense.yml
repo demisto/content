@@ -103,13 +103,13 @@ script:
         - contextPath: Host.OS
           description: The operating system of the host.
           type: string
-        - contextPath: RiskSense.Host.Id
+        - contextPath: RiskSense.Host.ID
           description: The unique identifier of the host.
           type: number
-        - contextPath: RiskSense.Host.ClientId
+        - contextPath: RiskSense.Host.ClientID
           description: The client id of the host.
           type: number
-        - contextPath: RiskSense.Host.GroupId
+        - contextPath: RiskSense.Host.GroupID
           description: The id of the group belonging to the host.
           type: number
         - contextPath: RiskSense.Host.GroupName
@@ -126,7 +126,7 @@ script:
         - contextPath: RiskSense.Host.Criticality
           description: The asset importance using a scale of 1 (lowest importance) to 5 (highest importance).
           type: number
-        - contextPath: RiskSense.Host.Tag.Id
+        - contextPath: RiskSense.Host.Tag.ID
           description: The ID of the tag.
           type: number
         - contextPath: RiskSense.Host.Tag.Name
@@ -147,7 +147,7 @@ script:
         - contextPath: RiskSense.Host.Tag.Color
           description: The color code of the tag.
           type: string
-        - contextPath: RiskSense.Host.NetworkId
+        - contextPath: RiskSense.Host.NetworkID
           description: The Network ID of the host.
           type: number
         - contextPath: RiskSense.Host.NetworkName
@@ -201,7 +201,7 @@ script:
         - contextPath: RiskSense.Host.Services
           description: The name of the services which are used by the host.
           type: string
-        - contextPath: RiskSense.Host.Note.UserId
+        - contextPath: RiskSense.Host.Note.UserID
           description: The User ID of the user who added a note for the host.
           type: string
         - contextPath: RiskSense.Host.Note.UserName
@@ -216,7 +216,7 @@ script:
         - contextPath: RiskSense.Host.Source.Name
           description: The name of the source associated with the host.
           type: string
-        - contextPath: RiskSense.Host.Source.Uuid
+        - contextPath: RiskSense.Host.Source.UuID
           description: The unique ID of the source associated with the host.
           type: string
         - contextPath: RiskSense.Host.Source.ScannerType
@@ -276,11 +276,17 @@ script:
         - contextPath: RiskSense.Host.Info
           description: The number of open findings of the host with info severity.
           type: number
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the host.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the host.
+          type: String
       description: Look up the host details. The host details can be searched based on input parameters like fieldname (hostname, ipaddress, criticality, etc), operator (EXACT, IN, LIKE), page, size, sort by and sort order.
     - name: risksense-get-host-detail
       arguments:
         - name: host_id
-          description: The host ID is unique for the host. Host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.Id) or in human-readable output of 'risksense-get-hosts' command.
+          description: The host ID is unique for the host. Host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in human-readable output of 'risksense-get-hosts' command.
         - name: host
           description: The host is identified by hostname. Host name is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in human-readable output of 'risksense-get-hosts' command.
       outputs:
@@ -296,13 +302,13 @@ script:
         - contextPath: Host.OS
           description: The operating system of the host.
           type: String
-        - contextPath: RiskSense.Host.Id
+        - contextPath: RiskSense.Host.ID
           description: The unique identifier of the host.
           type: Number
-        - contextPath: RiskSense.Host.ClientId
+        - contextPath: RiskSense.Host.ClientID
           description: The client id of the host.
           type: Number
-        - contextPath: RiskSense.Host.GroupId
+        - contextPath: RiskSense.Host.GroupID
           description: The id of the group belonging to the host.
           type: Number
         - contextPath: RiskSense.Host.GroupName
@@ -319,7 +325,7 @@ script:
         - contextPath: RiskSense.Host.Criticality
           description: The asset importance using a scale of 1 (lowest importance) to 5 (highest importance).
           type: Number
-        - contextPath: RiskSense.Host.Tag.Id
+        - contextPath: RiskSense.Host.Tag.ID
           description: The ID of the tag.
           type: Number
         - contextPath: RiskSense.Host.Tag.Name
@@ -340,7 +346,7 @@ script:
         - contextPath: RiskSense.Host.Tag.Color
           description: The color code of the tag.
           type: String
-        - contextPath: RiskSense.Host.NetworkId
+        - contextPath: RiskSense.Host.NetworkID
           description: The network ID of the host.
           type: Number
         - contextPath: RiskSense.Host.NetworkName
@@ -394,7 +400,7 @@ script:
         - contextPath: RiskSense.Host.Services
           description: The name of the services which are used by the host.
           type: String
-        - contextPath: RiskSense.Host.Note.UserId
+        - contextPath: RiskSense.Host.Note.UserID
           description: The User ID of the user who added a note for the host.
           type: String
         - contextPath: RiskSense.Host.Note.UserName
@@ -409,7 +415,7 @@ script:
         - contextPath: RiskSense.Host.Source.Name
           description: The name of the source associated with the host.
           type: String
-        - contextPath: RiskSense.Host.Source.Uuid
+        - contextPath: RiskSense.Host.Source.UuID
           description: The unique ID of the source associated with the host.
           type: String
         - contextPath: RiskSense.Host.Source.ScannerType
@@ -469,12 +475,18 @@ script:
         - contextPath: RiskSense.Host.Info
           description: The number of open findings of the host with info severity.
           type: Number
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the host.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the host.
+          type: String
       description: Look up single host details in depth. This command accepts either hostname or host id as an argument.
     - name: risksense-get-unique-cves
       arguments:
         - name: hostFindingId
           required: true
-          description: The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.Id) after executing 'risksense-get-open-host-findings' or 'risksense-get-close-host-findings' command.
+          description: The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-open-host-findings' or 'risksense-get-close-host-findings' command.
       outputs:
         - contextPath: RiskSense.HostFinding.Vulnerability.Cve
           description: Common Vulnerabilities and Exposures name.
@@ -508,6 +520,16 @@ script:
           type: Boolean
         - contextPath: RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn
           description: The Last trending date of vulnerability.
+          type: String
+        - contextPath: CVE.ID
+          description: Common Vulnerabilities and Exposures ID.
+          type: String
+        - contextPath: CVE.Description
+          description: Description about CVE.
+          type: String
+        - contextPath: CVE.CVSS
+          description: The CVSS represents Severity(informational, low, medium, high,
+            critical) of risk.
           type: String
       description: Lookup vulnerability details per host finding with its base score.
     - name: risksense-get-unique-open-findings
@@ -574,7 +596,7 @@ script:
         - contextPath: RiskSense.UniqueHostFinding.Source
           description: The name of the source associated with the unique host finding.
           type: String
-        - contextPath: RiskSense.UniqueHostFinding.SourceId
+        - contextPath: RiskSense.UniqueHostFinding.SourceID
           description: The unique ID of the source.
           type: String
         - contextPath: RiskSense.UniqueHostFinding.Href
@@ -629,13 +651,13 @@ script:
           description: The sorting order to be considered for returned records.
           defaultValue: ASC
       outputs:
-        - contextPath: RiskSense.HostFinding.Id
+        - contextPath: RiskSense.HostFinding.ID
           description: The unique ID of the host finding.
           type: string
         - contextPath: RiskSense.HostFinding.Source
           description: Host discovered by the scanner.
           type: string
-        - contextPath: RiskSense.HostFinding.SourceId
+        - contextPath: RiskSense.HostFinding.SourceID
           description: Scanner Id of discovered scanner.
           type: string
         - contextPath: RiskSense.HostFinding.Title
@@ -647,13 +669,13 @@ script:
         - contextPath: RiskSense.HostFinding.GroupCount
           description: The total number of groups for host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.Group.Id
+        - contextPath: RiskSense.HostFinding.Group.ID
           description: The unique ID of the group associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Group.Name
           description: The name of the group associated with the host finding.
           type: string
-        - contextPath: RiskSense.HostFinding.Host.HostId
+        - contextPath: RiskSense.HostFinding.Host.HostID
           description: The unique ID of the host associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Host.HostName
@@ -668,7 +690,7 @@ script:
         - contextPath: RiskSense.HostFinding.Host.External
           description: To identify if the host is external or internal.
           type: boolean
-        - contextPath: RiskSense.HostFinding.Host.Port.Id
+        - contextPath: RiskSense.HostFinding.Host.Port.ID
           description: The unique ID of the Host(s) Port associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Host.Port.Number
@@ -677,7 +699,7 @@ script:
         - contextPath: RiskSense.HostFinding.Host.Rs3
           description: The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications).
           type: integer
-        - contextPath: RiskSense.HostFinding.Network.Id
+        - contextPath: RiskSense.HostFinding.Network.ID
           description: The network ID of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Network.Name
@@ -686,7 +708,7 @@ script:
         - contextPath: RiskSense.HostFinding.Network.Type
           description: The type of the network used by the host finding.
           type: string
-        - contextPath: RiskSense.HostFinding.Assessment.Id
+        - contextPath: RiskSense.HostFinding.Assessment.ID
           description: The assessment ID of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Assessment.Name
@@ -769,7 +791,7 @@ script:
         - contextPath: RiskSense.HostFinding.TagCount
           description: The total number of tags associated with host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.Tag.Id
+        - contextPath: RiskSense.HostFinding.Tag.ID
           description: The Tag identifier of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Tag.Name
@@ -793,7 +815,7 @@ script:
         - contextPath: RiskSense.HostFinding.TagAssetCount
           description: The total number of tag assets.
           type: integer
-        - contextPath: RiskSense.HostFinding.TagAsset.Id
+        - contextPath: RiskSense.HostFinding.TagAsset.ID
           description: The ID of the tag asset.
           type: integer
         - contextPath: RiskSense.HostFinding.TagAsset.Name
@@ -871,7 +893,7 @@ script:
         - contextPath: RiskSense.HostFinding.FindingType
           description: The finding type of the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.MachineId
+        - contextPath: RiskSense.HostFinding.MachineID
           description: The machine ID of the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.StatusEmbedded.State
@@ -898,7 +920,7 @@ script:
         - contextPath: RiskSense.HostFinding.ManualFindingReportCount
           description: The total number of manual finding reports associated with the host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.Id
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.ID
           description: The ID of manual finding reports associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.ManualFindingReport.Title
@@ -928,13 +950,13 @@ script:
         - contextPath: RiskSense.HostFinding.Note.Note
           description: The notes that are added by the user for the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.Note.UserId
+        - contextPath: RiskSense.HostFinding.Note.UserID
           description: The User ID of the user who added a note for the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Note.UserName
           description: The Username of the user who added a note for the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.Assignment.Id
+        - contextPath: RiskSense.HostFinding.Assignment.ID
           description: The unique ID of the assignment associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Assignment.FirstName
@@ -955,6 +977,31 @@ script:
         - contextPath: RiskSense.HostFinding.Services
           description: The name of the services for the host finding.
           type: string
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the host finding.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the host finding.
+          type: String
+        - contextPath: Host.Hostname
+          description: The hostname of the host.
+          type: string
+        - contextPath: Host.ID
+          description: The unique ID within the tool retrieving the host.
+          type: string
+        - contextPath: Host.IP
+          description: The IP address of the host.
+          type: string
+        - contextPath: CVE.ID
+          description: Common Vulnerabilities and Exposures ID.
+          type: String
+        - contextPath: CVE.Description
+          description: Description about CVE.
+          type: String
+        - contextPath: CVE.CVSS
+          description: The CVSS represents Severity(informational, low, medium, high,
+            critical) of risk.
+          type: String
     - name: risksense-get-closed-host-findings
       description: A detail of close host finding with its severity level divided into Critical, High, Medium, Low and info part. Displays vulnerability information like CVE, threats associated with current findings and origin of findings.
       arguments:
@@ -1004,13 +1051,13 @@ script:
           description: The sorting order to be considered for returned records.
           defaultValue: ASC
       outputs:
-        - contextPath: RiskSense.HostFinding.Id
+        - contextPath: RiskSense.HostFinding.ID
           description: The unique ID of the host finding.
           type: string
         - contextPath: RiskSense.HostFinding.Source
           description: Host discovered by the scanner.
           type: string
-        - contextPath: RiskSense.HostFinding.SourceId
+        - contextPath: RiskSense.HostFinding.SourceID
           description: Scanner Id of discovered scanner.
           type: string
         - contextPath: RiskSense.HostFinding.Title
@@ -1022,13 +1069,13 @@ script:
         - contextPath: RiskSense.HostFinding.GroupCount
           description: The total number of groups for host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.Group.Id
+        - contextPath: RiskSense.HostFinding.Group.ID
           description: The unique ID of the group associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Group.Name
           description: The name of the group associated with the host finding.
           type: string
-        - contextPath: RiskSense.HostFinding.Host.HostId
+        - contextPath: RiskSense.HostFinding.Host.HostID
           description: The unique ID of the host associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Host.HostName
@@ -1043,7 +1090,7 @@ script:
         - contextPath: RiskSense.HostFinding.Host.External
           description: To identify if the host is external or internal.
           type: boolean
-        - contextPath: RiskSense.HostFinding.Host.Port.Id
+        - contextPath: RiskSense.HostFinding.Host.Port.ID
           description: The unique ID of the Host(s) Port associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Host.Port.Number
@@ -1052,7 +1099,7 @@ script:
         - contextPath: RiskSense.HostFinding.Host.Rs3
           description: The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications).
           type: integer
-        - contextPath: RiskSense.HostFinding.Network.Id
+        - contextPath: RiskSense.HostFinding.Network.ID
           description: The network ID of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Network.Name
@@ -1061,7 +1108,7 @@ script:
         - contextPath: RiskSense.HostFinding.Network.Type
           description: The type of the network used by the host finding.
           type: string
-        - contextPath: RiskSense.HostFinding.Assessment.Id
+        - contextPath: RiskSense.HostFinding.Assessment.ID
           description: The assessment ID of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Assessment.Name
@@ -1144,7 +1191,7 @@ script:
         - contextPath: RiskSense.HostFinding.TagCount
           description: The total number of tags associated with host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.Tag.Id
+        - contextPath: RiskSense.HostFinding.Tag.ID
           description: The Tag identifier of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Tag.Name
@@ -1168,7 +1215,7 @@ script:
         - contextPath: RiskSense.HostFinding.TagAssetCount
           description: The total number of tag assets.
           type: integer
-        - contextPath: RiskSense.HostFinding.TagAsset.Id
+        - contextPath: RiskSense.HostFinding.TagAsset.ID
           description: The ID of the tag asset.
           type: integer
         - contextPath: RiskSense.HostFinding.TagAsset.Name
@@ -1246,7 +1293,7 @@ script:
         - contextPath: RiskSense.HostFinding.FindingType
           description: The finding type of the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.MachineId
+        - contextPath: RiskSense.HostFinding.MachineID
           description: The machine ID of the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.StatusEmbedded.State
@@ -1273,7 +1320,7 @@ script:
         - contextPath: RiskSense.HostFinding.ManualFindingReportCount
           description: The total number of manual finding reports associated with the host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.Id
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.ID
           description: The ID of manual finding reports associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.ManualFindingReport.Title
@@ -1303,13 +1350,13 @@ script:
         - contextPath: RiskSense.HostFinding.Note.Note
           description: The notes that are added by the user for the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.Note.UserId
+        - contextPath: RiskSense.HostFinding.Note.UserID
           description: The User ID of the user who added a note for the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Note.UserName
           description: The Username of the user who added a note for the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.Assignment.Id
+        - contextPath: RiskSense.HostFinding.Assignment.ID
           description: The unique ID of the assignment associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Assignment.FirstName
@@ -1330,6 +1377,31 @@ script:
         - contextPath: RiskSense.HostFinding.Services
           description: The name of the services for the host finding.
           type: string
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the host finding.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the host finding.
+          type: String
+        - contextPath: Host.Hostname
+          description: The hostname of the host.
+          type: string
+        - contextPath: Host.ID
+          description: The unique ID within the tool retrieving the host.
+          type: string
+        - contextPath: Host.IP
+          description: The IP address of the host.
+          type: string
+        - contextPath: CVE.ID
+          description: Common Vulnerabilities and Exposures ID.
+          type: String
+        - contextPath: CVE.Description
+          description: Description about CVE.
+          type: String
+        - contextPath: CVE.CVSS
+          description: The CVSS represents Severity(informational, low, medium, high,
+            critical) of risk.
+          type: String
     - name: risksense-get-apps
       arguments:
         - name: fieldname
@@ -1385,10 +1457,10 @@ script:
           description: The sorting order to be considerd for retunred records.
           defaultValue: ASC
       outputs:
-        - contextPath: RiskSense.Application.Id
+        - contextPath: RiskSense.Application.ID
           description: The unique ID within the tool retrieving the application.
           type: Number
-        - contextPath: RiskSense.Application.GroupId
+        - contextPath: RiskSense.Application.GroupID
           description: The group ID of the application.
           type: Number
         - contextPath: RiskSense.Application.GroupName
@@ -1396,7 +1468,7 @@ script:
           type: String
         - contextPath: RiskSense.Application.Groups
           description: The list of groups.
-        - contextPath: RiskSense.Application.Network.Id
+        - contextPath: RiskSense.Application.Network.ID
           description: The network ID of the application.
           type: Number
         - contextPath: RiskSense.Application.Network.Name
@@ -1405,10 +1477,10 @@ script:
         - contextPath: RiskSense.Application.Network.Type
           description: The network type of the application.
           type: String
-        - contextPath: RiskSense.Application.ClientId
+        - contextPath: RiskSense.Application.ClientID
           description: The client ID of the application.
           type: Number
-        - contextPath: RiskSense.Application.HostId
+        - contextPath: RiskSense.Application.HostID
           description: The host ID of the application.
           type: Number
         - contextPath: RiskSense.Application.Uri
@@ -1486,7 +1558,7 @@ script:
         - contextPath: RiskSense.Application.CMDB.SupportGroup
           description: The CMDB supporting group of the application.
           type: String
-        - contextPath: RiskSense.Application.CMDB.SysId
+        - contextPath: RiskSense.Application.CMDB.SysID
           description: The CMDB system ID of the application.
           type: String
         - contextPath: RiskSense.Application.CMDB.OperatingSystem
@@ -1526,13 +1598,13 @@ script:
         - contextPath: RiskSense.Application.Source.Name
           description: The name of the source associated with the application.
           type: String
-        - contextPath: RiskSense.Application.Source.Uuid
+        - contextPath: RiskSense.Application.Source.UuID
           description: The unique ID of the source associated with the application.
           type: String
         - contextPath: RiskSense.Application.Source.ScannerType
           description: The type of scanner of the source associated with the application..
           type: String
-        - contextPath: RiskSense.Application.Note.UserId
+        - contextPath: RiskSense.Application.Note.UserID
           description: The user ID of the user who added a note for the application.
           type: String
         - contextPath: RiskSense.Application.Note.UserName
@@ -1544,7 +1616,7 @@ script:
         - contextPath: RiskSense.Application.Note.Date
           description: The time when the note is added by the user for the application.
           type: String
-        - contextPath: RiskSense.Application.Tag.Id
+        - contextPath: RiskSense.Application.Tag.ID
           description: The ID of the tag.
           type: integer
         - contextPath: RiskSense.Application.Tag.Name
@@ -1565,6 +1637,12 @@ script:
         - contextPath: RiskSense.Application.Tag.Color
           description: The color code of the tag of the application.
           type: String
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the application.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the application.
+          type: String
       description: Look up the application details. The application details can be searched based on input parameters like fieldname (name, network etc), operator (EXACT, IN, LIKE), page, size, sort by and sort order.
     - name: risksense-get-host-finding-detail
       description: This command is used to lookup single host finding details in depth. Command accepts host finding id as an argument.
@@ -1573,13 +1651,13 @@ script:
           description: The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.Id) after executing 'risksense-get-open-host-findings' or 'risksense-get-close-host-findings' command.
           required: true
       outputs:
-        - contextPath: RiskSense.HostFinding.Id
+        - contextPath: RiskSense.HostFinding.ID
           description: The unique ID of the host finding.
           type: string
         - contextPath: RiskSense.HostFinding.Source
           description: Host discovered by the scanner.
           type: string
-        - contextPath: RiskSense.HostFinding.SourceId
+        - contextPath: RiskSense.HostFinding.SourceID
           description: Scanner Id of discovered scanner.
           type: string
         - contextPath: RiskSense.HostFinding.Title
@@ -1591,13 +1669,13 @@ script:
         - contextPath: RiskSense.HostFinding.GroupCount
           description: The total number of groups for host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.Group.Id
+        - contextPath: RiskSense.HostFinding.Group.ID
           description: The unique ID of the group associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Group.Name
           description: The name of the group associated with the host finding.
           type: string
-        - contextPath: RiskSense.HostFinding.Host.HostId
+        - contextPath: RiskSense.HostFinding.Host.HostID
           description: The unique ID of the host associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Host.HostName
@@ -1612,7 +1690,7 @@ script:
         - contextPath: RiskSense.HostFinding.Host.External
           description: To identify if the host is external or internal.
           type: boolean
-        - contextPath: RiskSense.HostFinding.Host.Port.Id
+        - contextPath: RiskSense.HostFinding.Host.Port.ID
           description: The unique ID of the Host(s) Port associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Host.Port.Number
@@ -1621,7 +1699,7 @@ script:
         - contextPath: RiskSense.HostFinding.Host.Rs3
           description: The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications).
           type: integer
-        - contextPath: RiskSense.HostFinding.Network.Id
+        - contextPath: RiskSense.HostFinding.Network.ID
           description: The network ID of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Network.Name
@@ -1630,7 +1708,7 @@ script:
         - contextPath: RiskSense.HostFinding.Network.Type
           description: The type of the network used by the host finding.
           type: string
-        - contextPath: RiskSense.HostFinding.Assessment.Id
+        - contextPath: RiskSense.HostFinding.Assessment.ID
           description: The assessment ID of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Assessment.Name
@@ -1713,7 +1791,7 @@ script:
         - contextPath: RiskSense.HostFinding.TagCount
           description: The total number of tags associated with host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.Tag.Id
+        - contextPath: RiskSense.HostFinding.Tag.ID
           description: The Tag identifier of the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Tag.Name
@@ -1737,7 +1815,7 @@ script:
         - contextPath: RiskSense.HostFinding.TagAssetCount
           description: The total number of tag assets.
           type: integer
-        - contextPath: RiskSense.HostFinding.TagAsset.Id
+        - contextPath: RiskSense.HostFinding.TagAsset.ID
           description: The ID of the tag asset.
           type: integer
         - contextPath: RiskSense.HostFinding.TagAsset.Name
@@ -1815,7 +1893,7 @@ script:
         - contextPath: RiskSense.HostFinding.FindingType
           description: The finding type of the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.MachineId
+        - contextPath: RiskSense.HostFinding.MachineID
           description: The machine ID of the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.StatusEmbedded.State
@@ -1842,7 +1920,7 @@ script:
         - contextPath: RiskSense.HostFinding.ManualFindingReportCount
           description: The total number of manual finding reports associated with the host finding.
           type: integer
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.Id
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.ID
           description: The ID of manual finding reports associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.ManualFindingReport.Title
@@ -1872,13 +1950,13 @@ script:
         - contextPath: RiskSense.HostFinding.Note.Note
           description: The notes that are added by the user for the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.Note.UserId
+        - contextPath: RiskSense.HostFinding.Note.UserID
           description: The User ID of the user who added a note for the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Note.UserName
           description: The Username of the user who added a note for the host finding.
           type: String
-        - contextPath: RiskSense.HostFinding.Assignment.Id
+        - contextPath: RiskSense.HostFinding.Assignment.ID
           description: The unique ID of the assignment associated with the host finding.
           type: integer
         - contextPath: RiskSense.HostFinding.Assignment.FirstName
@@ -1899,16 +1977,41 @@ script:
         - contextPath: RiskSense.HostFinding.Services
           description: The name of the services for the host finding.
           type: string
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the host finding.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the host finding.
+          type: String
+        - contextPath: Host.Hostname
+          description: The hostname of the host.
+          type: string
+        - contextPath: Host.ID
+          description: The unique ID within the tool retrieving the host.
+          type: string
+        - contextPath: Host.IP
+          description: The IP address of the host.
+          type: string
+        - contextPath: CVE.ID
+          description: Common Vulnerabilities and Exposures ID.
+          type: String
+        - contextPath: CVE.Description
+          description: Description about CVE.
+          type: String
+        - contextPath: CVE.CVSS
+          description: The CVSS represents Severity(informational, low, medium, high,
+            critical) of risk.
+          type: String
     - name: risksense-get-app-detail
       arguments:
         - name: application_id
           required: true
           description: The application ID is unique for the application. Application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.Id) or in human-readable output of 'risksense-get-apps' command.
       outputs:
-        - contextPath: RiskSense.Application.Id
+        - contextPath: RiskSense.Application.ID
           description: The unique ID within the tool retrieving the application.
           type: Number
-        - contextPath: RiskSense.Application.GroupId
+        - contextPath: RiskSense.Application.GroupID
           description: The group ID of the application.
           type: Number
         - contextPath: RiskSense.Application.GroupName
@@ -1916,7 +2019,7 @@ script:
           type: String
         - contextPath: RiskSense.Application.Groups
           description: The list of groups.
-        - contextPath: RiskSense.Application.Network.Id
+        - contextPath: RiskSense.Application.Network.ID
           description: The network ID of the application.
           type: Number
         - contextPath: RiskSense.Application.Network.Name
@@ -1925,10 +2028,10 @@ script:
         - contextPath: RiskSense.Application.Network.Type
           description: The network type of the application.
           type: String
-        - contextPath: RiskSense.Application.ClientId
+        - contextPath: RiskSense.Application.ClientID
           description: The client ID of the application.
           type: Number
-        - contextPath: RiskSense.Application.HostId
+        - contextPath: RiskSense.Application.HostID
           description: The host ID of the application.
           type: Number
         - contextPath: RiskSense.Application.Uri
@@ -2006,7 +2109,7 @@ script:
         - contextPath: RiskSense.Application.CMDB.SupportGroup
           description: The CMDB supporting group of the application.
           type: String
-        - contextPath: RiskSense.Application.CMDB.SysId
+        - contextPath: RiskSense.Application.CMDB.SysID
           description: The CMDB system ID of the application.
           type: String
         - contextPath: RiskSense.Application.CMDB.OperatingSystem
@@ -2046,13 +2149,13 @@ script:
         - contextPath: RiskSense.Application.Source.Name
           description: The name of the source associated with the application.
           type: String
-        - contextPath: RiskSense.Application.Source.Uuid
+        - contextPath: RiskSense.Application.Source.UuID
           description: The unique ID of the source associated with the application.
           type: String
         - contextPath: RiskSense.Application.Source.ScannerType
           description: The type of scanner of the source associated with the application..
           type: String
-        - contextPath: RiskSense.Application.Note.UserId
+        - contextPath: RiskSense.Application.Note.UserID
           description: The user ID of the user who added a note for the application.
           type: String
         - contextPath: RiskSense.Application.Note.UserName
@@ -2064,7 +2167,7 @@ script:
         - contextPath: RiskSense.Application.Note.Date
           description: The time when note is added by the user for the application.
           type: String
-        - contextPath: RiskSense.Application.Tag.Id
+        - contextPath: RiskSense.Application.Tag.ID
           description: The ID of the tag.
           type: integer
         - contextPath: RiskSense.Application.Tag.Name
@@ -2084,6 +2187,12 @@ script:
           type: String
         - contextPath: RiskSense.Application.Tag.Color
           description: The color code of the tag of the application.
+          type: String
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the application.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the application.
           type: String
       description: This command is used to lookup single application details in depth. Command accepts application id as an argument.
   dockerimage: demisto/python3:3.8.1.5734

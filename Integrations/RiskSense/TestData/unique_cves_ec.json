@@ -13,5 +13,12 @@
       "Trending": false,
       "VulnLastTrendingOn": null
     }
+  ],
+  "CVE(val.ID && val.ID == obj.ID)": [
+    {
+      "ID": "cve",
+      "CVSS": 5,
+      "Description": "cve summary"
+    }
   ]
 }
