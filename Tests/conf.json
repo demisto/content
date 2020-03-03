@@ -133,7 +133,7 @@
         },
         {
             "integrations": "Google Vision AI",
-            "playbookID": "GoogleVisionAPI-Test"
+            "playbookID": "Google Vision API - Test"
         },
         {
             "integrations": "nmap",
