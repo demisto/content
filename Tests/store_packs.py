@@ -139,7 +139,9 @@ class Pack(object):
         is_deprecated = user_metadata.get('deprecated', False)
         pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
         pack_metadata['certification'] = user_metadata.get('certification', '')
-        pack_metadata['price'] = user_metadata.get('price', '0')
+        # pack_metadata['price'] = user_metadata.get('price', 0)
+        price = user_metadata.get('price', 0)
+        pack_metadata['price'] = int(price)
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
