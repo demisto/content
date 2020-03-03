@@ -2,6 +2,7 @@
 ---
 
 Use the Securonix integration to manage incidents and watchlists.
+Integration was build and tested with: SNYPR Version 6.3.
 Creating incidents and watchlists is currently not supported due to API limitations.
 
 ## Configure Securonix on Demisto
@@ -11,7 +12,7 @@ Creating incidents and watchlists is currently not supported due to API limitati
 2. Search for Securonix.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __tenanat__
+    * __tenant__
     * __username__
     * __password__
     * __Fetch incidents__

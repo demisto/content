@@ -702,15 +702,16 @@ class TAXIIClient(object):
 
                                 for indicator in indicators:
                                     yield indicator
-
-                                if self.last_stix_package_ts is None or timestamp > self.last_stix_package_ts:
-                                    self.last_stix_package_ts = timestamp
+                                if timestamp:
+                                    if self.last_stix_package_ts is None or timestamp > self.last_stix_package_ts:
+                                        self.last_stix_package_ts = timestamp
 
                             elif c.tag.endswith('Timestamp_Label'):
                                 timestamp = Taxii11.parse_timestamp_label(c.text)
 
-                                if self.last_taxii_content_ts is None or timestamp > self.last_taxii_content_ts:
-                                    self.last_taxii_content_ts = timestamp
+                                if timestamp:
+                                    if self.last_taxii_content_ts is None or timestamp > self.last_taxii_content_ts:
+                                        self.last_taxii_content_ts = timestamp
 
                         element.clear()
 

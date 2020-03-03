@@ -134,7 +134,8 @@
       "contextPath": "CVE(val.ID && val.ID === obj.ID)",
       "enhancementScriptNames": [
         "cveSearch"
-      ]
+      ],
+      "toVersion": "4.9.9"
     },
     {
       "id": "hostnameRep",

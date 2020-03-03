@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.1.2] - 2020-01-22
 Shortened the query time range to improve index usage.
 
 ## [19.9.1] - 2019-09-18
