@@ -113,10 +113,11 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     condition_string = ' %s ' % applied_condition.lower()
     similar_keys_query = condition_string.join(
         map(lambda t: '%s:"%s"' % (t[0], t[1]
+                                   .replace('\\', '\\\\')
                                    .replace('"', r'\"')
                                    .replace("\n", "\\n")
                                    .replace("\r", "\\r")
-                                   .replace('\\', '\\\\')),
+                                   ),
             similar_incident_keys.items()))
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
