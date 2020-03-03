@@ -89,9 +89,10 @@ class Client(BaseClient):
                     item["type"] = FeedIndicatorType.Domain
                     # As part of the domain feed, also DomainGlob indicators will be returned, so we are checking if the
                     # domain has '*' in their value
-                    if '*' in str(item.get("domain")):
+                    indicator_value = str(item.get("domain", ""))
+                    if '*' in indicator_value:
                         item["type"] = FeedIndicatorType.DomainGlob
-                    item["value"] = item.get("domain")
+                    item["value"] = indicator_value
                 elif "ip" in item:
                     item["type"] = FeedIndicatorType.IP
                     item["value"] = item.get("ip")

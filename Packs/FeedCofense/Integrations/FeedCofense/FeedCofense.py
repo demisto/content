@@ -132,7 +132,7 @@ class Client(BaseClient):
             value = block.get("data_1", {}).get("url")
         else:
             value = block.get("data_1")
-            # If a domain has '*' in the value it is of type domain globe
+            # If a domain has '*' in the value it is of type domainGlob
             if indicator_type == FeedIndicatorType.Domain and '*' in value:
                 indicator_type = FeedIndicatorType.DomainGlob
         return indicator_type, value

@@ -111,7 +111,6 @@ script:
       - all
       - domain
       - ip
-      - domainGlob
       required: false
       secret: false
     deprecated: false

@@ -1,5 +1,5 @@
 from FeedProofpoint import Client, fetch_indicators_command
-from CommonServerPython import *
+from CommonServerPython import FeedIndicatorType
 
 url = "https://example.com"
 auth_code = "cool"

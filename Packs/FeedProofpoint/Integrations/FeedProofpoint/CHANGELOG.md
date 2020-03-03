@@ -1,3 +1,3 @@
 ## [Unreleased]
-Added **DomainGlob** to the feed's indicators.
+Added **DomainGlob** to the integration's indicator types.
 
