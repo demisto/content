@@ -389,7 +389,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns the list of drive resources available for a target site.
+    description: Returns the list of document libraries (drives) available for a target site.
     execution: false
     name: msgraph-list-drives-in-site
     outputs:
@@ -532,7 +532,7 @@ script:
   - deprecated: false
     description: Returns a list of the tenant sites.
     execution: false
-    name: msgraph-list-share-point-sites
+    name: msgraph-list-sharepoint-sites
     outputs:
     - contextPath: MsGraph.Sites
       description: The MS Graph site object.

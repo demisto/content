@@ -267,7 +267,7 @@ class Client(BaseClient):
         else:
             return self.return_token_and_save_it_in_context(access_token_res)
 
-    def list_share_point_sites(self):
+    def list_sharepoint_sites(self):
         """
         This function returns a list of the tenant sites
         :return: graph api raw response
@@ -489,6 +489,32 @@ class Client(BaseClient):
         )
 
 
+def module_test(client, *_):
+    """
+    Performs basic get request to get item samples
+    """
+    result = client.get_access_token()
+    if result:
+        try:
+            client.http_call(
+                full_url=client.base_url + "/sites/root",
+                headers=client.headers,
+                params={"top": "1"},
+                timeout=7,
+                url_suffix="",
+                method="GET",
+            )
+
+        except Exception as e:
+            raise DemistoException(
+                f"Test failed. please check if Server Url is correct. \n {e}"
+            )
+        else:
+            return "ok"
+    else:
+        return "Test failed because could not get access token"
+
+
 def download_file_command(client, args):
     """
     This function runs download file command
@@ -562,7 +588,7 @@ def list_drive_content_command(client, args):
         }
     }
 
-    return (human_readable, context, result)
+    return human_readable, context, result
 
 
 def list_share_point_sites_human_readable_object(parsed_drive_items):
@@ -576,12 +602,12 @@ def list_share_point_sites_human_readable_object(parsed_drive_items):
     return human_readable_content_obj
 
 
-def list_share_point_sites_command(client, args):
+def list_sharepoint_sites_command(client, *_):
     """
     This function runs list tenant site command
     :return: human_readable, context, result
     """
-    result = client.list_share_point_sites()
+    result = client.list_sharepoint_sites()
 
     parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
 
@@ -601,7 +627,7 @@ def list_share_point_sites_command(client, args):
         title, human_readable_content, headerTransform=pascalToSpace
     )
 
-    return (human_readable, context, result)
+    return human_readable, context, result
 
 
 def list_drives_human_readable_object(parsed_drive_items):
@@ -653,7 +679,7 @@ def list_drives_in_site_command(client, args):
     # context == output
     context = {f"{INTEGRATION_NAME}.ListDrives(val.ID === obj.ID)": context_entry}
 
-    return (human_readable, context, result)
+    return human_readable, context, result
 
 
 def replace_an_existing_file_command(client, args):
@@ -690,7 +716,7 @@ def replace_an_existing_file_command(client, args):
     # context == output
     context = {f"{INTEGRATION_NAME}.ReplacedFiles(val.ID === obj.ID)": context_entry}
 
-    return (human_readable, context, result)
+    return human_readable, context, result
 
 
 def upload_new_file_command(client, args):
@@ -765,7 +791,7 @@ def create_new_folder_command(client, args):
     # context == output
     context = {f"{INTEGRATION_NAME}.CreatedFolders(val.ID === obj.ID)": context_entry}
 
-    return (human_readable, context, result)
+    return human_readable, context, result
 
 
 def delete_file_command(client, args):
@@ -785,7 +811,7 @@ def delete_file_command(client, args):
     # Creating human readable for War room
     human_readable = tableToMarkdown(title, context_entry, headers=item_id)
 
-    return (human_readable, text)  # == raw response
+    return human_readable, text  # == raw response
 
 
 def main():
@@ -811,13 +837,13 @@ def main():
             readable_output, raw_response = delete_file_command(client, demisto.args())
             return_outputs(readable_output=readable_output)
         elif demisto.command() == "msgraph-download-file":
+            # it has to be demisto.results instead of return_outputs.
+            # because fileResult contains 'content': '' and if that key is empty return_outputs returns error.
             demisto.results(
                 download_file_command(client, demisto.args())
-            )  # it has to be demisto.results instead
-            # of return_outputs. because fileResult contains 'content': '' and if that key is empty return_outputs
-            # returns error
-        elif demisto.command() == "msgraph-list-share-point-sites":
-            return_outputs(*list_share_point_sites_command(client, demisto.args()))
+            )
+        elif demisto.command() == "msgraph-list-sharepoint-sites":
+            return_outputs(*list_sharepoint_sites_command(client, demisto.args()))
         elif demisto.command() == "msgraph-list-drive-content":
             return_outputs(*list_drive_content_command(client, demisto.args()))
         elif demisto.command() == "msgraph-create-new-folder":
@@ -830,39 +856,10 @@ def main():
             return_outputs(*upload_new_file_command(client, demisto.args()))
 
     # Log exceptions
-    except Exception as e:
+    except Exception as err:
         return_error(
-            f"Failed to execute {demisto.command()} command. Error: {str(e)}", e
+            f"Failed to execute {demisto.command()} command. Error: {str(err)}", err
         )
-
-
-""" COMMANDS + REQUESTS FUNCTIONS """
-
-
-def module_test(client, args=None):
-    """
-    Performs basic get request to get item samples
-    """
-    result = client.get_access_token()
-    if result:
-        try:
-            client.http_call(
-                full_url=client.base_url + "/sites/root",
-                headers=client.headers,
-                params={"top": "1"},
-                timeout=7,
-                url_suffix="",
-                method="GET",
-            )
-
-        except Exception as e:
-            raise DemistoException(
-                f"Test failed. please check if Server Url is correct. \n {e}"
-            )
-        else:
-            return "ok"
-    else:
-        return "Test failed because could not get access token"
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
