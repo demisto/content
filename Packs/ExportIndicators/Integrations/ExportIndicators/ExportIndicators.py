@@ -29,7 +29,7 @@ FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
 FORMAT_MWG: str = 'McAfee Web Gateway'
 FORMAT_PROXYSG = "Symantec ProxySG"
-FORMAT_PANOSURL = "panosurl"
+FORMAT_PANOSURL = "PAN-OS URL"
 
 _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
