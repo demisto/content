@@ -2,7 +2,6 @@ category: Authentication
 commonfields:
   id: Microsoft_Graph_Files
   version: -1
-  fromVersion: 5.0.0
 configuration:
 - defaultvalue: https://graph.microsoft.com
   display: Server URL
@@ -640,5 +639,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - test_MsGraphFiles
