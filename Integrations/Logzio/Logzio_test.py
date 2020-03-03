@@ -1,8 +1,7 @@
 import time
 import Logzio
 import json
-
-BASE_URL = "https://api.logz.io/"
+from Logzio import BASE_URL
 SEARCH_LOGS_RESPONSE_EMPTY_BODY = {
     "hits": {
         "hits": []
@@ -35,9 +34,9 @@ TRIGGERED_RULES_RESPONSE_BODY = {
 TRIGGERED_RULES_EMPTY_RESPONSE_BODY = {
     "results": []
 }
-# client = Logzio.Client("https://api.logz.io/", "us", "ac4f3246-c684-4194-9ac9-709b33bc33a9",
-#                 "c9b842c7-8527-486f-82de-5bbd8fcb805a", True, False)
-# Logzio.test_module(client)
+client = Logzio.Client("us", "ac4f3246-c684-4194-9ac9-709b33bc33a9",
+                "8f974a9b-b83f-47cb-8fd7-4361fe3d198e", True, False)
+Logzio.test_module(client)
 # inc, last = Logzio.fetch_incidents(client, {}, None, ["MEDIUM", "HIGH"], '24 hours')
 # print(inc)
 # print(last)
@@ -48,16 +47,16 @@ TRIGGERED_RULES_EMPTY_RESPONSE_BODY = {
 #     print(last)
 #
 args = {
-    # "query": "*",
-    "key1": "EPOevent.SoftwareInfo.Event.CommonFields.SourceURL",
-    "value1": "http:",
-    "size": 10
-    # "from_time": 1580289841000
+    "query": "*",
+    # "key1": "EPOevent.SoftwareInfo.Event.CommonFields.SourceURL",
+    # "value1": "http:",
+    "size": 10,
+    "from_time": 1583021892000
     # "to_time": 1580376254000
 }
 
 
-# Logzio.search_logs_by_fields_command(client, args)
+print json.dumps(Logzio.search_logs_command(client, args)["EntryContext"])
 class TestLogzio:
 
     def test_logzio_fetch_incidents(self, requests_mock):
