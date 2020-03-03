@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Associated the XDR Detection Time field to the Cortex XDR Port Scan incident type.
 
 ## [19.10.2] - 2019-10-29
 - 
