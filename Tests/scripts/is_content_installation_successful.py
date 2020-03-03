@@ -2,15 +2,13 @@ import argparse
 import ast
 import json
 import sys
-from datetime import time
-
 import demisto_client
 import urllib3
 
 from Tests.scripts.wait_until_server_ready import is_release_branch
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from demisto_client.demisto_api.rest import ApiException
-
+from typing import List, AnyStr
 # Disable insecure warnings
 urllib3.disable_warnings()
 
