@@ -1,0 +1,253 @@
+id: Code42 File Search
+version: -1
+name: Code42 File Search
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d045a003-2e7f-4f47-80c7-3882baf399b6
+    type: start
+    task:
+      id: d045a003-2e7f-4f47-80c7-3882baf399b6
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: ea702e46-5871-49ef-855a-bec05fb512d5
+    type: condition
+    task:
+      id: ea702e46-5871-49ef-855a-bec05fb512d5
+      version: -1
+      name: Is Code42 Integration Active?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '2'
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Code42
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: d1b30d32-ca93-40b3-8f37-696f259ce695
+    type: condition
+    task:
+      id: d1b30d32-ca93-40b3-8f37-696f259ce695
+      version: -1
+      name: Does SHA256 Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: ae66d5d2-c756-4931-8915-93b56c2f9914
+    type: condition
+    task:
+      id: ae66d5d2-c756-4931-8915-93b56c2f9914
+      version: -1
+      name: Does MD5 Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: ff01f58e-f625-4557-8af8-64bc39c288e3
+    type: regular
+    task:
+      id: ff01f58e-f625-4557-8af8-64bc39c288e3
+      version: -1
+      name: Code42 Search
+      description: ''
+      script: '|||code42-securitydata-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      exposure: {}
+      hash:
+        simple: ${File.SHA256}
+      hostname: {}
+      json: {}
+      results: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 1e32f15f-ca6e-4b2f-8261-fc6eb0c4aa35
+    type: regular
+    task:
+      id: 1e32f15f-ca6e-4b2f-8261-fc6eb0c4aa35
+      version: -1
+      name: Code42 Search
+      description: ''
+      script: '|||code42-securitydata-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      exposure: {}
+      hash:
+        simple: ${File.MD5}
+      hostname: {}
+      json: {}
+      results: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+    type: title
+    task:
+      id: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.0.0
