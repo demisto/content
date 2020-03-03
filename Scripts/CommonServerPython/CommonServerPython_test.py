@@ -1103,7 +1103,8 @@ data_test_b64_encode = [
     ('', u''),
     ('test', u'dGVzdA=='),
     ('%', u'JQ=='),
-    (u'§', u'wqc=')
+    (u'§', u'wqc='),
+    (u'§t`e§s`t§', u'wqd0YGXCp3NgdMKn')
 ]
 
 
