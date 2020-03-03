@@ -191,162 +191,6 @@ def capitalize_first_letter(string):
 ''' FUNCTIONS '''
 
 
-def isolate_machine_command():
-
-    machine_id = demisto.args().get('machine_id')
-    comment = demisto.args().get('comment')
-    isolation_type = demisto.args().get('isolation_type')
-    response = isolate_machine(machine_id, comment, isolation_type)
-    ec = {
-        'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': {
-            'ID': machine_id,
-            'Isolation': {
-                'Isolated': True,
-                'Requestor': response.get('requestor'),
-                'RequestorComment': response.get('requestorComment')
-            }
-        }
-    }
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'The isolation request has been submitted successfully',
-        'EntryContext': ec
-    }
-    demisto.results(entry)
-
-
-def isolate_machine(machine_id, comment, isolation_type):
-
-    cmd_url = '/machines/{}/isolate'.format(machine_id)
-    json = {
-        "Comment": comment,
-        "IsolationType": isolation_type
-    }
-    response = http_request('POST', cmd_url, json=json)
-    return response
-
-
-def unisolate_machine_command():
-
-    machine_id = demisto.args().get('machine_id')
-    comment = demisto.args().get('comment')
-    response = unisolate_machine(machine_id, comment)
-    ec = {
-        'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': {
-            'ID': machine_id,
-            'Isolation': {
-                'Isolated': False,
-                'Requestor': response.get('requestor'),
-                'RequestorComment': response.get('requestorComment')
-            }
-        }
-    }
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'The request to stop the isolation has been submitted successfully',
-        'EntryContext': ec
-    }
-    demisto.results(entry)
-
-
-def unisolate_machine(machine_id, comment):
-
-    cmd_url = '/machines/{}/unisolate'.format(machine_id)
-    json = {
-        'Comment': comment
-    }
-    response = http_request('POST', cmd_url, json=json)
-    return response
-
-
-def get_machines_command():
-
-    machines = get_machines().get('value', [])
-
-    hostname = demisto.args().get('hostname')
-    ip = demisto.args().get('ip')
-    risk_score = demisto.args().get('risk_score')
-    health_status = demisto.args().get('health_status')
-
-    output = []
-    endpoint_context = []
-
-    for machine in machines:
-        computer_dns_name = machine.get('computerDnsName')
-        last_external_ip = machine.get('lastExternalIpAddress')
-        machine_risk_score = machine.get('riskScore')
-        machine_health_status = machine.get('healthStatus')
-        if (hostname and hostname != computer_dns_name) or (ip and ip != last_external_ip) or \
-                (risk_score and risk_score != machine_risk_score) or \
-                (health_status and health_status != machine_health_status):
-            continue
-        current_machine_output = {
-            'ComputerDNSName': computer_dns_name,
-            'ID': machine.get('id'),
-            'AgentVersion': machine.get('agentVersion'),
-            'FirstSeen': machine.get('firstSeen'),
-            'LastSeen': machine.get('lastSeen'),
-            'HealthStatus': machine_health_status,
-            'IsAADJoined': machine.get('isAadJoined'),
-            'LastExternalIPAddress': last_external_ip,
-            'LastIPAddress': machine.get('lastIpAddress'),
-            'Tags': machine.get('machineTags'),
-            'OSBuild': machine.get('osBuild'),
-            'OSPlatform': machine.get('osPlatform'),
-            'RBACGroupID': machine.get('rbacGroupId'),
-            'RiskScore': machine_risk_score
-        }
-        current_endpoint_output = {
-            'Hostname': machine.get('computerDnsName'),
-            'IPAddress': machine.get('lastExternalIpAddress'),
-            'OS': machine.get('osPlatform')
-        }
-        rbac_group_name = machine.get('rbacGroupName')
-        if rbac_group_name:
-            current_machine_output['RBACGroupName'] = rbac_group_name
-        aad_device_id = machine.get('aadDeviceId')
-        if aad_device_id:
-            current_machine_output['AADDeviceID'] = aad_device_id
-        os_version = machine.get('osVersion')
-        if os_version:
-            current_machine_output['OSVersion'] = os_version
-            current_endpoint_output['OSVersion'] = os_version
-        output.append(current_machine_output)
-        endpoint_context.append(current_endpoint_output)
-
-    if output:
-        ec = {
-            'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': output,
-            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
-        }
-
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': machines,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Windows Defender ATP machines', output, removeNull=True),
-            'EntryContext': ec
-        }
-    else:
-        entry = 'No results found'  # type: ignore
-    demisto.results(entry)
-
-
-def get_machines():
-
-    cmd_url = '/machines'
-    response = http_request('GET', cmd_url)
-    return response
-
 
 def get_file_related_machines_command():
     file = demisto.args()['file']
@@ -593,6 +437,54 @@ def update_alert(alert_id, json):
     return response
 
 
+def isolate_machine_request(machine_id, comment, isolation_type):
+    """Isolates a machine from accessing external network..
+    Args:
+        machine_id (str): Machine ID
+        comment(str): Comment to associate with the action.
+        isolation_type (str): 	Type of the isolation.
+    Returns:
+        dict. Machine action
+    """
+    cmd_url = '/machines/{}/isolate'.format(machine_id)
+    json = {
+        "Comment": comment,
+        "IsolationType": isolation_type
+    }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+
+def unisolate_machine_request(machine_id, comment):
+    """Undo isolation of a machine.
+    Args:
+        machine_id (str): Machine ID
+        comment(str): Comment to associate with the action.
+    Returns:
+        dict. Machine action
+    """
+    cmd_url = '/machines/{}/unisolate'.format(machine_id)
+    json = {
+        'Comment': comment
+    }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+
+def get_machines_request(filter_req):
+    """Retrieves a collection of Machines that have communicated with Microsoft Defender ATP cloud on the last 30 days.
+
+    Returns:
+        dict. Machine's info
+    """
+    cmd_url = '/machines'
+    if filter_req:
+        cmd_url += f'?$filter={filter_req}'
+    demisto.results(cmd_url)
+    response = http_request('GET', cmd_url)
+    return response
+
+
 def get_alert_related_domains_request(alert_id):
     """Retrieves all domains related to a specific alert.
     Args:
@@ -662,6 +554,7 @@ def get_machine_actions_request():
     response = http_request('GET', cmd_url)
     return response
 
+
 def get_investigation_package_request(machine_id, comment):
     """Collect investigation package from a machine.
     Args:
@@ -677,6 +570,7 @@ def get_investigation_package_request(machine_id, comment):
     response = http_request('POST', cmd_url, json=json)
     return response
 
+
 def get_investigation_package_sas_uri_request(action_id):
     """Get a URI that allows downloading of an Investigation package.
     Args:
@@ -687,6 +581,7 @@ def get_investigation_package_sas_uri_request(action_id):
     cmd_url = '/machineactions/{}/getPackageUri'.format(action_id)
     response = http_request('GET', cmd_url)
     return response
+
 
 def restrict_app_execution_request(machine_id, comment):
     """Restrict execution of all applications on the machine except a predefined set.
@@ -702,6 +597,7 @@ def restrict_app_execution_request(machine_id, comment):
         }
     response = http_request('POST', cmd_url, json=json)
     return response
+
 
 def remove_app_restriction_request(machine_id, comment):
     """Enable execution of any application on the machine.
@@ -736,6 +632,7 @@ def stop_and_quarantine_file_request(machine_id, file_sha1, comment):
     response = http_request('POST', cmd_url, json=json)
     return response
 
+
 def get_investigation_by_id_request(investigation_id):
     """Get the investigation ID and return the investigation details
     Args:
@@ -746,6 +643,7 @@ def get_investigation_by_id_request(investigation_id):
     cmd_url = '/investigations/{}'.format(investigation_id)
     response = http_request('GET', cmd_url)
     return response
+
 
 def get_alert_by_id_request(alert_id):
     """Get the alert ID and return the alert details
@@ -758,6 +656,7 @@ def get_alert_by_id_request(alert_id):
     response = http_request('GET', cmd_url)
     return response
 
+
 def get_investigation_list_request():
     """Retrieves a collection of Investigations.
     Returns:
@@ -766,6 +665,7 @@ def get_investigation_list_request():
     cmd_url = '/investigations'
     response = http_request('GET', cmd_url)
     return response
+
 
 def start_investigation_request(machine_id, comment):
     """Start automated investigation on a machine.
@@ -793,6 +693,7 @@ def get_domain_statistics_request(domain):
     response = http_request('GET', cmd_url)
     return response
 
+
 def get_file_statistics_request(file_sha1):
     """Retrieves the statistics on the given file.
     Args:
@@ -803,6 +704,7 @@ def get_file_statistics_request(file_sha1):
     cmd_url = '/files/{}/stats'.format(file_sha1)
     response = http_request('GET', cmd_url)
     return response
+
 
 def get_ip_statistics_request(ip):
     """Retrieves the statistics on the given IP.
@@ -815,6 +717,7 @@ def get_ip_statistics_request(ip):
     response = http_request('GET', cmd_url)
     return response
 
+
 def get_domain_alerts_request(domain):
     """Retrieves a collection of Alerts related to a given domain address.
     Args:
@@ -825,6 +728,7 @@ def get_domain_alerts_request(domain):
     cmd_url = '/domains/{}/alerts'.format(domain)
     response = http_request('GET', cmd_url)
     return response
+
 
 def get_file_alerts_request(file_sha1):
     """Retrieves a collection of Alerts related to a given file hash.
@@ -837,6 +741,7 @@ def get_file_alerts_request(file_sha1):
     response = http_request('GET', cmd_url)
     return response
 
+
 def get_ip_alerts_request(ip):
     """Retrieves a collection of Alerts related to a given IP.
     Args:
@@ -847,6 +752,7 @@ def get_ip_alerts_request(ip):
     cmd_url = '/ips/{}/alerts'.format(ip)
     response = http_request('GET', cmd_url)
     return response
+
 
 def get_user_alerts_request(username):
     """Retrieves a collection of Alerts related to a given  user ID.
@@ -859,6 +765,7 @@ def get_user_alerts_request(username):
     response = http_request('GET', cmd_url)
     return response
 
+
 def get_domain_machines_request(domain):
     """Retrieves a collection of Machines that have communicated to or from a given domain address.
     Args:
@@ -870,6 +777,7 @@ def get_domain_machines_request(domain):
     response = http_request('GET', cmd_url)
     return response
 
+
 def get_user_machines_request(username):
     """Retrieves a collection of machines related to a given user ID.
     Args:
@@ -880,6 +788,7 @@ def get_user_machines_request(username):
     cmd_url = '/users/{}/machines'.format(username)
     response = http_request('GET', cmd_url)
     return response
+
 
 def add_remove_machine_tag_request(machine_id, action, tag):
     """Retrieves a collection of machines related to a given user ID.
@@ -898,6 +807,7 @@ def add_remove_machine_tag_request(machine_id, action, tag):
     response = http_request('POST', cmd_url, json=new_tags)
     return response
 
+
 def get_file_data_request(file_hash):
     """Retrieves a File by identifier Sha1.
     Args:
@@ -908,6 +818,7 @@ def get_file_data_request(file_hash):
     cmd_url = '/files/{}'.format(file_hash)
     response = http_request('GET', cmd_url)
     return response
+
 
 def get_advanced_hunting_command():
     query = demisto.args().get('query')
@@ -1033,6 +944,74 @@ def get_alert_related_user_command():
     demisto.results(entry)
 
 
+def isolate_machine_command():
+    """Isolates a machine from accessing external network.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    machine_id = demisto.args().get('machine_id')
+    comment = demisto.args().get('comment')
+    isolation_type = demisto.args().get('isolation_type')
+    response = isolate_machine_request(machine_id, comment, isolation_type)
+    context_output = get_action_data(response['id'])
+    ec = {
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output
+    }
+
+    hr = "The isolation request has been submitted successfully"
+    return hr, ec, response
+
+
+def unisolate_machine_command():
+    """Undo isolation of a machine.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    machine_id = demisto.args().get('machine_id')
+    comment = demisto.args().get('comment')
+    response = unisolate_machine_request(machine_id, comment)
+    context_output = get_action_data(response['id'])
+    ec = {
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output
+    }
+
+    hr = 'The request to stop the isolation has been submitted successfully'
+    return hr, ec, response
+
+
+def get_machines_command():
+    """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
+               'RiskScore', 'ExposureLevel']
+    hostname = demisto.args().get('hostname', '')
+    ip = demisto.args().get('ip', '')
+    risk_score = demisto.args().get('risk_score', '')
+    health_status = demisto.args().get('health_status', '')
+    os_platform = demisto.args().get('os_platform', '')
+    demisto.results(os_platform)
+    filter_fields_dict = {'computerDnsName': hostname, 'lastIpAddress': ip, 'riskScore': risk_score,
+                          'healthStatus': health_status, 'osPlatform': os_platform}
+    filter_req = ''
+    for field_key, field_value in filter_fields_dict.items():
+        if field_value:
+            filter_req += field_key + '+eq+' + field_value + '&'
+    machines_response = get_machines_request(filter_req)
+    demisto.results(machines_response)
+    machines_list = []
+    for machine in machines_response['value']:
+        machine_data = get_machine_data(machine['id'])
+        machines_list.append(machine_data['value'])
+
+    ec = {
+        'MicrosoftATP.Machine(val.ID === obj.ID)': machines_list
+    }
+    hr = tableToMarkdown('Microsoft Defender ATP Machines:', machines_list, headers=headers)
+    return hr, ec, machines_response
+
+
 def get_alert_related_files_command():
     """Retrieves all files related to a specific alert.
     Returns:
@@ -1105,7 +1084,7 @@ def get_alert_related_ips_command():
     ec = {
         'MicrosoftATP.AlertIP(val.AlertID === obj.AlertID)': context_output
     }
-    hr = 'Alert {} Related IPs:'.format(alert_id), ips_list
+    hr = f'Alert {alert_id} Related IPs: {ips_list}'
     return hr, ec, response_ips_list
 
 
@@ -1126,7 +1105,7 @@ def get_alert_related_domains_command():
     ec = {
         'MicrosoftATP.AlertDomain(val.AlertID === obj.AlertID)': context_output
     }
-    hr = 'Alert {} Related Domains:'.format(alert_id), domains_list
+    hr = f'Alert {alert_id} Related Domains: {domains_list}'
     return hr, ec, response_domains_list
 
 
@@ -1209,8 +1188,8 @@ def get_investigation_package_sas_uri_command():
     action_id = demisto.args().get('action_id')
     response = get_investigation_package_sas_uri_request(action_id)
     link = {'Link': response['value']}
-    hr = tableToMarkdown('success. This link is valid for a very short time and should be used immediately for'
-                         ' downloading the package to a local storage. :', link, headers=headers)
+    hr = f'success. This link is valid for a very short time and should be used immediately for downloading' \
+         f' the package to a local storage{link["Link"]}'
     ec = {
         'MicrosoftATP.InvestigationURI(val.Link === obj.Link)': link
     }
@@ -1315,7 +1294,7 @@ def get_investigation_data(investigation_id):
             "StartTime": response.get('startTime'),
             "EndTime": response.get('endTime'),
             "CancelledBy": response.get('cancelledBy'),
-            "InvestigationState": response.get('investigationState'),
+            "State": response.get('state'),
             "StatusDetails": response.get('ststatusDetailsatus'),
             "MachineID": response.get('machineId'),
             "ComputerDNSName": response.get('computerDnsName'),
@@ -1386,7 +1365,7 @@ def get_domain_alerts_command():
     hr = tableToMarkdown('Domain {} related alerts Info:'.format(domain), alerts_list, headers=headers)
     context_output = {
         'Domain': domain,
-        'Alerts': response['value']
+        'Alerts': alerts_list
     }
     ec = {
         'MicrosoftATP.DomainAlert(val.Domain === obj.Domain)': context_output
@@ -1401,27 +1380,27 @@ def get_alert_data(alert_id):
     """
     response = get_alert_by_id_request(alert_id)
     alert_data = {
-            "ID": response.get('id'),
-            "IncidentID": response.get('incidentId'),
-            "investigationID": response.get('investigationId'),
-        "investigationState": response.get('investigationState'),
-        "assignedTo": response.get('assignedTo'),
+        "ID": alert_id,
+        "IncidentID": response.get('incidentId'),
+        "InvestigationID": response.get('investigationId'),
+        "InvestigationState": response.get('investigationState'),
+        "AssignedTo": response.get('assignedTo'),
         "Severity": response.get('severity'),
         "Status": response.get('status'),
         "Classification": response.get('classification'),
-        "determination": response.get('determination'),
-        "detectionSource": response.get('detectionSource'),
+        "Determination": response.get('determination'),
+        "DetectionSource": response.get('detectionSource'),
         "Category": response.get('category'),
         "ThreatFamilyName": response.get('threatFamilyName'),
         "Title": response.get('title'),
-            "Description": response.get('description'),
-        "alertCreationTime": response.get('alertCreationTime'),
-        "firstEventTime": response.get('firstEventTime'),
-        "lastEventTime": response.get('lastEventTime'),
-        "lastUpdateTime": response.get('lastUpdateTime'),
-        "resolvedTime": response.get('resolvedTime'),
+        "Description": response.get('description'),
+        "AlertCreationTime": response.get('alertCreationTime'),
+        "FirstEventTime": response.get('firstEventTime'),
+        "LastEventTime": response.get('lastEventTime'),
+        "LastUpdateTime": response.get('lastUpdateTime'),
+        "ResolvedTime": response.get('resolvedTime'),
         "MachineID": response.get('machineId'),
-        "comments": [
+        "Comments": [
             {
                 "Comment": response.get('comment'),
                 "CreatedBy": response.get('createdBy'),
@@ -1439,7 +1418,7 @@ def get_domain_machine_command():
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform','LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureScore']
+               'RiskScore', 'ExposureLevel']
     domain = demisto.args().get('domain')
     response = get_domain_machines_request(domain)
     machines_list = []
@@ -1465,7 +1444,7 @@ def get_machine_data(machine_id):
     machine = get_machine_details_request(machine_id)
     machine_data = assign_params(**{
         'ComputerDNSName': machine.get('computerDnsName'),
-        'ID': machine.get('id'),
+        'ID': machine_id,
         'AgentVersion': machine.get('agentVersion'),
         'FirstSeen': machine.get('firstSeen'),
         'LastSeen': machine.get('lastSeen'),
@@ -1478,10 +1457,10 @@ def get_machine_data(machine_id):
         'OSPlatform': machine.get('osPlatform'),
         'RBACGroupID': machine.get('rbacGroupId'),
         'RiskScore': machine.get('riskScore'),
-        'RBACGroupName':machine.get('rbacGroupName'),
-        'AADDeviceID':machine.get('aadDeviceId'),
+        'RBACGroupName': machine.get('rbacGroupName'),
+        'AADDeviceID': machine.get('aadDeviceId'),
         'OSVersion': machine.get('osVersion'),
-        'ExposureScore': machine.get('exposureScore')
+        'ExposureLevel': machine.get('exposureLevel')
     })
     return machine_data
 
@@ -1581,9 +1560,9 @@ def get_ip_alerts_command():
         'IPAddress': ip,
         'Alerts': alerts_list
     }
-    ec = camelize({
+    ec = {
         'MicrosoftATP.IPAlert(val.IPAddress === obj.IPAddress)': context_output
-    })
+    }
     return hr, ec, response
 
 
@@ -1616,7 +1595,7 @@ def get_user_machine_command():
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform','LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureScore']
+               'RiskScore', 'ExposureLevel']
     username = demisto.args().get('username')
     response = get_user_machines_request(username)
     machines_list = []
@@ -1639,7 +1618,7 @@ def add_remove_machine_tag_command():
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform','LastIpAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureScore']
+               'RiskScore', 'ExposureLevel']
     machine_id = demisto.args().get('machine_id')
     action = demisto.args().get('action')
     tag = demisto.args().get('tag')
