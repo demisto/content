@@ -89,7 +89,7 @@ def find_indicators_to_limit(indicator_query: str, limit: int,
     """
     Finds indicators using demisto.searchIndicators
     """
-    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, panos_compatible, url_ps)
+    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, panos_compatible=panos_compatible, url_ps=url_ps)
     return iocs[:limit]
 
 
