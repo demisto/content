@@ -109,7 +109,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: Host.Id
+                accessor: Host.ID
             iscontext: true
       - - operator: isExists
           left:
@@ -130,7 +130,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: Host.Id
+                accessor: Host.ID
             iscontext: true
       - - operator: isExists
           left:
@@ -186,14 +186,14 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: Host.Tag.Id
+                accessor: Host.Tag.ID
             iscontext: true
         - operator: isEmpty
           left:
             value:
               complex:
                 root: RiskSense
-                accessor: Host.Tag.Id
+                accessor: Host.Tag.ID
             iscontext: true
       - - operator: isExists
           left:
@@ -219,14 +219,14 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: Host.NetworkId
+                accessor: Host.NetworkID
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
                 root: RiskSense
-                accessor: Host.GroupId
+                accessor: Host.GroupID
             iscontext: true
       - - operator: isExists
           left:
@@ -254,7 +254,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: Host.ClientId
+                accessor: Host.ClientID
             iscontext: true
       - - operator: isExists
           left:
@@ -268,7 +268,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: Host.Source.Uuid
+                accessor: Host.Source.UuID
             iscontext: true
       - - operator: isExists
           left:

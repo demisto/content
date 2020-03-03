@@ -1,22 +1,22 @@
 {
-  "RiskSense.Application(val.Id == obj.Id)": [
+  "RiskSense.Application(val.ID == obj.ID)": [
     {
-      "Id": 19391,
-      "GroupId": 7990,
+      "ID": 19391,
+      "GroupID": 7990,
       "GroupName": "group name",
       "Groups": [
         {
-          "Id": 7990,
+          "ID": 7990,
           "Name": "group name"
         }
       ],
       "Network": {
-        "Id": 91502,
+        "ID": 91502,
         "Name": "network name",
         "Type": "network type"
       },
-      "ClientId": 747,
-      "HostId": null,
+      "ClientID": 747,
+      "HostID": null,
       "Uri": "uri",
       "Name": "name",
       "Description": null,
@@ -95,7 +95,7 @@
         "OwnedBy": null,
         "SupportedBy": null,
         "SupportGroup": null,
-        "SysId": null,
+        "SysID": null,
         "OperatingSystem": null,
         "LastScanDate": null,
         "FerpaComplianceAsset": false,
@@ -106,13 +106,13 @@
       "Source": [
         {
           "Name": "source name",
-          "Uuid": "uuid",
+          "UuID": "uuid",
           "ScannerType": "scanner type"
         }
       ],
       "Note": [
         {
-          "UserId": 5969,
+          "UserID": 5969,
           "UserName": "name",
           "Note": "note",
           "Date": "2020-01-28T12:21:06"
