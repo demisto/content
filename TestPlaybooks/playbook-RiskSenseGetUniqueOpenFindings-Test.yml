@@ -166,7 +166,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: UniqueHostFinding.SourceId
+                accessor: UniqueHostFinding.SourceID
                 transformers:
                 - operator: uniq
             iscontext: true

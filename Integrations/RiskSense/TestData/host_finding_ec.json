@@ -1,112 +1,112 @@
 {
-  "RiskSense.HostFinding(val.Id == obj.Id)": [
+  "RiskSense.HostFinding(val.ID == obj.ID)": [
     {
-      "Id": 115469577,
+      "ID": 115469577,
       "Source": "source name",
-      "SourceId": "source id",
+      "SourceID": "source id",
       "Title": "title",
       "Port": 25,
       "GroupCount": 1,
       "Group": [
         {
-          "Id": 7990,
+          "ID": 7990,
           "Name": "group name"
         }
       ],
       "Host": {
-        "HostId": 3569982,
+        "HostID": 3569982,
         "HostName": "hostname1",
         "IpAddress": "ip address",
         "Criticality": 5,
         "External": true,
         "Port": [
           {
-            "Id": 42841210,
+            "ID": 42841210,
             "Number": 21
           },
           {
-            "Id": 42841323,
+            "ID": 42841323,
             "Number": 22
           },
           {
-            "Id": 42841347,
+            "ID": 42841347,
             "Number": 23
           },
           {
-            "Id": 42841183,
+            "ID": 42841183,
             "Number": 25
           },
           {
-            "Id": 42841178,
+            "ID": 42841178,
             "Number": 111
           },
           {
-            "Id": 42841312,
+            "ID": 42841312,
             "Number": 123
           },
           {
-            "Id": 42841336,
+            "ID": 42841336,
             "Number": 587
           },
           {
-            "Id": 42841279,
+            "ID": 42841279,
             "Number": 852
           },
           {
-            "Id": 42841222,
+            "ID": 42841222,
             "Number": 6112
           },
           {
-            "Id": 42841168,
+            "ID": 42841168,
             "Number": 7100
           },
           {
-            "Id": 42841236,
+            "ID": 42841236,
             "Number": 8005
           },
           {
-            "Id": 42841197,
+            "ID": 42841197,
             "Number": 8007
           },
           {
-            "Id": 42841329,
+            "ID": 42841329,
             "Number": 32771
           },
           {
-            "Id": 42841246,
+            "ID": 42841246,
             "Number": 32772
           },
           {
-            "Id": 42841259,
+            "ID": 42841259,
             "Number": 32775
           },
           {
-            "Id": 42841269,
+            "ID": 42841269,
             "Number": 32776
           },
           {
-            "Id": 42841361,
+            "ID": 42841361,
             "Number": 32777
           },
           {
-            "Id": 42841370,
+            "ID": 42841370,
             "Number": 32778
           },
           {
-            "Id": 42841172,
+            "ID": 42841172,
             "Number": 32779
           }
         ],
         "Rs3": 644
       },
       "Network": {
-        "Id": 78038,
+        "ID": 78038,
         "Name": "network name",
         "Type": "type 1"
       },
       "Assessment": [
         {
-          "Id": 67442,
+          "ID": 67442,
           "Name": "Assessment",
           "Date": "2019-04-23"
         }
@@ -137,7 +137,7 @@
       "TagCount": 4,
       "Tag": [
         {
-          "Id": 215551,
+          "ID": 215551,
           "Name": "tag name1",
           "Category": "category",
           "Description": "",
@@ -146,7 +146,7 @@
           "Color": "#dd8361"
         },
         {
-          "Id": 215554,
+          "ID": 215554,
           "Name": "tag name 2",
           "Category": "category 2",
           "Description": "",
@@ -155,7 +155,7 @@
           "Color": "#78a19b"
         },
         {
-          "Id": 225744,
+          "ID": 225744,
           "Name": "tag name 3",
           "Category": "category 3",
           "Description": "",
@@ -164,7 +164,7 @@
           "Color": "#648d9f"
         },
         {
-          "Id": 225750,
+          "ID": 225750,
           "Name": "tag name 4",
           "Category": "category",
           "Description": "",
@@ -176,7 +176,7 @@
       "TagAssetCount": 2,
       "TagAsset": [
         {
-          "Id": 215551,
+          "ID": 215551,
           "Name": "Data_Center_1",
           "Category": "catgory name",
           "Created": "2019-04-24T21:35:12",
@@ -184,7 +184,7 @@
           "Color": "#dd8361"
         },
         {
-          "Id": 215554,
+          "ID": 215554,
           "Name": "Linux_Team_2",
           "Category": "category name",
           "Created": "2019-04-24T21:39:59",
@@ -213,7 +213,7 @@
       "ResolvedOn": "",
       "ScannerName": "scanner name",
       "FindingType": "finding type",
-      "MachineId": "",
+      "MachineID": "",
       "StatusEmbedded": {
         "State": "state",
         "StateName": "state name",
@@ -231,112 +231,112 @@
       "Services": "service1"
     },
     {
-      "Id": 115469577,
+      "ID": 115469577,
       "Source": "source name",
-      "SourceId": "source id",
+      "SourceID": "source id",
       "Title": "title",
       "Port": 25,
       "GroupCount": 1,
       "Group": [
         {
-          "Id": 7990,
+          "ID": 7990,
           "Name": "group name"
         }
       ],
       "Host": {
-        "HostId": 3569982,
+        "HostID": 3569982,
         "HostName": "hostname1",
         "IpAddress": "ip address",
         "Criticality": 5,
         "External": true,
         "Port": [
           {
-            "Id": 42841210,
+            "ID": 42841210,
             "Number": 21
           },
           {
-            "Id": 42841323,
+            "ID": 42841323,
             "Number": 22
           },
           {
-            "Id": 42841347,
+            "ID": 42841347,
             "Number": 23
           },
           {
-            "Id": 42841183,
+            "ID": 42841183,
             "Number": 25
           },
           {
-            "Id": 42841178,
+            "ID": 42841178,
             "Number": 111
           },
           {
-            "Id": 42841312,
+            "ID": 42841312,
             "Number": 123
           },
           {
-            "Id": 42841336,
+            "ID": 42841336,
             "Number": 587
           },
           {
-            "Id": 42841279,
+            "ID": 42841279,
             "Number": 852
           },
           {
-            "Id": 42841222,
+            "ID": 42841222,
             "Number": 6112
           },
           {
-            "Id": 42841168,
+            "ID": 42841168,
             "Number": 7100
           },
           {
-            "Id": 42841236,
+            "ID": 42841236,
             "Number": 8005
           },
           {
-            "Id": 42841197,
+            "ID": 42841197,
             "Number": 8007
           },
           {
-            "Id": 42841329,
+            "ID": 42841329,
             "Number": 32771
           },
           {
-            "Id": 42841246,
+            "ID": 42841246,
             "Number": 32772
           },
           {
-            "Id": 42841259,
+            "ID": 42841259,
             "Number": 32775
           },
           {
-            "Id": 42841269,
+            "ID": 42841269,
             "Number": 32776
           },
           {
-            "Id": 42841361,
+            "ID": 42841361,
             "Number": 32777
           },
           {
-            "Id": 42841370,
+            "ID": 42841370,
             "Number": 32778
           },
           {
-            "Id": 42841172,
+            "ID": 42841172,
             "Number": 32779
           }
         ],
         "Rs3": 644
       },
       "Network": {
-        "Id": 78038,
+        "ID": 78038,
         "Name": "network name",
         "Type": "type 1"
       },
       "Assessment": [
         {
-          "Id": 67442,
+          "ID": 67442,
           "Name": "Assessment",
           "Date": "2019-04-23"
         }
@@ -367,7 +367,7 @@
       "TagCount": 4,
       "Tag": [
         {
-          "Id": 215551,
+          "ID": 215551,
           "Name": "tag name1",
           "Category": "category",
           "Description": "",
@@ -376,7 +376,7 @@
           "Color": "#dd8361"
         },
         {
-          "Id": 215554,
+          "ID": 215554,
           "Name": "tag name 2",
           "Category": "category 2",
           "Description": "",
@@ -385,7 +385,7 @@
           "Color": "#78a19b"
         },
         {
-          "Id": 225744,
+          "ID": 225744,
           "Name": "tag name 3",
           "Category": "category 3",
           "Description": "",
@@ -394,7 +394,7 @@
           "Color": "#648d9f"
         },
         {
-          "Id": 225750,
+          "ID": 225750,
           "Name": "tag name 4",
           "Category": "category",
           "Description": "",
@@ -406,7 +406,7 @@
       "TagAssetCount": 2,
       "TagAsset": [
         {
-          "Id": 215551,
+          "ID": 215551,
           "Name": "Data_Center_1",
           "Category": "catgory name",
           "Created": "2019-04-24T21:35:12",
@@ -414,7 +414,7 @@
           "Color": "#dd8361"
         },
         {
-          "Id": 215554,
+          "ID": 215554,
           "Name": "Linux_Team_2",
           "Category": "category name",
           "Created": "2019-04-24T21:39:59",
@@ -443,7 +443,7 @@
       "ResolvedOn": "",
       "ScannerName": "scanner name",
       "FindingType": "finding type",
-      "MachineId": "",
+      "MachineID": "",
       "StatusEmbedded": {
         "State": "state",
         "StateName": "state name",
@@ -461,112 +461,112 @@
       "Services": "service1"
     },
     {
-      "Id": 115469577,
+      "ID": 115469577,
       "Source": "source name",
-      "SourceId": "source id",
+      "SourceID": "source id",
       "Title": "title",
       "Port": 25,
       "GroupCount": 1,
       "Group": [
         {
-          "Id": 7990,
+          "ID": 7990,
           "Name": "group name"
         }
       ],
       "Host": {
-        "HostId": 3569982,
+        "HostID": 3569982,
         "HostName": "hostname1",
         "IpAddress": "ip address",
         "Criticality": 5,
         "External": true,
         "Port": [
           {
-            "Id": 42841210,
+            "ID": 42841210,
             "Number": 21
           },
           {
-            "Id": 42841323,
+            "ID": 42841323,
             "Number": 22
           },
           {
-            "Id": 42841347,
+            "ID": 42841347,
             "Number": 23
           },
           {
-            "Id": 42841183,
+            "ID": 42841183,
             "Number": 25
           },
           {
-            "Id": 42841178,
+            "ID": 42841178,
             "Number": 111
           },
           {
-            "Id": 42841312,
+            "ID": 42841312,
             "Number": 123
           },
           {
-            "Id": 42841336,
+            "ID": 42841336,
             "Number": 587
           },
           {
-            "Id": 42841279,
+            "ID": 42841279,
             "Number": 852
           },
           {
-            "Id": 42841222,
+            "ID": 42841222,
             "Number": 6112
           },
           {
-            "Id": 42841168,
+            "ID": 42841168,
             "Number": 7100
           },
           {
-            "Id": 42841236,
+            "ID": 42841236,
             "Number": 8005
           },
           {
-            "Id": 42841197,
+            "ID": 42841197,
             "Number": 8007
           },
           {
-            "Id": 42841329,
+            "ID": 42841329,
             "Number": 32771
           },
           {
-            "Id": 42841246,
+            "ID": 42841246,
             "Number": 32772
           },
           {
-            "Id": 42841259,
+            "ID": 42841259,
             "Number": 32775
           },
           {
-            "Id": 42841269,
+            "ID": 42841269,
             "Number": 32776
           },
           {
-            "Id": 42841361,
+            "ID": 42841361,
             "Number": 32777
           },
           {
-            "Id": 42841370,
+            "ID": 42841370,
             "Number": 32778
           },
           {
-            "Id": 42841172,
+            "ID": 42841172,
             "Number": 32779
           }
         ],
         "Rs3": 644
       },
       "Network": {
-        "Id": 78038,
+        "ID": 78038,
         "Name": "network name",
         "Type": "type 1"
       },
       "Assessment": [
         {
-          "Id": 67442,
+          "ID": 67442,
           "Name": "Assessment",
           "Date": "2019-04-23"
         }
@@ -597,7 +597,7 @@
       "TagCount": 4,
       "Tag": [
         {
-          "Id": 215551,
+          "ID": 215551,
           "Name": "tag name1",
           "Category": "category",
           "Description": "",
@@ -606,7 +606,7 @@
           "Color": "#dd8361"
         },
         {
-          "Id": 215554,
+          "ID": 215554,
           "Name": "tag name 2",
           "Category": "category 2",
           "Description": "",
@@ -615,7 +615,7 @@
           "Color": "#78a19b"
         },
         {
-          "Id": 225744,
+          "ID": 225744,
           "Name": "tag name 3",
           "Category": "category 3",
           "Description": "",
@@ -624,7 +624,7 @@
           "Color": "#648d9f"
         },
         {
-          "Id": 225750,
+          "ID": 225750,
           "Name": "tag name 4",
           "Category": "category",
           "Description": "",
@@ -636,7 +636,7 @@
       "TagAssetCount": 2,
       "TagAsset": [
         {
-          "Id": 215551,
+          "ID": 215551,
           "Name": "Data_Center_1",
           "Category": "catgory name",
           "Created": "2019-04-24T21:35:12",
@@ -644,7 +644,7 @@
           "Color": "#dd8361"
         },
         {
-          "Id": 215554,
+          "ID": 215554,
           "Name": "Linux_Team_2",
           "Category": "category name",
           "Created": "2019-04-24T21:39:59",
@@ -673,7 +673,7 @@
       "ResolvedOn": "",
       "ScannerName": "scanner name",
       "FindingType": "finding type",
-      "MachineId": "",
+      "MachineID": "",
       "StatusEmbedded": {
         "State": "state",
         "StateName": "state name",
@@ -689,6 +689,40 @@
       "Note": [],
       "Assignment": [],
       "Services": "service1"
+    }
+  ],
+  "Host(val.ID == obj.ID)": [
+    {
+      "ID": 3569982,
+      "Hostname": "hostname1",
+      "IP": "ip address"
+    },
+    {
+      "ID": 3569982,
+      "Hostname": "hostname1",
+      "IP": "ip address"
+    },
+    {
+      "ID": 3569982,
+      "Hostname": "hostname1",
+      "IP": "ip address"
+    }
+  ],
+  "CVE(val.ID && val.ID == obj.ID)": [
+    {
+      "ID": "cve name",
+      "CVSS": 7.5,
+      "Description": "description"
+    },
+    {
+      "ID": "cve name",
+      "CVSS": 7.5,
+      "Description": "description"
+    },
+    {
+      "ID": "cve name",
+      "CVSS": 7.5,
+      "Description": "description"
     }
   ]
 }

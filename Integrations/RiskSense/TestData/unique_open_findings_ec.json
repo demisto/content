@@ -5,7 +5,7 @@
       "Severity": 2.3,
       "HostCount": 690,
       "Source": "Source Name",
-      "SourceId": "Source Id",
+      "SourceID": "Source Id",
       "Href": "href"
     }
   ]
