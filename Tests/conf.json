@@ -297,10 +297,25 @@
         },
         {
             "playbookID": "HighlightWords_Test"
-
+        },
+        {
+            "integrations": "Pentera",
+            "playbookID": "Pcysys-Test"
+        },
+        {
+            "integrations": "Pentera",
+            "playbookID": "Pentera Run Scan - Test"
         },
         {
             "playbookID": "StringContainsArray_test"
+        },
+        {
+            "integrations": "Pentera",
+            "playbookID": "Pcysys-Test"
+        },
+        {
+            "integrations": "Pentera",
+            "playbookID": "Pentera Run Scan - Test"
         },
         {
             "integrations": "Fidelis Elevate Network",
@@ -343,6 +358,10 @@
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
+        },
+        {
+            "integrations": "CVE Search v2",
+            "playbookID": "CVE Search v2 - Test"
         },
         {
             "integrations": "CVE Search",
@@ -688,11 +707,19 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500,
-            "pid_threshold": 6
+            "timeout": 500
         },
         {
             "playbookID": "CutTransformerTest"
+        },
+        {
+            "playbookID": "Default - Test",
+            "integrations": [
+              "ThreatQ v2",
+              "AlienVault OTX v2",
+              "Demisto REST API"
+            ],
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -798,8 +825,7 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 150
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
@@ -962,14 +988,12 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 100
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 100
+            "instance_names": "ewv2_regular"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -987,8 +1011,7 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240,
-            "pid_threshold": 18
+            "timeout": 240
         },
         {
             "integrations": "activedir",
@@ -1168,14 +1191,12 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 200
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewsv2_separate_process",
-            "memory_threshold": 150
+            "instance_names": "ewsv2_separate_process"
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1250,7 +1271,8 @@
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
             "nightly": true,
-            "timeout": 1200
+            "timeout": 1200,
+            "pid_threshold": 10
         },
         {
             "integrations": "Recorded Future",
@@ -2015,8 +2037,7 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest",
-            "pid_threshold": 24
+            "playbookID": "RasterizeImageTest"
         },
         {
             "integrations": "Ipstack",
@@ -2071,8 +2092,7 @@
         {
             "playbookID": "Send Investigation Summary Reports - Test",
             "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0",
-            "memory_threshold": 60
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Anomali ThreatStream v2",
@@ -2202,8 +2222,7 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular",
-          "memory_threshold": 65
+          "instance_names": "ewv2_regular"
         },
         {
           "integrations": "QRadar",
@@ -2376,21 +2395,23 @@
             "integrations": "CounterCraft Deception Director",
             "playbookID": "CounterCraft - Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "DbotPredictOufOfTheBoxTest",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 22300",
+        "Office365_Feed_Test": "Issue 22517",
+        "DuoAdmin API test playbook": "Issue 22514",
+        "Test XDR Playbook": "Issue 22512",
+        "RasterizeTest": "Issue 20702",
         "Send Investigation Summary Reports": "Issue 22299",
         "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
-        "okta_test_playbook": "Issue 22235",
-        "Test-VulnDB": "Issue 22232",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
-        "Luminate-TestPlaybook": "Issue 22224",
-        "GetTime-ObjectVsStringTest": "Issue 22223",
-        "GetTime-Test": "Issue 22222",
         "EmailReputationTest": "Issue 22187",
         "test_Qradar": "Issue 22186",
         "IntSights Test": "Issue 22185",
@@ -2426,7 +2447,8 @@
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
-        "C2sec-Test": "Issue #21633"
+        "C2sec-Test": "Issue #21633",
+        "TAXII_Feed_Test": "Issue #22423"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2494,11 +2516,11 @@
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
 
 
         "_comment": "~~~ OTHER ~~~",
+        "Pentera": "authentication method will not work with testing",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
@@ -2572,5 +2594,16 @@
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
         "Google Chronicle Backstory": "SDK"
+    },
+    "docker_thresholds": {
+        "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
+        "images": {
+            "demisto/chromium": {
+                "pid_threshold": 11
+            },
+            "demisto/py-ews:2.0": {
+                "memory_threshold": 150
+            }
+        }
     }
 }
