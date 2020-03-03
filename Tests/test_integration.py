@@ -9,6 +9,7 @@ import urllib3
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
+import json
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS, Docker
 from Tests.scripts.constants import PB_Status
@@ -426,6 +427,9 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
     module_instances = []
     test_docker_images = set()
 
+    with open("./Tests/conf.json", 'r') as conf_file:
+        docker_thresholds = json.load(conf_file).get('docker_thresholds', {}).get('images', {})
+
     for integration in integrations:
         integration_name = integration.get('name', None)
         integration_instance_name = integration.get('instance_name', '')
@@ -514,8 +518,9 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         pids_threshold = options.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
         error_message = Docker.check_resource_usage(server_url=server_url,
                                                     docker_images=test_docker_images,
-                                                    memory_threshold=memory_threshold,
-                                                    pids_threshold=pids_threshold)
+                                                    def_memory_threshold=memory_threshold,
+                                                    def_pid_threshold=pids_threshold,
+                                                    docker_thresholds=docker_thresholds)
 
         if error_message:
             prints_manager.add_print_job(error_message, print_error, thread_index)
