@@ -189,7 +189,7 @@ class TestHelperFunctions:
             # `*.demisto.com` and `demisto.com`
             assert len(indicator_vals) == len(iocs_dict.get('iocs', [])) + 1
             assert '*.demisto.com' in indicator_vals
-            assert 'demisto.com' in indicator_vals
+            assert 'demisto.com' in indicator_vals  # lgtm [py/incomplete-url-substring-sanitization]
             assert '*-blah.demisto.com' not in indicator_vals
 
     @pytest.mark.find_indicators_to_limit_loop
