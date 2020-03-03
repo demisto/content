@@ -1,0 +1,33 @@
+commonfields:
+  id: bb16398c-8921-4b73-85f7-922ab44c7720
+  version: 2
+name: Base64Decode
+script: |+
+  import base64
+
+  value = demisto.args()["value"]
+
+  decodedBytes = base64.urlsafe_b64decode(str(value))
+  res = str(decodedBytes)
+  demisto.results(res)
+
+type: python
+tags:
+- Utility
+- transformer
+- string
+comment: Will decode an input using Base64 format.
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: to decode in Base64 format
+outputs:
+- contextPath: Base64.decoded
+  description: input encoded as Base64 format
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+runas: DBotWeakRole
