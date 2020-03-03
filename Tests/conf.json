@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "fromVersion": "5.0.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
