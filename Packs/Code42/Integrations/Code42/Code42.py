@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
@@ -14,6 +14,7 @@ from py42.sdk.file_event_query import (
     OSHostname,
     DeviceUsername,
     ExposureType,
+    EventType,
     FileEventQuery
 )
 from py42.sdk.alert_query import (
@@ -86,6 +87,21 @@ FILE_CONTEXT_FIELD_MAPPER = {
     'osHostName': 'Hostname'
 }
 
+CODE42_FILE_TYPE_MAPPER = {
+    'SourceCode': 'SOURCE_CODE',
+    'Audio': 'AUDIO',
+    'Executable': 'EXECUTABLE',
+    'Document': 'DOCUMENT',
+    'Image': 'IMAGE',
+    'PDF': 'PDF',
+    'Presentation': 'PRESENTATION',
+    'Script': 'SCRIPT',
+    'Spreadsheet': 'SPREADSHEET',
+    'Video': 'VIDEO',
+    'VirtualDiskImage': 'VIRTUAL_DISK_IMAGE',
+    'Archive': 'ARCHIVE'
+}
+
 SECURITY_EVENT_HEADERS = ['EventType', 'FileName', 'FileSize', 'FileHostname', 'FileOwner', 'FileCategory', 'DeviceUsername']
 SECURITY_ALERT_HEADERS = ['Type', 'Occurred', 'Username', 'Name', 'Description', 'State', 'ID']
 
@@ -118,6 +134,7 @@ class Code42Client(BaseClient):
         alert_filter.append(AlertState.eq(AlertState.OPEN))
         alert_filter.append(DateObserved.on_or_after(start_time))
         alert_query = AlertQuery(self._sdk.user_context.get_current_tenant_id(), *alert_filter)
+        alert_query.sort_direction = "asc"
         alerts = self._sdk.security.alerts
         try:
             res = alerts.search_alerts(alert_query)
@@ -200,6 +217,7 @@ def build_query_payload(args):
 
 @logger
 def map_observation_to_security_query(observation, actor):
+    file_categories: Dict[str, Any]
     observation_data = json.loads(observation['data'])
     search_args = []
     exp_types = []
@@ -214,6 +232,7 @@ def map_observation_to_security_query(observation, actor):
         int(time.mktime(time.strptime(begin_time.replace('0000000', '000'), "%Y-%m-%dT%H:%M:%S.000Z")))))
     search_args.append(EventTimestamp.on_or_before(
         int(time.mktime(time.strptime(end_time.replace('0000000', '000'), "%Y-%m-%dT%H:%M:%S.000Z")))))
+    # Determine exposure types based on alert type
     if observation['type'] == 'FedCloudSharePermissions':
         if 'PublicSearchableShare' in exposure_types:
             exp_types.append(ExposureType.IS_PUBLIC)
@@ -221,7 +240,24 @@ def map_observation_to_security_query(observation, actor):
             exp_types.append(ExposureType.SHARED_VIA_LINK)
     elif observation['type'] == 'FedEndpointExfiltration':
         exp_types = exposure_types
+        search_args.append(EventType.is_in(['CREATED', 'MODIFIED', 'READ_BY_APP']))
     search_args.append(ExposureType.is_in(exp_types))
+    # Determine if file categorization is significant
+    file_categories = {
+        "filterClause": "OR"
+    }
+    filters = []
+    for filetype in observation_data['fileCategories']:
+        if filetype['isSignificant']:
+            file_category = {
+                "operator": "IS",
+                "term": "fileCategory",
+                "value": CODE42_FILE_TYPE_MAPPER.get(filetype['category'], 'UNCATEGORIZED')
+            }
+            filters.append(file_category)
+    if len(filters):
+        file_categories['filters'] = filters
+        search_args.append(json.dumps(file_categories))
     # Convert list of search criteria to *args
     query = FileEventQuery.all(*search_args)
     LOG('Alert Observation Query: {}'.format(query))

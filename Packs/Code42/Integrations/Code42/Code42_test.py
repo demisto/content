@@ -581,6 +581,26 @@ MOCK_OBSERVATION_QUERIES = [
                 ]
             },
             {
+                "filterClause": "OR",
+                "filters": [
+                    {
+                        "operator": "IS",
+                        "term": "eventType",
+                        "value": "CREATED"
+                    },
+                    {
+                        "operator": "IS",
+                        "term": "eventType",
+                        "value": "MODIFIED"
+                    },
+                    {
+                        "operator": "IS",
+                        "term": "eventType",
+                        "value": "READ_BY_APP"
+                    }
+                ]
+            },
+            {
                 "filterClause": "AND",
                 "filters": [
                     {
@@ -589,7 +609,7 @@ MOCK_OBSERVATION_QUERIES = [
                         "value": "ApplicationRead"
                     }
                 ]
-            }
+            },
         ],
         "pgNum": 1,
         "pgSize": 100,
@@ -680,6 +700,26 @@ MOCK_OBSERVATION_QUERIES = [
                         "operator": "ON_OR_BEFORE",
                         "term": "eventTimestamp",
                         "value": "2019-10-02T16:50:00.000Z"
+                    }
+                ]
+            },
+            {
+                "filterClause": "OR",
+                "filters": [
+                    {
+                        "operator": "IS",
+                        "term": "eventType",
+                        "value": "CREATED"
+                    },
+                    {
+                        "operator": "IS",
+                        "term": "eventType",
+                        "value": "MODIFIED"
+                    },
+                    {
+                        "operator": "IS",
+                        "term": "eventType",
+                        "value": "READ_BY_APP"
                     }
                 ]
             },
