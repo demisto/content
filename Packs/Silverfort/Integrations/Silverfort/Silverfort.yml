@@ -4,21 +4,22 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
+  hidden: false
   name: url
   required: true
   type: 0
 - additionalinfo: Generate your unique API token from the tower
-  display: API KEY
+  display: APIKEY
   hidden: false
   name: apikey
   required: true
-  type: 0
+  type: 4
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
   required: false
   type: 8
-description: Silverfort integration
+description: Use Silverfort integration to get & update Silverfort risk severity.
 display: Silverfort
 name: Silverfort
 script:
@@ -36,14 +37,10 @@ script:
       name: email
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: domain
+    - default: false
       description: Sam account
       isArray: false
       name: sam_account
-      predefined:
-      - Domain
       required: false
       secret: false
     - default: false
@@ -55,7 +52,7 @@ script:
     deprecated: false
     description: User risk commands - get the user entity risk
     execution: false
-    name: risks-get-user-risk
+    name: silverfort-get-user-risk
     outputs:
     - contextPath: Silverfort.UserRisk.Risk
       description: Risk level
@@ -65,7 +62,7 @@ script:
       type: Unknown
     - contextPath: Silverfort.UserRisk.UPN
       description: User principal name
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: Hostname
@@ -82,7 +79,7 @@ script:
     deprecated: false
     description: Resource risk commands - get the resource entity risk
     execution: false
-    name: risks-get-resource-risk
+    name: silverfort-get-resource-risk
     outputs:
     - contextPath: Silverfort.ResourceRisk.Risk
       description: Resource risk
@@ -92,7 +89,7 @@ script:
       type: Unknown
     - contextPath: Silverfort.ResourceRisk.ResourceName
       description: Hostname
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: User principal name
@@ -113,9 +110,9 @@ script:
       name: severity
       predefined:
       - low
-      - ' medium'
-      - ' high'
-      - ' critical'
+      - medium
+      - high
+      - critical
       required: true
       secret: false
     - default: false
@@ -151,10 +148,10 @@ script:
     deprecated: false
     description: User risk commands - update the user entity risk
     execution: false
-    name: risks-update-user-risk
+    name: silverfort-update-user-risk
   - arguments:
     - default: false
-      description: Resource name
+      description: Hostname
       isArray: false
       name: resource_name
       required: true
@@ -178,9 +175,9 @@ script:
       name: severity
       predefined:
       - low
-      - ' medium'
-      - ' high'
-      - ' critical'
+      - medium
+      - high
+      - critical
       required: true
       secret: false
     - default: false
@@ -198,7 +195,7 @@ script:
     deprecated: false
     description: Resource risk commands - update the resource entity risk
     execution: false
-    name: risks-update-resource-risk
+    name: silverfort-update-resource-risk
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
