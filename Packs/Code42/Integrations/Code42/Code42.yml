@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Code42
 display: Code42
-category: Data Enrichment & Threat Intelligence
+category: Endpoint
 description: Code42 identifies potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 configuration:
 - display: ""
