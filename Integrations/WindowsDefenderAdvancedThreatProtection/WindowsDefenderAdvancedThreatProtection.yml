@@ -159,6 +159,12 @@ script:
       - Inactive
       required: false
       secret: false
+    - default: false
+      description: Machine's OS platform
+      isArray: false
+      name: os_platform
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves a collection of machines that have communicated with WDATP
       cloud on the last 30 days
@@ -214,18 +220,6 @@ script:
       description: Machine AAD device ID
       type: string
     - contextPath: MicrosoftATP.Machine.OSVersion
-      description: Machine OS version
-      type: string
-    - contextPath: Endpoint.Hostname
-      description: Machine DNS name
-      type: string
-    - contextPath: Endpoint.IPAddress
-      description: Machine last IP address
-      type: string
-    - contextPath: Endpoint.OS
-      description: Machine OS platform
-      type: string
-    - contextPath: Endpoint.OSVersion
       description: Machine OS version
       type: string
   - arguments:
