@@ -67,10 +67,20 @@ class ElasticsearchClient:
 ''' ###################### COMMANDS ###################### '''
 
 
-def test_command(client, feed_type, src_val, src_type, default_type, time_method, time_field, fetch_time, query):
+def test_command(client, feed_type, src_val, src_type, default_type, time_method, time_field, fetch_time, query,
+                 username, password, api_key, api_id):
     """Test instance was set up correctly"""
     now = datetime.now()
-    err_msg = ''
+    if username and not password:
+        return_error('Please provide a password when using Username + Password authentication')
+    elif password and not username:
+        return_error('Please provide a username when using Username + Password authentication')
+    elif api_id and not api_key:
+        return_error('Please provide an API Key when using API ID + API Key authentication')
+    elif api_key and not api_id:
+        return_error('Please provide an API ID when using API ID + API Key authentication')
+
+        err_msg = ''
     if feed_type == FEED_TYPE_GENERIC:
         if not src_val:
             err_msg += 'Please provide a "Indicator Value Field"\n'
@@ -119,6 +129,7 @@ def get_indicators_command(client, feed_type, src_val, src_type, default_type):
         ioc_lst = get_generic_indicators(search, src_val, src_type, default_type)
         hr = tableToMarkdown('Indicators', ioc_lst, [src_val])
     else:
+        # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, feed_type=feed_type)
         ioc_lst, ioc_enrch_lst = get_demisto_indicators(search)
         hr = tableToMarkdown('Indicators', list(set(map(lambda ioc: ioc.get('name'), ioc_lst))), 'Name')
@@ -158,6 +169,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     ioc_lst: list = []
     ioc_enrch_lst: list = []
     if feed_type != FEED_TYPE_GENERIC:
+        # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, last_fetch_timestamp)
         for hit in search.scan():
             hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit)
@@ -317,7 +329,8 @@ def main():
         last_fetch = demisto.getLastRun().get('time')
 
         if demisto.command() == 'test-module':
-            test_command(client, feed_type, src_val, src_type, default_type, time_method, time_field, fetch_time, query)
+            test_command(client, feed_type, src_val, src_type, default_type, time_method, time_field, fetch_time, query,
+                         username, password, api_key, api_id)
         elif demisto.command() == 'fetch-indicators':
             fetch_indicators_command(client, feed_type, src_val, src_type, default_type, last_fetch)
         elif demisto.command() == 'es-get-indicators':
