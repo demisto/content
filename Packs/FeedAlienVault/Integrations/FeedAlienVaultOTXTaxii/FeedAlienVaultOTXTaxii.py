@@ -590,12 +590,15 @@ def parse_indicators(sub_indicator_list, full_indicator_list):
             continue
 
         indicator['value'] = indicator['indicator']
-        del indicator['indicator']
-        temp_copy = indicator.copy()
-        indicator['rawJSON'] = temp_copy
         indicator['fields'] = {
             "description": indicator["stix_package_short_description"]
         }
+
+        temp_copy = indicator.copy()
+
+        del indicator['indicator']
+
+        indicator['rawJSON'] = temp_copy
         parsed_indicator_list.append(indicator)
         full_indicator_list.append(indicator['value'])
 
