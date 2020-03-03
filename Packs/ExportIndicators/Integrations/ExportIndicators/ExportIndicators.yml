@@ -15,7 +15,7 @@ configuration:
   - json
   - json-seq
   - csv
-  - mgw
+  - McAfee Web Gateway
   - bluecoat
   - panosurl
   required: false
@@ -58,10 +58,10 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: For use with mgw format to indicate the list type.
+- additionalinfo: For use with mwg format to indicate the list type.
   display: Mcafee Gateway Indicator List Type
   hidden: false
-  name: mgw_type
+  name: mwg_type
   options:
   - string
   - applcontrol
@@ -112,7 +112,7 @@ script:
       - json
       - json-seq
       - csv
-      - mgw
+      - McAfee Web Gateway
       - bluecoat
       - panosurl
       required: false
@@ -140,9 +140,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: string
-      description: For use with mgw format to indicate the list type.
+      description: For use with mwg format to indicate the list type.
       isArray: false
-      name: mgw_type
+      name: mwg_type
       predefined:
       - string
       - applcontrol
