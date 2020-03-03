@@ -3,26 +3,29 @@ from CommonServerPython import *
 from markdownify import markdownify as md
 
 
-def markdownify_command(args):
+def markdownify_command():
+    args = demisto.args()
     html = args.get('html')
     markdown = md(html)
-    outputs = {
-        "Markdownify(val.Original == obj.Original)": {
+    result = {
             "Original": str(html),
             "Result": str(markdown)
         }
+    outputs = {
+        "Markdownify(val.Original == obj.Original)": result
     }
-
-    return (
-        markdown,
-        outputs,
-        markdown
-    )
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': result,
+        'HumanReadable': markdown,
+        'EntryContext': outputs
+    })
 
 
 def main():
     try:
-        return_outputs(*markdownify_command(demisto.args()))
+        markdownify_command()
     except Exception as expt:
         return_error(f'Failed to execute Markdownify script. Error: {str(expt)}')
 
