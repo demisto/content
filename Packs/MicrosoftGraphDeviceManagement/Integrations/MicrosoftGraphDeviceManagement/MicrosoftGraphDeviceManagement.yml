@@ -442,14 +442,14 @@ script:
     execution: false
     name: msgraph-device-windows-defender-update-signatures
   - arguments:
-    - default: true
+    - auto: PREDEFINED
+      default: true
       description: Whether to keep the user's data or not. (Default is set to true)
       isArray: false
       name: keep-user-data
-      auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -464,14 +464,14 @@ script:
     execution: false
     name: msgraph-clean-windows-device
   - arguments:
-    - default: true
+    - auto: PREDEFINED
+      default: true
       description: Whether to peformn quick scan or not. (Default is set to true)
       isArray: false
       name: quick-scan
-      auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -486,31 +486,31 @@ script:
     execution: false
     name: msgraph-device-windows-defender-scan
   - arguments:
-    - default: true
+    - auto: PREDEFINED
+      default: true
       description: Whether to keep enrollment data or not. (Default is set to true)
       isArray: false
       name: keep-enrollment-data
-      auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
-    - default: true
+    - auto: PREDEFINED
+      default: true
       description: Whether to keep the user's data or not. (Default is set to true)
       isArray: false
       name: keep-user-data
-      auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
       description: The MacOS unlock code.
       isArray: false
       name: mac-os-unlock-code
-      required: true
+      required: false
       secret: false
     - default: false
       description: The ID of the managed device to be fetched (Can be retreived using
@@ -546,15 +546,15 @@ script:
       - 'false'
       required: false
       secret: false
-    - default: true
+    - auto: PREDEFINED
+      default: true
       description: Whether to enable password rotation or not. (Default is set to
         false)
       isArray: false
       name: password-rotation-enabled
       predefined:
-        - 'true'
-        - 'false'
-      auto: PREDEFINED
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false

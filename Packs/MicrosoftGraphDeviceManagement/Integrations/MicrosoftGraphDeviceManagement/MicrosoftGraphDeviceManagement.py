@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 from typing import Tuple, Any, Union
+import json
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -188,7 +189,7 @@ def build_request_body_generic(args: dict) -> dict:
     :param args: demisto.args
     :return: The body of the http request
     """
-    return {dash_to_camelcase(k): v for k, v in args.items() if k != 'device-id'}
+    return {dash_to_camelcase(k): convert_string_to_type(v) for k, v in args.items() if k != 'device-id'}
 
 
 def build_request_body_update_windows_device_account(args: dict) -> dict:
@@ -197,7 +198,8 @@ def build_request_body_update_windows_device_account(args: dict) -> dict:
     :param args: demisto.args
     :return: The body of the http request
     """
-    body: dict = {dash_to_camelcase(k): v for k, v in args.items() if k not in ['device-id', 'device-account-password']}
+    body: dict = {dash_to_camelcase(k): convert_string_to_type(v) for k, v in args.items() if k not in
+                  ['device-id', 'device-account-password']}
     body.update({
         'deviceAcount': {
             '@odata.type': 'microsoft.graph.windowsDeviceAccount',
@@ -207,7 +209,7 @@ def build_request_body_update_windows_device_account(args: dict) -> dict:
     return {'updateWindowsDeviceAccountActionParameter': body}
 
 
-def build_request_body(args: dict, action: str) -> Union[dict, None]:
+def build_request_body(args: dict, action: str) -> Union[str, None]:
     """
     Build the body of the http request to send to MS Graph API
     :param args: demisto.args
@@ -219,7 +221,20 @@ def build_request_body(args: dict, action: str) -> Union[dict, None]:
     else:
         body = build_request_body_generic(args)
 
-    return body if body else None
+    return json.dumps(body) if body else None
+
+
+def convert_string_to_type(string: str) -> Union[str, bool, int]:
+    """
+    Converts the input string to it's object type
+    :param string: The input string
+    :return: The converted object
+    """
+    if string.isnumeric():
+        return int(string)
+    elif string in ['true', 'false', 'True', 'False']:
+        return bool(string)
+    return string
 
 
 def get_action(demisto_command: str) -> str:
@@ -269,24 +284,29 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> Tuple[str
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
     list_devices_hr: list = [build_device_human_readable(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
-    human_readable: str = tableToMarkdown('List managed devices', list_devices_hr, headers=HEADERS['device'])
+    human_readable: str = 'No devices found.'
+    if list_devices:
+        human_readable = tableToMarkdown('List managed devices', list_devices_hr, headers=HEADERS['device'])
     return human_readable, entry_context, raw_response
 
 
 def get_managed_device_command(client: MsGraphClient, args: dict) -> Tuple[str, dict, dict]:
-    url_suffix: str = f'/deviceManagement/managedDevices/{args.get("device-id")}'
+    device_id = args.get("device-id")
+    url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
     raw_response = client.make_request('GET', url_suffix)
     device: dict = build_device_object(raw_response)
     device_hr: dict = build_device_human_readable(raw_response)
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
     device_name: str = device.get('Name', '')
-    human_readable: str = tableToMarkdown(f'Managed device {device_name}', device_hr, headers=HEADERS['device'])
+    human_readable: str = f'Device {device_id} not found.'
+    if device:
+        human_readable = tableToMarkdown(f'Managed device {device_name}', device_hr, headers=HEADERS['device'])
     return human_readable, entry_context, raw_response
 
 
 def make_action_command(client: MsGraphClient, args: dict) -> Tuple[str, dict, dict]:
     action: str = get_action(demisto.command())
-    body: Union[dict, None] = build_request_body(args, action)
+    body: Union[str, None] = build_request_body(args, action)
     url_suffix: str = f'deviceManagement/managedDevices/{args.get("device-id")}/{dash_to_camelcase(action)}'
     client.make_request('POST', url_suffix, data=body, resp_type='None')
     return f'Device {action.replace("-", " ")} action activated successfully.', {}, {}

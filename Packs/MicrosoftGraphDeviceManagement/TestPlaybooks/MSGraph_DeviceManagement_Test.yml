@@ -1,0 +1,279 @@
+elasticcommonfields: {}
+id: 3a2f8506-c825-42fc-84fa-86020cadc27f
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+name: MSGraph_DeviceManagement_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b68dbaed-dd68-439c-8b3a-f947ef7610a7
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: b68dbaed-dd68-439c-8b3a-f947ef7610a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 05d8abe1-0907-467a-8f20-6f7918c434a1
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 05d8abe1-0907-467a-8f20-6f7918c434a1
+      version: -1
+      name: msgraph-list-managed-devices
+      description: List of managed devices
+      script: Microsoft Graph Device Management|||msgraph-list-managed-devices
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Device Management
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f2a34388-ef32-4552-8792-55dad7a0c993
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f2a34388-ef32-4552-8792-55dad7a0c993
+      version: -1
+      name: msgraph-get-managed-device-by-id
+      description: Get managed devices
+      script: Microsoft Graph Device Management|||msgraph-get-managed-device-by-id
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Device Management
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      device-id:
+        simple: ${MSGraphDeviceManagement.Device.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 75cf78e1-0c69-4977-8b52-3b308294849b
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 75cf78e1-0c69-4977-8b52-3b308294849b
+      version: -1
+      name: msgraph-device-windows-defender-scan
+      description: TBD
+      script: Microsoft Graph Device Management|||msgraph-device-windows-defender-scan
+      type: regular
+      iscommand: true
+      brand: Microsoft Graph Device Management
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      device-id:
+        simple: ${MSGraphDeviceManagement.Device.ID}
+      quick-scan:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 99370a24-51e4-4e2c-8124-49d6015c3066
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 99370a24-51e4-4e2c-8124-49d6015c3066
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e1d3135e-a792-4790-84fb-0b04e6efc2c1
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: e1d3135e-a792-4790-84fb-0b04e6efc2c1
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a989651a-fd9e-479a-8fa0-4380cd1eab08
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: a989651a-fd9e-479a-8fa0-4380cd1eab08
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.UserID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.OperatingSystem
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.OSVersion
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.Model
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphDeviceManagement.Device.Manufacturer
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

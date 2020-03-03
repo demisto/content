@@ -3,7 +3,7 @@ import json
 from CommonServerPython import DemistoException
 from MicrosoftGraphDeviceManagement import build_request_body, build_request_body_update_windows_device_account,\
     build_request_body_generic, get_action, dash_to_camelcase, build_device_human_readable, build_device_object,\
-    try_parse_integer
+    try_parse_integer, convert_string_to_type
 
 with open('test_data/raw_device.json', 'r') as json_file:
     data: dict = json.load(json_file)
@@ -17,7 +17,7 @@ with open('test_data/device.json', 'r') as json_file:
 
 args = {
     'device-id': 'ID',
-    'keep-enrollment-data': True,
+    'keep-enrollment-data': 'true',
     'device-account-password': 'Password'
 }
 
@@ -26,7 +26,7 @@ expected_body_uwda = {
         'keepEnrollmentData': True,
         'deviceAcount': {
             '@odata.type': 'microsoft.graph.windowsDeviceAccount',
-            'password': args.get('device-account-password')
+            'password': 'Password'
         }
     }
 }
@@ -72,9 +72,9 @@ def test_get_action(command, action):
 @pytest.mark.parametrize('action', ['shutdown', 'update-windows-device-account'])
 def test_build_request_body(action):
     if action == 'shutdown':
-        assert build_request_body(args, action) == expected_body_generic
+        assert build_request_body(args, action) == json.dumps(expected_body_generic)
     else:
-        assert build_request_body(args, action) == expected_body_uwda
+        assert build_request_body(args, action) == json.dumps(expected_body_uwda)
 
 
 def test_build_request_body_update_windows_device_account():
@@ -83,3 +83,8 @@ def test_build_request_body_update_windows_device_account():
 
 def test_build_request_body_generic():
     assert build_request_body_generic(args) == expected_body_generic
+
+
+@pytest.mark.parametrize('string, output', [('true', True), ('432', 432), ('str', 'str')])
+def test_convert_string_to_type(string, output):
+    assert convert_string_to_type(string) == output
