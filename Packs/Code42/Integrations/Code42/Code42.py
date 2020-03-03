@@ -399,6 +399,14 @@ def fetch_incidents(client, last_run, first_fetch_time, event_severity_filter,
                 security_data_query = map_observation_to_security_query(obs, details['actor'])
                 file_events = client.search_json(security_data_query)
                 for event in file_events:
+                    # We need to convert certain fields to a stringified list or React.JS will throw an error
+                    if event.get('sharedWith'):
+                        shared_list = []
+                        for shared_with in event['sharedWith']:
+                            shared_list.append(shared_with['cloudUsername'])
+                        event['sharedWith'] = str(shared_list)
+                    if event.get('privateIpAddresses'):
+                        event['privateIpAddresses'] = str(event['privateIpAddresses'])
                     details['fileevents'].append(event)
         incident['rawJSON'] = json.dumps(details)
         incidents.append(incident)
