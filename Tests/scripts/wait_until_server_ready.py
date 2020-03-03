@@ -1,20 +1,13 @@
 """Wait for server to be ready for tests"""
 import sys
-import json
-import ast
-import argparse
 import time
 import re
 from time import sleep
 import datetime
 import requests
-
-from demisto_client.demisto_api.rest import ApiException
-import demisto_client.demisto_api
-from typing import List, AnyStr
 import urllib3.util
 
-from Tests.test_utils import run_command, print_warning, print_error, print_color, LOG_COLORS
+from Tests.test_utils import run_command, print_error
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -65,7 +58,8 @@ def main():
                     print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                     # ready_ami_list.append(ami_instance_name)
                     instance_ips_not_created.remove(ami_instance_ip)
-                elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:  # printing the message every 30 seconds
+                # printing the message every 30 seconds
+                elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
                     print("{} at ip {} is not ready yet - waiting for it to start".format(ami_instance_name,
                                                                                           ami_instance_ip))
 
