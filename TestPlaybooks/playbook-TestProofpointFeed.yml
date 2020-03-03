@@ -8,7 +8,7 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 28f9f08f-5697-457c-85aa-a0db8887c3e9
+    taskid: 32374b87-da6e-47bb-876b-74e0b54edf8d
     type: start
     task:
       id: 32374b87-da6e-47bb-876b-74e0b54edf8d
@@ -23,21 +23,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 40
+          "x": 480,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quiet: false
   "1":
     id: "1"
-    taskid: 481e051d-01a2-4bf8-8057-ef25fb4f0b91
+    taskid: b9da1640-fffc-463f-8158-654927bad866
     type: regular
     task:
-      id: 481e051d-01a2-4bf8-8057-ef25fb4f0b91
+      id: b9da1640-fffc-463f-8158-654927bad866
       version: -1
       name: all indicators
       description: Gets indicators from the feed.
@@ -64,13 +64,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quiet: false
   "2":
     id: "2"
-    taskid: 95b4e538-fb81-45eb-801c-7c058c0d13b7
+    taskid: 62e46271-5d05-4370-8933-87c931c8d454
     type: regular
     task:
-      id: 95b4e538-fb81-45eb-801c-7c058c0d13b7
+      id: 62e46271-5d05-4370-8933-87c931c8d454
       version: -1
       name: ips
       description: Gets indicators from the feed.
@@ -97,13 +97,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quiet: false
   "3":
     id: "3"
-    taskid: 5ac72305-e0d9-470e-8121-7fd668c10937
+    taskid: 3d3c98aa-e819-413b-83ed-674e9b813d4b
     type: regular
     task:
-      id: 5ac72305-e0d9-470e-8121-7fd668c10937
+      id: 3d3c98aa-e819-413b-83ed-674e9b813d4b
       version: -1
       name: domains
       description: Gets indicators from the feed.
@@ -130,13 +130,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quiet: false
   "4":
     id: "4"
-    taskid: 9e68bd6f-59dd-4ea0-8a78-d599cb1f3c08
+    taskid: 10b461e0-8c0c-461d-80d6-262f0e2a2af5
     type: title
     task:
-      id: 9e68bd6f-59dd-4ea0-8a78-d599cb1f3c08
+      id: 10b461e0-8c0c-461d-80d6-262f0e2a2af5
       version: -1
       name: Done
       type: title
@@ -146,21 +146,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 550
+          "x": 480,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quiet: false
   "5":
     id: "5"
-    taskid: a1e21b2f-4e94-4e7d-8706-94dccfca90bd
+    taskid: 7fa2464b-5ff4-4589-813e-898c9f47311a
     type: regular
     task:
-      id: a1e21b2f-4e94-4e7d-8706-94dccfca90bd
+      id: 7fa2464b-5ff4-4589-813e-898c9f47311a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -173,7 +173,6 @@ tasks:
       - "1"
       - "2"
       - "3"
-      - "6"
     scriptarguments:
       all:
         simple: "yes"
@@ -185,57 +184,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 185
+          "x": 480,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: b330b7c4-43f6-4991-8773-b9f2340476e5
-    type: regular
-    task:
-      id: b330b7c4-43f6-4991-8773-b9f2340476e5
-      version: -1
-      name: domainGlobs
-      description: Gets indicators from the feed.
-      script: ProofpointFeed|||proofpoint-get-indicators
-      type: regular
-      iscommand: true
-      brand: ProofpointFeed
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      indicator_type:
-        simple: domainGlob
-      limit: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1380,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    quiet: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 575,
-        "width": 1710,
+        "height": 560,
+        "width": 1240,
         "x": 50,
-        "y": 40
+        "y": 50
       }
     }
   }
