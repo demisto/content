@@ -75,21 +75,16 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
     out_dict = create_values_out_dict(iocs, out_format)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
-    save_context(now, limit, offset, out_format, indicator_query, iocs, out_dict)
-    return out_dict[CTX_VALUES_KEY]
-
-
-def save_context(now: datetime, limit: int, offset: int, out_format: str, query: str, iocs: list, out_dict: dict):
-    """Saves export_iocs state and refresh time to context"""
     demisto.setIntegrationContext({
         "last_output": out_dict,
         'last_run': date_to_timestamp(now),
         'last_limit': limit,
         'last_offset': offset,
         'last_format': out_format,
-        'last_query': query,
+        'last_query': indicator_query,
         'current_iocs': iocs
     })
+    return out_dict[CTX_VALUES_KEY]
 
 
 def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
@@ -165,21 +160,37 @@ def get_outbound_mimetype() -> str:
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
+def is_request_change(limit, offset, out_format=FORMAT_TEXT, last_update_data={}) -> bool:
+    """ Checks for changes in the request params
+
+    Args:
+        limit (int): limit on how many indicators should be exported.
+        offset (int): the index of the indicator from which the list should be exported.
+        out_format (str): the requested output format.
+        last_update_data (dict): the cached params for the last request.
+
+    Returns:
+        bool. True if limit/offset/out_format params have changed since the last request, False otherwise.
+    """
+    last_limit = last_update_data.get('last_limit')
+    last_offset = last_update_data.get('last_offset')
+    last_format = last_update_data.get('last_format')
+
+    return out_format != last_format or limit != last_limit or offset != last_offset
+
+
 def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format=FORMAT_TEXT, last_update_data={},
                             cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the list
     """
     last_update = last_update_data.get('last_run')
-    last_limit = last_update_data.get('last_limit')
-    last_offset = last_update_data.get('last_offset')
-    last_format = last_update_data.get('last_format')
     last_query = last_update_data.get('last_query')
     current_iocs = last_update_data.get('current_iocs')
 
     # on_demand ignores cache
     if on_demand:
-        if out_format != last_format or limit != last_limit or offset != last_offset:
+        if is_request_change(limit, offset, out_format, last_update_data):
             values_str = get_ioc_values_str_from_context(current_iocs, out_format, limit, offset)
 
         else:
@@ -189,8 +200,8 @@ def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_fo
         if last_update:
             # takes the cache_refresh_rate amount of time back since run time.
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            if last_update <= cache_time or last_limit != limit or \
-                    last_offset != offset or last_format != out_format or indicator_query != last_query:
+            if last_update <= cache_time or is_request_change(limit, offset, out_format, last_update_data) or \
+                    indicator_query != last_query:
                 values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
             else:
                 values_str = get_ioc_values_str_from_context()
@@ -216,7 +227,7 @@ def get_ioc_values_str_from_context(iocs=None, new_format: str = FORMAT_TEXT,
         demisto.setIntegrationContext(current_cache)
 
     else:
-        returned_dict = demisto.getIntegrationContext().get('last_output')
+        returned_dict = demisto.getIntegrationContext().get('last_output', {})
 
     return returned_dict.get(CTX_VALUES_KEY, '')
 

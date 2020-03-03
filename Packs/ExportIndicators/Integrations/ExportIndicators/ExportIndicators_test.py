@@ -68,6 +68,81 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
+    @pytest.mark.get_outbound_ioc_values
+    def test_get_outbound_ioc_values_4(self, mocker):
+        """Test update by request params change - limit"""
+        import CommonServerPython as CSP
+        mocker.patch.object(CSP, 'parse_date_range', return_value=(1578383898, 1578383898))
+        import ExportIndicators as ei
+        with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
+            iocs_text_dict = json.loads(iocs_text_values_f.read())
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict,
+                                                                                "last_limit": 1, "last_offset": 0,
+                                                                                "last_query": "type:ip",
+                                                                                "last_format": "text"})
+            mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
+            mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            ioc_list = ei.get_outbound_ioc_values(
+                out_format='text',
+                indicator_query="type:ip",
+                on_demand=False,
+                limit=50,
+                offset=0,
+                cache_refresh_rate='1 minute'
+            )
+            for ioc_row in ioc_list:
+                assert ioc_row in iocs_text_dict
+
+    @pytest.mark.get_outbound_ioc_values
+    def test_get_outbound_ioc_values_5(self, mocker):
+        """Test update by request params change - offset"""
+        import CommonServerPython as CSP
+        mocker.patch.object(CSP, 'parse_date_range', return_value=(1578383898, 1578383898))
+        import ExportIndicators as ei
+        with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
+            iocs_text_dict = json.loads(iocs_text_values_f.read())
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict,
+                                                                                "last_limit": 50, "last_offset": 1,
+                                                                                "last_query": "type:ip",
+                                                                                "last_format": "text"})
+            mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
+            mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            ioc_list = ei.get_outbound_ioc_values(
+                out_format='text',
+                indicator_query="type:ip",
+                on_demand=False,
+                limit=50,
+                offset=0,
+                cache_refresh_rate='1 minute'
+            )
+            for ioc_row in ioc_list:
+                assert ioc_row in iocs_text_dict
+
+    @pytest.mark.get_outbound_ioc_values
+    def test_get_outbound_ioc_values_6(self, mocker):
+        """Test update by request params change - query"""
+        import CommonServerPython as CSP
+        mocker.patch.object(CSP, 'parse_date_range', return_value=(1578383898, 1578383898))
+        import ExportIndicators as ei
+        with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
+            iocs_text_dict = json.loads(iocs_text_values_f.read())
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict,
+                                                                                "last_limit": 50, "last_offset": 0,
+                                                                                "last_query": "type:URL",
+                                                                                "last_format": "text"})
+            mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
+            mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            ioc_list = ei.get_outbound_ioc_values(
+                out_format='text',
+                indicator_query="type:ip",
+                on_demand=False,
+                limit=50,
+                offset=0,
+                cache_refresh_rate='1 minute'
+            )
+            for ioc_row in ioc_list:
+                assert ioc_row in iocs_text_dict
+
     @pytest.mark.list_to_str
     def test_list_to_str_1(self):
         """Test invalid"""
