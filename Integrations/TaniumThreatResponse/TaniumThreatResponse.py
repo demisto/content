@@ -376,6 +376,17 @@ def alarm_to_incident(client, alarm):
         'rawJSON': json.dumps(alarm)}
 
 
+def state_params_suffix(alerts_states_to_retrieve):
+    valid_alert_states = ['unresolved', 'in progress', 'resolved', 'suppressed']
+
+    for state in alerts_states_to_retrieve:
+        if state.lower() not in valid_alert_states:
+            raise ValueError(f'Invalid state \'{state}\' in filter_alerts_by_state parameter.'
+                             f'Possible values are \'unresolved\', \'in progress\', \'resolved\' or \'suppressed\'.')
+
+    return '&'.join(['state=' + state.lower() for state in alerts_states_to_retrieve])
+
+
 def test_module(client, data_args):
     if client.login():
         return demisto.results('ok')
@@ -1036,7 +1047,7 @@ def get_process_timeline(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def fetch_incidents(client):
+def fetch_incidents(client, alerts_states_to_retrieve):
     """
     Fetch events from this integration and return them as Demisto incidents
 
@@ -1054,7 +1065,10 @@ def fetch_incidents(client):
 
     last_fetch = parse(last_fetch)
     current_fetch = last_fetch
-    raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/alerts')
+
+    url_suffix = '/plugin/products/detect3/api/v1/alerts?' + state_params_suffix(alerts_states_to_retrieve)
+
+    raw_response = client.do_request('GET', url_suffix)
 
     # convert the data/events to demisto incidents
     incidents = []
@@ -1135,7 +1149,8 @@ def main():
 
     try:
         if command == 'fetch-incidents':
-            return fetch_incidents(client)
+            alerts_states_to_retrieve = argToList(demisto.params().get('filter_alerts_by_state'))
+            return fetch_incidents(client, alerts_states_to_retrieve)
         if command == 'tanium-tr-get-downloaded-file':
             return get_downloaded_file(client, demisto.args())
 
