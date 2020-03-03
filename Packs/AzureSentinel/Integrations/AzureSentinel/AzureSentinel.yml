@@ -33,7 +33,8 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- display: Authorization Code (Click on the integration tips button on the top of the window ('?') for details)
+- display: Authorization Code (Click on the integration tips button on the top of
+    the window ('?') for details)
   name: auth_code
   required: true
   type: 4
@@ -136,6 +137,9 @@ script:
     - contextPath: AzureSentinel.Incident.LastActivityTimeGenerated
       description: The incident's generated last activity time.
       type: Date
+    - contextPath: AzureSentinel.Incident.Etag
+      description: Etag of the incident.
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
@@ -230,6 +234,9 @@ script:
         a NextLink element, its value specifies a starting point to use for subsequent
         calls.
       type: String
+    - contextPath: AzureSentinel.Incident.Etag
+      description: Etag of the incident.
+      type: String
   - arguments:
     - default: false
       description: The incident ID.
@@ -288,6 +295,12 @@ script:
       - TruePositive
       - FalsePositive
       required: false
+      secret: false
+    - default: false
+      description: Etag of the incident.
+      isArray: false
+      name: etag
+      required: true
       secret: false
     deprecated: false
     execution: false

@@ -22,7 +22,7 @@ AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access t
 INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName',
                     'AssigneeEmail', 'Labels', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
                     'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
-                    'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated']
+                    'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated', 'Etag']
 
 COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
 
@@ -153,7 +153,8 @@ def incident_data_to_demisto_format(inc_data):
         'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
         'Tactics': properties.get('tactics'),
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
-        'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated'))
+        'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated')),
+        'Etag': inc_data.get('etag')
     }
     return formatted_data
 
@@ -275,9 +276,10 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
 
 
 def update_incident_command(client, args):
-    # todo: API request is failing
     inc_id = args.get('incident_id')
+    etag = args.get('etag')
     inc_data = {
+        'etag': etag,
         'properties': {
             'title': args.get('title'),
             'description': args.get('description'),
