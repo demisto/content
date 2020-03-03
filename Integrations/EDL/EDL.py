@@ -28,8 +28,8 @@ EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit
 ''' REFORMATTING REGEXES '''
 # regexes from https://github.com/PaloAltoNetworks/minemeld-core/blob/master/minemeld/flask/feedredis.py#L36
 _PROTOCOL_RE = re.compile('^(?:[a-z]+:)*//')
-_PORT_RE = re.compile('^((?:[a-z]+:)*//([a-z0-9\-\.]+)|([a-z0-9\-\.]+))(?:\:[0-9]+)*')
-_INVALID_TOKEN_RE = re.compile('(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
+_PORT_RE = re.compile(r'^((?:[a-z]+:)*//([a-z0-9\-\.]+)|([a-z0-9\-\.]+))(?:\:[0-9]+)*')
+_INVALID_TOKEN_RE = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 
 ''' HELPER FUNCTIONS '''
 
@@ -109,7 +109,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
             for ioc in fetched_iocs:
                 ioc_value = ioc.get('value', '')
                 if url_ps:
-                    ioc_value = _PORT_RE.sub('\g<1>', ioc_value)
+                    ioc_value = _PORT_RE.sub(r'\g<1>', ioc_value)
                 if panos_compatible:
                     # protocol stripping
                     ioc_value = _PROTOCOL_RE.sub('', ioc_value)
