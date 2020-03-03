@@ -138,6 +138,60 @@ class TestHelperFunctions:
             edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit)
             assert len(edl_vals) == limit
 
+    @pytest.mark.find_indicators_to_limit
+    def test_find_indicators_to_limit_2(self, mocker):
+        """Test url port stripping"""
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
+            limit = 50
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
+            # disable-secrets-detection-start
+            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
+                                                    panos_compatible=False, url_ps=True)
+            # disable-secrets-detection-end
+            indicator_vals = [item.get('value', '') for item in edl_vals]
+            assert 'https://www.example.com/path/to/something.html' in indicator_vals
+            assert 'https://www.example.com:9999/path/to/something.html' not in indicator_vals
+
+    @pytest.mark.find_indicators_to_limit
+    def test_find_indicators_to_limit_3(self, mocker):
+        """Test panos compatibility and url port stripping together"""
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
+            limit = 50
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
+            # disable-secrets-detection-start
+            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
+                                                    panos_compatible=True, url_ps=True)
+            # disable-secrets-detection-end
+            indicator_vals = [item.get('value', '') for item in edl_vals]
+            # should have no protocol and no port
+            assert 'www.example.com/path/to/something.html' in indicator_vals
+            assert 'https://www.example.com:9999/path/to/something.html' not in indicator_vals
+
+    @pytest.mark.find_indicators_to_limit
+    def test_find_indicators_to_limit_4(self, mocker):
+        """Test panos compatibility for domain with wildcard/text mixed field"""
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
+            limit = 50
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
+            # disable-secrets-detection-start
+            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
+                                                    panos_compatible=True, url_ps=True)
+            # disable-secrets-detection-end
+            indicator_vals = [item.get('value', '') for item in edl_vals]
+
+            # reformatting `*-blah.demisto.com` to be panos compatible should output two indicators,
+            # `*.demisto.com` and `demisto.com`
+            assert len(indicator_vals) == len(iocs_dict.get('iocs', [])) + 1
+            assert '*.demisto.com' in indicator_vals
+            assert 'demisto.com' in indicator_vals
+            assert '*-blah.demisto.com' not in indicator_vals
+
     @pytest.mark.find_indicators_to_limit_loop
     def test_find_indicators_to_limit_loop_1(self, mocker):
         """Test find indicators stops when reached last page"""
