@@ -3,8 +3,7 @@ from CommonServerPython import *
 from markdownify import markdownify as md
 
 
-def markdownify_command():
-    args = demisto.args()
+def markdownify_command(args):
     html = args.get('html')
     markdown = md(html)
     result = {
@@ -25,7 +24,8 @@ def markdownify_command():
 
 def main():
     try:
-        markdownify_command()
+        args = demisto.args()
+        markdownify_command(args)
     except Exception as expt:
         return_error(f'Failed to execute Markdownify script. Error: {str(expt)}')
 
