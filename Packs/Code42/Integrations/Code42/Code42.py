@@ -270,6 +270,12 @@ def map_to_code42_event_context(obj):
     for (k, v) in CODE42_EVENT_CONTEXT_FIELD_MAPPER.items():
         if obj.get(k):
             code42_context[v] = obj.get(k)
+    # FileSharedWith is a special case and needs to be converted to a list
+    if code42_context.get('FileSharedWith'):
+        shared_list = []
+        for shared_with in code42_context['FileSharedWith']:
+            shared_list.append(shared_with['cloudUsername'])
+            code42_context['FileSharedWith'] = str(shared_list)
     return code42_context
 
 
