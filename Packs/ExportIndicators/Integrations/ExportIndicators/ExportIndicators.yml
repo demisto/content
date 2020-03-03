@@ -16,7 +16,7 @@ configuration:
   - json-seq
   - csv
   - McAfee Web Gateway
-  - bluecoat
+  - Symantec ProxySG
   - panosurl
   required: false
   type: 15
@@ -58,7 +58,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: For use with mwg format to indicate the list type.
+- additionalinfo: For use with McAfee Web Gateway format to indicate the list type.
   display: Mcafee Gateway Indicator List Type
   hidden: false
   name: mwg_type
@@ -82,12 +82,27 @@ configuration:
   type: 8
 - additionalinfo: For use with panosurl format - if checked any URL entry which is
     not compliant with PAN-OS EDL URL format the entry is dropped instead of being
-    rewritten
+    rewritten.
   display: PAN-OS URL format drop invalid entries
   hidden: false
   name: drop_invalids
   required: false
   type: 8
+- additionalinfo: For use with Symantec ProxySG format - set the default category
+    for the output.
+  defaultvalue: bc_category
+  display: Symantec ProxySG default category
+  hidden: false
+  name: category_default
+  required: false
+  type: 0
+- additionalinfo: For use with Symantec ProxySG format - set the categories that should
+    be listed in the output. If not set will list all existing categories.
+  display: Symantec ProxySG listed categories
+  hidden: false
+  name: category_attribute
+  required: false
+  type: 0
 description: Use the Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
 display: Export Indicators Service
@@ -113,7 +128,7 @@ script:
       - json-seq
       - csv
       - McAfee Web Gateway
-      - bluecoat
+      - Symantec ProxySG
       - panosurl
       required: false
       secret: false
@@ -177,6 +192,21 @@ script:
       predefined:
       - 'False'
       - 'True'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: bc_category
+      description: For use with Symantec ProxySG format - set the default category
+        for the output.
+      isArray: false
+      name: category_default
+      required: false
+      secret: false
+    - default: false
+      description: For use with Symantec ProxySG format - set the categories that
+        should be listed in the output. If not set will list all existing categories.
+      isArray: false
+      name: category_attribute
       required: false
       secret: false
     deprecated: false
