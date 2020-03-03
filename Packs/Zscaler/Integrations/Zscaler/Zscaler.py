@@ -338,44 +338,41 @@ def url_lookup(url):
     response = lookup_request(url)
     hr = json.loads(response.content)
     if hr:
-        ioc_context = [None] * len(hr)  # type: List[Any]
+        data = hr[0]
         suspicious_categories = ['SUSPICIOUS_DESTINATION', 'SPYWARE_OR_ADWARE']
-        dbot_score_array = [None] * len(hr)  # type: List[Any]
-        for i in range(len(hr)):
-            ioc_context[i] = {}
-            dbot_score_array[i] = {}
-            ioc_context[i]['Address'] = hr[i]['url']
-            ioc_context[i]['Data'] = hr[i]['url']
-            dbot_score_array[i]['Indicator'] = hr[i]['url']
-            score = 1
-            if len(hr[i]['urlClassifications']) == 0:
-                hr[i]['urlClassifications'] = ''
+        ioc_context = {'Address': data['url'], 'Data': data['url']}
+        score = 1
+        if len(data['urlClassifications']) == 0:
+            data['urlClassifications'] = ''
+        else:
+            data['urlClassifications'] = ''.join(data['urlClassifications'])
+            ioc_context['urlClassifications'] = data['urlClassifications']
+            if data['urlClassifications'] == 'MISCELLANEOUS_OR_UNKNOWN':
+                score = 0
+        if len(data['urlClassificationsWithSecurityAlert']) == 0:
+            data['urlClassificationsWithSecurityAlert'] = ''
+        else:
+            data['urlClassificationsWithSecurityAlert'] = ''.join(data['urlClassificationsWithSecurityAlert'])
+            if data['urlClassificationsWithSecurityAlert'] in suspicious_categories:
+                score = 2
             else:
-                hr[i]['urlClassifications'] = ''.join(hr[i]['urlClassifications'])
-                ioc_context[i]['urlClassifications'] = hr[i]['urlClassifications']
-                if hr[i]['urlClassifications'] == 'MISCELLANEOUS_OR_UNKNOWN':
-                    score = 0
-            if len(hr[i]['urlClassificationsWithSecurityAlert']) == 0:
-                hr[i]['urlClassificationsWithSecurityAlert'] = ''
-            else:
-                hr[i]['urlClassificationsWithSecurityAlert'] = ''.join(hr[i]['urlClassificationsWithSecurityAlert'])
-                if hr[i]['urlClassificationsWithSecurityAlert'] in suspicious_categories:
-                    score = 2
-                else:
-                    score = 3
-                ioc_context[i]['Malicious'] = {
-                    'Vendor': 'Zscaler',
-                    'Description': hr[i]['urlClassificationsWithSecurityAlert']
-                }
-                hr[i]['ip'] = hr[i].pop('url')
-            dbot_score_array[i]['Score'] = score
-            dbot_score_array[i]['Type'] = 'url'
-            dbot_score_array[i]['Vendor'] = 'Zscaler'
-
+                score = 3
+            ioc_context['Malicious'] = {
+                'Vendor': 'Zscaler',
+                'Description': data['urlClassificationsWithSecurityAlert']
+            }
+            data['ip'] = data.pop('url')
         ioc_context = createContext(data=ioc_context, removeNull=True)
         ec = {
             outputPaths['url']: ioc_context,
-            'DBotScore': dbot_score_array
+            'DBotScore': [
+                {
+                    "Indicator": url,
+                    "Score": score,
+                    "Type": "url",
+                    "Vendor": "Zscaler"
+                }
+            ]
         }
         title = 'Zscaler URL Lookup'
         entry = {
@@ -383,7 +380,7 @@ def url_lookup(url):
             'Contents': hr,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, hr, removeNull=True),
+            'HumanReadable': tableToMarkdown(title, data, removeNull=True),
             'EntryContext': ec
         }
     else:

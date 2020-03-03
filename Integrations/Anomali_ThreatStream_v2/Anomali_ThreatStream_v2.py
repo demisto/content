@@ -844,59 +844,60 @@ def get_indicators(**kwargs):
 
 
 def main():
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
-
-    LOG('Command being called is %s' % (demisto.command()))
-
+    """
+    Initiate integration command
+    """
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
     try:
         handle_proxy()
         args = prepare_args(demisto.args())
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_module()
-        elif demisto.command() == 'ip':
+        elif command == 'ip':
             ips_reputation_command(**args)
-        elif demisto.command() == 'domain':
+        elif command == 'domain':
             domains_reputation_command(**args)
-        elif demisto.command() == 'file':
+        elif command == 'file':
             files_reputation_command(**args)
-        elif demisto.command() == 'url':
+        elif command == 'url':
             urls_reputation_command(**args)
-        elif demisto.command() == 'threatstream-email-reputation':
+        elif command == 'threatstream-email-reputation':
             get_email_reputation(**args)
-        elif demisto.command() == 'threatstream-get-passive-dns':
+        elif command == 'threatstream-get-passive-dns':
             get_passive_dns(**args)
-        elif demisto.command() == 'threatstream-import-indicator-with-approval':
+        elif command == 'threatstream-import-indicator-with-approval':
             import_ioc_with_approval(**args)
-        elif demisto.command() == 'threatstream-get-model-list':
+        elif command == 'threatstream-get-model-list':
             get_model_list(**args)
-        elif demisto.command() == 'threatstream-get-model-description':
+        elif command == 'threatstream-get-model-description':
             get_model_description(**args)
-        elif demisto.command() == 'threatstream-get-indicators-by-model':
+        elif command == 'threatstream-get-indicators-by-model':
             get_iocs_by_model(**args)
-        elif demisto.command() == 'threatstream-create-model':
+        elif command == 'threatstream-create-model':
             create_model(**args)
-        elif demisto.command() == 'threatstream-update-model':
+        elif command == 'threatstream-update-model':
             update_model(**args)
-        elif demisto.command() == 'threatstream-submit-to-sandbox':
+        elif command == 'threatstream-submit-to-sandbox':
             submit_report(**args)
-        elif demisto.command() == 'threatstream-get-analysis-status':
+        elif command == 'threatstream-get-analysis-status':
             get_submission_status(**args)
-        elif demisto.command() == 'threatstream-analysis-report':
+        elif command == 'threatstream-analysis-report':
             get_report(**args)
-        elif demisto.command() == 'threatstream-supported-platforms':
+        elif command == 'threatstream-supported-platforms':
             supported_platforms(**args)
-        elif demisto.command() == 'threatstream-get-indicators':
+        elif command == 'threatstream-get-indicators':
             get_indicators(**args)
-        elif demisto.command() == 'threatstream-add-tag-to-model':
+        elif command == 'threatstream-add-tag-to-model':
             add_tag_to_model(**args)
 
-    except Exception as e:
-        if isinstance(e, MissingSchema):
+    except Exception as err:
+        if isinstance(err, MissingSchema):
             return_error("Not valid server url. Check url format")
-        elif isinstance(e, ConnectionError):
+        elif isinstance(err, ConnectionError):
             return_error("The server is not reachable.")
         else:
-            return_error(e)
+            return_error(err)
 
 
 # python2 uses __builtin__ python3 uses builtins

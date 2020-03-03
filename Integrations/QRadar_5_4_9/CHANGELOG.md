@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.3] - 2020-02-18
  - Added **Full Incident Enrichment** instance parameter. Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.
 
 ## [20.1.0] - 2020-01-07
