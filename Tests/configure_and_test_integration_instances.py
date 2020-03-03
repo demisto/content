@@ -72,7 +72,6 @@ def get_server_numeric_version(ami_env, prints_manager):
     Arguments:
         ami_env: (str)
             AMI version name.
-            Print manager object.
         prints_manager: (ParallelPrintsManager)
             Print manager object.
 
@@ -585,6 +584,8 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
     """
     testing_status = True
 
+    # a "Test" can be either successful both before and after content update(succeeded_pre_and_post variable),
+    # fail on one of them(mismatched_statuses variable), or on both(failed_pre_and_post variable)
     succeeded_pre_and_post = preupdate_success.intersection(postupdate_success)
     if succeeded_pre_and_post:
         succeeded_message = '\nIntegration instances that had ("Test" Button) succeeded' \
@@ -768,7 +769,8 @@ def main():
         prints_manager.execute_thread_prints(0)
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
-        preupdate_success.add((instance_name, integration_of_instance))
+        else:
+            preupdate_success.add((instance_name, integration_of_instance))
 
     threads_list = []
     threads_prints_manager = ParallelPrintsManager(len(servers))
@@ -814,7 +816,8 @@ def main():
         prints_manager.execute_thread_prints(0)
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
-        postupdate_success.add((instance_name, integration_of_instance))
+        else:
+            postupdate_success.add((instance_name, integration_of_instance))
     # reinitialize all clients since their authorization has probably expired by now
     for server_url in servers:
         client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
