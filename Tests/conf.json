@@ -707,7 +707,7 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500            
+            "timeout": 500
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1011,7 +1011,7 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240            
+            "timeout": 240
         },
         {
             "integrations": "activedir",
@@ -2037,7 +2037,7 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"            
+            "playbookID": "RasterizeImageTest"
         },
         {
             "integrations": "Ipstack",
@@ -2406,7 +2406,6 @@
         "Send Investigation Summary Reports": "Issue 22299",
         "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
-        "Test-VulnDB": "Issue 22232",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
