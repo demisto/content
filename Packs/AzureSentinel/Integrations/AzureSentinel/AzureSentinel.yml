@@ -248,7 +248,7 @@ script:
       description: The incident title.
       isArray: false
       name: title
-      required: true
+      required: false
       secret: false
     - default: false
       description: The incident's description.
@@ -266,7 +266,7 @@ script:
       - Medium
       - Low
       - Informal
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -277,30 +277,7 @@ script:
       - New
       - Active
       - Closed
-      required: true
-      secret: false
-    - default: false
-      description: The incident owner's email.
-      isArray: false
-      name: owner_email
       required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The incident's classification.
-      isArray: false
-      name: classification
-      predefined:
-      - Unknown
-      - TruePositive
-      - FalsePositive
-      required: false
-      secret: false
-    - default: false
-      description: Etag of the incident.
-      isArray: false
-      name: etag
-      required: true
       secret: false
     deprecated: false
     execution: false
@@ -369,6 +346,9 @@ script:
     - contextPath: AzureSentinel.Incident.LastActivityTimeGenerated
       description: The incident's generated last activity time.
       type: Date
+    - contextPath: AzureSentinel.Incident.Etag
+      description: Etag of the incident.
+      type: String
   - arguments:
     - default: false
       description: The incident ID.

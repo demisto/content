@@ -124,6 +124,8 @@ class Client(BaseClient):
 
 
 def format_date(date):
+    if not date:
+        return None
     return dateparser.parse(date).strftime(DATE_FORMAT)
 
 
@@ -157,6 +159,38 @@ def incident_data_to_demisto_format(inc_data):
         'Etag': inc_data.get('etag')
     }
     return formatted_data
+
+
+def get_update_incident_request_data(client, args):
+    # Get Etag and other mandatory properties (title, severity, status) for update_incident command
+    _, _, result = get_incident_by_id_command(client, args)
+
+    title = args.get('title')
+    description = args.get('description')
+    severity = args.get('severity')
+    status = args.get('status')
+
+    if not title:
+        title = result.get('properties', {}).get('title')
+    if not description:
+        description = result.get('properties', {}).get('description')
+    if not severity:
+        severity = result.get('properties', {}).get('severity')
+    if not status:
+        status = result.get('properties', {}).get('status')
+
+    inc_data = {
+        'etag': result.get('etag'),
+        'properties': {
+            'title': title,
+            'description': description,
+            'severity': severity,
+            'status': status
+        }
+    }
+    remove_nulls_from_dictionary(inc_data['properties'])
+
+    return inc_data
 
 
 def comment_data_to_demisto_format(comment_data, inc_id):
@@ -218,7 +252,6 @@ def get_incident_by_id_command(client, args):
     url_suffix = f'incidents/{inc_id}'
 
     result = client.http_request('GET', url_suffix)
-
     incident = incident_data_to_demisto_format(result)
 
     outputs = {'AzureSentinel.Incident(val.ID === obj.ID)': incident}
@@ -277,21 +310,10 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
 
 def update_incident_command(client, args):
     inc_id = args.get('incident_id')
-    etag = args.get('etag')
-    inc_data = {
-        'etag': etag,
-        'properties': {
-            'title': args.get('title'),
-            'description': args.get('description'),
-            'severity': args.get('severity'),
-            'status': args.get('status'),
-            # 'enum': args.get('classification'),  # todo: enum not in preview api version
-        }
-    }
-    remove_nulls_from_dictionary(inc_data['properties'])
+
+    inc_data = get_update_incident_request_data(client, args)
 
     url_suffix = f'incidents/{inc_id}'
-
     result = client.http_request('PUT', url_suffix, data=inc_data)
     incident = incident_data_to_demisto_format(result)
 
