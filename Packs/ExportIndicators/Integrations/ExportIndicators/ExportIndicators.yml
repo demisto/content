@@ -17,7 +17,7 @@ configuration:
   - csv
   - McAfee Web Gateway
   - Symantec ProxySG
-  - panosurl
+  - PAN-OS URL
   required: false
   type: 15
 - defaultvalue: '2500'
@@ -73,17 +73,17 @@ configuration:
   - regex
   required: false
   type: 16
-- additionalinfo: For use with panosurl format - if checked will strip the port off
+- additionalinfo: For use with PAN-OS URL format - if checked will strip the port off
     urls. If not checked - url with ports will be ignored.
-  display: PAN-OS URL format port strip
+  display: PAN-OS URL Format Port Strip
   hidden: false
   name: strip_port
   required: false
   type: 8
-- additionalinfo: For use with panosurl format - if checked any URL entry which is
+- additionalinfo: For use with PAN-OS URL format - if checked any URL entry which is
     not compliant with PAN-OS EDL URL format the entry is dropped instead of being
     rewritten.
-  display: PAN-OS URL format drop invalid entries
+  display: PAN-OS URL Format Drop Invalid Entries
   hidden: false
   name: drop_invalids
   required: false
@@ -91,14 +91,14 @@ configuration:
 - additionalinfo: For use with Symantec ProxySG format - set the default category
     for the output.
   defaultvalue: bc_category
-  display: Symantec ProxySG default category
+  display: Symantec ProxySG Default Category
   hidden: false
   name: category_default
   required: false
   type: 0
 - additionalinfo: For use with Symantec ProxySG format - set the categories that should
     be listed in the output. If not set will list all existing categories.
-  display: Symantec ProxySG listed categories
+  display: Symantec ProxySG Listed Categories
   hidden: false
   name: category_attribute
   required: false
@@ -119,7 +119,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: text
-      description: The output format. Can be "text", "json", "json-seq", or "csv".
+      description: The output format. Can be "text", "json", "json-seq", "csv", "PAN-OS URL", "McAfee Web Gateway" and "Symantec ProxySG".
       isArray: false
       name: format
       predefined:
@@ -129,7 +129,7 @@ script:
       - csv
       - McAfee Web Gateway
       - Symantec ProxySG
-      - panosurl
+      - PAN-OS URL
       required: false
       secret: false
     - default: false
@@ -155,7 +155,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: string
-      description: For use with mwg format to indicate the list type.
+      description: For use with McAfee Web Gateway format to indicate the list type.
       isArray: false
       name: mwg_type
       predefined:
@@ -172,7 +172,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with panosurl format - if True will strip the port off
+      description: For use with PAN-OS URL format - if True will strip the port off
         urls. If not checked - url with ports will be ignored.
       isArray: false
       name: strip_port
@@ -184,9 +184,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with panosurl format - if checked any URL entry which is
+      description: For use with PAN-OS URL format - if checked any URL entry which is
         not compliant with PAN-OS EDL URL format the entry is dropped instead of being
-        rewritten
+        rewritten.
       isArray: false
       name: drop_invalids
       predefined:
