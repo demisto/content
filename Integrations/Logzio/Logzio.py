@@ -14,14 +14,14 @@ MAX_LOGZIO_DOCS = 1000
 ONE_MINUTE = 60
 ONE_HOUR = ONE_MINUTE * 60
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+BASE_URL = "https://api.logz.io/"
 TRIGGERED_RULES_API_SUFFIX = "v2/security/rules/events/search"  # "v1/alerts/triggered-alerts"
 SEARCH_LOGS_API_SUFFIX = "v1/search"
 SEARCH_RULE_LOGS_API_SUFFIX = "v2/rules/logs/search"
 
 
 class Client:
-    def __init__(self, logzio_url, region, security_api_token, op_api_token, verify, proxies):
-        self.base_url = logzio_url
+    def __init__(self, region, security_api_token, op_api_token, verify, proxies):
         self.security_api_token = security_api_token
         self.op_api_token = op_api_token
         self.region = region
@@ -141,7 +141,7 @@ class Client:
         return "{}{}".format(self.get_base_api_url(), api_suffix)
 
     def get_base_api_url(self):
-        return self.base_url.replace("api.", "api{}.".format(self.get_region_code()))
+        return BASE_URL.replace("api.", "api{}.".format(self.get_region_code()))
 
     def get_region_code(self):
         if self.region != "us" and self.region != "":
@@ -258,14 +258,13 @@ def main():
         security_api_token = demisto.params().get('security_api_token')
         op_api_token = demisto.params().get('operational_api_token')
         region = demisto.params().get('region')
-        url = demisto.params().get('url')
         first_fetch_time = demisto.params().get('fetch_time', '1 hours')
         severities = demisto.params().get('severities')
         search = demisto.params().get('search')
         verify = not demisto.params().get('insecure', False)
         proxies = handle_proxy()
 
-        client = Client(url, region, security_api_token, op_api_token, verify, proxies)
+        client = Client(region, security_api_token, op_api_token, verify, proxies)
         command = demisto.command()
         # demisto.log('Command being called is {}'.format(command))
         # Run the commands

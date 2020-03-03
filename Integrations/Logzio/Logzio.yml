@@ -32,11 +32,6 @@ configuration:
   defaultvalue: us
   type: 0
   required: false
-- display: Logzio API Server URL
-  name: url
-  defaultvalue: api.logz.io
-  type: 0
-  required: true
 - display: Searches part of the rule
   name: search
   defaultvalue: ""
