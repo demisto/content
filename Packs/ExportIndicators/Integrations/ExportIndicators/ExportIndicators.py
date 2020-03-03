@@ -28,7 +28,7 @@ FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
 FORMAT_MWG: str = 'McAfee Web Gateway'
-FORMAT_BLUECOAT = "bluecoat"
+FORMAT_PROXYSG = "Symantec ProxySG"
 FORMAT_PANOSURL = "panosurl"
 
 _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
@@ -75,7 +75,8 @@ def get_params_port(params: dict = demisto.params()) -> int:
 
 
 def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0, mwg_type="string",
-                             drop_invalids=False, strip_port=False) -> str:
+                             drop_invalids=False, strip_port=False, category_default='bc_category',
+                             category_attribute='') -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
     Returns: List(IoCs in output format)
@@ -83,7 +84,8 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     now = datetime.now()
     iocs = find_indicators_with_limit(indicator_query, limit)  # poll indicators into list from demisto
     out_dict = create_values_out_dict(iocs, out_format, mwg_type=mwg_type,
-                                      strip_port=strip_port, drop_invalids=drop_invalids)
+                                      strip_port=strip_port, drop_invalids=drop_invalids,
+                                      category_default=category_default, category_attribute=category_attribute)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     save_context(now, out_dict)
     return out_dict[CTX_VALUES_KEY]
@@ -124,14 +126,17 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
         # only format URLs and Domains
-        if indicator_data.get('indicator_type') in ['URL', 'Domain']:
+        if indicator_data.get('indicator_type') in ['URL', 'Domain', 'GlobDomain']:
             indicator = indicator_data.get('value').lower()
-            # remove initial protocol
+
+            # remove initial protocol - http/https/ftp/ftps etc
             indicator = _PROTOCOL_REMOVAL.sub('', indicator)
+
             indicator_with_port = indicator
-            # remove port from indicator
+            # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
             indicator = _PORT_REMOVAL.sub(r'\g<1>', indicator)
 
+            # check if removing the port changed something about the indicator
             if indicator != indicator_with_port and not strip_port:
                 # if port was in the indicator and strip_port param not set - ignore the indicator
                 continue
@@ -139,12 +144,15 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
             with_invalid_tokens_indicator = indicator
             # remove invalid tokens from indicator
             indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
+
+            # check if the indicator held invalid tokens
             if with_invalid_tokens_indicator != indicator:
                 # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
                 if drop_invalids:
                     continue
 
                 # check if after removing the tokens the indicator is too broad if so - ignore
+                # example of too broad terms: "*.paloalto", "*.*.paloalto", "*.paloalto:60"
                 hostname = indicator
                 if '/' in hostname:
                     hostname, _ = hostname.split('/', 1)
@@ -152,9 +160,7 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
                 if _BROAD_PATTERN.match(hostname) is not None:
                     continue
 
-            # for PAN-OS "*.domain.com" does not match "domain.com"
-            # we should provide both
-            # this could generate more than num entries in the egress feed
+            # for PAN-OS "*.domain.com" does not match "domain.com" - we should provide both
             if indicator.startswith('*.'):
                 formatted_indicators.append(indicator[2:])
 
@@ -162,9 +168,43 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
     return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
 
 
-def create_bluecoat_out_format(iocs: list, category_default='', category_attribute=''):
-    formatted_indicators = []  # type:List
-    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
+def add_indicator_to_category(indicator, category, category_dict):
+    if category in category_dict.keys():
+        category_dict[category].append(indicator)
+
+    else:
+        category_dict[category] = [indicator]
+
+    return category_dict
+
+
+def create_proxysg_out_format(iocs: list, category_default='bc_category', category_attribute=''):
+    formatted_indicators = ''
+    category_dict = {}  # type:Dict
+    if not category_attribute:
+        category_attribute = ''
+    category_attribute = category_attribute.split(',')
+    for indicator in iocs:
+        if indicator.get('indicator_type') in ['URL', 'Domain', 'GlobDomain']:
+            indicator_proxysg_category = indicator.get('proxysgcategory')
+            # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
+            # than list add the indicator to it's category list
+            if indicator_proxysg_category is not None and \
+                    (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
+                category_dict = add_indicator_to_category(indicator.get('value'), indicator_proxysg_category,
+                                                          category_dict)
+
+            else:
+                # if ProxySG Category is not set or does not exist in the category_attribute list
+                category_dict = add_indicator_to_category(indicator.get('value'), category_default, category_dict)
+
+    for category, indicator_list in category_dict.items():
+        sub_output_string = f"define category {category}\n"
+        sub_output_string += list_to_str(indicator_list, '\n')
+        sub_output_string += "\nend\n"
+        formatted_indicators += sub_output_string
+
+    return {CTX_VALUES_KEY: formatted_indicators}
 
 
 def create_mwg_out_format(iocs: list, mwg_type) -> dict:
@@ -187,15 +227,17 @@ def create_mwg_out_format(iocs: list, mwg_type) -> dict:
 
 
 def create_values_out_dict(iocs: list, out_format: str, mwg_type: str = "string",
-                           drop_invalids=False, strip_port=False) -> dict:
+                           drop_invalids=False, strip_port=False, category_default='bc_category',
+                           category_attribute='') -> dict:
     """
-    Create a dictionary for output values using the selected format (json, json-seq, text, csv)
+    Create a dictionary for output values using the selected format (json, json-seq, text, csv, McAfee Web Gateway,
+    Symantec ProxySG, panosurl)
     """
     if out_format == FORMAT_PANOSURL:
         return panos_url_formatting(iocs, drop_invalids, strip_port)
 
-    if out_format == FORMAT_BLUECOAT:
-        return create_bluecoat_out_format(iocs)
+    if out_format == FORMAT_PROXYSG:
+        return create_proxysg_out_format(iocs, category_default, category_attribute)
 
     if out_format == FORMAT_MWG:
         return create_mwg_out_format(iocs, mwg_type)
@@ -230,7 +272,8 @@ def get_outbound_mimetype() -> str:
 
 
 def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='text', last_run=None,
-                            cache_refresh_rate=None, mwg_type="string", drop_invalids=False, strip_port=False) -> str:
+                            cache_refresh_rate=None, mwg_type="string", drop_invalids=False, strip_port=False,
+                            category_default='bc_category', category_attribute='') -> str:
     """
     Get the ioc list to return in the list
     """
@@ -242,12 +285,16 @@ def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='te
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             if last_run <= cache_time:
                 values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, mwg_type=mwg_type,
-                                                      drop_invalids=drop_invalids, strip_port=strip_port)
+                                                      drop_invalids=drop_invalids, strip_port=strip_port,
+                                                      category_default=category_default,
+                                                      category_attribute=category_attribute)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
             values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, mwg_type=mwg_type,
-                                                  drop_invalids=drop_invalids, strip_port=strip_port)
+                                                  drop_invalids=drop_invalids, strip_port=strip_port,
+                                                  category_default=category_default,
+                                                  category_attribute=category_attribute)
     return values_str
 
 
@@ -321,7 +368,9 @@ def route_list_values() -> Response:
         cache_refresh_rate=params.get('cache_refresh_rate'),
         mwg_type=params.get('mwg_type'),
         strip_port=params.get('strip_params'),
-        drop_invalids=params.get('drop_invalids')
+        drop_invalids=params.get('drop_invalids'),
+        category_default=params.get('category_default'),
+        category_attribute=params.get('category_attribute')
     )
     mimetype = get_outbound_mimetype()
     return Response(values, status=200, mimetype=mimetype)
@@ -420,8 +469,11 @@ def update_outbound_command(args, params):
     mwg_type = args.get('mwg_type')
     strip_port = args.get('strip_port') == 'True'
     drop_invalids = args.get('drop_invalids') == 'True'
+    category_attribute = args.get('category_attribute')
+    category_default = args.get('category_default')
     indicators = refresh_outbound_context(query, out_format, limit=limit, mwg_type=mwg_type, strip_port=strip_port,
-                                          drop_invalids=drop_invalids)
+                                          drop_invalids=drop_invalids, category_default=category_default,
+                                          category_attribute=category_attribute)
     hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
     return hr, {}, indicators
