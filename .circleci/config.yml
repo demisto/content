@@ -177,7 +177,6 @@ jobs:
             fi
             python copy_beta.py $CIRCLE_ARTIFACTS
             demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
-            echo "Copying beta"
             # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
             cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"

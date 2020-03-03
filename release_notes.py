@@ -161,7 +161,7 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                         print(f'{path}: Skipped because from version: {from_version}'
                               f' is greater than current server version: {current_server_version}')
                         beta_rn_paths.append(path)
-                        print("added to rn paths")
+                        print(f"{path} has added to beta release notes")
                         continue
                     if to_version is not None and server_version_compare(to_version, current_server_version) < 0:
                         print(f'{path}: Skipped because of to version" {to_version}'
@@ -198,8 +198,6 @@ class Content(object):  # pylint: disable=useless-object-inheritance
     def generate_release_notes(self, current_server_version):
         res = ""
         beta_res = ""
-        add_beta_paths = []
-        mod_beta_paths = []
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print("starting {} RN".format(self.get_header()))
 
