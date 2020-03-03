@@ -9,6 +9,7 @@ from typing import Callable, List, Any, cast, Dict
 from base64 import b64decode
 import re
 
+
 class Handler:
     @staticmethod
     def write(msg):
@@ -26,13 +27,13 @@ FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
-FORMAT_MGW: str = 'mgw'
+FORMAT_MWG: str = 'McAfee Web Gateway'
 FORMAT_BLUECOAT = "bluecoat"
 FORMAT_PANOSURL = "panosurl"
 
-_PROTOCOL_RE = re.compile(r'^(?:[a-z]+:)*//')
-_PORT_RE = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
-_INVALID_TOKEN_RE = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
+_PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
+_PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
+_INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
 
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
@@ -73,7 +74,7 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0, mgw_type="string",
+def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0, mwg_type="string",
                              drop_invalids=False, strip_port=False) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
@@ -81,7 +82,7 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     """
     now = datetime.now()
     iocs = find_indicators_with_limit(indicator_query, limit)  # poll indicators into list from demisto
-    out_dict = create_values_out_dict(iocs, out_format, mgw_type=mgw_type,
+    out_dict = create_values_out_dict(iocs, out_format, mwg_type=mwg_type,
                                       strip_port=strip_port, drop_invalids=drop_invalids)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     save_context(now, out_dict)
@@ -120,16 +121,16 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
 
 
 def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
-    formatted_indicators = []
+    formatted_indicators = []  # type:List
     for indicator_data in iocs:
         # only format URLs and Domains
         if indicator_data.get('indicator_type') in ['URL', 'Domain']:
             indicator = indicator_data.get('value').lower()
             # remove initial protocol
-            indicator = _PROTOCOL_RE.sub('', indicator)
+            indicator = _PROTOCOL_REMOVAL.sub('', indicator)
             indicator_with_port = indicator
             # remove port from indicator
-            indicator = _PORT_RE.sub(r'\g<1>', indicator)
+            indicator = _PORT_REMOVAL.sub(r'\g<1>', indicator)
 
             if indicator != indicator_with_port and not strip_port:
                 # if port was in the indicator and strip_port param not set - ignore the indicator
@@ -137,7 +138,7 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
 
             with_invalid_tokens_indicator = indicator
             # remove invalid tokens from indicator
-            indicator = _INVALID_TOKEN_RE.sub('*', indicator)
+            indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
             if with_invalid_tokens_indicator != indicator:
                 # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
                 if drop_invalids:
@@ -162,12 +163,12 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
 
 
 def create_bluecoat_out_format(iocs: list, category_default='', category_attribute=''):
-    formatted_indicators = []
+    formatted_indicators = []  # type:List
     return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
 
 
-def create_mgw_out_format(iocs: list, mgw_type) -> dict:
-    formatted_indicators = []
+def create_mwg_out_format(iocs: list, mwg_type) -> dict:
+    formatted_indicators = []  # type:List
     for indicator in iocs:
         value = "\"" + indicator.get('value') + "\""
         sources = indicator.get('sourceBrands')
@@ -180,12 +181,12 @@ def create_mgw_out_format(iocs: list, mgw_type) -> dict:
         formatted_indicators.append(value + " " + sources_string)
 
     string_formatted_indicators = list_to_str(formatted_indicators, '\n')
-    string_formatted_indicators = "type=" + mgw_type + "\n" + string_formatted_indicators
+    string_formatted_indicators = "type=" + mwg_type + "\n" + string_formatted_indicators
 
     return {CTX_VALUES_KEY: string_formatted_indicators}
 
 
-def create_values_out_dict(iocs: list, out_format: str, mgw_type: str ="string",
+def create_values_out_dict(iocs: list, out_format: str, mwg_type: str = "string",
                            drop_invalids=False, strip_port=False) -> dict:
     """
     Create a dictionary for output values using the selected format (json, json-seq, text, csv)
@@ -196,8 +197,8 @@ def create_values_out_dict(iocs: list, out_format: str, mgw_type: str ="string",
     if out_format == FORMAT_BLUECOAT:
         return create_bluecoat_out_format(iocs)
 
-    if out_format == FORMAT_MGW:
-        return create_mgw_out_format(iocs, mgw_type)
+    if out_format == FORMAT_MWG:
+        return create_mwg_out_format(iocs, mwg_type)
 
     if out_format == FORMAT_JSON:  # handle json separately
         iocs_list = [ioc for ioc in iocs]
@@ -229,7 +230,7 @@ def get_outbound_mimetype() -> str:
 
 
 def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='text', last_run=None,
-                            cache_refresh_rate=None, mgw_type="string", drop_invalids=False, strip_port=False) -> str:
+                            cache_refresh_rate=None, mwg_type="string", drop_invalids=False, strip_port=False) -> str:
     """
     Get the ioc list to return in the list
     """
@@ -240,12 +241,12 @@ def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='te
         if last_run:
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             if last_run <= cache_time:
-                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, mgw_type=mgw_type,
+                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, mwg_type=mwg_type,
                                                       drop_invalids=drop_invalids, strip_port=strip_port)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
-            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, mgw_type=mgw_type,
+            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, mwg_type=mwg_type,
                                                   drop_invalids=drop_invalids, strip_port=strip_port)
     return values_str
 
@@ -318,7 +319,7 @@ def route_list_values() -> Response:
         last_run=demisto.getLastRun().get('last_run'),
         indicator_query=params.get('indicators_query'),
         cache_refresh_rate=params.get('cache_refresh_rate'),
-        mgw_type=params.get('mgw_type'),
+        mwg_type=params.get('mwg_type'),
         strip_port=params.get('strip_params'),
         drop_invalids=params.get('drop_invalids')
     )
@@ -416,10 +417,10 @@ def update_outbound_command(args, params):
     print_indicators = args.get('print_indicators')
     query = args.get('query')
     out_format = args.get('format')
-    mgw_type = args.get('mgw_type')
+    mwg_type = args.get('mwg_type')
     strip_port = args.get('strip_port') == 'True'
     drop_invalids = args.get('drop_invalids') == 'True'
-    indicators = refresh_outbound_context(query, out_format, limit=limit, mgw_type=mgw_type, strip_port=strip_port,
+    indicators = refresh_outbound_context(query, out_format, limit=limit, mwg_type=mwg_type, strip_port=strip_port,
                                           drop_invalids=drop_invalids)
     hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
