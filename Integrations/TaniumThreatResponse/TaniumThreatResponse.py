@@ -127,7 +127,7 @@ def get_evidence_item(raw_item):
         'UpdatedAt': raw_item.get('lastModified'),
         'User': raw_item.get('user'),
         'Host': raw_item.get('host'),
-        'ConnectionID': raw_item.get('connId'),
+        'ConnectionName': raw_item.get('connId'),
         'Type': evidence_type_number_to_name(try_parse_integer(raw_item.get('type'))),
         'ProcessTableId': raw_item.get('sID'),
         'Timestamp': raw_item.get('sTimestamp'),
@@ -498,15 +498,15 @@ def get_snapshots(client, data_args):
 
 
 def create_snapshot(client, data_args):
-    con_id = data_args.get('connection-id')
-    client.do_request('POST', f'/plugin/products/trace/conns/{con_id}/snapshots', resp_type='content')
-    return f"Initiated snapshot creation request for {con_id}.", {}, {}
+    con_name = data_args.get('connection-name')
+    client.do_request('POST', f'/plugin/products/trace/conns/{con_name}/snapshots', resp_type='content')
+    return f"Initiated snapshot creation request for {con_name}.", {}, {}
 
 
 def delete_snapshot(client, data_args):
-    con_id = data_args.get('connection-id')
+    con_name = data_args.get('connection-name')
     snapshot_id = data_args.get('snapshot-id')
-    client.do_request('DELETE', f'/plugin/products/trace/conns/{con_id}/snapshots/{snapshot_id}', resp_type='content')
+    client.do_request('DELETE', f'/plugin/products/trace/conns/{con_name}/snapshots/{snapshot_id}', resp_type='content')
     return f"Snapshot {snapshot_id} deleted successfully.", {}, {}
 
 
@@ -693,7 +693,7 @@ def get_events_by_connection(client, data_args):
         events.append(event)
 
     context = createContext(events, removeNull=True)
-    outputs = {'Tanium.Event(val.ID && val.ID === obj.ID)': context}
+    outputs = {'TaniumEvent(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Timestamp', 'Domain', 'ProcessTableID', 'ProcessCommandLine', 'ProcessID', 'ProcessName',
                'ProcessHash', 'ExitCode', 'SID', 'Username', 'Hashes', 'Operation', 'File', 'DestinationAddress',
                'DestinationPort', 'SourceAddress', 'SourcePort', 'KeyPath', 'ValueName', 'EndTime', 'ImageLoaded',
@@ -915,12 +915,12 @@ def delete_evidence(client, data_args):
 
 
 def request_file_download(client, data_args):
-    con_id = data_args.get('connection-id')
+    con_name = data_args.get('connection-name')
     path = data_args.get('path')
 
     # context object will help us to verify the request has succeed in the download file playbook.
     context = {
-        'Host': con_id,
+        'Host': con_name,
         'Path': path,
         'Downloaded': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')
     }
@@ -928,7 +928,7 @@ def request_file_download(client, data_args):
 
     data = {
         'path': path,
-        'connId': con_id
+        'connId': con_name
     }
     client.do_request('POST', f'/plugin/products/trace/filedownloads', data=data, resp_type='text')
     filename = os.path.basename(path)
@@ -977,13 +977,13 @@ def delete_file_download(client, data_args):
 
 
 def list_files_in_dir(client, data_args):
-    con_id = data_args.get('connection-id')
+    con_name = data_args.get('connection-name')
     dir_path_name = data_args.get('path')
     dir_path = urllib.parse.quote(dir_path_name)
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads/{con_id}/list/{dir_path}')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads/{con_name}/list/{dir_path}')
 
     files = []
     for file in raw_response[offset:offset + limit]:
@@ -997,10 +997,10 @@ def list_files_in_dir(client, data_args):
 
 
 def get_file_info(client, data_args):
-    con_id = data_args.get('connection-id')
+    con_name = data_args.get('connection-name')
     path = data_args.get('path')
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/fileinfo/{path}')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_name}/fileinfo/{path}')
     file_info = get_file_item(raw_response)
 
     context = createContext(file_info, removeNull=True)
@@ -1011,20 +1011,20 @@ def get_file_info(client, data_args):
 
 
 def delete_file_from_endpoint(client, data_args):
-    con_id = data_args.get('connection-id')
+    con_name = data_args.get('connection-name')
     path = urllib.parse.quote(data_args.get('path'))
-    client.do_request('DELETE', f'/plugin/products/trace/filedownloads/{con_id}/{path}', resp_type='text')
-    return f"Delete request of file {path} from endpoint {con_id} has been sent successfully.", {}, {}
+    client.do_request('DELETE', f'/plugin/products/trace/filedownloads/{con_name}/{path}', resp_type='text')
+    return f"Delete request of file {path} from endpoint {con_name} has been sent successfully.", {}, {}
 
 
 def get_process_timeline(client, data_args):
-    con_id = data_args.get('connection-id')
+    con_name = data_args.get('connection-name')
     ptid = data_args.get('ptid')
     category = data_args.get('category')
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/eprocesstimelines/{ptid}')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_name}/eprocesstimelines/{ptid}')
     demisto.info('AAAAAAAAAA')
     demisto.info(str(raw_response))
     timeline = get_process_timeline_item(raw_response, category, limit, offset)

@@ -7,7 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Credentials
+- display: Username
   name: credentials
   required: true
   type: 9
@@ -354,20 +354,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The connection ID.
+      description: The connection name.
       isArray: false
-      name: connection-id
+      name: connection-name
       required: true
       secret: false
     deprecated: false
-    description: Captures a new snapshot by connection ID.
+    description: Captures a new snapshot by connection name.
     execution: false
     name: tanium-tr-create-snapshot
   - arguments:
     - default: false
-      description: The connection ID.
+      description: The connection name.
       isArray: false
-      name: connection-id
+      name: connection-name
       required: true
       secret: false
     - default: false
@@ -377,7 +377,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes a snapshot by connection ID and snapshot ID.
+    description: Deletes a snapshot by connection name and snapshot ID.
     execution: false
     name: tanium-tr-delete-snapshot
   - arguments:
@@ -753,91 +753,91 @@ script:
     execution: false
     name: tanium-tr-list-events-by-connection
     outputs:
-    - contextPath: Tanium.Event.Domain
+    - contextPath: TaniumEvent.Domain
       description: The domain of the event.
       type: String
-    - contextPath: Tanium.Event.File
+    - contextPath: TaniumEvent.File
       description: The path of the file in the event.
       type: String
-    - contextPath: Tanium.Event.Operation
+    - contextPath: TaniumEvent.Operation
       description: The event operation.
       type: String
-    - contextPath: Tanium.Event.ProcessID
+    - contextPath: TaniumEvent.ProcessID
       description: The ID of the process.
       type: Number
-    - contextPath: Tanium.Event.ProcessName
+    - contextPath: TaniumEvent.ProcessName
       description: The name of the process.
       type: String
-    - contextPath: Tanium.Event.ProcessTableID
+    - contextPath: TaniumEvent.ProcessTableID
       description: The ID of the process table.
       type: Number
-    - contextPath: Tanium.Event.Timestamp
+    - contextPath: TaniumEvent.Timestamp
       description: The date when the event was created.
       type: Date
-    - contextPath: Tanium.Event.Username
+    - contextPath: TaniumEvent.Username
       description: The username associated with the event.
       type: String
-    - contextPath: Tanium.Event.DestinationAddress
+    - contextPath: TaniumEvent.DestinationAddress
       description: The network event destination address.
       type: String
-    - contextPath: Tanium.Event.DestinationPort
+    - contextPath: TaniumEvent.DestinationPort
       description: The network event destination port.
       type: Number
-    - contextPath: Tanium.Event.SourceAddress
+    - contextPath: TaniumEvent.SourceAddress
       description: The network event source address.
       type: String
-    - contextPath: Tanium.Event.SourcePort
+    - contextPath: TaniumEvent.SourcePort
       description: The network event source port.
       type: Number
-    - contextPath: Tanium.Event.KeyPath
+    - contextPath: TaniumEvent.KeyPath
       description: The registry key path.
       type: String
-    - contextPath: Tanium.Event.ValueName
+    - contextPath: TaniumEvent.ValueName
       description: The registry value name.
       type: String
-    - contextPath: Tanium.Event.EndTime
+    - contextPath: TaniumEvent.EndTime
       description: The process end time.
       type: Date
-    - contextPath: Tanium.Event.ExitCode
+    - contextPath: TaniumEvent.ExitCode
       description: The process exit code.
       type: Number
-    - contextPath: Tanium.Event.ProcessCommandLine
+    - contextPath: TaniumEvent.ProcessCommandLine
       description: The process command line.
       type: String
-    - contextPath: Tanium.Event.ProcessHash
+    - contextPath: TaniumEvent.ProcessHash
       description: The hash value of the process.
       type: String
-    - contextPath: Tanium.Event.SID
+    - contextPath: TaniumEvent.SID
       description: The process SID.
       type: Number
-    - contextPath: Tanium.Event.Hashes
+    - contextPath: TaniumEvent.Hashes
       description: The hashes of the driver.
       type: String
-    - contextPath: Tanium.Event.ImageLoaded
+    - contextPath: TaniumEvent.ImageLoaded
       description: The image loaded path of the driver.
       type: String
-    - contextPath: Tanium.Event.Signature
+    - contextPath: TaniumEvent.Signature
       description: The signature of the driver.
       type: String
-    - contextPath: Tanium.Event.Signed
+    - contextPath: TaniumEvent.Signed
       description: Whether the driver is signed.
       type: Boolean
-    - contextPath: Tanium.Event.EventId
+    - contextPath: TaniumEvent.EventId
       description: The ID of the event.
       type: Number
-    - contextPath: Tanium.Event.EventOpcode
+    - contextPath: TaniumEvent.EventOpcode
       description: The event opcode.
       type: Number
-    - contextPath: Tanium.Event.EventRecordID
+    - contextPath: TaniumEvent.EventRecordID
       description: The ID of the event record.
       type: Number
-    - contextPath: Tanium.Event.EventTaskID
+    - contextPath: TaniumEvent.EventTaskID
       description: The ID of the event task.
       type: Number
-    - contextPath: Tanium.Event.Query
+    - contextPath: TaniumEvent.Query
       description: The query of the DNS.
       type: String
-    - contextPath: Tanium.Event.Response
+    - contextPath: TaniumEvent.Response
       description: The response of the DNS.
       type: String
   - arguments:
@@ -1187,8 +1187,8 @@ script:
     - contextPath: Tanium.Evidence.Host
       description: The evidence host.
       type: String
-    - contextPath: Tanium.Evidence.ConnectionID
-      description: The evidence connection ID.
+    - contextPath: Tanium.Evidence.ConnectionName
+      description: The evidence connection name.
       type: String
     - contextPath: Tanium.Evidence.Type
       description: The evidence type.
@@ -1235,8 +1235,8 @@ script:
     - contextPath: Tanium.Evidence.Host
       description: The evidence host.
       type: String
-    - contextPath: Tanium.Evidence.ConnectionID
-      description: The evidence connection ID.
+    - contextPath: Tanium.Evidence.ConnectionName
+      description: The evidence connection name.
       type: String
     - contextPath: Tanium.Evidence.Type
       description: The evidence type.
@@ -1298,9 +1298,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Connection ID.
+      description: Connection name.
       isArray: false
-      name: connection-id
+      name: connection-name
       required: true
       secret: false
     deprecated: false
@@ -1342,9 +1342,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Connection ID.
+      description: Connection name.
       isArray: false
-      name: connection-id
+      name: connection-name
       required: true
       secret: false
     - default: false
@@ -1386,10 +1386,10 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: Connection ID.
+      defaultValue: Connection name.
       isArray: false
-      description: The ID of the connection.
-      name: connection-id
+      description: The name of the connection.
+      name: connection-name
       required: true
       secret: false
     - default: false
@@ -1418,9 +1418,9 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: Connection ID.
+      description: Connection name.
       isArray: false
-      name: connection-id
+      name: connection-name
       required: true
       secret: false
     - default: false
@@ -1435,9 +1435,9 @@ script:
     name: tanium-tr-delete-file-from-endpoint
   - arguments:
     - default: false
-      description: Connection ID.
+      description: Connection name.
       isArray: false
-      name: connection-id
+      name: connection-name
       required: true
       secret: false
     - default: false
@@ -1482,8 +1482,8 @@ script:
     - contextPath: Tanium.ProcessTimeline.ProcessTableID
       description: The process instance ID.
       type: Number
-    - contextPath: Tanium.ProcessTimeline.ConnectionID
-      description: The connection ID of the process.
+    - contextPath: Tanium.ProcessTimeline.ConnectionName
+      description: The connection name of the process.
       type: String
     - contextPath: Tanium.ProcessTimeline.Date
       description: Events date of the process.
