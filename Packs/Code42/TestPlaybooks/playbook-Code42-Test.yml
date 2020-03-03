@@ -514,10 +514,10 @@ tasks:
     ignoreworker: false
   '17':
     id: '17'
-    taskid: 8dbb73ea-8e94-4570-85d0-f9eadcf3ae98
+    taskid: ef99d4c7-21c2-45c2-84e8-811b7fac735f
     type: condition
     task:
-      id: 8dbb73ea-8e94-4570-85d0-f9eadcf3ae98
+      id: ef99d4c7-21c2-45c2-84e8-811b7fac735f
       version: -1
       name: Validate code42-securitydata-search
       type: condition
@@ -531,14 +531,17 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isNotEqualString
+      - - operator: greaterThanOrEqual
           left:
             value:
-              simple: searchresults
+              complex:
+                root: searchresults
+                transformers:
+                - operator: count
             iscontext: true
           right:
             value:
-              simple: No results found
+              simple: '0'
     view: |-
       {
         "position": {
