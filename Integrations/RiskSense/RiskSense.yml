@@ -2195,7 +2195,7 @@ script:
           description: The state of the ticket associated with the application.
           type: String
       description: This command is used to lookup single application details in depth. Command accepts application id as an argument.
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6120
   isfetch: false
   longRunning: false
   longRunningPort: false
