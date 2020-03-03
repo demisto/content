@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Deprecate lastline v1
+  - Deprecated. Use the Lastline v2 integration instead.
   
 ## [18.8.2] - 2018-08-21
 Added the *File.Type* output to the following commands:
