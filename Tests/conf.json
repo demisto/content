@@ -2402,6 +2402,8 @@
         }
     ],
     "skipped_tests": {
+        "SplunkPy-Test-V2": "Issue 22537",
+        "Archer-Test-Playbook": "Issue 22536",
         "Office365_Feed_Test": "Issue 22517",
         "DuoAdmin API test playbook": "Issue 22514",
         "Test XDR Playbook": "Issue 22512",
