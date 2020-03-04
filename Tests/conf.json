@@ -2448,7 +2448,8 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423"
+        "TAXII_Feed_Test": "Issue #22423",
+        "SplunkPy-Test-V2": "waiting for access to splunk server(@esharf)"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
