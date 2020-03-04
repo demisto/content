@@ -295,7 +295,7 @@ def get_connection_item(connection):
 
 def get_local_snapshot_items(raw_snapshots, limit, offset, conn_name):
     snapshots = []
-    host_snapshots = raw_snapshots.get(conn_name)
+    host_snapshots = raw_snapshots.get(conn_name, {})
     snapshot_keys = sorted(host_snapshots)
     from_idx = min(offset, len(snapshot_keys))
     to_idx = min(offset + limit, len(snapshot_keys))
@@ -311,7 +311,7 @@ def get_local_snapshot_items(raw_snapshots, limit, offset, conn_name):
 
 def get_snapshot_items(raw_snapshots, limit, offset, conn_name):
     snapshots = []
-    host_snapshots = raw_snapshots.get(conn_name)
+    host_snapshots = raw_snapshots.get(conn_name, {})
     snapshot_keys = sorted(host_snapshots)
     from_idx = min(offset, len(snapshot_keys))
     to_idx = min(offset + limit, len(snapshot_keys))
@@ -508,7 +508,8 @@ def get_snapshots(client, data_args):
     context = createContext(snapshots, removeNull=True)
     headers = ['FileName', 'ConnectionName', 'State', 'Started', 'Error']
     outputs = {'Tanium.Snapshot(val.FileName === obj.FileName && val.ConnectionName === obj.ConnectionName)': context}
-    human_readable = tableToMarkdown('Snapshots', snapshots, headers=headers, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(f'Snapshots for connection {conn_name}', snapshots, headers=headers,
+                                     headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -536,7 +537,8 @@ def get_local_snapshots(client, data_args):
         'Tanium.LocalSnapshot(val.FileName === obj.FileName && val.ConnectionName === obj.ConnectionName)': context
     }
     headers = ['FileName', 'ConnectionName']
-    human_readable = tableToMarkdown('Local snapshots', snapshots, headers=headers, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(f'Local snapshots for connection {conn_name}', snapshots, headers=headers,
+                                     headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
