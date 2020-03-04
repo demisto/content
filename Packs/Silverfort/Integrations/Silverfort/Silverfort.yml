@@ -125,7 +125,7 @@ script:
       description: Risk description
       isArray: false
       name: description
-      required: false
+      required: true
       secret: false
     - default: false
       description: Email
@@ -190,7 +190,7 @@ script:
       description: Short description about the risk
       isArray: false
       name: description
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Resource risk commands - update the resource entity risk
