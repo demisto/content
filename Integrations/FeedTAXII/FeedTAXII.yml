@@ -79,7 +79,7 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: false
+  required: true
   type: 9
 - additionalinfo: Time (in seconds) before HTTP requests timeout.
   defaultvalue: '20'
@@ -90,16 +90,6 @@ configuration:
 - additionalinfo: Used by a TAXII Client to request information from a TAXII Server.
   display: Poll Service
   name: poll_service
-  required: false
-  type: 0
-- additionalinfo: API key used for authentication with the TAXII server.
-  display: API Key
-  name: api_key
-  required: false
-  type: 0
-- additionalinfo: API key header to be used to provide API key to the TAXII server. For example, "Authorization".
-  display: API Header Name
-  name: api_header
   required: false
   type: 0
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12
@@ -154,7 +144,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.6220
+  dockerimage: demisto/taxii:1.0.0.6243
   feed: true
   isfetch: false
   longRunning: false
