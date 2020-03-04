@@ -424,7 +424,7 @@ def get_investigation_package_request(machine_id, comment):
     cmd_url = '/machines/{}/collectInvestigationPackage'.format(machine_id)
     json = {
         'Comment': comment
-        }
+    }
     response = http_request('POST', cmd_url, json=json)
     return response
 
@@ -452,7 +452,7 @@ def restrict_app_execution_request(machine_id, comment):
     cmd_url = '/machines/{}/restrictCodeExecution'.format(machine_id)
     json = {
         'Comment': comment
-        }
+    }
     response = http_request('POST', cmd_url, json=json)
     return response
 
@@ -468,7 +468,7 @@ def remove_app_restriction_request(machine_id, comment):
     cmd_url = '/machines/{}/unrestrictCodeExecution'.format(machine_id)
     json = {
         'Comment': comment
-        }
+    }
     response = http_request('POST', cmd_url, json=json)
     return response
 
@@ -660,7 +660,7 @@ def add_remove_machine_tag_request(machine_id, action, tag):
     """
     cmd_url = '/machines/{}/tags'.format(machine_id)
     new_tags = {
-        "Value" : tag,
+        "Value": tag,
         "Action": action
     }
     response = http_request('POST', cmd_url, json=new_tags)
@@ -965,9 +965,9 @@ def get_alert_related_files_command():
     limit = demisto.args().get('limit')
     response_files_list = get_alert_related_files_request(alert_id)
     files_data_list = []
-    headers = ['Sha1', 'Sha256', 'Md5', 'GlobalPrevalence', 'GlobalFirstObserved','GlobalLastObserved', 'Size',
+    headers = ['Sha1', 'Sha256', 'Md5', 'GlobalPrevalence', 'GlobalFirstObserved', 'GlobalLastObserved', 'Size',
                'FileType', 'IsPeFile', 'FilePublisher', 'FileProductName', 'Signer', 'Issuer', 'SignerHash',
-               'IsValidCertificate', 'DeterminationType', 'DeterminationValue' ]
+               'IsValidCertificate', 'DeterminationType', 'DeterminationValue']
     for file_obj in response_files_list['value']:
         files_data_list.append(get_file_data(file_obj['sha1']))
         if len(files_data_list) == limit:
@@ -1085,7 +1085,8 @@ def get_machine_action_data(action_id):
         dict. Action's info
     """
     response = get_machine_action_by_id_request(action_id)
-    action_data = {
+    action_data = \
+        {
             "ID": response.get('id'),
             "Type": response.get('type'),
             "Scope": response.get('scope'),
@@ -1099,6 +1100,7 @@ def get_machine_action_data(action_id):
             "RelatedFileInfo": {
                 "FileIdentifier": response.get('fileIdentifier'),
                 "FileIdentifierType": response.get('fileIdentifierType')
+
             }
         }
     return action_data
@@ -1231,16 +1233,16 @@ def get_investigation_data(investigation_id):
     """
     response = get_investigation_by_id_request(investigation_id)
     investigation_data = {
-            "ID": response.get('id'),
-            "StartTime": response.get('startTime'),
-            "EndTime": response.get('endTime'),
-            "State": response.get('state'),
-            "CancelledBy": response.get('cancelledBy'),
-            "StatusDetails": response.get('ststatusDetailsatus'),
-            "MachineID": response.get('machineId'),
-            "ComputerDNSName": response.get('computerDnsName'),
-            "TriggeringAlertId": response.get('triggeringAlertId')
-        }
+        "ID": response.get('id'),
+        "StartTime": response.get('startTime'),
+        "EndTime": response.get('endTime'),
+        "State": response.get('state'),
+        "CancelledBy": response.get('cancelledBy'),
+        "StatusDetails": response.get('ststatusDetailsatus'),
+        "MachineID": response.get('machineId'),
+        "ComputerDNSName": response.get('computerDnsName'),
+        "TriggeringAlertId": response.get('triggeringAlertId')
+    }
     return investigation_data
 
 
@@ -1359,7 +1361,7 @@ def get_domain_machine_command():
         (str, dict, dict). Human readable, context, raw response
     """
 
-    headers = ['ID', 'ComputerDNSName', 'OSPlatform','LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
     domain = demisto.args().get('domain')
     response = get_domain_machines_request(domain)
@@ -1533,7 +1535,7 @@ def get_user_machine_command():
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
-    headers = ['ID', 'ComputerDNSName', 'OSPlatform','LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
     username = demisto.args().get('username')
     response = get_user_machines_request(username)
@@ -1556,7 +1558,7 @@ def add_remove_machine_tag_command():
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
-    headers = ['ID', 'ComputerDNSName', 'OSPlatform','LastIpAddress', 'LastExternalIPAddress', 'HealthStatus',
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIpAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
     machine_id = demisto.args().get('machine_id')
     action = demisto.args().get('action')

@@ -15,7 +15,7 @@ def mock_demisto(mocker):
 
 
 def atp_mocker(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     with open('./test_data/alerts.json', 'r') as f:
         alerts = json.loads(f.read())
     mocker.patch.object(atp, 'list_alerts_request', return_value=alerts)
@@ -23,7 +23,7 @@ def atp_mocker(mocker):
 
 def test_fetch(mocker):
     mock_demisto(mocker)
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     atp_mocker(mocker)
     atp.fetch_incidents()
     # Check that all 3 incidents are extracted
@@ -46,7 +46,7 @@ def test_fetch(mocker):
 
 
 def test_get_file_data(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_file_data_request', return_value=FILE_DATA_API_RESPONSE)
     res = atp.get_file_data("123abc")
     assert res['Sha1'] == "123abc"
@@ -54,7 +54,7 @@ def test_get_file_data(mocker):
 
 
 def test_get_alert_related_ips_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(demisto, 'args', return_value={'id': '123'})
     mocker.patch.object(atp, 'get_alert_related_ips_request', return_value=ALERT_RELATED_IPS_API_RESPONSE)
     _, res, _ = atp.get_alert_related_ips_command()
@@ -65,7 +65,7 @@ def test_get_alert_related_ips_command(mocker):
 
 
 def test_get_alert_related_domains_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(demisto, 'args', return_value={'id': '123'})
     mocker.patch.object(atp, 'get_alert_related_domains_request', return_value=ALERT_RELATED_DOMAINS_API_RESPONSE)
     _, res, _ = atp.get_alert_related_domains_command()
@@ -76,7 +76,7 @@ def test_get_alert_related_domains_command(mocker):
 
 
 def test_get_action_data(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_machine_action_by_id_request', return_value=ACTION_DATA_API_RESPONSE)
     res = atp.get_machine_action_data("123456")
     assert res['ID'] == "123456"
@@ -84,7 +84,7 @@ def test_get_action_data(mocker):
 
 
 def test_get_machine_investigation_package_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_investigation_package_request', return_value=INVESTIGATION_PACKAGE_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=INVESTIGATION_ACTION_DATA)
     _, res, _ = atp.get_machine_investigation_package_command()
@@ -92,17 +92,16 @@ def test_get_machine_investigation_package_command(mocker):
 
 
 def test_get_investigation_package_sas_uri_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_investigation_package_sas_uri_request', return_value=INVESTIGATION_SAS_URI_API_RES)
     _, res, _ = atp.get_investigation_package_sas_uri_command()
     assert res['MicrosoftATP.InvestigationURI(val.Link === obj.Link)'] == {
-        'Link': 'https://userrequests-us.securitycenter.' \
-                'windows.com:443/safedownload/' \
+        'Link': 'https://userrequests-us.securitycenter.windows.com:443/safedownload/'
                 'WDATP_Investigation_Package.zip?token=test1'}
 
 
 def test_restrict_app_execution_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'restrict_app_execution_request', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
     _, res, _ = atp.restrict_app_execution_command()
@@ -110,7 +109,7 @@ def test_restrict_app_execution_command(mocker):
 
 
 def test_remove_app_restriction_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'remove_app_restriction_request', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
     _, res, _ = atp.remove_app_restriction_command()
@@ -118,7 +117,7 @@ def test_remove_app_restriction_command(mocker):
 
 
 def test_stop_and_quarantine_file_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'stop_and_quarantine_file_request', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
     _, res, _ = atp.stop_and_quarantine_file_command()
@@ -126,7 +125,7 @@ def test_stop_and_quarantine_file_command(mocker):
 
 
 def test_get_investigations_by_id_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(demisto, 'args', return_value={'id': '123'})
     mocker.patch.object(atp, 'get_investigation_by_id_request', return_value=INVESTIGATION_API_RESPONSE)
     mocker.patch.object(atp, 'get_investigation_data', return_value=INVESTIGATION_DATA)
@@ -135,7 +134,7 @@ def test_get_investigations_by_id_command(mocker):
 
 
 def test_get_investigation_data(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_investigation_by_id_request', return_value=INVESTIGATION_API_RESPONSE)
     res = atp.get_investigation_data(INVESTIGATION_API_RESPONSE['id'])
     assert res['ID'] == '123'
@@ -143,7 +142,7 @@ def test_get_investigation_data(mocker):
 
 
 def test_start_investigation_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'start_investigation_request', return_value=INVESTIGATION_API_RESPONSE)
     mocker.patch.object(atp, 'get_investigation_data', return_value=INVESTIGATION_DATA)
     _, res, _ = atp.start_investigation_command()
@@ -151,7 +150,7 @@ def test_start_investigation_command(mocker):
 
 
 def test_get_domain_alerts_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(demisto, 'args', return_value={'domain': 'test'})
     mocker.patch.object(atp, 'get_domain_alerts_request', return_value=ALERTS_API_RESPONSE)
     mocker.patch.object(atp, 'get_alert_data', return_value=ALERT_DATA)
@@ -163,7 +162,7 @@ def test_get_domain_alerts_command(mocker):
 
 
 def test_get_alert_data(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_alert_by_id_request', return_value=SINGLE_ALERT_API_RESPONSE)
     res = atp.get_alert_data("123abc")
     assert res['ID'] == '123abc'
@@ -171,7 +170,7 @@ def test_get_alert_data(mocker):
 
 
 def test_get_domain_machine_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(demisto, 'args', return_value={'domain': 'test'})
     mocker.patch.object(atp, 'get_domain_machines_request', return_value=MACHINE_RESPONSE_API)
     mocker.patch.object(atp, 'get_machine_data', return_value=MACHINE_DATA)
@@ -183,7 +182,7 @@ def test_get_domain_machine_command(mocker):
 
 
 def test_get_machine_data(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_machine_details_request', return_value=SINGLE_MACHINE_RESPONSE_API)
     res = atp.get_machine_data('123')
     assert res['ID'] == '123'
@@ -191,7 +190,7 @@ def test_get_machine_data(mocker):
 
 
 def test_get_ip_alerts_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(demisto, 'args', return_value={'ip': '1.1.1.1'})
     mocker.patch.object(atp, 'get_ip_alerts_request', return_value=ALERTS_API_RESPONSE)
     mocker.patch.object(atp, 'get_alert_data', return_value=ALERT_DATA)
@@ -203,7 +202,7 @@ def test_get_ip_alerts_command(mocker):
 
 
 def test_run_antivirus_scan_command(mocker):
-    import WindowsDefenderAdvancedThreatProtection as atp
+    import MicrosoftDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'run_antivirus_scan_request', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
     _, res, _ = atp.run_antivirus_scan_command()
@@ -417,35 +416,36 @@ ALERTS_API_RESPONSE = {
     ]
 }
 SINGLE_ALERT_API_RESPONSE = {
-        "id": "123",
-        "incidentId": 123456,
-        "investigationId": 654321,
-        "investigationState": "Running",
-        "assignedTo": "test@test.com",
-        "severity": "Low",
-        "status": "New",
-        "classification": "TruePositive",
-        "determination": None,
-        "detectionSource": "WindowsDefenderAtp",
-        "category": "CommandAndControl",
-        "threatFamilyName": None,
-        "title": "Network connection to a risky host",
-        "description": "A network connection was made to a risky host which has exhibited malicious activity.",
-        "alertCreationTime": "2019-11-03T23:49:45.3823185Z",
-        "firstEventTime": "2019-11-03T23:47:16.2288822Z",
-        "lastEventTime": "2019-11-03T23:47:51.2966758Z",
-        "lastUpdateTime": "2019-11-03T23:55:52.6Z",
-        "resolvedTime": None,
-        "machineId": "123abc",
-        "comments": [
-            {
-                "comment": "test comment for docs",
-                "createdBy": "test@test.com",
-                "createdTime": "2019-11-05T14:08:37.8404534Z"
-            }
+    "id": "123",
+    "incidentId": 123456,
+    "investigationId": 654321,
+    "investigationState": "Running",
+    "assignedTo": "test@test.com",
+    "severity": "Low",
+    "status": "New",
+    "classification": "TruePositive",
+    "determination": None,
+    "detectionSource": "WindowsDefenderAtp",
+    "category": "CommandAndControl",
+    "threatFamilyName": None,
+    "title": "Network connection to a risky host",
+    "description": "A network connection was made to a risky host which has exhibited malicious activity.",
+    "alertCreationTime": "2019-11-03T23:49:45.3823185Z",
+    "firstEventTime": "2019-11-03T23:47:16.2288822Z",
+    "lastEventTime": "2019-11-03T23:47:51.2966758Z",
+    "lastUpdateTime": "2019-11-03T23:55:52.6Z",
+    "resolvedTime": None,
+    "machineId": "123abc",
+    "comments": [
+        {
+            "comment": "test comment for docs",
+            "createdBy": "test@test.com",
+            "createdTime": "2019-11-05T14:08:37.8404534Z"
+        }
 
-        ]
+    ]
 }
+
 ALERT_DATA = {
     "ID": '123',
     "IncidentID": 123456,
@@ -500,26 +500,25 @@ MACHINE_RESPONSE_API = {
     ]
 }
 SINGLE_MACHINE_RESPONSE_API = {
-        "id": "123",
-        "computerDnsName": "test",
-        "firstSeen": "2019-11-03T23:47:16.2288822Z",
-        "lastSeen": "2019-11-03T23:47:51.2966758Z",
-        "osPlatform": "Windows10",
-        "version": "1709",
-        "osProcessor": "x64",
-        "lastIpAddress": "2.2.2.2",
-        "lastExternalIpAddress": "1.1.1.1",
-        "osBuild": 12345,
-        "healthStatus": "Active",
-        "rbacGroupId": 140,
-        "rbacGroupName": "The-A-Team",
-        "riskScore": "Low",
-        "exposureLevel": "Medium",
-        "isAadJoined": True,
-        "aadDeviceId": "12ab34cd",
-        "machineTags": ["test tag 1", "test tag 2"]
+    "id": "123",
+    "computerDnsName": "test",
+    "firstSeen": "2019-11-03T23:47:16.2288822Z",
+    "lastSeen": "2019-11-03T23:47:51.2966758Z",
+    "osPlatform": "Windows10",
+    "version": "1709",
+    "osProcessor": "x64",
+    "lastIpAddress": "2.2.2.2",
+    "lastExternalIpAddress": "1.1.1.1",
+    "osBuild": 12345,
+    "healthStatus": "Active",
+    "rbacGroupId": 140,
+    "rbacGroupName": "The-A-Team",
+    "riskScore": "Low",
+    "exposureLevel": "Medium",
+    "isAadJoined": True,
+    "aadDeviceId": "12ab34cd",
+    "machineTags": ["test tag 1", "test tag 2"]
 }
-# "osProcessor": "x64",
 
 MACHINE_DATA = {
     'ComputerDNSName': 'test',
@@ -538,6 +537,5 @@ MACHINE_DATA = {
     'RiskScore': "Low",
     'RBACGroupName': "The-A-Team",
     'AADDeviceID': '12ab34cd',
-    #    'OSVersion': machine.get('osVersion'),
     'ExposureLevel': "Medium"
 }
