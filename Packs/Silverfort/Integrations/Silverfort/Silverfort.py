@@ -35,7 +35,7 @@ class Client(BaseClient):
             url_suffix='getUPN',
             params=params
         )
-        return response
+        return response['user_principal_name']
 
     def get_user_entity_risk_http_request(self, upn):
         """
