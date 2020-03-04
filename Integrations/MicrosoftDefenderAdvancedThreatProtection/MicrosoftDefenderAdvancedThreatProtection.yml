@@ -2144,7 +2144,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
   Microsoft Defender Advanced Threat ProtectionV2 - Test
