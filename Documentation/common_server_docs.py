@@ -18,11 +18,11 @@ JS_PRIVATE_FUNCS = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRec
                     "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
                     "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
 
-pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
-                  "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                  "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
-                  "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator", "IndicatorType",
-                  "IP", "Domain", "DBotScore", "EntryType", "EntryFormat"]
+PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
+                    "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
+                    "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
+                    "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator", "IndicatorType",
+                    "IP", "Domain", "DBotScore", "EntryType", "EntryFormat"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
