@@ -22,7 +22,8 @@ configuration:
   name: on_demand
   required: false
   type: 8
-- additionalinfo: How often to refresh the EDL (e.g., 12 hours, 7 days, 3 months, 1 year)
+- additionalinfo: How often to refresh the EDL (e.g., 12 hours, 7 days, 3 months,
+    1 year)
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
@@ -47,8 +48,9 @@ configuration:
   name: key
   required: false
   type: 14
-- display: Username
-  additionalinfo: Uses basic authentication for accessing the EDL. If empty, no authentication is enforced. 
+- additionalinfo: Uses basic authentication for accessing the EDL. If empty, no authentication
+    is enforced.
+  display: Username
   name: credentials
   required: false
   type: 9
@@ -67,8 +69,8 @@ script:
       secret: false
     - default: false
       description: The maximum number of entries in the EDL. If no value is provided,
-        will use the value specified in the "EDL Size" parameter configured in the instance
-        configuration.
+        will use the value specified in the "EDL Size" parameter configured in the
+        instance configuration.
       isArray: false
       name: edl_size
       required: false
