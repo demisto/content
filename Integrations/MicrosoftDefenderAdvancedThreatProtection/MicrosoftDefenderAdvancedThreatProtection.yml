@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Windows Defender Advanced Threat Protection-test
+  id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
 - defaultvalue: https://api.securitycenter.windows.com
@@ -50,11 +50,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Windows Defender Advanced Threat Protection (ATP) is a unified platform
+description: Microsoft Defender Advanced Threat Protection (ATP) is a unified platform
   for preventative protection, post-breach detection, automated investigation, and
   response.
-display: Windows Defender Advanced Threat Protection-test
-name: Windows Defender Advanced Threat Protection-test
+display: Microsoft Defender Advanced Threat Protection
+name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
   - arguments:
@@ -443,7 +443,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Initiate Windows Defender Antivirus scan on a machine
+    description: Initiate Microsoft Defender Antivirus scan on a machine
     execution: false
     name: microsoft-atp-run-antivirus-scan
     outputs:
@@ -740,7 +740,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Allows you to run programmatic queries like in Windows Defender
+    description: 'Allows you to run programmatic queries like in Microsoft Defender
       ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
       only run a query on data from the last 30 days, The results will include a maximum
       of 10,000 rows, The number of executions is limited (up to 15 calls per minute,
@@ -2147,4 +2147,4 @@ script:
   subtype: python3
   type: python
 tests:
-- Test - Windows Defender Advanced Threat Protection
+  Microsoft Defender Advanced Threat ProtectionV2 - Test
