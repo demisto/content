@@ -138,8 +138,8 @@ def http_request(method, endpoint, params=None, token=False):
         res_json = r.json()
         return res_json
     except json.decoder.JSONDecodeError as err:
-        raise ValueError('Failed to parse response as JSON. Original response:\n{rtext}.\nError: {error}' \
-            .format(rtext=r.text, error=str(err)))
+        raise ValueError('Failed to parse response as JSON. Original response:\n{rtext}.\nError: {error}'
+                         .format(rtext=r.text, error=str(err)))
 
 
 def parse_events(events):
