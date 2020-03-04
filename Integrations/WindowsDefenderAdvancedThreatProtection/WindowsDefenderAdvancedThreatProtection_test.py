@@ -18,7 +18,7 @@ def atp_mocker(mocker):
     import WindowsDefenderAdvancedThreatProtection as atp
     with open('./test_data/alerts.json', 'r') as f:
         alerts = json.loads(f.read())
-    mocker.patch.object(atp, 'list_alerts', return_value=alerts)
+    mocker.patch.object(atp, 'list_alerts_request', return_value=alerts)
 
 
 def test_fetch(mocker):
@@ -78,7 +78,7 @@ def test_get_alert_related_domains_command(mocker):
 def test_get_action_data(mocker):
     import WindowsDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_machine_action_by_id_request', return_value=ACTION_DATA_API_RESPONSE)
-    res = atp.get_action_data("123456")
+    res = atp.get_machine_action_data("123456")
     assert res['ID'] == "123456"
     assert res['Status'] == "Succeeded"
 
@@ -86,7 +86,7 @@ def test_get_action_data(mocker):
 def test_get_machine_investigation_package_command(mocker):
     import WindowsDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'get_investigation_package_request', return_value=INVESTIGATION_PACKAGE_API_RESPONSE)
-    mocker.patch.object(atp, 'get_action_data', return_value=INVESTIGATION_ACTION_DATA)
+    mocker.patch.object(atp, 'get_machine_action_data', return_value=INVESTIGATION_ACTION_DATA)
     _, res, _ = atp.get_machine_investigation_package_command()
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
 
@@ -104,7 +104,7 @@ def test_get_investigation_package_sas_uri_command(mocker):
 def test_restrict_app_execution_command(mocker):
     import WindowsDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'restrict_app_execution_request', return_value=MACHINE_ACTION_API_RESPONSE)
-    mocker.patch.object(atp, 'get_action_data', return_value=MACHINE_ACTION_DATA)
+    mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
     _, res, _ = atp.restrict_app_execution_command()
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
 
@@ -112,7 +112,7 @@ def test_restrict_app_execution_command(mocker):
 def test_remove_app_restriction_command(mocker):
     import WindowsDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'remove_app_restriction_request', return_value=MACHINE_ACTION_API_RESPONSE)
-    mocker.patch.object(atp, 'get_action_data', return_value=MACHINE_ACTION_DATA)
+    mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
     _, res, _ = atp.remove_app_restriction_command()
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
 
@@ -120,7 +120,7 @@ def test_remove_app_restriction_command(mocker):
 def test_stop_and_quarantine_file_command(mocker):
     import WindowsDefenderAdvancedThreatProtection as atp
     mocker.patch.object(atp, 'stop_and_quarantine_file_request', return_value=MACHINE_ACTION_API_RESPONSE)
-    mocker.patch.object(atp, 'get_action_data', return_value=MACHINE_ACTION_DATA)
+    mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
     _, res, _ = atp.stop_and_quarantine_file_command()
     assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
 
@@ -200,6 +200,14 @@ def test_get_ip_alerts_command(mocker):
         'IPAddress': '1.1.1.1',
         'Alerts': [ALERT_DATA]
     }
+
+
+def test_run_antivirus_scan_command(mocker):
+    import WindowsDefenderAdvancedThreatProtection as atp
+    mocker.patch.object(atp, 'run_antivirus_scan_request', return_value=MACHINE_ACTION_API_RESPONSE)
+    mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
+    _, res, _ = atp.run_antivirus_scan_command()
+    assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
 
 
 """ API RAW RESULTS """
