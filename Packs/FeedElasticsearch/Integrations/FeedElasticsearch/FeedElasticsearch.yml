@@ -33,9 +33,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Cortex XSOAR Feed are indicators saved by Cortex XSOAR in an Elasticsearch
-    configured environment. Cortex XSOAR MT Shared Feed are indicators shared by a
-    tenant account in a multi-tenant environment. Generic Feed is a feed in a format dictated by the user
+- additionalinfo: The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index. The Cortex XSOAR MT Shared Feed contains indicators shared by a
+    tenant account in a multi-tenant environment. Generic Feed contains a feed in a format specified by the user
   defaultvalue: Cortex XSOAR Feed
   display: Feed Type
   hidden: false

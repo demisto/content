@@ -2,9 +2,9 @@
 ---
 
 Fetch indicators stored in an Elasticsearch database. 
-1. Cortex XSOAR Feed saved by Cortex XSOAR in an Elasticsearch configured enviornment. 
-2. Cortex XSOAR MT Shared Feed shared by a tenant in a multi-tenant enviornment. 
-3. Generic Feed is a feed in a format dictated by the user.
+1. The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index. 
+2. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant account in a multi-tenant environment. 
+3. The Generic Feed contains a feed in a format specified by the user.
 
 ## Configure ElasticsearchFeed on Cortex XSOAR
 ---
