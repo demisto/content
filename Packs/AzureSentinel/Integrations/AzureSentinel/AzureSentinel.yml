@@ -1,4 +1,4 @@
-category: Authentication
+category: Analytics & SIEM
 commonfields:
   id: Azure Sentinel
   version: -1
@@ -12,6 +12,16 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: Informational
+  display: The minimum severity of incidents to fetch.
+  name: min_severity
+  options:
+  - Informational
+  - Low
+  - Medium
+  - High
+  required: false
+  type: 15
 - display: Incident type
   name: incidentType
   required: false
@@ -58,7 +68,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+description: Azure Sentinel is a cloud-native security information and event manager
+  (SIEM) platform that uses built-in AI to help analyze large volumes of data across
+  an enterprise.
 display: Azure Sentinel
 name: Azure Sentinel
 script:
@@ -71,6 +83,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Get a single incident from Azure Sentinel.
     execution: false
     name: azure-sentinel-get-incident-by-id
     outputs:
@@ -163,6 +176,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Get a list of incidents from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-incidents
     outputs:
@@ -280,6 +294,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Update a single incident in Azure Sentinel.
     execution: false
     name: azure-sentinel-update-incident
     outputs:
@@ -357,6 +372,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Delete a single incident in Azure Sentinel.
     execution: false
     name: azure-sentinel-delete-incident
   - arguments:
@@ -368,6 +384,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
+      description: The maximum number of incident comments to return. Maximum value
+        is 50.
       isArray: false
       name: top
       required: false
@@ -380,6 +398,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Get an incident comments from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-incident-comments
     outputs:
@@ -420,6 +439,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Add a comment to an incident in Azure Sentinel.
     execution: false
     name: azure-sentinel-incident-add-comment
     outputs:
@@ -449,9 +469,11 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Get a single entity from Azure Sentinel.
     execution: false
     name: azure-sentinel-get-entity-by-id
   - deprecated: false
+    description: Get a list of entities from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-entities
   - arguments:
@@ -493,6 +515,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Get a list of an incident's related entities from Azure Sentinel.
     execution: false
     name: azure-sentinel-list-incident-relations
     outputs:

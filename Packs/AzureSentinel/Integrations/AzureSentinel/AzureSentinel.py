@@ -495,7 +495,7 @@ def list_incident_relations_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_time):
+def fetch_incidents(client, last_run, first_fetch_time, min_severity):
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
@@ -503,9 +503,9 @@ def fetch_incidents(client, last_run, first_fetch_time):
     # Handle first time fetch
     if last_fetch_time is None:
         last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
-        last_fetch_time = datetime.strptime(last_fetch_time_str, DATE_FORMAT)
+        last_fetch_time = dateparser.parse(last_fetch_time_str)
     else:
-        last_fetch_time = datetime.strptime(last_fetch_time, DATE_FORMAT)
+        last_fetch_time = dateparser.parse(last_fetch_time)
 
     latest_created_time = last_fetch_time
     latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
@@ -515,13 +515,15 @@ def fetch_incidents(client, last_run, first_fetch_time):
     current_fetch_ids = []
 
     for incident in items:
-        # fetch only incidents that weren't fetched in the last run
-        if incident.get('ID') not in last_fetch_ids:
-            incident_created_time = datetime.strptime(incident.get('CreatedTimeUTC'), DATE_FORMAT)
+        incident_severity = severity_to_level(incident.get('Severity'))
+
+        # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
+        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
+            incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
             incident = {
                 'name': '[Azure Sentinel] ' + incident.get('Title'),
                 'occurred': incident.get('CreatedTimeUTC'),
-                'severity': severity_to_level(incident.get('Severity')),
+                'severity': incident_severity,
                 'rawJSON': json.dumps(incident)
             }
 
@@ -544,9 +546,6 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
 
     LOG(f'Command being called is {demisto.command()}')
     try:
@@ -581,11 +580,18 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
+            # How much time before the first fetch to retrieve incidents
+            first_fetch_time = params.get('fetch_time', '3 days').strip()
+
+            min_severity = severity_to_level(params.get('min_severity', 'Informational'))
+
             # Set and define the fetch incidents command to run after activated via integration settings.
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
+                first_fetch_time=first_fetch_time,
+                min_severity=min_severity
+            )
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
