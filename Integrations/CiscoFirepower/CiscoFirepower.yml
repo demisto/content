@@ -250,7 +250,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean indicating whether object values can be overridden.
+      description: Boolean indicating whether object can be overridden.
       isArray: false
       name: overridable
       predefined:
@@ -273,7 +273,7 @@ script:
       description: CIDR
       type: String
     - contextPath: CiscoFP.Network.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Boolean indicating whether object can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
       description: Description of network object
@@ -320,7 +320,7 @@ script:
       description: Description of the group
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address value
+      description: IP address / CIDR range
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
       description: Address type
@@ -382,13 +382,13 @@ script:
       description: Name of the group
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Boolean indicating whether object can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
       description: Description of the group
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address or cidr value
+      description: IP address / CIDR range
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
       description: Address type
@@ -457,13 +457,13 @@ script:
       description: Name of the group
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Boolean indicating whether object can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
       description: Description of the group
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address value
+      description: IP address / CIDR range
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
       description: Address type
@@ -502,7 +502,7 @@ script:
       description: Description of the group
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address value
+      description: IP address CIDR range
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
       description: Address type
@@ -552,10 +552,10 @@ script:
       description: Name of host object
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: Host IP address value for this object.
+      description: IP address
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: Itz ‘true’ if the object can be overridden, ‘false’ otherwise.
+      description: Boolean indicating whether object can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
       description: Description of host object
@@ -582,7 +582,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden.
+      description: Boolean indicating whether object can be overridden.
       isArray: false
       name: overridable
       predefined:
@@ -602,10 +602,10 @@ script:
       description: Name of host object
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: Host IP address
+      description: IP address
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: ‘true’ if the object can be overridden, ‘false’ otherwise.
+      description: Boolean indicating whether object can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
       description: Description of host object
@@ -624,7 +624,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Value of the object.
+      description: ip address.
       isArray: false
       name: value
       required: true
@@ -637,7 +637,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean indicating whether object values can be overridden.
+      description: Boolean indicating whether object can be overridden.
       isArray: false
       name: overridable
       predefined:
@@ -657,10 +657,10 @@ script:
       description: Name of host object
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: Host IP address or cidr value for this object.
+      description: IP address
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: ‘true’ if the object can be overridden, ‘false’ otherwise.
+      description: Boolean indicating whether object can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
       description: Description of host object
@@ -684,7 +684,7 @@ script:
       description: Name of network object
       type: String
     - contextPath: CiscoFP.Network.Value
-      description: IP cidr
+      description: CISR range
       type: String
     - contextPath: CiscoFP.Network.Overridable
       description: Boolean indicating whether object values can be overridden.
@@ -711,7 +711,7 @@ script:
       description: Name of host object
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: Host IP address or cidr value for this object.
+      description: cidr range
       type: String
     - contextPath: CiscoFP.Host.Overridable
       description: ‘true’ if the object can be overridden, ‘false’ otherwise.
@@ -1092,7 +1092,7 @@ script:
       description: Address type
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Value
-      description: Address value
+      description: ip Address / CIDR range
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.ID
       description: Object id
@@ -1152,7 +1152,7 @@ script:
       description: address type
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Value
-      description: address ip
+      description: address ip / CIDR range
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.ID
       description: object id
@@ -1200,7 +1200,7 @@ script:
       description: object type
       type: String
     - contextPath: CiscoFP.Rule.Uels.Addresses.URL
-      description: url
+      description: url address
       type: String
     - contextPath: CiscoFP.Rule.Uels.Objects.ID
       description: url object id
@@ -1226,7 +1226,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Action—A rule's action determines how the system handles matching
+      description: rule's
         traffic
       isArray: false
       name: action
@@ -1257,7 +1257,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: list of source Zones object id - use cisco-fp-list-source-zones
+      description: list of source Zones object id - use ciscofp-list-zones
         command
       isArray: true
       name: source_zone_object_ids
@@ -1270,31 +1270,31 @@ script:
       required: true
       secret: false
     - default: false
-      description: list of destination Zones object id
+      description: list of destination Zones object id - use ciscofp-list-zones
       isArray: true
       name: destination_zone_object_ids
       required: false
       secret: false
     - default: false
-      description: list of vlan Tags object id
+      description: list of vlan Tags object id - use ciscofp-list-vlan-tags
       isArray: true
       name: vlan_tag_object_ids
       required: false
       secret: false
     - default: false
-      description: list of network object id
+      description: list of network object id  - use ciscofp-get-network-groups-object
       isArray: true
       name: source_network_object_ids
       required: false
       secret: false
     - default: false
-      description: list of IP addresses / CIDR ranges
+      description: list of IP addresses / CIDR ranges - use ciscofp-get-network-object / ciscofp-get-host-object
       isArray: true
       name: source_network_addresses
       required: false
       secret: false
     - default: false
-      description: source_network_object_ids
+      description: source_network_object_ids  - use ciscofp-get-network-object / ciscofp-get-host-object
       isArray: true
       name: destination_network_object_ids
       required: false
@@ -1306,31 +1306,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: list of port object id
+      description: list of port object id - use ciscofp-get-network-object / ciscofp-get-host-object
       isArray: false
       name: source_port_object_ids
       required: false
       secret: false
     - default: false
-      description: list of port object id
+      description: list of port object id - use ciscofp-list-ports
       isArray: false
       name: destination_port_object_ids
       required: false
       secret: false
     - default: false
-      description: list of security group tag object id
+      description: list of security group tag object id - use ciscofp-list-security-group-tags
       isArray: false
       name: source_security_group_tag_object_ids
       required: false
       secret: false
     - default: false
-      description: list of application object id
+      description: list of application object id - use ciscofp-list-applications
       isArray: true
       name: application_object_ids
       required: false
       secret: false
     - default: false
-      description: list of url object id
+      description: list of url object id - use ciscofp-list-url-categories
       isArray: true
       name: url_object_ids
       required: false
@@ -1392,13 +1392,13 @@ script:
       description: port object type
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.ID
-      description: zones id
+      description: zone id
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Name
-      description: zones name
+      description: zone name
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Type
-      description: zones type
+      description: zone type
       type: String
     - contextPath: CiscoFP.Rule.Enabled
       description: Boolean indicating to enable or not
@@ -2154,7 +2154,7 @@ script:
       description: device group id
       type: String
     - contextPath: CiscoFP.DeviceRecords.HostName
-      description: 'device host '
+      description: device host
       type: String
     - contextPath: CiscoFP.DeviceRecords.ID
       description: device id
@@ -2193,7 +2193,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: the version of Policy Assignments to deploy
+      description: the version to deploy - use ciscofp-get-deployable-devices
       isArray: false
       name: version
       required: true
