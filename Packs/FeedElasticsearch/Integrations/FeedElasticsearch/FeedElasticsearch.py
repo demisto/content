@@ -80,7 +80,7 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
     elif api_key and not api_id:
         return_error('Please provide an API ID when using API ID + API Key authentication')
 
-        err_msg = ''
+    err_msg = ''
     if feed_type == FEED_TYPE_GENERIC:
         if not src_val:
             err_msg += 'Please provide a "Indicator Value Field"\n'
@@ -319,8 +319,8 @@ def main():
         fetch_index = params.get('fetch_index')
         fetch_time = params.get('fetch_time', '3 days')
         query = params.get('es_query')
-        api_key = params.get('api_key')
-        api_id = params.get('api_id')
+        api_creds = params.get('api_key')
+        api_key, api_id = (api_creds.get('identifier'), api_creds.get('password')) if api_creds else (None, None)
         client = ElasticsearchClient(insecure, server, username, password, api_key, api_id, time_field, time_method,
                                      fetch_index, fetch_time, query)
         src_val = params.get('src_val')

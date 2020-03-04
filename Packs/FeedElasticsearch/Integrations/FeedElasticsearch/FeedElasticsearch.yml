@@ -7,23 +7,17 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
-  additionalinfo: Provide Username + Passoword instead of API key + API ID
+- additionalinfo: Provide Username + Passoword instead of API key + API ID
+  display: Username
   name: credentials
   required: false
   type: 9
-- display: API Key
-  additionalinfo: Provide API key + API ID instead of Username + Password
+- additionalinfo: Provide API key + API ID instead of Username + Password
+  display: API Key (Password is API ID)
   hidden: false
   name: api_key
   required: false
-  type: 4
-- display: API ID
-  additionalinfo: Provide API key + API ID instead of Username + Password
-  hidden: false
-  name: api_id
-  required: false
-  type: 4
+  type: 9
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -33,8 +27,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch index. The Cortex XSOAR MT Shared Feed contains indicators shared by a
-    tenant account in a multi-tenant environment. Generic Feed contains a feed in a format specified by the user
+- additionalinfo: The Cortex XSOAR Feed contains system indicators saved in an Elasticsearch
+    index. The Cortex XSOAR MT Shared Feed contains indicators shared by a tenant
+    account in a multi-tenant environment. Generic Feed contains a feed in a format
+    specified by the user
   defaultvalue: Cortex XSOAR Feed
   display: Feed Type
   hidden: false
@@ -130,8 +126,7 @@ configuration:
   name: default_type
   required: false
   type: 0
-- additionalinfo: A comma-separated list of indexes. If
-    empty, searches all indexes.
+- additionalinfo: A comma-separated list of indexes. If empty, searches all indexes.
   display: Index from Which To Fetch Indicators
   name: fetch_index
   required: false
@@ -150,8 +145,7 @@ configuration:
   name: time_field
   required: false
   type: 0
-- additionalinfo: Elasticsearch query to execute when fetching indicators from
-    Elasticsearch
+- additionalinfo: Elasticsearch query to execute when fetching indicators from Elasticsearch
   defaultvalue: '*'
   display: Query
   hidden: false
