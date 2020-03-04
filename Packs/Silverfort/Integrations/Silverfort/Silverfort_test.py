@@ -57,7 +57,7 @@ def valid_get_risk_response():
 
 @pytest.fixture(autouse=True)
 def valid_get_upn_response(upn):
-    return {"upn": upn}
+    return {"user_principal_name": upn}
 
 
 @pytest.fixture(autouse=True)
@@ -90,7 +90,7 @@ class TestSiverfort(object):
         requests_mock.get(f'{base_url}/getUPN?apikey={api_key}&email={email}&domain={domain}', json=valid_get_upn_response)
 
         output = client.get_upn_by_email_or_sam_account_http_request(domain, email=email)
-        assert output["upn"] == upn
+        assert output == upn
 
     @patch('Silverfort.API_KEY', API_KEY)
     def test_get_upn_by_sam_account(self, requests_mock, upn, base_url, valid_get_upn_response, api_key, client, sam_account,
@@ -99,7 +99,7 @@ class TestSiverfort(object):
                           json=valid_get_upn_response)
 
         output = client.get_upn_by_email_or_sam_account_http_request(domain, sam_account=sam_account)
-        assert output["upn"] == upn
+        assert output == upn
 
     @patch('Silverfort.API_KEY', API_KEY)
     def test_get_user_entity_risk(self, requests_mock, upn, base_url, api_key, client, valid_get_risk_response):
