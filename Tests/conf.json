@@ -2332,6 +2332,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Code42",
+            "playbookID": "Code42-Test",
+            "timeout": 600
+        },
+        {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
         }
