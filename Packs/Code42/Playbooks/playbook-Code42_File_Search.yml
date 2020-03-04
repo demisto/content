@@ -250,4 +250,6 @@ view: |-
 inputs: []
 outputs: []
 description: ''
+tests:
+  - Code42 File Search Test
 fromversion: 5.0.0
