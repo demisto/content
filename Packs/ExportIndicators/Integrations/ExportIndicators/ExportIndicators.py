@@ -274,6 +274,13 @@ def get_request_args(params):
     out_format = request.args.get('v', params.get('format', 'text'))
     query = request.args.get('q', params.get('indicators_query'))
 
+    # prevent given empty params
+    if len(query) == 0:
+        query = params.get('indicators_query')
+
+    if len(out_format) == 0:
+        out_format = params.get('format', 'text')
+
     if out_format not in ['text', 'json', 'json-seq', 'csv']:
         raise DemistoException(CTX_FORMAT_ERR_MSG)
 
