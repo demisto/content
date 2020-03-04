@@ -86,6 +86,7 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     out_dict = create_values_out_dict(iocs, out_format, mwg_type=mwg_type,
                                       strip_port=strip_port, drop_invalids=drop_invalids,
                                       category_default=category_default, category_attribute=category_attribute)
+
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     save_context(now, out_dict)
     return out_dict[CTX_VALUES_KEY]
@@ -135,7 +136,6 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
             indicator_with_port = indicator
             # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
             indicator = _PORT_REMOVAL.sub(r'\g<1>', indicator)
-
             # check if removing the port changed something about the indicator
             if indicator != indicator_with_port and not strip_port:
                 # if port was in the indicator and strip_port param not set - ignore the indicator
@@ -184,6 +184,10 @@ def create_proxysg_out_format(iocs: list, category_default='bc_category', catego
     if not category_attribute:
         category_attribute = ''
     category_attribute = category_attribute.split(',')
+
+    if len(category_attribute) == 1 and '' in category_attribute:
+        category_attribute = []
+
     for indicator in iocs:
         if indicator.get('indicator_type') in ['URL', 'Domain', 'GlobDomain']:
             indicator_proxysg_category = indicator.get('proxysgcategory')
