@@ -17,7 +17,7 @@ def base_url():
 
 @pytest.fixture(autouse=True)
 def email():
-    return 'jhon@silverfort.com'
+    return 'john@silverfort.com'
 
 
 @pytest.fixture(autouse=True)
