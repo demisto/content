@@ -4,6 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import json
 import requests
+import re
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -135,18 +136,24 @@ def login():
     Logins to EclecticIQ API with given credentials and sets the returned token in the headers
 
     """
-
-    cmd_url = '/api/auth'
-    cmd_json = {
-        'password': PASSWORD,
-        'username': USERNAME
-    }
-    response = http_request('POST', cmd_url, cmd_json=cmd_json)
-    if 'token' in response:
-        token = response['token']
+    if (re.match('^[\dabcdef]{64}$', PASSWORD)) == None:
+        cmd_url = '/api/auth'
+        cmd_json = {
+            'password': PASSWORD,
+            'username': USERNAME
+        }
+        response = http_request('POST', cmd_url, cmd_json=cmd_json)
+        if 'token' in response:
+            token = response['token']
+            HEADERS['Authorization'] = 'Bearer {}'.format(token)
+        else:
+            return_error('Failed to retrieve token')
     else:
-        return_error('Failed to retrieve token')
-    HEADERS['Authorization'] = 'Bearer {}'.format(token)
+        HEADERS['Authorization'] = 'Bearer {}'.format(PASSWORD)
+        cmd_url = '/api'
+        response = http_request('GET', cmd_url)
+        if not response:
+            return_error('Failed to retrieve an answer from EclecticIQ')
 
 
 def ip_command():
