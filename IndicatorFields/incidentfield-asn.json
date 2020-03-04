@@ -26,7 +26,10 @@
   "shouldPublish": false,
   "associatedTypes": [
     "IP",
-    "IP_tmp"
+    "IP_tmp",
+    "CIDR",
+    "IPv6",
+    "IPv6CIDR"
   ],
   "caseInsensitive": true,
   "columns": null,
