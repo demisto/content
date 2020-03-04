@@ -274,3 +274,59 @@ class TestHelperFunctions:
         assert not validate_basic_authentication(data.get('wrong_length_auth'), username, password)
         assert not validate_basic_authentication(data.get('wrong_credentials_auth'), username, password)
         assert validate_basic_authentication(data.get('right_credentials_auth'), username, password)
+
+    @pytest.mark.validate_basic_authentication
+    def test_panos_url_formatting(self):
+        from ExportIndicators import panos_url_formatting, CTX_VALUES_KEY
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+
+            # strips port numbers
+            returned_dict = panos_url_formatting(iocs=iocs_json, drop_invalids=True, strip_port=True)
+            returned_output = returned_dict.get(CTX_VALUES_KEY)
+            assert returned_output == "1.2.3.4/wget\nwww.demisto.com/cool"
+
+            # should ignore indicators with port numbers
+            returned_dict = panos_url_formatting(iocs=iocs_json, drop_invalids=True, strip_port=False)
+            returned_output = returned_dict.get(CTX_VALUES_KEY)
+            assert returned_output == 'www.demisto.com/cool'
+
+    @pytest.mark.validate_basic_authentication
+    def test_create_proxysg_out_format(self):
+        from ExportIndicators import create_proxysg_out_format, CTX_VALUES_KEY
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+
+            # classify all categories
+            returned_dict = create_proxysg_out_format(iocs=iocs_json, category_default="default", category_attribute='')
+            returned_output = returned_dict.get(CTX_VALUES_KEY)
+            assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
+                                      "define category category1\nhttps://www.demisto.com/cool\nend\n"
+
+            # listed category does not exist - all results should be in default category
+            returned_dict = create_proxysg_out_format(iocs=iocs_json, category_default="default",
+                                                      category_attribute="category3")
+            returned_output = returned_dict.get(CTX_VALUES_KEY)
+            assert returned_output == "define category default\n1.2.3.4:89/wget\n" \
+                                      "https://www.demisto.com/cool\nend\n"
+
+            # list category2 only, the rest go to default
+            returned_dict = create_proxysg_out_format(iocs=iocs_json, category_default="default",
+                                                      category_attribute="category2")
+            returned_output = returned_dict.get(CTX_VALUES_KEY)
+            assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
+                                      "define category default\nhttps://www.demisto.com/cool\nend\n"
+
+    @pytest.mark.validate_basic_authentication
+    def test_create_mwg_out_format(self):
+        from ExportIndicators import create_mwg_out_format, CTX_VALUES_KEY
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+
+            # listed category does not exist - all results should be in default category
+            returned_dict = create_mwg_out_format(iocs=iocs_json, mwg_type="ip")
+            returned_output = returned_dict.get(CTX_VALUES_KEY)
+
+            assert returned_output == "type=ip\n\"1.2.3.4:89/wget\" \"AutoFocus Feed\"\n\"" \
+                                      "https://www.demisto.com/cool\" \"AutoFocus V2,VirusTotal," \
+                                      "Alien Vault OTX TAXII Feed\""
