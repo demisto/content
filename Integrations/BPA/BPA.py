@@ -204,7 +204,7 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     panorama_server = demisto.params().get('server')
-    panorama_port = demisto.params().get('port')
+    panorama_port = demisto.params().get('port', None)
     panorama_api_key = demisto.params().get('key')
     bpa_token = demisto.params().get('token')
     verify = not demisto.params().get('insecure', False)
