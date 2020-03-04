@@ -26,7 +26,6 @@
   "shouldPublish": false,
   "associatedTypes": [
     "IP",
-    "IP_tmp",
     "CIDR",
     "IPv6",
     "IPv6CIDR"
