@@ -26,6 +26,43 @@ Ingests indicator feeds from TAXII 1.x servers.
     * __First Fetch Time__: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12 hours, 7 days.
 4. Click __Test__ to validate the URLs, token, and connection.
 
+## Step by step configuration
+---
+As an example, we'll be looking at the public TAXII threat intelligence feed by Abuse_ch accessible via _Hail a TAXII_. These are the feed instance configuration parameters for our example.
+
+**Indicator Reputation** - Because this is just an example, we can leave the default value. Ordinarily you would set the reputation based off the specific feed's information about what type of indicators they are returning, e.g., whether they are good or bad.
+
+**Source Reliability** - Because this is just an example, we can leave the default value. Ordinarily you would set the reliability equal to how much you trusted the feed's source.
+
+**Indicator Expiration Method** - For this example, we can leave the default value here.
+
+**Feed Fetch Interval** - For this example, we can leave the default value here.
+
+**Discovery Service** - Enter `http://hailataxii.com/taxii-discovery-service`.
+
+**Collection** - Enter `guest.Abuse_ch`
+
+**Subscription ID** - No need to enter a value here for this example so we'll leave it blank.
+
+**Username** - Enter `guest`.
+
+**Password** - Enter `guest`.
+
+**Request Timeout** - Let's increase the number to `80`.
+
+**Poll Service** - No need to enter a value here for this example so we'll leave it blank.
+
+**API Key** - No need to enter a value here for this example so we'll leave it blank.
+
+**API Header Name** - No need to enter a value here for this example so we'll leave it blank.
+
+**First Fetch Time** - Since this example feed isn't very high volume let's enter `500 days`  to make sure we fetch a good number of indicators.
+
+Now we have successfully configured an instance for the TAXII threat intelligence feed by Abuse_ch accessible via _Hail a TAXII_, once we enable `Fetches indicators` the instance will start pulling indicators.
+
+By clicking `Mapping` in the integration instance, we can map indicator data returned by the feed to actual indicator fields in Cortex XSOAR.
+We can use `Set up a new classification rule` using actual data from the feed.
+
 ## Commands
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
