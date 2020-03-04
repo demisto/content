@@ -2337,6 +2337,9 @@
             "timeout": 600
         },
         {
+            "playbookID": Code42 File Search Test"
+        },
+        {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
         }
