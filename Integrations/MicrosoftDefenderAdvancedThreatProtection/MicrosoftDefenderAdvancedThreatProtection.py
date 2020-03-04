@@ -43,7 +43,6 @@ def epoch_seconds(d=None):
 
 def get_encrypted(content: str, key: str) -> str:
     """
-
     Args:
         content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
             the tenant id
@@ -57,7 +56,6 @@ def get_encrypted(content: str, key: str) -> str:
 
     def encrypt(string: str, enc_key: str) -> bytes:
         """
-
         Args:
             enc_key (str):
             string (str):
@@ -188,261 +186,15 @@ def capitalize_first_letter(string):
     return string[:1].upper() + string[1:]
 
 
-''' FUNCTIONS '''
-
-
-
-def get_file_related_machines_command():
-    file = demisto.args()['file']
-    machines = get_file_related_machines(file).get('value', [])
-    if machines:
-        output = []
-        endpoint_context = []
-        for machine in machines:
-            current_machine_output = get_machine_data(machine.get('id'))
-            current_machine_output['RelatedFile'] = file
-            current_endpoint_output = {
-                'Hostname': machine.get('computerDnsName'),
-                'IPAddress': machine.get('lastExternalIpAddress'),
-                'OS': machine.get('osPlatform')
-            }
-            os_version = machine.get('osVersion')
-            if os_version:
-                current_endpoint_output['OSVersion'] = os_version
-            output.append(current_machine_output)
-            endpoint_context.append(current_endpoint_output)
-
-        ec = {
-            'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': output,
-            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
-        }
-
-        title = 'Windows Defender ATP machines related to file {}'.format(file)
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': machines,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, output, removeNull=True),
-            'EntryContext': ec
-        }
-    else:
-        entry = 'No results found'  # type: ignore
-    demisto.results(entry)
-
-
-def get_file_related_machines(file):
-
-    cmd_url = '/files/{}/machines'.format(file)
-    response = http_request('GET', cmd_url)
-    return response
-
-
-def get_machine_details_command():
-
-    machine_id = demisto.args()['machine_id']
-    machine = get_machine_details_request(machine_id)
-    if machine:
-        output = []
-        endpoint_context = []
-        current_machine_output = get_machine_data(machine_id)
-        current_endpoint_output = {
-            'Hostname': machine.get('computerDnsName'),
-            'IPAddress': machine.get('lastExternalIpAddress'),
-            'OS': machine.get('osPlatform')
-        }
-        os_version = machine.get('osVersion')
-        if os_version:
-            current_endpoint_output['OSVersion'] = os_version
-        output.append(current_machine_output)
-        endpoint_context.append(current_endpoint_output)
-        ec = {
-            'MicrosoftATP.Machine(val.ID && val.ID === obj.ID)': output,
-            'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': endpoint_context
-        }
-
-        title = 'Windows Defender ATP machine {} details'.format(machine_id)
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': machine,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, output, removeNull=True),
-            'EntryContext': ec
-        }
-    else:
-        entry = 'No results found'  # type: ignore
-    demisto.results(entry)
-
-
-def get_machine_details_request(machine_id):
-
-    cmd_url = '/machines/{}'.format(machine_id)
-    response = http_request('GET', cmd_url)
-    return response
-
-
-def block_file_command():
-
-    file_sha1 = demisto.args().get('sha1')
-    comment = demisto.args().get('comment')
-    title = demisto.args().get('title')
-    expiration_time = demisto.args().get('expiration_time')
-    severity = demisto.args().get('severity')
-    recommended_actions = demisto.args().get('recommended_actions')
-
-    block_file(file_sha1, comment, title, expiration_time, severity, recommended_actions)
-
-
-def block_file(file_sha1, comment, title, expiration_time, severity, recommended_actions):
-
-    cmd_url = '/tiindicators'
-    json = {
-        'indicator': file_sha1,
-        'indicatorType': 'FileSha1',
-        'action': 'AlertAndBlock',
-        'title': title,
-        'expirationTime': expiration_time,
-        'severity': severity,
-        'description': comment,
-        'recommendedActions': recommended_actions
-    }
-    response = http_request('POST', cmd_url, json=json)
-    return response
-
-
-def get_user_related_machines(user_id):
-
-    cmd_url = '/users/{}/machines'.format(user_id)
-    response = http_request('GET', cmd_url)
-    return response
-
-
-def run_antivirus_scan_command():
-
-    machine_id = demisto.args().get('machine_id')
-    scan_type = demisto.args().get('scan_type')
-    comment = demisto.args().get('comment')
-
-    run_antivirus_scan(machine_id, comment, scan_type)
-
-    demisto.results('Antivirus scan successfully triggered')
-
-
-def run_antivirus_scan(machine_id, comment, scan_type):
-
-    cmd_url = '/machines/{}/runAntiVirusScan'.format(machine_id)
-    json = {
-        'Comment': comment,
-        'ScanType': scan_type
-    }
-    response = http_request('POST', cmd_url, json=json)
-    return response
-
-
-def list_alerts_command():
-
-    alerts = list_alerts().get('value', [])
-
-    severity = demisto.args().get('severity')
-    status = demisto.args().get('status')
-
-    output = []
-    for alert in alerts:
-        alert_severity = alert.get('severity')
-        alert_status = alert.get('status')
-        if (severity and severity != alert_severity) or (status and status != alert_status):
-            continue
-        current_alert_output = {}
-        for key, value in alert.items():
-            if value or value is False:
-                current_alert_output[capitalize_first_letter(key).replace('Id', 'ID')] = value
-        output.append(current_alert_output)
-
-    if output:
-        ec = {
-            'MicrosoftATP.Alert(val.ID && val.ID === obj.ID)': output
-        }
-
-        title = 'Windows Defender ATP alerts'
-
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': alerts,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, output, removeNull=True),
-            'EntryContext': ec
-        }
-    else:
-        entry = 'No results found'  # type: ignore
-    demisto.results(entry)
-
-
-def list_alerts():
-    cmd_url = '/alerts'
-    response = http_request('GET', cmd_url)
-    return response
-
-
-def update_alert_command():
-
-    alert_id = demisto.args()['alert_id']
-    assigned_to = demisto.args().get('assigned_to')
-    status = demisto.args().get('status')
-    classification = demisto.args().get('classification')
-    determination = demisto.args().get('determination')
-
-    if all(v is None for v in [assigned_to, status, classification, determination]):
-        return_error('No arguments were given to update the alert')
-
-    json = {}
-    context = {
-        'ID': alert_id
-    }
-    if assigned_to:
-        json['assignedTo'] = assigned_to
-        context['AssignedTo'] = assigned_to
-    if status:
-        json['status'] = status
-        context['Status'] = status
-    if classification:
-        json['classification'] = classification
-        context['Classification'] = classification
-    if determination:
-        json['determination'] = determination
-        context['Determination'] = determination
-
-    update_alert(alert_id, json)
-
-    ec = {
-        'MicrosoftATP.Alert(val.ID && val.ID === obj.ID)': context
-    }
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': '',
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'Alert {0} was updated successfully'.format(alert_id),
-        'EntryContext': ec
-    }
-
-    demisto.results(entry)
-
-
-def update_alert(alert_id, json):
-    cmd_url = '/alerts/' + alert_id
-    response = http_request('PATCH', cmd_url, json=json)
-    return response
+''' REQUESTS '''
 
 
 def isolate_machine_request(machine_id, comment, isolation_type):
     """Isolates a machine from accessing external network..
     Args:
         machine_id (str): Machine ID
-        comment(str): Comment to associate with the action.
-        isolation_type (str): 	Type of the isolation.
+        comment (str): Comment to associate with the action.
+        isolation_type (str): Type of the isolation.
     Returns:
         dict. Machine action
     """
@@ -459,7 +211,7 @@ def unisolate_machine_request(machine_id, comment):
     """Undo isolation of a machine.
     Args:
         machine_id (str): Machine ID
-        comment(str): Comment to associate with the action.
+        comment (str): Comment to associate with the action.
     Returns:
         dict. Machine action
     """
@@ -473,15 +225,121 @@ def unisolate_machine_request(machine_id, comment):
 
 def get_machines_request(filter_req):
     """Retrieves a collection of Machines that have communicated with Microsoft Defender ATP cloud on the last 30 days.
-
     Returns:
         dict. Machine's info
     """
     cmd_url = '/machines'
     if filter_req:
         cmd_url += f'?$filter={filter_req}'
-    demisto.results(cmd_url)
     response = http_request('GET', cmd_url)
+    return response
+
+
+def get_file_related_machines_request(file):
+    """Retrieves a collection of Machines related to a given file hash.
+    Args:
+        file (str): File's hash
+    Returns:
+        dict. Related machines
+    """
+    cmd_url = '/files/{}/machines'.format(file)
+    response = http_request('GET', cmd_url)
+    return response
+
+
+def get_machine_details_request(machine_id):
+    """Retrieves specific Machine by its machine ID.
+    Args:
+        machine_id (str): Machine ID
+    Returns:
+        dict. Machine's info
+    """
+    cmd_url = '/machines/{}'.format(machine_id)
+    response = http_request('GET', cmd_url)
+    return response
+
+
+def run_antivirus_scan_request(machine_id, comment, scan_type):
+    """Initiate Windows Defender Antivirus scan on a machine.
+    Args:
+        machine_id (str): Machine ID
+        comment (str): 	Comment to associate with the action
+        scan_type (str): Defines the type of the Scan (Quick, Full)
+    Returns:
+        dict. Machine action object
+    """
+    cmd_url = '/machines/{}/runAntiVirusScan'.format(machine_id)
+    json = {
+        'Comment': comment,
+        'ScanType': scan_type
+    }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+
+def list_alerts_request(filter_req=None):
+    """Retrieves a collection of Alerts.
+    Returns:
+        dict. Alerts info
+    """
+    cmd_url = '/alerts'
+    if filter_req:
+        cmd_url += f'?$filter={filter_req}'
+    response = http_request('GET', cmd_url)
+    return response
+
+
+def update_alert_request(alert_id, json):
+    """Updates properties of existing Alert.
+    Returns:
+        dict. Alerts info
+    """
+    cmd_url = '/alerts/{}'.format(alert_id)
+    response = http_request('PATCH', cmd_url, json=json)
+    return response
+
+
+def get_advanced_hunting_request(query):
+    """Retrieves results according to query.
+    Args:
+        query (str): Query to do advanced hunting on
+    Returns:
+        dict. Advanced hunting results
+    """
+    cmd_url = '/advancedqueries/run'
+    json = {
+        'Query': query
+    }
+    response = http_request('POST', cmd_url, json=json)
+    return response
+
+
+def create_alert(machine_id, severity, title, description, event_time, report_id, rec_action, category):
+    """Creates new Alert on top of Event.
+    Args:
+        machine_id (str): ID of the machine on which the event was identified
+        severity (str): Severity of the alert
+        title (str): Title for the alert
+        description (str): Description of the alert
+        event_time (str): The precise time of the event as string
+        report_id (str): The reportId of the event
+        rec_action (str): Action that is recommended to be taken by security officer when analyzing the alert
+        category (Str): Category of the alert
+    Returns:
+        dict. Related domains
+    """
+    cmd_url = '/alerts/CreateAlertByReference'
+    json = {
+        'machineId': machine_id,
+        'severity': severity,
+        'title': title,
+        'description': description,
+        'eventTime': event_time,
+        'reportId': report_id,
+        'recommendedAction': rec_action,
+        'category': category
+    }
+    response = http_request('POST', cmd_url, json=json)
     return response
 
 
@@ -670,8 +528,8 @@ def get_investigation_list_request():
 def start_investigation_request(machine_id, comment):
     """Start automated investigation on a machine.
     Args:
-          machine_id (str): The Machine ID
-          comment (str): Comment to associate with the action
+        machine_id (str): The Machine ID
+        comment (str): Comment to associate with the action
     Returns:
         dict. Investigation's entity
     """
@@ -681,6 +539,7 @@ def start_investigation_request(machine_id, comment):
     }
     response = http_request('POST', cmd_url, json=json)
     return response
+
 
 def get_domain_statistics_request(domain):
     """Retrieves the statistics on the given domain.
@@ -781,7 +640,7 @@ def get_domain_machines_request(domain):
 def get_user_machines_request(username):
     """Retrieves a collection of machines related to a given user ID.
     Args:
-        username (str): The user ID
+        username (str): The user name
     Returns:
         dict. Machines entities
     """
@@ -809,9 +668,9 @@ def add_remove_machine_tag_request(machine_id, action, tag):
 
 
 def get_file_data_request(file_hash):
-    """Retrieves a File by identifier Sha1.
+    """Retrieves a File by identifier SHA1.
     Args:
-        file_hash(str): The file sha1 hash
+        file_hash(str): The file SHA1 hash
     Returns:
         dict. File entities
     """
@@ -820,128 +679,40 @@ def get_file_data_request(file_hash):
     return response
 
 
-def get_advanced_hunting_command():
-    query = demisto.args().get('query')
-    response = get_advanced_hunting(query)
-    results = response.get('Results')
-    if isinstance(results, list) and len(results) == 1:
-        report_id = results[0].get('ReportId')
-        if report_id:
-            results[0]['ReportId'] = str(report_id)
-    ec = {
-        'MicrosoftATP.Hunt.Result': results
-    }
-    hr = tableToMarkdown('Hunt results', results, removeNull=True)
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
-    }
-
-    demisto.results(entry)
-
-
-def get_advanced_hunting(query):
-    cmd_url = '/advancedqueries/run'
-    json = {
-        'Query': query
-    }
-    response = http_request('POST', cmd_url, json=json)
-    return response
-
-
-def create_alert_command():
-    args = demisto.args()
-    response = create_alert(
-        args.get('machine_id'),
-        args.get('severity'),
-        args.get('title'),
-        args.get('description'),
-        args.get('event_time'),
-        args.get('report_id'),
-        args.get('recommended_action'),
-        args.get('category')
-    )
-    output = {
-        'MachineID': response.get('machineId'),
-        'RecommendedAction': response.get('recommendedAction'),
-        'Title': response.get('title'),
-        'Description': response.get('description'),
-        'Severity': response.get('severity'),
-        'Category': response.get('Category'),
-        'ReportID': response.get('reportId'),
-        'ID': response.get('id'),
-        'Status': response.get('status')
-    }
-    output = {k: v for k, v in output.items() if v is not None}
-    ec = {
-        'MicrosoftATP.Alert': output
-    }
-    hr = tableToMarkdown('Alert created:', output)
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
-    }
-
-    demisto.results(entry)
-
-
-def create_alert(machine_id, severity, title, description, event_time, report_id, rec_action, category):
-    cmd_url = '/alerts/CreateAlertByReference'
-    json = {
-        'machineId': machine_id,
-        'severity': severity,
-        'title': title,
-        'description': description,
-        'eventTime': event_time,
-        'reportId': report_id
-    }
-    if rec_action:
-        json['recommendedAction'] = rec_action
-    if category:
-        json['category'] = category
-    response = http_request('POST', cmd_url, json=json)
-    return response
+''' Commands '''
 
 
 def get_alert_related_user_command():
+    """Retrieves the User related to a specific alert.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
     alert_id = demisto.args().get('id')
     response = get_alert_related_user_request(alert_id)
-    output = {
+    user_data = {
         'ID': response.get('id'),
-        'AlertID': alert_id,
+        'AccountName': response.get('accountName'),
+        'AccountDomain': response.get('accountDomain'),
+        'AccountSID': response.get('accountSid'),
         'FirstSeen': response.get('firstSeen'),
         'LastSeen': response.get('lastSeen'),
         'MostPrevalentMachineID': response.get('mostPrevalentMachineId'),
+        'LeastPrevalentMachineID': response.get('leastPrevalentMachineId'),
         'LogonTypes': response.get('logonTypes'),
         'LogonCount': response.get('logOnMachinesCount'),
         'DomainAdmin': response.get('isDomainAdmin'),
         'NetworkUser': response.get('isOnlyNetworkUser')
     }
+    context_output = {
+        'AlertID': alert_id,
+        'User': user_data
+    }
     ec = {
-        'MicrosoftATP.User(val.AlertID === obj.AlertID && val.ID === obj.ID)': output
-    }
-    hr = tableToMarkdown('Alert Related User:', output, removeNull=True)
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
+        'MicrosoftATP.AlertUser(val.AlertID === obj.AlertID)': context_output
     }
 
-    demisto.results(entry)
+    hr = tableToMarkdown('Alert Related User:', user_data)
+    return hr, ec, response
 
 
 def isolate_machine_command():
@@ -953,7 +724,7 @@ def isolate_machine_command():
     comment = demisto.args().get('comment')
     isolation_type = demisto.args().get('isolation_type')
     response = isolate_machine_request(machine_id, comment, isolation_type)
-    context_output = get_action_data(response['id'])
+    context_output = get_machine_action_data(response['id'])
     ec = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output
     }
@@ -970,7 +741,7 @@ def unisolate_machine_command():
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
     response = unisolate_machine_request(machine_id, comment)
-    context_output = get_action_data(response['id'])
+    context_output = get_machine_action_data(response['id'])
     ec = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output
     }
@@ -991,19 +762,18 @@ def get_machines_command():
     risk_score = demisto.args().get('risk_score', '')
     health_status = demisto.args().get('health_status', '')
     os_platform = demisto.args().get('os_platform', '')
-    demisto.results(os_platform)
     filter_fields_dict = {'computerDnsName': hostname, 'lastIpAddress': ip, 'riskScore': risk_score,
                           'healthStatus': health_status, 'osPlatform': os_platform}
     filter_req = ''
     for field_key, field_value in filter_fields_dict.items():
         if field_value:
-            filter_req += field_key + '+eq+' + field_value + '&'
+            filter_req += field_key + '+eq+\'' + field_value + '\'&'
+    demisto.results(filter_req)
     machines_response = get_machines_request(filter_req)
-    demisto.results(machines_response)
     machines_list = []
     for machine in machines_response['value']:
         machine_data = get_machine_data(machine['id'])
-        machines_list.append(machine_data['value'])
+        machines_list.append(machine_data)
 
     ec = {
         'MicrosoftATP.Machine(val.ID === obj.ID)': machines_list
@@ -1012,13 +782,187 @@ def get_machines_command():
     return hr, ec, machines_response
 
 
+def get_file_related_machines_command():
+    """Retrieves a collection of Machines related to a given file hash.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
+               'RiskScore', 'ExposureLevel']
+    file = demisto.args()['file']
+    machines_response = get_file_related_machines_request(file)
+    machines_list = []
+    for machine in machines_response['value']:
+        machine_data = get_machine_data(machine['id'])
+        machines_list.append(machine_data)
+    context_output = {
+        'File': file,
+        'Machines': machines_list
+    }
+    ec = {
+        'MicrosoftATP.FileMachine(val.ID === obj.ID)': context_output
+    }
+    hr = tableToMarkdown(f'Windows Defender ATP machines related to file {file}', machines_list, headers=headers)
+    return hr, ec, machines_response
+
+
+def get_machine_details_command():
+    """Retrieves specific Machine by its machine ID or computer name.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
+               'RiskScore', 'ExposureLevel']
+    machine_id = demisto.args()['machine_id']
+    machine_response = get_machine_details_request(machine_id)
+    machine_data = get_machine_data(machine_response['id'])
+    ec = {
+        'MicrosoftATP.Machine(val.ID === obj.ID)': machine_data
+    }
+    hr = tableToMarkdown(f'Windows Defender ATP machine {machine_id} details', machine_data, headers=headers)
+    return hr, ec, machine_response
+
+
+def run_antivirus_scan_command():
+    """Initiate Windows Defender Antivirus scan on a machine.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'Type', 'Scope', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName',
+               'CreationDateTimeUtc', 'LastUpdateTimeUtc', 'RelatedFileInfo', 'FileIdentifier', 'FileIdentifierType']
+    machine_id = demisto.args().get('machine_id')
+    scan_type = demisto.args().get('scan_type')
+    comment = demisto.args().get('comment')
+    response = run_antivirus_scan_request(machine_id, comment, scan_type)
+    machine_action_data = get_machine_action_data(response['id'])
+    ec = {
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machine_action_data
+    }
+    hr = tableToMarkdown('Antivirus scan successfully triggered', machine_action_data, headers=headers)
+    return hr, ec, response
+
+
+def list_alerts_command():
+    """Initiate Windows Defender Antivirus scan on a machine.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'Title', 'Description', 'IncidentID', 'Severity', 'Status', 'Classification', 'Category',
+               'ThreatFamilyName', 'MachineID']
+    severity = demisto.args().get('severity')
+    status = demisto.args().get('status')
+    filter_fields_dict = {'severity': severity, 'status': status}
+    filter_req = ''
+    for field_key, field_value in filter_fields_dict.items():
+        if field_value:
+            filter_req += field_key + '+eq+\'' + field_value + '\'&'
+    alerts_response = list_alerts_request(filter_req)
+    alerts_list = []
+    for alert in alerts_response['value']:
+        alert_data = get_alert_data(alert['id'])
+        alerts_list.append(alert_data)
+
+    ec = {
+        'MicrosoftATP.Alert(val.ID === obj.ID)': alerts_list
+    }
+    hr = tableToMarkdown('Windows Defender ATP alerts:', alerts_list, headers=headers)
+    return hr, ec, alerts_response
+
+
+def update_alert_command():
+    """Updates properties of existing Alert.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    alert_id = demisto.args()['alert_id']
+    assigned_to = demisto.args().get('assigned_to')
+    status = demisto.args().get('status')
+    classification = demisto.args().get('classification')
+    determination = demisto.args().get('determination')
+    comment = demisto.args().get('comment')
+    if all(v is None for v in [assigned_to, status, classification, determination]):
+        return_error('No arguments were given to update the alert')
+    json = {}
+    context = {
+        'ID': alert_id
+    }
+    if assigned_to:
+        json['assignedTo'] = assigned_to
+        context['AssignedTo'] = assigned_to
+    if status:
+        json['status'] = status
+        context['Status'] = status
+    if classification:
+        json['classification'] = classification
+        context['Classification'] = classification
+    if determination:
+        json['determination'] = determination
+        context['Determination'] = determination
+    if comment:
+        json['comment'] = determination
+        context['Comment'] = determination
+    response = update_alert_request(alert_id, json)
+    ec = {
+        'MicrosoftATP.Alert(val.ID === obj.ID)': context
+    }
+    hr = f'The alert {alert_id} has been updated successfully'
+    return hr, ec, response
+
+
+def get_advanced_hunting_command():
+    """Get results of advanced hunting according to user query.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    query = demisto.args().get('query')
+    response = get_advanced_hunting_request(query)
+    results = response.get('Results')
+    if isinstance(results, list) and len(results) == 1:
+        report_id = results[0].get('ReportId')
+        if report_id:
+            results[0]['ReportId'] = str(report_id)
+    ec = {
+        'MicrosoftATP.Hunt.Result': results
+    }
+    hr = tableToMarkdown('Hunt results', results)
+
+    return hr, ec, response
+
+
+def create_alert_command():
+    """Creates new Alert on top of Event.
+    Returns:
+        (str, dict, dict). Human readable, context, raw response
+    """
+    headers = ['ID', 'Title', 'Description', 'IncidentID', 'Severity', 'Status', 'Classification', 'Category',
+               'ThreatFamilyName', 'MachineID']
+    args = demisto.args()
+    response = create_alert(
+        args.get('machine_id'),
+        args.get('severity'),
+        args.get('title'),
+        args.get('description'),
+        args.get('event_time'),
+        args.get('report_id'),
+        args.get('recommended_action'),
+        args.get('category')
+    )
+    alert_data = get_alert_data(response['id'])
+
+    ec = {
+        'MicrosoftATP.Alert(val.ID === obj.ID)': alert_data
+    }
+    hr = tableToMarkdown('Alert created:', alert_data, headers=headers)
+    return hr, ec, response
+
+
 def get_alert_related_files_command():
     """Retrieves all files related to a specific alert.
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
     alert_id = demisto.args().get('id')
-    limit = int(demisto.args().get('limit'))
+    limit = demisto.args().get('limit')
     response_files_list = get_alert_related_files_request(alert_id)
     files_data_list = []
     headers = ['Sha1', 'Sha256', 'Md5', 'GlobalPrevalence', 'GlobalFirstObserved','GlobalLastObserved', 'Size',
@@ -1035,12 +979,12 @@ def get_alert_related_files_command():
     ec = {
         'MicrosoftATP.AlertFile(val.AlertID === obj.AlertID)': context_output
     }
-    hr = tableToMarkdown('Alert {} Related Files:'.format(alert_id), files_data_list, headers=headers)
+    hr = tableToMarkdown(f'Alert {alert_id} Related Files:', files_data_list, headers=headers)
     return hr, ec, response_files_list
 
 
 def get_file_data(file_sha1):
-    """Get file's hash and returns the file's info
+    """Get file's hash and returns the file's info.
     Returns:
         dict. File's info
     """
@@ -1119,14 +1063,14 @@ def get_machine_action_by_id_command():
                'CreationDateTimeUtc', 'LastUpdateTimeUtc', 'RelatedFileInfo', 'FileIdentifier', 'FileIdentifierType']
     if action_id:
         response = get_machine_action_by_id_request(action_id)
-        action_data = get_action_data(action_id)
-        hr = tableToMarkdown('Action {} Info:'.format(action_id), action_data, headers=headers)
+        action_data = get_machine_action_data(action_id)
+        hr = tableToMarkdown(f'Action {action_id} Info:', action_data, headers=headers)
         context_output = action_data
     else:
         response = get_machine_actions_request()
         actions_list = []
         for action in response['value']:
-            actions_list.append(get_action_data(action['id']))
+            actions_list.append(get_machine_action_data(action['id']))
         hr = tableToMarkdown('Machine actions Info:', actions_list, headers=headers)
         context_output = actions_list
     ec = {
@@ -1135,8 +1079,8 @@ def get_machine_action_by_id_command():
     return hr, ec, response
 
 
-def get_action_data(action_id):
-    """Get action ID and returns the action's info
+def get_machine_action_data(action_id):
+    """Get machine action ID and returns the action's info.
     Returns:
         dict. Action's info
     """
@@ -1170,8 +1114,8 @@ def get_machine_investigation_package_command():
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
     response = get_investigation_package_request(machine_id, comment)
-    action_data = get_action_data(response['id'])
-    hr = tableToMarkdown('Initiating collect investigation package from {} machine :'.format(machine_id), action_data,
+    action_data = get_machine_action_data(response['id'])
+    hr = tableToMarkdown(f'Initiating collect investigation package from {machine_id} machine :', action_data,
                          headers=headers)
     ec = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
@@ -1184,7 +1128,6 @@ def get_investigation_package_sas_uri_command():
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
-    headers = ['Link']
     action_id = demisto.args().get('action_id')
     response = get_investigation_package_sas_uri_request(action_id)
     link = {'Link': response['value']}
@@ -1206,9 +1149,9 @@ def restrict_app_execution_command():
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
     response = restrict_app_execution_request(machine_id, comment)
-    action_data = get_action_data(response['id'])
-    hr = tableToMarkdown('Initiating Restrict execution of all applications on the machine {} except a predefined set:'
-                         .format(machine_id), action_data, headers=headers)
+    action_data = get_machine_action_data(response['id'])
+    hr = tableToMarkdown(f'Initiating Restrict execution of all applications on the machine {machine_id}'
+                         f' except a predefined set:', action_data, headers=headers)
     ec = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
@@ -1225,9 +1168,8 @@ def remove_app_restriction_command():
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
     response = remove_app_restriction_request(machine_id, comment)
-    action_data = get_action_data(response['id'])
-    hr = tableToMarkdown(
-        'Removing applications restriction on the machine {}:'.format(machine_id), action_data, headers=headers)
+    action_data = get_machine_action_data(response['id'])
+    hr = tableToMarkdown(f'Removing applications restriction on the machine {machine_id}:', action_data, headers=headers)
     ec = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
@@ -1245,10 +1187,9 @@ def stop_and_quarantine_file_command():
     file_sha1 = demisto.args().get('sha1')
     comment = demisto.args().get('comment')
     response = stop_and_quarantine_file_request(machine_id, file_sha1, comment)
-    action_data = get_action_data(response['id'])
-    hr = tableToMarkdown(
-        'Stopping the execution of a file on {} machine and deleting it:'.format(machine_id), action_data,
-        headers=headers)
+    action_data = get_machine_action_data(response['id'])
+    hr = tableToMarkdown(f'Stopping the execution of a file on {machine_id} machine and deleting it:', action_data,
+                         headers=headers)
     ec = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
@@ -1266,7 +1207,7 @@ def get_investigations_by_id_command():
     if investigation_id:
         response = get_investigation_by_id_request(investigation_id)
         investigation_data = get_investigation_data(investigation_id)
-        hr = tableToMarkdown('Investigation {} Info:'.format(investigation_id), investigation_data, headers=headers)
+        hr = tableToMarkdown(f'Investigation {investigation_id} Info:', investigation_data, headers=headers)
         context_output = investigation_data
     else:
         response = get_investigation_list_request()
@@ -1293,8 +1234,8 @@ def get_investigation_data(investigation_id):
             "ID": response.get('id'),
             "StartTime": response.get('startTime'),
             "EndTime": response.get('endTime'),
-            "CancelledBy": response.get('cancelledBy'),
             "State": response.get('state'),
+            "CancelledBy": response.get('cancelledBy'),
             "StatusDetails": response.get('ststatusDetailsatus'),
             "MachineID": response.get('machineId'),
             "ComputerDNSName": response.get('computerDnsName'),
@@ -1315,9 +1256,8 @@ def start_investigation_command():
     response = start_investigation_request(machine_id, comment)
     investigation_id = response['id']
     investigation_data = get_investigation_data(investigation_id)
-    hr = tableToMarkdown(
-        'Starting investigation {} on {} machine:'.format(investigation_id, machine_id), investigation_data,
-        headers=headers)
+    hr = tableToMarkdown(f'Starting investigation {investigation_id} on {machine_id} machine:', investigation_data,
+                         headers=headers)
     ec = {
         'MicrosoftATP.Investigation(val.ID === obj.ID)': investigation_data
     }
@@ -1337,8 +1277,7 @@ def get_domain_statistics_command():
         "OrgFirstSeen": response.get('orgFirstSeen'),
         "OrgLastSeen": response.get('orgLastSeen')
     }
-    hr = tableToMarkdown(
-        'Statistics on {} domain:'.format(domain), domain_stat)
+    hr = tableToMarkdown(f'Statistics on {domain} domain:', domain_stat)
 
     context_output = {
         'Domain': domain,
@@ -1362,7 +1301,7 @@ def get_domain_alerts_command():
     alerts_list = []
     for alert in response['value']:
         alerts_list.append(get_alert_data(alert['id']))
-    hr = tableToMarkdown('Domain {} related alerts Info:'.format(domain), alerts_list, headers=headers)
+    hr = tableToMarkdown(f'Domain {domain} related alerts Info:', alerts_list, headers=headers)
     context_output = {
         'Domain': domain,
         'Alerts': alerts_list
@@ -1400,6 +1339,8 @@ def get_alert_data(alert_id):
         "LastUpdateTime": response.get('lastUpdateTime'),
         "ResolvedTime": response.get('resolvedTime'),
         "MachineID": response.get('machineId'),
+        "ComputerDNSName": response.get('computerDnsName'),
+        "AADTenantID": response.get('aadTenantId'),
         "Comments": [
             {
                 "Comment": response.get('comment'),
@@ -1407,8 +1348,8 @@ def get_alert_data(alert_id):
                 "CreatedTime": response.get('createdTime')
             }
         ]
-
     }
+
     return alert_data
 
 
@@ -1417,6 +1358,7 @@ def get_domain_machine_command():
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
+
     headers = ['ID', 'ComputerDNSName', 'OSPlatform','LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
     domain = demisto.args().get('domain')
@@ -1424,7 +1366,7 @@ def get_domain_machine_command():
     machines_list = []
     for machine in response['value']:
         machines_list.append(get_machine_data(machine['id']))
-    hr = tableToMarkdown('Machines that have communicated with {} domain:'.format(domain), machines_list,
+    hr = tableToMarkdown(f'Machines that have communicated with {domain} domain:', machines_list,
                          headers=headers)
     context_output = {
         'Domain': domain,
@@ -1443,24 +1385,25 @@ def get_machine_data(machine_id):
     """
     machine = get_machine_details_request(machine_id)
     machine_data = assign_params(**{
-        'ComputerDNSName': machine.get('computerDnsName'),
         'ID': machine_id,
-        'AgentVersion': machine.get('agentVersion'),
+        'ComputerDNSName': machine.get('computerDnsName'),
         'FirstSeen': machine.get('firstSeen'),
         'LastSeen': machine.get('lastSeen'),
-        'HealthStatus': machine.get('healthStatus'),
-        'IsAADJoined': machine.get('isAadJoined'),
-        'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
-        'LastIPAddress': machine.get('lastIpAddress'),
-        'Tags': machine.get('machineTags'),
-        'OSBuild': machine.get('osBuild'),
         'OSPlatform': machine.get('osPlatform'),
+        'OSVersion': machine.get('version'),
+        'OSProcessor': machine.get('osProcessor'),
+        'LastIPAddress': machine.get('lastIpAddress'),
+        'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
+        'AgentVersion': machine.get('agentVersion'),
+        'OSBuild': machine.get('osBuild'),
+        'HealthStatus': machine.get('healthStatus'),
         'RBACGroupID': machine.get('rbacGroupId'),
-        'RiskScore': machine.get('riskScore'),
         'RBACGroupName': machine.get('rbacGroupName'),
+        'RiskScore': machine.get('riskScore'),
+        'ExposureLevel': machine.get('exposureLevel'),
         'AADDeviceID': machine.get('aadDeviceId'),
-        'OSVersion': machine.get('osVersion'),
-        'ExposureLevel': machine.get('exposureLevel')
+        'IsAADJoined': machine.get('isAadJoined'),
+        'MachineTags': machine.get('machineTags'),
     })
     return machine_data
 
@@ -1474,7 +1417,6 @@ def get_file_statistics_command():
     response = get_file_statistics_request(file_sha1)
     file_name = response.get('topFileNames')
     file_stat = assign_params(**{
-        "Sha1": response.get('sha1'),
         "OrgPrevalence": response.get('orgPrevalence'),
         "OrgFirstSeen": response.get('orgFirstSeen'),
         "OrgLastSeen": response.get('orgLastSeen'),
@@ -1483,8 +1425,7 @@ def get_file_statistics_command():
         "GlobalLastObserved": response.get('globalLastObserved'),
         "TopFileNames": [file_name],
     })
-    hr = tableToMarkdown(
-        'Statistics on {} file:'.format(file_name), file_stat)
+    hr = tableToMarkdown(f'Statistics on {file_name} file:', file_stat)
     context_output = {
         'Sha1': file_sha1,
         'Statistics': file_stat
@@ -1507,7 +1448,7 @@ def get_file_alerts_command():
     alerts_list = []
     for alert in response['value']:
         alerts_list.append(get_alert_data(alert['id']))
-    hr = tableToMarkdown('File {} related alerts Info:'.format(file_sha1), alerts_list, headers=headers)
+    hr = tableToMarkdown(f'File {file_sha1} related alerts Info:', alerts_list, headers=headers)
     context_output = {
         'Sha1': file_sha1,
         'Alerts': alerts_list
@@ -1526,13 +1467,11 @@ def get_ip_statistics_command():
     ip = demisto.args().get('ip')
     response = get_ip_statistics_request(ip)
     ip_stat = assign_params(**{
-        "IPAddress": response.get('ipAddress'),
         "OrgPrevalence": response.get('orgPrevalence'),
         "OrgFirstSeen": response.get('orgFirstSeen'),
         "OrgLastSeen": response.get('orgLastSeen')
     })
-    hr = tableToMarkdown(
-        'Statistics on {} IP:'.format(ip), ip_stat)
+    hr = tableToMarkdown(f'Statistics on {ip} IP:', ip_stat)
     context_output = {
         'IPAddress': ip,
         'Statistics': ip_stat
@@ -1555,7 +1494,7 @@ def get_ip_alerts_command():
     alerts_list = []
     for alert in response['value']:
         alerts_list.append(get_alert_data(alert['id']))
-    hr = tableToMarkdown('IP {} related alerts Info:'.format(ip), alerts_list, headers=headers)
+    hr = tableToMarkdown(f'IP {ip} related alerts Info:', alerts_list, headers=headers)
     context_output = {
         'IPAddress': ip,
         'Alerts': alerts_list
@@ -1578,7 +1517,7 @@ def get_user_alerts_command():
     alerts_list = []
     for alert in response['value']:
         alerts_list.append(get_alert_data(alert['id']))
-    hr = tableToMarkdown('User {} related alerts Info:'.format(username), alerts_list, headers=headers)
+    hr = tableToMarkdown(f'User {username} related alerts Info:', alerts_list, headers=headers)
     context_output = {
         'Username': username,
         'Alerts': alerts_list
@@ -1601,7 +1540,7 @@ def get_user_machine_command():
     machines_list = []
     for machine in response['value']:
         machines_list.append(get_machine_data(machine['id']))
-    hr = tableToMarkdown('Machines that are related to user {}:'.format(username), machines_list, headers=headers)
+    hr = tableToMarkdown(f'Machines that are related to user {username}:', machines_list, headers=headers)
     context_output = {
         'Username': username,
         'Machines': machines_list
@@ -1624,7 +1563,7 @@ def add_remove_machine_tag_command():
     tag = demisto.args().get('tag')
     response = add_remove_machine_tag_request(machine_id, action, tag)
     machine_data = get_machine_data(machine_id)
-    hr = tableToMarkdown('Succeed to {} tag to {}:'.format(action, machine_id), machine_data, headers=headers)
+    hr = tableToMarkdown(f'Succeed to {action} tag to {machine_id}:', machine_data, headers=headers)
     ec = {
         'MicrosoftATP.Machine(val.ID === obj.ID)': machine_data
     }
@@ -1642,7 +1581,7 @@ def fetch_incidents():
     previous_ids = last_run.get('last_ids', [])
     latest_creation_time = last_alert_fetched_time
 
-    alerts = list_alerts()['value']
+    alerts = list_alerts_request()['value']
     incidents = []
     last_ids = []
 
@@ -1711,37 +1650,37 @@ try:
         fetch_incidents()
 
     elif demisto.command() == 'microsoft-atp-isolate-machine':
-        isolate_machine_command()
+        return_outputs(*isolate_machine_command())
 
     elif demisto.command() == 'microsoft-atp-unisolate-machine':
-        unisolate_machine_command()
+        return_outputs(*unisolate_machine_command())
 
     elif demisto.command() == 'microsoft-atp-get-machines':
-        get_machines_command()
+        return_outputs(*get_machines_command())
 
     elif demisto.command() == 'microsoft-atp-get-file-related-machines':
-        get_file_related_machines_command()
+        return_outputs(*get_file_related_machines_command())
 
     elif demisto.command() == 'microsoft-atp-get-machine-details':
-        get_machine_details_command()
-
-    elif demisto.command() == 'microsoft-atp-block-file':
-        block_file_command()
+        return_outputs(*get_machine_details_command())
 
     elif demisto.command() == 'microsoft-atp-run-antivirus-scan':
-        run_antivirus_scan_command()
+        return_outputs(*run_antivirus_scan_command())
 
     elif demisto.command() == 'microsoft-atp-list-alerts':
-        list_alerts_command()
+        return_outputs(*list_alerts_command())
 
     elif demisto.command() == 'microsoft-atp-update-alert':
-        update_alert_command()
+        return_outputs(*update_alert_command())
 
     elif demisto.command() == 'microsoft-atp-advanced-hunting':
-        get_advanced_hunting_command()
+        return_outputs(*get_advanced_hunting_command())
 
     elif demisto.command() == 'microsoft-atp-create-alert':
-        create_alert_command()
+        return_outputs(*create_alert_command())
+
+    elif demisto.command() == 'microsoft-atp-get-alert-related-user':
+        return_outputs(*get_alert_related_user_command())
 
     elif demisto.command() == 'microsoft-atp-get-alert-related-files':
         return_outputs(*get_alert_related_files_command())
