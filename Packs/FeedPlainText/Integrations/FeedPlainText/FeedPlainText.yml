@@ -1,24 +1,16 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: SpamhausFeed
+  id: Plain Text Feed
   version: -1
 configuration:
-- defaultvalue: https://www.spamhaus.org/drop/drop.txt
-  display: Sub-Feeds
-  name: url
-  options:
-  - https://www.spamhaus.org/drop/edrop.txt
-  - https://www.spamhaus.org/drop/drop.txt
-  required: false
-  type: 16
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
-  defaultvalue: Bad
+    reputation
+  defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -28,7 +20,8 @@ configuration:
   - Bad
   required: false
   type: 18
-- defaultvalue: B - Usually reliable
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
   options:
@@ -53,7 +46,7 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '60'
+- defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -65,6 +58,30 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
+- additionalinfo: Type of the indicator in the feed.
+  display: Indicator Type
+  name: indicator_type
+  required: false
+  type: 0
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: Time (in seconds) before HTTP requests timeout.
+  defaultvalue: '20'
+  display: Request Timeout
+  name: polling_timeout
+  required: true
+  type: 0
+- additionalinfo: Python regular expression for lines to ignore.
+  display: Ignore Regex
+  name: ignore_regex
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -73,21 +90,41 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Timeout of the polling request in seconds.
-  defaultvalue: '20'
-  display: Request Timeout
-  name: polling_timeout
+- display: Feed name
+  hidden: false
+  name: feed_name
   required: false
   type: 0
-description: Use the Spamhaus feed integration to fetch indicators from the feed.
-display: Spamhaus Feed
-name: SpamhausFeed
+- additionalinfo: JSON string of patterns to extract from the text response. See the
+    description for more details.
+  display: Indicator extraction pattern
+  hidden: false
+  name: indicator
+  required: false
+  type: 12
+- additionalinfo: JSON string of patterns to extract from the text response. See the
+    description for more details.
+  display: Fields extraction pattern
+  hidden: false
+  name: fields
+  required: false
+  type: 12
+- additionalinfo: CSV List of headers to send in the HTTP request in the format of
+    "header_name:header_value".
+  display: Headers
+  hidden: false
+  name: headers
+  required: false
+  type: 0
+description: Fetch indicators from a plain text feed.
+display: Plain Text Feed
+name: Plain Text Feed
 script:
   commands:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return. The default value is 50.
+      description: The maximum number of results to return to the output.
       isArray: false
       name: limit
       required: false
@@ -99,9 +136,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the feed indicators.
+    description: Gets indicators from the feed.
     execution: false
-    name: spamhaus-get-indicators
+    name: plaintext-get-indicators
   dockerimage: demisto/python3:3.8.1.6120
   feed: true
   isfetch: false
@@ -111,4 +148,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- PlainText_Feed_Test
 fromversion: 5.5.0
