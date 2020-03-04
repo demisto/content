@@ -284,7 +284,7 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> Tuple[str
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
     list_devices_hr: list = [build_device_human_readable(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
-    human_readable: str = 'No devices found.'
+    human_readable: str = 'No managed devices found.'
     if list_devices:
         human_readable = tableToMarkdown('List managed devices', list_devices_hr, headers=HEADERS['device'])
     return human_readable, entry_context, raw_response
@@ -298,7 +298,7 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> Tuple[str, 
     device_hr: dict = build_device_human_readable(raw_response)
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
     device_name: str = device.get('Name', '')
-    human_readable: str = f'Device {device_id} not found.'
+    human_readable: str = f'Managed device {device_id} not found.'
     if device:
         human_readable = tableToMarkdown(f'Managed device {device_name}', device_hr, headers=HEADERS['device'])
     return human_readable, entry_context, raw_response
