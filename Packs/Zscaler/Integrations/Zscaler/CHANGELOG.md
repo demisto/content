@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.4] - 2020-02-25
 - Fixed an issue where the ***url*** command in *Zscaler* was not creating an Indicator in Demisto.
 - Fixed the ***url*** and ***ip*** commands the in *Zscaler* output descriptions.
 - Fixed an issue where the ***zscaler-category-add-url*** command failed when passing multiple URLs separated with spaces.
