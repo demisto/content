@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Graph Device Management",
+            "playbookID": "MSGraph_DeviceManagement_Test"
+        },
+        {
             "integrations": "Blocklist_de Feed",
             "playbookID": "Blocklist_de - Test",
             "fromversion": "5.5.0"
