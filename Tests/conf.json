@@ -2403,7 +2403,6 @@
     ],
     "skipped_tests": {
         "Office365_Feed_Test": "Issue 22517",
-        "DuoAdmin API test playbook": "Issue 22514",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
         "Send Investigation Summary Reports": "Issue 22299",
