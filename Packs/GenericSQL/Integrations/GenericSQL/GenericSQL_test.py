@@ -1,4 +1,4 @@
-from GenericSQL.GenericSQL import Client, sql_query_execute, sql_command_execute
+from .GenericSQL import Client, sql_query_execute
 import pytest
 
 args1 = {
@@ -55,7 +55,7 @@ def test_sql_queries(command, args, response, expected_result, mocker):
     """
     mocker.patch.object(Client, '_create_engine_and_connect')  # needed in order not to make a connection in tests
     mocker.patch.object(Client, 'sql_query_execute_request', return_value=(raw1, ['Name']))
-    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database')
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', False, "")
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
@@ -63,9 +63,9 @@ def test_sql_queries(command, args, response, expected_result, mocker):
 # there is an issue with the name
 # no raw data
 @pytest.mark.parametrize('command, command_type, args, expected_result', [
-    (sql_command_execute, 'sql-insert', sql_insert_args, human_readable_insert),
-    (sql_command_execute, 'sql-delete', sql_delete_args, human_readable_delete),
-    (sql_command_execute, 'sql-update', sql_update_args, human_readable_update),
+    (sql_query_execute, 'sql-insert', sql_insert_args, "command executed"),
+    (sql_query_execute, 'sql-delete', sql_delete_args, "command executed"),
+    (sql_query_execute, 'sql-update', sql_update_args, "command executed"),
 
 ])
 def test_sql_commands(command, command_type, args, expected_result, mocker):
@@ -83,7 +83,6 @@ def test_sql_commands(command, command_type, args, expected_result, mocker):
     """
     mocker.patch.object(Client, '_create_engine_and_connect')  # needed in order not to make a connection in tests
     mocker.patch.object(Client, 'sql_query_execute_request')
-    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', db_name)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', db_name, 'False', '')
     result = command(client, args, command_type)
     assert expected_result == result[0]  # human readable is found in the 2nd place in the result of the command
-
