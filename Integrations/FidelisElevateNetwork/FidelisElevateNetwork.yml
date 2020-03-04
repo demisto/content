@@ -1,57 +1,55 @@
+category: Network Security
 commonfields:
   id: Fidelis Elevate Network
   version: -1
-name: Fidelis Elevate Network
-display: Fidelis Elevate Network
-category: Network Security
-description: Automate Detection and Response to Network Threats and data leakage in
-  your organization with Fidelis Elevate Network Integration.
 configuration:
 - display: Server URL
   name: server_url
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: Credentials
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
+  required: false
   type: 13
-  required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
   name: fetch_time
-  defaultvalue: 3 days
-  type: 0
   required: false
+  type: 0
+description: Automate Detection and Response to Network Threats and data leakage in
+  your organization with Fidelis Elevate Network Integration.
+display: Fidelis Elevate Network
+name: Fidelis Elevate Network
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: fidelis-get-alert
-    arguments:
-    - name: alert_id
-      required: true
+  - arguments:
+    - default: false
       description: Alert ID
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets alert details from Fidelis Elevate.
+    execution: false
+    name: fidelis-get-alert
     outputs:
     - contextPath: Fidelis.Alert.ID
       description: Alert ID.
@@ -86,19 +84,28 @@ script:
     - contextPath: Fidelis.Alert.AssignedUser
       description: Assigned user ID.
       type: string
-    description: Gets alert details from Fidelis Elevate.
-  - name: fidelis-delete-alert
-    arguments:
-    - name: alert_id
-      required: true
+  - arguments:
+    - default: false
       description: ID of the alert to delete.
       isArray: true
-    description: Deletes an alert from Fidelis Elevate.
-  - name: fidelis-get-malware-data
-    arguments:
-    - name: alert_id
+      name: alert_id
       required: true
+      secret: false
+    deprecated: false
+    description: Deletes an alert from Fidelis Elevate.
+    execution: false
+    name: fidelis-delete-alert
+  - arguments:
+    - default: false
       description: Alert ID.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves malware data related to a "Malware" type alert.
+    execution: false
+    name: fidelis-get-malware-data
     outputs:
     - contextPath: Fidelis.Alert.ID
       description: Alert ID.
@@ -124,34 +131,49 @@ script:
     - contextPath: Fidelis.Alert.Malware.Description
       description: Malware description from Fidelis Elevate.
       type: string
-    description: Retrieves malware data related to a "Malware" type alert.
-  - name: fidelis-get-alert-pcap
-    deprecated: true
-    arguments:
-    - name: alert_id
-      required: true
+  - arguments:
+    - default: false
       description: ID of the alert for which to get the PCAP file.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: true
     description: Retrieves the alert PCAP from Fidelis Elevate.
-  - name: fidelis-get-alert-report
-    arguments:
-    - name: alert_id
-      required: true
+    execution: false
+    name: fidelis-get-alert-pcap
+  - arguments:
+    - default: false
       description: Alert ID of the alert for which to download a PDF report.
-    description: Downloads a PDF report for a specified alert.
-  - name: fidelis-sandbox-upload
-    arguments:
-    - name: upload_item
+      isArray: false
+      name: alert_id
       required: true
+      secret: false
+    deprecated: false
+    description: Downloads a PDF report for a specified alert.
+    execution: false
+    name: fidelis-get-alert-report
+  - arguments:
+    - default: false
       description: The file or URL to upload to Fidelis Elevate for analysis.
+      isArray: false
+      name: upload_item
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads a file or a URL for sandbox analysis in Fidelis Elevate.
+    execution: false
+    name: fidelis-sandbox-upload
     outputs:
     - contextPath: Fidelis.Alert.ID
       description: Alert ID generated from the upload.
       type: string
-    description: Uploads a file or a URL for sandbox analysis in Fidelis Elevate.
-  - name: fidelis-list-alerts
-    arguments:
-    - name: time_frame
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter alerts by time frame, for example, Last 48 Hours.
+      isArray: false
+      name: time_frame
       predefined:
       - Today
       - Yesterday
@@ -161,23 +183,39 @@ script:
       - Last 48 Hours
       - Last 30 Days
       - Custom
-      description: Filter alerts by time frame, for example, Last 48 Hours.
-    - name: start_time
+      required: false
+      secret: false
+    - default: false
       description: If the time_frame value is Custom, specify the start time for the
         time range, for example, 2017-06-01T12:48:16.734.
-    - name: end_time
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
       description: If the time_frame value is Custom, specify the end time for the
         time range, for example, 2017-06-01T12:48:16.734.
-    - name: severity
-      auto: PREDEFINED
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter alerts by alert severity.
+      isArray: false
+      name: severity
       predefined:
       - Low
       - Medium
       - High
       - Critical
-      description: Filter alerts by alert severity.
-    - name: type
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter alerts by alert type.
+      isArray: false
+      name: type
       predefined:
       - Endpoint
       - DSI
@@ -188,11 +226,24 @@ script:
       - File Upload
       - Collector Feed
       - Analytics
-      description: Filter alerts by alert type.
-    - name: threat_score
+      required: false
+      secret: false
+    - default: false
       description: Filter alerts by alert threat score threshold (higher than).
-    - name: ioc
+      isArray: false
+      name: threat_score
+      required: false
+      secret: false
+    - default: false
       description: Filter alerts that are related to a specified IOC.
+      isArray: false
+      name: ioc
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of open alerts from Fidelis Elevate.
+    execution: false
+    name: fidelis-list-alerts
     outputs:
     - contextPath: Fidelis.Alert.ID
       description: Alert ID.
@@ -209,18 +260,27 @@ script:
     - contextPath: Fidelis.Alert.Type
       description: Alert type.
       type: string
-    description: Returns a list of open alerts from Fidelis Elevate.
-  - name: fidelis-upload-pcap
-    arguments:
-    - name: component_ip
-      required: true
+  - arguments:
+    - default: false
       description: Component IP address.
-    - name: entry_id
+      isArray: false
+      name: component_ip
       required: true
+      secret: false
+    - default: false
       description: War Room entry ID of the PCAP file, for example, "3245@6".
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
     description: Uploads a PCAP file to Fidelis Elevate for analysis.
-  - name: fidelis-list-pcap-components
-    arguments: []
+    execution: false
+    name: fidelis-upload-pcap
+  - deprecated: false
+    description: Gets PCAP components.
+    execution: false
+    name: fidelis-list-pcap-components
     outputs:
     - contextPath: Fidelis.Component.Name
       description: Component name.
@@ -228,22 +288,35 @@ script:
     - contextPath: Fidelis.Component.IP
       description: Component IP address.
       type: string
-    description: Gets PCAP components.
-  - name: fidelis-run-pcap
-    arguments:
-    - name: component_ip
-      required: true
+  - arguments:
+    - default: false
       description: Component IP address. Run the 'fidelis-list-pcap-components' command
         to get this value.
-    - name: files
+      isArray: false
+      name: component_ip
       required: true
+      secret: false
+    - default: false
       description: CSV list of PCAP file names in Fidelis Elevate.
-    description: Runs PCAP file analysis in Fidelis Elevate.
-  - name: fidelis-get-alert-by-uuid
-    arguments:
-    - name: alert_uuid
+      isArray: false
+      name: files
       required: true
+      secret: false
+    deprecated: false
+    description: Runs PCAP file analysis in Fidelis Elevate.
+    execution: false
+    name: fidelis-run-pcap
+  - arguments:
+    - default: false
       description: The UUID of the alert.
+      isArray: false
+      name: alert_uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns an alert, by UUID.
+    execution: false
+    name: fidelis-get-alert-by-uuid
     outputs:
     - contextPath: Fidelis.Alert.ID
       description: Alert ID.
@@ -263,11 +336,12 @@ script:
     - contextPath: Fidelis.Alert.UUID
       description: Alert UUID.
       type: String
-    description: Returns an alert, by UUID.
-  - name: fidelis-list-metadata
-    arguments:
-    - name: time_frame
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter alerts by time frame, for example, Last 48 Hours.
+      isArray: false
+      name: time_frame
       predefined:
       - Today
       - Yesterday
@@ -277,27 +351,52 @@ script:
       - Last 48 Hours
       - Last 30 Days
       - Custom
-      description: Filter alerts by time frame, for example, Last 48 Hours.
-    - name: start_time
-      auto: PREDEFINED
-      predefined:
-      - ""
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: If the time_frame value is Custom, specify the start time for the
         time range, for example, 2017-06-01T12:48:16.734.
-    - name: end_time
+      isArray: false
+      name: start_time
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
       description: If the time_frame value is Custom, specify the end time for the
         time range, for example,2017-06-01T12:48:16.734.
-    - name: client_ip
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
       description: Filter alerts by client IP.
-    - name: server_ip
+      isArray: false
+      name: client_ip
+      required: false
+      secret: false
+    - default: false
       description: Filter alerts by server IP address.
-    - name: request_direction
-      auto: PREDEFINED
+      isArray: false
+      name: server_ip
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Direction of the request. Can be "s2c" (server to client) or "c2s"
+        (client to server).
+      isArray: false
+      name: request_direction
       predefined:
       - s2c
       - c2s
-      description: Direction of the request. Can be "s2c" (server to client) or "c2s"
-        (client to server).
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a metadata list.
+    execution: false
+    name: fidelis-list-metadata
     outputs:
     - contextPath: Fidelis.Metadata.MalwareName
       description: Malware name.
@@ -374,22 +473,45 @@ script:
     - contextPath: Fidelis.Metadata.MD5
       description: MD5 hash of the file.
       type: String
-    description: Returns a metadata list.
-  - name: fidelis-list-alerts-by-ip
-    arguments:
-    - name: time_frame
+  - arguments:
+    - default: false
       description: Today,Yesterday,Last 7 Days,Last Hour,Last 24 Hours,Last 48 Hours,Last
         30 Days,Custom
-    - name: start_time
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
       description: If the time_frame value is Custom, specify the start time for the
         time range, for example, 2017-06-01T12:48:16.734.
-    - name: end_time
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
       description: If the time_frame value is Custom, specify the start time for the
         time range, for example, 2017-06-01T12:48:16.734.
-    - name: src_ip
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
       description: Filter alerts by the source IP.
-    - name: dest_ip
+      isArray: false
+      name: src_ip
+      required: false
+      secret: false
+    - default: false
       description: Filter alerts by the destination IP address.
+      isArray: false
+      name: dest_ip
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of alerts, by source IP address or destination IP
+      address.
+    execution: false
+    name: fidelis-list-alerts-by-ip
     outputs:
     - contextPath: Fidelis.Alert.SourceIP
       description: 'The alert source IP address. '
@@ -427,13 +549,17 @@ script:
     - contextPath: Fidelis.Alert.SourceCountry
       description: Alert source country
       type: String
-    description: Returns a list of alerts, by source IP address or destination IP
-      address.
-  - name: fidelis-download-malware-file
-    arguments:
-    - name: alert_id
-      required: true
+  - arguments:
+    - default: false
       description: ID of the alert from which to download the file.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Downloads a malware file from a specified alert.
+    execution: false
+    name: fidelis-download-malware-file
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -465,12 +591,17 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file.
       type: String
-    description: Downloads a malware file from a specified alert.
-  - name: fidelis-download-pcap-file
-    arguments:
-    - name: alert_id
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the alert from which to download the file.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Downloads the PCAP file from a specified alert.
+    execution: false
+    name: fidelis-download-pcap-file
     outputs:
     - contextPath: File.EntryID
       description: The entry ID of the file.
@@ -499,108 +630,404 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file.
       type: String
-    description: Downloads the PCAP file from a specified alert.
-  - name: fidelis-get-alert-sessiondata
-    arguments:
-    - name: alert_id
-      required: true
+  - arguments:
+    - default: false
       description: Alert ID
-    outputs:
-    - contextPath: Fidelis.Alert.ID
-      description: Alert ID.
-      type: string
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
     description: Returns the session information related to an alert
-  - name: fidelis-get-alert-ef
-    arguments:
-    - name: alert_id
-      required: true
-      description: Alert ID
+    execution: false
+    name: fidelis-get-alert-session-data
     outputs:
     - contextPath: Fidelis.Alert.ID
       description: Alert ID.
       type: string
+    - contextPath: Fidelis.Alert.SessionData.RecordingState
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ClientPackets
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ServerSize
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ServerPort
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ServerDataComplete
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ServerPackets
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.EndTime
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ServerDomaniName
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ServerIp
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ClientSize
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ClientPort
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ServerData
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.BinaryServerData
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ClientDataComplete
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ServerDataSize
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.RecordedObject
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.StartTime
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ClientDomaniName
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.TcpState
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ShowingDataSize
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ClientIp
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.Duration
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ClientData
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.BinaryClientData
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.ClientDataSize
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.NoForensics
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.Exist
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.TimeZone
+      type: Unknown
+    - contextPath: Fidelis.Alert.SessionData.Highlights
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Alert ID
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
     description: Pulls the exectution forensics for an alert
-  - name: fidelis-get-alert-forensictext
-    arguments:
-    - name: alert_id
-      required: true
+    execution: false
+    name: fidelis-get-alert-ef
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID.
+      type: string
+    - contextPath: Fidelis.Alert.EF.EFEnabled
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Size
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.SubmitTime
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.SandBoxOn
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.TgReport
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.FileName
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.DnsFeed
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.RecordingComplete
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.PcapUrl
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.AlertFlagsXeNonsubmit
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Bit9Server
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.DecodingPath
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.FileCheckAlert
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Status
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Submitable
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Score
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.SubmitId
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.VideoUrl
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.StatusMessage
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.FileType
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.AlertId
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Type
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.ReportUrl
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.JsSubmitable
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Uuid
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.JsonReport
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.FileSize
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Md5
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.ThreatGridOn
+      type: Unknown
+  - arguments:
+    - default: false
       description: Alert ID
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
     description: Pulls the text of the forensic data
-  - name: fidelis-get-alert-dpath
+    execution: false
+    name: fidelis-get-alert-forensic-text
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      type: Unknown
+    - contextPath: Fidelis.Alert.ForensicText
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Alert ID
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
     description: Get alert dpath
-    arguments:
-    - name: alert_id
-      required: true
+    execution: false
+    name: fidelis-get-alert-dpath
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      type: Unknown
+    - contextPath: Fidelis.Alert.DPath.ClickableDpaths
+      type: Unknown
+    - contextPath: Fidelis.Alert.DPath.CommandpostIp
+      type: Unknown
+    - contextPath: Fidelis.Alert.DPath.DecodingPaths
+      type: Unknown
+    - contextPath: Fidelis.Alert.DPath.OriginalAttributes
+      type: Unknown
+    - contextPath: Fidelis.Alert.DPath.OriginalDPath
+      type: Unknown
+    - contextPath: Fidelis.Alert.DPath.AttributeMap
+      type: Unknown
+    - contextPath: Fidelis.Alert.DPath.AttributeMapHighLights
+      type: Unknown
+  - arguments:
+    - default: false
       description: Alert ID
-  - name: fidelis-update-alertstatus
-    description: Update alert status
-    arguments:
-    - name: alert_id
+      isArray: false
+      name: alert_id
       required: true
-      description: Alert ID
-    - name: status
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new alert status
+      isArray: false
+      name: status
       predefined:
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      description: status_score (1 False Positive, etc)
-    - name: explicitScore
+      - false positive
+      - not interesting
+      - interesting
+      - actionable
       required: true
-      description: explicitScore
-  - name: fidelis-alert-ef-submission
-    arguments:
-    - name: alert_id
-      required: true
+      secret: false
+    deprecated: false
+    description: Update alert status
+    execution: false
+    name: fidelis-update-alert-status
+  - arguments:
+    - default: false
       description: Alert ID
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
     description: submits a file to the fidelis sandbox
-  - name: fidelis-add-alert-comment
-    arguments:
-    - name: alert_id
+    execution: false
+    name: fidelis-alert-ef-submission
+    outputs:
+    - contextPath: Fidelis.Alert.EF.EFEnabled
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Size
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.SubmitTime
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.SandBoxOn
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.TgReport
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.FileName
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.DnsFeed
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.RecordingComplete
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.PcapUrl
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.AlertFlagsXeNonsubmit
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Bit9Server
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.DecodingPath
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.FileCheckAlert
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Status
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Submitable
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Score
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.SubmitId
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.VideoUrl
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.StatusMessage
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.FileType
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.AlertId
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Type
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.ReportUrl
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.JsSubmitable
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Uuid
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.JsonReport
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.FileSize
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.Md5
+      type: Unknown
+    - contextPath: Fidelis.Alert.EF.ThreatGridOn
+      type: Unknown
+    - contextPath: Fidelis.Alert.ID
+      type: Unknown
+  - arguments:
+    - default: false
       description: Alert ID
-    - name: comment
+      isArray: false
+      name: alert_id
       required: true
+      secret: false
+    - default: false
       description: comment
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
     description: adds a comment to an alert
-  - name: fidelis-manage-alert-assignuser
-    arguments:
-    - name: alert_id
-      required: true
+    execution: false
+    name: fidelis-add-alert-comment
+  - arguments:
+    - default: false
       description: Alert ID
-    - name: comment
-      description: comment
-    - name: assignToUser
+      isArray: false
+      name: alert_id
       required: true
+      secret: false
+    - default: false
+      description: comment
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: assignToUser
+      isArray: false
+      name: assignToUser
+      required: true
+      secret: false
+    deprecated: false
     description: fidelis-manage-alert-assignuser
-  - name: fidelis-manage-alert-closealert
-    arguments:
-    - name: alert_id
-      required: true
+    execution: false
+    name: fidelis-manage-alert-assign-user
+  - arguments:
+    - default: false
       description: Alert ID
-    - name: comment
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
       description: comment
-    - name: assignToUser
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: assignToUser
-    - name: resolution
-      required: true
+      isArray: false
+      name: assignToUser
+      required: false
+      secret: false
+    - default: false
       description: resolution
+      isArray: false
+      name: resolution
+      required: true
+      secret: false
+    deprecated: false
     description: closes a fidelis alert and can assign a user
-  - name: fidelis-manage-alert-label
-    arguments:
-    - name: alert_id
-      required: true
+    execution: false
+    name: fidelis-manage-alert-close-alert
+  - arguments:
+    - default: false
       description: Alert ID
-    - name: label
+      isArray: false
+      name: alert_id
       required: true
+      secret: false
+    - default: false
       description: label
-    description: adds a label to an alert
-  - name: fidelis-upload-URL
-    arguments:
-    - name: url
+      isArray: false
+      name: label
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: action
+      predefined:
+      - LABEL_ADD
+      - REPLACE_ALL
+      - CLEAR
+      - REMOVE
+      required: false
+      secret: false
+    deprecated: false
+    description: adds a label to an alert
+    execution: false
+    name: fidelis-manage-alert-label
+  - arguments:
+    - default: false
       description: url
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
     description: uploads a URL to Fidelis
+    execution: false
+    name: fidelis-upload-url
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
+  subtype: python2
+  type: python
