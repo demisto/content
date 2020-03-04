@@ -1,3 +1,7 @@
+. $PSScriptRoot\demistomock.ps1
+
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Scope="", Justification="Use of globals set by the Demisto Server")]
+
 # Silence Progress STDOUT (e.g. long http request download progress)
 $progressPreference = 'silentlyContinue'
 
@@ -8,13 +12,15 @@ enum ServerLogLevel {
 }
 
 # Demist Object Class for communicating with the Demisto Server
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='use of global:DemistoServerRequest')]
 class DemistoObject {
     hidden [hashtable] $ServerEntry
     hidden [bool] $IsDebug
     hidden [bool] $IsIntegration
     hidden [hashtable] $ContextArgs
 
-    DemistoObject ([hashtable]$context) {
+    DemistoObject () {
+        $context = $global:InnerContext | ConvertFrom-Json -AsHashtable
         $this.ServerEntry = $context
         $this.ContextArgs = $context.args
         $this.IsDebug = $context.IsDebug
@@ -66,7 +72,7 @@ class DemistoObject {
                 else {
                     $Entry = @(@{Type = 1; Contents = $EntryRaw; ContentsFormat = "json" })
                 }
-                ; Break 
+                ; Break
             }
             "Object[]" {
                 foreach ($EntryObj in $EntryRaw) {
@@ -86,12 +92,12 @@ class DemistoObject {
                 else {
                     $Entry = @(@{Type = 1; Contents = $EntryRaw; ContentsFormat = "json" })
                 }
-                ; Break 
+                ; Break
             }
             default {
                 $EntryContent = [string]$EntryRaw
                 $Entry = @(@{Type = 1; Contents = $EntryContent; ContentsFormat = "text" })
-                ; Break 
+                ; Break
             }
         }
         return $entry
@@ -207,11 +213,11 @@ class DemistoObject {
         return $this.Results(@{Type = 1; Contents = $Incidents; ContentsFormat = "json" })
     }
 
-    [array] Credentials ($Credentials) {
+    [array] Credentials ($Crds) {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        $Credentials = $Credentials | ConvertTo-Json -Depth 6
+        $Credentials = $Crds | ConvertTo-Json -Depth 6
         return $this.Results(@{Type = 1; Contents = $Credentials; ContentsFormat = "json" })
     }
 
@@ -244,41 +250,67 @@ class DemistoObject {
     }
 }
 
-$InnerContext = $global:InnerContext | ConvertFrom-Json -AsHashtable
-[DemistoObject]$demisto = [DemistoObject]::New($InnerContext)
-Remove-Variable InnerContext
+[DemistoObject]$demisto = [DemistoObject]::New()
 function global:Write-Host($UserInput) { $demisto.Log($UserInput) | Out-Null }
 function global:Write-Output($UserInput) { $demisto.Log($UserInput) | Out-Null }
 
-function tableToMarkdown {
+# -----------------------------------------------------------------------
+# Utility Functions
+# -----------------------------------------------------------------------
+
+<#
+.DESCRIPTION
+Converts a string representation of args to a list
+
+.PARAMETER Arg
+The argument to convert
+
+.PARAMETER Seperator
+The seperator to use (default ',')
+
+.OUTPUTS
+Object[]. Returns an array of the arguments
+#>
+function argToList($Arg, [string]$Seperator = ",") {
+    if (! $Arg) {
+        $r = @()
+    }
+    elseif ($Arg.GetType().IsArray) {
+        $r = $Arg
+    }
+    elseif ($Arg[0] -eq "[" -and $Arg[-1] -eq "]") { # json string
+        $r  = $Arg | ConvertFrom-Json -AsHashtable
+    }
+    else {
+        $r = $Arg.Split($Seperator)
+    }
+    # we want to return an array and avoid one-at-a-time processing
+    # see: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_return?view=powershell-6#return-values-and-the-pipeline
+    return @(, $r)
+}
+
+function tableToMarkdown($name, $t, $headers, $headerTransform, $removeNull, $metadata) {
     <#
 .DESCRIPTION
-
 Converts a demisto table in JSON form to a Markdown table
 
-.PARAMETER name (required)
-
+.PARAMETER name
 The name of the table
 
-.PARAMETER t (required)
-
+.PARAMETER t
 The JSON table - List of dictionaries with the same keys or a single dictionary
 
-.PARAMATER headers
-
+.PARAMETER headers
 A list of headers to be presented in the output table (by order).
 If string will be passed then table will have single header. Default will include all available headers.
 
-.PARAMATER headerTransform
-
+.PARAMETER headerTransform
 A function that formats the original data headers
 
-.PARAMATER removeNull
-
+.PARAMETER removeNull
 Remove empty columns from the table.
 
-.PARAMATER metadata
-
+.PARAMETER metadata
 Metadata about the table contents
 #>
 
