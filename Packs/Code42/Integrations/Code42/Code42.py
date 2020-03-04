@@ -167,7 +167,7 @@ class Code42Client(BaseClient):
             return None
         case_id = res.json().get('caseId')
         try:
-            res = de.resolve_departing_employee(case_id)
+            de.resolve_departing_employee(case_id)
         except Exception:
             return None
         return case_id
