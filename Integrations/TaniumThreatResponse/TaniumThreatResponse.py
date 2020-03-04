@@ -81,7 +81,9 @@ def get_process_timeline_item(raw_item, category_name, limit, offset):
     for category in raw_item:
         if category['name'].lower() == category_name.lower():
             sorted_timeline_dates = sorted(category['details'].keys())
-            for i in range(offset, min(offset + limit, len(sorted_timeline_dates))):
+            from_idx = min(offset, len(sorted_timeline_dates))
+            to_idx = min(offset + limit, len(sorted_timeline_dates))
+            for i in range(from_idx, to_idx):
                 current_date = sorted_timeline_dates[i]
                 events_in_current_date = category['details'][current_date]
                 timeline_item.append({
@@ -291,39 +293,37 @@ def get_connection_item(connection):
         'OsName': connection.get('osName')}
 
 
-def get_local_snapshot_items(raw_snapshots, limit):
+def get_local_snapshot_items(raw_snapshots, limit, offset, conn_name):
     snapshots = []
-    count = 0
+    host_snapshots = raw_snapshots.get(conn_name)
+    snapshot_keys = sorted(host_snapshots)
+    from_idx = min(offset, len(snapshot_keys))
+    to_idx = min(offset + limit, len(snapshot_keys))
 
-    for host in raw_snapshots.items():
-        for snapshot in host[1]:
-            snapshots.append({
-                'DirectoryName': host[0],
-                'FileName': snapshot
-            })
-            count += 1
-            if count == limit:
-                return snapshots
+    for key in snapshot_keys[from_idx:to_idx]:
+        snapshots.append({
+            'ConnectionName': conn_name,
+            'FileName': key
+        })
 
     return snapshots
 
 
-def get_snapshot_items(raw_snapshots, limit):
+def get_snapshot_items(raw_snapshots, limit, offset, conn_name):
     snapshots = []
-    count = 0
+    host_snapshots = raw_snapshots.get(conn_name)
+    snapshot_keys = sorted(host_snapshots)
+    from_idx = min(offset, len(snapshot_keys))
+    to_idx = min(offset + limit, len(snapshot_keys))
 
-    for host in raw_snapshots.items():
-        for key in host[1].items():
-            snapshots.append({
-                'DirectoryName': host[0],
-                'FileName': key[0],
-                'Started': key[1].get('started', ''),
-                'State': key[1].get('state', ''),
-                'Error': key[1].get('error', ''),
-            })
-            count += 1
-            if count == limit:
-                return snapshots
+    for key in snapshot_keys[from_idx:to_idx]:
+        snapshots.append({
+            'ConnectionName': conn_name,
+            'FileName': key,
+            'Started': host_snapshots[key].get('started', ''),
+            'State': host_snapshots[key].get('state', ''),
+            'Error': host_snapshots[key].get('error', ''),
+        })
 
     return snapshots
 
@@ -404,7 +404,7 @@ def get_intel_doc(client, data_args):
     intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
     headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
                'LabelIds']
-    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers)
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -425,7 +425,7 @@ def get_intel_docs(client, data_args):
 
     headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
                'LabelIds']
-    human_readable = tableToMarkdown('Intel docs', intel_docs, headers=headers)
+    human_readable = tableToMarkdown('Intel docs', intel_docs, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -464,7 +464,7 @@ def get_alerts(client, data_args):
     headers = ['ID', 'Name', 'Type', 'Severity', 'Priority', 'AlertedAt', 'CreatedAt', 'UpdatedAt', 'ComputerIpAddress',
                'ComputerName', 'GUID', 'State', 'IntelDocId']
     outputs = {'Tanium.Alert(val.ID && val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Alerts', alerts, headers=headers)
+    human_readable = tableToMarkdown('Alerts', alerts, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -477,7 +477,7 @@ def get_alert(client, data_args):
     outputs = {'Tanium.Alert(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Name', 'Type', 'Severity', 'Priority', 'AlertedAt', 'CreatedAt', 'UpdatedAt', 'ComputerIpAddress',
                'ComputerName', 'GUID', 'State', 'IntelDocId']
-    human_readable = tableToMarkdown('Alert information', alert, headers=headers)
+    human_readable = tableToMarkdown('Alert information', alert, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -493,18 +493,22 @@ def alert_update_state(client, data_args):
     outputs = {'Tanium.Alert(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Name', 'Type', 'Severity', 'Priority', 'AlertedAt', 'CreatedAt', 'UpdatedAt', 'ComputerIpAddress',
                'ComputerName', 'GUID', 'State', 'IntelDocId']
-    human_readable = tableToMarkdown(f'Alert state updated to {state}', alert, headers=headers)
+    human_readable = tableToMarkdown(f'Alert state updated to {state}', alert, headers=headers,
+                                     headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
 def get_snapshots(client, data_args):
     limit = int(data_args.get('limit'))
+    offset = int(data_args.get('offset'))
+    conn_name = data_args.get('connection_name')
+
     raw_response = client.do_request('GET', '/plugin/products/trace/snapshots/')
-    snapshots = get_snapshot_items(raw_response, limit)
+    snapshots = get_snapshot_items(raw_response, limit, offset, conn_name)
     context = createContext(snapshots, removeNull=True)
-    headers = ['FileName', 'DirectoryName', 'State', 'Started', 'Error']
-    outputs = {'Tanium.Snapshot(val.FileName && val.FileName === obj.FileName)': context}
-    human_readable = tableToMarkdown('Snapshots', snapshots, headers=headers)
+    headers = ['FileName', 'ConnectionName', 'State', 'Started', 'Error']
+    outputs = {'Tanium.Snapshot(val.FileName === obj.FileName && val.ConnectionName === obj.ConnectionName)': context}
+    human_readable = tableToMarkdown('Snapshots', snapshots, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -523,12 +527,16 @@ def delete_snapshot(client, data_args):
 
 def get_local_snapshots(client, data_args):
     limit = int(data_args.get('limit'))
+    offset = int(data_args.get('offset'))
+    conn_name = data_args.get('connection_name')
     raw_response = client.do_request('GET', '/plugin/products/trace/locals/')
-    snapshots = get_local_snapshot_items(raw_response, limit)
+    snapshots = get_local_snapshot_items(raw_response, limit, offset, conn_name)
     context = createContext(snapshots, removeNull=True)
-    outputs = {'Tanium.LocalSnapshot.DirectoryName(val.FileName && val.FileName === obj.FileName)': context}
-    headers = ['FileName', 'DirectoryName']
-    human_readable = tableToMarkdown('Local snapshots', snapshots, headers=headers)
+    outputs = {
+        'Tanium.LocalSnapshot(val.FileName === obj.FileName && val.ConnectionName === obj.ConnectionName)': context
+    }
+    headers = ['FileName', 'ConnectionName']
+    human_readable = tableToMarkdown('Local snapshots', snapshots, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -541,16 +549,20 @@ def delete_local_snapshot(client, data_args):
 
 def get_connections(client, data_args):
     limit = int(data_args.get('limit'))
+    offset = int(data_args.get('offset'))
     raw_response = client.do_request('GET', '/plugin/products/trace/conns')
     connections = []
 
-    for conn in raw_response[:limit]:
+    from_idx = min(offset, len(raw_response))
+    to_idx = min(offset + limit, len(raw_response))
+
+    for conn in raw_response[from_idx:to_idx]:
         connections.append(get_connection_item(conn))
 
     context = createContext(connections, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
     headers = ['Name', 'State', 'Remote', 'CreateTime', 'DST', 'OsName']
-    human_readable = tableToMarkdown('Connections', connections, headers=headers)
+    human_readable = tableToMarkdown('Connections', connections, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -573,7 +585,8 @@ def get_connection(client, data_args):
     context = createContext(connection, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
     headers = ['Name', 'State', 'Remote', 'CreateTime', 'DST', 'OsName']
-    human_readable = tableToMarkdown('Connection information', connection, headers=headers)
+    human_readable = tableToMarkdown('Connection information', connection, headers=headers,
+                                     headerTransform=pascalToSpace)
     return human_readable, outputs, connection_raw_response
 
 
@@ -604,17 +617,21 @@ def delete_connection(client, data_args):
 
 def get_labels(client, data_args):
     limit = int(data_args.get('limit'))
-    raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/', params={'limit': limit})
+    offset = int(data_args.get('offset'))
+    raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/')
+
+    from_idx = min(offset, len(raw_response))
+    to_idx = min(offset + limit, len(raw_response))
 
     labels = []
-    for item in raw_response:
+    for item in raw_response[from_idx:to_idx]:
         label = get_label_item(item)
         labels.append(label)
 
     context = createContext(labels, removeNull=True)
     outputs = {'Tanium.Label(val.ID && val.ID === obj.ID)': context}
     headers = ['Name', 'Description', 'ID', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
-    human_readable = tableToMarkdown('Labels', labels, headers=headers)
+    human_readable = tableToMarkdown('Labels', labels, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -626,7 +643,7 @@ def get_label(client, data_args):
     context = createContext(label, removeNull=True)
     outputs = {'Tanium.Label(val.ID && val.ID === obj.ID)': context}
     headers = ['Name', 'Description', 'ID', 'IndicatorCount', 'SignalCount', 'CreatedAt', 'UpdatedAt']
-    human_readable = tableToMarkdown('Label information', label, headers=headers)
+    human_readable = tableToMarkdown('Label information', label, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -643,7 +660,7 @@ def get_file_downloads(client, data_args):
     outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Host', 'Path', 'Hash', 'Downloaded', 'Size', 'Created', 'CreatedBy', 'CreatedByProc',
                'LastModified', 'LastModifiedBy', 'LastModifiedByProc', 'SPath', 'Comments', 'Tags']
-    human_readable = tableToMarkdown('File downloads', files, headers=headers)
+    human_readable = tableToMarkdown('File downloads', files, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -673,7 +690,7 @@ def filter_to_tanium_api_syntax(filter_str):
 
 def get_events_by_connection(client, data_args):
     limit = int(data_args.get('limit'))
-    offset = data_args.get('offset')
+    offset = int(data_args.get('offset'))
     connection = data_args.get('connection-name')
     sort = data_args.get('sort')
     fields = data_args.get('fields')
@@ -709,7 +726,7 @@ def get_events_by_connection(client, data_args):
                'ProcessHash', 'ExitCode', 'SID', 'Username', 'Hashes', 'Operation', 'File', 'DestinationAddress',
                'DestinationPort', 'SourceAddress', 'SourcePort', 'KeyPath', 'ValueName', 'EndTime', 'ImageLoaded',
                'Signature', 'Signed', 'EventId', 'EventOpcode', 'EventRecordID', 'EventTaskID', 'Query', 'Response']
-    human_readable = tableToMarkdown(f'Events for {connection}', events, headers=headers)
+    human_readable = tableToMarkdown(f'Events for {connection}', events, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -728,7 +745,8 @@ def get_file_download_info(client, data_args):
     outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Host', 'Path', 'Hash', 'Downloaded', 'Size', 'Created', 'CreatedBy', 'CreatedByProc',
                'LastModified', 'LastModifiedBy', 'LastModifiedByProc', 'SPath', 'Comments', 'Tags']
-    human_readable = tableToMarkdown(f'File download metadata for file `{file["Path"]}`', file, headers=headers)
+    human_readable = tableToMarkdown(f'File download metadata for file `{file["Path"]}`', file, headers=headers,
+                                     headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -742,16 +760,17 @@ def get_process_info(client, data_args):
     outputs = {'Tanium.Process(val.ProcessID && val.ProcessID === obj.ProcessID)': context}
     headers = ['ProcessID', 'ProcessName', 'ProcessCommandLine', 'ProcessTableId', 'SID', 'Username', 'Domain',
                'ExitCode', 'CreateTime']
-    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', process, headers=headers)
+    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', process, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
 def get_events_by_process(client, data_args):
     limit = int(data_args.get('limit'))
+    offset = int(data_args.get('offset'))
     conn_name = data_args.get('connection-name')
     ptid = data_args.get('ptid')
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processevents/{ptid}',
-                                     params={'limit': limit})
+                                     params={'limit': limit, 'offset': offset})
 
     events = []
     for item in raw_response:
@@ -761,7 +780,8 @@ def get_events_by_process(client, data_args):
     context = createContext(events, removeNull=True)
     outputs = {'Tanium.ProcessEvent(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Detail', 'Type', 'Timestamp', 'Operation']
-    human_readable = tableToMarkdown(f'Events for process {ptid}', events, headers=headers)
+    human_readable = tableToMarkdown(f'Events for process {ptid}', events, headers=headers,
+                                     headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -780,7 +800,8 @@ def get_process_children(client, data_args):
     context = createContext(children, removeNull=True)
     outputs = {'Tanium.ProcessChildren(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Name', 'PID', 'PTID', 'Parent', 'Children', 'ChildrenCount']
-    human_readable = tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_human_readable, headers=headers)
+    human_readable = tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_human_readable, headers=headers,
+                                     headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -794,7 +815,7 @@ def get_parent_process(client, data_args):
     outputs = {'Tanium.ParentProcess(val.ProcessID && val.ProcessID === obj.ProcessID)': context}
     headers = ['ProcessID', 'ProcessName', 'ProcessCommandLine', 'ProcessTableId', 'SID', 'Username', 'Domain',
                'ExitCode', 'CreateTime']
-    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', process, headers=headers)
+    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', process, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -816,10 +837,13 @@ def get_parent_process_tree(client, data_args):
         del process_tree['Children']
         headers = ['ID', 'Name', 'PID', 'PTID', 'Parent', 'Children', 'ChildrenCount']
 
-        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', process_tree, headers=headers)
-        human_readable += tableToMarkdown(f'Processes with the same parent', children_item, headers=headers)
+        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', process_tree, headers=headers,
+                                         headerTransform=pascalToSpace)
+        human_readable += tableToMarkdown(f'Processes with the same parent', children_item, headers=headers,
+                                          headerTransform=pascalToSpace)
     else:
-        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', readable_output, headers=headers)
+        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', readable_output, headers=headers,
+                                         headerTransform=pascalToSpace)
 
     context = createContext(tree, removeNull=True)
     outputs = {'Tanium.ParentProcessTree(val.ID && val.ID === obj.ID)': context}
@@ -844,10 +868,12 @@ def get_process_tree(client, data_args):
         process_tree = readable_output.copy()
         del process_tree['Children']
         human_readable = tableToMarkdown(f'Process information for process with PTID {ptid}', process_tree,
-                                         headers=headers)
-        human_readable += tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_item, headers=headers)
+                                         headers=headers, headerTransform=pascalToSpace)
+        human_readable += tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_item,
+                                          headers=headers, headerTransform=pascalToSpace)
     else:
-        human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', readable_output, headers=headers)
+        human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', readable_output,
+                                         headers=headers, headerTransform=pascalToSpace)
 
     context = createContext(tree, removeNull=True)
     outputs = {'Tanium.ProcessTree(val.ID && val.ID === obj.ID)': context}
@@ -875,7 +901,7 @@ def list_evidence(client, data_args):
     outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Timestamp', 'Host', 'User', 'Summary', 'ConntectionID', 'Type', 'CreatedAt', 'UpdatedAt',
                'ProcessTableId', 'Comments', 'Tags']
-    human_readable = tableToMarkdown('Evidences', evidences, headers=headers)
+    human_readable = tableToMarkdown('Evidences', evidences, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -890,7 +916,7 @@ def get_evidence(client, data_args):
     outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
     headers = ['ID', 'Timestamp', 'Host', 'User', 'Summary', 'ConntectionID', 'Type', 'CreatedAt', 'UpdatedAt',
                'ProcessTableId', 'Comments', 'Tags']
-    human_readable = tableToMarkdown('Label information', evidence, headers=headers)
+    human_readable = tableToMarkdown('Label information', evidence, headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -977,7 +1003,8 @@ def get_file_download_request_status(client, data_args):
     context = createContext(file_download_request, removeNull=True)
     outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.Host === obj.Host)': context}
     headers = ['ID', 'Host', 'Status', 'Path', 'Downloaded']
-    human_readable = tableToMarkdown('File download request status', file_download_request, headers=headers)
+    human_readable = tableToMarkdown('File download request status', file_download_request,
+                                     headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -997,13 +1024,17 @@ def list_files_in_dir(client, data_args):
     raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads/{con_name}/list/{dir_path}')
 
     files = []
-    for file in raw_response[offset:offset + limit]:
+    from_idx = min(offset, len(raw_response))
+    to_idx = min(offset + limit, len(raw_response))
+
+    for file in raw_response[from_idx:to_idx]:
         files.append(get_file_item(file))
 
     context = createContext(files, removeNull=True)
     outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
     headers = ['Path', 'Size', 'Created', 'LastModified', 'Permissions', 'IsDirectory']
-    human_readable = tableToMarkdown(f'Files in directory `{dir_path_name}`', files, headers=headers)
+    human_readable = tableToMarkdown(f'Files in directory `{dir_path_name}`', files,
+                                     headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -1017,7 +1048,8 @@ def get_file_info(client, data_args):
     context = createContext(file_info, removeNull=True)
     outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
     headers = ['Path', 'Size', 'Created', 'LastModified', 'Permissions', 'IsDirectory']
-    human_readable = tableToMarkdown(f'Information for file `{path}`', file_info, headers=headers)
+    human_readable = tableToMarkdown(f'Information for file `{path}`', file_info,
+                                     headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -1036,14 +1068,13 @@ def get_process_timeline(client, data_args):
     offset = int(data_args.get('offset'))
 
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_name}/eprocesstimelines/{ptid}')
-    demisto.info('AAAAAAAAAA')
-    demisto.info(str(raw_response))
     timeline = get_process_timeline_item(raw_response, category, limit, offset)
 
     context = createContext(timeline, removeNull=True)
     outputs = {'Tanium.ProcessTimeline(val.ProcessTableID && val.ProcessTableID === obj.ProcessTableID)': context}
     headers = ['Date', 'Event', 'Category']
-    human_readable = tableToMarkdown(f'Timeline data for process with PTID `{ptid}`', timeline, headers=headers)
+    human_readable = tableToMarkdown(f'Timeline data for process with PTID `{ptid}`', timeline,
+                                     headers=headers, headerTransform=pascalToSpace)
     return human_readable, outputs, raw_response
 
 
@@ -1114,10 +1145,10 @@ def main():
         f'tanium-tr-list-alerts': get_alerts,
         f'tanium-tr-get-alert-by-id': get_alert,
         f'tanium-tr-alert-update-state': alert_update_state,
-        f'tanium-tr-list-snapshots': get_snapshots,
+        f'tanium-tr-list-snapshots-by-connection': get_snapshots,
         f'tanium-tr-create-snapshot': create_snapshot,
         f'tanium-tr-delete-snapshot': delete_snapshot,
-        f'tanium-tr-list-local-snapshots': get_local_snapshots,
+        f'tanium-tr-list-local-snapshots-by-connection': get_local_snapshots,
         f'tanium-tr-delete-local-snapshot': delete_local_snapshot,
         f'tanium-tr-list-connections': get_connections,
         f'tanium-tr-get-connection-by-name': get_connection,

@@ -5,14 +5,12 @@ commonfields:
 configuration:
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
+  type: 13
 - display: Hostname, IP address, or server URL
   name: url
   required: true
@@ -87,10 +85,16 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
-      description: The maximum number of intel documents to return. The default value
-        is 5.
+      description: The maximum number of intel documents to return.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset number to begin listing intel documents.
+      isArray: false
+      name: offset
       required: false
       secret: false
     deprecated: false
@@ -346,20 +350,32 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '5'
-      description: The maximin number of snapshots to return. The default value is
-        5.
+      defaultValue: '50'
+      description: The maximum number of snapshots to return.
       isArray: false
       name: limit
       required: false
       secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset number to begin listing snapshots.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: The connection name.
+      isArray: false
+      name: connection_name
+      required: true
+      secret: false
     deprecated: false
-    description: Returns all snapshots.
+    description: Returns all snapshots of a single connection.
     execution: false
-    name: tanium-tr-list-snapshots
+    name: tanium-tr-list-snapshots-by-connection
     outputs:
-    - contextPath: Tanium.Snapshot.DirectoryName
-      description: The snapshot directory name.
+    - contextPath: Tanium.Snapshot.ConnectionName
+      description: The snapshot connection name.
       type: String
     - contextPath: Tanium.Snapshot.Error
       description: The snapshot error message.
@@ -403,20 +419,33 @@ script:
     name: tanium-tr-delete-snapshot
   - arguments:
     - default: false
-      defaultValue: '5'
+      defaultValue: '50'
       description: The maximum number of local snapshots to return. The default value
-        is 5.
+        is 50.
       isArray: false
       name: limit
       required: false
       secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset number to begin listing local snapshots.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: The connection name.
+      isArray: false
+      name: connection_name
+      required: true
+      secret: false
     deprecated: false
-    description: Returns all local snapshots.
+    description: Returns all local snapshots of a single connection.
     execution: false
-    name: tanium-tr-list-local-snapshots
+    name: tanium-tr-list-local-snapshots-by-connection
     outputs:
-    - contextPath: Tanium.LocalSnapshot.DirectoryName
-      description: The snapshot directory name.
+    - contextPath: Tanium.LocalSnapshot.ConnectionName
+      description: The snapshot connection name.
       type: String
     - contextPath: Tanium.LocalSnapshot.FileName
       description: The snapshot file name.
@@ -440,11 +469,17 @@ script:
     name: tanium-tr-delete-local-snapshot
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: The maximum number of connections to return. The default value
-        is 50.
+      defaultValue: '5'
+      description: The maximum number of connections to return.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset number to begin listing connections.
+      isArray: false
+      name: offset
       required: false
       secret: false
     deprecated: false
@@ -541,10 +576,17 @@ script:
     name: tanium-tr-delete-connection
   - arguments:
     - default: false
-      defaultValue: '5'
-      description: The maximum number of labels to return. The default value is 5.
+      defaultValue: '50'
+      description: The maximum number of labels to return.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset number to begin listing labels.
+      isArray: false
+      name: offset
       required: false
       secret: false
     deprecated: false
@@ -993,10 +1035,17 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '5'
-      description: The maximum number of events to return. The default value is 5.
+      defaultValue: '50'
+      description: The maximum number of events to return.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The offset number to begin listing events.
+      isArray: false
+      name: offset
       required: false
       secret: false
     deprecated: false
