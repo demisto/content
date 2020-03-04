@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Azure Sentinel",
+            "playbookID": "TestAzureSentinelPlaybook"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -707,7 +711,7 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500            
+            "timeout": 500
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1011,7 +1015,7 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240            
+            "timeout": 240
         },
         {
             "integrations": "activedir",
@@ -2037,7 +2041,7 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"            
+            "playbookID": "RasterizeImageTest"
         },
         {
             "integrations": "Ipstack",
