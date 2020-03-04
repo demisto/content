@@ -1100,13 +1100,13 @@ def test_ip_to_indicator(ip, indicator_type):
 
 
 data_test_b64_encode = [
-    (u'test', u'dGVzdA=='),
-    ('test', u'dGVzdA=='),
-    (b'test', u'dGVzdA=='),
-    ('', u''),
-    ('%', u'JQ=='),
-    (u'§', u'wqc='),
-    (u'§t`e§s`t§', u'wqd0YGXCp3NgdMKn'),
+    (u'test', 'dGVzdA=='),
+    ('test', 'dGVzdA=='),
+    (b'test', 'dGVzdA=='),
+    ('', ''),
+    ('%', 'JQ=='),
+    (u'§', 'wqc='),
+    (u'§t`e§s`t§', 'wqd0YGXCp3NgdMKn'),
 ]
 
 
