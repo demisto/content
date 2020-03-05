@@ -1111,7 +1111,6 @@ IP_TO_INDICATOR_TYPE_PACK = [
 
 @pytest.mark.parametrize('ip, indicator_type', IP_TO_INDICATOR_TYPE_PACK)
 def test_ip_to_indicator(ip, indicator_type):
-
     assert FeedIndicatorType.ip_to_indicator_type(ip) is indicator_type
 
 
