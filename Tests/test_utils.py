@@ -680,9 +680,8 @@ class Docker:
                                                         container_id)  # get full name (ex: demisto/slack:1.0.0.4978)
             image_name = image_full.split(':')[0]  # just the name such as demisto/slack
 
-            memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold')
-                                or docker_thresholds.get(image_name, {}).get(
-                        'memory_threshold') or def_memory_threshold)
+            memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold') or docker_thresholds.get(
+                image_name, {}).get('memory_threshold') or def_memory_threshold)
             pid_threshold = (docker_thresholds.get(image_full, {}).get('pid_threshold')
                              or docker_thresholds.get(image_name, {}).get('pid_threshold') or def_pid_threshold)
             print("Checking container: {} (image: {}) for memory: {} pid: {} thresholds ...".format(
