@@ -920,7 +920,7 @@ try:
     elif demisto.command() == 'microsoft-atp-create-alert':
         create_alert_command()
 
-    elif demisto.command() == 'microsoft-atp-get-alert-related-user':
+    elif demisto.command() == 'microsoft-atp-1-get-alert-related-user':
         get_alert_related_user_command()
 
 except Exception as e:
