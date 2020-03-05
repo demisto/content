@@ -132,6 +132,10 @@
             "timeout": 500
         },
         {
+            "integrations": "Google Vision AI",
+            "playbookID": "Google Vision API - Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test",
             "fromversion": "5.0.0"
@@ -2403,11 +2407,9 @@
     ],
     "skipped_tests": {
         "Office365_Feed_Test": "Issue 22517",
-        "DuoAdmin API test playbook": "Issue 22514",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
         "Send Investigation Summary Reports": "Issue 22299",
-        "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
@@ -2513,6 +2515,7 @@
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
         "LogRhythm": "Issue 21672",
+        "SecBI": "Issue 22545",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2593,7 +2596,8 @@
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
-        "Google Chronicle Backstory": "SDK"
+        "Google Chronicle Backstory": "SDK",
+        "Google Vision AI": "SDK"
     },
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
