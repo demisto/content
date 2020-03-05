@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.1] - 2020-03-04
 Added the ability to run the integration as a separate process, which protects against memory depletion.
 
 ## [19.12.0] - 2019-12-10
