@@ -1,8 +1,6 @@
 ## [Unreleased]
-
-
-## [20.3.1] - 2020-03-04
--
+- Updated Authorization header for Events API to use the correct token
+- Added a User-Agent header to aid in diagnostics/debugging
 
 ## [20.2.4] - 2020-02-25
 -
