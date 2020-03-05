@@ -12,7 +12,7 @@ from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Tests.test_utils import run_command, print_error, print_warning, print_color, LOG_COLORS, \
-    collect_content_items_data, input_to_list
+    collect_pack_content_items, input_to_list
 
 # global constants
 STORAGE_BASE_PATH = "content/packs"
@@ -46,7 +46,8 @@ class Pack(object):
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
         CHANGELOG_MD (str): changelog md full name.
         README (str): pack's readme file name.
-        METADATA (str): pack's metadata file name, may be changed in the future.
+        METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
+        USER_METADATA (str); user metadata file name, the one that located in content repo.
         INDEX_NAME (str): pack's index name, may be changed in the future.
 
     """
@@ -55,6 +56,7 @@ class Pack(object):
     CHANGELOG_JSON = "changelog.json"
     CHANGELOG_MD = "changelog.md"
     README = "README.md"
+    USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     INDEX_NAME = "index"
     EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
@@ -104,11 +106,12 @@ class Pack(object):
 
             return pack_versions[0].vstring
 
-    def _parse_pack_metadata(self, user_metadata):
+    def _parse_pack_metadata(self, user_metadata, pack_content_items):
         """Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
             user_metadata (dict): user metadata that was created in pack initialization.
+            pack_content_items (dict): content items located inside specific pack.
 
         Returns:
             dict: parsed pack metadata.
@@ -139,9 +142,7 @@ class Pack(object):
         is_deprecated = user_metadata.get('deprecated', False)
         pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
         pack_metadata['certification'] = user_metadata.get('certification', '')
-        # pack_metadata['price'] = user_metadata.get('price', 0)
-        price = user_metadata.get('price', 0)
-        pack_metadata['price'] = int(price)
+        pack_metadata['price'] = int(user_metadata.get('price', 0))
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
@@ -149,10 +150,8 @@ class Pack(object):
         pack_metadata['general'] = input_to_list(user_metadata.get('general'))
         pack_metadata['tags'] = input_to_list(user_metadata.get('tags'))
         pack_metadata['categories'] = input_to_list(user_metadata.get('categories'))
-        content_items_data = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in
-                              collect_content_items_data(self._pack_path).items() if k in DIR_NAME_TO_CONTENT_TYPE}
-        pack_metadata['contentItems'] = content_items_data
-        pack_metadata["contentItemTypes"] = list(content_items_data.keys())
+        pack_metadata['contentItems'] = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in pack_content_items.items()
+                                         if k in DIR_NAME_TO_CONTENT_TYPE and v}
         # todo collect all integrations display name
         pack_metadata["integrations"] = []
         pack_metadata["useCases"] = input_to_list(user_metadata.get('useCases'))
@@ -214,22 +213,30 @@ class Pack(object):
 
         return True
 
-    def format_metadata(self):
+    def format_metadata(self, pack_content_items):
         """Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
-        """
-        metadata_path = os.path.join(self._pack_path, Pack.METADATA)
+        Args:
+            pack_content_items (dict): content items that are located inside specific pack. Possible keys of the dict:
+            Classifiers, Dashboards, IncidentFields, IncidentTypes, IndicatorFields, Integrations, Layouts, Playbooks,
+            Reports, Scripts and Widgets. Each key is mapped to list of items with name and description. Several items
+            have no description.
 
-        if not os.path.exists(metadata_path):
-            print_error(f"{self._pack_name} pack is missing {Pack.METADATA} file.")
+        """
+        user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
+        metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
+
+        if not os.path.exists(user_metadata_path):
+            print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
             sys.exit(1)
 
-        with open(metadata_path, "r+") as metadata_file:
-            user_metadata = json.load(metadata_file)
-            formatted_metadata = self._parse_pack_metadata(user_metadata)
-            metadata_file.seek(0)
-            json.dump(formatted_metadata, metadata_file, indent=4)
+        with open(user_metadata_path, "r") as user_metadata_file:
+            user_metadata = json.load(user_metadata_file)  # loading user metadata
+            formatted_metadata = self._parse_pack_metadata(user_metadata, pack_content_items)
+
+        with open(metadata_path, "w") as metadata_file:
+            json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
 
         print_color(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.",
                     LOG_COLORS.GREEN)
@@ -360,6 +367,12 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
     download_index_path = os.path.join(extract_destination_path, f"{Pack.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
+    index_folder_path = os.path.join(extract_destination_path, Pack.INDEX_NAME)
+
+    if not index_blob.exists():
+        os.mkdir(index_folder_path)
+        return index_folder_path, index_blob
+
     index_blob.cache_control = "no-cache"  # index zip should never be cached in the memory, should be updated version
     index_blob.reload()
     index_blob.download_to_filename(download_index_path)
@@ -368,7 +381,7 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         with ZipFile(download_index_path, 'r') as index_zip:
             index_zip.extractall(extract_destination_path)
 
-        index_folder_path = os.path.join(extract_destination_path, Pack.INDEX_NAME)
+        # index_folder_path = os.path.join(extract_destination_path, Pack.INDEX_NAME)
 
         if not os.path.exists(index_folder_path):
             print_error(f"Failed creating {Pack.INDEX_NAME} folder with extracted data.")
@@ -434,7 +447,9 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
 
     index_blob.cache_control = "no-cache"  # disabling caching for index blob
-    index_blob.reload()
+    if index_blob.exists():
+        index_blob.reload()
+
     index_blob.upload_from_filename(index_zip_path)
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {Pack.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
@@ -490,7 +505,8 @@ def main():
     index_was_updated = False  # indicates whether one or more index folders were updated
 
     for pack in packs_list:
-        pack.format_metadata()
+        pack_content_items = collect_pack_content_items(pack.path)
+        pack.format_metadata(pack_content_items)
         # todo finish implementation of release notes
         # pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
