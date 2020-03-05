@@ -452,7 +452,7 @@ jobs:
 
             EXTRACT_FOLDER=$(mktemp -d)
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_MARKETPLACE_KEY -b marketplace-dist-dev -n $CIRCLE_BUILD_NUM
+            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_MARKETPLACE_KEY -b marketplace-dist -n $CIRCLE_BUILD_NUM
           when: on_success
       - store_artifacts:
           path: artifacts
