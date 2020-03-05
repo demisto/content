@@ -22,6 +22,11 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
+- display: API Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: false
 - display: Trust any certificate (unsecure)
   name: insecure
   defaultvalue: ""
