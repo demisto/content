@@ -347,7 +347,10 @@ def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
 
 
-def collect_content_items_data(pack_path):
+def collect_pack_content_items(pack_path):
+    """Collects specific pack content items.
+
+    """
     YML_SUPPORTED_DIRS = [
         "Scripts",
         "Integrations",
@@ -559,7 +562,8 @@ class Docker:
 
     @classmethod
     def get_image_for_container_id(cls, server_ip, container_id):
-        cmd = cls._build_ssh_command(server_ip, "sudo docker inspect -f {{.Config.Image}} " + container_id, force_tty=False)
+        cmd = cls._build_ssh_command(server_ip, "sudo docker inspect -f {{.Config.Image}} " + container_id,
+                                     force_tty=False)
         stdout, stderr = cls.run_shell_command(cmd)
         if stderr:
             print_warning("Received stderr from docker inspect command. Additional information: {}".format(stderr))
@@ -646,7 +650,8 @@ class Docker:
         return stdout
 
     @classmethod
-    def check_resource_usage(cls, server_url, docker_images, def_memory_threshold, def_pid_threshold, docker_thresholds):
+    def check_resource_usage(cls, server_url, docker_images, def_memory_threshold, def_pid_threshold,
+                             docker_thresholds):
         """
         Executes docker stats command on remote machine and returns error message in case of exceeding threshold.
 
@@ -671,15 +676,17 @@ class Docker:
             container_id = container_stat['container_id']
             memory_usage = container_stat['memory_usage']
             pids_usage = container_stat['pids']
-            image_full = cls.get_image_for_container_id(server_ip, container_id)  # get full name (ex: demisto/slack:1.0.0.4978)
+            image_full = cls.get_image_for_container_id(server_ip,
+                                                        container_id)  # get full name (ex: demisto/slack:1.0.0.4978)
             image_name = image_full.split(':')[0]  # just the name such as demisto/slack
 
             memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold')
-                                or docker_thresholds.get(image_name, {}).get('memory_threshold') or def_memory_threshold)
+                                or docker_thresholds.get(image_name, {}).get(
+                        'memory_threshold') or def_memory_threshold)
             pid_threshold = (docker_thresholds.get(image_full, {}).get('pid_threshold')
                              or docker_thresholds.get(image_name, {}).get('pid_threshold') or def_pid_threshold)
             print("Checking container: {} (image: {}) for memory: {} pid: {} thresholds ...".format(
-                  container_name, image_full, memory_threshold, pid_threshold))
+                container_name, image_full, memory_threshold, pid_threshold))
             if memory_usage > memory_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the memory threshold, '
                                   'configured: {} MiB and actual memory usage is {} MiB.\n'
