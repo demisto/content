@@ -1,7 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
 from dateutil.parser import parse
-import demistomock as demisto
 
 """MOCKED RESPONSES"""
 

@@ -254,12 +254,12 @@ def test_extract_api_from_username_password_empty():
     assert esf.extract_api_from_username_password(None, None) == (None, None)
 
 
-def test_extract_api_from_username_password_username():
+def test_extract_api_from_username_password_username_username():
     import FeedElasticsearch as esf
     assert esf.extract_api_from_username_password('username', 'password') == (None, None)
 
 
-def test_extract_api_from_username_password_username():
+def test_extract_api_from_username_password_username_api_key():
     import FeedElasticsearch as esf
     username = esf.API_KEY_PREFIX + 'api_key'
     assert esf.extract_api_from_username_password(username, 'api_id') == ('api_key', 'api_id')
