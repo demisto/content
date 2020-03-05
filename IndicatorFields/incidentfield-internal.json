@@ -28,9 +28,12 @@
     "Account",
     "Domain",
     "Email",
-    "IP",
     "URL",
-    "Host"
+    "Host",
+    "IP",
+    "CIDR",
+    "IPv6",
+    "IPv6CIDR"
   ],
   "caseInsensitive": true,
   "columns": null,
