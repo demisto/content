@@ -3,11 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Microsoft_Graph_Files",
-            "playbookID": "test_MsGraphFiles",
-            "fromVersion": "5.0.0"
-        },
-        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -1314,7 +1309,19 @@
             "playbookID": "Microsoft Graph Groups - Test",
             "instance_names": "ms_graph_groups_prod"
         },
-                {
+        {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "instance_names": "ms_graph_groups_dev",
+            "fromVersion": "5.0.0"
+        },
+        {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "instance_names": "ms_graph_groups_prod",
+            "fromVersion": "5.0.0"
+        },
+        {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test",
             "instance_names": "ms_graph_calendar_dev"
