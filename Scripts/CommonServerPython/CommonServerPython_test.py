@@ -1129,4 +1129,3 @@ data_test_b64_encode = [
 def test_b64_encode(_input, expected_output):
     output = b64_encode(_input)
     assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
-    
