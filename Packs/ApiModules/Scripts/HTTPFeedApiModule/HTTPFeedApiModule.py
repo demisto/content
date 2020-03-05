@@ -110,7 +110,11 @@ class Client(BaseClient):
         if username.startswith('_header:'):
             if not self.headers:
                 self.headers = {}
-            header_name: str = username.split(':')[1]
+            header_field = username.split(':')
+            if len(header_field) < 2:
+                raise ValueError('An incorrect value was provided for an API key header.'
+                                 ' The correct value is "_header:<header_name>"')
+            header_name: str = header_field[1]
             header_value: str = credentials.get('password', '')
             self.headers[header_name] = header_value
         else:
@@ -383,7 +387,7 @@ def test_module(client, args):
 
 def feed_main(feed_name, params=None, prefix=''):
     if not params:
-        params = {k: v for k, v in demisto.params().items() if v is not None}
+        params = assign_params(demisto.params())
     if 'feed_name' not in params:
         params['feed_name'] = feed_name
     client = Client(**params)

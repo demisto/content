@@ -1,7 +1,7 @@
 elasticcommonfields: {}
-id: PlainText_Feed_Test
+id: PlainText Feed - Test
 version: -1
-name: PlainText_Feed_Test
+name: PlainText Feed - Test
 starttaskid: "0"
 tasks:
   "0":

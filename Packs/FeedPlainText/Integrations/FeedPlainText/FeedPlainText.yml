@@ -12,7 +12,9 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
+- additionalinfo: It is possible to provide an API key header instead. See the description
+    for more details.
+  display: Username
   name: credentials
   required: false
   type: 9
@@ -65,7 +67,6 @@ configuration:
   type: 15
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
-  display: ''
   options:
   - never
   - interval
@@ -75,7 +76,6 @@ configuration:
   type: 17
 - defaultvalue: '20160'
   name: feedExpirationInterval
-  display: ''
   required: false
   type: 1
 - defaultvalue: '240'
@@ -168,5 +168,5 @@ script:
   subtype: python3
   type: python
 tests:
-- PlainText_Feed_Test
+- PlainText Feed - Test
 fromversion: 5.5.0
