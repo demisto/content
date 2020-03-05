@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "Plain Text Feed",
-            "playbookID": "PlainText_Feed_Test",
+            "playbookID": "PlainText Feed - Test",
             "fromversion": "5.5.0"
         },
         {
