@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Silverfort",
+            "playbookID": "Silverfort-test"
+        },
+        {
             "integrations": "Blocklist_de Feed",
             "playbookID": "Blocklist_de - Test",
             "fromversion": "5.5.0"
