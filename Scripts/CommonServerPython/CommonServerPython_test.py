@@ -1112,3 +1112,20 @@ IP_TO_INDICATOR_TYPE_PACK = [
 @pytest.mark.parametrize('ip, indicator_type', IP_TO_INDICATOR_TYPE_PACK)
 def test_ip_to_indicator(ip, indicator_type):
     assert FeedIndicatorType.ip_to_indicator_type(ip) is indicator_type
+
+
+data_test_b64_encode = [
+    (u'test', 'dGVzdA=='),
+    ('test', 'dGVzdA=='),
+    (b'test', 'dGVzdA=='),
+    ('', ''),
+    ('%', 'JQ=='),
+    (u'§', 'wqc='),
+    (u'§t`e§s`t§', 'wqd0YGXCp3NgdMKn'),
+]
+
+
+@pytest.mark.parametrize('_input, expected_output', data_test_b64_encode)
+def test_b64_encode(_input, expected_output):
+    output = b64_encode(_input)
+    assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
