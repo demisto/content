@@ -18,11 +18,13 @@ from dateutil.parser import parse
 requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
+API_KEY_PREFIX = '_api_key'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
-API_KEY = demisto.params().get('api_key')
-API_ID = demisto.params().get('api_id')
+API_KEY = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
+if API_KEY:
+    USERNAME = None
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
     400: '400 Bad Request - Incorrect or invalid parameters',
@@ -89,7 +91,16 @@ def timestamp_to_date(timestamp_string):
 
 def elasticsearch_builder():
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    if USERNAME:
+    if API_KEY:
+        if PROXY:
+            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                 api_key=(PASSWORD, API_KEY), verify_certs=INSECURE, proxies=handle_proxy())
+
+        else:
+            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                 api_key=(PASSWORD, API_KEY), verify_certs=INSECURE)
+
+    elif USERNAME:
         if PROXY:
             return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
                                  http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
@@ -97,16 +108,6 @@ def elasticsearch_builder():
         else:
             return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
                                  http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
-
-    if API_KEY:
-        if PROXY:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 api_key=(API_ID, API_KEY), verify_certs=INSECURE, proxies=handle_proxy())
-
-        else:
-            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                 api_key=(API_ID, API_KEY), verify_certs=INSECURE)
-
     else:
         if PROXY:
             return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,

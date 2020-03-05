@@ -1,6 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 from dateutil.parser import parse
+import demistomock as demisto
 
 """MOCKED RESPONSES"""
 
@@ -37,7 +38,6 @@ ES_V6_RESPONSE = {
         ]
     }
 }
-
 
 ES_V7_RESPONSE = {
     'took': 1,
@@ -245,7 +245,6 @@ MOCK_ES6_INCIDETNS = str([
     }
 ])
 
-
 ES_V7_RESPONSE_WITH_TIMESTAMP = {
     'took': 1,
     'timed_out': False,
@@ -282,7 +281,6 @@ ES_V7_RESPONSE_WITH_TIMESTAMP = {
         ]
     }
 }
-
 
 MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
     {
@@ -428,7 +426,7 @@ def test_elasticsearch_builder_called_with_username_password(mocker):
 
 
 @patch("Elasticsearch_v2.API_KEY", "demisto")
-@patch("Elasticsearch_v2.API_ID", "mock")
+@patch("Elasticsearch_v2.PASSWORD", "mock")
 def test_elasticsearch_builder_called_with_api_key(mocker):
     from elasticsearch import Elasticsearch
     from Elasticsearch_v2 import elasticsearch_builder

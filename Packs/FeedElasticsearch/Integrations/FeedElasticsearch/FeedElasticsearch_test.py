@@ -247,3 +247,19 @@ def test_elasticsearch_builder_called_with_no_creds(mocker):
     client._elasticsearch_builder()
     assert es_mock.call_args[1].get('http_auth') is None
     assert es_mock.call_args[1].get('api_key') is None
+
+
+def test_extract_api_from_username_password_empty():
+    import FeedElasticsearch as esf
+    assert esf.extract_api_from_username_password(None, None) == (None, None)
+
+
+def test_extract_api_from_username_password_username():
+    import FeedElasticsearch as esf
+    assert esf.extract_api_from_username_password('username', 'password') == (None, None)
+
+
+def test_extract_api_from_username_password_username():
+    import FeedElasticsearch as esf
+    username = esf.API_KEY_PREFIX + 'api_key'
+    assert esf.extract_api_from_username_password(username, 'api_id') == ('api_key', 'api_id')

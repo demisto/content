@@ -12,12 +12,6 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Provide API key + API ID instead of Username + Password
-  display: API Key (Password is API ID)
-  hidden: false
-  name: api_key
-  required: false
-  type: 9
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure

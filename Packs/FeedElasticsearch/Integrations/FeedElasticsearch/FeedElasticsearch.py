@@ -26,6 +26,7 @@ HTTP_ERRORS = {
 
 '''VARIABLES FOR FETCH INDICATORS'''
 FETCH_SIZE = 50
+API_KEY_PREFIX = '_api_key'
 MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 FEED_TYPE_GENERIC = 'Generic Feed (fill in configuration below)'
 FEED_TYPE_CORTEX = 'Cortex XSOAR Feed'
@@ -62,6 +63,11 @@ class ElasticsearchClient:
         }
         return requests.get(self._server, auth=self._http_auth, verify=self._insecure, headers=headers,
                             proxies=self._proxy)
+
+
+def extract_api_from_username_password(username, password):
+    return (username[len(API_KEY_PREFIX):], password) if username and username.startswith(
+        API_KEY_PREFIX) else (None, None)
 
 
 ''' ###################### COMMANDS ###################### '''
@@ -319,8 +325,7 @@ def main():
         fetch_index = params.get('fetch_index')
         fetch_time = params.get('fetch_time', '3 days')
         query = params.get('es_query')
-        api_creds = params.get('api_key')
-        api_key, api_id = (api_creds.get('identifier'), api_creds.get('password')) if api_creds else (None, None)
+        api_key, api_id = extract_api_from_username_password(username, password)
         client = ElasticsearchClient(insecure, server, username, password, api_key, api_id, time_field, time_method,
                                      fetch_index, fetch_time, query)
         src_val = params.get('src_val')

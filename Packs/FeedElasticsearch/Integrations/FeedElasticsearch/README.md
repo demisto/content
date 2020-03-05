@@ -13,10 +13,8 @@ Fetch indicators stored in an Elasticsearch database.
 2. Search for SharedTenantElasticsearchFeed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Server URL__: Elasticsearch database URL. 
-    * __Username__: Used for authentication via Username + Password.
-    * __Password__: Used for authentication via Username + Password.
-    * __API Key__: Used for authentication via API ID + API Key.
-    * __API ID__: Used for authentication via API ID + API Key.
+    * __Username__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter **_api_key** followed by your API key).
+    * __Password__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter you API ID).
     * __Trust any certificate (not secure)__: Ignore HTTPS certificates.
     * __Use system proxy settings__: Enable/Disable
     * __Feed Type__: Choose the feed type saved into the Elasticsearch database. Cortex XSOAR Feed are indicators saved by Cortex XSOAR in an Elasticsearch
