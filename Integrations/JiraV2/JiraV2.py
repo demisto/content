@@ -371,8 +371,9 @@ def get_issue_fields(issue_creating=False, **issue_args):
             issue['fields']['priority'] = {}
         issue['fields']['priority']['name'] = issue_args['priority']
 
-    if issue_args.get('duedate'):
-        issue['fields']['duedate'] = issue_args['duedate']
+    duedate = issue_args.get('duedate') or issue_args.get('dueDate')
+    if duedate:
+        issue['fields']['duedate'] = duedate
 
     if issue_args.get('assignee'):
         if not issue['fields'].get('assignee'):
