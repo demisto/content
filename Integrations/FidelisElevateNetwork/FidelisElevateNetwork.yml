@@ -1003,10 +1003,10 @@ script:
       name: action
       predefined:
       - LABEL_ADD
-      - REPLACE_ALL
-      - CLEAR
-      - REMOVE
-      required: false
+      - ASSIGN
+      - UNASSIGN
+      - LABEL_REMOVE
+      required: true
       secret: false
     deprecated: false
     description: adds a label to an alert
