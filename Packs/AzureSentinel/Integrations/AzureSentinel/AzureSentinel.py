@@ -599,7 +599,6 @@ def main():
         elif demisto.command() in commands:
             return_outputs(*commands[demisto.command()](client, demisto.args()))  # type: ignore
 
-    # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
