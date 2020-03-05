@@ -7,7 +7,7 @@ import urllib3
 import requests
 import traceback
 from dateutil.parser import parse
-from typing import Optional, Pattern, List
+from typing import Optional, Pattern, List, Dict, Any
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -17,7 +17,7 @@ class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
                  indicator: str = '', fields: str = '{}', feed_url_to_config: dict = None, polling_timeout: int = 20,
-                 headers: dict = None, proxy: bool = False, custom_fields_mapping: dict = None, **kwargs):
+                 headers: Optional[Dict[str, str]] = None, proxy: bool = False, custom_fields_mapping: dict = None, **kwargs):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
@@ -257,9 +257,9 @@ def get_indicator_fields(line, url, client: Client):
     :param client: The client
     :return: The indicator
     """
-    attributes: Optional[dict] = None
+    attributes: Optional[Dict] = None
     value: str = ''
-    indicator: Optional[dict] = None
+    indicator: Optional[Dict] = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
     if feed_config:
@@ -352,6 +352,28 @@ def get_indicators_command(client: Client, args):
 
 
 def test_module(client, args):
+    indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
+    if not FeedIndicatorType.is_valid_type(indicator_type):
+        supported_values = ', '.join((
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
+        ))
+        raise ValueError(f'Indicator type of {indicator_type} is not supported. Supported values are:'
+                         f' {supported_values}')
     client.build_iterator()
     return 'ok', {}, {}
 
@@ -359,7 +381,6 @@ def test_module(client, args):
 def feed_main(feed_name, params=None, prefix=''):
     if not params:
         params = {k: v for k, v in demisto.params().items() if v is not None}
-
     if 'feed_name' not in params:
         params['feed_name'] = feed_name
     client = Client(**params)
