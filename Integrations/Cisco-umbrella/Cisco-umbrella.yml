@@ -1546,13 +1546,12 @@ script:
     - contextPath: Umbrella.Timeline.Data.Timestamp
       description: The time when the attribution for this URL changed.
       type: date
-  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
   type: python
+  subtype: python2
 tests:
 - Cisco Umbrella Test
