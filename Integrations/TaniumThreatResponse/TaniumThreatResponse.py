@@ -1190,7 +1190,7 @@ def main():
         if command in commands:
             human_readable, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-        # Log exceptions
+
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':
