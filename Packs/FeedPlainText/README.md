@@ -1,1 +1,1 @@
-Pack for the generic CSV feed integration.
+Pack for the generic Plain Text feed integration.
