@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.1] - 2020-03-04
 Fixed an issue in the ***jira-create-issue*** and ***jira-edit-issue*** commands where the due date was not set correctly.
 
 ## [20.2.0] - 2020-02-04
