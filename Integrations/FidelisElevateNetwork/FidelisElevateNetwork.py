@@ -323,8 +323,7 @@ def manage_alert_label_command():
     args = demisto.args()
     alert_id = args['alert_id']
     label = args['label']
-    action = args['action']
-    labelAction = args['labelAction']
+    label_action = args['action']
 
     # Action Options (LABEL_ADD, REPLACE_ALL, CLEAR, REMOVE)
     # labelAction Options(LABEL_ADD, ASSIGN, UNASSIGN, LABEL_REMOVE)
@@ -334,17 +333,26 @@ def manage_alert_label_command():
         'alertIds': [alert_id],
         # 'alertIds': ['Console-' + str(alert_id)],
         'labels': [label],
-        'action': action,
-        'labelAction': labelAction,
+        'labelAction': label_action,
     }
 
-    manage_alert_label(alert_id, data)
+    bad_res = manage_alert_label(data)
+    if bad_res:
+        return_error("Was not able to assign label {} to alert {}".format(label, alert_id))
+
+    else:
+        return_outputs("Assigned label: {} to alert {}".format(label, alert_id), {}, {})
 
 
 @logger
-def manage_alert_label(alert_id, data):
+def manage_alert_label(data):
     url = '/j/rest/v1/alert/mgmt/'
-    http_request('PUT', url, data=data)
+    res = http_request('PUT', url, data=data)
+    if res.get('Console') == 'OK':
+        return 0
+
+    else:
+        return 1
 
 
 # end of adding a label section
@@ -529,6 +537,7 @@ def get_alert_forensictext_command():
         'EntryContext': {
             'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
         },
+        'HumanReadable': 'Alert {}'.format(alert_id) + "\nForensic Text: " + str(result)
     })
 
 
