@@ -37,22 +37,6 @@ config = Config(
 """HELPER FUNCTIONS"""
 
 
-def aws_table_to_markdown(response, table_header):
-    if not isinstance(response, dict):
-        return tableToMarkdown(table_header, response)
-    elif len(response) != 1:
-        return tableToMarkdown(table_header, response)
-    elif not isinstance(response[list(response.keys())[0]], dict) and \
-            not isinstance(response[list(response.keys())[0]], list):
-        return tableToMarkdown(table_header, response)
-    elif not isinstance(response[list(response.keys())[0]], list):
-        return tableToMarkdown(table_header, response[list(response.keys())[0]])
-    elif not isinstance(response[list(response.keys())[0]][0], str):
-        return tableToMarkdown(table_header, response[list(response.keys())[0]])
-    else:
-        return tableToMarkdown(table_header, response[list(response.keys())[0]])
-
-
 def parse_resource_ids(resource_id):
     id_list = resource_id.replace(" ", "")
     resourceIds = id_list.split(",")
