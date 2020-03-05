@@ -1,0 +1,39 @@
+commonfields:
+  elasticcommonfields: {}
+  id: DemistoServerURL
+  version: -1
+name: DemistoServerURL
+script: |-
+  from urllib.parse import urlparse, ParseResult
+
+  urls = demisto.demistoUrls()
+  server_url = urls.get('server', '')
+
+  server_url_parts: ParseResult = urlparse(server_url)
+  host_name = server_url_parts.hostname
+  port = server_url_parts.port
+  scheme = server_url_parts.scheme
+
+  server_address = {
+      'Host': f'{scheme}://{host_name}',
+      'Port': port
+  }
+
+  return_outputs(server_url, {'ServerURL': server_address}, server_url)
+type: python
+tags: []
+comment: Get the Demisto Server URL.
+enabled: true
+outputs:
+- contextPath: ServerURL.Host
+  description: The server host name.
+  type: string
+- contextPath: ServerURL.Port
+  description: The server port.
+  type: number
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.1.6120
+runas: DBotWeakRole
