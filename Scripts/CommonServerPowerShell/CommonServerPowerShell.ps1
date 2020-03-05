@@ -140,7 +140,7 @@ class DemistoObject {
     }
 
     Debug ($Log) {
-        global:DemistoServerLog ([ServerLogLevel]::debug) $Log
+        global:DemistoServerLog ([ServerLogLevel]::debug) $Log  # disable-secrets-detection
     }
 
     Error ($Log) {
