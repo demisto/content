@@ -18,16 +18,23 @@ class MsGraphClient:
     def __init__(self, ms_client):
         self.ms_client = ms_client
 
-    def make_request(self, method, url_suffix, resp_type='json', data=None):
-        """
-        Performs a simple http request
-        :param method: The method of the request
-        :param url_suffix: The url suffix to add to base url
-        :param resp_type: The expected type of the response (Can be empty)
-        :param data: The request's body
-        :return: The request's response
-        """
-        return self.ms_client.http_request(method, url_suffix, data=data, resp_type=resp_type)
+    def list_managed_devices(self, args) -> Tuple[list, Any]:
+        url_suffix: str = '/deviceManagement/managedDevices'
+        limit: int = try_parse_integer(args.get('limit', 10), err_msg='This value for limit must be an integer.')
+        raw_response = self.ms_client.http_request('GET', url_suffix)
+        return raw_response.get('value', [])[:limit], raw_response
+
+    def get_managed_device(self, args) -> Tuple[Any, str]:
+        device_id = args.get("device-id")
+        url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
+        return self.ms_client.http_request('GET', url_suffix), device_id
+
+    def make_action(self, args) -> str:
+        action: str = get_action(demisto.command())
+        body: Union[str, None] = build_request_body(args, action)
+        url_suffix: str = f'deviceManagement/managedDevices/{args.get("device-id")}/{dash_to_camelcase(action)}'
+        self.ms_client.http_request_request('POST', url_suffix, data=body, resp_type='None')
+        return action
 
 
 ''' HELPER FUNCTIONS '''
@@ -276,24 +283,19 @@ SPECIAL_ACTIONS: dict = {
 ''' COMMANDS '''
 
 
-def list_managed_devices_command(client: MsGraphClient, args: dict) -> Tuple[str, dict, dict]:
-    url_suffix: str = '/deviceManagement/managedDevices'
-    limit: int = try_parse_integer(args.get('limit', 10), err_msg='This value for limit must be an integer.')
-    raw_response = client.make_request('GET', url_suffix)
-    list_raw_devices: list = raw_response.get('value', [])[:limit]
+def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
+    list_raw_devices, raw_response = client.list_managed_devices(args)
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
     list_devices_hr: list = [build_device_human_readable(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
     human_readable: str = 'No managed devices found.'
     if list_devices:
         human_readable = tableToMarkdown('List managed devices', list_devices_hr, headers=HEADERS['device'])
-    return human_readable, entry_context, raw_response
+    return_outputs(human_readable, entry_context, raw_response)
 
 
-def get_managed_device_command(client: MsGraphClient, args: dict) -> Tuple[str, dict, dict]:
-    device_id = args.get("device-id")
-    url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
-    raw_response = client.make_request('GET', url_suffix)
+def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
+    raw_response, device_id = client.get_managed_device(args)
     device: dict = build_device_object(raw_response)
     device_hr: dict = build_device_human_readable(raw_response)
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
@@ -301,15 +303,12 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> Tuple[str, 
     human_readable: str = f'Managed device {device_id} not found.'
     if device:
         human_readable = tableToMarkdown(f'Managed device {device_name}', device_hr, headers=HEADERS['device'])
-    return human_readable, entry_context, raw_response
+    return_outputs(human_readable, entry_context, raw_response)
 
 
-def make_action_command(client: MsGraphClient, args: dict) -> Tuple[str, dict, dict]:
-    action: str = get_action(demisto.command())
-    body: Union[str, None] = build_request_body(args, action)
-    url_suffix: str = f'deviceManagement/managedDevices/{args.get("device-id")}/{dash_to_camelcase(action)}'
-    client.make_request('POST', url_suffix, data=body, resp_type='None')
-    return f'Device {action.replace("-", " ")} action activated successfully.', {}, {}
+def make_action_command(client: MsGraphClient, args: dict) -> None:
+    action = client.make_action(args)
+    return_outputs(f'Device {action.replace("-", " ")} action activated successfully.', {}, {})
 
 
 ''' MAIN '''
@@ -346,28 +345,6 @@ def main():
 
     client: MsGraphClient = MsGraphClient(ms_client)
 
-    commands: dict = {
-        'msgraph-list-managed-devices': list_managed_devices_command,
-        'msgraph-get-managed-device-by-id': get_managed_device_command,
-        'msgraph-device-disable-lost-mode': make_action_command,
-        'msgraph-locate-device': make_action_command,
-        'msgraph-sync-device': make_action_command,
-        'msgraph-device-reboot-now': make_action_command,
-        'msgraph-device-shutdown': make_action_command,
-        'msgraph-device-bypass-activation-lock': make_action_command,
-        'msgraph-device-retire': make_action_command,
-        'msgraph-device-reset-passcode': make_action_command,
-        'msgraph-device-remote-lock': make_action_command,
-        'msgraph-device-request-remote-assistance': make_action_command,
-        'msgraph-device-recover-passcode': make_action_command,
-        'msgraph-device-logout-shared-apple-device-active-user': make_action_command,
-        'msgraph-device-delete-user-from-shared-apple-device': make_action_command,
-        'msgraph-device-windows-defender-update-signatures': make_action_command,
-        'msgraph-clean-windows-device': make_action_command,
-        'msgraph-device-windows-defender-scan': make_action_command,
-        'msgraph-device-wipe': make_action_command,
-        'msgraph-update-windows-device-account': make_action_command
-    }
     command: str = demisto.command()
     LOG(f'Command being called is {command}')
 
@@ -375,11 +352,21 @@ def main():
         if command == 'test-module':
             client.ms_client.get_access_token()
             demisto.results('ok')
-        else:
-            # run the command
-            human_readable, entry_context, raw_response = commands[command](client, args)
-            # create a war room entry
-            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        elif command == 'msgraph-list-managed-devices':
+            list_managed_devices_command(client, args)
+        elif command == 'msgraph-get-managed-device-by-id':
+            get_managed_device_command(client, args)
+        elif command in ['msgraph-device-disable-lost-mode', 'msgraph-locate-device', 'msgraph-sync-device',
+                         'msgraph-device-reboot-now', 'msgraph-device-shutdown',
+                         'msgraph-device-bypass-activation-lock', 'msgraph-device-retire',
+                         'msgraph-device-reset-passcode', 'msgraph-device-remote-lock',
+                         'msgraph-device-request-remote-assistance', 'msgraph-device-recover-passcode',
+                         'msgraph-device-logout-shared-apple-device-active-user',
+                         'msgraph-device-delete-user-from-shared-apple-device',
+                         'msgraph-device-windows-defender-update-signatures',
+                         'msgraph-clean-windows-device', 'msgraph-device-windows-defender-scan',
+                         'msgraph-device-wipe', 'msgraph-update-windows-device-account']:
+            make_action_command(client, args)
 
     # log exceptions
     except Exception as err:
