@@ -1,6 +1,3 @@
-wget -q https://raw.githubusercontent.com/demisto/dockerfiles/syslog/docker/rsyslog/rsyslog.conf --no-check-certificate \
-&& rm -rf /etc/rsyslog.conf
-
-mv rsyslog.conf /etc/rsyslog.conf
-
+echo "module(load=\"imudp\")" >> /etc/rsyslog.conf
+echo "input(type=\"imudp\" port=\"514\")" >> /etc/rsyslog.conf
 echo "*.* @@`hostname -i`:5140" >> /etc/rsyslog.conf
