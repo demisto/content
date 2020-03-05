@@ -7,7 +7,7 @@ import urllib3
 import requests
 import traceback
 from dateutil.parser import parse
-from typing import Optional, Pattern, List, Dict, Any
+from typing import Optional, Pattern, List, Dict
 
 # disable insecure warnings
 urllib3.disable_warnings()
