@@ -632,7 +632,7 @@ def get_domain_machines_request(domain):
     Returns:
         dict. Machines entities
     """
-    cmd_url = '/domains/{}/alerts'.format(domain)
+    cmd_url = '/domains/{}/machines'.format(domain)
     response = http_request('GET', cmd_url)
     return response
 

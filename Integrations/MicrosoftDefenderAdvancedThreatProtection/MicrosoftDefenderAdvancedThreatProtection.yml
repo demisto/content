@@ -1417,7 +1417,7 @@ script:
     - default: false
       description: The machine's ID
       isArray: false
-      name: machine_id-p
+      name: machine_id
       required: true
       secret: false
     - default: false
@@ -2146,5 +2146,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-  Microsoft Defender Advanced Threat ProtectionV2 - Test
+tests: Microsoft Defender Advanced Threat ProtectionV2 - Test
