@@ -356,8 +356,12 @@ def test_module(client, args):
     return 'ok', {}, {}
 
 
-def feed_main(feed_name, params, prefix=''):
-    params['feed_name'] = feed_name
+def feed_main(feed_name, params=None, prefix=''):
+    if not params:
+        params = {k: v for k, v in demisto.params().items() if v is not None}
+
+    if 'feed_name' not in params:
+        params['feed_name'] = feed_name
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':
