@@ -7,7 +7,7 @@ import urllib3
 import requests
 import traceback
 from dateutil.parser import parse
-from typing import Optional, Pattern, List, Dict
+from typing import Optional, Pattern, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -17,7 +17,7 @@ class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
                  indicator: str = '', fields: str = '{}', feed_url_to_config: dict = None, polling_timeout: int = 20,
-                 headers: Optional[Dict[str, str]] = None, proxy: bool = False, custom_fields_mapping: dict = None, **kwargs):
+                 headers: dict = None, proxy: bool = False, custom_fields_mapping: dict = None, **kwargs):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
@@ -97,6 +97,7 @@ class Client(BaseClient):
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
             raise ValueError('Please provide an integer value for "Request Timeout"')
+
         self.headers = headers
         self.encoding = encoding
         self.feed_name = feed_name
@@ -107,8 +108,10 @@ class Client(BaseClient):
 
         username = credentials.get('identifier', '')
         if username.startswith('_header:'):
-            header_name = username.split(':')[1]
-            header_value = credentials.get('password', '')
+            if not self.headers:
+                self.headers = {}
+            header_name: str = username.split(':')[1]
+            header_value: str = credentials.get('password', '')
             self.headers[header_name] = header_value
         else:
             self.username = username
@@ -257,9 +260,9 @@ def get_indicator_fields(line, url, client: Client):
     :param client: The client
     :return: The indicator
     """
-    attributes: Optional[Dict] = None
+    attributes = None
     value: str = ''
-    indicator: Optional[Dict] = None
+    indicator = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
     if feed_config:
