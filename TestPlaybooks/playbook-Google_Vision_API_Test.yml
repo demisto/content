@@ -127,7 +127,7 @@ tasks:
             value:
               complex:
                 root: GoogleVisionAPI
-                accessor: Logo.[0].description
+                accessor: Logo.[0].Description
                 transformers:
                 - operator: toLowerCase
             iscontext: true
