@@ -12,7 +12,6 @@ tasks:
       '#none#':
       - "1"
     note: false
-    quiet: false
     separatecontext: false
     skipunavailable: false
     task:
@@ -36,7 +35,6 @@ tasks:
     id: "1"
     ignoreworker: false
     note: false
-    quiet: false
     scriptarguments:
       alert_id:
         simple: ${incident.helloworldid}

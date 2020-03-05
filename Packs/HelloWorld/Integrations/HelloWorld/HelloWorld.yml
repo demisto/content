@@ -78,10 +78,10 @@ script:
     - name: severity
       auto: PREDEFINED
       predefined:
-      - 1
-      - 2
-      - 3
-      - 4
+      - "1"
+      - "2"
+      - "3"
+      - "4"
       description: Filter by alert severity (0 to 4). 0-low, 1-medium, 2-high, 3-critical
     - name: status
       auto: PREDEFINED
@@ -177,18 +177,18 @@ script:
     - contextPath: HelloWorld.IP.reputation
       description: Reputation of the ip, number between 0-100
       type: number
-    - contextPath: DBotScore.Indicator
-      description: The tested indicator
-      type: string
     - contextPath: DBotScore.Vendor
-      description: HelloWorld
-      type: string
-    - contextPath: DBotScore.Type
-      description: it will be "ip"
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: 0-Not found, 1-Good, 2-Suspicious, 3-Bad
-      type: string
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
     description: Return IP reputation
   - name: helloworld-scan-start
     arguments:
