@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.1] - 2020-03-04
 - Fixed an issue where ***fetch-incidents*** did not work as intended.
 - Fixed an issue where ***splunk-parse-raw*** cut the last character of parsed fields.
 
