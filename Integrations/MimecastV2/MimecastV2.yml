@@ -1582,9 +1582,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The sender type by which to block senders in the policy. This argument
-        must match the fromValue argument. For example, if you specify email_domain,
-        the fromValue must be an email domain.
+      description: The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain.
       isArray: false
       name: fromType
       predefined:
@@ -1601,9 +1599,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The blocked receiver type by which to block receivers in the policy.
-        This argument must match the toValue argument. For example, if you specify
-        email_domain, the fromType must be an email domain.
+      description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain.
       isArray: false
       name: toType
       predefined:
@@ -1617,7 +1613,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The block action. Can be "no_action" or "block_sender".
+      description: 'The block action. Can be "no_action" or "block_sender".'
       isArray: false
       name: option
       predefined:
@@ -1626,23 +1622,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value of the fromType argument. For example, if you specify
-        email_domain for fromType, the fromValue must be an email domain.
+      description: The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain.
       isArray: false
       name: fromValue
       required: false
       secret: false
     - default: false
-      description: The value of the toType argument. For example, if you specify email_domain
-        for toType, the toValue must be an email domain.
+      description: The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain.
       isArray: false
       name: toValue
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The part from where addresses are pulled. Can be "envelope_from",
-        "header_from", or "both".
+      description: The part from where addresses are pulled. Can be "envelope_from", "header_from", or "both".
       isArray: false
       name: fromPart
       predefined:

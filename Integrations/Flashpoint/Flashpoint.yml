@@ -1,45 +1,42 @@
-category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Flashpoint
   version: -1
+name: Flashpoint
+display: Flashpoint
+category: Data Enrichment & Threat Intelligence
+description: Use the Flashpoint integration to reduce business risk.
 configuration:
-- defaultvalue: https://fp.tools
-  display: URL
+- display: URL
   name: url
-  required: true
+  defaultvalue: "https://fp.tools"
   type: 0
+  required: true
 - display: API Key
   name: api_key
-  required: true
+  defaultvalue: ""
   type: 4
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
+  defaultvalue: ""
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
+  defaultvalue: ""
   type: 8
-description: Use the Flashpoint integration to reduce business risk.
-display: Flashpoint
-name: Flashpoint
+  required: false
 script:
+  script: ''
+  type: python
   commands:
-  - arguments:
-    - default: true
+  - name: ip
+    arguments:
+    - name: ip
+      default: true
+      required: false
       description: The IP address to check.
       isArray: true
-      name: ip
-      required: false
-      secret: false
-    deprecated: false
-    description: Looks up details of an IP indicator. The reputation of the IP address
-      is considered malicious if there's at least one IOC event in the Flashpoint
-      database that matches the IP indicator. Alternatively, the IP address is considered
-      suspicious if it matches any one of the Torrent's Peer IP Address or Forum Visit's
-      Peer IP Address.
-    execution: false
-    name: ip
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -89,19 +86,16 @@ script:
     - contextPath: Flashpoint.IP.Event.Comment
       description: The comment that was provided when the indicator was observed.
       type: string
-  - arguments:
-    - default: true
+    description: Looks up details of an IP indicator. The reputation of the IP address is considered malicious
+      if there's at least one IOC event in the Flashpoint database that matches the IP indicator.
+      Alternatively, the IP address is considered suspicious if it matches any one of the Torrent's Peer IP Address or Forum Visit's Peer IP Address.
+  - name: domain
+    arguments:
+    - name: domain
+      required: false
+      default: true
       description: The domain name to check.
       isArray: true
-      name: domain
-      required: false
-      secret: false
-    deprecated: false
-    description: Lookup the "Domain" type indicator details. The reputation of Domain
-      is considered Malicious if there's at least one IOC event in Flashpoint database
-      matching the Domain indicator.
-    execution: false
-    name: domain
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -151,19 +145,15 @@ script:
     - contextPath: Domain.Name
       description: Name of domain.
       type: string
-  - arguments:
-    - default: true
+    description: Lookup the "Domain" type indicator details. The reputation of Domain is considered Malicious
+      if there's at least one IOC event in Flashpoint database matching the Domain indicator.
+  - name: filename
+    arguments:
+    - name: filename
+      required: false
+      default: true
       description: The file name to check.
       isArray: true
-      name: filename
-      required: false
-      secret: false
-    deprecated: false
-    description: Lookup the "Filename" type indicator details. The reputation of Filename
-      is considered Malicious if there's at least one IOC event in Flashpoint database
-      matching the Filename indicator.
-    execution: false
-    name: filename
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -204,19 +194,15 @@ script:
     - contextPath: Flashpoint.Filename.Event.Comment
       description: The comment that was provided when the indicator was observed.
       type: string
-  - arguments:
-    - default: true
+    description: Lookup the "Filename" type indicator details. The reputation of Filename is considered Malicious
+      if there's at least one IOC event in Flashpoint database matching the Filename indicator.
+  - name: url
+    arguments:
+    - name: url
+      required: false
+      default: true
       description: The url to check.
       isArray: true
-      name: url
-      required: false
-      secret: false
-    deprecated: false
-    description: Lookup the "URL" type indicator details. The reputation of Url is
-      considered Malicious if there's at least one IOC event in Flashpoint database
-      matching the Url indicator.
-    execution: false
-    name: url
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -263,19 +249,15 @@ script:
     - contextPath: URL.Malicious.Vendor
       description: Vendor of malicious url.
       type: string
-  - arguments:
-    - default: true
+    description: Lookup the "URL" type indicator details. The reputation of Url is considered Malicious
+      if there's at least one IOC event in Flashpoint database matching the Url indicator.
+  - name: file
+    arguments:
+    - name: file
+      required: false
+      default: true
       description: A list of hashes of the file to query. Supports MD5, SHA1 and SHA256.
       isArray: true
-      name: file
-      required: false
-      secret: false
-    deprecated: false
-    description: Lookup the "File" type indicator details. The reputation of File-hash
-      is considered Malicious if there's at least one IOC event in Flashpoint database
-      matching the File-hash indicator.
-    execution: false
-    name: file
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -337,19 +319,15 @@ script:
     - contextPath: File.SHA256
       description: SHA256 type file.
       type: string
-  - arguments:
-    - default: true
+    description: Lookup the "File" type indicator details. The reputation of File-hash is considered Malicious
+      if there's at least one IOC event in Flashpoint database matching the File-hash indicator.
+  - name: email
+    arguments:
+    - name: email
+      required: false
+      default: true
       description: The email to check.
       isArray: true
-      name: email
-      required: false
-      secret: false
-    deprecated: false
-    description: Lookup the "Email" type indicator details. The reputation of Email
-      is considered Malicious if there's at least one IOC event in Flashpoint database
-      matching the Email indicator.
-    execution: false
-    name: email
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -396,36 +374,24 @@ script:
     - contextPath: Account.Email.Name
       description: Name of indicator.
       type: string
-  - arguments:
-    - default: false
-      description: Search report using keyword or text
-      isArray: false
-      name: report_search
+    description: Lookup the "Email" type indicator details. The reputation of Email is considered Malicious
+      if there's at least one IOC event in Flashpoint database matching the Email indicator.
+  - name: flashpoint-search-intelligence-reports
+    arguments:
+    - name: report_search
       required: true
-      secret: false
-    deprecated: false
-    description: Search for the Intelligence Reports using a keyword
-    execution: false
-    name: flashpoint-search-intelligence-reports
+      description: Search report using keyword or text
     outputs:
     - contextPath: Flashpoint.Report
       description: List of reports based on specified search query or keyword
-      type: Unknown
-  - arguments:
-    - default: false
-      description: The report id of the report for which the details are to be fetched.
-        The report id can be known from output context path (Flashpoint.Report.ReportId)
-        of report-search command or some other investigation.
-      isArray: false
-      name: report_id
+    description: Search for the Intelligence Reports using a keyword
+  - name: flashpoint-get-single-intelligence-report
+    arguments:
+    - name: report_id
       required: true
-      secret: false
-    deprecated: false
-    description: Get single report details using the report id. The report id can
-      be known from output context path (Flashpoint.Report.ReportId) of report-search
-      command or some other investigation.
-    execution: false
-    name: flashpoint-get-single-intelligence-report
+      description: The report id of the report for which the details are to be fetched.
+        The report id can be known from output context path (Flashpoint.Report.ReportId) of
+        report-search command or some other investigation.
     outputs:
     - contextPath: Flashpoint.Report.NotifiedAt
       description: Notify date of report.
@@ -448,41 +414,29 @@ script:
     - contextPath: Flashpoint.Report.ReportId
       description: Unique id of the report.
       type: string
-  - arguments:
-    - default: false
-      description: The report-id of the report of which the related reports are to
-        be fetched. The report id can be known from output context path (Flashpoint.Report.ReportId)
-        of report-search command or some other investigation.
-      isArray: false
-      name: report_id
+    description: Get single report details using the report id.
+      The report id can be known from output context path (Flashpoint.Report.ReportId) of
+      report-search command or some other investigation.
+  - name: flashpoint-get-related-reports
+    arguments:
+    - name: report_id
       required: true
-      secret: false
-    deprecated: false
-    description: Get related reports for a particular report using the report-id.
-      The report id can be known from output context path (Flashpoint.Report.ReportId)
-      of report-search command or some other investigation.
-    execution: false
-    name: flashpoint-get-related-reports
+      description: The report-id of the report of which the related reports are to be fetched.
+        The report id can be known from output context path (Flashpoint.Report.ReportId) of
+        report-search command or some other investigation.
     outputs:
     - contextPath: Flashpoint.Report
       description: Display list of related report based on report fpid.
-      type: Unknown
-  - arguments:
-    - default: false
-      description: The UUID or FPID that identifies a particular event. The event
-        id can be fetched from output context path (Flashpoint.Event.EventId) get-events
-        command or indicator reputation command response or some other investigation.
-      isArray: false
-      name: event_id
+    description: Get related reports for a particular report using the report-id.
+      The report id can be known from output context path (Flashpoint.Report.ReportId) of
+      report-search command or some other investigation.
+  - name: flashpoint-get-single-event
+    arguments:
+    - name: event_id
       required: true
-      secret: false
-    deprecated: false
-    description: Retrieves the details of a single event using event UUID or FPID.
-      To retrieve the event id, run the get-events command and see the value under
-      the Flashpoint.Event.EventId context path. or indicator reputation command response
-      or some other investigation.
-    execution: false
-    name: flashpoint-get-single-event
+      description: The UUID or FPID that identifies a particular event. The event id can be fetched from
+        output context path (Flashpoint.Event.EventId) get-events command
+        or indicator reputation command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Event.ObservedTime
       description: The date that the event was triggered.
@@ -495,63 +449,36 @@ script:
       type: string
     - contextPath: Flashpoint.Event.Tags
       description: The display event tags.
-      type: Unknown
     - contextPath: Flashpoint.Event.EventId
       description: The display event ID (event fpid).
       type: string
     - contextPath: Flashpoint.Event.Name
       description: The name of the event.
       type: string
-  - arguments:
-    - default: false
+    description: Retrieves the details of a single event using event UUID or FPID. To retrieve the event id, run the get-events command and see the value under the Flashpoint.Event.EventId context path.
+      or indicator reputation command response or some other investigation.
+  - name: flashpoint-get-events
+    arguments:
+    - name: time_period
       description: The time period for the search.
-      isArray: false
-      name: time_period
-      required: false
-      secret: false
-    - default: false
-      description: The report fpid. To retrieve the report fpid, run the related-reports
-        command.
-      isArray: false
-      name: report_fpid
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - name: report_fpid
+      description: The report fpid. To retrieve the report fpid, run the related-reports command.
+    - name: limit
       description: Specify the limit on the no. of record.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of attack IDs for which to search. Attack
-        IDs can be found in event information or on the Flashpoint platform by filtering
-        events by attack IDs.
-      isArray: false
-      name: attack_ids
-      required: false
-      secret: false
-    deprecated: false
-    description: Searches for events within the specified time-period, the report
-      fpid, or attack IDs.
-    execution: false
-    name: flashpoint-get-events
+      defaultValue: "10"
+    - name: attack_ids
+      description: A comma-separated list of attack IDs for which to search. Attack IDs can be found in event information or on the Flashpoint platform by filtering events by attack IDs.
     outputs:
     - contextPath: Flashpoint.Event
       description: A list of multiple events.
-      type: Unknown
-  - arguments:
-    - default: true
-      description: The indicator type, for example, domain, ip, email, url, and so
-        on.
-      isArray: true
-      name: indicator
+    description: Searches for events within the specified time-period, the report fpid, or attack IDs.
+  - name: flashpoint-common-lookup
+    arguments:
+    - name: indicator
       required: false
-      secret: false
-    deprecated: false
-    description: Lookup any type of indicator
-    execution: false
-    name: flashpoint-common-lookup
+      default: true
+      description: The indicator type, for example, domain, ip, email, url, and so on.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -565,21 +492,14 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-  - arguments:
-    - default: false
-      description: Specify forum id of the forum for which the details are to be fetched.
-        The forum id can be known from context path (Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id)
-        of flashpoint-search-forum-posts command or some other investigation.
-      isArray: false
-      name: forum_id
+    description: Lookup any type of indicator
+  - name: flashpoint-get-forum-details
+    arguments:
+    - name: forum_id
       required: true
-      secret: false
-    deprecated: false
-    description: Retrieves forum details using the forum ID. To retrieve the forum
-      ID run the flashpoint-search-forum-posts command and see the value under the
-      following context paths, Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id.
-    execution: false
-    name: flashpoint-get-forum-details
+      description: Specify forum id of the forum for which the details are to be fetched. The forum id can be known from
+        context path (Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id)
+        of flashpoint-search-forum-posts command or some other investigation.
     outputs:
     - contextPath: Flashpoint.Forum.Description
       description: Detailed information of the supplied forum ID.
@@ -591,38 +511,23 @@ script:
       description: The name of forum.
       type: string
     - contextPath: Flashpoint.Forum.Stats
-      description: Statistical information such as the number of posts, rooms, threads,
-        and users details.
-      type: Unknown
+      description: Statistical information such as the number of posts, rooms, threads, and users details.
     - contextPath: Flashpoint.Forum.Tags
       description: A list of forum tags, including id, name, parent_tag, and UUID.
-      type: Unknown
     - contextPath: Flashpoint.Forum.ForumId
       description: The Forum ID.
       type: string
-  - arguments:
-    - default: false
-      description: The room ID for which to retrieve room information in a forum.
-        To retrieve the room ID run the flashpoint-search-forum-posts command and
-        see the value under the Flashpoint.Forum.Post.Room.id context path.
-      isArray: false
-      name: room_id
+    description: Retrieves forum details using the forum ID. To retrieve the forum ID run the flashpoint-search-forum-posts command and see the value under the following context paths, Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id.
+  - name: flashpoint-get-forum-room-details
+    arguments:
+    - name: room_id
       required: true
-      secret: false
-    deprecated: false
-    description: Retrieves forum room details using the room ID. To retrieve the room
-      ID run the flashpoint-search-forum-posts command and see the value under the
-      Flashpoint.Forum.Post.Room.id context path.
-    execution: false
-    name: flashpoint-get-forum-room-details
+      description: The room ID for which to retrieve room information in a forum. To retrieve the room ID run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.Room.id context path.
     outputs:
     - contextPath: Flashpoint.Forum.Room.Forum
-      description: Forum details, including forum name, hostname, platform url, stats,
-        tags, and so on.
-      type: Unknown
+      description: Forum details, including forum name, hostname, platform url, stats, tags, and so on.
     - contextPath: Flashpoint.Forum.Room.Title
-      description: The room title. You can use the same title in the forum search
-        command.
+      description: The room title. You can use the same title in the forum search command.
       type: string
     - contextPath: Flashpoint.Forum.Room.Url
       description: The forum room URL.
@@ -630,32 +535,21 @@ script:
     - contextPath: Flashpoint.Forum.Room.RoomId
       description: The forum room ID.
       type: string
-  - arguments:
-    - default: false
-      description: The user ID used to retrieve a user's information. To retrieve
-        the user ID, run the flashpoint-search-forum-posts command and see the value
-        under the Flashpoint.Forum.Post.User.id context path.
-      isArray: false
-      name: user_id
+    description: Retrieves forum room details using the room ID. To retrieve the room ID run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.Room.id context path.
+  - name: flashpoint-get-forum-user-details
+    arguments:
+    - name: user_id
       required: true
-      secret: false
-    deprecated: false
-    description: Retrieves user details using the user-id. To retrieve the user ID,
-      run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id
-      context path.
-    execution: false
-    name: flashpoint-get-forum-user-details
+      description: The user ID used to retrieve a user's information. To retrieve the user ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id context path.
     outputs:
     - contextPath: Flashpoint.Forum.User.Forum
-      description: Forum details, including id, hostname, description, stats, tags,
-        and so on.
-      type: Unknown
+      description: Forum details, including id, hostname, description, stats,
+        tags, and so on.
     - contextPath: Flashpoint.Forum.User.Name
       description: The name of the user.
       type: string
     - contextPath: Flashpoint.Forum.User.PlatformUrl
-      description: The platform URL of the user which is redirected to Flashpoint
-        platform.
+      description: The platform URL of the user which is redirected to Flashpoint platform.
       type: string
     - contextPath: Flashpoint.Forum.User.Url
       description: The URL of user.
@@ -663,89 +557,57 @@ script:
     - contextPath: Flashpoint.Forum.User.UserId
       description: The unique ID of the forum user.
       type: string
-  - arguments:
-    - default: false
-      description: The post ID, which gives post information embedded within the forum,
-        room, user, and so on. To retrieve the post ID, run the flashpoint-search-forum-posts
-        and see the value under the Flashpoint.Forum.Post.PostId context path.
-      isArray: false
-      name: post_id
+    description: Retrieves user details using the user-id. To retrieve the user ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id context path.
+  - name: flashpoint-get-forum-post-details
+    arguments:
+    - name: post_id
       required: true
-      secret: false
-    deprecated: false
-    description: Retrieves post details using the post-id. To retrieve the post ID,
-      run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.PostId
-      context path. command or some other investigation.
-    execution: false
-    name: flashpoint-get-forum-post-details
+      description: The post ID, which gives post information embedded within the forum, room, user, and so on. To retrieve the post ID, run the flashpoint-search-forum-posts and see the value under the Flashpoint.Forum.Post.PostId context path.
     outputs:
     - contextPath: Flashpoint.Forum.Post.Forum
       description: Forum details of the post, including id, hostname, stats, description,
         tags, and so on.
-      type: Unknown
     - contextPath: Flashpoint.Forum.Post.Room
       description: Room details of the post, including room title, id, url, platform
         url, and so on.
-      type: Unknown
     - contextPath: Flashpoint.Forum.Post.User
       description: User details of the post, including user id, name, url, platform
         url, and so on.
-      type: Unknown
     - contextPath: Flashpoint.Forum.Post.PlatformUrl
       description: Using platform URL user can redirect to Flashpoint platform.
       type: string
     - contextPath: Flashpoint.Forum.Post.PublishedAt
       description: The date that the post was published.
-      type: Unknown
     - contextPath: Flashpoint.Forum.Post.Url
       description: The display URL of the post.
-      type: Unknown
     - contextPath: Flashpoint.Forum.Post.PostId
       description: The forum post ID.
       type: string
-  - arguments:
-    - default: false
-      description: The site keyword or text for which to search. This keyword is used
-        for search information in forum sites. This keyword or text is known by Flashpoint
-        users.
-      isArray: false
-      name: site_search
+    description: Retrieves post details using the post-id. To retrieve the post ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.PostId context path.
+      command or some other investigation.
+  - name: flashpoint-search-forum-sites
+    arguments:
+    - name: site_search
       required: true
-      secret: false
-    deprecated: false
-    description: Searches forum sites using a keyword. it will search in site content
-      like name, title, descripion etc.
-    execution: false
-    name: flashpoint-search-forum-sites
+      description: The site keyword or text for which to search. This keyword is used for search information in forum sites.
+        This keyword or text is known by Flashpoint users.
     outputs:
     - contextPath: Flashpoint.Forum.Site
       description: A list of forum site details based on the search keyword.
-      type: Unknown
-  - arguments:
-    - default: false
-      description: The post keyword or text which is used for search information in
-        forum posts, and is known by Flashpoint users.
-      isArray: false
-      name: post_search
+    description: Searches forum sites using a keyword. it will search in site content like name, title, descripion etc.
+  - name: flashpoint-search-forum-posts
+    arguments:
+    - name: post_search
       required: true
-      secret: false
-    deprecated: false
-    description: Search forum posts using a keyword
-    execution: false
-    name: flashpoint-search-forum-posts
+      description: The post keyword or text which is used for search information in forum posts, and is known by
+        Flashpoint users.
     outputs:
     - contextPath: Flashpoint.Forum.Post
       description: A list of forum posts based on the search keyword.
-      type: Unknown
+    description: Search forum posts using a keyword
   dockerimage: demisto/python3:3.7.5.4583
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
   subtype: python3
-  type: python
 tests:
 - Flashpoint_event-Test
 - Flashpoint_forum-Test
