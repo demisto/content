@@ -121,13 +121,9 @@ script:
         endpoint analysis url, families,  verdict, host_name)
       type: Unknown
   dockerimage: demisto/python3:3.7.3.286
-  feed: false
   isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python
 tests:
-- Intezer Testing v2
+  - Intezer Testing v2
