@@ -1,21 +1,22 @@
 id: Silverfort-test
-version: 21
+version: -1
 name: Silverfort-test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 74c9c774-f2b4-4642-80f1-44cdc6c9aa5e
     type: start
     task:
       id: 74c9c774-f2b4-4642-80f1-44cdc6c9aa5e
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -27,8 +28,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 58cabd42-723c-4d40-8c24-3209b051747e
     type: regular
     task:
@@ -38,28 +39,27 @@ tasks:
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
-      - "9"
-      - "10"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 200
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 1cfbe583-ebc4-421b-87e5-4f5e7d6c0533
     type: regular
     task:
@@ -69,10 +69,11 @@ tasks:
       script: '|||silverfort-get-user-risk'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       domain: {}
       email: {}
@@ -84,14 +85,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 68c82d64-05b1-4418-8180-a90ea725e986
     type: condition
     task:
@@ -100,13 +101,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "4"
+      'yes':
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -136,14 +138,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 600
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 9d62ab81-9937-42a0-81f0-925065c59b69
     type: regular
     task:
@@ -153,10 +155,11 @@ tasks:
       script: '|||silverfort-get-resource-risk'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       domain_name:
         simple: silverfort.io
@@ -167,14 +170,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 800
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: cf6bcf37-4a58-4ac9-819e-feb152da40d5
     type: condition
     task:
@@ -183,13 +186,14 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "yes":
-      - "6"
+      'yes':
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -219,14 +223,14 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1000
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 8f0f4504-8684-451f-8b9b-95102ecd1e8e
     type: regular
     task:
@@ -236,10 +240,11 @@ tasks:
       script: '|||silverfort-update-user-risk'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       description:
         simple: Suspicious activity
@@ -253,20 +258,20 @@ tasks:
       upn:
         simple: sfuser@silverfort.io
       valid_for:
-        simple: "1"
+        simple: '1'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1200
+          "y": 2120
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: c0c9ad4e-d87f-4250-8bdb-e050d01c2f91
     type: regular
     task:
@@ -276,10 +281,11 @@ tasks:
       script: '|||silverfort-update-resource-risk'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       description:
         simple: Malware detected
@@ -292,20 +298,20 @@ tasks:
       severity:
         simple: high
       valid_for:
-        simple: "1"
+        simple: '1'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1400
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: dcbd3823-07d6-4fc9-88c7-d12bbf540597
     type: title
     task:
@@ -314,33 +320,35 @@ tasks:
       name: Test Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1600
+          "y": 2470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: cf86d354-4ae6-4413-8c74-eb4b348d0216
+  '9':
+    id: '9'
+    taskid: 5f7aff6e-f3c2-43dc-80dc-ca9a704d388c
     type: regular
     task:
-      id: cf86d354-4ae6-4413-8c74-eb4b348d0216
+      id: 5f7aff6e-f3c2-43dc-80dc-ca9a704d388c
       version: -1
-      name: silverfort-get-user-risk buy sam account&domain
+      name: silverfort-get-user-risk by sam account&domain
       script: '|||silverfort-get-user-risk'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '11'
     scriptarguments:
       domain:
         simple: silverfort.io
@@ -352,15 +360,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 400
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 2e040bf7-0a64-486f-882e-5991486d2801
     type: regular
     task:
@@ -370,10 +378,11 @@ tasks:
       script: '|||silverfort-get-user-risk'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '14'
     scriptarguments:
       domain:
         simple: silverfort.io
@@ -385,8 +394,174 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
-          "y": 400
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 033c4847-95a2-4452-8d42-642b7fdf16b6
+    type: condition
+    task:
+      id: 033c4847-95a2-4452-8d42-642b7fdf16b6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      'yes':
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.Risk
+            iscontext: true
+          right:
+            value:
+              simple: Low
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.Reasons
+            iscontext: true
+          right:
+            value:
+              simple: Password never expires
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.UPN
+            iscontext: true
+          right:
+            value:
+              simple: sfuser@silverfort.io
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: be266c99-a09c-4002-845b-dc81e088a9c6
+    type: regular
+    task:
+      id: be266c99-a09c-4002-845b-dc81e088a9c6
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 64f186e3-3803-44ac-8d35-2976f123569e
+    type: regular
+    task:
+      id: 64f186e3-3803-44ac-8d35-2976f123569e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      all:
+        simple: 'yes'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 1fcf86d3-06e6-40f8-8fff-f05f2954ca6d
+    type: condition
+    task:
+      id: 1fcf86d3-06e6-40f8-8fff-f05f2954ca6d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      'yes':
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.Risk
+            iscontext: true
+          right:
+            value:
+              simple: Low
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.Reasons
+            iscontext: true
+          right:
+            value:
+              simple: Password never expires
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Silverfort.UserRisk.UPN
+            iscontext: true
+          right:
+            value:
+              simple: sfuser@silverfort.io
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -397,12 +572,14 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1615,
-        "width": 1180,
-        "x": -350,
+        "height": 2485,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+description: ''
+fromversion: 5.0.0
