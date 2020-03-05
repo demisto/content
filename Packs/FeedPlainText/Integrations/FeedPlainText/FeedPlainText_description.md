@@ -1,4 +1,8 @@
-Fetch indicators from a CSV feed. The integration allows a great amount of user configuration to support different types of CSV feeds.
+## Plain Text Feed Integration
+
+Fetch indicators from a plain text feed. The integration allows a great amount of user configuration to support different types of plain text feeds.
+
+## Configuration
 
 * **Server URL** - URL of the feed.
 * **Indicator Type** - The type of indicators in the feed.
