@@ -106,12 +106,14 @@ class Pack(object):
 
             return pack_versions[0].vstring
 
-    def _parse_pack_metadata(self, user_metadata, pack_content_items):
+    @staticmethod
+    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id):
         """Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
             user_metadata (dict): user metadata that was created in pack initialization.
             pack_content_items (dict): content items located inside specific pack.
+            pack_id (str): pack unique identifier.
 
         Returns:
             dict: parsed pack metadata.
@@ -121,7 +123,7 @@ class Pack(object):
         # part of old packs are initialized with empty list
         user_metadata = {} if isinstance(user_metadata, list) else user_metadata
         pack_metadata['name'] = user_metadata.get('name', '')
-        pack_metadata['id'] = self._pack_name
+        pack_metadata['id'] = pack_id
         pack_metadata['description'] = user_metadata.get('description', '')
         pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
@@ -233,7 +235,9 @@ class Pack(object):
 
         with open(user_metadata_path, "r") as user_metadata_file:
             user_metadata = json.load(user_metadata_file)  # loading user metadata
-            formatted_metadata = self._parse_pack_metadata(user_metadata, pack_content_items)
+            formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
+                                                           pack_content_items=pack_content_items,
+                                                           pack_id=self._pack_name)
 
         with open(metadata_path, "w") as metadata_file:
             json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
