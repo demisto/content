@@ -387,7 +387,7 @@ def test_module(client, args):
 
 def feed_main(feed_name, params=None, prefix=''):
     if not params:
-        params = assign_params(demisto.params())
+        params = assign_params(**demisto.params())
     if 'feed_name' not in params:
         params['feed_name'] = feed_name
     client = Client(**params)
