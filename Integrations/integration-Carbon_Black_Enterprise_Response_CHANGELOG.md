@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Changed some v1 API calls to v2 calls
 
 ## [19.11.1] - 2019-11-26
 Added the ***cb-binary-download*** command, which replaces the deprecated ***cb-binary-get*** command.
