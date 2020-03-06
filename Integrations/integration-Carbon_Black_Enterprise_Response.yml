@@ -274,7 +274,7 @@ script:
         if (setIgnored) {
             queryParams.set_ignored = setIgnored;
         }
-        let response = sendRequest(`/v2/alerts`, 'POST', queryParams).Body;
+        let response = sendRequest('/v2/alerts', 'POST', queryParams).Body;
         try {
             return JSON.parse(response);
         } catch (err) {
