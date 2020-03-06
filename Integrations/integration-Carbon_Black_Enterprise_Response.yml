@@ -330,7 +330,7 @@ script:
         if (facets) {
             queryParams.facets = facets;
         }
-        let response = sendRequest('/v2/process', 'GET', encodeToURLQuery(queryParams));
+        let response = sendRequest('/v1/process', 'GET', encodeToURLQuery(queryParams));
         try {
             return JSON.parse(response.Body).results;
         } catch (err) {
