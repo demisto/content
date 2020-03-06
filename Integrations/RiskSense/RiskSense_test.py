@@ -1,4 +1,5 @@
 import unittest
+import pytest
 import json
 from unittest.mock import patch
 from RiskSense import Client
@@ -131,9 +132,9 @@ class MyTestCase(unittest.TestCase):
     @patch("RiskSense.get_client_detail_from_context")
     @patch("RiskSense.Client.http_request")
     @patch("RiskSense.prepare_filter_payload")
-    def test_open_host_finding(self, mocker_request, mocker_res, mocker_client_id):
+    def test_host_finding(self, mocker_request, mocker_res, mocker_client_id):
         """
-        When "risksense-get-open-host-findings" command executes successfully
+        When "risksense-get-host-findings" command executes successfully
         then context output and response should match.
 
         :param mocker_request: mocker object of request.
@@ -141,7 +142,7 @@ class MyTestCase(unittest.TestCase):
         :param mocker_client_id: mocker object of client id.
         :return: None
         """
-        from RiskSense import get_open_host_findings_command
+        from RiskSense import get_host_findings_command
         mocker_client_id.return_value = CLIENT_DETAILS
         mocker_request.return_value = {
             "projection": "detail",
@@ -173,7 +174,7 @@ class MyTestCase(unittest.TestCase):
             expected_res = json.load(f)
         mocker_res.return_value = expected_res
 
-        hr, ec, resp = get_open_host_findings_command(self.client, {})
+        hr, ec, resp = get_host_findings_command(self.client, {})
         with open("./TestData/host_finding_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
 
@@ -221,56 +222,6 @@ class MyTestCase(unittest.TestCase):
 
         hr, ec, resp = get_unique_open_findings_command(self.client, {})
         with open("./TestData/unique_open_findings_ec.json") as f:
-            expected_ec = json.load(f)
-        assert expected_res == resp
-        assert expected_ec == ec
-
-    @patch("RiskSense.get_client_detail_from_context")
-    @patch("RiskSense.Client.http_request")
-    @patch("RiskSense.prepare_filter_payload")
-    def test_closed_host_finding(self, mocker_request, mocker_res, mocker_client_id):
-        """
-        When "risksense-get-closed-host-findings" command executes successfully
-        then context output and response should match.
-
-        :param mocker_request: mocker object of request.
-        :param mocker_res: mocker object of response.
-        :param mocker_client_id: mocker object of client id.
-        :return: None
-        """
-        from RiskSense import get_closed_host_findings_command
-        mocker_client_id.return_value = CLIENT_DETAILS
-        mocker_request.return_value = {
-            "projection": "detail",
-            "sort": [
-                {
-                    "field": "riskRating",
-                    "direction": "ASC"
-                }
-            ],
-            "page": "0",
-            "size": "10",
-            "filters": [
-                {
-                    "field": "generic_state",
-                    "exclusive": "false",
-                    "operator": "EXACT",
-                    "value": "closed"
-                },
-                {
-                    "field": "hostName",
-                    "exclusive": "false",
-                    "operator": "EXACT",
-                    "value": "loz.xg.mil"
-                },
-            ]
-        }
-
-        with open("./TestData/host_finding_resp.json", encoding='utf-8') as f:
-            expected_res = json.load(f)
-        mocker_res.return_value = expected_res
-        hr, ec, resp = get_closed_host_findings_command(self.client, {})
-        with open("./TestData/host_finding_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
         assert expected_res == resp
         assert expected_ec == ec
@@ -349,6 +300,7 @@ class MyTestCase(unittest.TestCase):
         mocker_res.return_value = expected_res
 
         hr, ec, resp = get_host_finding_detail_command(self.client, {})
+
         with open("./TestData/host_finding_details_ec.json") as f:
             expected_ec = json.load(f)
 
@@ -395,6 +347,25 @@ class MyTestCase(unittest.TestCase):
 
         assert expected_res == resp
         assert expected_ec == ec
+
+    def test_validate_values_for_between_operator(self):
+        from RiskSense import validate_values_for_between_operator
+        args = {
+            'operator': 'BETWEEN',
+            'value': '200,400'
+        }
+
+        validate_values_for_between_operator(args)
+        args['value'] = "2017-02-20,2020-01-01"
+        validate_values_for_between_operator(args)
+
+        with pytest.raises(SystemExit):
+            args['value'] = "2020-20-20,123.0.0"
+            validate_values_for_between_operator(args)
+
+        with pytest.raises(SystemExit):
+            args['value'] = "2020-20-20,123"
+            validate_values_for_between_operator(args)
 
 
 if __name__ == '__main__':
