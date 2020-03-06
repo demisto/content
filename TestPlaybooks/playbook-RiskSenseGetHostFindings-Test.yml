@@ -1,16 +1,16 @@
-id: RiskSense Get Closed Host Findings - Test
+id: RiskSense Get Host Findings - Test
 version: -1
-name: RiskSense Get Closed Host Findings - Test
+name: RiskSense Get Host Findings - Test
 description: This playbook uses the RiskSense integration and tests the various scenarios
-  of the "risksense-get-closed-host-findings" command. 
+  of the "risksense-get-host-findings" command. 
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 09225056-5b42-4f65-8f75-7faf740a1e43
+    taskid: 10b39b81-f0f8-4b75-8977-1fe9f12a3e8e
     type: start
     task:
-      id: 09225056-5b42-4f65-8f75-7faf740a1e43
+      id: 10b39b81-f0f8-4b75-8977-1fe9f12a3e8e
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 9a9e7052-2cb1-40f4-8d06-8b459fe9a46a
+    taskid: 3e6023f1-5419-4bd7-89aa-fdc231b6db0a
     type: regular
     task:
-      id: 9a9e7052-2cb1-40f4-8d06-8b459fe9a46a
+      id: 3e6023f1-5419-4bd7-89aa-fdc231b6db0a
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -65,16 +65,16 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 2da00f3e-c6a6-42bd-8145-4355c9595462
+    taskid: 82a50be1-ce5a-45d9-8bf0-7b89ac19db18
     type: regular
     task:
-      id: 2da00f3e-c6a6-42bd-8145-4355c9595462
+      id: 82a50be1-ce5a-45d9-8bf0-7b89ac19db18
       version: -1
-      name: Execute risksense-get-closed-host-findings command from Demisto
-      description: A detail of close host finding with its severity level divided
-        into Critical, High, Medium, Low and info part.Displays vulnerability information
-        like CVE, threats associated with current findings and origin of findings.
-      script: RiskSense|||risksense-get-closed-host-findings
+      name: Execute risksense-get-host-findings command from Demisto
+      description: A detailed host finding view with the severity level. Displays
+        vulnerability information like CVE, Threats associated with current findings
+        and origin of findings.
+      script: RiskSense|||risksense-get-host-findings
       type: regular
       iscommand: true
       brand: RiskSense
@@ -82,15 +82,18 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      exclusive_operator: {}
-      fieldname: {}
-      operator: {}
+      exclusive_operator:
+        simple: "false"
+      fieldname:
+        simple: titles
+      operator:
+        simple: EXACT
       page: {}
-      size:
-        simple: "1"
+      size: {}
       sort_by: {}
       sort_order: {}
-      value: {}
+      value:
+        simple: 'NULL Pointer Dereference - based vulnerability identified : CVE-2017-3169'
     separatecontext: false
     view: |-
       {
@@ -104,10 +107,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 951daed4-4019-4eef-8fb2-d0c7f106babf
+    taskid: 8bea6e9e-5c4d-4022-8f4c-b717f5caabb6
     type: condition
     task:
-      id: 951daed4-4019-4eef-8fb2-d0c7f106babf
+      id: 8bea6e9e-5c4d-4022-8f4c-b717f5caabb6
       version: -1
       name: Is context data matched to the response?
       type: condition
@@ -125,7 +128,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Host.HostName
+                accessor: HostFinding.HostName
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -134,7 +137,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Host.IpAddress
+                accessor: HostFinding.HostIpAddress
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -206,7 +209,7 @@ tasks:
             value:
               complex:
                 root: RiskSense
-                accessor: HostFinding.Host.HostID
+                accessor: HostFinding.HostID
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -269,6 +272,24 @@ tasks:
             value:
               complex:
                 root: RiskSense
+                accessor: HostFinding.Vulnerability.BaseScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Vulnerability.Cve
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
                 accessor: HostFinding.ID
                 transformers:
                 - operator: uniq
@@ -285,10 +306,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 7588387a-3a5b-4321-81e0-24d60b89d978
+    taskid: d63cfd54-e4a8-48e0-89ca-7430276e1204
     type: regular
     task:
-      id: 7588387a-3a5b-4321-81e0-24d60b89d978
+      id: d63cfd54-e4a8-48e0-89ca-7430276e1204
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -319,10 +340,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: a8f5447a-3656-46a6-845d-0a4ead0ac9c8
+    taskid: 8455350c-2248-431b-8e57-3c08cfc1cb2b
     type: title
     task:
-      id: a8f5447a-3656-46a6-845d-0a4ead0ac9c8
+      id: 8455350c-2248-431b-8e57-3c08cfc1cb2b
       version: -1
       name: Done
       type: title
@@ -341,10 +362,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 093eb4d7-69f0-42ea-850c-7b997d1637a6
+    taskid: 7b6c0521-c487-45b8-8b8e-58db33e0deb0
     type: regular
     task:
-      id: 093eb4d7-69f0-42ea-850c-7b997d1637a6
+      id: 7b6c0521-c487-45b8-8b8e-58db33e0deb0
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -389,4 +410,3 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: RiskSense Get Open Host Findings - Test

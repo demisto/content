@@ -2347,15 +2347,11 @@
         },
         {
             "integrations": "RiskSense",
-            "playbookID": "RiskSense Get Closed Host Findings - Test"
-        },
-        {
-            "integrations": "RiskSense",
             "playbookID": "RiskSense Get Host Detail - Test"
         },
         {
             "integrations": "RiskSense",
-            "playbookID": "RiskSense Get Host Findings Detail- Test"
+            "playbookID": "RiskSense Get Host Finding Detail - Test"
         },
         {
             "integrations": "RiskSense",
@@ -2363,7 +2359,7 @@
         },
         {
             "integrations": "RiskSense",
-            "playbookID": "RiskSense Get Open Host Findings - Test"
+            "playbookID": "RiskSense Get Host Findings - Test"
         },
         {
             "integrations": "RiskSense",
