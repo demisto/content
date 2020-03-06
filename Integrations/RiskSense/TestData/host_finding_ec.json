@@ -1,6 +1,9 @@
 {
   "RiskSense.HostFinding(val.ID == obj.ID)": [
     {
+      "HostID": 3569982,
+      "HostName": "hostname1",
+      "HostIpAddress": "ip address",
       "ID": 115469577,
       "Source": "source name",
       "SourceID": "source id",
@@ -14,9 +17,6 @@
         }
       ],
       "Host": {
-        "HostID": 3569982,
-        "HostName": "hostname1",
-        "IpAddress": "ip address",
         "Criticality": 5,
         "External": true,
         "Port": [
@@ -228,9 +228,13 @@
       "NoteCount": 0,
       "Note": [],
       "Assignment": [],
-      "Services": "service1"
+      "Services": "service1",
+      "Ticket": []
     },
     {
+      "HostID": 3569982,
+      "HostName": "hostname1",
+      "HostIpAddress": "ip address",
       "ID": 115469577,
       "Source": "source name",
       "SourceID": "source id",
@@ -244,9 +248,6 @@
         }
       ],
       "Host": {
-        "HostID": 3569982,
-        "HostName": "hostname1",
-        "IpAddress": "ip address",
         "Criticality": 5,
         "External": true,
         "Port": [
@@ -458,9 +459,13 @@
       "NoteCount": 0,
       "Note": [],
       "Assignment": [],
-      "Services": "service1"
+      "Services": "service1",
+      "Ticket": []
     },
     {
+      "HostID": 3569982,
+      "HostName": "hostname1",
+      "HostIpAddress": "ip address",
       "ID": 115469577,
       "Source": "source name",
       "SourceID": "source id",
@@ -474,9 +479,6 @@
         }
       ],
       "Host": {
-        "HostID": 3569982,
-        "HostName": "hostname1",
-        "IpAddress": "ip address",
         "Criticality": 5,
         "External": true,
         "Port": [
@@ -688,7 +690,8 @@
       "NoteCount": 0,
       "Note": [],
       "Assignment": [],
-      "Services": "service1"
+      "Services": "service1",
+      "Ticket": []
     }
   ],
   "Host(val.ID == obj.ID)": [

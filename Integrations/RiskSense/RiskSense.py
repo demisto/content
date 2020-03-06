@@ -15,17 +15,24 @@ RISKSENSE_FIELD_MAPPINGS = {
     'Medium Findings': 'findingsDistribution.medium',
     'Low Findings': 'findingsDistribution.low',
     'Info Findings': 'findingsDistribution.info',
-    'Title': 'title',
     'Severity': 'severity',
     'Id': 'id',
+    'ID': 'id',
     'Source': 'source',
     'Risk Rating': 'riskRating',
     'Network Name': 'network.name',
     'Address': 'url',
     'Name': 'name',
-    'Network': 'network.name'
+    'Network': 'network.name',
+    'Title': 'titles',
+    'IP Address': 'ipAddress',
+    'Host Name': 'hostName',
+    'Criticality': 'criticality',
+    'RS3': 'rs3',
+    'BETWEEN': 'RANGE'
 }
-
+REGEX_FOR_YYYY_MM_DD = r'^[12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
+REGEX_FOR_INR_OR_FLOAT = r'^\d+?(\.\d+)?$'
 ''' CLIENT CLASS'''
 
 
@@ -158,8 +165,8 @@ def get_client_detail_from_context(client):
 def prepare_filter_payload(args, projection):
     """
     Prepare body (raw-json) for post API request.
-    Uses in 'risksense-get-hosts' and 'risksense-get-open-host-findings' and 'risksense-get-unique-open-findings'
-    commands.
+    Used in 'risksense-get-hosts', 'risksense-get-host-findings', 'risksense-get-apps' and
+    'risksense-get-unique-open-findings' commands.
 
     :param args: Demisto argument provided by user
     :param projection: projection is used to get detail response or basic response from RiskSense.
@@ -192,17 +199,19 @@ def prepare_filter_payload(args, projection):
         if not exclusive_operator:
             exclusive_operator = 'false'
 
+        if operator in RISKSENSE_FIELD_MAPPINGS:
+            operator = RISKSENSE_FIELD_MAPPINGS[operator]
+
+        if fieldname in RISKSENSE_FIELD_MAPPINGS:
+            fieldname = RISKSENSE_FIELD_MAPPINGS[fieldname]
+
         # Check validation of IP Address in case of operator = EXACT
         if fieldname == 'ipAddress' and operator == 'EXACT':
             if not is_ip_valid(value, True):
                 return_error('IP Address is invalid.')
 
         # Check validation of multiple values
-        if len(value.split(',')) > 1 and operator != 'IN':
-            return_error('In case of multiple comma (,) separated values, use the supported operator = IN')
-
-        if fieldname in RISKSENSE_FIELD_MAPPINGS:
-            fieldname = RISKSENSE_FIELD_MAPPINGS[fieldname]
+        validate_values_for_between_operator(args)
 
         filters.append(
             {
@@ -272,11 +281,11 @@ def get_host_hr(resp_host):
     """
     return {
         'ID': resp_host.get('id', ''),
-        'Rs3': resp_host.get('rs3', ''),
-        'XRs3': resp_host.get('xRS3', ''),
-        'HostName': resp_host.get('hostName', ''),
+        'RS3': resp_host.get('rs3', ''),
+        'xRS3': resp_host.get('xRS3', ''),
+        'Host Name': resp_host.get('hostName', ''),
         'Criticality': resp_host.get('criticality', ''),
-        'IpAddress': resp_host.get('ipAddress', ''),
+        'IP Address': resp_host.get('ipAddress', ''),
         'Network': resp_host.get('network', {}).get('name', ''),
         'Group': len(resp_host.get('groups', [])),
         'Total Findings': resp_host.get('findingsDistribution', {}).get('total', {}).get('value', 0),
@@ -603,28 +612,41 @@ def get_host_detail_hr(host_detail_dict):
     :param host_detail_dict: Dictionary of host detail.
     :return: String represent human readable output.
     """
-    hr = tableToMarkdown('Host Details:', get_host_details_hr(host_detail_dict),
-                         ['Name', 'IP', 'RS3', 'Discovered On', 'Last Found On'])
+    hr = '### Group Details: '
+    if host_detail_dict.get('group', {}).get('name', ''):
+        hr += '\n Name: ' + host_detail_dict.get('group', {}).get('name', '')
+    else:
+        hr += '\n No data.'
+
+    hr += '\n ### Sources:'
+    if host_detail_dict.get('sources', []):
+        hr += '\n Scanner(s): ' + get_source_detail_hr(host_detail_dict.get('sources'))
+    else:
+        hr += '\n No data.'
+
+    hr += '\n ### Most Recently Identified Service(s): '
+
+    if host_detail_dict.get('services', []):
+        hr += '\n' + get_services(host_detail_dict.get('services')) + '\n'
+    else:
+        hr += '\n No data.\n'
+
+    hr += tableToMarkdown('Host Details:', get_host_details_hr(host_detail_dict),
+                          ['Name', 'IP', 'RS3', 'Discovered On', 'Last Found On'], removeNull=True)
     findings_distribution = get_findings_distribution_hr(host_detail_dict.get('findingsDistribution', {}))
     hr += '\n' + tableToMarkdown('Findings Distribution:', findings_distribution,
-                                 ['Total', 'Critical', 'High', 'Medium', 'Low', 'Info'])
+                                 ['Total', 'Critical', 'High', 'Medium', 'Low', 'Info'], removeNull=True)
 
     hr += tableToMarkdown('Operating System: ',
                           get_operating_system_hr(host_detail_dict.get('operatingSystemScanner', {})),
-                          ['Name', 'Vendor', 'Class', 'Family'])
+                          ['Name', 'Vendor', 'Class', 'Family'], removeNull=True)
 
-    hr += tableToMarkdown('Tag(s) (' + str(len(host_detail_dict.get('tags'))) + '):',
-                          get_tag_details_hr(host_detail_dict.get('tags')),
-                          ['Name', 'Category', 'Description', 'Created', 'Updated'])
-    hr += tableToMarkdown('Ticket(s) (' + str(len(host_detail_dict.get('tickets'))) + '):',
-                          get_ticket_detail_hr(host_detail_dict.get('tickets')),
-                          ['Ticket Number', 'Ticket Status', 'Deep Link', 'Type', 'Connector Name'])
-    hr += '\n ### Group Details: '
-    hr += '\n Name: ' + host_detail_dict.get('group').get('name')
-    hr += '\n ### Most Recently Identified Service(s): '
-    hr += '\n' + get_services(host_detail_dict.get('services'))
-    hr += '\n ### Sources:'
-    hr += '\n Scanner(s): ' + get_source_detail_hr(host_detail_dict.get('sources'))
+    hr += tableToMarkdown('Tag(s) (' + str(len(host_detail_dict.get('tags', []))) + '):',
+                          get_tag_details_hr(host_detail_dict.get('tags', [])),
+                          ['Name', 'Category', 'Description', 'Created', 'Updated'], removeNull=True)
+    hr += tableToMarkdown('Ticket(s) (' + str(len(host_detail_dict.get('tickets', []))) + '):',
+                          get_ticket_detail_hr(host_detail_dict.get('tickets', [])),
+                          ['Ticket Number', 'Ticket Status', 'Deep Link', 'Type', 'Connector Name'], removeNull=True)
 
     return hr
 
@@ -670,15 +692,17 @@ def get_vulnerabilities_hr(vulnerability_list):
              } for vuln_info_dict in vulnerability_list]
 
 
-def get_unique_cves_context(unique_cves_list):
+def get_unique_cves_context(unique_cves_list, host_finding_id):
     """
     Iterate over vulnerability list and extract attribute for context data.
     This method is used in 'risksense-get-unique-cves' command.
 
     :param unique_cves_list: List of vulnerabilities.
+    :param host_finding_id: The unique host finding ID
     :return: None.
     """
     return [{
+        'HostFindingID': host_finding_id,
         'Cve': unique_cves_dict.get('cve', ''),
         'BaseScore': unique_cves_dict.get('baseScore', ''),
         'ThreatCount': unique_cves_dict.get('threatCount', ''),
@@ -766,9 +790,6 @@ def get_host_detail(host):
     :rtype: dict
     """
     return {
-        'HostID': host.get('hostId', ''),
-        'HostName': host.get('hostName', ''),
-        'IpAddress': host.get('ipAddress', ''),
         'Criticality': host.get('criticality', ''),
         'External': host.get('external', ''),
         'Port': get_port_detail(host.get('ports', [])),
@@ -960,12 +981,15 @@ def get_assignment_detail(assignments):
 
 def get_risksense_host_finding_context(resp_hostfinding):
     """
-    Prepare context data for "risksense-get-open-host-finding" command.
+    Prepare context data for "risksense-get-host-findings" and "risksense-get-host-finding-detail" command.
 
     :param resp_hostfinding: host finding response
     :return: list of host finding context
     """
     return {
+        'HostID': resp_hostfinding.get('host', {}).get('hostId', ''),
+        'HostName': resp_hostfinding.get('host', {}).get('hostName', ''),
+        'HostIpAddress': resp_hostfinding.get('host', {}).get('ipAddress', ''),
         'ID': resp_hostfinding.get('id', ''),
         'Source': resp_hostfinding.get('source', ''),
         'SourceID': resp_hostfinding.get('sourceId', ''),
@@ -1002,7 +1026,8 @@ def get_risksense_host_finding_context(resp_hostfinding):
         'NoteCount': len(resp_hostfinding.get('notes', [])),
         'Note': get_note_detail(resp_hostfinding.get('notes', [])),
         'Assignment': get_assignment_detail(resp_hostfinding.get('assignments', [])),
-        'Services': get_services(resp_hostfinding.get('services', []))
+        'Services': get_services(resp_hostfinding.get('services', [])),
+        'Ticket': get_ticket_detail(resp_hostfinding.get('tickets', []))
     }
 
 
@@ -1027,13 +1052,13 @@ def get_host_finding_hr(host_finding):
         'ID': host_finding['id'],
         'Risk': host_finding.get('riskRating', ''),
         'Severity': host_finding.get('severity', ''),
-        'Hostname': host_finding.get('host', {}).get('hostName', ''),
+        'Host Name': host_finding.get('host', {}).get('hostName', ''),
         'IP Address': host_finding.get('host', {}).get('ipAddress', ''),
         'Title': host_finding.get('title', ''),
         'Criticality': host_finding.get('host', {}).get('criticality', ''),
         'Groups': len(host_finding.get('groups', [])),
         'Port': host_finding.get('port', ''),
-        'Rs3': host_finding.get('host', {}).get('rs3', ''),
+        'RS3': host_finding.get('host', {}).get('rs3', ''),
         'State': host_finding.get('statusEmbedded', {}).get('state', ''),
         'Assignments': get_assignee(host_finding.get('assignments', [])),
         'Manual Finding Report Count': len(host_finding.get('manualFindingReports', [])),
@@ -1276,42 +1301,46 @@ def get_host_finding_detail_hr(host_finding_detail):
     :param host_finding_detail: host finding details from response.
     :return: human readable string
     """
-    hr = tableToMarkdown("Host Finding Details:", get_host_finding_details_hr(host_finding_detail),
-                         ['Host Name', 'Ip Address', 'Network', 'Source', 'Risk Rating', 'Title'])
+    hr = '### Group Details: ' + '\n'
+    if host_finding_detail.get('group', {}).get('name', ''):
+        hr += 'Name: ' + host_finding_detail['group']['name'] + '\n'
+    else:
+        hr += '\n No data.\n'
+    hr += tableToMarkdown("Host Finding Details:", get_host_finding_details_hr(host_finding_detail),
+                          ['Host Name', 'Ip Address', 'Network', 'Source', 'Risk Rating', 'Title'], removeNull=True)
 
-    threats = host_finding_detail['threats']['threats']
+    threats = host_finding_detail.get('threats', {}).get('threats', [])
     hr += '\n' + tableToMarkdown("Threat(s) (" + str(len(threats)) + '):',
                                  get_host_finding_threat_hr(threats),
-                                 ['Title', 'Category', 'Source', 'CVEs', 'Published', 'Updated'])
-    vulnerabilities = host_finding_detail['vulnerabilities']['vulnInfoList']
+                                 ['Title', 'Category', 'Source', 'CVEs', 'Published', 'Updated'], removeNull=True)
+    vulnerabilities = host_finding_detail.get('vulnerabilities', {}).get('vulnInfoList', [])
     hr += '\n' + tableToMarkdown("Vulnerabilities (" + str(len(vulnerabilities)) + '):',
                                  get_host_finding_vulnerabilities_hr(vulnerabilities),
                                  ['Name', 'V2/Score', 'Threat Count', 'Attack Vector',
-                                  'Access Complexity', 'Authentication'])
+                                  'Access Complexity', 'Authentication'], removeNull=True)
 
-    status_detail = host_finding_detail['statusEmbedded']
+    status_detail = host_finding_detail.get('statusEmbedded', {})
     hr += '\n' + tableToMarkdown("Status:", get_host_finding_status_hr(status_detail),
-                                 ['State', 'Current State', 'Description', 'Duration', 'Due Date', 'Resolved On'])
+                                 ['State', 'Current State', 'Description', 'Duration', 'Due Date', 'Resolved On'],
+                                 removeNull=True)
 
-    tags = host_finding_detail['tags']
+    tags = host_finding_detail.get('tags', [])
     hr += '\n' + tableToMarkdown("Tag(s) (" + str(len(tags)) + '):', get_tag_details_hr(tags),
-                                 ["Name", "Category", "Created", "Updated"])
+                                 ["Name", "Category", "Created", "Updated"], removeNull=True)
 
-    manual_report = host_finding_detail['manualFindingReports']
+    manual_report = host_finding_detail.get('manualFindingReports', [])
     hr += '\n' + tableToMarkdown('Manual Finding Report(s) (' + str(len(manual_report)) + '):',
                                  get_manual_finding_report_detail_hr(manual_report),
-                                 ['Title', 'Label', 'Pil', 'Source'])
+                                 ['Title', 'Label', 'Pil', 'Source'], removeNull=True)
 
-    ticket_detail = host_finding_detail['tickets']
+    ticket_detail = host_finding_detail.get('tickets', [])
     hr += '\n' + tableToMarkdown("Ticket(s) (" + str(len(ticket_detail)) + '):', get_ticket_detail_hr(ticket_detail),
                                  ['Ticket Number', 'Ticket Status', 'Deep Link', 'Type', 'Connector Name',
-                                  'Detailed Status'])
+                                  'Detailed Status'], removeNull=True)
 
-    assessment_detail = host_finding_detail['assessments']
+    assessment_detail = host_finding_detail.get('assessments', [])
     hr += '\n' + tableToMarkdown("Assessment(s) (" + str(len(assessment_detail)) + '):',
-                                 get_assessment_detail_hr(assessment_detail), ['Name', 'Date'])
-
-    hr += '\n' + '### Group Name: ' + '\n' + host_finding_detail['group']['name']
+                                 get_assessment_detail_hr(assessment_detail), ['Name', 'Date'], removeNull=True)
 
     host_finding_description = host_finding_detail.get('description', '')
     if host_finding_description:
@@ -1344,28 +1373,35 @@ def get_app_detail_hr(app_detail_dict):
     :param app_detail_dict: Dictionary of application detail.
     :return: String represent human readable output.
     """
-    hr = tableToMarkdown('Application Details:', get_app_details_hr(app_detail_dict),
-                         ['Address', 'Name', 'Network Name', 'Network Type', 'Discovered On', 'Last Found On'])
+    hr = '### Group Details: '
+    if app_detail_dict.get('group', {}).get('name', ''):
+        hr += '\n Name: ' + app_detail_dict.get('group', {}).get('name', '')
+    else:
+        hr += '\n No data.'
 
-    findings_distribution = get_findings_distribution_hr(app_detail_dict.get('findingsDistribution'))
+    hr += '\n ### Sources: '
+    if app_detail_dict.get('sources', []):
+        hr += '\n Scanner(s): ' + get_source_detail_hr(app_detail_dict.get('sources', [])) + '\n'
+    else:
+        hr += '\n No data.\n'
+
+    hr += tableToMarkdown('Application Details:', get_app_details_hr(app_detail_dict),
+                          ['Address', 'Name', 'Network Name', 'Network Type', 'Discovered On', 'Last Found On'],
+                          removeNull=True)
+
+    findings_distribution = get_findings_distribution_hr(app_detail_dict.get('findingsDistribution', {}))
     hr += '\n' + tableToMarkdown(
         'Findings Distribution:',
         findings_distribution,
-        ['Total', 'Critical', 'High', 'Medium', 'Low', 'Info'])
+        ['Total', 'Critical', 'High', 'Medium', 'Low', 'Info'], removeNull=True)
 
-    hr += tableToMarkdown('Tag(s) (' + str(len(app_detail_dict.get('tags'))) + '):',
-                          get_tag_details_hr(app_detail_dict.get('tags')),
-                          ['Name', 'Category', 'Description', 'Created', 'Updated'])
+    hr += tableToMarkdown('Tag(s) (' + str(len(app_detail_dict.get('tags', []))) + '):',
+                          get_tag_details_hr(app_detail_dict.get('tags', [])),
+                          ['Name', 'Category', 'Description', 'Created', 'Updated'], removeNull=True)
 
-    hr += tableToMarkdown('Ticket(s) (' + str(len(app_detail_dict.get('tickets'))) + '):',
-                          get_ticket_detail_hr(app_detail_dict.get('tickets')),
-                          ['TicketNumber', 'TicketStatus', 'DeepLink', 'Type', 'ConnectorName'])
-
-    hr += '\n ### Group Details: '
-    hr += '\n Name: ' + app_detail_dict.get('group', {}).get('name', '')
-
-    hr += '\n ### Sources: '
-    hr += '\n Scanner(s): ' + get_source_detail_hr(app_detail_dict.get('sources', {}))
+    hr += tableToMarkdown('Ticket(s) (' + str(len(app_detail_dict.get('tickets', []))) + '):',
+                          get_ticket_detail_hr(app_detail_dict.get('tickets', [])),
+                          ['TicketNumber', 'TicketStatus', 'DeepLink', 'Type', 'ConnectorName'], removeNull=True)
 
     app_description = app_detail_dict.get('description', '')
     if app_description:
@@ -1457,82 +1493,26 @@ def get_host_context_for_host_finding(resp_host):
     }
 
 
-def get_host_finding_output(args, client, status):
+def validate_values_for_between_operator(args):
     """
-    Retrieves information about host finding based on arguments.
+    Validate value of BETWEEN operator
 
-    :param client: object of client class
     :param args: Demisto arguments provided by user
-    :param status: status of finding.can be 'open' or 'closed'.
-    :return: standard output
+    :return:
     """
-    client_detail = get_client_detail_from_context(client)
-    client_id = client_detail['Id']
-    client_name = client_detail['ClientName']
-    url_suffix = '/' + str(client_id) + '/hostFinding/search'
+    operator = args.get('operator', '')
+    value = args.get('value', '')
 
-    data = prepare_filter_payload(args, 'detail')
+    if operator == 'BETWEEN':
+        values = value.split(',')
+        if len(values) != 2:
+            return_error('Only two values allowed for BETWEEN operator')
 
-    # adding additional filters
-    data = add_filter_to_request(data, 'generic_state', 'false', 'EXACT', status)
-
-    # making final API call
-    resp = client.http_request('POST', url_suffix=url_suffix, json_data=data)
-
-    page_number, total_element, total_pages = fetch_page_details(resp)
-
-    if total_element == 0:
-        return 'No ' + status + ' host finding(s) details found for given argument(s).', {}, {}
-    if page_number >= total_pages:
-        return_error('Invalid page navigation.')
-
-    ec = {}  # type: Dict[str, Any]
-    hr = ''
-
-    if resp and '_embedded' in resp.keys():
-        resp_list_hostfinding = resp.get('_embedded', {}).get('hostFindings', [])
-
-        host_finding_details_hr = []  # type: List[Dict[str, Any]]
-        risksense_host_finding_context = []  # type: List[Dict[str, Any]]
-        host_finding_ticket_context = []  # type: List[Dict[str, Any]]
-        host_finding_cve_context = []  # type: List[Dict[str, Any]]
-        host_context = []  # type: List[Dict[str, Any]]
-
-        for resp_hostfinding in resp_list_hostfinding:
-            host_finding_details_hr.append(get_host_finding_hr(resp_hostfinding))
-            risksense_host_finding_context.append(get_risksense_host_finding_context(resp_hostfinding))
-
-            # creating Demisto's standard host context
-            host_context.append(get_host_context_for_host_finding(resp_hostfinding.get('host', {})))
-
-            # creating Demisto's standard ticket context
-            host_finding_ticket_context.extend(get_ticket_context(resp_hostfinding.get('tickets', [])))
-
-            # creating Demisto's standard CVE context
-            host_finding_cve_context.extend(
-                get_cve_context(resp_hostfinding.get('vulnerabilities', {}).get('vulnInfoList', [])))
-
-        # human Readable
-        hr += '### Total ' + status + ' host findings: ' + str(total_element)
-        hr += '\t\t Page: ' + str(page_number) + '/' + str(total_pages - 1)
-        hr += '\t\t Client: ' + client_name
-        hr += '\n' + tableToMarkdown(status.capitalize() + ' host finding(s) details:', host_finding_details_hr,
-                                     ['ID', 'Hostname', 'IP Address', 'Title', 'Risk', 'Threats', 'Rs3', 'Criticality',
-                                      'Severity',
-                                      'Groups', 'Port', 'State', 'Assignments', 'Tags', 'Asset Tags', 'Note',
-                                      'Manual Finding Report Count'])
-        # context data
-        ec = {
-            'RiskSense.HostFinding(val.ID == obj.ID)': risksense_host_finding_context,
-            'Host(val.ID == obj.ID)': host_context
-        }
-        if host_finding_ticket_context:
-            ec['Ticket(val.ID == obj.ID)'] = host_finding_ticket_context
-        if host_finding_cve_context:
-            ec[outputPaths['cve']] = host_finding_cve_context
-    else:
-        hr += 'No ' + status + ' host finding(s) details found for given argument(s).'
-    return hr, ec, resp
+        if not (bool(re.match(REGEX_FOR_INR_OR_FLOAT, values[0]))
+                and bool(re.match(REGEX_FOR_INR_OR_FLOAT, values[1]))
+                or bool(re.match(REGEX_FOR_YYYY_MM_DD, values[0]))
+                and bool(re.match(REGEX_FOR_YYYY_MM_DD, values[1]))):
+            return_error('Value must be in number format or YYYY-MM-DD date format for BETWEEN operator')
 
 
 ''' REQUESTS FUNCTIONS '''
@@ -1614,9 +1594,9 @@ def get_hosts_command(client, args):
             risksense_host_context.append(get_risksense_host_context(href, resp_host))
 
         hr += tableToMarkdown('RiskSense host(s) details:', host_details_hr,
-                              ['Rs3', 'HostName', 'Total Findings', 'Critical Findings', 'High Findings',
+                              ['RS3', 'Host Name', 'Total Findings', 'Critical Findings', 'High Findings',
                                'Medium Findings', 'Low Findings', 'Info Findings', 'ID', 'OS', 'Tags',
-                               'Notes', 'XRs3', 'Criticality', 'IpAddress', 'Network', 'Group'])
+                               'Notes', 'xRS3', 'Criticality', 'IP Address', 'Network', 'Group'], removeNull=True)
 
         ec = {
             'Host(val.ID == obj.ID)': host_context,
@@ -1720,16 +1700,18 @@ def get_unique_cves_command(client, args):
             hr += '### Client: ' + client_name + '\n'
             hr += tableToMarkdown('Vulnerabilities found:', get_vulnerabilities_hr(vulnerabilities),
                                   ['Name', 'V2/Score', 'Attack Vector', 'Attack Complexity', 'Authentication',
-                                   'Confidentiality Impact', 'Integrity Impact', 'Availability Impact', 'Summary'])
+                                   'Confidentiality Impact', 'Integrity Impact', 'Availability Impact', 'Summary'],
+                                  removeNull=True)
 
             #  Prepare context data
-            host_findings_context.extend(get_unique_cves_context(vulnerabilities))
+            host_findings_context.extend(get_unique_cves_context(vulnerabilities, args.get('hostFindingId', '')))
 
             # creating Demisto's standard CVE context
             host_finding_cve_context.extend(get_cve_context(vulnerabilities))
 
         ec = {
-            'RiskSense.HostFinding.Vulnerability(val.Cve == obj.Cve)': host_findings_context
+            'RiskSense.UniqueVulnerabilities(val.Cve == obj.Cve && val.HostFindingID == obj.HostFindingID)':
+                host_findings_context
         }
         if host_finding_cve_context:
             ec[outputPaths['cve']] = host_finding_cve_context
@@ -1739,15 +1721,90 @@ def get_unique_cves_command(client, args):
     return hr, ec, resp
 
 
-def get_open_host_findings_command(client, args):
+def get_host_findings_command(client, args):
     """
-    Retrieves information about open host findings based on CHMLI and store it in context data.
+    Retrieves information about host findings based on arguments.
+    Finding status can be 'Open' or 'Closed'.By default return all host findings.
 
-    :param client: object of client class
+    :param client: Object of client class
     :param args: Demisto arguments provided by user
-    :return: standard output
+    :return: Standard output
     """
-    return get_host_finding_output(args, client, 'open')
+    client_detail = get_client_detail_from_context(client)
+    client_id = client_detail['Id']
+    client_name = client_detail['ClientName']
+    url_suffix = '/' + str(client_id) + '/hostFinding/search'
+
+    # Status of host findings
+    status = args.get('status', '')
+
+    data = prepare_filter_payload(args, 'detail')
+
+    if status:
+        # adding additional filters
+        data = add_filter_to_request(data, 'generic_state', 'false', 'EXACT', status)
+
+    # making final API call
+    resp = client.http_request('POST', url_suffix=url_suffix, json_data=data)
+
+    page_number, total_element, total_pages = fetch_page_details(resp)
+
+    if total_element == 0:
+        return 'No host finding(s) found for given argument(s).', {}, {}
+    if page_number >= total_pages:
+        return_error('Invalid page navigation.')
+
+    ec = {}  # type: Dict[str, Any]
+    hr = ''
+
+    if resp and '_embedded' in resp.keys():
+        resp_list_hostfinding = resp.get('_embedded', {}).get('hostFindings', [])
+
+        host_finding_details_hr = []  # type: List[Dict[str, Any]]
+        risksense_host_finding_context = []  # type: List[Dict[str, Any]]
+        host_finding_ticket_context = []  # type: List[Dict[str, Any]]
+        host_finding_cve_context = []  # type: List[Dict[str, Any]]
+        host_context = []  # type: List[Dict[str, Any]]
+
+        for resp_hostfinding in resp_list_hostfinding:
+            host_finding_details_hr.append(get_host_finding_hr(resp_hostfinding))
+            risksense_host_finding_context.append(get_risksense_host_finding_context(resp_hostfinding))
+
+            # creating Demisto's standard host context
+            host_context.append(get_host_context_for_host_finding(resp_hostfinding.get('host', {})))
+
+            # creating Demisto's standard ticket context
+            host_finding_ticket_context.extend(get_ticket_context(resp_hostfinding.get('tickets', [])))
+
+            # creating Demisto's standard CVE context
+            host_finding_cve_context.extend(
+                get_cve_context(resp_hostfinding.get('vulnerabilities', {}).get('vulnInfoList', [])))
+
+        # human Readable
+        hr += '### Total ' + status.lower() + ' host findings: ' + str(
+            total_element) if status else '### Total host findings: ' + str(total_element)
+
+        hr += '\t\t Page: ' + str(page_number) + '/' + str(total_pages - 1)
+        hr += '\t\t Client: ' + client_name
+        hr += '\n' + tableToMarkdown(
+            status.capitalize() + ' host finding(s) details:' if status else 'Host finding(s) details:',
+            host_finding_details_hr,
+            ['ID', 'Host Name', 'IP Address', 'Title', 'Risk', 'Threats', 'RS3', 'Criticality',
+             'Severity',
+             'Groups', 'Port', 'State', 'Assignments', 'Tags', 'Asset Tags', 'Note',
+             'Manual Finding Report Count'], removeNull=True)
+        # context data
+        ec = {
+            'RiskSense.HostFinding(val.ID == obj.ID)': risksense_host_finding_context,
+            'Host(val.ID == obj.ID)': host_context
+        }
+        if host_finding_ticket_context:
+            ec['Ticket(val.ID == obj.ID)'] = host_finding_ticket_context
+        if host_finding_cve_context:
+            ec[outputPaths['cve']] = host_finding_cve_context
+    else:
+        hr += 'No host finding(s) found for given argument(s).'
+    return hr, ec, resp
 
 
 def get_unique_open_findings_command(client, args):
@@ -1764,6 +1821,12 @@ def get_unique_open_findings_command(client, args):
     client_name = client_detail['ClientName']
     url_suffix = '/' + str(client_id) + '/uniqueHostFinding/search'
     projection = 'basic'
+
+    if args.get('fieldname', '') == 'Title':
+        args['fieldname'] = 'title'
+
+    if args.get('sort_by', '') == 'Title':
+        args['sort_by'] = 'title'
 
     # preparing request payload
     data = prepare_filter_payload(args, projection)
@@ -1796,7 +1859,7 @@ def get_unique_open_findings_command(client, args):
         hr += '\t\t Page: ' + str(page_number) + '/' + str(total_pages - 1)
         hr += '\t\t Client: ' + client_name + '\n'
         hr += tableToMarkdown('Unique open finding(s) details:', unique_open_finding_hr,
-                              ['Title', 'Severity', 'Asset Count', 'Source', 'Source ID'])
+                              ['Title', 'Severity', 'Asset Count', 'Source', 'Source ID'], removeNull=True)
 
         ec = {
             'RiskSense.UniqueHostFinding': unique_open_finding_context
@@ -1805,17 +1868,6 @@ def get_unique_open_findings_command(client, args):
         hr += 'No unique open finding(s) found for given argument(s).'
 
     return hr, ec, resp
-
-
-def get_closed_host_findings_command(client, args):
-    """
-    Retrieve information about closed host findings and store it in context data.
-
-    :param client: object of client class
-    :param args: demisto arguments provided by user
-    :return: standard output
-    """
-    return get_host_finding_output(args, client, 'closed')
 
 
 def get_apps_command(client, args):
@@ -1870,7 +1922,7 @@ def get_apps_command(client, args):
         hr += tableToMarkdown('RiskSense application(s) details:', apps_hr,
                               ['ID', 'Address', 'Name', 'Network', 'Total Findings', 'Critical Findings',
                                'High Findings', 'Medium Findings', 'Low Findings', 'Info Findings', 'Groups', 'URLs',
-                               'Tags', 'Notes'])
+                               'Tags', 'Notes'], removeNull=True)
         ec = {
             'RiskSense.Application(val.ID == obj.ID)': apps_context
         }
@@ -2024,9 +2076,8 @@ def main():
         'risksense-get-hosts': get_hosts_command,
         'risksense-get-host-detail': get_host_detail_command,
         'risksense-get-unique-cves': get_unique_cves_command,
-        'risksense-get-open-host-findings': get_open_host_findings_command,
+        'risksense-get-host-findings': get_host_findings_command,
         'risksense-get-unique-open-findings': get_unique_open_findings_command,
-        'risksense-get-closed-host-findings': get_closed_host_findings_command,
         'risksense-get-apps': get_apps_command,
         'risksense-get-host-finding-detail': get_host_finding_detail_command,
         'risksense-get-app-detail': get_app_detail_command
@@ -2038,9 +2089,6 @@ def main():
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
-    except DemistoException as ce:
-        if isinstance(ce, ConnectionError):
-            return_error('Holi hai !!"')
     except Exception as e:
         return_error('Failed to execute {} command.\nError: {}'.format(demisto.command(), str(e)))
 
