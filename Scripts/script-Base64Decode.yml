@@ -1,5 +1,5 @@
 commonfields:
-  id: bb16398c-8921-4b73-85f7-922ab44c7720
+  id: Base64Decode
   version: 2
 name: Base64Decode
 script: |+
