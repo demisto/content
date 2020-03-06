@@ -8362,7 +8362,10 @@ def whois_command():
 def test_command():
     whois_result = get_whois('google.co.uk')
 
-    domain_test = whois_result['nameservers'][0]
+    try:
+        domain_test = whois_result['nameservers'][0]
+    except ValueError as e:
+        return_error('Whois did not return the correct result: {}'.format(str(e)))
 
     if domain_test == 'ns1.google.com':
         demisto.results('ok')
