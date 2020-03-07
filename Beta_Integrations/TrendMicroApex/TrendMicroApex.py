@@ -119,7 +119,7 @@ class Client(BaseClient):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client: Client, *_) -> str:
+def test_module(client: Client, *_):
     """
     Performs basic get request to get item samples
     """
@@ -231,7 +231,7 @@ def main():
     }
     try:
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
     except ValueError as e:
         return_error(f'Error from TrendMicro Apex integration: {str(e)}', e)
 
