@@ -109,11 +109,13 @@ def check_cpus(num_cpus: int) -> str:
         p.join()
     runtime2 = time.time_ns() - start
     p.close()
-    # runtime 2 should be 2 times slower. But we give it a safet
+    # runtime 2 should be 2 times slower. But we give it a safty as the machine itself maybe loaded
     LOG("cpus check runtime for {} processes time: {}".format(num_cpus * 2, runtime2))
-    if runtime2 < runtime * 1.8:
-        return ("CPU processing power increased significantly when increasing processes "
-                "from: {} (time: {}) to: {} (time: {}).".format(num_cpus, runtime, num_cpus * 2, runtime2))
+    if runtime2 < runtime * 1.5:
+        return ("CPU processing power increased significantly when increasing processes "                
+                "from: {} (time: {}) to: {} (time: {}). "
+                "Note: this test may fail even if the proper configuration has been applied and"
+                " the machine itself is loaded.".format(num_cpus, runtime, num_cpus * 2, runtime2))
     return ""
 
 
