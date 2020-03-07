@@ -13,7 +13,7 @@ def main():
     })
 
     fields = json.dumps({
-        "updatedate": {
+        "lastseenbyfeed": {
             "regex": r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})",
             "transform": "\\1"
         }
@@ -21,7 +21,7 @@ def main():
     params['fields'] = fields
 
     params['custom_fields_mapping'] = {
-        "updatedate": "updatedate"
+        "lastseenbyfeed": "lastseenbyfeed"
     }
 
     # Call the main execution of the HTTP API module.

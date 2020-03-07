@@ -110,6 +110,7 @@ class FeedIndicatorType(object):
     Account = "Account"
     CVE = "CVE"
     Domain = "Domain"
+    DomainGlob = "DomainGlob"
     Email = "Email"
     File = "File"
     FQDN = "Domain"
@@ -131,6 +132,7 @@ class FeedIndicatorType(object):
             FeedIndicatorType.Account,
             FeedIndicatorType.CVE,
             FeedIndicatorType.Domain,
+            FeedIndicatorType.DomainGlob,
             FeedIndicatorType.Email,
             FeedIndicatorType.File,
             FeedIndicatorType.MD5,
@@ -653,9 +655,11 @@ def b64_encode(text):
     """
     if not text:
         return ''
-    to_encode = text
-    if IS_PY3:
+    elif isinstance(text, bytes):
+        to_encode = text
+    else:
         to_encode = text.encode('utf-8', 'ignore')
+
     res = base64.b64encode(to_encode)
     if IS_PY3:
         res = res.decode('utf-8')  # type: ignore
@@ -677,6 +681,99 @@ def encode_string_results(text):
         return str(text)
     except UnicodeEncodeError as exception:
         return text.encode("utf8", "replace")
+
+
+def safe_load_json(json_object):
+    """
+    Safely loads a JSON object from an argument. Allows the argument to accept either a JSON in string form,
+    or an entry ID corresponding to a JSON file.
+
+    :param json_object: Entry ID or JSON string.
+    :type json_object: str
+    :return: Dictionary object from a parsed JSON file or string.
+    :rtype: dict
+    """
+    safe_json = None
+    if isinstance(json_object, dict) or isinstance(json_object, list):
+        return json_object
+    if (json_object.startswith('{') and json_object.endswith('}')) or (json_object.startswith('[') and json_object.endswith(']')):
+        try:
+            safe_json = json.loads(json_object)
+        except ValueError as e:
+            return_error(
+                'Unable to parse JSON string. Please verify the JSON is valid. - '+str(e))
+    else:
+        try:
+            path = demisto.getFilePath(json_object)
+            with open(path['path'], 'rb') as data:
+                try:
+                    safe_json = json.load(data)
+                except:  # lgtm [py/catch-base-exception]
+                    safe_json = json.loads(data.read())
+        except Exception as e:
+            return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
+                         'ID is correct. - '+str(e))
+    return safe_json
+
+
+def datetime_to_string(datetime_obj):
+    """
+    Converts a datetime object into a string. When used with `json.dumps()` for the `default` parameter,
+    e.g. `json.dumps(response, default=datetime_to_string)` datetime_to_string allows entire JSON objects
+    to be safely added to context without causing any datetime marshalling errors.
+    :param datetime_obj: Datetime object.
+    :type datetime_obj: datetime.datetime
+    :return: String representation of a datetime object.
+    :rtype: str
+    """
+    if isinstance(datetime_obj, datetime):  # type: ignore
+        return datetime_obj.__str__()
+
+
+def remove_empty_elements(d):
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary.
+    :param d: Input dictionary.
+    :type d: dict
+    :return: Dictionary with all empty lists, and empty dictionaries removed.
+    :rtype: dict
+    """
+
+    def empty(x):
+        return x is None or x == {} or x == []
+
+    if not isinstance(d, (dict, list)):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+    else:
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
+
+
+def aws_table_to_markdown(response, table_header):
+    """
+    Converts a raw response from AWS into a markdown formatted table. This function checks to see if
+    there is only one nested dict in the top level of the dictionary and will use the nested data.
+    :param response: Raw response from AWS
+    :type response: dict
+    :param table_header: The header string to use for the table.
+    :type table_header: str
+    :return: Markdown formatted table as a string.
+    :rtype: str
+    """
+    if not isinstance(response, dict):
+        return tableToMarkdown(table_header, response)
+    elif len(response) != 1:
+        return tableToMarkdown(table_header, response)
+    elif not isinstance(response[list(response.keys())[0]], dict) and \
+            not isinstance(response[list(response.keys())[0]], list):
+        return tableToMarkdown(table_header, response)
+    elif not isinstance(response[list(response.keys())[0]], list):
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+    elif not isinstance(response[list(response.keys())[0]][0], str):
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+    else:
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
 
 
 class IntegrationLogger(object):
@@ -1581,7 +1678,7 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-def return_outputs(readable_output, outputs=None, raw_response=None):
+def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1596,6 +1693,10 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
     raw response from the 3rd party service (originally Contents)
 
+    :type timeline: ``dict`` | ``list``
+    :param timeline: expects a list, if a dict is passed it will be put into a list. used by server to populate an 
+    indicator's timeline
+
     :return: None
     :rtype: ``None``
     """
@@ -1604,7 +1705,8 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
         "HumanReadable": readable_output,
         "ContentsFormat": formats["json"],
         "Contents": raw_response,
-        "EntryContext": outputs
+        "EntryContext": outputs,
+        "IndicatorTimeline": [timeline] if isinstance(timeline, dict) else timeline
     }
     # Return 'readable_output' only if needed
     if readable_output and not outputs and not raw_response:
@@ -1770,6 +1872,7 @@ emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)

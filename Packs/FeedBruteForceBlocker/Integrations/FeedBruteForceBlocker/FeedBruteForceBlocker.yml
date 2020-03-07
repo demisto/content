@@ -43,8 +43,10 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  display: ""
 - defaultvalue: '20160'
   name: feedExpirationInterval
+  display: ""
   required: false
   type: 1
 - defaultvalue: '360'
@@ -87,7 +89,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bruteforceblocker-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6120
   feed: true
   isfetch: false
   longRunning: false

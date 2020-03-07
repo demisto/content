@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.2.3] - 2020-02-18
 You can now fetch incidents without specifying the *Date Format* parameter.
 
 ## [20.2.0] - 2020-02-04
