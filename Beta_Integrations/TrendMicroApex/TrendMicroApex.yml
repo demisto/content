@@ -56,20 +56,20 @@ script:
     execution: false
     name: trendmicro-apex-usdo-list
     outputs:
-    - contextPath: TrendMicro.Apex.USDO.type
+    - contextPath: TrendMicroApex.USDO.type
       description: 'Indicator type of the USDO object, for example: ip, file, file_sha1,
         url, domain.'
       type: String
-    - contextPath: TrendMicro.Apex.USDO.content
+    - contextPath: TrendMicroApex.USDO.content
       description: Indicator content of the USDO object.
       type: String
-    - contextPath: TrendMicro.Apex.USDO.notes
+    - contextPath: TrendMicroApex.USDO.notes
       description: Indicator notes of the USDO object.
       type: String
-    - contextPath: TrendMicro.Apex.USDO.scan_action
+    - contextPath: TrendMicroApex.USDO.scan_action
       description: 'Scan action of the USDO object, for example: log, block, quarantine.'
       type: String
-    - contextPath: TrendMicro.Apex.USDO.expiration_utc_date
+    - contextPath: TrendMicroApex.USDO.expiration_utc_date
       description: Expiration date of the USDO object in UTC.
       type: Date
   - arguments:
