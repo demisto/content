@@ -290,7 +290,7 @@ class Pack(object):
             print(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
 
-def get_modified_packs(specific_packs=None):
+def get_modified_packs(specific_packs=""):
     """Detects and returns modified or new packs names.
 
     Checks the git difference between two commits, current and previous and greps only ones with prefix Packs/.
