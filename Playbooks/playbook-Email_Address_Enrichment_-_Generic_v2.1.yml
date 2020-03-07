@@ -6,22 +6,22 @@ description: |-
   Enrich email addresses.
   - Get information from Active Directory for internal addresses
   - Get the domain-squatting reputation for external addresses
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 10b003be-68f2-4e57-8f11-d0475f1aac42
     type: start
     task:
       id: 10b003be-68f2-4e57-8f11-d0475f1aac42
       version: -1
-      name: ""
-      description: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -33,18 +33,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 01ab9a35-e60e-4331-826d-48194fb5a771
     type: title
     task:
       id: 01ab9a35-e60e-4331-826d-48194fb5a771
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     scriptarguments:
       details: {}
       fromclosedate: {}
@@ -77,27 +77,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: db8113cf-a721-49a6-83dd-152e83c7d962
+  '5':
+    id: '5'
+    taskid: 43ea7e61-2e1e-4d4c-835c-623055112691
     type: condition
     task:
-      id: db8113cf-a721-49a6-83dd-152e83c7d962
+      id: 43ea7e61-2e1e-4d4c-835c-623055112691
       version: -1
       name: Are there email addresses to check?
       description: Determines whether the playbook's input contains at least one email
         address.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "20"
-      "yes":
-      - "9"
+      - '20'
+      'yes':
+      - '9'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -105,6 +105,11 @@ tasks:
               simple: inputs.Email
             iscontext: true
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Email
+            iscontext: true
     view: |-
       {
         "position": {
@@ -115,12 +120,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 17c82691-cc28-445a-8aea-129217f589d6
+  '9':
+    id: '9'
+    taskid: 7aa90f8f-bdf1-4d72-88ae-f0d7d2d0142f
     type: regular
     task:
-      id: 17c82691-cc28-445a-8aea-129217f589d6
+      id: 7aa90f8f-bdf1-4d72-88ae-f0d7d2d0142f
       version: -1
       name: Classify email addresses as internal or external
       description: Adds a NetworkType attribute to all email addresses. The NetworkType
@@ -130,11 +135,11 @@ tasks:
       scriptName: IsEmailAddressInternal
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
-      - "14"
+      - '13'
+      - '14'
     scriptarguments:
       domain:
         complex:
@@ -144,8 +149,15 @@ tasks:
       email:
         complex:
           root: inputs.Email
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Email
+                iscontext: true
           transformers:
           - operator: uniq
+      include_subdomains: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -158,21 +170,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: e82515ea-9f9a-4273-8182-e6a84b24e4d6
     type: title
     task:
       id: e82515ea-9f9a-4273-8182-e6a84b24e4d6
       version: -1
       name: Internal
-      description: ""
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     separatecontext: false
     view: |-
       {
@@ -184,21 +196,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: d501d6f3-d086-40fa-8c28-052fc32787fb
     type: title
     task:
       id: d501d6f3-d086-40fa-8c28-052fc32787fb
       version: -1
       name: External
-      description: ""
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     separatecontext: false
     view: |-
       {
@@ -210,8 +222,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 266c8054-586a-4b62-811b-d13147f12e54
     type: regular
     task:
@@ -223,10 +235,10 @@ tasks:
       script: '|||ad-get-user'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -265,24 +277,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 2d740d11-a326-4913-83f1-8df803c0a3eb
     type: condition
     task:
       id: 2d740d11-a326-4913-83f1-8df803c0a3eb
       version: -1
       name: Are there any external email addresses?
-      description: Checks whether there is at least one email address with a NetworkType attribute set to "Internal".
+      description: Checks whether there are email addresses with a NetworkType attribute
+        value of "External".
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "11"
+      - '4'
+      'yes':
+      - '11'
     scriptarguments:
       value:
         complex:
@@ -311,25 +324,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: e521733d-b152-4a1f-8050-e7658405a187
     type: condition
     task:
       id: e521733d-b152-4a1f-8050-e7658405a187
       version: -1
-      name: Are there internal email addresses?
+      name: Are there any internal email addresses?
       description: Checks whether there are email addresses with a NetworkType attribute
         value of "Internal".
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "10"
+      - '4'
+      'yes':
+      - '10'
     scriptarguments:
       value:
         complex:
@@ -358,8 +371,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 7d4c6562-651c-487d-834e-f3921527c76e
     type: regular
     task:
@@ -371,20 +384,20 @@ tasks:
       scriptName: EmailDomainSquattingReputation
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       domain:
         complex:
           root: inputs.Domain
           filters:
-            - - operator: isNotEmpty
-                left:
-                  value:
-                    simple: inputs.Domain
-                  iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
           transformers:
           - operator: uniq
       email:
@@ -417,8 +430,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 71e0fb34-e1c8-4606-8462-1f83a0a2cb56
     type: condition
     task:
@@ -430,12 +443,12 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "12"
+      - '4'
+      'yes':
+      - '12'
     scriptarguments:
       value:
         complex:
@@ -471,8 +484,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 1f1a6cd8-5aaa-4b0a-8147-e91dc6beec49
     type: condition
     task:
@@ -483,22 +496,22 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "15"
+      - '4'
+      'yes':
+      - '15'
     scriptarguments:
       value:
         complex:
           root: inputs.Domain
           filters:
-            - - operator: isNotEmpty
-                left:
-                  value:
-                    simple: inputs.Domain
-                  iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
           transformers:
           - operator: uniq
     separatecontext: false
@@ -512,21 +525,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 3ecf1917-78f6-4350-84bb-704fdaa1bf05
     type: title
     task:
       id: 3ecf1917-78f6-4350-84bb-704fdaa1bf05
       version: -1
       name: No Email Addresses
-      description: ""
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     separatecontext: false
     view: |-
       {
@@ -538,6 +551,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -582,11 +596,11 @@ inputs:
     complex:
       root: inputs.Domain
       filters:
-        - - operator: isNotEmpty
-            left:
-              value:
-                simple: inputs.Domain
-              iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
       transformers:
       - operator: uniq
   required: false
