@@ -310,6 +310,7 @@ def get_modified_packs(specific_packs=""):
 
         if os.path.exists(content_packs_path):
             all_packs = {p for p in os.listdir(content_packs_path) if p not in IGNORED_FILES}
+            print(f"Number of selected packs is: {len(all_packs)}")
             return all_packs
         else:
             print(f"Folder {CONTENT_PACKS_FOLDER} was not found at the following path: {content_packs_path}")
