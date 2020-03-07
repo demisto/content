@@ -18,6 +18,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Trend Micro Apex",
+            "playbookID": "Trend Micro Apex - Test"
+        },
+        {
             "integrations": "Blocklist_de Feed",
             "playbookID": "Blocklist_de - Test",
             "fromversion": "5.5.0"
