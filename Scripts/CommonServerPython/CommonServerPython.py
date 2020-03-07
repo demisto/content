@@ -655,9 +655,11 @@ def b64_encode(text):
     """
     if not text:
         return ''
-    to_encode = text
-    if IS_PY3:
+    elif isinstance(text, bytes):
+        to_encode = text
+    else:
         to_encode = text.encode('utf-8', 'ignore')
+
     res = base64.b64encode(to_encode)
     if IS_PY3:
         res = res.decode('utf-8')  # type: ignore
@@ -679,6 +681,99 @@ def encode_string_results(text):
         return str(text)
     except UnicodeEncodeError as exception:
         return text.encode("utf8", "replace")
+
+
+def safe_load_json(json_object):
+    """
+    Safely loads a JSON object from an argument. Allows the argument to accept either a JSON in string form,
+    or an entry ID corresponding to a JSON file.
+
+    :param json_object: Entry ID or JSON string.
+    :type json_object: str
+    :return: Dictionary object from a parsed JSON file or string.
+    :rtype: dict
+    """
+    safe_json = None
+    if isinstance(json_object, dict) or isinstance(json_object, list):
+        return json_object
+    if (json_object.startswith('{') and json_object.endswith('}')) or (json_object.startswith('[') and json_object.endswith(']')):
+        try:
+            safe_json = json.loads(json_object)
+        except ValueError as e:
+            return_error(
+                'Unable to parse JSON string. Please verify the JSON is valid. - '+str(e))
+    else:
+        try:
+            path = demisto.getFilePath(json_object)
+            with open(path['path'], 'rb') as data:
+                try:
+                    safe_json = json.load(data)
+                except:  # lgtm [py/catch-base-exception]
+                    safe_json = json.loads(data.read())
+        except Exception as e:
+            return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
+                         'ID is correct. - '+str(e))
+    return safe_json
+
+
+def datetime_to_string(datetime_obj):
+    """
+    Converts a datetime object into a string. When used with `json.dumps()` for the `default` parameter,
+    e.g. `json.dumps(response, default=datetime_to_string)` datetime_to_string allows entire JSON objects
+    to be safely added to context without causing any datetime marshalling errors.
+    :param datetime_obj: Datetime object.
+    :type datetime_obj: datetime.datetime
+    :return: String representation of a datetime object.
+    :rtype: str
+    """
+    if isinstance(datetime_obj, datetime):  # type: ignore
+        return datetime_obj.__str__()
+
+
+def remove_empty_elements(d):
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary.
+    :param d: Input dictionary.
+    :type d: dict
+    :return: Dictionary with all empty lists, and empty dictionaries removed.
+    :rtype: dict
+    """
+
+    def empty(x):
+        return x is None or x == {} or x == []
+
+    if not isinstance(d, (dict, list)):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+    else:
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
+
+
+def aws_table_to_markdown(response, table_header):
+    """
+    Converts a raw response from AWS into a markdown formatted table. This function checks to see if
+    there is only one nested dict in the top level of the dictionary and will use the nested data.
+    :param response: Raw response from AWS
+    :type response: dict
+    :param table_header: The header string to use for the table.
+    :type table_header: str
+    :return: Markdown formatted table as a string.
+    :rtype: str
+    """
+    if not isinstance(response, dict):
+        return tableToMarkdown(table_header, response)
+    elif len(response) != 1:
+        return tableToMarkdown(table_header, response)
+    elif not isinstance(response[list(response.keys())[0]], dict) and \
+            not isinstance(response[list(response.keys())[0]], list):
+        return tableToMarkdown(table_header, response)
+    elif not isinstance(response[list(response.keys())[0]], list):
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+    elif not isinstance(response[list(response.keys())[0]][0], str):
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+    else:
+        return tableToMarkdown(table_header, response[list(response.keys())[0]])
 
 
 class IntegrationLogger(object):
