@@ -16,7 +16,9 @@ from Tests.test_utils import run_command, print_error, print_warning, print_colo
 
 # global constants
 STORAGE_BASE_PATH = "content/packs"
-IGNORED_PATHS = ['Packs/__init__.py']
+CONTENT_PACKS_FOLDER = "Packs"
+IGNORED_FILES = ['__init__.py']
+IGNORED_PATHS = [os.path.join(CONTENT_PACKS_FOLDER, p) for p in IGNORED_FILES]  # Packs/__init__.py is ignored
 # the format is defined in issue #19786, may change in the future
 DIR_NAME_TO_CONTENT_TYPE = {
     "Classifiers": "classifier",
@@ -184,7 +186,7 @@ class Pack(object):
 
         return zip_pack_path
 
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket):
+    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
@@ -193,6 +195,7 @@ class Pack(object):
             zip_pack_path (str): full path to pack zip artifact.
             latest_version (str): pack latest version.
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
+            override_pack (bool): whether to override existing pack.
 
         Returns:
             bool: True is pack was successfully uploaded. False in case that packs already exists at the bucket.
@@ -201,7 +204,7 @@ class Pack(object):
         version_pack_path = os.path.join(STORAGE_BASE_PATH, self._pack_name, latest_version)
         existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
-        if existing_files:
+        if existing_files and not override_pack:
             print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
             print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return False
@@ -295,23 +298,34 @@ def get_modified_packs(specific_packs=None):
     In case of local dev mode, the function will receive comma separated list of target packs.
 
     Args:
-        specific_packs (str): comma separated packs names, used only in local dev mode.
+        specific_packs (str): comma separated packs names or `All` for all available packs in content.
 
     Returns:
         set: unique collection of modified/new packs names.
 
     """
-    if specific_packs:
+    if specific_packs.lower() == "all":
+        content_root_path = os.path.abspath(os.path.join(__file__, '../..'))
+        content_packs_path = os.path.join(content_root_path, CONTENT_PACKS_FOLDER)
+
+        if os.path.exists(content_packs_path):
+            all_packs = {p for p in os.listdir(content_packs_path) if p not in IGNORED_FILES}
+            return all_packs
+        else:
+            print(f"Folder {CONTENT_PACKS_FOLDER} was not found at the following path: {content_packs_path}")
+            sys.exit(1)
+
+    elif specific_packs:
         modified_packs = {p.strip() for p in specific_packs.split(',')}
         print(f"Number of selected packs is: {len(modified_packs)}")
         return modified_packs
+    else:
+        cmd = f"git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
+        modified_packs_path = run_command(cmd, use_shell=True).splitlines()
+        modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
+        print(f"Number of modified packs is: {len(modified_packs)}")
 
-    cmd = f"git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
-    modified_packs_path = run_command(cmd, use_shell=True).splitlines()
-    modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
-    print(f"Number of modified packs is: {len(modified_packs)}")
-
-    return modified_packs
+        return modified_packs
 
 
 def extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path):
@@ -479,11 +493,14 @@ def option_handler():
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
     parser.add_argument('-p', '--pack_names',
-                        help="Comma separated list of target pack names. Is used only in local dev mode.",
+                        help=("Comma separated list of target pack names. "
+                              "Define `All` in order to store all available packs."),
                         required=False, default="")
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
+    parser.add_argument('-o', '--override_pack', help="Override existing packs in cloud storage", default=False,
+                        action='store_true', required=False)
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -496,11 +513,13 @@ def main():
     service_account = option.service_account
     specific_packs = option.pack_names
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
+    override_pack = option.override_pack
 
     # detect new or modified packs
     modified_packs = get_modified_packs(specific_packs)
     extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs]
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in modified_packs
+                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -514,7 +533,8 @@ def main():
         # todo finish implementation of release notes
         # pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
-        uploaded_successfully = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket)
+        uploaded_successfully = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
+                                                       override_pack)
         # in case that pack already exist at cloud storage path, skipped further steps
         if not uploaded_successfully:
             pack.cleanup()
