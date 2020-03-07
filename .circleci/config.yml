@@ -445,7 +445,7 @@ jobs:
             fi
           when: always
       - run:
-          name: Upload Changed Packs To Storage
+          name: Upload Packs To Marketplace Storage
           command: |
             if [[ $CIRCLE_BRANCH != master ]]; then
               echo "Skipping packs uploading on non master branch"
@@ -454,7 +454,9 @@ jobs:
 
             EXTRACT_FOLDER=$(mktemp -d)
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
-            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_MARKETPLACE_KEY -b marketplace-dist -n $CIRCLE_BUILD_NUM
+            GCS_PATH=$(mktemp)
+            echo $GCS_MARKETPLACE_KEY > $GCS_PATH
+            python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -s $GCS_PATH -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o
           when: on_success
       - store_artifacts:
           path: artifacts
