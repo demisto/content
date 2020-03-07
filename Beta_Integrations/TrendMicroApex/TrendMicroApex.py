@@ -175,7 +175,7 @@ def prodagent_isolate_command(client: Client, args):
     result_content = response.get('result_content', [])
     if result_content:
         return (tableToMarkdown("Apex ProductAgent Isolate", result_content),
-            {"TrendMicroApex.ProductAgent": result_content}, response)
+                {"TrendMicroApex.ProductAgent": result_content}, response)
     else:
         return 'No agents were affected.', None, None
 
