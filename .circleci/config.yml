@@ -84,6 +84,7 @@ jobs:
             python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/store_packs_test.py -v
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
@@ -194,7 +195,7 @@ jobs:
                 echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
-            
+
             SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
             if [ -n "$SHOULD_LINT_ALL" ]; then
               echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
