@@ -5,11 +5,11 @@ name: GetLicenseID
 script: '-'
 type: python
 tags: []
-comment: A script that returns the license ID
+comment: Returns the license ID.
 enabled: true
 outputs:
 - contextPath: License.ID
-  description: License ID
+  description: The license ID.
   type: string
 scripttarget: 0
 subtype: python3
