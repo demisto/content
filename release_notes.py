@@ -632,41 +632,45 @@ def main():
 
     # get changed yaml/json files (filter only relevant changed files)
     file_validator = FilesValidator()
-    change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
-    modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
-                                                                          removed_files, tag=tag)
+    try:
+        change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
+        modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
+        modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
+                                                                              removed_files, tag=tag)
 
-    for file_path in added_files:
-        create_file_release_notes('A', file_path)
+        for file_path in added_files:
+            create_file_release_notes('A', file_path)
 
-    for file_path in modified_files:
-        create_file_release_notes('M', file_path)
+        for file_path in modified_files:
+            create_file_release_notes('M', file_path)
 
-    for file_path in removed_files:
-        handle_deleted_file(file_path, tag)
+        for file_path in removed_files:
+            handle_deleted_file(file_path, tag)
 
-    # join all release notes
-    res = []
-    beta_res = []
-    missing_release_notes = False
-    for key in RELEASE_NOTES_ORDER:
-        value = RELEASE_NOTE_GENERATOR[key]
-        ans, beta_ans = value.generate_release_notes(args.server_version)
-        if ans is None or value.is_missing_release_notes:
-            missing_release_notes = True
-        if ans:
-            res.append(ans)
-        if beta_ans:
-            beta_res.append(beta_ans)
+        # join all release notes
+        res = []
+        beta_res = []
+        missing_release_notes = False
+        for key in RELEASE_NOTES_ORDER:
+            value = RELEASE_NOTE_GENERATOR[key]
+            ans, beta_ans = value.generate_release_notes(args.server_version)
+            if ans is None or value.is_missing_release_notes:
+                missing_release_notes = True
+            if ans:
+                res.append(ans)
+            if beta_ans:
+                beta_res.append(beta_ans)
 
-    release_notes = "\n---\n".join(res)
-    beta_release_notes = "\n---\n".join(beta_res)
-    create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_release_notes)
+        release_notes = "\n---\n".join(res)
+        beta_release_notes = "\n---\n".join(beta_res)
+        create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_release_notes)
 
-    if missing_release_notes:
-        print_error("Error: some release notes are missing. See previous errors.")
-        sys.exit(1)
+        if missing_release_notes:
+            print_error("Error: some release notes are missing. See previous errors.")
+            sys.exit(1)
+    except RuntimeError:
+        print_error('Failed to get latest release tag. This may happen if your branch is not updated with '
+                    'origin master. Please merge from origin master and try again.')
 
 
 if __name__ == "__main__":
