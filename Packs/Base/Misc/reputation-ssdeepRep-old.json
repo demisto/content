@@ -1,0 +1,9 @@
+{
+  "id": "ssdeepRep",
+  "version": -1,
+  "regex": "",
+  "reputationScriptName": "",
+  "details": "ssdeep",
+  "enhancementScriptNames": [],
+  "toVersion": "4.5.0"
+}
