@@ -1942,7 +1942,7 @@ script:
     - default: false
       description: |-
         The user ID.  Note that the id is not the full UPN, but only the user name.
-         (e.g., to retrieve alerts for user1@contoso.com use user1)
+         (e.g., to retrieve alerts for user1@test.com use user1)
       isArray: false
       name: username
       required: true
@@ -2035,7 +2035,7 @@ script:
     - default: false
       description: |-
         The user ID.  Note that the id is not the full UPN, but only the user name.
-        (e.g., to retrieve machines for user1@contoso.com use user1)
+        (e.g., to retrieve machines for user1@test.com use user1)
       isArray: false
       name: username
       required: true
@@ -2197,4 +2197,4 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests: Microsoft Defender Advanced Threat ProtectionV2 - Test
+tests: Microsoft Defender Advanced Threat Protection - Test
