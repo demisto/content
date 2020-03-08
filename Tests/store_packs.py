@@ -530,7 +530,7 @@ def main():
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.get_bucket(storage_bucket_name)
+    storage_bucket = storage_client.bucket(storage_bucket_name)
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
     index_was_updated = False  # indicates whether one or more index folders were updated
 
