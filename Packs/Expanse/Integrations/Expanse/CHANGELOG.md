@@ -1,6 +1,6 @@
 ## [Unreleased]
-- Updated Authorization header for Events API to use the correct token
-- Added a User-Agent header to aid in diagnostics/debugging
+  - Updated the Authorization header for the Events API to use the correct token.
+  - Added a User-Agent header to assist with diagnostics/debugging.
 
 ## [20.2.4] - 2020-02-25
 -
