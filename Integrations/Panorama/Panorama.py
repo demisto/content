@@ -665,9 +665,10 @@ def panorama_push_status_command():
             # job['result'] == 'FAIL'
             push_status_output['Status'] = 'Failed'
 
-        devices = job.get('devices', {}).get('entry')
+        devices = job.get('devices')
+        devices = devices.get('entry') if devices else devices
         if isinstance(devices, list):
-            devices_details = [device.get('status') for device in devices]
+            devices_details = [device.get('status') for device in devices if device]
             push_status_output['Details'] = devices_details
         elif isinstance(devices, dict):
             push_status_output['Details'] = devices.get('status')
