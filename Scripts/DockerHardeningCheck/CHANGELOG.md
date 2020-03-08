@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Decreased the CPU check sensitivity to accommodate loaded systems. 
 
 ## [20.2.3] - 2020-02-18
 Updated the error entry with a detailed explanation of the failure.
