@@ -33,7 +33,7 @@ As an example, we'll be looking at the public TAXII threat intelligence feed by 
 
 **Password** - Enter `guest`.
 
-**Request Timeout** - Let's increase the number to `80` since the request may take a while complete.
+**Request Timeout** - Let's increase the number to `80` seconds since the request may take a while complete.
 
 **Poll Service** - No need to enter a value here for this example because the poll service will be determined dynamically in the integration code if it is not explicitly provided here so we'll leave it blank.
 
