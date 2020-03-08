@@ -182,21 +182,7 @@
             "complex": {
                 "root": "IP",
                 "filters": [],
-                "accessor": "Reported By",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
-        "status": {
-            "simple": "",
-            "complex": {
-                "root": "IP",
-                "filters": [],
-                "accessor": "Status",
+                "accessor": "ReportedBy",
                 "transformers": [
                     {
                         "operator": "uniq",
@@ -210,7 +196,7 @@
             "complex": {
                 "root": "IP",
                 "filters": [],
-                "accessor": "Threat Types",
+                "accessor": "ThreatTypes",
                 "transformers": [
                     {
                         "operator": "uniq",
@@ -224,7 +210,21 @@
             "complex": {
                 "root": "IP",
                 "filters": [],
-                "accessor": "Traffic Light Protocol (TLP)",
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Tags",
                 "transformers": [
                     {
                         "operator": "uniq",

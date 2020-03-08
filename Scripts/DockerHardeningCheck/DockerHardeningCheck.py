@@ -109,11 +109,13 @@ def check_cpus(num_cpus: int) -> str:
         p.join()
     runtime2 = time.time_ns() - start
     p.close()
-    # runtime 2 should be 2 times slower. But we give it a safet
+    # runtime 2 should be 2 times slower. But we give it a safty as the machine itself maybe loaded
     LOG("cpus check runtime for {} processes time: {}".format(num_cpus * 2, runtime2))
-    if runtime2 < runtime * 1.8:
+    if runtime2 < runtime * 1.5:
         return ("CPU processing power increased significantly when increasing processes "
-                "from: {} (time: {}) to: {} (time: {}).".format(num_cpus, runtime, num_cpus * 2, runtime2))
+                "from: {} (time: {}) to: {} (time: {}). "
+                "Note: this test may fail even if the proper configuration has been applied and"
+                " the machine itself is loaded.".format(num_cpus, runtime, num_cpus * 2, runtime2))
     return ""
 
 
@@ -149,15 +151,17 @@ def main():
         },
     ]
     failed = False
+    failed_msg = ''
     for v in res:
         if v[status] != success:
             failed = True
             v[status] = "Failed: " + v[status]
+            failed_msg += f'* {v[status]}\n'
     table = tableToMarkdown("Docker Hardening Results Check", res, [check, status])
     return_outputs(table)
     if failed:
-        return_error("Failed verifying docker hardening. "
-                     "More details at: https://support.demisto.com/hc/en-us/articles/360040922194")
+        return_error(f'Failed verifying docker hardening:\n{failed_msg}'
+                     'More details at: https://support.demisto.com/hc/en-us/articles/360040922194')
 
 
 # python2 uses __builtin__ python3 uses builtins

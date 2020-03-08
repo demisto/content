@@ -205,9 +205,12 @@ def http_request(uri: str, method: str, headers: Dict = {},
     return json_result
 
 
-def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any: Optional[bool] = False) -> str:
+def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
+        if isinstance(arg, str):
+            arg = [arg]
+
         for item in arg:
             member_stringify_list += '<member>' + item + '</member>'
         if field_name == 'member':
@@ -216,7 +219,7 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any: Op
             return '<' + field_name + '>' + member_stringify_list + '</' + field_name + '>'
         else:
             return '<' + field_name + '>' + arg + '</' + field_name + '>'
-    if any:
+    if any_:
         if member:
             return '<' + field_name + '><member>any</member></' + field_name + '>'
         else:
@@ -288,10 +291,14 @@ def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
 def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: Any = None,
                                  destination: Any = None, negate_source: str = None,
                                  negate_destination: str = None, action: str = None, service: List[str] = None,
-                                 disable: str = None, application: str = None, source_user: str = None,
+                                 disable: str = None, application: List[str] = None, source_user: str = None,
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None) -> Dict:
+    if application is None or len(application) == 0:
+        # application always must be specified and the default should be any
+        application = ['any']
+
     rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
     params = {
         'type': 'config',
@@ -307,7 +314,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                 + add_argument_open(source_user, 'source-user', True)
                 + add_argument_open(from_, 'from', True)  # default from will always be any
                 + add_argument_open(to, 'to', True)  # default to will always be any
-                + add_argument_list(service, 'service', True)
+                + add_argument_list(service, 'service', True, True)
                 + add_argument_yes_no(negate_source, 'negate-source')
                 + add_argument_yes_no(negate_destination, 'negate-destination')
                 + add_argument_yes_no(disable, 'disabled')
@@ -656,7 +663,13 @@ def panorama_push_status_command():
         else:
             # result['response']['job']['result'] == 'FAIL'
             push_status_output['Status'] = 'Failed'
-        push_status_output['Details'] = result['response']['result']['job']['devices']['entry']['status']
+
+        devices = result['response']['result']['job']['devices']['entry']
+        if isinstance(devices, list):
+            devices_details = [device.get('status') for device in devices]
+            push_status_output['Details'] = devices_details
+        elif isinstance(devices, dict):
+            push_status_output['Details'] = devices.get('status')
 
     if result['response']['result']['job']['status'] == 'PEND':
         push_status_output['Status'] = 'Pending'
@@ -2645,6 +2658,7 @@ def panorama_create_rule_command():
     action = demisto.args().get('action')
     service = demisto.args().get('service')
     disable = demisto.args().get('disable')
+    categories = argToList(demisto.args().get('category'))
     application = argToList(demisto.args().get('application'))
     source_user = demisto.args().get('source_user')
     disable_server_response_inspection = demisto.args().get('disable_server_response_inspection')
@@ -2665,7 +2679,7 @@ def panorama_create_rule_command():
                                           disable=disable, application=application, source_user=source_user,
                                           disable_server_response_inspection=disable_server_response_inspection,
                                           description=description, target=target,
-                                          log_forwarding=log_forwarding, tags=tags)
+                                          log_forwarding=log_forwarding, tags=tags, category=categories)
     result = http_request(
         URL,
         'POST',
@@ -2909,12 +2923,12 @@ def panorama_custom_block_rule_command():
     if object_type == 'ip':
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
-                                                  destination='any', rulename=rulename + '-from', target=target,
+                                                  destination=['any'], rulename=rulename + '-from', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', params=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
-                                                  source='any', rulename=rulename + '-to', target=target,
+                                                  source=['any'], rulename=rulename + '-to', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
@@ -2922,25 +2936,25 @@ def panorama_custom_block_rule_command():
     elif object_type in ['address-group', 'edl']:
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
-                                                  destination='any', rulename=rulename + '-from', target=target,
+                                                  destination=['any'], rulename=rulename + '-from', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', params=params)
         if block_destination:
             params = prepare_security_rule_params(api_action='set', action='drop', destination=object_value,
-                                                  source='any', rulename=rulename + '-to', target=target,
+                                                  source=['any'], rulename=rulename + '-to', target=target,
                                                   log_forwarding=log_forwarding, tags=tags)
             result = http_request(URL, 'POST', params=params)
         custom_block_output['AddressGroup'] = object_value
 
     elif object_type == 'url-category':
-        params = prepare_security_rule_params(api_action='set', action='drop', source='any', destination='any',
+        params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               category=object_value, rulename=rulename, target=target,
                                               log_forwarding=log_forwarding, tags=tags)
         result = http_request(URL, 'POST', params=params)
         custom_block_output['CustomURLCategory'] = object_value
 
     elif object_type == 'application':
-        params = prepare_security_rule_params(api_action='set', action='drop', source='any', destination='any',
+        params = prepare_security_rule_params(api_action='set', action='drop', source=['any'], destination=['any'],
                                               application=object_value, rulename=rulename, target=target,
                                               log_forwarding=log_forwarding, tags=tags)
         result = http_request(URL, 'POST', params=params)
@@ -3037,13 +3051,13 @@ def panorama_get_pcap_command():
     }
 
     password = demisto.args().get('password')
-    pcap_id = demisto.args()['pcapID']
+    pcap_id = demisto.args().get('pcapID')
     search_time = demisto.args().get('searchTime')
     if pcap_type == 'dlp-pcap' and not password:
         raise Exception('Can not provide dlp-pcap without password.')
     else:
         params['dlp-password'] = password
-    if pcap_type == 'threat-pcap' and not pcap_id or not search_time:
+    if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
         raise Exception('Can not provide threat-pcap without pcap-id and the searchTime arguments.')
 
     pcap_name = demisto.args().get('from')
@@ -3570,6 +3584,110 @@ def panorama_unregister_ip_tag_command():
         'Contents': result,
         'ReadableContentsFormat': formats['text'],
         'HumanReadable': 'Unregistered ip-tag successfully'
+    })
+
+
+''' User Tags '''
+
+
+@logger
+def panorama_register_user_tag(tag: str, users: List):
+    entry: str = ''
+    for user in users:
+        entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
+
+    params = {
+        'type': 'user-id',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register-user>{entry}'
+               f'</register-user></payload></uid-message>',
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'POST',
+        params=params,
+    )
+
+    return result
+
+
+def panorama_register_user_tag_command():
+    """
+    Register Users to a Tag
+    """
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:
+        raise Exception('The panorama-register-user-tag command is only available for PAN-OS 9.X and above versions.')
+    tag = demisto.args()['tag']
+    users = argToList(demisto.args()['Users'])
+
+    result = panorama_register_user_tag(tag, users)
+
+    # get existing Users for this tag
+    context_users = demisto.dt(demisto.context(), 'Panorama.DynamicTags(val.Tag ==\"' + tag + '\").Users')
+
+    if context_users:
+        all_users = users + context_users
+    else:
+        all_users = users
+
+    registered_user = {
+        'Tag': tag,
+        'Users': all_users
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Registered user-tag successfully',
+        'EntryContext': {
+            "Panorama.DynamicTags(val.Tag == obj.Tag)": registered_user
+        }
+    })
+
+
+@logger
+def panorama_unregister_user_tag(tag: str, users: list):
+    entry = ''
+    for user in users:
+        entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
+
+    params = {
+        'type': 'user-id',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><unregister-user>{entry}'
+               f'</unregister-user></payload></uid-message>',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'POST',
+        params=params,
+    )
+
+    return result
+
+
+def panorama_unregister_user_tag_command():
+    """
+    Unregister Users from a Tag
+    """
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:
+        raise Exception('The panorama-unregister-user-tag command is only available for PAN-OS 9.X and above versions.')
+    tag = demisto.args()['tag']
+    users = argToList(demisto.args()['Users'])
+
+    result = panorama_unregister_user_tag(tag, users)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Unregistered user-tag successfully'
     })
 
 
@@ -4555,6 +4673,495 @@ def panorama_delete_static_route_command():
     })
 
 
+def panorama_show_device_version(target: str = None):
+    params = {
+        'type': 'op',
+        'cmd': '<show><system><info/></system></show>',
+        'key': API_KEY
+    }
+    if target:
+        params['target'] = target
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result['response']['result']['system']
+
+
+def panorama_show_device_version_command():
+    """
+    Get device details and show message in war room
+    """
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+
+    response = panorama_show_device_version(target)
+
+    info_data = {
+        'Devicename': response['devicename'],
+        'Model': response['model'],
+        'Serial': response['serial'],
+        'Version': response['sw-version']
+    }
+    entry_context = {"Panorama.Device.Info(val.Devicename === obj.Devicename)": info_data}
+    headers = ['Devicename', 'Model', 'Serial', 'Version']
+    human_readable = tableToMarkdown('Device Version:', info_data, headers=headers, removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': entry_context
+    })
+
+
+@logger
+def panorama_download_latest_content_update_content(target: str):
+    params = {
+        'type': 'op',
+        'target': target,
+        'cmd': '<request><content><upgrade><download><latest/></download></upgrade></content></request>',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'POST',
+        params=params
+    )
+
+    return result
+
+
+def panorama_download_latest_content_update_command():
+    """
+    Download content and show message in war room
+    """
+    if DEVICE_GROUP:
+        raise Exception('Download latest content is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    result = panorama_download_latest_content_update_content(target)
+
+    if 'result' in result['response']:
+        # download has been given a jobid
+        download_status_output = {
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": download_status_output}
+        human_readable = tableToMarkdown('Content download:',
+                                         download_status_output, ['JobID', 'Status'], removeNull=True)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': entry_context
+        })
+    else:
+        # no download took place
+        demisto.results(result['response']['msg'])
+
+
+@logger
+def panorama_content_update_download_status(target: str, job_id: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_content_update_download_status_command():
+    """
+    Check jobID of content update download status
+    """
+    if DEVICE_GROUP:
+        raise Exception('Content download status is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    job_id = demisto.args()['job_id']
+    result = panorama_content_update_download_status(target, job_id)
+
+    content_download_status = {
+        'JobID': result['response']['result']['job']['id']
+    }
+    if result['response']['result']['job']['status'] == 'FIN':
+        if result['response']['result']['job']['result'] == 'OK':
+            content_download_status['Status'] = 'Completed'
+        else:
+            content_download_status['Status'] = 'Failed'
+        content_download_status['Details'] = result['response']['result']['job']
+
+    if result['response']['result']['job']['status'] == 'PEND':
+        content_download_status['Status'] = 'Pending'
+
+    entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": content_download_status}
+    human_readable = tableToMarkdown('Content download status:', content_download_status,
+                                     ['JobID', 'Status', 'Details'], removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': entry_context
+    })
+
+
+@logger
+def panorama_install_latest_content_update(target: str):
+    params = {
+        'type': 'op',
+        'cmd': '<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_install_latest_content_update_command():
+    """
+        Check jobID of content content install status
+    """
+    if DEVICE_GROUP:
+        raise Exception('Content download status is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    result = panorama_install_latest_content_update(target)
+
+    if 'result' in result['response']:
+        # installation has been given a jobid
+        content_install_info = {
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
+        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': entry_context
+        })
+    else:
+        # no content install took place
+        demisto.results(result['response']['msg'])
+
+
+@logger
+def panorama_content_update_install_status(target: str, job_id: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result
+
+
+def panorama_content_update_install_status_command():
+    """
+    Check jobID of content update install status
+    """
+    if DEVICE_GROUP:
+        raise Exception('Content download status is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    job_id = demisto.args()['job_id']
+    result = panorama_content_update_install_status(target, job_id)
+
+    content_install_status = {
+        'JobID': result['response']['result']['job']['id']
+    }
+    if result['response']['result']['job']['status'] == 'FIN':
+        if result['response']['result']['job']['result'] == 'OK':
+            content_install_status['Status'] = 'Completed'
+        else:
+            # result['response']['job']['result'] == 'FAIL'
+            content_install_status['Status'] = 'Failed'
+        content_install_status['Details'] = result['response']['result']['job']
+
+    if result['response']['result']['job']['status'] == 'PEND':
+        content_install_status['Status'] = 'Pending'
+
+    entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_status}
+    human_readable = tableToMarkdown('Content install status:', content_install_status,
+                                     ['JobID', 'Status', 'Details'], removeNull=True)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': entry_context
+    })
+
+
+def panorama_check_latest_panos_software_command():
+    if DEVICE_GROUP:
+        raise Exception('Checking latest PAN-OS version is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    params = {
+        'type': 'op',
+        'cmd': '<request><system><software><check></check></software></system></request>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    demisto.results(result['response']['result'])
+
+
+@logger
+def panorama_download_panos_version(target: str, target_version: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<request><system><software><download><version>{target_version}'
+               f'</version></download></software></system></request>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_download_panos_version_command():
+    """
+    Check jobID of pan-os version download
+    """
+    if DEVICE_GROUP:
+        raise Exception('Downloading PAN-OS version is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    target_version = str(demisto.args()['target_version'])
+    result = panorama_download_panos_version(target, target_version)
+
+    if 'result' in result['response']:
+        # download has been given a jobid
+        panos_version_download = {
+            'JobID': result['response']['result']['job']
+        }
+        entry_context = {"Panorama.PANOS.Download(val.JobID == obj.JobID)": panos_version_download}
+        human_readable = tableToMarkdown('Result:', panos_version_download, ['JobID', 'Status'], removeNull=True)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': entry_context
+        })
+    else:
+        # no panos download took place
+        demisto.results(result['response']['msg'])
+
+
+@logger
+def panorama_download_panos_status(target: str, job_id: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_download_panos_status_command():
+    """
+    Check jobID of panos download status
+    """
+    if DEVICE_GROUP:
+        raise Exception('PAN-OS version download status is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    job_id = demisto.args()['JobID']
+    result = panorama_download_panos_status(target, job_id)
+    panos_download_status = {
+        'JobID': result['response']['result']['job']['id']
+    }
+    if result['response']['result']['job']['status'] == 'FIN':
+        if result['response']['result']['job']['result'] == 'OK':
+            panos_download_status['Status'] = 'Completed'
+        else:
+            # result['response']['job']['result'] == 'FAIL'
+            panos_download_status['Status'] = 'Failed'
+        panos_download_status['Details'] = result['response']['result']['job']
+
+    if result['response']['result']['job']['status'] == 'PEND':
+        panos_download_status['Status'] = 'Pending'
+
+    human_readable = tableToMarkdown('PAN-OS download status:', panos_download_status,
+                                     ['JobID', 'Status', 'Details'], removeNull=True)
+    entry_context = {"Panorama.PANOS.Download(val.JobID == obj.JobID)": panos_download_status}
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': entry_context
+    })
+
+
+@logger
+def panorama_install_panos_version(target: str, target_version: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<request><system><software><install><version>{target_version}'
+               '</version></install></software></system></request>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_install_panos_version_command():
+    """
+    Check jobID of panos install
+    """
+    if DEVICE_GROUP:
+        raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    target_version = str(demisto.args()['target_version'])
+    result = panorama_install_panos_version(target, target_version)
+
+    if 'result' in result['response']:
+        # panos install has been given a jobid
+        panos_install = {
+            'JobID': result['response']['result']['job']
+        }
+        entry_context = {"Panorama.PANOS.Install(val.JobID == obj.JobID)": panos_install}
+        human_readable = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'], removeNull=True)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': entry_context
+        })
+    else:
+        # no panos install took place
+        demisto.results(result['response']['msg'])
+
+
+@logger
+def panorama_install_panos_status(target: str, job_id: str):
+    params = {
+        'type': 'op',
+        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def panorama_install_panos_status_command():
+    """
+    Check jobID of panos install status
+    """
+    if DEVICE_GROUP:
+        raise Exception('PAN-OS installation status status is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    job_id = demisto.args()['job_id']
+    result = panorama_install_panos_status(target, job_id)
+
+    panos_install_status = {
+        'JobID': result['response']['result']['job']['id']
+    }
+    if result['response']['result']['job']['status'] == 'FIN':
+        if result['response']['result']['job']['result'] == 'OK':
+            panos_install_status['Status'] = 'Completed'
+        else:
+            # result['response']['job']['result'] == 'FAIL'
+            panos_install_status['Status'] = 'Failed'
+        panos_install_status['Details'] = result['response']['result']['job']
+
+    if result['response']['result']['job']['status'] == 'PEND':
+        panos_install_status['Status'] = 'Pending'
+
+    entry_context = {"Panorama.PANOS.Install(val.JobID == obj.JobID)": panos_install_status}
+    human_readable = tableToMarkdown('PAN-OS installation status:', panos_install_status,
+                                     ['JobID', 'Status', 'Details'], removeNull=True)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': entry_context
+    })
+
+
+def panorama_device_reboot_command():
+    if DEVICE_GROUP:
+        raise Exception('Device reboot is only supported on Firewall (not Panorama).')
+    target = str(demisto.args()['target']) if 'target' in demisto.args() else None
+    params = {
+        'type': 'op',
+        'cmd': '<request><restart><system></system></restart></request>',
+        'target': target,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    demisto.results(result['response']['result'])
+
+
 def main():
     LOG(f'Command being called is: {demisto.command()}')
 
@@ -4700,6 +5307,13 @@ def main():
         elif demisto.command() == 'panorama-unregister-ip-tag':
             panorama_unregister_ip_tag_command()
 
+        # Registered Users
+        elif demisto.command() == 'panorama-register-user-tag':
+            panorama_register_user_tag_command()
+
+        elif demisto.command() == 'panorama-unregister-user-tag':
+            panorama_unregister_user_tag_command()
+
         # Security Rules Managing
         elif demisto.command() == 'panorama-list-rules':
             panorama_list_rules_command()
@@ -4767,6 +5381,51 @@ def main():
 
         elif demisto.command() == 'panorama-delete-static-route':
             panorama_delete_static_route_command()
+
+        # Firewall Upgrade
+        # Check device software version
+        elif demisto.command() == 'panorama-show-device-version':
+            panorama_show_device_version_command()
+
+        # Download the latest content update
+        elif demisto.command() == 'panorama-download-latest-content-update':
+            panorama_download_latest_content_update_command()
+
+        # Download the latest content update
+        elif demisto.command() == 'panorama-content-update-download-status':
+            panorama_content_update_download_status_command()
+
+        # Install the latest content update
+        elif demisto.command() == 'panorama-install-latest-content-update':
+            panorama_install_latest_content_update_command()
+
+        # Content update install status
+        elif demisto.command() == 'panorama-content-update-install-status':
+            panorama_content_update_install_status_command()
+
+        # Check PAN-OS latest software update
+        elif demisto.command() == 'panorama-check-latest-panos-software':
+            panorama_check_latest_panos_software_command()
+
+        # Download target PAN-OS version
+        elif demisto.command() == 'panorama-download-panos-version':
+            panorama_download_panos_version_command()
+
+        # PAN-OS download status
+        elif demisto.command() == 'panorama-download-panos-status':
+            panorama_download_panos_status_command()
+
+        # PAN-OS software install
+        elif demisto.command() == 'panorama-install-panos-version':
+            panorama_install_panos_version_command()
+
+        # PAN-OS install status
+        elif demisto.command() == 'panorama-install-panos-status':
+            panorama_install_panos_status_command()
+
+        # Reboot Panorama Device
+        elif demisto.command() == 'panorama-device-reboot':
+            panorama_device_reboot_command()
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

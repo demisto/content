@@ -188,20 +188,6 @@
                 ]
             }
         },
-        "status": {
-            "simple": "",
-            "complex": {
-                "root": "IPv6",
-                "filters": [],
-                "accessor": "Status",
-                "transformers": [
-                    {
-                        "operator": "uniq",
-                        "args": {}
-                    }
-                ]
-            }
-        },
         "threattypes": {
             "simple": "",
             "complex": {
@@ -222,6 +208,20 @@
                 "root": "IPv6",
                 "filters": [],
                 "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Tags",
                 "transformers": [
                     {
                         "operator": "uniq",

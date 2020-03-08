@@ -1,6 +1,13 @@
 ## [Unreleased]
-Added **Full Incident Enrichment** instance parameter. Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.
+- Fixed an issue where the ***qradar-get-search-results*** and ***qradar-get-search*** ignored the headers argument.
+- You can now supply a comma-separated list for the *value* argument in the ***qradar-update-reference-set-value*** command.
+- Added the ***qradar-upload-indicators*** command, which enables you to add indicators from Cortex SOAR to a QRadar reference set.
 
+## [20.2.0] - 2020-02-04
+Added an immediate recovery for HTTP requests in case of connection error, which should help if QRadar SIEM is busy.
+
+## [20.1.2] - 2020-01-22
+Added **Full Incident Enrichment** instance parameter. Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.
 
 ## [20.1.0] - 2020-01-07
 Fixed an issue with ***fetch-incidents*** which caused incident name to be cut short if it had newlines in its description.

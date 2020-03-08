@@ -12,7 +12,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown
 
 try:
     from StringIO import StringIO
@@ -394,6 +395,53 @@ def test_pascalToSpace():
         assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
 
 
+def test_safe_load_json():
+    valid_json_str = '{"foo": "bar"}'
+    expected_valid_json_result = {u'foo': u'bar'}
+    assert expected_valid_json_result == safe_load_json(valid_json_str)
+
+
+def test_remove_empty_elements():
+    test_dict = {
+        "foo": "bar",
+        "baz": {},
+        "empty": [],
+        "nested_dict": {
+            "empty_list": [],
+            "hummus": "pita"
+        },
+        "nested_list": {
+            "more_empty_list": []
+        }
+    }
+
+    expected_result = {
+        "foo": "bar",
+        "nested_dict": {
+            "hummus": "pita"
+        }
+    }
+    assert expected_result == remove_empty_elements(test_dict)
+
+
+def test_aws_table_to_markdown():
+    header = "AWS DynamoDB DescribeBackup"
+    raw_input = {
+        'BackupDescription': {
+            "Foo": "Bar",
+            "Baz": "Bang",
+            "TestKey": "TestValue"
+        }
+    }
+    expected_output = '''### AWS DynamoDB DescribeBackup
+|Baz|Foo|TestKey|
+|---|---|---|
+| Bang | Bar | TestValue |
+'''
+
+    assert expected_output == aws_table_to_markdown(raw_input, header)
+
+
 def test_argToList():
     expected = ['a', 'b', 'c']
     test1 = ['a', 'b', 'c']
@@ -624,11 +672,26 @@ def test_return_error_fetch_incidents(mocker):
     assert returned_error
 
 
+def test_return_error_fetch_indicators(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-indicators
+    mocker.patch.object(demisto, 'command', return_value="fetch-indicators")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
 def test_return_error_long_running_execution(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"
 
-    # Test fetch-incidents
+    # Test long-running-execution
     mocker.patch.object(demisto, 'command', return_value="long-running-execution")
     returned_error = False
     try:
@@ -962,6 +1025,19 @@ def test_parse_date_range():
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
 
 
+def test_encode_string_results():
+    s = "test"
+    assert s == encode_string_results(s)
+    s2 = u"בדיקה"
+    if IS_PY3:
+        res = str(s2)
+    else:
+        res = s2.encode("utf8")
+    assert encode_string_results(s2) == res
+    not_string = [1, 2, 3]
+    assert not_string == encode_string_results(not_string)
+
+
 class TestReturnOutputs:
     def test_return_outputs(self, mocker):
         mocker.patch.object(demisto, 'results')
@@ -997,6 +1073,21 @@ class TestReturnOutputs:
         assert outputs == results['Contents']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
+
+    def test_return_outputs_timeline(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        raw_response = {'event': 1}
+        timeline = [{'Value': 'blah', 'Message': 'test', 'Category': 'test'}]
+        return_outputs(md, outputs, raw_response, timeline)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
+        assert timeline == results['IndicatorTimeline']
 
 
 def test_argToBoolean():
@@ -1055,3 +1146,33 @@ def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
     # emulates re.fullmatch from py3.4
     assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
+
+
+IP_TO_INDICATOR_TYPE_PACK = [
+    ('192.168.1.1', FeedIndicatorType.IP),
+    ('192.168.1.1/32', FeedIndicatorType.CIDR),
+    ('2001:db8:a0b:12f0::1', FeedIndicatorType.IPv6),
+    ('2001:db8:a0b:12f0::1/64', FeedIndicatorType.IPv6CIDR),
+]
+
+
+@pytest.mark.parametrize('ip, indicator_type', IP_TO_INDICATOR_TYPE_PACK)
+def test_ip_to_indicator(ip, indicator_type):
+    assert FeedIndicatorType.ip_to_indicator_type(ip) is indicator_type
+
+
+data_test_b64_encode = [
+    (u'test', 'dGVzdA=='),
+    ('test', 'dGVzdA=='),
+    (b'test', 'dGVzdA=='),
+    ('', ''),
+    ('%', 'JQ=='),
+    (u'§', 'wqc='),
+    (u'§t`e§s`t§', 'wqd0YGXCp3NgdMKn'),
+]
+
+
+@pytest.mark.parametrize('_input, expected_output', data_test_b64_encode)
+def test_b64_encode(_input, expected_output):
+    output = b64_encode(_input)
+    assert output == expected_output, 'b64_encode({}) returns: {} instead: {}'.format(_input, output, expected_output)
