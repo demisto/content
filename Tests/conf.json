@@ -2606,7 +2606,7 @@
                 "pid_threshold": 11
             },
             "demisto/py-ews:2.0": {
-                "memory_threshold": 500
+                "memory_threshold": 800
             }
         }
     }
