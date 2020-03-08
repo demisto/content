@@ -2607,6 +2607,9 @@
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 800
+            },
+            "demisto/python33.8.1.6120": {
+                "memory_threshold": 80
             }
         }
     }
