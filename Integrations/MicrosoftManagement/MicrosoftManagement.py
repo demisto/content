@@ -30,47 +30,78 @@ class Client(BaseClient):
         self.suffix_template = "{}/activity/feed/subscriptions/{}"
         self.tenant_id_suffix = ''
         self.access_token = None
-        self._login()
 
-    def refresh_token_request(self):
+    @staticmethod
+    def is_token_expired(integration_context):
+        token_expiry_timestamp = int(integration_context["expires_on"])
+        now_in_epoch = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
+        return token_expiry_timestamp <= now_in_epoch - 10  # Checking with a 10 seconds margin to be on the safe side
+
+    @staticmethod
+    def build_access_token_request_data(integration_context):
+        redirect_uri = demisto.params().get('redirect_uri')
+        auth_code = demisto.params().get('auth_code')
+        client_id = demisto.params().get('client_id')
+        client_secret = demisto.params().get('client_secret')
+        data = {
+            'client_id': client_id,
+            'redirect_uri': redirect_uri,
+            'client_secret': client_secret,
+            'resource': 'https://manage.office.com'
+        }
+
+        if not integration_context:
+            data['code'] = auth_code
+            data['grant_type'] = 'authorization_code'
+        else:
+            data['refresh_token'] = integration_context['refresh_token']
+            data['grant_type'] = 'refresh_token'
+
+        return data
+
+    @staticmethod
+    def create_new_integration_context(get_access_token_response):
+        new_integration_context = {
+            'refresh_token': get_access_token_response.get('refresh_token'),
+            'access_token': get_access_token_response.get('access_token'),
+            'expires_on': get_access_token_response.get('expires_on')
+        }
+        return new_integration_context
+
+    def get_access_token_request(self):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        redirect_uri = demisto.params()['redirect_uri']
-        auth_code = demisto.params()['auth_code']
-        client_id = demisto.params()['client_id']
-        client_secret = demisto.params()['client_secret']
-        data = {
-            'client_id':client_id,
-            'redirect_uri':redirect_uri,
-            'grant_type':'refresh_token',
-            'client_secret':client_secret,
-            'resource':'https://manage.office.com',
-            'code':auth_code
-        }
+
+        integration_context = demisto.getIntegrationContext()
+        if integration_context and not Client.is_token_expired(integration_context):
+            return integration_context
+
+        data = Client.build_access_token_request_data(integration_context)
+
         response = self._http_request(
             method='POST',
             url_suffix='',
             full_url='https://login.windows.net/common/oauth2/token',
             headers=headers,
-            json_data = data
+            json_data=data
         )
+
+        new_integration_context = Client.create_new_integration_context(response)
+        demisto.setIntegrationContext(new_integration_context)
         return response
 
     def get_access_token_data(self):
-        refresh_token_response = self.refresh_token_request()
-
+        refresh_token_response = self.get_access_token_request()
         access_token_jwt = refresh_token_response.get('access_token')
-
-        expiration = refresh_token_response.get('expires_on')
         token_data = jwt.decode(access_token_jwt, verify=False)
         return access_token_jwt, token_data
 
     def get_blob_data_request(self, blob_url):
         auth_string = 'Bearer {}'.format(self.access_token)
         headers = {
-            'Content-Type':'application/json',
-            'Authorization':auth_string
+            'Content-Type': 'application/json',
+            'Authorization': auth_string
         }
         response = self._http_request(
             method='GET',
@@ -83,7 +114,7 @@ class Client(BaseClient):
     def list_content_request(self, content_type, start_time, end_time):
         auth_string = 'Bearer {}'.format(self.access_token)
         headers = {
-            'Authorization':auth_string
+            'Authorization': auth_string
         }
         params = {
             'contentType': content_type
@@ -103,7 +134,7 @@ class Client(BaseClient):
     def list_subscriptions_request(self):
         auth_string = 'Bearer {}'.format(self.access_token)
         headers = {
-            'Authorization':auth_string
+            'Authorization': auth_string
         }
         response = self._http_request(
             method='GET',
@@ -115,10 +146,10 @@ class Client(BaseClient):
     def start_or_stop_subscription_request(self, content_type, start_or_stop_suffix):
         auth_string = 'Bearer {}'.format(self.access_token)
         headers = {
-            'Authorization':auth_string
+            'Authorization': auth_string
         }
         params = {
-            'contentType':content_type
+            'contentType': content_type
         }
         response = self._http_request(
             method='POST',
@@ -166,11 +197,14 @@ def start_or_stop_subscription_command(client, args, start_or_stop):
         raw_response=res
     )
 
+
 def get_all_subscribed_content_types(client):
     subscriptions_data = client.list_subscriptions_request()
     # Since subscriptions are defined by there content type, we need the content types of enabled subscriptions
-    enabled_subscriptions = [subscription.get('contentType') for subscription in subscriptions_data if subscription.get('status') == 'enabled']
+    enabled_subscriptions = [subscription.get('contentType') for subscription in subscriptions_data
+                             if subscription.get('status') == 'enabled']
     return enabled_subscriptions
+
 
 def list_subscriptions_command(client):
     # Since subscriptions are defined by there content type, we need the content types of enabled subscriptions
@@ -189,7 +223,7 @@ def list_subscriptions_command(client):
 
 def build_event_context(event_record):
     event_context = {
-        "CreationTime":event_record.get("Creation Time"),
+        "CreationTime": event_record.get("Creation Time"),
         "ID": event_record.get("Id"),
         "RecordType": event_record.get("RecordType"),
         "Operation": event_record.get("Operation"),
@@ -210,8 +244,6 @@ def build_event_context(event_record):
     return event_context
 
 
-
-
 def get_content_records_context(content_records):
     content_records_context = []
     for content_recors in content_records:
@@ -221,7 +253,7 @@ def get_content_records_context(content_records):
 
 
 def get_all_content_type_records(client, content_type, start_time, end_time):
-    # The request returns a list of content records, each containing a url that contains the actual data
+    # The request returns a list of content records, each containing a url that holds the actual data
     content_blobs = client.list_content_request(content_type, start_time, end_time)
     content_uris = [content_blob.get("contentUri") for content_blob in content_blobs]
     content_records = []
@@ -230,9 +262,11 @@ def get_all_content_type_records(client, content_type, start_time, end_time):
         content_records.extend(content_records_in_uri)
     return content_records
 
+
 def create_events_human_readable(events_context, content_type):
     headers = ["ID", "Creation Time", "Workload", "Operation"]
-    human_readable = tableToMarkdown("Content for content type {}".format(content_type), events_context, headers=headers)
+    content_header = "Content for content type {}".format(content_type)
+    human_readable = tableToMarkdown(content_header, events_context, headers=headers)
     return human_readable
 
 
@@ -249,8 +283,8 @@ def list_content_command(client, args):
     human_readable = create_events_human_readable(content_records_context, content_type)
     return_outputs(
         readable_output=human_readable,
-        outputs= {
-            "MicrosoftManagement.ContentRecord(val.ID && val.ID === obj.ID)":content_records_context
+        outputs={
+            "MicrosoftManagement.ContentRecord(val.ID && val.ID === obj.ID)": content_records_context
         },
         raw_response=content_records
     )
@@ -289,53 +323,53 @@ def get_fetch_start_and_end_time(last_run, first_fetch_delta_in_minutes):
     return fetch_start_time_str, fetch_end_time_str
 
 
-
-
-def fetch_incidents(client, last_run, first_fetch_delta):
-    """
-    This function will execute each interval (default is 1 minute).
-
-    Args:
-        client (Client): HelloWorld client
-        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
-
-    Returns:
-        next_run: This will be last_run in the next fetch-incidents
-        incidents: Incidents that will be created in Demisto
-    """
-    # Get the last fetch time, if exists
-
-    start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_delta)
-
-    content_types_to_fetch = get_content_types_to_fetch(client)
+def get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time):
     all_content_records = []
     for content_type in content_types_to_fetch:
         content_records_of_current_type = get_all_content_type_records(client, content_type, start_time, end_time)
         all_content_records.extend(content_records_of_current_type)
+    return all_content_records
 
 
-
-    latest_creation_time = datetime.strptime(start_time, DATE_FORMAT)
+def content_records_to_incidents(content_records, start_time, end_time):
     incidents = []
+    start_time_datetime = datetime.strptime(start_time, DATE_FORMAT)
+    latest_creation_time_datetime = start_time_datetime
 
-    for content_record in all_content_records:
-        incident_created_time = content_record['created_time']
+    for content_record in content_records:
+        incident_creation_time_str = content_record['CreationTime']
+        incident_creation_time_datetime = datetime.strptime(incident_creation_time_str, DATE_FORMAT)
+
+        if incident_creation_time_datetime < start_time_datetime:
+            pass
         incident = {
             'name': content_record['Id'],
-            'occurred': incident_created_time,
+            'occurred': incident_creation_time_str,
             'rawJSON': json.dumps(content_record)
         }
 
         incidents.append(incident)
+        if incident_creation_time_datetime > latest_creation_time_datetime:
+            latest_creation_time_datetime = incident_creation_time_datetime
 
-        # Update last run and add incident if the incident is newer than last fetch
-        incident_created_time = datetime.strptime(incident_created_time, DATE_FORMAT)
-        if incident_created_time > latest_creation_time:
-            latest_creation_time = incident_created_time
+    latest_creation_time_str = datetime.strftime(latest_creation_time_datetime, DATE_FORMAT)
+
+    if len(content_records) == 0:
+        latest_creation_time_str = end_time
+
+    return incidents, latest_creation_time_str
+
+
+def fetch_incidents(client, last_run, first_fetch_delta):
+    start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_delta)
+
+    content_types_to_fetch = get_content_types_to_fetch(client)
+    content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
+
+    incidents, latest_creation_time = content_records_to_incidents(content_records, start_time, end_time)
 
     latest_creation_time_str = latest_creation_time.strftime(DATE_FORMAT)
-    last_fetch =  latest_creation_time_str if incidents else datetime.now().strftime(DATE_FORMAT)
+    last_fetch = latest_creation_time_str if incidents else end_time
     next_run = {'last_fetch': last_fetch}
     return next_run, incidents
 
@@ -344,7 +378,7 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    base_url = urljoin(demisto.params()['url'], 'https://manage.office.com/api/v1.0/')
+    base_url = 'https://manage.office.com/api/v1.0/'
     verify_certificate = not demisto.params().get('insecure', False)
 
     first_fetch_delta = demisto.params().get('first_fetch_delta', '1440').strip()
@@ -356,9 +390,9 @@ def main():
     try:
         args = demisto.args()
         client = Client(
-            base_url=base_url,
+            base_url, username='', password='',
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy, headers='')
 
         access_token, token_data = client.get_access_token_data()
         client.access_token = access_token
@@ -395,6 +429,7 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

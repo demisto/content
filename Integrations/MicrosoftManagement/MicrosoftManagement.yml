@@ -163,6 +163,6 @@ script:
       description: The ID of the record's user.
       type: string
     description: Returns all content of a specific content type.
-  dockerimage: demisto/python3:3.7.3.286
+  dockerimage: demisto/pyjwt3:1.0.0.4946
   runonce: false
   subtype: python3
