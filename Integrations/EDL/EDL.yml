@@ -57,13 +57,13 @@ configuration:
   name: panos_compatible
   required: false
   type: 8
-  additionalinfo: If selected, indicator values that don't conform to PAN-OS expectations will be reformatted, otherwise they will be dropped.
+  additionalinfo: If selected, indicator values that don't conform to PAN-OS expectations will be reformatted, otherwise the indicator values will be dropped.
 - defaultvalue: 'true'
   display: Strip Ports from URLs
   name: url_port_stripping
   required: false
   type: 8
-  additionalinfo: If selected, a URL that includes a port number will be reformatted to remove it, e.g., 'www.example.com:9999/path' would become 'www.example.com/path'.
+  additionalinfo: If selected, a URL that includes a port number will be reformatted to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service
