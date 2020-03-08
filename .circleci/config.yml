@@ -314,7 +314,7 @@ jobs:
                 echo "Skipping - not running in INSTANCE_TESTS build, unit-tests container or NIghtly run"
                 exit 0
             fi
-            if ./Tests/scripts/is_ami.sh;
+            if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto GA"
 
