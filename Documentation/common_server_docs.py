@@ -21,8 +21,9 @@ JS_PRIVATE_FUNCS = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRec
 PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                     "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
                     "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
-                    "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator", "IndicatorType",
-                    "IP", "Domain", "DBotScore", "EntryType", "EntryFormat", "CommandResults"]
+                    "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
+                    "IndicatorType", "IP", "Domain", "DBotScore", "EntryType", "EntryFormat", "CommandResults",
+                    "old_demisto_results", "new_demisto_results", "abstractmethod"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
@@ -149,13 +150,20 @@ def create_py_documentation(path, origin, language):
             if not docstring:
                 print("docstring for function {} is empty".format(a))
                 is_error_py = True
+            elif 'ignore docstring' in docstring:
+                continue
             else:
-                y = parser.parse_docstring(docstring)
-                y["name"] = a
-                y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
-                    else PY_IRREGULAR_FUNCS[a]["argList"]
+                try:
+                    y = parser.parse_docstring(docstring)
 
-                x.append(y)
+                    y["name"] = a
+                    y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
+                        else PY_IRREGULAR_FUNCS[a]["argList"]
+
+                    x.append(y)
+                except parser.MethodParsingException as ex:
+                    print('Failed to parse {} class/function.\nError: {}'.format(a, str(ex)))
+                    is_error_py = True
 
     if is_error_py:
         return None, is_error_py

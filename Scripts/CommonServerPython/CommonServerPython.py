@@ -131,7 +131,7 @@ thresholds = {
 
 
 class DBotScoreType(object):
-    """
+    """ ignore docstring
     Enum: contains all the indicator types, used DBotScore.Type)
     """
     IP = 'ip'
@@ -1824,7 +1824,9 @@ class IP(Indicator):
         return ret_value
 
 
-class Signature(object):
+class FileSignature(object):
+    """ ignore docstring
+    """
     def __init(self, authentihash, copyright, description, file_version, internal_name, original_name):
         self.authentihash = authentihash
         self.copyright = copyright
@@ -1844,18 +1846,8 @@ class Signature(object):
         }
 
 
-class DigitalSignature(object):
-    def __init__(self, publisher):
-        self.publisher = publisher
-
-    def to_context(self):
-        return {
-            'Publisher': self.publisher
-        }
-
-
 class File(Indicator):
-    """
+    """ ignore docstring
     File indicator - https://demisto.pan.dev/docs/context-standards#file
     """
     CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
@@ -1865,7 +1857,7 @@ class File(Indicator):
 
     def __init__(self, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None, sha512=None, ssdeep=None,
                  extension=None, file_type=None, hostname=None, path=None, company=None, product_name=None,
-                 digital_signature=None, signature=None, author=None, tags=None, dbot_score=None):
+                 digital_signature__publisher=None, signature=None, author=None, tags=None, dbot_score=None):
         self.name = name
         self.entry_id = entry_id
         self.size = size
@@ -1880,7 +1872,7 @@ class File(Indicator):
         self.path = path
         self.company = company
         self.product_name = product_name
-        self.digital_signature = digital_signature
+        self.digital_signature__publisher = digital_signature__publisher
         self.signature = signature
         self.author = author
         self.tags = tags
@@ -1893,9 +1885,7 @@ class File(Indicator):
         self.dbot_score = dbot_score
 
     def to_context(self):
-        file_context = {
-            'Name': self.name
-        }
+        file_context = {}
 
         if self.name:
             file_context['Name'] = self.name
@@ -1925,8 +1915,10 @@ class File(Indicator):
             file_context['Company'] = self.company
         if self.product_name:
             file_context['ProductName'] = self.product_name
-        if self.digital_signature:
-            file_context['DigitalSignature'] = self.digital_signature.to_context()
+        if self.digital_signature__publisher:
+            file_context['DigitalSignature'] = {
+                'Published': self.digital_signature__publisher
+            }
         if self.signature:
             file_context['Signature'] = self.signature.to_context()
         if self.author:
@@ -1999,7 +1991,7 @@ class CVE(Indicator):
 
 
 class URL(Indicator):
-    """
+    """ ignore docstring
     URL indicator - https://demisto.pan.dev/docs/context-standards#url
     """
     CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
@@ -2044,7 +2036,7 @@ class URL(Indicator):
 
 
 class WHOIS(object):
-    """
+    """ ignore docstring
     WHOIS is a class that used with Domain class
     """
     def __init__(self, domain_status=None, name_servers=None, creation_date=None, update_date=None,
@@ -2112,7 +2104,7 @@ class WHOIS(object):
 
 
 class Domain(Indicator):
-    """
+    """ ignore docstring
     Domain indicator - https://demisto.pan.dev/docs/context-standards#domain
     """
     CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
