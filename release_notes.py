@@ -633,7 +633,7 @@ def main():
     # get changed yaml/json files (filter only relevant changed files)
     file_validator = FilesValidator()
     try:
-        change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
+        change_log = run_command('git diff --name-status {}'.format(args.git_sha1), exit_on_error=False)
         modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
         modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
                                                                               removed_files, tag=tag)
