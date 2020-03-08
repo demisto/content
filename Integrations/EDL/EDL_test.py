@@ -148,7 +148,7 @@ class TestHelperFunctions:
             mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             # disable-secrets-detection-start
             edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
-                                                    panos_compatible=False, url_ps=True)
+                                                    panos_compatible=False, url_port_stripping=True)
             # disable-secrets-detection-end
             indicator_vals = [item.get('value', '') for item in edl_vals]
             assert 'https://www.example.com/path/to/something.html' in indicator_vals
@@ -164,7 +164,7 @@ class TestHelperFunctions:
             mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             # disable-secrets-detection-start
             edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
-                                                    panos_compatible=True, url_ps=True)
+                                                    panos_compatible=True, url_port_stripping=True)
             # disable-secrets-detection-end
             indicator_vals = [item.get('value', '') for item in edl_vals]
             # should have no protocol and no port
@@ -181,7 +181,7 @@ class TestHelperFunctions:
             mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
             # disable-secrets-detection-start
             edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
-                                                    panos_compatible=True, url_ps=True)
+                                                    panos_compatible=True, url_port_stripping=True)
             # disable-secrets-detection-end
             indicator_vals = [item.get('value', '') for item in edl_vals]
 
