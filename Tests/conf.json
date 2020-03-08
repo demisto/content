@@ -2406,6 +2406,7 @@
         }
     ],
     "skipped_tests": {
+        "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
