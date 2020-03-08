@@ -125,7 +125,6 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     # Make sure that rule IDs and/or a search ID is provided
     if eventIDs is None and searchID is None:
         raise Exception("Either eventIDs of a searchID must be provided (or both)")
-        return False
 
     # These the arguments to the REST handler
     args = {}
@@ -209,7 +208,7 @@ def handler(proxy):
     return request
 
 
-def request(url, message, **kwargs):
+def request(url, message):
     method = message['method'].lower()
     data = message.get('body', "") if method == 'post' else None
     headers = dict(message.get('headers', []))
