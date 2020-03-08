@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue in the test command, which caused an out of memory error. 
 
 ## [20.3.1] - 2020-03-04
 - Fixed an issue where ***fetch-incidents*** did not work as intended.
