@@ -316,10 +316,7 @@ def run_threads_list(threads_list):
         t.start()
     # wait for the commands to complete
     for t in threads_list:
-        try:
-            t.join()
-        except SystemExit:
-            sys.exit(1)
+        t.join()
 
 
 def get_dockerimage45(script_object):
