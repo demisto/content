@@ -11,6 +11,30 @@ enum ServerLogLevel {
     error
 }
 
+enum EntryTypes {
+    note = 1
+    downloadAgent = 2
+    file = 3
+    error = 4
+    pinned = 5
+    userManagement = 6
+    image = 7
+    playgroundError = 8
+    entryInfoFile = 9
+    warning = 11
+    map = 15
+    widget = 17
+}
+
+enum EntryFormats {
+    html
+    table
+    json
+    text
+    dbotResponse
+    markdown
+}
+
 # Demist Object Class for communicating with the Demisto Server
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='use of global:DemistoServerRequest')]
 class DemistoObject {
@@ -136,15 +160,15 @@ class DemistoObject {
     }
 
     Info ($Log) {
-        global:DemistoServerLog ([ServerLogLevel]::info) $Log
+        DemistoServerLog ([ServerLogLevel]::info) $Log
     }
 
     Debug ($Log) {
-        global:DemistoServerLog ([ServerLogLevel]::debug) $Log  # disable-secrets-detection
+        DemistoServerLog ([ServerLogLevel]::debug) $Log  # disable-secrets-detection
     }
 
     Error ($Log) {
-        global:DemistoServerLog ([ServerLogLevel]::error) $Log
+        DemistoServerLog ([ServerLogLevel]::error) $Log
     }
 
     [array] GetIncidents () {
@@ -271,7 +295,7 @@ The seperator to use (default ',')
 .OUTPUTS
 Object[]. Returns an array of the arguments
 #>
-function argToList($Arg, [string]$Seperator = ",") {
+function ArgToList($Arg, [string]$Seperator = ",") {
     if (! $Arg) {
         $r = @()
     }
@@ -287,6 +311,33 @@ function argToList($Arg, [string]$Seperator = ",") {
     # we want to return an array and avoid one-at-a-time processing
     # see: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_return?view=powershell-6#return-values-and-the-pipeline
     return @(, $r)
+}
+
+<#
+.DESCRIPTION
+Return an Error entry back to the Server
+
+.PARAMETER Message
+Messsage to display in the error entry
+
+.PARAMETER Err
+Error to log (optional)
+
+.PARAMETER Outputs
+The outputs that will be returned to playbook/investigation context (optional)
+
+.OUTPUTS
+The error entry object returned to the server
+#>
+function ReturnError([string]$Message, $Err, [hashtable]$Outputs) {
+    $demisto.Error("$Message")
+    if($Err) {
+        $errMsg = $Err | Out-String
+        $demisto.Error($errMsg)
+    }
+    $entry = @{Type = [EntryTypes]::error; ContentsFormat = [EntryFormats]::text.ToString(); Contents = $message; EntryContext = $Outputs}
+    $demisto.Results($entry) | Out-Null
+    return $entry
 }
 
 function tableToMarkdown($name, $t, $headers, $headerTransform, $removeNull, $metadata) {
