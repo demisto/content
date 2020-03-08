@@ -28,6 +28,7 @@ EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_RE = re.compile('^(?:[a-z]+:)*//')
 _PORT_RE = re.compile(r'^((?:[a-z]+:)*//([a-z0-9\-\.]+)|([a-z0-9\-\.]+))(?:\:[0-9]+)*')
+_URL_WITHOUT_PORT = r'\g<1>'
 _INVALID_TOKEN_RE = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 
 ''' HELPER FUNCTIONS '''
@@ -65,13 +66,22 @@ def get_params_port(params: dict = demisto.params()) -> int:
 
 
 def refresh_edl_context(indicator_query: str, limit: int = 0,
-                        panos_compatible: bool = True, url_ps: bool = True) -> str:
+                        panos_compatible: bool = True, url_port_stripping: bool = True) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
+
+    Parameters:
+        indicator_query (str): Query that determines which indicators to include in
+            the EDL (Cortex XSOAR indicator query syntax)
+        limit (int): The maximum number of indicators to include in the EDL
+        panos_compatible (bool): Whether to make the indicators PANOS compatible or not
+        url_port_stripping (bool): Whether to strip the port from URL indicators (if a port is present) or not
+
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
-    iocs = find_indicators_to_limit(indicator_query, limit, panos_compatible, url_ps)  # poll indicators into edl from demisto
+    # poll indicators into edl from demisto
+    iocs = find_indicators_to_limit(indicator_query, limit, panos_compatible, url_port_stripping)
     out_dict = create_values_out_dict(iocs)
     save_context(now, out_dict)
     return out_dict[EDL_VALUES_KEY]
@@ -84,31 +94,56 @@ def save_context(now: datetime, out_dict: dict):
 
 
 def find_indicators_to_limit(indicator_query: str, limit: int,
-                             panos_compatible: bool = True, url_ps: bool = False) -> list:
+                             panos_compatible: bool = True, url_port_stripping: bool = False) -> list:
     """
     Finds indicators using demisto.searchIndicators
+
+    Parameters:
+        indicator_query (str): Query that determines which indicators to include in
+            the EDL (Cortex XSOAR indicator query syntax)
+        limit (int): The maximum number of indicators to include in the EDL
+        panos_compatible (bool): Whether to make the indicators PANOS compatible or not
+        url_port_stripping (bool): Whether to strip the port from URL indicators (if a port is present) or not
+
+    Returns:
+        list: The IoCs list up until the amount set by 'limit'
     """
-    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, panos_compatible=panos_compatible, url_ps=url_ps)
+    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, 
+                                            panos_compatible=panos_compatible,
+                                            url_port_stripping=url_port_stripping)
     return iocs[:limit]
 
 
 def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0,
                                   next_page: int = 0, last_found_len: int = PAGE_SIZE,
-                                  panos_compatible: bool = True, url_ps: bool = False):
+                                  panos_compatible: bool = True, url_port_stripping: bool = False):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
+
+    Parameters:
+        indicator_query (str): Query that determines which indicators to include in
+            the EDL (Cortex XSOAR indicator query syntax)
+        limit (int): The maximum number of indicators to include in the EDL
+        total_fetched (int): The amount of indicators already fetched
+        next_page (int): The page we are up to in the loop
+        last_found_len (int): The amount of indicators found in the last fetch
+        panos_compatible (bool): Whether to make the indicators PANOS compatible or not
+        url_port_stripping (bool): Whether to strip the port from URL indicators (if a port is present) or not
+
+    Returns:
+        (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
     if not last_found_len:
         last_found_len = total_fetched
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
         formatted_iocs = []
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
-        if panos_compatible or url_ps:
+        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs', [])
+        if panos_compatible or url_port_stripping:
             for ioc in fetched_iocs:
                 ioc_value = ioc.get('value', '')
-                if url_ps:
-                    ioc_value = _PORT_RE.sub(r'\g<1>', ioc_value)
+                if url_port_stripping:
+                    ioc_value = _PORT_RE.sub(_URL_WITHOUT_PORT, ioc_value)
                 if panos_compatible:
                     # protocol stripping
                     ioc_value = _PROTOCOL_RE.sub('', ioc_value)
@@ -117,9 +152,9 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
                     # for PAN-OS *.domain.com does not match domain.com
                     # we should provide both
                     # this could generate more than num entries according to PAGE_SIZE
-                    if ioc_value.startswith('*'):
+                    if ioc_value.startswith('*.'):
                         ioc_object_copy = deepcopy(ioc)
-                        ioc_object_copy['value'] = ioc_value[2:]
+                        ioc_object_copy['value'] = ioc_value.lstrip('*.')
                         formatted_iocs.append(ioc_object_copy)
                 ioc['value'] = ioc_value
                 formatted_iocs.append(ioc)
@@ -145,7 +180,7 @@ def create_values_out_dict(iocs: list) -> dict:
 
 
 def get_edl_ioc_values(on_demand, limit, indicator_query='', last_run=None, cache_refresh_rate=None,
-                       panos_compatible: bool = True, url_ps: bool = False) -> str:
+                       panos_compatible: bool = True, url_port_stripping: bool = False) -> str:
     """
     Get the ioc list to return in the edl
     """
@@ -157,12 +192,14 @@ def get_edl_ioc_values(on_demand, limit, indicator_query='', last_run=None, cach
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             if last_run <= cache_time:
                 values_str = refresh_edl_context(indicator_query, limit=limit,
-                                                 panos_compatible=panos_compatible, url_ps=url_ps)
+                                                 panos_compatible=panos_compatible,
+                                                 url_port_stripping=url_port_stripping)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
             values_str = refresh_edl_context(indicator_query, limit=limit,
-                                             panos_compatible=panos_compatible, url_ps=url_ps)
+                                             panos_compatible=panos_compatible,
+                                             url_port_stripping=url_port_stripping)
     return values_str
 
 
@@ -236,7 +273,7 @@ def route_edl_values() -> Response:
         indicator_query=params.get('indicators_query'),
         cache_refresh_rate=params.get('cache_refresh_rate'),
         panos_compatible=panos_compatible,
-        url_ps=url_port_stripping
+        url_port_stripping=url_port_stripping
     )
     return Response(values, status=200, mimetype='text/plain')
 
