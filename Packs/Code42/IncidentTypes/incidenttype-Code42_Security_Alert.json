@@ -11,7 +11,7 @@
 	"id": "Code42 Security Alert",
 	"locked": false,
 	"name": "Code42 Security Alert",
-	"playbookId": "49e57919-bcd8-4e9a-8e6a-384c7c411b64",
+	"playbookId": "Code42 Exfiltration Playbook",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 1,
