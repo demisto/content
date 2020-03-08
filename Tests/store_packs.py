@@ -360,11 +360,13 @@ def init_storage_client():
         storage.Client: initialized google cloud storage client.
     """
     if os.environ.get(GCP_SERVICE_ACCOUNT_VAR):
+        print_color("Initialized gcp service account", LOG_COLORS.GREEN)
         return storage.Client()
     else:
         # in case of local dev use, ignored the warning of non use of service account.
         warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
         credentials, project = google.auth.default()
+        print_color("Initialized gcp personal account", LOG_COLORS.GREEN)
         return storage.Client(credentials=credentials, project=project)
 
 
