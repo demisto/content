@@ -55,18 +55,18 @@ def test_get_file_data(mocker):
 
 def test_get_alert_related_ips_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'id': '123'})
+    mocker.patch.object(demisto, 'args', return_value={'id': '123', 'limit': '1', 'offset': '0'})
     mocker.patch.object(atp, 'get_alert_related_ips_request', return_value=ALERT_RELATED_IPS_API_RESPONSE)
     _, res, _ = atp.get_alert_related_ips_command()
     assert res['MicrosoftATP.AlertIP(val.AlertID === obj.AlertID)'] == {
         'AlertID': '123',
-        'IPs': ['1.1.1.1', '2.2.2.2']
+        'IPs': ['1.1.1.1']
     }
 
 
 def test_get_alert_related_domains_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'id': '123'})
+    mocker.patch.object(demisto, 'args', return_value={'id': '123', 'limit': '2', 'offset': '0'})
     mocker.patch.object(atp, 'get_alert_related_domains_request', return_value=ALERT_RELATED_DOMAINS_API_RESPONSE)
     _, res, _ = atp.get_alert_related_domains_command()
     assert res['MicrosoftATP.AlertDomain(val.AlertID === obj.AlertID)'] == {
@@ -126,7 +126,7 @@ def test_stop_and_quarantine_file_command(mocker):
 
 def test_get_investigations_by_id_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    mocker.patch.object(demisto, 'args', return_value={'id': '123'})
+    mocker.patch.object(demisto, 'args', return_value={'id': '123', 'limit': '1', 'offset': '0'})
     mocker.patch.object(atp, 'get_investigation_by_id_request', return_value=INVESTIGATION_API_RESPONSE)
     mocker.patch.object(atp, 'get_investigation_data', return_value=INVESTIGATION_DATA)
     _, res, _ = atp.get_investigations_by_id_command()
@@ -138,7 +138,7 @@ def test_get_investigation_data(mocker):
     mocker.patch.object(atp, 'get_investigation_by_id_request', return_value=INVESTIGATION_API_RESPONSE)
     res = atp.get_investigation_data(INVESTIGATION_API_RESPONSE['id'])
     assert res['ID'] == '123'
-    assert res['State'] == "Running"
+    assert res['InvestigationState'] == "Running"
 
 
 def test_start_investigation_command(mocker):

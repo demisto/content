@@ -962,16 +962,18 @@ def get_alert_related_files_command():
         (str, dict, dict). Human readable, context, raw response
     """
     alert_id = demisto.args().get('id')
-    limit = demisto.args().get('limit')
-    response_files_list = get_alert_related_files_request(alert_id)
+    limit = int(demisto.args().get('limit'))
+    offset = int(demisto.args().get('offset'))
+    response = get_alert_related_files_request(alert_id)
+    response_files_list = response['value']
     files_data_list = []
     headers = ['Sha1', 'Sha256', 'Md5', 'GlobalPrevalence', 'GlobalFirstObserved', 'GlobalLastObserved', 'Size',
                'FileType', 'IsPeFile', 'FilePublisher', 'FileProductName', 'Signer', 'Issuer', 'SignerHash',
                'IsValidCertificate', 'DeterminationType', 'DeterminationValue']
-    for file_obj in response_files_list['value']:
+    from_index = min(offset, len(response_files_list))
+    to_index = min(offset + limit, len(response_files_list))
+    for file_obj in response_files_list[from_index:to_index]:
         files_data_list.append(get_file_data(file_obj['sha1']))
-        if len(files_data_list) == limit:
-            break
     context_output = {
         'AlertID': alert_id,
         'Files': files_data_list
@@ -1017,9 +1019,14 @@ def get_alert_related_ips_command():
         (str, dict, dict). Human readable, context, raw response
     """
     alert_id = demisto.args().get('id')
-    response_ips_list = get_alert_related_ips_request(alert_id)
+    limit = int(demisto.args().get('limit'))
+    offset = int(demisto.args().get('offset'))
+    response = get_alert_related_ips_request(alert_id)
+    response_ips_list = response['value']
     ips_list = []
-    for ip in response_ips_list['value']:
+    from_index = min(offset, len(response_ips_list))
+    to_index = min(offset + limit, len(response_ips_list))
+    for ip in response_ips_list[from_index:to_index]:
         ips_list.append(ip['id'])
     context_output = {
         'AlertID': alert_id,
@@ -1038,9 +1045,14 @@ def get_alert_related_domains_command():
         (str, dict, dict). Human readable, context, raw response
     """
     alert_id = demisto.args().get('id')
-    response_domains_list = get_alert_related_domains_request(alert_id)
+    limit = int(demisto.args().get('limit'))
+    offset = int(demisto.args().get('offset'))
+    response = get_alert_related_domains_request(alert_id)
+    response_domains_list = response['value']
     domains_list = []
-    for domain in response_domains_list['value']:
+    from_index = min(offset, len(response_domains_list))
+    to_index = min(offset + limit, len(response_domains_list))
+    for domain in response_domains_list[from_index:to_index]:
         domains_list.append(domain['host'])
     context_output = {
         'AlertID': alert_id,
@@ -1204,6 +1216,8 @@ def get_investigations_by_id_command():
         (str, dict, dict). Human readable, context, raw response
     """
     investigation_id = demisto.args().get('id', '')
+    limit = int(demisto.args().get('limit'))
+    offset = int(demisto.args().get('offset'))
     headers = ['ID', 'StartTime', 'EndTime', 'CancelledBy', 'InvestigationState', 'StatusDetails', 'MachineID',
                'ComputerDNSName', 'TriggeringAlertID']
     if investigation_id:
@@ -1212,9 +1226,11 @@ def get_investigations_by_id_command():
         hr = tableToMarkdown(f'Investigation {investigation_id} Info:', investigation_data, headers=headers)
         context_output = investigation_data
     else:
-        response = get_investigation_list_request()
+        response = get_investigation_list_request()['value']
         investigations_list = []
-        for investigation in response['value']:
+        from_index = min(offset, len(response))
+        to_index = min(offset + limit, len(response))
+        for investigation in response[from_index:to_index]:
             investigations_list.append(get_investigation_data(investigation['id']))
         hr = tableToMarkdown('Investigation Info:', investigations_list, headers=headers)
         context_output = investigations_list
@@ -1236,12 +1252,12 @@ def get_investigation_data(investigation_id):
         "ID": response.get('id'),
         "StartTime": response.get('startTime'),
         "EndTime": response.get('endTime'),
-        "State": response.get('state'),
+        "InvestigationState": response.get('state'),
         "CancelledBy": response.get('cancelledBy'),
-        "StatusDetails": response.get('ststatusDetailsatus'),
+        "StatusDetails": response.get('statusDetails'),
         "MachineID": response.get('machineId'),
         "ComputerDNSName": response.get('computerDnsName'),
-        "TriggeringAlertId": response.get('triggeringAlertId')
+        "TriggeringAlertID": response.get('triggeringAlertId')
     }
     return investigation_data
 
@@ -1349,7 +1365,8 @@ def get_alert_data(alert_id):
                 "CreatedBy": response.get('createdBy'),
                 "CreatedTime": response.get('createdTime')
             }
-        ]
+        ],
+        "Evidence": response.get('evidence')
     }
 
     return alert_data
