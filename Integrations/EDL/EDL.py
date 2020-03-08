@@ -108,7 +108,7 @@ def find_indicators_to_limit(indicator_query: str, limit: int,
     Returns:
         list: The IoCs list up until the amount set by 'limit'
     """
-    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, 
+    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit,
                                             panos_compatible=panos_compatible,
                                             url_port_stripping=url_port_stripping)
     return iocs[:limit]

@@ -192,6 +192,23 @@ class TestHelperFunctions:
             assert 'demisto.com' in indicator_vals  # lgtm [py/incomplete-url-substring-sanitization]
             assert '*-blah.demisto.com' not in indicator_vals
 
+    @pytest.mark.find_indicators_to_limit
+    def test_find_indicators_to_limit_5(self, mocker):
+        """Test panos compatibility and url port stripping both False"""
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
+            limit = 50
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
+            # disable-secrets-detection-start
+            edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit,
+                                                    panos_compatible=False, url_port_stripping=False)
+            # disable-secrets-detection-end
+            indicator_vals = [item.get('value', '') for item in edl_vals]
+            # should have protocol and port
+            assert 'www.example.com/path/to/something.html' not in indicator_vals
+            assert 'https://www.example.com:9999/path/to/something.html' in indicator_vals
+
     @pytest.mark.find_indicators_to_limit_loop
     def test_find_indicators_to_limit_loop_1(self, mocker):
         """Test find indicators stops when reached last page"""
