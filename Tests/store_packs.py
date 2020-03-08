@@ -15,7 +15,6 @@ from Tests.test_utils import run_command, print_error, print_warning, print_colo
     collect_pack_content_items, input_to_list
 
 # global constants
-GCP_SERVICE_ACCOUNT_VAR = "GOOGLE_APPLICATION_CREDENTIALS"
 STORAGE_BASE_PATH = "content/packs"
 CONTENT_PACKS_FOLDER = "Packs"
 IGNORED_FILES = ['__init__.py']
@@ -350,24 +349,31 @@ def extract_modified_packs(modified_packs, packs_artifacts_path, extract_destina
     print_color("Finished extracting modified packs", LOG_COLORS.GREEN)
 
 
-def init_storage_client():
+def init_storage_client(service_account=None):
     """Initialize google cloud storage client.
 
     In case of local dev usage the client will be initialized with user default credentials.
     Otherwise, client will be initialized from service account json that is stored in CirlceCI.
 
+    Args:
+        service_account (str): full path to service account json.
+
     Return:
         storage.Client: initialized google cloud storage client.
     """
-    if os.environ.get(GCP_SERVICE_ACCOUNT_VAR):
-        print_color("Initialized gcp service account", LOG_COLORS.GREEN)
-        return storage.Client()
+    if service_account:
+        storage_client = storage.Client.from_service_account_json(service_account)
+        print_color("Created gcp service account", LOG_COLORS.GREEN)
+
+        return storage_client
     else:
         # in case of local dev use, ignored the warning of non use of service account.
         warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
         credentials, project = google.auth.default()
-        print_color("Initialized gcp personal account", LOG_COLORS.GREEN)
-        return storage.Client(credentials=credentials, project=project)
+        storage_client = storage.Client(credentials=credentials, project=project)
+        print_color("Created gcp privare account", LOG_COLORS.GREEN)
+
+        return storage_client
 
 
 def download_and_extract_index(storage_bucket, extract_destination_path):
@@ -485,6 +491,14 @@ def option_handler():
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-s', '--service_account',
+                        help=("Path to gcloud service account, is for circleCI usage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Comma separated list of target pack names. "
                               "Define `All` in order to store all available packs."),
@@ -499,17 +513,11 @@ def option_handler():
 
 
 def main():
-    # disable-secrets-detection-start
-    """
-    For local development use your personal account and authenticate using Google Cloud SDK by running:
-    `gcloud auth application-default login`.
-    For more information go to: https://googleapis.dev/python/google-api-core/latest/auth.html
-    """
-    # disable-secrets-detection-end
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
+    service_account = option.service_account
     specific_packs = option.pack_names
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_pack = option.override_pack
@@ -521,7 +529,7 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     # google cloud storage client initialized
-    storage_client = init_storage_client()
+    storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.get_bucket(storage_bucket_name)
     index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
     index_was_updated = False  # indicates whether one or more index folders were updated
