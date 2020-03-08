@@ -458,7 +458,7 @@ jobs:
             echo $GCS_MARKET_KEY > $GCS_PATH
             export GOOGLE_APPLICATION_CREDENTIALS=$GCS_PATH
             python3 ./Tests/store_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -b 'marketplace-dist' -n $CIRCLE_BUILD_NUM -p 'All' -o
-            rm $$GCS_PATH
+            rm $GCS_PATH
           when: on_success
       - store_artifacts:
           path: artifacts
