@@ -1,4 +1,4 @@
-# TAXII Service Integration
+## TAXII Service Integration
 
 This integration provides TAXII Services for system indicators (Outbound feed).
 
@@ -15,7 +15,7 @@ The collections are defined by a JSON object in the following format:
 ## How to Access the TAXII Service
 
 To view the available TAXII services, visit the discovery service in one of the following options:
-
+ 
 - **https://*demisto_address*/instance/execute/*instance_name/taxii-discovery-service*** 
 - **http://*demisto_address*:*listen_port/taxii-discovery-service***
 
@@ -27,8 +27,6 @@ To access the TAXII service by instance name, make sure ***Instance execute exte
 
 ## How to use HTTPS
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
-
-The `HTTP Server` check box needs to be unchecked.
 
 ## How to use authentication
 The integration allows the use of basic authentication in the requests.
