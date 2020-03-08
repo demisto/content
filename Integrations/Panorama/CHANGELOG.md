@@ -1,5 +1,5 @@
 ## [Unreleased]
----------
+adding checks for return data.
 
 ## [20.2.4] - 2020-02-25
   - Added 2 new commands:
