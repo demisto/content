@@ -2,7 +2,7 @@ commonfields:
   id: jira-v2
   version: -1
 name: jira-v2
-display: Atlassian Jira (v2)
+display: Atlassian Jira v2
 fromversion: 2.6.0
 toversion: 4.5.9
 category: Case Management
