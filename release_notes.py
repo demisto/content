@@ -669,8 +669,8 @@ def main():
             print_error("Error: some release notes are missing. See previous errors.")
             sys.exit(1)
     except RuntimeError:
-        print_error('Failed to get latest release tag. This may happen if your branch is not updated with '
-                    'origin master. Please merge from origin master and try again.\nPlease run "git origin/master"')
+        print_error('Failed to get latest release tag. This may happen if your branch is not updated with origin '
+                    'master. Please merge from origin master and try again.\nPlease run "git merge origin/master"')
 
 
 if __name__ == "__main__":
