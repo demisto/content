@@ -10,7 +10,6 @@ TestData/EmailWithNonUnicodeSubject.eml
 CommonServerPython.py
 *Module.py
 !Packs/ApiModules/Scripts/*/*Module.py
-!Scripts/CommonServerPython/CommonServerPython.py
 !Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py
