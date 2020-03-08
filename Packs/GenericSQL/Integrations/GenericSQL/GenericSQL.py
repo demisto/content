@@ -7,8 +7,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import sqlalchemy
 import pymysql
-import psycopg2
-#import pyodbc
 from sqlalchemy.sql import text
 
 # explain why?
@@ -169,7 +167,7 @@ def main():
     password = params.get("credentials").get("password")
     host = params.get('host')
     database = params.get('dbname')
-    connect_parameters = params.get('connectParameters')
+    connect_parameters = params.get('connect_parameters')
 
     try:
         command = demisto.command()

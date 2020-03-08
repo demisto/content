@@ -1,4 +1,4 @@
-category: Database a
+category: Database
 commonfields:
   id: Generic SQL
   version: -1
@@ -20,7 +20,7 @@ configuration:
   type: 0
 - display: Port
   hidden: false
-  name: port (if empty - use default)
+  name: port
   required: false
   type: 0
 - display: Database Name
@@ -34,7 +34,7 @@ configuration:
   type: 9
 - display: 'Connection Arguments (ex: arg1=val1&arg2=val2)'
   hidden: false
-  name: connectParameters
+  name: connect_parameters
   required: false
   type: 0
 description: Generic SQL for the Databases MYSQL, PostgreSQL,Microsoft SQL Server,
