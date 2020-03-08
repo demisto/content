@@ -30,14 +30,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: c895832b-2acb-4977-8b1d-d6626d8d1004
+    taskid: 1c2e6772-bc4d-425a-82e6-a11d6bad9e48
     type: regular
     task:
-      id: c895832b-2acb-4977-8b1d-d6626d8d1004
+      id: 1c2e6772-bc4d-425a-82e6-a11d6bad9e48
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -50,7 +48,7 @@ tasks:
       - "2"
     scriptarguments:
       query:
-        simple: google.com
+        simple: google.co.uk
     separatecontext: false
     view: |-
       {
@@ -62,14 +60,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 54c12bad-e2c8-450f-8927-f108b3ff4890
+    taskid: bd7bab9a-8d83-4880-8f67-5c5fed2a5317
     type: condition
     task:
-      id: 54c12bad-e2c8-450f-8927-f108b3ff4890
+      id: bd7bab9a-8d83-4880-8f67-5c5fed2a5317
       version: -1
       name: Check results
       type: condition
@@ -91,7 +87,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              simple: google.co.uk
       - - operator: isEqualString
           left:
             value:
@@ -126,8 +122,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
     taskid: 6bc8d138-f9a1-4abf-800e-19c04c567802
@@ -162,8 +156,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
     taskid: 51697048-ab03-4464-8932-188f005f61be
@@ -187,15 +179,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": 380,
+          "y": 900
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
     taskid: 09737e8f-f542-4b06-8fd8-b48279c3b6d5
@@ -220,14 +210,12 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1490
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
     taskid: 534b2823-d3f4-4185-8fc9-e44950b00c76
@@ -251,15 +239,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 380,
           "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
     taskid: c691b483-541f-43ce-8276-9d5c40b5ee2a
@@ -297,15 +283,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 380,
           "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
     taskid: d558b3e8-9342-45aa-85a3-6c66284ead72
@@ -336,8 +320,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
     id: "9"
     taskid: 351178f6-6cde-4f28-8411-f17c0daad5eb
@@ -353,7 +335,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -366,20 +348,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
     id: "10"
     taskid: 479df6e9-d209-47b1-80d8-446810396f2b
     type: regular
     task:
-      elasticcommonfields: {}
       id: 479df6e9-d209-47b1-80d8-446810396f2b
       version: -1
       name: domain
@@ -399,21 +378,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1830
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: 4f9a68f8-689c-42c7-8842-4227bf7879c3
+    taskid: 0091c9a9-451d-4910-8b5d-cc324efca439
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 4f9a68f8-689c-42c7-8842-4227bf7879c3
+      id: 0091c9a9-451d-4910-8b5d-cc324efca439
       version: -1
       name: Check results
       type: condition
@@ -431,14 +407,6 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: google.com
-      - - operator: isEqualString
-          left:
-            value:
               simple: Domain.Whois.QueryStatus
             iscontext: true
           right:
@@ -447,37 +415,26 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Domain.Whois.TechAdmin.country
+              simple: Domain.Whois.ExpirationDate
             iscontext: true
           right:
             value:
-              simple: US
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Domain.Whois.Registrant.country
-            iscontext: true
-          right:
-            value:
-              simple: US
+              simple: 14-02-2021
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1980
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
     taskid: 27efe3f7-45be-4f67-8859-8bb332e96a02
     type: regular
     task:
-      elasticcommonfields: {}
       id: 27efe3f7-45be-4f67-8859-8bb332e96a02
       version: -1
       name: Sleep
@@ -496,21 +453,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2295
+          "x": 430,
+          "y": 2190
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
     taskid: 62fd33be-9409-446b-8827-bb04d105417a
     type: regular
     task:
-      elasticcommonfields: {}
       id: 62fd33be-9409-446b-8827-bb04d105417a
       version: -1
       name: domain
@@ -529,22 +483,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2470
+          "x": 430,
+          "y": 2360
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "14":
     id: "14"
-    taskid: 50c90ecb-a8d1-42e4-8f27-c9a9edf1aa5e
+    taskid: d82c7e59-a2e2-4c88-8188-fd3d67f776c5
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 50c90ecb-a8d1-42e4-8f27-c9a9edf1aa5e
+      id: d82c7e59-a2e2-4c88-8188-fd3d67f776c5
       version: -1
       name: Check results
       type: condition
@@ -564,33 +515,30 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              simple: google.co.uk
       - - operator: isEqualString
           left:
             value:
-              simple: Domain.Whois.TechAdmin.country
+              simple: Domain.Whois.ExpirationDate
             iscontext: true
           right:
             value:
-              simple: US
+              simple: 14-02-2021
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2645
+          "x": 430,
+          "y": 2520
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "15":
     id: "15"
     taskid: 3add51c3-0d9a-4ddf-8f58-6da4410cbd6a
     type: regular
     task:
-      elasticcommonfields: {}
       id: 3add51c3-0d9a-4ddf-8f58-6da4410cbd6a
       version: -1
       name: Print
@@ -607,55 +555,19 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2750
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 89639419-829c-4ea2-8515-b5e46276c01e
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 89639419-829c-4ea2-8515-b5e46276c01e
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      seconds:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2865,
-        "width": 492.5,
+        "height": 2795,
+        "width": 760,
         "x": 50,
         "y": 50
       }
