@@ -105,7 +105,7 @@ PAN_OS_ERROR_DICT = {
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
-    def __init__(self, *args, **kwargs):  # real signature unknown
+    def __init__(self, *args):  # real signature unknown
         pass
 
 
