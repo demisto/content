@@ -54,7 +54,13 @@ def filter_list(lst, items, ignore_case, match_exact, list_name):
     white_listed, not_white_listed, human_readable = build_filtered_data(lst, items, ignore_case, match_exact,
                                                                          regex_ignore_case_flag)
 
-    ec = {'List.In': white_listed, 'List.NotIn': not_white_listed}
+    ec = {
+        'List': {
+            'ListName': list_name,
+            'In': white_listed,
+            'NotIn': not_white_listed
+        }
+    }
 
     return human_readable, ec
 

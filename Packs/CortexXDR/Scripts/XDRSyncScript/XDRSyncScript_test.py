@@ -2,6 +2,8 @@ from CommonServerPython import *
 import copy
 import json
 import XDRSyncScript as xdr_script
+from XDRSyncScript import ASSIGNED_USER_MAIL_XDR_FIELD, MODIFICATION_TIME_XDR_FIELD, MANUAL_SEVERITY_XDR_FIELD, \
+    SEVERITY_XDR_FIELD
 
 
 INCIDENT_IN_DEMISTO = {
@@ -14,7 +16,9 @@ INCIDENT_IN_DEMISTO = {
         "xdrurl": "http://example.com/incident-view/697567",
         "xdrdescription": "WildFire Malware detected on host HostNameFFM8VIP9",
         "xdralertcount": 1,
-        "xdrstatus": "new"
+        "xdrstatus": "new",
+        "xdrassignedusermail": "",
+        "xdrassigneduserprettyname": ""
     },
     "severity": 1,
     "name": "#697567 - WildFire Malware detected on host HostNameFFM8VIP9",
@@ -74,6 +78,10 @@ INCIDENT_FROM_XDR = {
     "notes": None,
     "assigned_user_mail": None,
     "high_severity_alert_count": 1
+}
+
+INCIDENT_FROM_XDR_RAW_RESPONSE = {
+    'incident': INCIDENT_FROM_XDR
 }
 
 
@@ -457,7 +465,7 @@ def test_compare_incident_in_demisto_when_the_severity_is_unknown():
     assert {} == update_args
 
 
-def test_fix_bug_19669(mocker):
+def test_fix_bug_19669(mocker, capfd):
     """
     bug fix https://github.com/demisto/etc/issues/19669
 
@@ -493,7 +501,8 @@ def test_fix_bug_19669(mocker):
     args = {
         'interval': '1'
     }
-    xdr_script.main(args)
+    with capfd.disabled():  # this line should prevent the test failing on writing to demisto.error => print => stdout
+        xdr_script.main(args)
 
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
@@ -501,3 +510,198 @@ def test_fix_bug_19669(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['error']
     assert results[0]['Contents'] == 'Raised exception'
+
+
+def create_test_incident(no_assignee=False, severity=None):
+    xdr_incident = copy.deepcopy(INCIDENT_FROM_XDR)
+    demisto_incident = copy.deepcopy(INCIDENT_IN_DEMISTO)
+
+    if no_assignee:
+        xdr_incident['assigned_user_pretty_name'] = None
+        xdr_incident[ASSIGNED_USER_MAIL_XDR_FIELD] = None
+
+        demisto_incident['xdrassignedusermail'] = ''
+        demisto_incident['xdrassigneduserprettyname'] = ''
+
+    if severity:
+        xdr_incident[SEVERITY_XDR_FIELD] = severity
+
+        # 3=high, 2=medium, 1=low
+        demisto_incident['severity'] = {
+            'high': 3,
+            'medium': 2,
+            'low': 1
+        }[severity]
+
+    xdr_incident_from_previous_run = copy.deepcopy(xdr_incident)
+
+    if 'alerts' in xdr_incident_from_previous_run:
+        del xdr_incident_from_previous_run['alerts']
+    if 'file_artifacts' in xdr_incident_from_previous_run:
+        del xdr_incident_from_previous_run['file_artifacts']
+    if 'network_artifacts' in xdr_incident_from_previous_run:
+        del xdr_incident_from_previous_run['network_artifacts']
+
+    return demisto_incident, xdr_incident_from_previous_run, xdr_incident
+
+
+def get_execute_command_call(mocked_execute_command, script_name):
+    """
+
+    Returns:
+        is_called - True means script was called via demisto.executeCommand
+        script_args - The arguments that demisto.executeCommand was called with
+
+    """
+    if mocked_execute_command.call_count == 0:
+        return False, None
+
+    for call_args in mocked_execute_command.call_args_list:
+        if call_args[0][0] == script_name:
+            return True, call_args[0][1]
+
+    return False, None
+
+
+def test_incident_was_modified_in_xdr(mocker):
+    """
+    - incident in demisto
+    - incident in xdr
+
+    - incident assignee in xdr is updated by the user to be foo@test.com
+
+    - XDRSyncScript executed
+
+    - ensure incident assignee in demisto is updated to be foo@test.com
+    - ensure current playbook was re-executed
+    - ensure XDRSyncScript is scheduled to be executed in the next internal with
+        xdr_incident_from_previous_run has assignee foo@test.com
+    """
+    import XDRSyncScript as xdr_script
+    import demistomock as demisto
+
+    # - incident in demisto
+    # - incident in xdr
+    demisto_incident, xdr_incident_from_previous_run, xdr_incident_latest = create_test_incident(no_assignee=True)
+
+    # - incident assignee in xdr is updated by the user to be foo@test.com
+    xdr_incident_latest[ASSIGNED_USER_MAIL_XDR_FIELD] = 'foo@test.com'
+    xdr_incident_latest[MODIFICATION_TIME_XDR_FIELD] = xdr_incident_from_previous_run[MODIFICATION_TIME_XDR_FIELD] + 100
+
+    mocker.patch.object(demisto, 'incidents', return_value=[demisto_incident])
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{
+        'Contents': {
+            'incident': xdr_incident_latest,
+            'alerts': {
+                'data': xdr_incident_latest['alerts']
+            },
+            'file_artifacts': {
+                'data': xdr_incident_latest['file_artifacts']
+            },
+            'network_artifacts': {
+                'data': xdr_incident_latest['network_artifacts']
+            }
+        },
+        'HumanReadable': 'nla',
+        'Type': entryTypes['note'],
+        'Format': formats['json']
+    }])
+    args = {
+        'interval': '1',
+        'verbose': 'true',
+        'first': 'false',
+        ASSIGNED_USER_MAIL_XDR_FIELD: 'xdrassignedusermail',
+        'xdr_alerts': 'xdralerts',
+        'xdr_file_artifacts': 'xdrfileartifacts',
+        'xdr_network_artifacts': 'xdrnetworkartifacts',
+        'xdr_incident_from_previous_run': json.dumps(xdr_incident_from_previous_run)
+    }
+    xdr_script.main(args)
+
+    # - ensure incident assignee in demisto is updated to be foo@test.com
+    is_called, set_incident_args = get_execute_command_call(demisto.executeCommand, 'setIncident')
+    assert is_called is True
+    assert set_incident_args['xdrassignedusermail'] == 'foo@test.com'
+
+    # - ensure current playbook was re-executed
+    is_playbook_executed, _ = get_execute_command_call(demisto.executeCommand, 'setPlaybook')
+    assert is_playbook_executed is True
+
+    # - ensure XDRSyncScript is scheduled to be executed in the next internal with
+    # xdr_incident_from_previous_run has assignee foo@test.com
+    is_called, scheduled_command_args = get_execute_command_call(demisto.executeCommand, 'ScheduleCommand')
+    assert is_called is True
+
+    scheduled_command = scheduled_command_args['command']
+    assert '"assigned_user_mail": "foo@test.com"' in scheduled_command
+
+
+def test_incident_was_modified_in_demisto(mocker):
+    """
+    - incident in demisto and in XDR with low severity
+
+    - incident severity in Demisto is updated by the user to be "high"
+
+    - XDRSyncScript executed
+
+    - ensure incident severity in XDR is updated to be high
+    - ensure playbook is NOT executed
+    - ensure XDRSyncScript is scheduled to be executed in the next internal with
+        xdr_incident_from_previous_run has severity=high
+    """
+    import XDRSyncScript as xdr_script
+    import demistomock as demisto
+
+    # - incident in demisto
+    # - incident in xdr
+    demisto_incident, xdr_incident_from_previous_run, xdr_incident_latest = create_test_incident(severity='low')
+
+    # - incident severity in Demisto is updated by the user to be "high"
+    demisto_incident['severity'] = 3
+
+    # - XDRSyncScript executed
+    mocker.patch.object(demisto, 'incidents', return_value=[demisto_incident])
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{
+        'Contents': {
+            'incident': xdr_incident_latest,
+            'alerts': {
+                'data': xdr_incident_latest['alerts']
+            },
+            'file_artifacts': {
+                'data': xdr_incident_latest['file_artifacts']
+            },
+            'network_artifacts': {
+                'data': xdr_incident_latest['network_artifacts']
+            }
+        },
+        'HumanReadable': 'nla',
+        'Type': entryTypes['note'],
+        'Format': formats['json']
+    }])
+    args = {
+        'interval': '1',
+        'verbose': 'true',
+        'first': 'false',
+        SEVERITY_XDR_FIELD: 'severity',
+        'xdr_alerts': 'xdralerts',
+        'xdr_file_artifacts': 'xdrfileartifacts',
+        'xdr_network_artifacts': 'xdrnetworkartifacts',
+        'xdr_incident_from_previous_run': json.dumps(xdr_incident_from_previous_run)
+    }
+    xdr_script.main(args)
+
+    # - ensure incident severity in XDR is updated to be high
+    is_called, xdr_update_args = get_execute_command_call(demisto.executeCommand, 'xdr-update-incident')
+    assert is_called is True
+    assert xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] == 'high'
+
+    # - ensure playbook is NOT executed
+    is_playbook_executed, _ = get_execute_command_call(demisto.executeCommand, 'setPlaybook')
+    assert not is_playbook_executed
+
+    # - ensure XDRSyncScript is scheduled to be executed in the next internal with
+    #     xdr_incident_from_previous_run has severity=high
+    is_called, scheduled_command_args = get_execute_command_call(demisto.executeCommand, 'ScheduleCommand')
+    assert is_called is True

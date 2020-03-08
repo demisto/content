@@ -16,32 +16,26 @@ detaileddescription: |+
 configuration:
 - display: Credentials
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
 - display: Server URL and port (e.g. https://192.168.0.1:4119)
   name: server
-  defaultvalue: ""
   type: 0
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 script:
@@ -338,7 +332,6 @@ script:
     execution: true
     description: Assign security profile to host
   - name: trendmicro-anti-malware-event-retrieve
-    description: Retrive anti malware event
     arguments:
     - name: rangeFrom
       description: Time interval start
@@ -382,3 +375,5 @@ script:
       description: event ID operator
     description: Get anti malware events
   isfetch: true
+tests:
+  - No test
