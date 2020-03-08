@@ -763,7 +763,7 @@ def main():
 
     success = report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names)
     if not success:
-        sys.exit(1)
+        sys.exit(2)
 
 
 if __name__ == '__main__':
