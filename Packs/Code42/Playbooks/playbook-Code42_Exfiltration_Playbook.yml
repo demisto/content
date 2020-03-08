@@ -1155,3 +1155,5 @@ inputs:
   required: false
   description: Summary to use with Jira ticket creation
 outputs: []
+tests:
+- No Test
