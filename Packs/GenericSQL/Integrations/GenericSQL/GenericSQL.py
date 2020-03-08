@@ -9,6 +9,7 @@ import sqlalchemy
 import pymysql
 import psycopg2
 #import pyodbc
+from sqlalchemy.sql import text
 
 # explain why?
 pymysql.install_as_MySQLdb()
@@ -20,20 +21,23 @@ class Client:
     makes the connection to the DB server
     """
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
-                 database: str, server_certificate: bool, connect_parameters: str):
+                 database: str, connect_parameters: str):
         self.dialect = dialect
         self.host = host
         self.username = username
         self.password = password
         self.port = port
         self.dbname = database
-        self.server_certificate = server_certificate
         self.connect_parameters = connect_parameters
-        self.engine = self._create_engine_and_connect()
+        self.connection = self._create_engine_and_connect()
 
     @staticmethod
     def _convert_dialect_to_module(dialect: str) -> str:
-        module = ""
+        """
+        Converting a dialect to the correct string needed in order to connect the wanted dialect
+        :param dialect: the SQL db
+        :return: a key string needed for the connection
+        """
         if dialect == "MySQL":
             module = "mysql"
         elif dialect == "PostgreSQL":
@@ -47,31 +51,40 @@ class Client:
         return module
 
     def _create_engine_and_connect(self):
+        """
+        Creating and engine according to the instance preferences and connecting
+        :return: a connection object that will be used in order to execute SQL queries
+        """
         try:
             module = self._convert_dialect_to_module(self.dialect)
             db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
-            if self.connect_parameters: # debug - make sure that if empty returns None
+            if self.connect_parameters:
                 db_preferences += f'?{self.connect_parameters}'
-            if self.server_certificate:
-                db_preferences += '?verify_ssl_cert=True'
             return sqlalchemy.create_engine(db_preferences).connect()
         except Exception as err:
             raise Exception(err)
 
-    def sql_query_execute_request(self, sql_query: str, bind_vars: list) -> Tuple[Dict, List]:
+    def sql_query_execute_request(self, sql_query: str, bind_vars: Any) -> Tuple[Dict, List]:
         """Execute query in DB via engine
-
-        :param bind_vars:
-        :param sql_query: bf
+        :param bind_vars: in case there are names and values - a bind_var dict, in case there are only values - list
+        :param sql_query: the SQL query
         :return: results of query, table headers
         """
-        result = self.engine.execute(sql_query, bind_vars)
+        if type(bind_vars) is dict:
+            sql_query = text(sql_query)
+
+        result = self.connection.execute(sql_query, bind_vars)
         results = result.fetchall()
         headers = results[0].keys()
         return results, headers
 
 
 def generate_default_port_by_dialect(dialect: str) -> str:
+    """
+    In case no port wash chosen, a default port will be chosen according to the SQL db type
+    :param dialect: sql db type
+    :return: default port needed for connection
+    """
     if dialect == "MySQL":
         return "3306"
     elif dialect == "PostgreSQL":
@@ -86,17 +99,23 @@ def generate_default_port_by_dialect(dialect: str) -> str:
 
 
 def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) -> Any:
+    """
+    The bind variables can be given in 2 legal ways: as 2 lists - names and values, or only values
+    any way defines a different executing way, therefore there are 2 legal return types
+    :param bind_variables_names: the names of the bind variables, must be in the length of the values list
+    :param bind_variables_values: the values of the bind variables, can be in the length of the names list
+            or in case there is no name lists - at any length
+    :return: a dict or lists of the bind variables
+    """
     bind_variables_names_list = argToList(bind_variables_names)
     bind_variables_values_list = argToList(bind_variables_values)
 
     if bind_variables_values and not bind_variables_names:
-        a=1
-        # only vars, some dialect support positaniol bind vars notation
-        #??check
-    elif len(bind_variables_names_list) is not len(bind_variables_values_list):
-        raise Exception("The bind variables lists are not is the same length")
-    else:
+        return [var for var in argToList(bind_variables_values)]
+    elif len(bind_variables_names_list) is len(bind_variables_values_list):
         return dict(zip(bind_variables_names_list, bind_variables_values_list))
+    else:
+        raise Exception("The bind variables lists are not is the same length")
 
 
 def test_module(client: Client, *_):
@@ -150,15 +169,13 @@ def main():
     password = params.get("credentials").get("password")
     host = params.get('host')
     database = params.get('dbname')
-    trust_server_certificate = params.get('trustServerCertificate') #'verify_ssl_cert'
     connect_parameters = params.get('connectParameters')
 
     try:
         command = demisto.command()
         LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
-                        port=port, database=database, server_certificate=trust_server_certificate,
-                        connect_parameters=connect_parameters)
+                        port=port, database=database, connect_parameters=connect_parameters)
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,
@@ -168,7 +185,7 @@ def main():
             return_outputs(*commands[command](client, demisto.args(), command))
         else:
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
-        client.engine.close()
+        client.connection.close()
     except Exception as err:
         return_error(err)
 

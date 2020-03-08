@@ -1,4 +1,4 @@
-category: Database
+category: Database a
 commonfields:
   id: Generic SQL
   version: -1
@@ -37,17 +37,8 @@ configuration:
   name: connectParameters
   required: false
   type: 0
-- display: Trust server certificate
-  hidden: false
-  name: trustServerCertificate
-  required: false
-  type: 8
 description: Generic SQL for the Databases MYSQL, PostgreSQL,Microsoft SQL Server,
   Oracle
-detaileddescription: |-
-  ## Hello World
-  - This text is markdown
-  - Here you should explain how to configure the instance in Demisto
 display: Generic SQL
 name: Generic SQL
 script:
