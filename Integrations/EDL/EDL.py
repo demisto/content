@@ -26,7 +26,6 @@ EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
 EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
 ''' REFORMATTING REGEXES '''
-# regexes from https://github.com/PaloAltoNetworks/minemeld-core/blob/master/minemeld/flask/feedredis.py#L36
 _PROTOCOL_RE = re.compile('^(?:[a-z]+:)*//')
 _PORT_RE = re.compile(r'^((?:[a-z]+:)*//([a-z0-9\-\.]+)|([a-z0-9\-\.]+))(?:\:[0-9]+)*')
 _INVALID_TOKEN_RE = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
