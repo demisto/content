@@ -2406,7 +2406,6 @@
         }
     ],
     "skipped_tests": {
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 22300",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
