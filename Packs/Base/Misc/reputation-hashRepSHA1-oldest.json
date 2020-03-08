@@ -1,0 +1,13 @@
+{
+  "id": "hashRepSHA1",
+  "version": -1,
+  "regex": "\\b[a-fA-F\\d]{40}\\b",
+  "reputationScriptName": "DataHashReputation",
+  "details": "File SHA-1",
+  "enhancementScriptNames": [
+    "FileReputation",
+    "SplunkSearch",
+    "WildfireReport"
+  ],
+  "toVersion": "3.0.1"
+}
