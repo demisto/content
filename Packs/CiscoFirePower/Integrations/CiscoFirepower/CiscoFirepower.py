@@ -365,6 +365,14 @@ def raw_response_to_context_list(list_key, items):
 
 
 def raw_response_to_context_network_groups(items):
+    """Receives raw response and returns Context entry to network groups command
+
+    :type items: ``list`` or ``dict``
+    :param items:  list of dict or dict of data from http request
+
+    :return: ``list`` or ``dict``
+    :rtype: context entry`
+    """
     if isinstance(items, list):
         return [raw_response_to_context_network_groups(item) for item in items]
     return {
@@ -389,6 +397,14 @@ def raw_response_to_context_network_groups(items):
 
 
 def raw_response_to_context_policy_assignment(items):
+    """Receives raw response and returns Context entry to policy assignment command
+
+    :type items: ``list`` or ``dict``
+    :param items:  list of dict or dict of data from http request
+
+    :return: ``list`` or ``dict``
+    :rtype: context entry`
+    """
     if isinstance(items, list):
         return [raw_response_to_context_policy_assignment(item) for item in items]
     return {
@@ -408,6 +424,14 @@ def raw_response_to_context_policy_assignment(items):
 
 
 def raw_response_to_context_access_policy(items):
+    """Receives raw response and returns Context entry to access policy command
+
+    :type items: ``list`` or ``dict``
+    :param items:  list of dict or dict of data from http request
+
+    :return: ``list`` or ``dict``
+    :rtype: context entry`
+    """
     if isinstance(items, list):
         return [raw_response_to_context_access_policy(item) for item in items]
     return {
@@ -418,6 +442,14 @@ def raw_response_to_context_access_policy(items):
 
 
 def raw_response_to_context_ruls(items):
+    """Receives raw response and returns Context entry to ruls command
+
+    :type items: ``list`` or ``dict``
+    :param items:  list of dict or dict of data from http request
+
+    :return: ``list`` or ``dict``
+    :rtype: context entry`
+    """
     if isinstance(items, list):
         return [raw_response_to_context_ruls(item) for item in items]
     return {
@@ -1339,8 +1371,9 @@ def get_task_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
 def main():  # pragma: no cover
     params = demisto.params()
     base_url = params.get('url')
-    username = params.get('username')
-    password = params.get('password')
+    username = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
+
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     client = Client(base_url=base_url, verify=verify_ssl, proxy=proxy, auth=(username, password))

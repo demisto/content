@@ -8,13 +8,9 @@ configuration:
   required: true
   type: 0
 - display: Username
-  name: username
+  name: credentials
   required: true
-  type: 0
-- display: Password
-  name: password
-  required: true
-  type: 0
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -1226,8 +1222,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: rule's
-        traffic
+      description: rule's traffic
       isArray: false
       name: action
       predefined:
@@ -1257,8 +1252,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: list of source Zones object id - use ciscofp-list-zones
-        command
+      description: list of source Zones object id - use ciscofp-list-zones command
       isArray: true
       name: source_zone_object_ids
       required: false
@@ -1288,7 +1282,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: list of IP addresses / CIDR ranges - use ciscofp-get-network-object / ciscofp-get-host-object
+      description: list of IP addresses / CIDR ranges - use ciscofp-get-network-object
+        / ciscofp-get-host-object
       isArray: true
       name: source_network_addresses
       required: false

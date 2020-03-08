@@ -1,3 +1,5 @@
+Supports FMC 6.2.3 and above
+
 Authentication from a REST API Client
 Cisco recommends that you use different accounts for interfacing with the API and the Firepower User Interface. Credentials cannot be used for both interfaces simultaneously, and will be logged out without warning if used for both.
 
