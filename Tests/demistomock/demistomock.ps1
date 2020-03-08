@@ -339,12 +339,12 @@ function global:DemistoServerRequest ([hashtable]$Cmd)
     return {}
 }
 
-function global:DemistoServerLog([string]$level) {
+function global:DemistoServerLog([string]$level, $msg) {
     <#
     .Description
     Additional args are loged.
     For example DemistoServerLog "error" "this is a test log"
     #>
-    return Write-Information "DemistoServerLog: ${level}: $args"
+    return Write-Information "DemistoServerLog: ${level}: $msg $args"
 }
 
