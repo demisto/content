@@ -348,9 +348,7 @@ def test_get_distribution_versions(requests_mock):
         base_url=f'{XDR_URL}/public_api/v1'
     )
 
-    args = {}
-
-    readable_output, outputs, _ = get_distribution_versions_command(client, args)
+    readable_output, outputs, _ = get_distribution_versions_command(client)
 
     assert outputs == {
         'PaloAltoNetworksXDR.DistributionVersions': {

@@ -317,12 +317,12 @@ tasks:
     task:
       id: d8093197-7aa9-4b18-8774-563225e8c72b
       version: -1
-      name: Detonate File - Lastline
+      name: Detonate File - Lastline v2
       description: |-
-        Detonates a File using the Lastline sandbox.
-        Lastline supports the following File Types:
+        Detonates a file using the Lastline sandbox.
+        Lastline supports the following file types:
         EXE, SYS, DLL, COM, SCR, CPL, OCX, CGI, DOC, DOTM, DOCX, DOTX, XLS, PPAM, XSLX, PPS, XLSB, PPSX, XLSM, PPSM, PPT, PPTX, PPTM, RTF, SHS, XLTM, SLDM, XLTX, SLDX, XLAM, THMX, DOCM, XAR, JTD, JTDC, PDF, SWF, GZ, 7Z, TGZ, MSI, ZIP, LZH, CAB, LZMA, APK, JAR, CLASS, JPEG, PNG, GIF, CMD, ACE, BAT, ARJ, VBS, CHM, XML, LNK, URL, MOF, HTM, OCX, HTML, POTM, EML, POTX, MSG, PS, |VB, REG, VBA, WSC, VBE, WSF, VBS, WSH
-      playbookName: Detonate File - Lastline
+      playbookName: Detonate File - Lastline v2
       type: playbook
       iscommand: false
       brand: ""

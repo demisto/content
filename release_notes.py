@@ -18,6 +18,7 @@ from Tests.scripts.validate_files import FilesValidator
 
 CONTENT_LIB_PATH = "./"
 
+NEXT_VERSION = "5.5.0"
 NEW_RN = "New"
 MODIFIED_RN = "Improved"
 IGNORE_RN = '-'
@@ -43,7 +44,7 @@ RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR
 
 
 def add_dot(text):
-    if not text:
+    if not text or len(text) < 2:
         return ''
 
     text = text.rstrip().replace('```', '***').replace('`', '*')
@@ -67,7 +68,8 @@ def add_dot(text):
         return '\n'.join(formatted_text)
 
     # single record release notes
-    return text[0].upper() + text[1:].rstrip('.') + '.'
+    text = text[0].upper() + text[1:]
+    return text if text.endswith('.') else text + '.'
 
 
 def release_notes_item(header, body):
@@ -144,20 +146,27 @@ class Content(object):  # pylint: disable=useless-object-inheritance
     # create a release notes section for store (add or modified) - return None if found missing release notes
     def release_notes_section(self, store, title_prefix, current_server_version):
         res = ""
+        beta_rn_paths = list()
         if store:
             new_str = ""
             new_count = 0
             for path in store:
                 with open(path, 'r') as file_obj:
-                    print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), end='')
                     raw_content = file_obj.read()
                     cnt = self.load_data(raw_content)
 
                     from_version = cnt.get("fromversion") or cnt.get("fromVersion")
+                    to_version = cnt.get("toversion") or cnt.get("toVersion")
                     if from_version is not None and server_version_compare(current_server_version, from_version) < 0:
-                        print("Skipped because of version differences")
+                        print(f'{path}: Skipped because from version: {from_version}'
+                              f' is greater than current server version: {current_server_version}')
+                        beta_rn_paths.append(path)
+                        print(f"{path} has added to beta release notes")
                         continue
-
+                    if to_version is not None and server_version_compare(to_version, current_server_version) < 0:
+                        print(f'{path}: Skipped because of to version" {to_version}'
+                              f' is smaller: than current server version: {current_server_version}')
+                        continue
                     if title_prefix == NEW_RN:
                         ans = self.added_release_notes(path, cnt)
                     elif title_prefix == MODIFIED_RN:
@@ -174,9 +183,6 @@ class Content(object):  # pylint: disable=useless-object-inheritance
                     elif ans:
                         new_count += 1
                         new_str += ans
-                        print("Success")
-                    else:
-                        print("Skipped")
 
             if new_str:
                 if self.show_secondary_header:
@@ -186,26 +192,25 @@ class Content(object):  # pylint: disable=useless-object-inheritance
 
                     res = "\n#### %s %s %s\n" % (count_str, title_prefix, self.get_header())
                 res += new_str
-
-        return res
+        print("Collected {} beta notes".format(len(beta_rn_paths)))
+        return res, beta_rn_paths
 
     def generate_release_notes(self, current_server_version):
         res = ""
-
+        beta_res = ""
         if len(self.modified_store) + len(self.deleted_store) + len(self.added_store) > 0:
             print("starting {} RN".format(self.get_header()))
 
             # Added files
-            add_rn = self.release_notes_section(self.added_store, NEW_RN, current_server_version)
-
+            add_rn, add_beta_paths = self.release_notes_section(self.added_store, NEW_RN, current_server_version,)
             # Modified files
-            modified_rn = self.release_notes_section(self.modified_store, MODIFIED_RN, current_server_version)
-
-            if add_rn is None or modified_rn is None:
-                return None
+            modified_rn, mod_beta_paths = self.release_notes_section(self.modified_store, MODIFIED_RN,
+                                                                     current_server_version)
+            add_beta_res, _ = self.release_notes_section(add_beta_paths, NEW_RN, NEXT_VERSION)
+            mod_beta_res, _ = self.release_notes_section(mod_beta_paths, MODIFIED_RN, NEXT_VERSION)
 
             section_body = add_rn + modified_rn
-
+            beta_section_body = add_beta_res + mod_beta_res
             # Deleted files
             if self.deleted_store:
                 section_body += "\n##### Removed {}\n".format(self.get_header())
@@ -217,8 +222,10 @@ class Content(object):  # pylint: disable=useless-object-inheritance
             if section_body:
                 res = "### {}\n".format(self.get_header())
                 res += section_body
+                beta_res = "### {}\n".format(self.get_header())
+                beta_res += beta_section_body
 
-        return res
+        return res, beta_res
 
 
 class ScriptContent(Content):
@@ -360,7 +367,7 @@ class LayoutContent(Content):
         return json.loads(data)
 
     def get_header(self):
-        return "Incident Layouts"
+        return "Layouts"
 
     def get_release_notes(self, file_path, data):
         release_note = super(LayoutContent, self).get_release_notes(file_path, data)
@@ -576,7 +583,7 @@ def get_release_notes_draft(github_token, asset_id):
     return ''
 
 
-def create_content_descriptor(version, asset_id, res, github_token):
+def create_content_descriptor(version, asset_id, res, github_token, beta_rn=None):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
     release_notes = '## Demisto Content Release Notes for version {} ({})\n'.format(version, asset_id)
@@ -602,6 +609,13 @@ def create_content_descriptor(version, asset_id, res, github_token):
 
     with open('release-notes.md', 'w') as outfile:
         outfile.write(release_notes)
+
+    print("saving beta release notes")
+    with open('beta-release-notes.md', 'w') as outfile:
+        beta_release_notes = '## Demisto Content Beta Release Notes for version {}\n'.format(NEXT_VERSION)
+        beta_release_notes += '##### Published on {}\n{}'.format(datetime.datetime.now().strftime("%d %B %Y"),
+                                                                 beta_rn)
+        outfile.write(beta_rn)
 
 
 def main():
@@ -634,17 +648,21 @@ def main():
 
     # join all release notes
     res = []
+    beta_res = []
     missing_release_notes = False
     for key in RELEASE_NOTES_ORDER:
         value = RELEASE_NOTE_GENERATOR[key]
-        ans = value.generate_release_notes(args.server_version)
+        ans, beta_ans = value.generate_release_notes(args.server_version)
         if ans is None or value.is_missing_release_notes:
             missing_release_notes = True
         if ans:
             res.append(ans)
+        if beta_ans:
+            beta_res.append(beta_ans)
 
     release_notes = "\n---\n".join(res)
-    create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token)
+    beta_release_notes = "\n---\n".join(beta_res)
+    create_content_descriptor(args.version, args.asset_id, release_notes, args.github_token, beta_rn=beta_release_notes)
 
     if missing_release_notes:
         print_error("Error: some release notes are missing. See previous errors.")
