@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 # flake8: noqa
 import boto3
 import json
-import datetime  # type: ignore
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
