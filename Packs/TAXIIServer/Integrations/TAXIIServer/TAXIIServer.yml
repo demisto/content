@@ -27,13 +27,6 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Ignores the certificate and private key, and will run the TAXII server in HTTP
-  defaultvalue: 'true'
-  display: HTTP Server
-  hidden: false
-  name: http_flag
-  required: false
-  type: 8
 - additionalinfo: JSON string of indicator query collections - dictionary of the collection
     name as the key and the query as the value.
   defaultvalue: |-

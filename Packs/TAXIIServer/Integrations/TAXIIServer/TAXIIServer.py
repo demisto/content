@@ -6,7 +6,6 @@ from urllib.parse import urlparse, ParseResult
 from tempfile import NamedTemporaryFile
 from base64 import b64decode
 from typing import Callable, List, Generator
-from multiprocessing import Process
 
 from libtaxii.messages_11 import (
     TAXIIMessage,
@@ -866,12 +865,10 @@ def taxii_poll_service() -> Response:
 
 
 def test_module(taxii_server: TAXIIServer):
-    run_server(taxii_server, True)
-
     return 'ok', {}, {}
 
 
-def run_server(taxii_server: TAXIIServer, is_test: bool = False):
+def run_server(taxii_server: TAXIIServer):
     """
     Start the taxii server.
     """
@@ -879,6 +876,7 @@ def run_server(taxii_server: TAXIIServer, is_test: bool = False):
     certificate_path = str()
     private_key_path = str()
     ssl_args = dict()
+
     try:
         if taxii_server.certificate and taxii_server.private_key and not taxii_server.http_server:
             certificate_file = NamedTemporaryFile(delete=False)
@@ -897,13 +895,7 @@ def run_server(taxii_server: TAXIIServer, is_test: bool = False):
             demisto.debug('Starting HTTP Server')
 
         wsgi_server = WSGIServer(('', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
-        if is_test:
-            server_process = Process(target=wsgi_server.serve_forever)
-            server_process.start()
-            time.sleep(10)
-            server_process.terminate()
-        else:
-            wsgi_server.serve_forever()
+        wsgi_server.serve_forever()
     except Exception as e:
         if certificate_path:
             os.unlink(certificate_path)
@@ -925,8 +917,12 @@ def main():
 
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
-    http_server: bool = params.get('http_flag', True)
     credentials: dict = params.get('credentials', None)
+    http_server = True
+    if (certificate and not private_key) or (private_key and not certificate):
+        raise ValueError('When using HTTPS connection, both certificate and private key must be provided.')
+    elif certificate and private_key:
+        http_server = False
 
     global SERVER
     scheme = 'http'

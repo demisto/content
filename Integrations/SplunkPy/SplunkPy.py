@@ -86,7 +86,7 @@ def rawToDict(raw):
                     result[key] = val
 
     else:
-        raw_response = re.split('\S,', raw)  # split by any non-whitespace character follows by
+        raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
         for key_val in raw_response:
             key_value = key_val.replace('"', '').strip()
             if '=' in key_value:
