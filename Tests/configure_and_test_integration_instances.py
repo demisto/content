@@ -541,7 +541,7 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
                 'Content Update to version: {} was Unsuccessful:\n{}'.format(release, err_details),
                 print_error, thread_index)
             prints_manager.execute_thread_prints(thread_index)
-            sys.exit(1)
+            raise SystemExit('Content update failed.')
 
 
 def report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names):
