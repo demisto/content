@@ -4,7 +4,7 @@
 	"layout": {
 		"id": "Employee Offboarding",
 		"kind": "edit",
-		"modified": "2020-01-06T11:54:34.649188186Z",
+		"modified": "2020-01-22T14:07:01.061552369Z",
 		"name": "",
 		"sections": [
 			{
@@ -75,6 +75,13 @@
 				"fields": [
 					{
 						"fieldId": "incident_employeemanageremail",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					},
+					{
+						"fieldId": "incident_offboardingdate",
 						"id": "",
 						"isVisible": true,
 						"modified": "0001-01-01T00:00:00Z",

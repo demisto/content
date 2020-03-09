@@ -1,0 +1,103 @@
+fromversion: 5.0.0
+id: Sixgill - DarkFeed - Indicators
+version: -1
+name: Sixgill - DarkFeed - Indicators
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: ee6a2320-9bb6-4ec3-8588-cab46abee2a5
+    type: start
+    task:
+      id: ee6a2320-9bb6-4ec3-8588-cab46abee2a5
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 9e63819a-6e2f-4067-8c1e-a0f7500a42e4
+    type: regular
+    task:
+      id: 9e63819a-6e2f-4067-8c1e-a0f7500a42e4
+      version: -1
+      name: sixgill-get-indicators
+      description: Fetching Sixgill's DarkFeed Threat Intelligence indicators
+      script: Sixgill|||sixgill-get-indicators
+      type: regular
+      iscommand: true
+      brand: Sixgill
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      fetch_indicators_limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 065eae4d-318f-4048-8d00-b24c6951a56f
+    type: regular
+    task:
+      id: 065eae4d-318f-4048-8d00-b24c6951a56f
+      version: -1
+      name: CreateIndicatorsFromSTIX
+      description: Creates indicators from the submitted STIX file. Supports STIX
+        1.0 and STIX 2.0.
+      scriptName: CreateIndicatorsFromSTIX
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      entry_id:
+        simple: ${InfoFile.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: 'The playbook extracts a STIX bundle then uses StixParser automation in order to parse and push indicators into demisto’s platform.'

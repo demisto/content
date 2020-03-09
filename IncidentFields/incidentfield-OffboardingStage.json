@@ -1,6 +1,7 @@
 {
 	"id": "incident_offboardingstage",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2019-12-18T17:44:18.949268542Z",
 	"name": "Offboarding Stage",
 	"ownerOnly": false,

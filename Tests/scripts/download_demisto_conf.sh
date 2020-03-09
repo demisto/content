@@ -22,13 +22,6 @@ if [ "$?" != "0" ]; then
     cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
     cp -r ./content-test-conf-master/demisto.lic $DEMISTO_LIC_PATH
     cp -r ./content-test-conf-master/conf.json $SECRET_CONF_PATH
-    if [ -n "${NIGHTLY}" ]
-      then
-        cp -r ./content-test-conf-master/nightly_instance.json instance.json
-
-      else
-        cp -r ./content-test-conf-master/instance.json instance.json
-    fi
     rm -rf ./content-test-conf-master
     rm -rf ./test_configuration.zip
   else
@@ -36,18 +29,14 @@ if [ "$?" != "0" ]; then
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/awsinstancetool ./Tests/scripts/awsinstancetool
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/demisto.lic $DEMISTO_LIC_PATH
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/conf.json $SECRET_CONF_PATH
-    if [ -n "${NIGHTLY}" ]
-      then
-        cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/nightly_instance.json instance.json
-
-      else
-        cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/instance.json instance.json
-    fi
     rm -rf ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH
     rm -rf ./test_configuration.zip
+    if [ "$UNDERSCORE_CIRCLE_BRANCH" != "master" ]; then
+        echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
+        exit 1
+    fi
+
 fi
 
 set -e
-echo "using instance:"
-cat instance.json
 echo "Successfully downloaded configuration files"

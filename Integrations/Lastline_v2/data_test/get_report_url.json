@@ -1,0 +1,528 @@
+{
+  "success": 1,
+  "data": {
+    "task_uuid": "f03db6ae1ac8001002fc26c1dc11cf6f",
+    "report": {
+      "activities": [],
+      "prefilter_scanners": [
+        {
+          "test": false,
+          "detector_id": "llweb:prefilter-char-code-at-function",
+          "score": 5,
+          "version": 2,
+          "activity": "A script used the charCodeAt function"
+        },
+        {
+          "test": false,
+          "detector_id": "llweb:prefilter-from-char-code-function",
+          "score": 5,
+          "version": 2,
+          "activity": "A script used the fromCharCode function"
+        }
+      ],
+      "uuid": "",
+      "format": {
+        "build_version": 0,
+        "major_version": 1,
+        "name": "ll-web",
+        "minor_version": 2
+      },
+      "analysis_engine_version": 16777216,
+      "analysis": {
+        "evals": [],
+        "processes": [],
+        "exploits": [],
+        "network": {
+          "requests": [
+            {
+              "status": 200,
+              "content_length": 221667,
+              "end": 991,
+              "relation_type_str": "USER",
+              "activities": [
+                {
+                  "is_test": true,
+                  "score": 0,
+                  "version": 1,
+                  "name": "",
+                  "desc": "Info: Page contains a form"
+                }
+              ],
+              "url": "https://www.google.com/",
+              "content_sha1": "512ec7da3122488cce6db6a12b29801a69b69f44",
+              "relation_type": 6,
+              "filename": null,
+              "start": 1,
+              "task_uuid": null,
+              "content_type": "text/html",
+              "error": null,
+              "parent_url": "USER_URL",
+              "content_md5": "",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 15344,
+              "end": 2182,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "",
+              "content_sha1": "",
+              "relation_type": null,
+              "filename": null,
+              "start": 1271,
+              "task_uuid": null,
+              "content_type": "font/woff2",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "5d4aeb4e5f5ef754e307d7ffaef688bd",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 15436,
+              "end": 2266,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "",
+              "content_sha1": "619389190b3cafafb5db94113990350acc8a0278",
+              "relation_type": null,
+              "filename": null,
+              "start": 1272,
+              "task_uuid": null,
+              "content_type": "font/woff2",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "037d830416495def72b7881024c14b7b",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 7325,
+              "end": 2207,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "/",
+              "content_sha1": "e8d110b196c504d1d48d0c864411223cc3604f18",
+              "relation_type": null,
+              "filename": null,
+              "start": 1297,
+              "task_uuid": null,
+              "content_type": "image/png",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "063ada405398fb5d6f1e2c3b5fb0ef59",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 646,
+              "end": 2204,
+              "relation_type_str": 1,
+              "activities": [],
+              "url": "",
+              "content_sha1": "8be2d4dd8890de1f314545ddfdbf583b74fd37fc",
+              "relation_type": null,
+              "filename": null,
+              "start": 1310,
+              "task_uuid": null,
+              "content_type": "image/png",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "35299314fc759677b0eede4b5df29ca7",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 5969,
+              "end": 1641,
+              "relation_type_str": 1,
+              "activities": [],
+              "url": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+              "content_sha1": "1737d3dfb411c07b86ed8bd30f5987a4dc397cc1",
+              "relation_type": null,
+              "filename": null,
+              "start": 1317,
+              "task_uuid": null,
+              "content_type": "image/png",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "8f9327db2597fa57d2f42b4a6c5a9855",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 574,
+              "end": 1664,
+              "relation_type_str": 1,
+              "activities": [],
+              "url": "https://www.google.com/images/searchbox/desktop_searchbox_sprites302_hr.webp",
+              "content_sha1": "f72e642534abd16c451ff2374cab2fab95577812",
+              "relation_type": null,
+              "filename": null,
+              "start": 1332,
+              "task_uuid": null,
+              "content_type": "image/webp",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "3acf25baccf6d2b22056d0d6a61c88d2",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 465650,
+              "end": 2513,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "https://www.google.com/xjs/_/js/k=xjs.s.en_US.qmAVfCCNbGI.O/ck=xjs.s.w9X5qvL5xGI.L.W.O/m=Fkg7bd,HcFEGb,IvlUe,MC8mtf,OF7gzc,RMhBfe,T4BAC,TJw5qb,TbaHGc,Y33vzc,cdos,hsm,iDPoPb,jsa,mvYTse,tg8oTe,uz938c,vWNDde,ws9Tlc,yQ43ff,d,csi/am=AAAAsAjYdQcE-X8rAAgA7BgAAALcgg0WCENChbE6AREg/d=1/dg=2/br=1/ct=zgms/rs=ACT90oGsPfbqNAQgG9W8ObcVY2MQBEHBJg",
+              "content_sha1": "974e2c26c616daa077df9cbe0aec560adc3429f9",
+              "relation_type": null,
+              "filename": null,
+              "start": 1341,
+              "task_uuid": null,
+              "content_type": "text/javascript",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "819561c66e69826f4b076d99b18867ea",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 4396,
+              "end": 2911,
+              "relation_type_str": 1,
+              "activities": [],
+              "url": "https://www.google.com/images/nav_logo299.webp",
+              "content_sha1": "dbfcc7b41e4b9e94ff3b78acc9f280a7ae1f3c0c",
+              "relation_type": null,
+              "filename": null,
+              "start": 1497,
+              "task_uuid": null,
+              "content_type": "image/webp",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "1697cff83402987aff3198daf841d510",
+              "ip": ""
+            },
+            {
+              "status": 204,
+              "content_length": 0,
+              "end": 3019,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "https://www.google.com/gen_204?s=webhp&t=aft&atyp=csi&ei=kWvoXbPzN8Ks0PEPu6CG-Ag&rt=wsrt.987,aft.675,prt.503&bl=99lT&ima=1&imad=0&imn=1",
+              "content_sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+              "relation_type": null,
+              "filename": null,
+              "start": 1663,
+              "task_uuid": null,
+              "content_type": "text/html",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 175295,
+              "end": 2546,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "",
+              "content_sha1": "d8e1327ea74041529a26a280b7354ca81086f043",
+              "relation_type": null,
+              "filename": null,
+              "start": 1697,
+              "task_uuid": null,
+              "content_type": "text/javascript",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "4cf635aaf354ac9d8b914e36163d7ab8",
+              "ip": ""
+            },
+            {
+              "status": 204,
+              "content_length": 0,
+              "end": 3362,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "https://www.google.com/gen_204?atyp=csi&ei=kWvoXbPzN8Ks0PEPu6CG-Ag&s=jsa&jsi=s,t.0,et.focus,n.iDPoPb,cn.1&zx=1575512980147",
+              "content_sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+              "relation_type": null,
+              "filename": null,
+              "start": 2994,
+              "task_uuid": null,
+              "content_type": "text/html",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 152853,
+              "end": 3317,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "https://www.google.com/xjs/_/js/k=xjs.s.en_US.qmAVfCCNbGI.O/ck=xjs.s.w9X5qvL5xGI.L.W.O/am=AAAAsAjYdQcE-X8rAAgA7BgAAALcgg0WCENChbE6AREg/d=1/exm=Fkg7bd,HcFEGb,IvlUe,MC8mtf,OF7gzc,RMhBfe,T4BAC,TJw5qb,TbaHGc,Y33vzc,cdos,csi,d,hsm,iDPoPb,jsa,mvYTse,tg8oTe,uz938c,vWNDde,ws9Tlc,yQ43ff/ed=1/dg=2/br=1/ct=zgms/rs=ACT90oGsPfbqNAQgG9W8ObcVY2MQBEHBJg/m=aa,abd,async,dvl,fEVMic,foot,ifl,lu,m,mUpTid,mu,sb_wiz,sf,sonic,spch,wft,xz7cCd?xjs=s1",
+              "content_sha1": "96298db79c6dd7625d0e38cba5e053feba0b5bab",
+              "relation_type": null,
+              "filename": null,
+              "start": 3032,
+              "task_uuid": null,
+              "content_type": "text/javascript",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "2dce6621df8a61cc34358f72b418ba9e",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 147794,
+              "end": 3969,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "https://apis.google.com/_/scs/abc-static/_/js/k=gapi.gapi.en.7kWSr24wXFc.O/m=gapi_iframes,googleapis_client,plusone/rt=j/sv=1/d=1/ed=1/rs=AHpOoo-i9r7IbCTUQfJ0v-FPhRKRS8aihQ/cb=gapi.loaded_0",
+              "content_sha1": "a1d66bea8024d8d4db57813489b2643129e77cc2",
+              "relation_type": null,
+              "filename": null,
+              "start": 3072,
+              "task_uuid": null,
+              "content_type": "text/javascript",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "cb62749e1bf22a0b725cd7c6a7481e43",
+              "ip": ""
+            },
+            {
+              "status": 200,
+              "content_length": 0,
+              "end": 4086,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "https://ogs.google.com/widget/app/so?hl=en&origin=https%3A%2F%2Fwww.google.com&pid=1&spid=1&usegapi=1",
+              "content_sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+              "relation_type": null,
+              "filename": null,
+              "start": 3093,
+              "task_uuid": null,
+              "content_type": "text/html",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
+              "ip": ""
+            },
+            {
+              "status": 204,
+              "content_length": 0,
+              "end": 4754,
+              "relation_type_str": 10,
+              "activities": [],
+              "url": "https://www.google.com/gen_204?atyp=csi&ei=kWvoXbPzN8Ks0PEPu6CG-Ag&s=webhp&t=all&bl=99lT&imn=1&adh=&conn=onchange&ima=1&imad=0&ime=1&imeb=0&imeo=0&wh=1024&scp=0&net=dl.9200,ect.4g,rtt.0&mem=ujhs.11,tjhs.13,jhsl.3760,dm.8&sto=&sys=hc.12&rt=xjsls.353,prt.503,aft.675,iml.675,dcl.504,xjses.1942,xjsee.1992,xjs.1992,ol.3450,wsrt.987,cst.583,dnst.2,rqst.883,rspt.501,sslt.307,rqstt.605,unt.0,cstt.22,dit.1491&zx=1575512981595",
+              "content_sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+              "relation_type": null,
+              "filename": null,
+              "start": 4441,
+              "task_uuid": null,
+              "content_type": "text/html",
+              "error": null,
+              "parent_url": "https://www.google.com/",
+              "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
+              "ip": ""
+            },
+            {
+              "status": 302,
+              "content_length": 0,
+              "end": 5344,
+              "relation_type_str": 6,
+              "activities": [],
+              "url": "https://adservice.google.com/adsid/google/ui",
+              "content_sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+              "relation_type": null,
+              "filename": null,
+              "start": 4443,
+              "task_uuid": null,
+              "content_type": "text/html",
+              "error": null,
+              "parent_url": "USER_URL",
+              "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
+              "ip": ""
+            },
+            {
+              "status": null,
+              "content_length": 0,
+              "end": 5344,
+              "relation_type_str": 5,
+              "activities": [],
+              "url": "",
+              "content_sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+              "relation_type": null,
+              "filename": null,
+              "start": 5344,
+              "task_uuid": null,
+              "content_type": "application/x-empty",
+              "error": null,
+              "parent_url": null,
+              "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
+              "ip": null
+            },
+            {
+              "status": 204,
+              "content_length": 0,
+              "end": 7761,
+              "relation_type_str": 6,
+              "activities": [],
+              "url": "https://www.google.com/gen_204?atyp=i&ct=webfont_timing&cad=@2sec,1.s.1270,1.ds.47,1.de.49,1.cs.49,1.ce.632,1.rq.633,1.rs.910,1.re.993,1.d.993,2.s.1271,2.ds.0,2.de.0,2.cs.0,2.ce.0,2.rq.632,2.rs.992,2.re.1233,2.d.1233&s=1268&er=2266&eb=2507&ei=kWvoXbPzN8Ks0PEPu6CG-Ag&zx=1575512982544",
+              "content_sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+              "relation_type": null,
+              "filename": null,
+              "start": 5389,
+              "task_uuid": null,
+              "content_type": "text/html",
+              "error": null,
+              "parent_url": "USER_URL",
+              "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
+              "ip": ""
+            }
+          ]
+        },
+        "shellcodes": [],
+        "urls_from_documents": [],
+        "applets": {},
+        "writes": [],
+        "dropped_files": [],
+        "statics": [
+          {
+            "media_type": "text/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "text/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "text/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "text/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "application/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "application/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "application/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "application/javascript",
+            "code": "window.gbar&&gbar.up&&gbar.up.tp&&gbar.up.tp();",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "application/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "application/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          },
+          {
+            "media_type": "application/javascript",
+            "code": "-",
+            "activities": [],
+            "source_url": null
+          }
+        ],
+        "strings": [],
+        "artifacts": [],
+        "result": {
+          "analysis_ended": "2019-12-05 02:30:49+0000",
+          "detector": "1.0.0"
+        },
+        "plugins": [],
+        "text_from_documents": [],
+        "subject": {},
+        "new_functions": [],
+        "resources": [],
+        "hidden_elements": []
+      },
+      "analysis_metadata": [
+        {
+          "timestamp": 7,
+          "metadata_type": "screenshot",
+          "name": "screenshot_capture.png",
+          "retention_date": "2020-03-04 02:30:49"
+        },
+        {
+          "name": "traffic.pcap",
+          "metadata_type": "traffic_capture"
+        },
+        {
+          "metadata_type": "llurl_framework_trace",
+          "name": "trace.json",
+          "retention_date": "2020-01-05 02:30:49"
+        }
+      ],
+      "score": 0,
+      "prefilter_score": 9
+    },
+    "submission": "2019-12-05 02:29:33",
+    "reports": [
+      {
+        "relevance": 1.0,
+        "report_versions": [
+          "ll-web"
+        ],
+        "description": "Dynamic analysis in instrumented Chrome browser",
+        "report_uuid": ""
+      },
+      {
+        "relevance": 1.0,
+        "report_versions": [
+          "ll-pcap"
+        ],
+        "description": "Pcap analysis",
+        "report_uuid": ""
+      }
+    ],
+    "child_tasks": [
+      {
+        "task_uuid": "a680b4754ff500100b5e515e19255232",
+        "score": 0,
+        "tag": "network traffic analysis",
+        "parent_report_uuid": ""
+      }
+    ],
+    "score": 0,
+    "analysis_subject": {
+      "url": "https://www.google.com"
+    },
+    "last_submission_timestamp": "2019-12-05 14:12:37"
+  }
+}
