@@ -1,6 +1,6 @@
 ## Plain Text Feed Integration
 
-Fetch indicators from a plain text feed. The integration allows a great amount of user configuration to support different types of plain text feeds.
+Fetches indicators from a plain text feed. The integration allows a many user configurations to support different types of plain text feeds.
 
 ## Configuration
 
@@ -35,7 +35,7 @@ These fields also support the use of API key headers. To use API key headers, sp
 
 For more information about regular expression extraction, see this [python documentation](https://docs.python.org/3/library/re.html#match-objects).
 
-* **Headers** -  CSV List of headers to send in the HTTP request in the format of "header_name:header_value". For example:
+* **Headers** -  CSV list of headers to send in the HTTP request in the format of "header_name:header_value". For example:
 
 `Content-Type:text/plain,Accept:application/json`
 
@@ -51,7 +51,7 @@ As an example, we'll be looking at the Recommended Block List feed by DShield. T
 
 From a quick look at the feed in the web browser, we are going to configure the rest of the parameters:
 
-**Ignore Regex** - We are going to need to ignore all the text inside the part enclosed by the `#` character (included) 
+**Ignore Regex** - We are going to need to ignore all the text inside the part enclosed within the `#` character (included) 
 so we'll configure `^#` as the regular expression to use to ignore this text.
 
 **Indicator extraction pattern** - We would like to extract the IP range and turn it into a CIDR. For that, we will configure a regular expression to extract both IP addresses in the range into 2 groups,
@@ -65,7 +65,7 @@ This would be our extraction pattern object as a JSON string which we will fill 
 }
 ```
 
-****Fields extraction pattern**** - We would like to extract the name and the number of attacks field for each IP range in the feed.
+****Fields extraction pattern**** - We want to extract the name and the number of attacks field for each IP range in the feed.
 For each field we will configure a regular expression to extract it and then a template to grab the regex group as is.
 This would be the JSON string we will use in the integration configuration:
 ```json
@@ -83,7 +83,7 @@ This would be the JSON string we will use in the integration configuration:
 }
 ```
 
-Then our indicator will have these 2 additional fields. We would be able to map them to other indicator fields in the system later.
+Then our indicator will have these 2 additional fields. We can map them to other indicator fields in the system later.
 
 
 **Headers** - No need for additional headers.
