@@ -72,16 +72,16 @@ configuration:
   - number
   - regex
   required: false
-  type: 16
-- additionalinfo: For use with PAN-OS URL format - if checked will strip the port off
-    urls. If not checked - url with ports will be ignored.
+  type: 15
+- additionalinfo: For use with PAN-OS URL format - if checked will strip the port
+    off urls. If not checked - url with ports will be ignored.
   display: PAN-OS URL Format Port Strip
   hidden: false
   name: strip_port
   required: false
   type: 8
-- additionalinfo: For use with PAN-OS URL format - if checked any URL entry which is
-    not compliant with PAN-OS EDL URL format the entry is dropped instead of being
+- additionalinfo: For use with PAN-OS URL format - if checked any URL entry which
+    is not compliant with PAN-OS EDL URL format the entry is dropped instead of being
     rewritten.
   display: PAN-OS URL Format Drop Invalid Entries
   hidden: false
@@ -119,7 +119,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: text
-      description: The output format. Can be "text", "json", "json-seq", "csv", "PAN-OS URL", "McAfee Web Gateway" and "Symantec ProxySG".
+      description: The output format. Can be "text", "json", "json-seq", "csv", "PAN-OS
+        URL", "McAfee Web Gateway" and "Symantec ProxySG".
       isArray: false
       name: format
       predefined:
@@ -190,9 +191,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with PAN-OS URL format - if checked any URL entry which is
-        not compliant with PAN-OS EDL URL format the entry is dropped instead of being
-        rewritten.
+      description: For use with PAN-OS URL format - if checked any URL entry which
+        is not compliant with PAN-OS EDL URL format the entry is dropped instead of
+        being rewritten.
       isArray: false
       name: drop_invalids
       predefined:

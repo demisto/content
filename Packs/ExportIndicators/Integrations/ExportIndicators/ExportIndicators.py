@@ -8,6 +8,7 @@ from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any, cast, Dict
 from base64 import b64decode
 import re
+import traceback
 
 
 class Handler:
@@ -27,12 +28,18 @@ FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
+FORMAT_ARG_MWG = 'mwg'
+FORMAT_ARG_PANOSURL = 'panosurl'
+FORMAT_ARG_BLUECOAT = 'bluecoat'
+FORMAT_ARG_PROXYSG = 'proxysg'
 FORMAT_MWG: str = 'McAfee Web Gateway'
 FORMAT_PROXYSG = "Symantec ProxySG"
 FORMAT_PANOSURL = "PAN-OS URL"
 CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text,json,json-seq,csv'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
+CTX_MWG_TYPE_ERR_MSG: str = 'The McAFee Web Gateway type can only be one of the following: string,' \
+                            ' applcontrol, dimension, category, ip, mediatype, number, regex'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
 
@@ -95,7 +102,12 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
         'last_offset': offset,
         'last_format': out_format,
         'last_query': indicator_query,
-        'current_iocs': iocs
+        'current_iocs': iocs,
+        'mwg_type': mwg_type,
+        'drop_invalids': drop_invalids,
+        'strip_port': strip_port,
+        'category_default': category_default,
+        'category_attribute': category_attribute
     })
     return out_dict[CTX_VALUES_KEY]
 
@@ -229,7 +241,7 @@ def create_proxysg_out_format(iocs: list, category_default='bc_category', catego
     return {CTX_VALUES_KEY: formatted_indicators}
 
 
-def create_mwg_out_format(iocs: list, mwg_type) -> dict:
+def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
     formatted_indicators = []  # type:List
     for indicator in iocs:
         value = "\"" + indicator.get('value') + "\""
@@ -243,6 +255,10 @@ def create_mwg_out_format(iocs: list, mwg_type) -> dict:
         formatted_indicators.append(value + " " + sources_string)
 
     string_formatted_indicators = list_to_str(formatted_indicators, '\n')
+
+    if isinstance(mwg_type, list):
+        mwg_type = mwg_type[0]
+
     string_formatted_indicators = "type=" + mwg_type + "\n" + string_formatted_indicators
 
     return {CTX_VALUES_KEY: string_formatted_indicators}
@@ -293,7 +309,9 @@ def get_outbound_mimetype() -> str:
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
-def is_request_change(limit, offset, out_format=FORMAT_TEXT, last_update_data={}) -> bool:
+def is_request_change(limit, offset, out_format=FORMAT_TEXT, last_update_data={}, mwg_type: str = "string",
+                      drop_invalids=False, strip_port=False, category_default='bc_category',
+                      category_attribute='') -> bool:
     """ Checks for changes in the request params
 
     Args:
@@ -301,6 +319,11 @@ def is_request_change(limit, offset, out_format=FORMAT_TEXT, last_update_data={}
         offset (int): the index of the indicator from which the list should be exported.
         out_format (str): the requested output format.
         last_update_data (dict): the cached params for the last request.
+        mwg_type (str): the type indicated in the Mcafee Gateway format.
+        drop_invalids (bool): Whether to drop invalid indicators in PANOS format.
+        strip_port (bool): Whether to strip ports from url indicators in PANOS format.
+        category_default (str): the defualt category in ProxySG format.
+        category_attribute (str):the categories to print in ProxySG format.
 
     Returns:
         bool. True if limit/offset/out_format params have changed since the last request, False otherwise.
@@ -308,8 +331,15 @@ def is_request_change(limit, offset, out_format=FORMAT_TEXT, last_update_data={}
     last_limit = last_update_data.get('last_limit')
     last_offset = last_update_data.get('last_offset')
     last_format = last_update_data.get('last_format')
+    last_mwg_type = last_update_data.get('mwg_type')
+    last_drop_invalids = last_update_data.get('drop_invalids')
+    last_strip_port = last_update_data.get('strip_port')
+    last_category_default = last_update_data.get('category_default')
+    last_category_attribute = last_update_data.get('category_attribute')
 
-    return out_format != last_format or limit != last_limit or offset != last_offset
+    return (out_format != last_format or limit != last_limit or offset != last_offset or last_mwg_type != mwg_type
+            or last_drop_invalids != drop_invalids or last_strip_port != strip_port
+            or last_category_default != category_default or last_category_attribute != category_attribute)
 
 
 def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format=FORMAT_TEXT, last_update_data={},
@@ -324,7 +354,8 @@ def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_fo
 
     # on_demand ignores cache
     if on_demand:
-        if is_request_change(limit, offset, out_format, last_update_data):
+        if is_request_change(limit, offset, out_format, last_update_data, mwg_type, drop_invalids, strip_port,
+                             category_default, category_attribute):
             values_str = get_ioc_values_str_from_context(current_iocs, out_format, limit, offset)
 
         else:
@@ -412,6 +443,18 @@ def get_request_args(params):
     offset = try_parse_integer(request.args.get('s', 0), CTX_OFFSET_ERR_MSG)
     out_format = request.args.get('v', params.get('format', 'text'))
     query = request.args.get('q', params.get('indicators_query'))
+    mwg_type = request.args.get('t', params.get('mwg_type', "string"))
+    strip_port = request.args.get('sp', params.get('strip_port', False))
+    drop_invalids = request.args.get('di', params.get('drop_invalids', False))
+    category_default = request.args.get('cd', params.get('category_default', 'bc_category'))
+    category_attribute = request.args.get('ca', params.get('category_attribute', ''))
+
+    # handle flags
+    if strip_port == '':
+        strip_port = True
+
+    if drop_invalids == '':
+        drop_invalids = True
 
     # prevent given empty params
     if len(query) == 0:
@@ -420,10 +463,32 @@ def get_request_args(params):
     if len(out_format) == 0:
         out_format = params.get('format', 'text')
 
-    if out_format not in ['text', 'json', 'json-seq', 'csv']:
+    if out_format not in [FORMAT_PROXYSG, FORMAT_PANOSURL, FORMAT_TEXT, FORMAT_JSON, FORMAT_CSV,
+                          FORMAT_JSON_SEQ, FORMAT_MWG, FORMAT_ARG_BLUECOAT, FORMAT_ARG_MWG, FORMAT_ARG_PANOSURL,
+                          FORMAT_ARG_PROXYSG]:
         raise DemistoException(CTX_FORMAT_ERR_MSG)
 
-    return limit, offset, out_format, query
+    elif out_format in [FORMAT_ARG_PROXYSG, FORMAT_ARG_BLUECOAT]:
+        out_format = FORMAT_PROXYSG
+
+    elif out_format == FORMAT_ARG_MWG:
+        out_format = FORMAT_MWG
+
+    elif out_format == FORMAT_ARG_PANOSURL:
+        out_format = FORMAT_PANOSURL
+
+    results = {
+        'limit': limit,
+        'offset': offset,
+        'out_format': out_format,
+        'query': query,
+        'mwg_type': mwg_type,
+        'strip_port': strip_port,
+        'drop_invalids': drop_invalids,
+        'category_default': category_default,
+        'category_attribute': category_attribute
+    }
+    return results
 
 
 @APP.route('/', methods=['GET'])
@@ -444,28 +509,28 @@ def route_list_values() -> Response:
                 demisto.debug(err_msg)
                 return Response(err_msg, status=401)
 
-        limit, offset, out_format, query = get_request_args(params)
+        request_args = get_request_args(params)
 
         values = get_outbound_ioc_values(
-            out_format=out_format,
+            out_format=request_args.get('out_format'),
             on_demand=params.get('on_demand'),
-            limit=limit,
-            offset=offset,
+            limit=request_args.get('limit'),
+            offset=request_args.get('offset'),
             last_update_data=demisto.getIntegrationContext(),
-            indicator_query=query,
+            indicator_query=request_args.get('query'),
             cache_refresh_rate=params.get('cache_refresh_rate'),
-            mwg_type=params.get('mwg_type'),
-            strip_port=params.get('strip_params'),
-            drop_invalids=params.get('drop_invalids'),
-            category_default=params.get('category_default'),
-            category_attribute=params.get('category_attribute')
+            mwg_type=request_args.get('mwg_type'),
+            strip_port=request_args.get('strip_port'),
+            drop_invalids=request_args.get('drop_invalids'),
+            category_default=request_args.get('category_default'),
+            category_attribute=request_args.get('category_attribute')
         )
 
         mimetype = get_outbound_mimetype()
         return Response(values, status=200, mimetype=mimetype)
 
     except Exception as e:
-        return Response(str(e), status=400, mimetype='text/plain')
+        return Response(str(e) + traceback.format_exc(), status=400, mimetype='text/plain')
 
 
 ''' COMMAND FUNCTIONS '''
