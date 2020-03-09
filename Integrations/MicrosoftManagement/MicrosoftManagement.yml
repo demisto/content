@@ -1,9 +1,8 @@
 commonfields:
   id: Microsoft Management
   version: -1
-contentitemfields:
-  propagationLabels: []
 name: Microsoft Management
+description: The Microsoft Management API integration allows you to subscribe or unsubscribe to different audits, receive their content and fetch new content as incidents.
 display: Microsoft Management
 category: Data Enrichment & Threat Intelligence
 configuration:
@@ -46,7 +45,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
-  type: 0
+  type: 8
   required: false
 - display: First fetch start (minutes)
   name: first_fetch_delta
