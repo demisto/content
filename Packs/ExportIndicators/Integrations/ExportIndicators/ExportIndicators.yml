@@ -20,7 +20,7 @@ configuration:
   - PAN-OS URL
   required: false
   type: 15
-- defaultvalue: '2500'
+- defaultvalue: '10000'
   display: List Size
   name: list_size
   required: true
@@ -152,6 +152,12 @@ script:
       - 'true'
       required: true
       secret: false
+    - default: false
+      description: The starting entry index from which to export the indicators.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: string
@@ -214,7 +220,7 @@ script:
       On-Demand).
     execution: false
     name: eis-update
-  dockerimage: demisto/teams:1.0.0.4937
+  dockerimage: demisto/teams:1.0.0.6411
   feed: false
   isfetch: false
   longRunning: true

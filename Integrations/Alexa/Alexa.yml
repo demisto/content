@@ -25,7 +25,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: domain to search
+      description: Domain to search.
       isArray: false
       name: domain
       required: true
