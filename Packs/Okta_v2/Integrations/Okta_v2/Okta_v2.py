@@ -50,20 +50,29 @@ class Client(BaseClient):
 
     # Getting Group Id with a given group name
     def get_group_id(self, group_name):
-        uri = 'groups?q=' + encode_string_results(group_name)
+        uri = 'groups'
+        query_params = {
+            'q': encode_string_results(group_name)
+        }
         res = self._http_request(
             method="GET",
-            url_suffix=uri
+            url_suffix=uri,
+            params=query_params
         )
         if res and len(res) == 1:
             return res[0].get('id')
 
     # Getting User Id with a given username
     def get_user_id(self, username):
-        uri = 'users?filter=' + encode_string_results(f'profile.login eq "{username}"')
+        uri = 'users'
+        query_params = {
+            'filter': encode_string_results(f'profile.login eq "{username}"')
+        }
         res = self._http_request(
             method='GET',
-            url_suffix=uri
+            url_suffix=uri,
+            params=query_params
+
         )
         if res and len(res) == 1:
             return res[0].get('id')
@@ -258,10 +267,15 @@ class Client(BaseClient):
         return response
 
     def search(self, term, limit):
-        uri = f"users?q={encode_string_results(term)}&limit={limit}"
+        uri = f"users"
+        query_params = {
+            'q': encode_string_results(term),
+            'limit': limit
+        }
         return self._http_request(
             method='GET',
-            url_suffix=uri
+            url_suffix=uri,
+            params=query_params
         )
 
     @staticmethod
@@ -347,12 +361,16 @@ class Client(BaseClient):
             'groupIds': group_ids or [],
             'credentials': cred
         }
-        uri = f'users?activate={activate}&provider=true' if cred and cred.get(
-            'provider') else f'users?activate={activate}'
+        uri = 'users'
+        query_params = {
+            'activate': activate,
+            'provider': 'true' if cred.get('provider') else None
+        }
         return self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=body
+            json_data=body,
+            params=query_params
         )
 
     # Build profile dict with pre-defined keys (for user)
@@ -419,10 +437,13 @@ class Client(BaseClient):
     def get_group_members(self, group_id, limit):
         uri = f'groups/{group_id}/users'
         if limit:
-            uri += f'?limit={limit}'
+            query_params = {
+                'limit': limit
+            }
             return self._http_request(
                 method="GET",
-                url_suffix=uri
+                url_suffix=uri,
+                params=query_params
             )
         return self.get_paged_results(uri)
 
