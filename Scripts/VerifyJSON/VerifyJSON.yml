@@ -20,7 +20,7 @@ name: VerifyJSON
 script: '-'
 system: false
 outputs:
-  - contextPath: VerfiyJSON.Result
+  - contextPath: VerifyJSON.Result
     description: Result of verifying the passed JSON
     type: boolean
 tags:

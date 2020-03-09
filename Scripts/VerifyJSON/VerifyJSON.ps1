@@ -27,6 +27,6 @@ function Main() {
 }
 
 # Execute Main when not in Tests
-if (-not $MyInvocation.ScriptName -contains ".Tests.ps1") {
+if ($MyInvocation.ScriptName -notlike "*.Tests.ps1") {
     Main
 }
