@@ -18,7 +18,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Type of the indicator in the feed.
+- additionalinfo: Type of indicator in the feed.
   display: Indicator Type
   name: indicator_type
   options:
@@ -92,13 +92,13 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Time (in seconds) before HTTP requests timeout.
+- additionalinfo: Time (in seconds) before HTTP requests timeout
   defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
   type: 0
-- additionalinfo: Python regular expression for lines to ignore.
+- additionalinfo: Python regular expression for lines to ignore
   display: Ignore Regex
   name: ignore_regex
   required: false
@@ -130,14 +130,14 @@ configuration:
   name: fields
   required: false
   type: 12
-- additionalinfo: CSV List of headers to send in the HTTP request in the format of
+- additionalinfo: CSV list of headers to send in the HTTP request in the format of
     "header_name:header_value".
   display: Headers
   hidden: false
   name: headers
   required: false
   type: 0
-description: Fetch indicators from a plain text feed.
+description: Fetches indicators from a plain text feed.
 display: Plain Text Feed
 name: Plain Text Feed
 script:
@@ -145,7 +145,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return to the output.
+      description: The maximum number of results to return to the output. The default value is 50.
       isArray: false
       name: limit
       required: false
