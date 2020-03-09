@@ -507,8 +507,6 @@ def main():
             return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
     except Exception as e:
-        LOG(str(e))
-        LOG.print_log()
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
