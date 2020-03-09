@@ -1,4 +1,14 @@
 ## [Unreleased]
+
+
+## [20.3.1] - 2020-03-04
+- Fixed an issue where ***fetch-incidents*** did not work as intended.
+- Fixed an issue where ***splunk-parse-raw*** cut the last character of parsed fields.
+
+## [20.2.4] - 2020-02-25
+Added support for comma-separated values in the ***splunk-parse-raw*** command.
+
+## [20.2.3] - 2020-02-18
 Added the *app* argument to the ***splunk-job-create*** and ***splunk-search*** commands.
 
 ## [20.2.0] - 2020-02-04
