@@ -1,6 +1,6 @@
 . $PSScriptRoot\demistomock.ps1
 
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Scope="", Justification="Use of globals set by the Demisto Server")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "", Scope = "", Justification = "Use of globals set by the Demisto Server")]
 
 # Silence Progress STDOUT (e.g. long http request download progress)
 $progressPreference = 'silentlyContinue'
@@ -36,7 +36,7 @@ enum EntryFormats {
 }
 
 # Demist Object Class for communicating with the Demisto Server
-[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification='use of global:DemistoServerRequest')]
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'use of global:DemistoServerRequest')]
 class DemistoObject {
     hidden [hashtable] $ServerEntry
     hidden [bool] $IsDebug
@@ -302,8 +302,9 @@ function ArgToList($Arg, [string]$Seperator = ",") {
     elseif ($Arg.GetType().IsArray) {
         $r = $Arg
     }
-    elseif ($Arg[0] -eq "[" -and $Arg[-1] -eq "]") { # json string
-        $r  = $Arg | ConvertFrom-Json -AsHashtable
+    elseif ($Arg[0] -eq "[" -and $Arg[-1] -eq "]") {
+        # json string
+        $r = $Arg | ConvertFrom-Json -AsHashtable
     }
     else {
         $r = $Arg.Split($Seperator)
@@ -331,38 +332,49 @@ The error entry object returned to the server
 #>
 function ReturnError([string]$Message, $Err, [hashtable]$Outputs) {
     $demisto.Error("$Message")
-    if($Err) {
+    if ($Err) {
         $errMsg = $Err | Out-String
         $demisto.Error($errMsg)
     }
-    $entry = @{Type = [EntryTypes]::error; ContentsFormat = [EntryFormats]::text.ToString(); Contents = $message; EntryContext = $Outputs}
+    $entry = @{Type = [EntryTypes]::error; ContentsFormat = [EntryFormats]::text.ToString(); Contents = $message; EntryContext = $Outputs }
     $demisto.Results($entry) | Out-Null
     return $entry
 }
 
-function tableToMarkdown($name, $t, $headers, $headerTransform, $removeNull, $metadata) {
-    <#
+<#
 .DESCRIPTION
-Converts a demisto table in JSON form to a Markdown table
+This function wraps the $demisto.results(), makes the usage of returning results to the user more intuitively.
 
-.PARAMETER name
-The name of the table
+.PARAMETER ReadableOutput
+Markdown string that will be presented in the warroom, should be human readable
 
-.PARAMETER t
-The JSON table - List of dictionaries with the same keys or a single dictionary
+.PARAMETER Outputs
+The outputs that will be returned to playbook/investigation context (optional)
 
-.PARAMETER headers
-A list of headers to be presented in the output table (by order).
-If string will be passed then table will have single header. Default will include all available headers.
+.PARAMETER RawResponse
+If not provided then will be equal to outputs. usually is the original
+raw response from the 3rd party service (optional)
 
-.PARAMETER headerTransform
-A function that formats the original data headers
-
-.PARAMETER removeNull
-Remove empty columns from the table.
-
-.PARAMETER metadata
-Metadata about the table contents
+.OUTPUTS
+The entry object returned to the server
 #>
-
+function ReturnOutputs([string]$ReadableOutput, [hashtable]$Outputs, [hashtable]$RawResponse) {
+    $entry = @{
+        Type           = [EntryTypes]::note;
+        ContentsFormat = [EntryFormats]::json.ToString();
+        HumanReadable  = $ReadableOutput;
+        Contents       = $RawResponse;
+        EntryContext   = $Outputs
+    }
+    # Return 'readable_output' only if needed
+    if ($ReadableOutput -and -not $outputs -and -not $RawResponse) {
+        $entry.Contents = $ReadableOutput
+        $entry.ContentsFormat = [EntryFormats]::text.ToString();
+    }
+    elseif ($Outputs -and -not $RawResponse) {
+        # if RawResponse was not provided but outputs were provided then set Contents as outputs
+        $entry.Contents = $Outputs
+    }
+    $demisto.Results($entry) | Out-Null
+    return $entry
 }

@@ -2,16 +2,13 @@ commonfields:
   id: CommonServerPowerShell
   version: -1
 name: CommonServerPowerShell
-script: ''
+script: '-'
 type: powershell
 tags:
 - infra
 - server
 comment: Common code that will be merged into each server script when it runs
 system: true
-scripttarget: 0
-dependson: {}
-timeout: 0s
 fromversion: 5.5.0
 tests:
   - No test - TODO

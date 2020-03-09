@@ -1,7 +1,5 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
-Write-Host "starting test ..."
-
 Describe 'Check-DemistoServerRequest' {
     It 'Check that a call to demisto DemistoServerRequest mock works. Should always return an empty response' {
         global:DemistoServerRequest @{} | Should -BeNullOrEmpty         
@@ -29,6 +27,18 @@ Describe 'Check-UtilityFunctions' {
         $r.GetType().IsArray | Should -BeTrue
         $r[0] | Should -Be "a"        
         $r.Length | Should -Be 1
+    }
+
+    It "ReturnOutputs" {
+        $msg = "Human readable"
+        $r = ReturnOutputs $msg @{Test="test"} @{Raw="raw"}
+        $r.ContentsFormat | Should -Be "json"
+        $r.HumanReadable | Should -Be $msg
+        $r.EntryContext.Test | Should -Be "test"
+        $r.Contents.Raw | Should -Be "raw"
+        $r = ReturnOutputs $msg
+        $r.ContentsFormat | Should -Be "text"
+        $r.Contents | Should -Be $msg
     }
 
     It "ReturnError simple" {
