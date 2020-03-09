@@ -40,6 +40,8 @@ if not demisto.params().get('proxy', False):
     del os.environ['https_proxy']
 
 CATEGORIES_NAME = {
+    1: 'DNS_Compromise',
+    2: 'DNS_Poisoning',
     3: 'Frad_Orders',
     4: 'DDoS_Attack',
     5: 'FTP_Brute-Force',
