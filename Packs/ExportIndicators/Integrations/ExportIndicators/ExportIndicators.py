@@ -168,7 +168,7 @@ def create_values_out_dict(iocs: list, out_format: str, collapse_ips=DONT_COLLAP
                 if out_format == FORMAT_TEXT:
                     if type == 'IP' and collapse_ips != DONT_COLLAPSE:
                         ipv4_formatted_indicators.append(IPAddress(value))
-                    elif type  == 'IPv6' and collapse_ips != DONT_COLLAPSE:
+                    elif type == 'IPv6' and collapse_ips != DONT_COLLAPSE:
                         ipv6_formatted_indicators.append(IPAddress(value))
                     else:
                         formatted_indicators.append(value)
