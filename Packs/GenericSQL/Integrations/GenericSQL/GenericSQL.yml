@@ -52,6 +52,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: The sql query
       isArray: false
       name: query
       required: true
@@ -76,10 +77,12 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Runing a sql query
     execution: false
     name: query
   - arguments:
     - default: false
+      description: The sql query
       isArray: false
       name: query
       required: true
@@ -111,6 +114,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Runing a sql query
     execution: false
     name: sql-command
   dockerimage: devdemisto/genericsql:1.0.0.6104
