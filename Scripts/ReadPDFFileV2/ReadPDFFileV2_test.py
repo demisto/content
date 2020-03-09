@@ -158,4 +158,4 @@ def test_build_readpdf_entry_object_empty_extract(mocker):
 def test_get_urls_from_binary_file():
     from ReadPDFFileV2 import get_urls_from_binary_file
     urls = get_urls_from_binary_file(f'{CWD}/text-with-images.pdf')
-    assert 'http://www.adobe.com/education/etdtutorials/lesson2/exercise2.html' in urls
+    assert len(urls) == 10
