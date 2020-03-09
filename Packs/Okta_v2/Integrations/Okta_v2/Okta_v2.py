@@ -956,7 +956,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1/')
+    base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
     apitoken = demisto.params().get('apitoken')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
