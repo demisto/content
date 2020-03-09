@@ -477,6 +477,10 @@ class Client():
             self.collections = self.get_all_collections()
 
         else:
+            if collection is None or collection == '':
+                return_error(f"No collection set. Here is a list of all accessible collections: "
+                             f"{self.get_all_collections()}")
+
             self.collections = collection.split(',')
 
     def get_all_collections(self):
@@ -627,7 +631,6 @@ def fetch_indicators_command(client: Client, limit=None):
             else:
                 continue
 
-        index = 0
         only_indicator_list = []  # type:List
         for raw_response in taxii_iter:
             _, res = client.decode_indicators(raw_response.content)
@@ -636,10 +639,9 @@ def fetch_indicators_command(client: Client, limit=None):
             # this is because AlienVault OTX can return the same indicator several times from the same collection.
             parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list)
             indicator_list.extend(parsed_list)
-            if limit:
-                index = index + 1
-                if limit == index:
-                    break
+            if limit <= len(indicator_list):
+                indicator_list = indicator_list[:limit]
+                break
 
     return indicator_list
 
