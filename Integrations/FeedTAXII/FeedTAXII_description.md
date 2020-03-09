@@ -12,20 +12,19 @@ subscription a *Subscription ID* value. From then on, both the Consumer and the 
 
 
 ## Step by step configuration
----
-As an example, we'll be looking at the public TAXII threat intelligence feed by Abuse_ch accessible via _Hail a TAXII_. These are the feed instance configuration parameters for our example.
+As an example, we'll use the public TAXII threat intelligence feed by Abuse_ch accessible via _Hail a TAXII_. These are the feed instance configuration parameters for our example.
 
-**Indicator Reputation** - Because this is just an example, we can leave the default value. Ordinarily you would set the reputation based off the specific feed's information about what type of indicators they are returning, e.g., whether they are good or bad.
+**Indicator Reputation** - Because this is just an example, we can leave the default value. Ordinarily you would set the reputation based on the specific feed's information about what type of indicators they are returning, i.e., whether they are good or bad.
 
-**Source Reliability** - Because this is just an example, we can leave the default value. Ordinarily you would set the reliability equal to how much you trusted the feed's source.
+**Source Reliability** - Because this is just an example, we can leave the default value. Ordinarily you would set the reliability according to your level of trust in this feed.
 
-**Indicator Expiration Method** - For this example, we can leave the default value here. Ordinarily you would set the value according to the type of feed you were fetching from. As an example, let us say that you are a customer of a Cloud Services provider and you want to add the URLs from which that provider serves up a lot of the services you use to your network firewall exclusion list. Assuming that that same Cloud Services provider maintains an up-to-date feed of the URLs from which they currently provide service, you would probably want to configure a feed integration instance with this parameter set to `Expire indicators when they disappear from feed` so that you don't continue to mark a given URL with a `Good` reputation after it is no longer being used by your Cloud Services provider.
+**Indicator Expiration Method** - For this example, we can leave the default value here. Ordinarily you would set the value according to the type of feed you were fetching from. As an example, let's that you are a customer of a Cloud Services provider and you want to add the URLs from which that provider serves up many of the services you use to your network firewall exclusion list. Assuming that that same Cloud Services provider maintains an up-to-date feed of the URLs from which they currently provide service, you would probably want to configure a feed integration instance with this parameter set to `Expire indicators when they disappear from feed` so that you don't continue to mark a given URL with a `Good` reputation after it is no longer being used by your Cloud Services provider.
 
 **Feed Fetch Interval** - For this example, we can leave the default value here.
 
 **Discovery Service** - Enter `http://hailataxii.com/taxii-discovery-service`.
 
-**Collection** - Enter `guest.Abuse_ch`
+**Collection** - Enter `guest.Abuse_ch`.
 
 **Subscription ID** - No need to enter a value here for this example since the TAXII server we are addressing does not require it so we'll leave it blank.
 
@@ -33,15 +32,15 @@ As an example, we'll be looking at the public TAXII threat intelligence feed by 
 
 **Password** - Enter `guest`.
 
-**Request Timeout** - Let's increase the number to `80` seconds since the request may take a while complete.
+**Request Timeout** - Let's increase the number to `80` seconds since the request may take a while to complete.
 
-**Poll Service** - No need to enter a value here for this example because the poll service will be determined dynamically in the integration code if it is not explicitly provided here so we'll leave it blank.
+**Poll Service** - We don't have to enter a value here for this example because the poll service will be determined dynamically in the integration code if it is not explicitly provided.
 
-**API Key** - No need to enter a value here for this example because the TAXII server we are addressing doesn't require it so we'll leave it blank.
+**API Key** - We don't have to enter a value here for this example because the TAXII server we are addressing doesn't require an API key.
 
-**API Header Name** - No need to enter a value here for this example because the TAXII server we are addressing doesn't require it so we'll leave it blank.
+**API Header Name** - We don't have to enter a value here for this example because the TAXII server we are addressing doesn't require an API header name.
 
-**First Fetch Time** - Since this example feed isn't very high volume let's enter `500 days`  to make sure we fetch a good number of indicators.
+**First Fetch Time** - Since this example feed isn't very high volume, let's enter `500 days`  to make sure we fetch a sufficient number of indicators.
 
 Click the `Test` button and ensure that a green `Success` message is returned.
 
