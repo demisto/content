@@ -17,7 +17,7 @@ configuration:
   - csv
   required: false
   type: 15
-- defaultvalue: '2500'
+- defaultvalue: '10000'
   display: List Size
   name: list_size
   required: true
@@ -110,6 +110,12 @@ script:
       - 'false'
       - 'true'
       required: true
+      secret: false
+    - default: false
+      description: The starting entry index from which to export the indicators.
+      isArray: false
+      name: offset
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false

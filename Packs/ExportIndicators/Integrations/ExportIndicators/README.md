@@ -33,8 +33,19 @@ Use the Export Indicators Service integration to provide an endpoint with a list
 ### Update values in the export indicators service
 ---
 Updates values stored in the export indicators service (only avaialable On-Demand).
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
+
+### URL Inline Arguments
+---
+Use the following arguments in the URL to change the request:
+
+| **Argument Name** | **Description** | **Example** |
+| --- | --- | --- |
+| n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?n=50 |
+| s | The starting entry index from which to export the indicators. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50 |
+| v | The output format. Supports `text`, `csv`, `json` and `json-seq` | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
+| q | The query used to retrieve indicators from the system. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source" |
+
 ##### Base Command
 
 `eis-update`
@@ -45,8 +56,9 @@ Updates values stored in the export indicators service (only avaialable On-Deman
 | query | The query used to retrieve indicators from the system. | Required | 
 | format | The output format. | Optional | 
 | list_size | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | Optional | 
+| offset | The starting entry index from which to export the indicators. | Optional |
 | print_indicators | If set to true will print the indicators the that were saved to the export indicators service | Required | 
-
+ 
 
 ##### Context Output
 
