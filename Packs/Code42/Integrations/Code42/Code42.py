@@ -392,7 +392,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_severity_filter,
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, to_timestamp=True, utc=True)
         start_query_time /= 1000
-    alerts = client.fetch_alerts(start_query_time, demisto.params().get('alert_severity'))
+    alerts = client.fetch_alerts(start_query_time, event_severity_filter)
     for alert in alerts:
         details = client.get_alert_details(alert['id'])
         incident = {
