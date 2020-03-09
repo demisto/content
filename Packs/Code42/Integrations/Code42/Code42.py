@@ -443,7 +443,8 @@ def securitydata_search_command(client, args):
             code42_securitydata_context,
             headers=SECURITY_EVENT_HEADERS
         )
-        return readable_outputs, {'Code42.SecurityData': code42_securitydata_context, 'File': file_context}, file_events
+        return readable_outputs, {'Code42.SecurityData(val.EventID && val.EventID == obj.EventID)': code42_securitydata_context, 
+            'File': file_context}, file_events
     else:
         return 'No results found', {}, {}
 

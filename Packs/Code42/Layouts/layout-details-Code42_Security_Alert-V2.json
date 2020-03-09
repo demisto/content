@@ -1,6 +1,7 @@
 {
 	"TypeName": "Code42 Security Alert",
 	"kind": "details",
+	"fromVersion": "5.0.0",
 	"layout": {
 		"TypeName": "",
 		"id": "Code42 Security Alert",
