@@ -669,7 +669,7 @@ def host_info_command(client: Client, args: dict):
     response = client.get_host_info(ip)
     hosts = response.get('data')
     if not hosts:
-        return f'No hosts was found for ip {ip}', {}, {}
+        return f'No hosts was found for ip address {ip}', {}, {}
     for host in hosts:
         contents.append({
             'HostName': host.get('hostName'),
@@ -721,7 +721,7 @@ def file_search(client: Client, args: dict):
     }
 
     response = client.search_file(host, md5, file_extension, file_path, file_size)
-    data = response.get('data')
+    data = response.get('data', {})
     contents = {
         'JobID': data.get('jobId'),
         'JobResultID': data.get('jobResultId')
@@ -733,14 +733,14 @@ def file_search(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def file_seatch_status(client: Client, args: dict):
+def file_search_status(client: Client, args: dict):
     """Get the file search job status"""
 
     job_id = args.get('job_id')
     job_result_id = args.get('job_result_id')
 
     response = client.file_search_status(job_id, job_result_id)
-    data = response.get('data')
+    data = response.get('data', {})
     if not data:
         return 'Could not find any data for this Job ID', {}, {}
     contents = {
@@ -766,12 +766,12 @@ def file_search_reasult_metadata(client: Client, args: dict):
     response = client.file_search_results_metadata(job_id, job_result_id)
     if not response.get('success'):
         return f'Could not find results for this job ID.', {}, {}
-    data = response.get('data').get('jobResultInfos')
+    data = response.get('data', {}).get('jobResultInfos', [])
     contents = {}
     file_standards = {}
     for item in data:
         if item.get('collectedFiles'):
-            collected_files = item.get('collectedFiles')
+            collected_files = item.get('collectedFiles', [])
             for obj in collected_files:
                 contents = {
                     'FileName': obj.get('name'),
@@ -810,11 +810,7 @@ def get_file(client: Client, args: dict):
 
 
 def delete_file_search_job(client: Client, args: dict):
-    """removed the job to free-up space on the server. This end-point
-    deletes the job from database and cleans up the file system entry for the job."""
-
     job_id = args.get('job_id')
-
     response = client.delete_job(job_id)
 
     return 'The job was successfully deleted', {}, response
@@ -824,7 +820,7 @@ def list_scripts_command(client: Client, *_):
     headers = ['Name', 'ID', 'Description']
     response = client.list_scripts()
 
-    scripts = response.get('data').get('scripts')
+    scripts = response.get('data', {}).get('scripts', [])
     contents = []
     for script in scripts:
         contents.append({
@@ -844,9 +840,9 @@ def script_manifest_command(client: Client, args: dict):
     headers = ['Name', 'ID', 'Description', 'Platform', 'Command', 'Questions', 'Priority', 'TimeoutSeconds',
                'ResultColumns', 'ImpersonationUser', 'ImpersonationPassword', 'WizardOverridePassword']
     response = client.script_manifest(script_id)
-    data = response.get('data')
+    data = response.get('data', {})
 
-    platforms = [k for k, v in data.get('platforms').items() if v]
+    platforms = [k for k, v in data.get('platforms', {}).items() if v]
 
     contents = {
         'ID': data.get('id'),
@@ -920,7 +916,7 @@ def get_script_result(client: Client, args: dict):
                'StartTime']
 
     response = client.script_job_results(job_id)
-    hits = response.get('data').get('hits').get('hits')
+    hits = response.get('data', {}).get('hits', {}).get('hits', [])
     contents = []
     context = []
     for hit in hits:
@@ -1069,7 +1065,7 @@ def script_job_status(client: Client, args: dict):
     contents = []
     response = client.get_script_job_status(job_result_id)
 
-    results = response.get('data').get('targets')
+    results = response.get('data', {}).get('targets', [])
 
     for result in results:
         contents.append({
@@ -1089,13 +1085,12 @@ def query_file_by_hash(client: Client, args: dict):
     end_time = args.get('end_time')
     logic = args.get('logic')
     file_hash = args.get('file_hash')
-    type_ = get_hash_type(file_hash)
-    if type_ == 'Unknown':
+    if get_hash_type(file_hash) == 'Unknown':
         return_error('Enter a valid hash format.')
     contents = []
     context = []
     response = client.query_by_hash(start_time, end_time, logic, file_hash)
-    events = response.get('events')
+    events = response.get('events', [])
 
     for event in events:
         contents.append({
@@ -1157,7 +1152,7 @@ def query_process_name_command(client: Client, args: dict):
     context = []
 
     response = client.query_by_process_name(start_time, end_time, logic, process_name)
-    events = response.get('events')
+    events = response.get('events', [])
 
     for event in events:
         contents.append({
@@ -1208,7 +1203,7 @@ def query_connection_by_remote_ip(client: Client, args: dict):
     context = []
 
     response = client.query_by_remote_ip(start_time, end_time, logic, remote_ip)
-    events = response.get('events')
+    events = response.get('events', [])
 
     for event in events:
         contents.append({
@@ -1270,7 +1265,7 @@ def query_dns_request(client: Client, args: dict):
     context = []
 
     response = client.query_by_dns_request(start_time, end_time, logic, url)
-    events = response.get('events')
+    events = response.get('events', [])
 
     for event in events:
         contents.append({
@@ -1320,7 +1315,7 @@ def query_by_server_ip(client: Client, args: dict):
     context = []
 
     response = client.query_by_dns_server_ip(start_time, end_time, logic, remote_ip)
-    events = response.get('events')
+    events = response.get('events', [])
 
     for event in events:
         contents.append({
@@ -1371,7 +1366,7 @@ def query_by_source_ip(client: Client, args: dict):
     context = []
 
     response = client.query_by_dns_source_ip(start_time, end_time, logic, source_ip, domain)
-    events = response.get('events')
+    events = response.get('events', [])
 
     for event in events:
         contents.append({
@@ -1423,7 +1418,7 @@ def query_events(client: Client, args: dict):
     context = []
 
     response = client.query_events(start_time, end_time, logic ,column, value, entity_type)
-    events = response.get('events')
+    events = response.get('events', [])
 
     for event in events:
         contents.append({
@@ -1506,7 +1501,7 @@ def main():
             return_outputs(*file_search(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-file-search-status':
-            return_outputs(*file_seatch_status(client, demisto.args()))
+            return_outputs(*file_search_status(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-file-search-result-metadata':
             return_outputs(*file_search_reasult_metadata(client, demisto.args()))
@@ -1520,10 +1515,10 @@ def main():
         elif demisto.command() == 'fidelis-endpoint-list-scripts':
             return_outputs(*list_scripts_command(client, demisto.args()))
 
-        elif demisto.command() == 'fidelis-endpoint-script-manifest':
+        elif demisto.command() == 'fidelis-endpoint-get-script-manifest':
             return_outputs(*script_manifest_command(client, demisto.args()))
 
-        elif demisto.command() == 'fidelis-endpoint-list-process':
+        elif demisto.command() == 'fidelis-endpoint-list-processes':
             return_outputs(*list_process_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-get-script-result':

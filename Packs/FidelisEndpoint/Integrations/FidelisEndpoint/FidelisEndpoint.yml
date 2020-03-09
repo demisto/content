@@ -1,6 +1,6 @@
-category: Authentication
+category: Endpoint
 commonfields:
-  id: FidelisEndpoint
+  id: Fidelis EDR
   version: -1
 configuration:
 - display: Server URL (e.g. https://domain/endpoint)
@@ -11,10 +11,6 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Incident type
   name: incidentType
   required: false
@@ -27,9 +23,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
-display: Fidelis Endpoint
-name: FidelisEndpoint
+description: Fidelis Endpoint provides advanced endpoint detection and response (EDR)
+  across Windows, Mac and Linux OSes for faster threat remediation.
+display: Fidelis EDR
+name: Fidelis EDR
 script:
   commands:
   - arguments:
@@ -416,7 +413,7 @@ script:
     deprecated: false
     description: Get the script manifest
     execution: false
-    name: fidelis-endpoint-script-manifest
+    name: fidelis-endpoint-get-script-manifest
     outputs:
     - contextPath: FidelisEndpoint.Script.ResultColumns
       description: The script results columns.
@@ -482,7 +479,7 @@ script:
     deprecated: false
     description: List all processes according to the OS system.
     execution: false
-    name: fidelis-endpoint-list-process
+    name: fidelis-endpoint-list-processes
     outputs:
     - contextPath: FidelisEndpoint.Script.JobID
       description: Script data - Job ID
@@ -679,7 +676,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The isolated enspoint IP.
+      description: The isolated endpoint IP.
       isArray: false
       name: endpoint_ip
       required: true

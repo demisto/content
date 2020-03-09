@@ -2234,7 +2234,7 @@
             "playbookID": "Tanium v2 - Test"
         },
         {
-            "integrations": "FidelisEndpoint",
+            "integrations": "Fidelis EDR",
             "playbookID": "Fidelis Endpoint - Test"
         },
         {
