@@ -66,14 +66,14 @@ configuration:
   name: api_key
   required: true
   type: 4
-- additionalinfo: 'If checked will run on all active collections regaurdless of the entered collections. Inactive or empty collections will be ignored.'
+- additionalinfo: 'When selected, will run on all active collections regardless of the supplied collections. Inactive or empty collections will be ignored.'
   display: Get All Active Collections
   hidden: false
   name: all_collections
   required: false
   type: 8
-- additionalinfo: 'Support a CSV of collections to fetch from. If given a collection which is inactive or empty, An error will be raised. If not set, will raise an error listing all the available collections.'
-  display: The Collections to Fetch From
+- additionalinfo: 'Supports a CSV of collections to fetch from. If an inactive or empty collection is supplied, n error will be raised. If not set, will raise an error listing all the available collections.'
+  display: Collections to Fetch From
   hidden: false
   name: collections
   required: false
@@ -100,7 +100,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the indicators from AutoFocus.
+    description: Gets the indicators from AlientVault OTX.
     execution: false
     name: alienvaultotx-get-indicators
   dockerimage: demisto/taxii:1.0.0.6243
