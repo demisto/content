@@ -8258,7 +8258,6 @@ def create_outputs(whois_result, domain):
         standard_ec['NameServers'] = whois_result.get('nameservers')
         standard_ec['WHOIS']['NameServers'] = whois_result.get('nameservers')
         md['NameServers'] = whois_result.get('nameservers')
-
     try:
         if 'creation_date' in whois_result:
             ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
@@ -8361,11 +8360,14 @@ def whois_command():
 
 
 def test_command():
-    whois_result = get_whois('google.com')
+    whois_result = get_whois('google.co.uk')
 
-    domain_test = whois_result['id'][0]
+    try:
+        domain_test = whois_result['nameservers'][0]
+    except ValueError as e:
+        return_error('Whois did not return the correct result: {}'.format(str(e)))
 
-    if domain_test == '2138514_DOMAIN_COM-VRSN':
+    if domain_test == 'ns1.google.com':
         demisto.results('ok')
 
 
