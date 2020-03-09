@@ -1558,6 +1558,10 @@
             "playbookID": "STIXParserTest"
         },
         {
+            "playbookID": "VerifyJSON - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
