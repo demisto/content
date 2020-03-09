@@ -467,7 +467,7 @@ class Client(BaseClient):
     def get_lists(self, limit: int = None, offset: int = None, created_at: str = None, description: str = None,
                   is_active: bool = None, is_internal: bool = None, is_protected: bool = None, name: str = None,
                   short_name: str = None, type: str = None, updated_at: str = None, usage: str = None,
-                  order_by: str = None, **kwargs) -> Dict:
+                  order_by: str = None) -> Dict:
         """Fetches lists by a GET request
 
         Args:
@@ -520,7 +520,7 @@ class Client(BaseClient):
 
     def create_list(self, name: Optional[str], usage: str = None, short_name: str = None, is_internal: bool = None,
                     is_active: bool = None, is_protected: bool = None, is_hidden: bool = None, type: str = None,
-                    description: str = None, **kwargs) -> Dict:
+                    description: str = None) -> Dict:
         """Creates a list using a POST request
 
         Args:
@@ -553,7 +553,7 @@ class Client(BaseClient):
 
     def update_list(self, list_id: int, name: str = None, usage: str = None, short_name: str = None,
                     is_internal: bool = None, is_active: bool = None, is_protected: bool = None, is_hidden: bool = None,
-                    type: str = None, description: str = None, **kwargs) -> Dict:
+                    type: str = None, description: str = None) -> Dict:
         """Creates a list using a POST request
 
         Args:
@@ -618,7 +618,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def list_rules(self, limit: int = None, offset: int = None, sort: str = None, **kwargs) -> Dict:
+    def list_rules(self, limit: int = None, offset: int = None, sort: str = None) -> Dict:
         """Fetches rules using GET request
 
         Args:
