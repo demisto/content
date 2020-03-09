@@ -25,6 +25,8 @@ try:
 except Exception:
     pass
 
+# TODO: remove
+
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
