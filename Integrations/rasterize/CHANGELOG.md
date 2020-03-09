@@ -1,4 +1,11 @@
 ## [Unreleased]
+
+
+## [20.3.1] - 2020-03-04
+  - Fixed the setting **Use system proxy settings**, so proxies are ignored when not enabled.
+  - Fixed an issue with the ***rasterize*** command in which child processes were defunct when using a proxy server.
+
+## [20.2.3] - 2020-02-18
   - Updated Chromium to version 80.
   - Added support for specifying a maximum page load time (default is set to 180 seconds).
   - Changed the default user agent to match the Chrome user agent.
