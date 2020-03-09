@@ -503,6 +503,9 @@ class TAXIIClient(object):
         self.collection = collection
 
         # authentication
+        if not credentials:
+            credentials = {}
+
         if '_header' in credentials.get('identifier', None):
             self.api_key = credentials.get('identifier', None)
             self.api_header = credentials.get('password', None)
