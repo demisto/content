@@ -33,7 +33,7 @@ class MsGraphClient:
         action: str = get_action(demisto.command())
         body: Union[str, None] = build_request_body(args, action)
         url_suffix: str = f'deviceManagement/managedDevices/{args.get("device-id")}/{dash_to_camelcase(action)}'
-        self.ms_client.http_request_request('POST', url_suffix, data=body, resp_type='None')
+        self.ms_client.http_request_request('POST', url_suffix, data=body, resp_type=EMPTY_RESP_TYPE)
         return action
 
 
@@ -260,6 +260,8 @@ def get_action(demisto_command: str) -> str:
 
 
 ''' GLOBAL VARS '''
+
+EMPTY_RESP_TYPE = 'None'
 
 HEADERS: dict = {
     'raw_device': ['id', 'userId', 'deviceName', 'operatingSystem', 'osVersion', 'emailAddress',
