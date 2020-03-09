@@ -1,5 +1,4 @@
-[
-    {
+[{
         "account": "",
         "calculatedTime": "2019-12-23T12:30:29.353516+02:00",
         "comment": "",
@@ -2872,163 +2871,183 @@
         "version": 1
     },
     {
-        "account": "",
-        "calculatedTime": "2020-01-05T17:29:56.040124+02:00",
         "comment": "",
-        "expiration": "0001-01-01T00:00:00Z",
-        "expirationSource": {
-            "expirationInterval": 0,
-            "expirationPolicy": "never",
-            "feedId": "CSVFeed.IP26k",
-            "setTime": "2019-12-23T12:30:29.347947+02:00",
-            "source": "indicatorType",
-            "user": ""
-        },
+        "version": 2,
+        "sortValues": null,
         "expirationStatus": "active",
-        "firstSeen": "2019-12-23T12:30:29.353217+02:00",
-        "firstSeenEntryID": "API",
-        "id": "28534",
-        "indicator_type": "IP",
-        "insightCache": null,
-        "investigationIDs": [
-            "d470522a-4fd4-4606-8379-40886666f490"
+        "indicator_type": "URL",
+        "lastSeen": "2020-03-01T19:11:17.645381+02:00",
+        "id": "2183",
+        "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+        "lastReputationRun": "2020-03-01T19:11:17.125652+02:00",
+        "sourceBrands": [
+            "VirusTotal",
+            "urlscan.io"
         ],
+        "comments": [{
+                "category": "Sighting",
+                "created": "2020-03-01T19:11:15.668601+02:00",
+                "sortValues": null,
+                "modified": "0001-01-01T00:00:00Z",
+                "content": "Created",
+                "source": "@DBot",
+                "version": 0,
+                "entryId": "",
+                "user": "@DBot",
+                "type": "IndicatorCommentTimeLine",
+                "id": "88fcebde-9a3a-4916-870e-31f7d708ba85"
+            },
+            {
+                "category": "Indicator Update",
+                "created": "2020-03-01T19:11:15.669984+02:00",
+                "sortValues": null,
+                "modified": "0001-01-01T00:00:00Z",
+                "content": "Reputation changed from Good to None",
+                "source": "@DBot",
+                "version": 0,
+                "entryId": "",
+                "user": "@DBot",
+                "type": "IndicatorCommentTimeLine",
+                "id": "5c755d85-d553-4e4d-8d7b-05843fe83e45"
+            }
+        ],
+        "score": 0,
+        "investigationIDs": [
+            "9d16d586-a929-4ef3-8cda-ab5e090cf35b"
+        ],
+        "insightCache": {},
         "isShared": false,
-        "lastReputationRun": "2020-01-05T17:29:44.151331+02:00",
-        "lastSeen": "2020-01-05T17:29:56.040124+02:00",
-        "lastSeenEntryID": "82@d470522a-4fd4-4606-8379-40886666f490",
+        "modifiedTime": "2020-03-01T19:11:17.114923+02:00",
+        "timestamp": "2020-03-01T19:11:15.685404+02:00",
+        "lastSeenEntryID": "80@9d16d586-a929-4ef3-8cda-ab5e090cf35b",
+        "firstSeen": "2020-03-01T19:11:15.68453+02:00",
         "manualScore": false,
-        "manualSetTime": "0001-01-01T00:00:00Z",
-        "manuallyEditedFields": null,
-        "modified": "2020-01-05T17:29:56.076498+02:00",
-        "modifiedTime": "2019-12-23T12:23:34+02:00",
         "moduleToFeedMap": {
-            "CSVFeed.IP26k": {
-                "CustomFields": null,
-                "ExpirationSource": {
-                    "expirationInterval": 0,
-                    "expirationPolicy": "never",
-                    "feedId": "CSVFeed.IP26k",
-                    "setTime": "2019-12-23T12:30:29.347947+02:00",
-                    "source": "indicatorType",
-                    "user": ""
-                },
-                "expiration": "0001-01-01T00:00:00Z",
-                "expirationInterval": 0,
-                "expirationPolicy": "indicatorType",
-                "fetchTime": "2019-12-23T12:23:34+02:00",
-                "firstSeen": "0001-01-01T00:00:00Z",
-                "lastSeen": "0001-01-01T00:00:00Z",
-                "modifiedTime": "2019-12-23T12:23:34+02:00",
-                "rawJSON": null,
-                "reliability": "F - Reliability cannot be judged",
+            "urlscan.io": {
+                "fetchTime": "2020-03-01T19:11:17.114923+02:00",
+                "isEnrichment": true,
                 "score": 0,
-                "source": {
-                    "content": "",
-                    "contentFormat": "",
-                    "context": null,
-                    "isTypedIndicator": false,
-                    "score": 0,
-                    "scoreChangeTimestamp": "0001-01-01T00:00:00Z",
-                    "timestamp": "0001-01-01T00:00:00Z",
-                    "type": ""
-                },
-                "sourceBrand": "CSVFeed",
-                "sourceInstance": "IP26k",
+                "modifiedTime": "0001-01-01T00:00:00Z",
+                "rawJSON": null,
                 "timestamp": "0001-01-01T00:00:00Z",
-                "type": "IP",
-                "value": "213.177.121.139"
+                "classifierVersion": 0,
+                "expirationInterval": 0,
+                "value": "https://www.example.com:9999/path/to/something.html",
+                "ExpirationSource": {
+                    "expirationInterval": 43200,
+                    "instance": "urlscan.io",
+                    "brand": "urlscan.io",
+                    "source": "indicatorType",
+                    "setTime": "2020-03-01T19:11:17.630558+02:00",
+                    "user": "",
+                    "expirationPolicy": "indicatorType",
+                    "moduleId": "urlscan.io"
+                },
+                "reliability": "A+ - 3rd party enrichment",
+                "bypassExclusionList": false,
+                "sourceInstance": "urlscan.io",
+                "sourceBrand": "urlscan.io",
+                "CustomFields": null,
+                "type": "url",
+                "expirationPolicy": "indicatorType",
+                "moduleId": "urlscan.io"
+            },
+            "VirusTotal": {
+                "fetchTime": "2020-03-01T19:10:30.27589+02:00",
+                "isEnrichment": true,
+                "score": 1,
+                "modifiedTime": "0001-01-01T00:00:00Z",
+                "rawJSON": null,
+                "timestamp": "0001-01-01T00:00:00Z",
+                "classifierVersion": 0,
+                "expirationInterval": 0,
+                "value": "https://www.example.com:9999/path/to/something.html",
+                "ExpirationSource": {
+                    "expirationInterval": 43200,
+                    "instance": "VirusTotal",
+                    "brand": "VirusTotal",
+                    "source": "indicatorType",
+                    "setTime": "2020-03-01T19:11:17.63053+02:00",
+                    "user": "",
+                    "expirationPolicy": "indicatorType",
+                    "moduleId": "VirusTotal"
+                },
+                "reliability": "A+ - 3rd party enrichment",
+                "bypassExclusionList": false,
+                "sourceInstance": "VirusTotal",
+                "sourceBrand": "VirusTotal",
+                "CustomFields": null,
+                "type": "url",
+                "expirationPolicy": "indicatorType",
+                "moduleId": "VirusTotal"
             }
         },
-        "score": 0,
-        "sortValues": null,
-        "sourceBrands": [
-            "CSVFeed"
-        ],
+        "account": "",
+        "manualExpirationTime": "0001-01-01T00:00:00Z",
+        "manualSetTime": "0001-01-01T00:00:00Z",
+        "firstSeenEntryID": "82@9d16d586-a929-4ef3-8cda-ab5e090cf35b",
+        "modified": "2020-03-01T19:11:17.646385+02:00",
+        "value": "https://www.example.com:9999/path/to/something.html",
+        "expirationSource": {
+            "expirationInterval": 43200,
+            "instance": "urlscan.io",
+            "brand": "urlscan.io",
+            "source": "indicatorType",
+            "setTime": "2020-03-01T19:11:17.630558+02:00",
+            "user": "",
+            "expirationPolicy": "indicatorType",
+            "moduleId": "urlscan.io"
+        },
+        "expiration": "2020-03-31T20:11:17.630558+03:00",
+        "manuallyEditedFields": null,
+        "calculatedTime": "2020-03-01T19:11:17.645381+02:00",
         "sourceInstances": [
-            "IP26k"
-        ],
-        "timestamp": "2019-12-23T12:31:03.416966+02:00",
-        "value": "213.177.121.139",
-        "version": 1
+            "VirusTotal",
+            "urlscan.io"
+        ]
     },
     {
-        "account": "",
-        "calculatedTime": "2019-12-23T12:30:29.354406+02:00",
         "comment": "",
-        "expiration": "0001-01-01T00:00:00Z",
-        "expirationSource": {
-            "expirationInterval": 0,
-            "expirationPolicy": "never",
-            "feedId": "CSVFeed.IP26k",
-            "setTime": "2019-12-23T12:30:29.348786+02:00",
-            "source": "indicatorType",
-            "user": ""
-        },
-        "expirationStatus": "active",
-        "firstSeen": "2019-12-23T12:30:29.354406+02:00",
-        "firstSeenEntryID": "API",
-        "id": "10899",
-        "indicator_type": "IP",
-        "insightCache": null,
-        "investigationIDs": [],
-        "isShared": false,
-        "lastReputationRun": "0001-01-01T00:00:00Z",
-        "lastSeen": "2019-12-23T12:30:29.354406+02:00",
-        "lastSeenEntryID": "API",
-        "manualScore": false,
-        "manualSetTime": "0001-01-01T00:00:00Z",
-        "manuallyEditedFields": null,
-        "modified": "2019-12-23T12:31:04.598958+02:00",
-        "modifiedTime": "2019-12-23T12:23:34+02:00",
-        "moduleToFeedMap": {
-            "CSVFeed.IP26k": {
-                "CustomFields": null,
-                "ExpirationSource": {
-                    "expirationInterval": 0,
-                    "expirationPolicy": "never",
-                    "feedId": "CSVFeed.IP26k",
-                    "setTime": "2019-12-23T12:30:29.348786+02:00",
-                    "source": "indicatorType",
-                    "user": ""
-                },
-                "expiration": "0001-01-01T00:00:00Z",
-                "expirationInterval": 0,
-                "expirationPolicy": "indicatorType",
-                "fetchTime": "2019-12-23T12:23:34+02:00",
-                "firstSeen": "0001-01-01T00:00:00Z",
-                "lastSeen": "0001-01-01T00:00:00Z",
-                "modifiedTime": "2019-12-23T12:23:34+02:00",
-                "rawJSON": null,
-                "reliability": "F - Reliability cannot be judged",
-                "score": 0,
-                "source": {
-                    "content": "",
-                    "contentFormat": "",
-                    "context": null,
-                    "isTypedIndicator": false,
-                    "score": 0,
-                    "scoreChangeTimestamp": "0001-01-01T00:00:00Z",
-                    "timestamp": "0001-01-01T00:00:00Z",
-                    "type": ""
-                },
-                "sourceBrand": "CSVFeed",
-                "sourceInstance": "IP26k",
-                "timestamp": "0001-01-01T00:00:00Z",
-                "type": "IP",
-                "value": "190.102.154.131"
-            }
-        },
-        "score": 0,
+        "version": 1,
         "sortValues": null,
-        "sourceBrands": [
-            "CSVFeed"
-        ],
-        "sourceInstances": [
-            "IP26k"
-        ],
-        "timestamp": "2019-12-23T12:31:04.598941+02:00",
-        "value": "190.102.154.131",
-        "version": 1
+        "expirationStatus": "",
+        "indicator_type": "Unknown",
+        "lastSeen": "0001-01-01T00:00:00Z",
+        "id": "2191",
+        "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+        "comments": [{
+            "category": "Sighting",
+            "created": "2020-03-01T19:15:05.72882+02:00",
+            "sortValues": null,
+            "modified": "0001-01-01T00:00:00Z",
+            "content": "Created",
+            "source": "@DBot",
+            "version": 0,
+            "entryId": "",
+            "user": "@DBot",
+            "type": "IndicatorCommentTimeLine",
+            "id": "94c75662-28d3-46c3-83de-85d454840e57"
+        }],
+        "score": 0,
+        "investigationIDs": [],
+        "insightCache": null,
+        "setBy": "admin",
+        "isShared": false,
+        "modifiedTime": "0001-01-01T00:00:00Z",
+        "timestamp": "2020-03-01T19:15:05.728855+02:00",
+        "lastSeenEntryID": "API",
+        "firstSeen": "0001-01-01T00:00:00Z",
+        "manualScore": true,
+        "account": "",
+        "lastReputationRun": "0001-01-01T00:00:00Z",
+        "manualSetTime": "0001-01-01T00:00:00Z",
+        "firstSeenEntryID": "API",
+        "modified": "2020-03-01T19:15:05.728901+02:00",
+        "value": "*-blah.demisto.com",
+        "expirationSource": null,
+        "expiration": "0001-01-01T00:00:00Z",
+        "manuallyEditedFields": null,
+        "calculatedTime": "2020-03-01T19:15:05.728855+02:00",
+        "manualExpirationTime": "0001-01-01T00:00:00Z"
     }
 ]
