@@ -127,7 +127,7 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
         # only format URLs and Domains
-        if indicator_data.get('indicator_type') in ['URL', 'Domain', 'GlobDomain']:
+        if indicator_data.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
             indicator = indicator_data.get('value').lower()
 
             # remove initial protocol - http/https/ftp/ftps etc
@@ -189,7 +189,7 @@ def create_proxysg_out_format(iocs: list, category_default='bc_category', catego
         category_attribute = []
 
     for indicator in iocs:
-        if indicator.get('indicator_type') in ['URL', 'Domain', 'GlobDomain']:
+        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
