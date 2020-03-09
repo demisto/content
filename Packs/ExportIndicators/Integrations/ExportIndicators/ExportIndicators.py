@@ -7,7 +7,7 @@ from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any, cast, Dict
 from base64 import b64decode
-
+from netaddr import IPAddress, iprange_to_cidrs
 
 class Handler:
     @staticmethod
@@ -29,6 +29,10 @@ FORMAT_JSON: str = 'json'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
+
+DONT_COLLAPSE = "Don't Collapse"
+COLLAPSE_TO_CIDR = "To CIDRS"
+COLLAPSE_TO_RANGES = "To Ranges"
 
 ''' HELPER FUNCTIONS '''
 
@@ -64,14 +68,14 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0) -> str:
+def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0, collapse_ips=DONT_COLLAPSE) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
     iocs = find_indicators_with_limit(indicator_query, limit)  # poll indicators into list from demisto
-    out_dict = create_values_out_dict(iocs, out_format)
+    out_dict = create_values_out_dict(iocs, out_format, collapse_ips=collapse_ips)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     save_context(now, out_dict)
     return out_dict[CTX_VALUES_KEY]
@@ -108,7 +112,42 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
     return iocs, next_page
 
 
-def create_values_out_dict(iocs: list, out_format: str) -> dict:
+def ips_to_ranges(ips: list, collapse_ips):
+    ip_ranges = []
+    ips_range_groups = []
+    ips = sorted(ips)
+    for ip in ips:
+        appended = False
+        if len(ips_range_groups) == 0:
+            ips_range_groups.append([ip])
+            continue
+
+        for group in ips_range_groups:
+            if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
+                group.append(ip)
+                sorted(group)
+                appended = True
+
+        if not appended:
+            ips_range_groups.append([ip])
+
+    for group in ips_range_groups:
+        if len(group) == 1:
+            ip_ranges.append(str(group[0]))
+            continue
+
+        min_ip = group[0]
+        max_ip = group[-1]
+        if collapse_ips == COLLAPSE_TO_RANGES:
+            ip_ranges.append(str(min_ip) + "-" + str(max_ip))
+
+        elif collapse_ips == COLLAPSE_TO_CIDR:
+            ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
+
+    return ip_ranges
+
+
+def create_values_out_dict(iocs: list, out_format: str, collapse_ips=DONT_COLLAPSE) -> dict:
     """
     Create a dictionary for output values using the selected format (json, json-seq, text, csv)
     """
@@ -116,21 +155,38 @@ def create_values_out_dict(iocs: list, out_format: str) -> dict:
         iocs_list = [ioc for ioc in iocs]
         return {CTX_VALUES_KEY: json.dumps(iocs_list)}
     else:
+        ipv4_formatted_indicators =[]
+        ipv6_formatted_indicators = []
         formatted_indicators = []
         if out_format == FORMAT_CSV and len(iocs) > 0:  # add csv keys as first item
             headers = list(iocs[0].keys())
             formatted_indicators.append(list_to_str(headers))
         for ioc in iocs:
             value = ioc.get('value')
+            type = ioc.get('indicator_type')
             if value:
                 if out_format == FORMAT_TEXT:
-                    formatted_indicators.append(value)
+                    if type == 'IP' and collapse_ips != DONT_COLLAPSE:
+                        ipv4_formatted_indicators.append(IPAddress(value))
+                    elif type  == 'IPv6' and collapse_ips != DONT_COLLAPSE:
+                        ipv6_formatted_indicators.append(IPAddress(value))
+                    else:
+                        formatted_indicators.append(value)
                 elif out_format == FORMAT_JSON_SEQ:
                     formatted_indicators.append(json.dumps(ioc))
                 elif out_format == FORMAT_CSV:
                     # wrap csv values with " to escape them
                     values = list(ioc.values())
                     formatted_indicators.append(list_to_str(values, map_func=lambda val: f'"{val}"'))
+
+        if len(ipv4_formatted_indicators) > 0:
+            ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, collapse_ips)
+            formatted_indicators.extend(ipv4_formatted_indicators)
+
+        if len(ipv6_formatted_indicators) > 0:
+            ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, collapse_ips)
+            formatted_indicators.extend(ipv6_formatted_indicators)
+
     return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
 
 
@@ -141,7 +197,7 @@ def get_outbound_mimetype() -> str:
 
 
 def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='text', last_run=None,
-                            cache_refresh_rate=None) -> str:
+                            cache_refresh_rate=None, collapse_ips=DONT_COLLAPSE) -> str:
     """
     Get the ioc list to return in the list
     """
@@ -152,11 +208,12 @@ def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='te
         if last_run:
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             if last_run <= cache_time:
-                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit)
+                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit,
+                                                      collapse_ips=collapse_ips)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
-            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit)
+            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, collapse_ips=collapse_ips)
     return values_str
 
 
@@ -227,7 +284,8 @@ def route_list_values() -> Response:
         limit=try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG),
         last_run=demisto.getLastRun().get('last_run'),
         indicator_query=params.get('indicators_query'),
-        cache_refresh_rate=params.get('cache_refresh_rate')
+        cache_refresh_rate=params.get('cache_refresh_rate'),
+        collapse_ips = params.get('collapse_ips')
     )
     mimetype = get_outbound_mimetype()
     return Response(values, status=200, mimetype=mimetype)
@@ -323,7 +381,8 @@ def update_outbound_command(args, params):
     print_indicators = args.get('print_indicators')
     query = args.get('query')
     out_format = args.get('format')
-    indicators = refresh_outbound_context(query, out_format, limit=limit)
+    collapse_ips = args.get('collapse_ips')
+    indicators = refresh_outbound_context(query, out_format, limit=limit, collapse_ips=collapse_ips)
     hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
     return hr, {}, indicators
