@@ -2,7 +2,7 @@
     "displayName": "Base",
     "description": "The base pack for Cortex XSOAR.",
     "support": "demisto",
-    "serverMinVersion": "3.5",
+    "serverMinVersion": "1.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "",
