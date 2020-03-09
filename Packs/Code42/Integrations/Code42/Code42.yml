@@ -215,7 +215,8 @@ script:
     arguments:
     - name: id
       required: true
-      description: Alert ID to retrieve
+      description: Alert ID to retrieve. Alert IDs are associated with alerts that
+        are fetched via fetch-incidents.
     outputs:
     - contextPath: Code42.SecurityAlert.Username
       description: Username associated with alert
