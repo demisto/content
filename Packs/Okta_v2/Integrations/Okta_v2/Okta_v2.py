@@ -782,9 +782,6 @@ def get_group_members_command(client, args):
     limit = args.get('limit')
     group_id = args.get('groupId') or client.get_group_id(args.get('groupName'))
     raw_members = client.get_group_members(group_id, limit)
-    # group = client.get_readable_groups(client.get_groups(args))
-    # for member in raw_members:
-    #     member['group'] = group
     users_context = client.get_users_context(raw_members)
     users_readable = client.get_readable_users(raw_members, args.get('verbose'))
     context = createContext(users_context, removeNull=True)
@@ -824,13 +821,13 @@ def list_groups_command(client, args):
 
 def get_logs_command(client, args):
     raw_response = client.get_logs(args)
-    if len(raw_response) == 0:
+    if not raw_response:
         return 'No logs found', {}, raw_response
 
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Okta Events', logs)
     outputs = {
-        'Okta.Logs.Events(val.uuid===obj.uuid)': createContext(raw_response)
+        'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
         readable_output,
@@ -842,7 +839,7 @@ def get_logs_command(client, args):
 def get_failed_login_command(client, args):
     args['filter'] = 'eventType eq "user.session.start" and outcome.result eq "FAILURE"'
     raw_response = client.get_logs(args)
-    if len(raw_response) == 0:
+    if not raw_response:
         return 'No logs found', {}, raw_response
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Failed Login Events', logs)
@@ -859,7 +856,7 @@ def get_failed_login_command(client, args):
 def get_group_assignments_command(client, args):
     args['filter'] = 'eventType eq "group.user_membership.add"'
     raw_response = client.get_logs(args)
-    if len(raw_response) == 0:
+    if not raw_response:
         return 'No logs found', {}, raw_response
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Group Assignment Events', logs)
@@ -876,7 +873,7 @@ def get_group_assignments_command(client, args):
 def get_application_assignments_command(client, args):
     args['filter'] = 'eventType eq "application.user_membership.add"'
     raw_response = client.get_logs(args)
-    if len(raw_response) == 0:
+    if not raw_response:
         return 'No logs found', {}, raw_response
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Application Assignment Events', logs)
@@ -893,7 +890,7 @@ def get_application_assignments_command(client, args):
 def get_application_authentication_command(client, args):
     args['filter'] = 'eventType eq "user.authentication.sso"'
     raw_response = client.get_logs(args)
-    if len(raw_response) == 0:
+    if not raw_response:
         return 'No logs found', {}, raw_response
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Application Authentication Events', logs)
@@ -938,7 +935,6 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API url
-    # TODO: write the fix_url function in order to check if the givenurl ends with '/' or not.
     base_url = urljoin(demisto.params()['url'], '/api/v1/')
     apitoken = demisto.params().get('apitoken')
     verify_certificate = not demisto.params().get('insecure', False)
