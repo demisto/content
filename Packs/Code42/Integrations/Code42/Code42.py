@@ -443,8 +443,8 @@ def securitydata_search_command(client, args):
             code42_securitydata_context,
             headers=SECURITY_EVENT_HEADERS
         )
-        return readable_outputs, {'Code42.SecurityData(val.EventID && val.EventID == obj.EventID)': code42_securitydata_context, 
-            'File': file_context}, file_events
+        return readable_outputs, {'Code42.SecurityData(val.EventID && val.EventID == obj.EventID)': code42_securitydata_context,
+                                  'File': file_context}, file_events
     else:
         return 'No results found', {}, {}
 
@@ -454,7 +454,9 @@ def test_module(client):
     if user:
         return 'ok'
     else:
-        return 'Error in get_current_user'
+        return 'Invalid credentials or host address. Check that the username and password are correct, \
+               that the host is available and reachable, and that you have supplied the full scheme, \
+               domain, and port (e.g. https://myhost.code42.com:4285)'
 
 
 def main():
