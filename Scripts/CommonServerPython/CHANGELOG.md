@@ -1,4 +1,18 @@
 ## [Unreleased]
+Added ***remove_empty_elements*** command.
+Added ***datetime_to_string*** command.
+Added ***safe_load_json*** command.
+Added encoding from UTF-8 for Python 2.
+
+## [20.3.1] - 2020-03-04
+Added **DomainGlob** to the **FeedIndicatorType** class.
+Added the *timeline* argument to the ***return_outputs*** convenience function.
+
+## [20.2.3] - 2020-02-18
+Added cveRegex to validate cve_id format.
+
+## [20.2.0] - 2020-02-04
+Added ***ip_to_indicator_type*** command.
 
 
 ## [20.1.2] - 2020-01-22

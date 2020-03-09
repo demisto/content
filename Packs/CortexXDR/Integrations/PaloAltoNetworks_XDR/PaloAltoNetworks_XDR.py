@@ -1,21 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-''' IMPORTS '''
-
-import json
-import time
-import requests
-import dateparser
-from datetime import datetime, timezone
+from datetime import timezone
 import secrets
 import string
 import hashlib
 from typing import Any, Dict
+import dateparser
+import urllib3
+from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
@@ -24,24 +17,23 @@ API_KEY_LENGTH = 128
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 
 
-def convert_epoch_to_milli(ts):
-    if ts is None:
+def convert_epoch_to_milli(timestamp):
+    if timestamp is None:
         return None
-    if 9 < len(str(ts)) < 13:
-        ts = int(ts) * 1000
-    return int(ts)
+    if 9 < len(str(timestamp)) < 13:
+        timestamp = int(timestamp) * 1000
+    return int(timestamp)
 
 
 def convert_datetime_to_epoch(the_time=0):
     if the_time is None:
         return None
-    else:
-        try:
-            if isinstance(the_time, datetime):
-                return int(the_time.strftime('%s'))
-        except Exception as e:
-            print(e)
-            return 0
+    try:
+        if isinstance(the_time, datetime):
+            return int(the_time.strftime('%s'))
+    except Exception as err:
+        print(err)
+        return 0
 
 
 def convert_datetime_to_epoch_millis(the_time=0):
@@ -59,9 +51,19 @@ def generate_key():
 def create_auth(api_key):
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(NONCE_LENGTH)])
     timestamp = str(generate_current_epoch_utc())  # Get epoch time utc millis
-    m = hashlib.sha256()
-    m.update((api_key + nonce + timestamp).encode("utf-8"))
-    return nonce, timestamp, m.hexdigest()
+    hash_ = hashlib.sha256()
+    hash_.update((api_key + nonce + timestamp).encode("utf-8"))
+    return nonce, timestamp, hash_.hexdigest()
+
+
+def clear_trailing_whitespace(res):
+    index = 0
+    while index < len(res):
+        for key, value in res[index].items():
+            if isinstance(value, str):
+                res[index][key] = value.rstrip()
+        index += 1
+    return res
 
 
 class Client(BaseClient):
@@ -101,7 +103,7 @@ class Client(BaseClient):
         if sort_by_creation_time and sort_by_modification_time:
             raise ValueError('Should be provide either sort_by_creation_time or '
                              'sort_by_modification_time. Can\'t provide both')
-        elif sort_by_creation_time:
+        if sort_by_creation_time:
             request_data['sort'] = {
                 'field': 'creation_time',
                 'keyword': sort_by_creation_time
@@ -196,7 +198,7 @@ class Client(BaseClient):
 
         if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
             raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
-        elif unassign_user:
+        if unassign_user:
             update_data['assigned_user_mail'] = 'none'
 
         if assigned_user_mail:
@@ -626,9 +628,9 @@ def get_incidents_command(client, args):
 
     incident_id_list = argToList(incident_id_list)
     # make sure all the ids passed are strings and not integers
-    for index, id in enumerate(incident_id_list):
-        if isinstance(id, (int, float)):
-            incident_id_list[index] = str(id)
+    for index, id_ in enumerate(incident_id_list):
+        if isinstance(id_, (int, float)):
+            incident_id_list[index] = str(id_)
 
     lte_modification_time = args.get('lte_modification_time')
     gte_modification_time = args.get('gte_modification_time')
@@ -636,7 +638,7 @@ def get_incidents_command(client, args):
 
     if since_modification_time and gte_modification_time:
         raise ValueError('Can\'t set both since_modification_time and lte_modification_time')
-    elif since_modification_time:
+    if since_modification_time:
         gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
 
     lte_creation_time = args.get('lte_creation_time')
@@ -645,8 +647,7 @@ def get_incidents_command(client, args):
 
     if since_creation_time and gte_creation_time:
         raise ValueError('Can\'t set both since_creation_time and lte_creation_time')
-
-    elif since_creation_time:
+    if since_creation_time:
         gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
 
     sort_by_modification_time = args.get('sort_by_modification_time')
@@ -690,7 +691,8 @@ def get_incident_extra_data_command(client, args):
 
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
-    alerts = raw_incident.get('alerts').get('data')
+    raw_alerts = raw_incident.get('alerts').get('data')
+    alerts = clear_trailing_whitespace(raw_alerts)
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
@@ -751,18 +753,14 @@ def arg_to_int(arg, arg_name: str, required: bool = False):
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
-        else:
-            return None
-
+        return None
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
-        else:
-            raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
-    elif isinstance(arg, int):
+        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+    if isinstance(arg, int):
         return arg
-    else:
-        return ValueError(f'Invalid number: "{arg_name}"')
+    return ValueError(f'Invalid number: "{arg_name}"')
 
 
 def get_endpoints_command(client, args):
@@ -980,21 +978,20 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
-        else:
-            return None
+        return None
 
     if isinstance(arg, str) and arg.isdigit():
         # timestamp that str - we just convert it to int
         return int(arg)
-    elif isinstance(arg, str):
+    if isinstance(arg, str):
         # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
-        d = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if d is None:
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
             # if d is None it means dateparser failed to parse it
             raise ValueError(f'Invalid date: {arg_name}')
 
-        return int(d.timestamp() * 1000)
-    elif isinstance(arg, (int, float)):
+        return int(date.timestamp() * 1000)
+    if isinstance(arg, (int, float)):
         return arg
 
 
@@ -1163,7 +1160,7 @@ def get_distribution_status_command(client, args):
     )
 
 
-def get_distribution_versions_command(client, args):
+def get_distribution_versions_command(client):
     versions = client.get_distribution_versions()
 
     readable_output = []
@@ -1219,9 +1216,9 @@ def create_distribution_command(client, args):
     )
 
 
-def fetch_incidents(client, first_fetch_time, last_run={}):
+def fetch_incidents(client, first_fetch_time, last_run: dict = None):
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('time')
+    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
@@ -1251,11 +1248,11 @@ def fetch_incidents(client, first_fetch_time, last_run={}):
     return next_run, incidents
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
-
-
 def main():
-    LOG('Command being called is %s' % (demisto.command()))
+    """
+    Executes an integration command
+    """
+    LOG(f'Command being called is {demisto.command()}')
 
     api_key = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
@@ -1326,7 +1323,7 @@ def main():
             return_outputs(*get_distribution_status_command(client, demisto.args()))
 
         elif demisto.command() == 'xdr-get-distribution-versions':
-            return_outputs(*get_distribution_versions_command(client, demisto.args()))
+            return_outputs(*get_distribution_versions_command(client))
 
         elif demisto.command() == 'xdr-create-distribution':
             return_outputs(*create_distribution_command(client, demisto.args()))
@@ -1337,13 +1334,12 @@ def main():
         elif demisto.command() == 'xdr-get-audit-agent-reports':
             return_outputs(*get_audit_agent_reports_command(client, demisto.args()))
 
-    except Exception as e:
+    except Exception as err:
         if demisto.command() == 'fetch-incidents':
-            LOG(str(e))
+            LOG(str(err))
             raise
-        else:
-            demisto.error()
-            return_error(str(e))
+        demisto.error()
+        return_error(str(err))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,6 +1,6 @@
+from __future__ import print_function
 from mock import patch
 from Tests.mock_server import AMIConnection, clean_filename, get_mock_file_path, get_log_file_path, get_folder_path
-from Tests.test_content import organize_tests
 
 
 def test_clean_filename():
@@ -30,20 +30,3 @@ with patch('Tests.mock_server.AMIConnection._get_docker_ip') as mock:
     def test_ami():
         assert ami.public_ip == '1.1.1.1'
         assert ami.docker_ip == '2.2.2.2'
-
-
-def test_integration_list_split_by_unmockable():
-    test1 = {
-        'integrations': ['mockable', 'unmockable', 'mockable1', 'unmockable1']
-    }
-    test2 = {}
-    test3 = {
-        'integrations': ['mockable']
-    }
-    tests = [test1, test2, test3]
-    unmockable_integrations = {'unmockable': "", 'unmockable1': ""}
-
-    mockable, unmockable = organize_tests(tests, unmockable_integrations, {}, [])
-
-    assert mockable == [test3]
-    assert unmockable == [test1, test2]

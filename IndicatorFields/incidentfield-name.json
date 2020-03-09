@@ -24,9 +24,6 @@
   "associatedToAll": false,
   "shouldCommit": false,
   "shouldPublish": false,
-  "associatedTypes": [
-    "Registry Key"
-  ],
   "caseInsensitive": true,
   "columns": null,
   "placeholder": "",
