@@ -66,11 +66,17 @@ configuration:
   name: api_key
   required: true
   type: 4
-- additionalinfo: Support a CSV of collections.
+- additionalinfo: 'If checked will run on all active collections regaurdless of the entered collections. Inactive or empty collections will be ignored.'
+  display: Get All Active Collections
+  hidden: false
+  name: all_collections
+  required: false
+  type: 8
+- additionalinfo: 'Support a CSV of collections to fetch from. If given a collection which is inactive or empty, An error will be raised. If not set, will raise an error listing all the available collections.'
   display: The Collections to Fetch From
   hidden: false
   name: collections
-  required: true
+  required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
@@ -80,15 +86,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: If checked - will run on all active collections regaurdless of the
-    entered collections.
-  display: Get All Active Collections
-  hidden: false
-  name: all_collections
-  required: false
-  type: 8
-description: This integration fetches indicators from AlienVault OTX using a TAXII
-  client.
+description: This integration fetches indicators from AlienVault OTX using a TAXII client.
 display: AlienVault OTX TAXII Feed
 name: AlienVault OTX TAXII Feed
 script:
