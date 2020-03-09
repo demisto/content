@@ -277,10 +277,11 @@ script:
     arguments:
     - name: id
       required: true
-      description: Alert ID to resolve
+      description: Alert ID to resolve. Alert IDs are associated with alerts that
+        are fetched via fetch-incidents.
     outputs:
     - contextPath: Code42.SecurityAlert.ID
-      description: Alert ID from alerts fetched via fetch-incident.
+      description: Alert ID for resolved alert
       type: string
     description: Resolve a Code42 Security alert
   dockerimage: demisto/py42:1.0.0.6301
