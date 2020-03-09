@@ -814,6 +814,7 @@ def test_alert_get_command(requests_mock):
 def test_alert_resolve_command(requests_mock):
     create_alert_mocks(requests_mock)
     requests_mock.post(MOCK_URL + '/svc/api/v1/resolve-alert', json={'dummyresponse': True})
+    requests_mock.post(MOCK_URL + '/svc/api/v1/query-details', json=MOCK_ALERT_DETAILS_RESPONSE[0])
     client = Code42Client(
         sdk=SDK,
         base_url=MOCK_URL,
@@ -822,7 +823,7 @@ def test_alert_resolve_command(requests_mock):
         proxy=None
     )
     _, _, res = alert_resolve_command(client, {'id': '36fb8ca5-0533-4d25-9763-e09d35d60610'})
-    assert res == '36fb8ca5-0533-4d25-9763-e09d35d60610'
+    assert res['id'] == '36fb8ca5-0533-4d25-9763-e09d35d60610'
 
 
 def test_departingemployee_remove_command(requests_mock):

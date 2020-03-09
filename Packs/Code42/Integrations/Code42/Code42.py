@@ -316,16 +316,22 @@ def alert_get_command(client, args):
 
 @logger
 def alert_resolve_command(client, args):
+    code42_securityalert_context = []
     alert = client.resolve_alert(args['id'])
     if alert:
-        alert_context = {
-            'ID': args['id']
-        }
-        readable_outputs = tableToMarkdown(
-            f'Code42 Security Alert Resolved',
-            alert_context
-        )
-        return readable_outputs, {'Code42.SecurityAlert': alert_context}, alert
+        # Retrieve new alert details
+        updated_alert = client.get_alert_details(args['id'])
+        if updated_alert:
+            code42_context = map_to_code42_alert_context(updated_alert)
+            code42_securityalert_context.append(code42_context)
+            readable_outputs = tableToMarkdown(
+                f'Code42 Security Alert Resolved',
+                code42_securityalert_context,
+                headers=SECURITY_ALERT_HEADERS
+            )
+            return readable_outputs, {'Code42.SecurityAlert': code42_securityalert_context}, updated_alert
+        else:
+            return 'Error retrieving updated alert', {}, {}
     else:
         return 'No results found', {}, {}
 
@@ -392,7 +398,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_severity_filter,
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, to_timestamp=True, utc=True)
         start_query_time /= 1000
-    alerts = client.fetch_alerts(start_query_time, event_severity_filter)
+    alerts = client.fetch_alerts(start_query_time, demisto.params().get('alert_severity'))
     for alert in alerts:
         details = client.get_alert_details(alert['id'])
         incident = {
