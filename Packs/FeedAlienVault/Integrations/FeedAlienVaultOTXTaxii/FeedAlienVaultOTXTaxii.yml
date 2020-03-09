@@ -94,8 +94,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of XML elements to parse from the TAXII response.
-        Default value is 10.
+      description: The maximum number of indicators to return. The default value is 10.
       isArray: false
       name: limit
       required: true
