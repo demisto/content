@@ -639,7 +639,7 @@ def fetch_indicators_command(client: Client, limit=None):
             # this is because AlienVault OTX can return the same indicator several times from the same collection.
             parsed_list, only_indicator_list = parse_indicators(res, only_indicator_list)
             indicator_list.extend(parsed_list)
-            if limit <= len(indicator_list):
+            if limit is not None and limit <= len(indicator_list):
                 indicator_list = indicator_list[:limit]
                 break
 
