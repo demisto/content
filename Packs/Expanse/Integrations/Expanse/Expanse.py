@@ -59,12 +59,12 @@ def make_headers(endpoint, token):
     """
     headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'User-Agent': 'Expanse_Demisto/1.0.0'
     }
-    if API_ENDPOINTS[endpoint]['version'] == 1:
+    if endpoint == "IdToken":
         headers['Authorization'] = 'Bearer ' + token
-
-    elif API_ENDPOINTS[endpoint]['version'] == 2:
+    else:
         headers['Authorization'] = 'JWT ' + token
 
     return headers
@@ -138,7 +138,8 @@ def http_request(method, endpoint, params=None, token=False):
         res_json = r.json()
         return res_json
     except json.decoder.JSONDecodeError as err:
-        raise ValueError(f'Failed to parse response as JSON. Original response:\n{r.text}.\nError: {str(err)}')
+        raise ValueError('Failed to parse response as JSON. Original response:\n{rtext}.\nError: {error}'
+                         .format(rtext=r.text, error=str(err)))
 
 
 def parse_events(events):
@@ -449,7 +450,7 @@ def ip_command():
         'IP(val.Address == obj.Address)': ip_context,
         'Expanse.IP(val.Address == obj.Address)': expanse_ip_context
     }
-    human_readable = tableToMarkdown(F"IP information for: {search}", expanse_ip_context)
+    human_readable = tableToMarkdown("IP information for: {search}".format(search=search), expanse_ip_context)
 
     return_outputs(human_readable, ec, ip)
 
@@ -486,7 +487,7 @@ def domain_command():
         'Expanse.Domain(val.Name == obj.Name)': expanse_domain_context
     }
 
-    human_readable = tableToMarkdown(F"Domain information for: {search}", expanse_domain_context)
+    human_readable = tableToMarkdown("Domain information for: {search}".format(search=search), expanse_domain_context)
 
     return_outputs(human_readable, ec, domain)
 
