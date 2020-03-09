@@ -844,7 +844,7 @@ def get_failed_login_command(client, args):
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Failed Login Events', logs)
     outputs = {
-        'Okta.Logs.Events(val.uuid===obj.uuid)': createContext(raw_response)
+        'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
         readable_output,
@@ -861,7 +861,7 @@ def get_group_assignments_command(client, args):
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Group Assignment Events', logs)
     outputs = {
-        'Okta.Logs.Events(val.uuid===obj.uuid)': createContext(raw_response)
+        'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
         readable_output,
@@ -878,7 +878,7 @@ def get_application_assignments_command(client, args):
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Application Assignment Events', logs)
     outputs = {
-        'Okta.Logs.Events(val.uuid===obj.uuid)': createContext(raw_response)
+        'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
         readable_output,
@@ -895,7 +895,7 @@ def get_application_authentication_command(client, args):
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown('Application Authentication Events', logs)
     outputs = {
-        'Okta.Logs.Events(val.uuid===obj.uuid)': createContext(raw_response)
+        'Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)': createContext(raw_response)
     }
     return (
         readable_output,

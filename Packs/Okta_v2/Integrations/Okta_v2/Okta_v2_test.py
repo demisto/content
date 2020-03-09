@@ -1,4 +1,4 @@
-from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
+from .Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command
 import pytest
 
@@ -612,13 +612,10 @@ def test_get_group_members_command(mocker, args, expected):
     assert expected == outputs.get('Account(val.ID && val.ID === obj.ID)')[1]
 
 
-# def test_get_readable_logs():
-#     readable_logs = Client.get_readable_logs(logs)
-
 def test_get_logs_command(mocker):
     mocker.patch.object(client, 'get_logs', return_value=logs)
     readable, outputs, _ = get_logs_command(client, {})
-    assert logs == outputs.get('Okta.Logs.Events(val.uuid===obj.uuid)')
+    assert logs == outputs.get('Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)')
     assert 'Unknown browser on Unknown OS Unknown device' in readable
     assert 'Chrome on Windows Computer' in readable
 
