@@ -9,6 +9,33 @@ from unittest.mock import mock_open
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
+TIME_ONE_MINUTE_AGO_DATETIME = datetime.now() - timedelta(minutes=1)
+TIME_ONE_MINUTE_AGO_STRING = datetime.strftime(TIME_ONE_MINUTE_AGO_DATETIME, DATE_FORMAT)
+
+
+
+TIME_24_HOURS_AGO = datetime.now() - timedelta(hours=24)
+TIME_24_HOURS_AGO_STRING = datetime.strftime(TIME_24_HOURS_AGO, DATE_FORMAT)
+
+TIME_48_HOURS_AGO = datetime.now() - timedelta(hours=24)
+TIME_48_HOURS_AGO_STRING = datetime.strftime(TIME_48_HOURS_AGO, DATE_FORMAT)
+
+TIME_6_HOURS_AGO = datetime.now() - timedelta(hours=6)
+TIME_6_HOURS_AGO_STRING = datetime.strftime(TIME_6_HOURS_AGO, DATE_FORMAT)
+TIME_ONE_HOUR_AGO = datetime.now() - timedelta(hours=1)
+TIME_ONE_HOUR_AGO_STRING = datetime.strftime(TIME_ONE_HOUR_AGO, DATE_FORMAT)
+TEST_FETCH_FIRST_RUN = ({}, 720, 12, 0)
+TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS = ({},2880,48,24)
+TEST_FETCH_NOT_FIRST_RUN = ({'last_fetch': TIME_6_HOURS_AGO_STRING}, 2880,6,0)
+FETCH_TIMES_TEST_DATA = [
+    TEST_FETCH_FIRST_RUN,
+    TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS,
+    TEST_FETCH_NOT_FIRST_RUN
+]
+
+DATE_YESTERDAY_IN_EPOCH = int((datetime.now() - datetime(1970, 1, 1)).total_seconds()) - 24 * 60 * 60
+DATE_TOMORROW_IN_EPOCH = int((datetime.now() - datetime(1970, 1, 1)).total_seconds()) + 24 * 60 * 60
+
 START_SUBSCRIPTION_RESPONSE = {
     "contentType": "Audit.AzureActiveDirectory",
     "status": "enabled",
@@ -43,22 +70,19 @@ LIST_CONTENT_AUDIT_GENERAL_RESPONSE = [
         "contentUri": "https://manage.office.com/api/v1.0/test1",
         "contentId": "test1",
         "contentType": "audit.general",
-        "contentCreated": "2020-02-27T01:00:18.139Z",
-        "contentExpiration": "2020-03-04T07:56:39.063Z"
+        "contentCreated": TIME_6_HOURS_AGO_STRING,
     },
     {
         "contentUri": "https://manage.office.com/api/v1.0/test2",
         "contentId": "test2",
         "contentType": "audit.general",
-        "contentCreated": "2020-02-27T01:00:18.139Z",
-        "contentExpiration": "2020-03-04T07:56:39.063Z"
+        "contentCreated": TIME_6_HOURS_AGO_STRING,
     },
     {
         "contentUri": "https://manage.office.com/api/v1.0/test3",
         "contentId": "test3",
         "contentType": "audit.general",
-        "contentCreated": "2020-02-27T01:00:18.139Z",
-        "contentExpiration": "2020-03-04T07:56:39.063Z"
+        "contentCreated": TIME_6_HOURS_AGO_STRING,
     }
 ]
 
@@ -67,22 +91,19 @@ LIST_CONTENT_AZUREACTIVE_RESPONSE = [
         "contentUri": "https://manage.office.com/api/v1.0/test4",
         "contentId": "test4",
         "contentType": "Audit.AzureActiveDirectory",
-        "contentCreated": "2020-02-27T01:00:18.139Z",
-        "contentExpiration": "2020-03-04T07:56:39.063Z"
+        "contentCreated": TIME_6_HOURS_AGO_STRING,
     },
     {
         "contentUri": "https://manage.office.com/api/v1.0/test5",
         "contentId": "test5",
         "contentType": "Audit.AzureActiveDirectory",
-        "contentCreated": "2020-02-27T01:00:18.139Z",
-        "contentExpiration": "2020-03-04T07:56:39.063Z"
+        "contentCreated": TIME_6_HOURS_AGO_STRING,
     },
     {
         "contentUri": "https://manage.office.com/api/v1.0/test6",
         "contentId": "test6",
         "contentType": "Audit.AzureActiveDirectory",
-        "contentCreated": "2020-02-27T01:00:18.139Z",
-        "contentExpiration": "2020-03-04T07:56:39.063Z"
+        "contentCreated": TIME_6_HOURS_AGO_STRING,
     }
 ]
 
@@ -92,6 +113,57 @@ GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL = [
     {
         "CreationTime": "2020-02-27T00:57:40",
         "Id": "1234",
+        "Operation": "Test",
+        "OrganizationId": "Test1234",
+        "RecordType": 25,
+        "UserKey": "key1234",
+        "UserType": 5,
+        "Version": 1234,
+        "Workload": "MicrosoftTeams",
+        "UserId": "Application",
+        "CommunicationType": "Team",
+        "Members": [
+            {
+                "DisplayName": "test",
+                "Role": 1,
+                "UPN": "test@test.onmicrosoft.com"
+            }
+        ],
+        "TeamGuid": "testGuid",
+        "ItemName": "TestTeam",
+        "TeamName": "TestTeam"
+    }
+]
+GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL_SECOND_RESPONSE = [
+    {
+        "CreationTime": "2020-02-27T00:57:40",
+        "Id": "567",
+        "Operation": "Test",
+        "OrganizationId": "Test1234",
+        "RecordType": 25,
+        "UserKey": "key1234",
+        "UserType": 5,
+        "Version": 1234,
+        "Workload": "MicrosoftTeams",
+        "UserId": "Application",
+        "CommunicationType": "Team",
+        "Members": [
+            {
+                "DisplayName": "test",
+                "Role": 1,
+                "UPN": "test@test.onmicrosoft.com"
+            }
+        ],
+        "TeamGuid": "testGuid",
+        "ItemName": "TestTeam",
+        "TeamName": "TestTeam"
+    }
+]
+
+GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL_THIRD_RESPONSE = [
+    {
+        "CreationTime": "2020-02-27T00:57:40",
+        "Id": "89",
         "Operation": "Test",
         "OrganizationId": "Test1234",
         "RecordType": 25,
@@ -140,13 +212,10 @@ GET_BLOB_DATA_RESPONSE_FOR_AUDIT_ACTIVEDIRECTORY = [
     }
 ]
 
-TIME_ONE_MINUTE_AGO_DATETIME = datetime.now() - timedelta(minutes=1)
-TIME_ONE_MINUTE_AGO_DATETIME = datetime.strftime(TIME_ONE_MINUTE_AGO_DATETIME, DATE_FORMAT)
 
-
-CONTENT_RECORD_CREATED_ONE_MINUTE_AGO = [
+CONTENT_RECORD_CREATED_ONE_HOUR_AGO = [
     {
-        "CreationTime": TIME_ONE_MINUTE_AGO_DATETIME,
+        "CreationTime": TIME_ONE_HOUR_AGO_STRING,
         "Id": "5678",
         "Operation": "Test",
         "OrganizationId": "Test1234",
@@ -170,9 +239,9 @@ CONTENT_RECORD_CREATED_ONE_MINUTE_AGO = [
     }
 ]
 
-CONTENT_RECORD_CREATED_ONE_MINUTE_AGO = [
+CONTENT_RECORD_CREATED_48_HOURS_AGO = [
     {
-        "CreationTime": TIME_ONE_MINUTE_AGO_DATETIME,
+        "CreationTime": TIME_48_HOURS_AGO_STRING,
         "Id": "5678",
         "Operation": "Test",
         "OrganizationId": "Test1234",
@@ -196,7 +265,54 @@ CONTENT_RECORD_CREATED_ONE_MINUTE_AGO = [
     }
 ]
 
-
+CONTENT_RECORDS_CREATED_1_AND_6_HOURS_AGO = [
+    {
+        "CreationTime": TIME_ONE_HOUR_AGO_STRING,
+        "Id": "5678",
+        "Operation": "Test",
+        "OrganizationId": "Test1234",
+        "RecordType": 25,
+        "UserKey": "key1234",
+        "UserType": 5,
+        "Version": 1234,
+        "Workload": "MicrosoftTeams",
+        "UserId": "Application",
+        "CommunicationType": "Team",
+        "Members": [
+            {
+                "DisplayName": "test",
+                "Role": 1,
+                "UPN": "test@test.onmicrosoft.com"
+            }
+        ],
+        "TeamGuid": "testGuid",
+        "ItemName": "TestTeam",
+        "TeamName": "TestTeam"
+    },
+    {
+        "CreationTime": TIME_6_HOURS_AGO_STRING,
+        "Id": "5678",
+        "Operation": "Test",
+        "OrganizationId": "Test1234",
+        "RecordType": 25,
+        "UserKey": "key1234",
+        "UserType": 5,
+        "Version": 1234,
+        "Workload": "MicrosoftTeams",
+        "UserId": "Application",
+        "CommunicationType": "Team",
+        "Members": [
+            {
+                "DisplayName": "test",
+                "Role": 1,
+                "UPN": "test@test.onmicrosoft.com"
+            }
+        ],
+        "TeamGuid": "testGuid",
+        "ItemName": "TestTeam",
+        "TeamName": "TestTeam"
+    }
+]
 
 
 GET_ACCESS_TOKEN_RESPONSE = {
@@ -211,20 +327,6 @@ GET_ACCESS_TOKEN_RESPONSE = {
     "refresh_token": "refresh"
 }
 
-
-TIME_6_HOURS_AGO = datetime.now() - timedelta(hours=6)
-TIME_6_HOURS_AGO_STRING = datetime.strftime(TIME_6_HOURS_AGO, DATE_FORMAT)
-TEST_FETCH_FIRST_RUN = ({},720,12,0)
-TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS = ({},2880,48,24)
-TEST_FETCH_NOT_FIRST_RUN = ({'last_fetch': TIME_6_HOURS_AGO_STRING}, 2880,6,0)
-FETCH_TIMES_TEST_DATA = [
-    TEST_FETCH_FIRST_RUN,
-    TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS,
-    TEST_FETCH_NOT_FIRST_RUN
-]
-
-DATE_YESTERDAY_IN_EPOCH = int((datetime.now() - datetime(1970, 1, 1)).total_seconds()) - 24 * 60 * 60
-DATE_TOMORROW_IN_EPOCH = int((datetime.now() - datetime(1970, 1, 1)).total_seconds()) + 24 * 60 * 60
 FIRST_RUN = {}
 EXPIRED_TOKEN = {
     'expires_on': str(DATE_YESTERDAY_IN_EPOCH),
@@ -245,6 +347,17 @@ def is_time_in_expected_delta(actual_time, expected_time_delta):
     one_minute_before_expected_time = expected_time - timedelta(minutes=1)
     return one_minute_before_expected_time <= actual_time <= expected_time
 
+def are_dates_approximately_equal(date_a, date_b):
+    date_a_datetime = datetime.strptime(date_a, DATE_FORMAT)
+    date_b_datetime = datetime.strptime(date_b, DATE_FORMAT)
+
+    one_minute_before_date_a = date_a_datetime - timedelta(minutes=1)
+    one_minute_before_date_b = date_b_datetime - timedelta(minutes=1)
+
+    date_a_is_almost_date_b = one_minute_before_date_b <= date_a_datetime <= date_b_datetime
+    date_b_is_almost_date_a = one_minute_before_date_a <= date_b_datetime <= date_a_datetime
+
+    return date_a_is_almost_date_b or date_b_is_almost_date_a
 
 def http_return_data(method, url_suffix, full_url, headers, json_data):
     return json_data
@@ -349,17 +462,96 @@ def test_content_records_to_incidents_records_creation():
     assert 'occurred' in single_incident and single_incident['occurred'] == '2020-02-27T00:57:40'
 
 
-@pytest.mark.parametrize()
-def test_content_records_to_incidents_last_run():
+TEST_LAST_RUN_UPDATE_DATA = [
+    ([], datetime.strftime(datetime.now(), DATE_FORMAT)),
+    (CONTENT_RECORD_CREATED_48_HOURS_AGO, datetime.strftime(datetime.now(), DATE_FORMAT)),
+    (CONTENT_RECORD_CREATED_ONE_HOUR_AGO, TIME_ONE_HOUR_AGO_STRING),
+    (CONTENT_RECORDS_CREATED_1_AND_6_HOURS_AGO, TIME_ONE_HOUR_AGO_STRING)
+
+]
+
+
+@pytest.mark.parametrize('content_records, expected_last_run', TEST_LAST_RUN_UPDATE_DATA)
+def test_content_records_to_incidents_last_run(content_records, expected_last_run):
     from MicrosoftManagement import content_records_to_incidents
     time_now_string = datetime.strftime(datetime.now(), DATE_FORMAT)
-    _, latest_creation_time = content_records_to_incidents(GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL,
-                                                           TIME_6_HOURS_AGO_STRING, time_now_string)
+    end_time = time_now_string
+
+    time_24_hours_ago = datetime.now() - timedelta(hours=24)
+    time_24_hours_ago_string = datetime.strftime(time_24_hours_ago, DATE_FORMAT)
+    start_time = time_24_hours_ago_string
+
+    _, last_run = content_records_to_incidents(content_records, start_time, end_time)
+    assert are_dates_approximately_equal(last_run, expected_last_run)
 
 
+def test_fetch_incidents_flow(mocker, requests_mock):
+    from MicrosoftManagement import fetch_incidents
+    client = create_client()
+    set_requests_mock(client, requests_mock)
+    demisto_params = {
+        "content_types_to_fetch": "audit.general"
+    }
+    mocker.patch.object(demisto, 'params', return_value=demisto_params)
+    last_run = {}
+    first_fetch_delta = 1440
+
+    next_run, incidents = fetch_incidents(client, last_run, first_fetch_delta)
+    incident_names = [incident["name"] for incident in incidents]
+    assert incident_names == ["1234", "1234", "1234"]
 
 
+@pytest.mark.parametrize("command", [("start"), ("stop")])
+def test_start_and_stop_subscription(requests_mock, command, ):
+    from MicrosoftManagement import start_or_stop_subscription_command
+    args = {
+        'content_type': 'audit.general'
+    }
+    client = create_client()
+    set_requests_mock(client, requests_mock)
+    start_or_stop_subscription_command(client, args, command)
 
+    # This test does not assert anything, it only tests if the command matches the mocked endpoints.
+
+
+@pytest.mark.parametrize('first_fetch_delta, expected_output_prefix', [("not_an_int", "Error"), ("-1567", "Error"), ("1900", "Error"), ("1200", "ok")])
+def test_the_test_module(mocker, requests_mock, first_fetch_delta, expected_output_prefix):
+    from MicrosoftManagement import test_module
+    client = create_client()
+    set_requests_mock(client, requests_mock)
+    params = {
+        "first_fetch_delta": first_fetch_delta
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    test_result = test_module(client)
+    assert test_result.startswith(expected_output_prefix)
+
+
+def test_list_subscriptions(requests_mock, ):
+    from MicrosoftManagement import list_subscriptions_command
+    client = create_client()
+    set_requests_mock(client, requests_mock)
+    list_subscriptions_command(client)
+
+    # This test does not assert anything, it only tests if the command matches the mocked endpoints.
+
+
+def test_get_all_content_type_records(requests_mock):
+    from MicrosoftManagement import get_all_content_type_records
+    client = create_client()
+    mock_list_content(requests_mock)
+
+    first_audit_general_blob_uri = "https://manage.office.com/api/v1.0/test1"
+    second_audit_general_blob_uri = "https://manage.office.com/api/v1.0/test2"
+    third_audit_general_blob_uri = "https://manage.office.com/api/v1.0/test3"
+
+    requests_mock.get(first_audit_general_blob_uri, json=GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL)
+    requests_mock.get(second_audit_general_blob_uri, json=GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL_SECOND_RESPONSE)
+    requests_mock.get(third_audit_general_blob_uri, json=GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL_THIRD_RESPONSE)
+
+    content_records = get_all_content_type_records(client, "audit.general", TIME_24_HOURS_AGO, TIME_ONE_MINUTE_AGO_STRING)
+    content_record_ids = [record['Id'] for record in content_records]
+    assert set(content_record_ids) == set(["1234", "567", "89"])
 
 
 

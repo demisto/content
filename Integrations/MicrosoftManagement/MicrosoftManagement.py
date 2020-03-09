@@ -119,6 +119,7 @@ class Client(BaseClient):
         params = {
             'contentType': content_type
         }
+
         if start_time and end_time:
             params['startTime'] = start_time
             params['endTime'] = end_time
@@ -209,7 +210,7 @@ def get_all_subscribed_content_types(client):
 def list_subscriptions_command(client):
     # Since subscriptions are defined by there content type, we need the content types of enabled subscriptions
     enabled_subscriptions = get_all_subscribed_content_types(client)
-    human_readable = tableToMarkdown('Current Subscriptions', enabled_subscriptions)
+    human_readable = tableToMarkdown('Current Subscriptions', enabled_subscriptions, headers='Current Subscriptions')
 
     entry_context = {
         'MicrosoftManagement.Subscription(val && val == obj)': enabled_subscriptions
@@ -246,8 +247,8 @@ def build_event_context(event_record):
 
 def get_content_records_context(content_records):
     content_records_context = []
-    for content_recors in content_records:
-        record_context = build_event_context(content_recors)
+    for content_record in content_records:
+        record_context = build_event_context(content_record)
         content_records_context.append(record_context)
     return content_records_context
 
@@ -325,6 +326,7 @@ def get_fetch_start_and_end_time(last_run, first_fetch_delta_in_minutes):
 
 def get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time):
     all_content_records = []
+    content_types_to_fetch = content_types_to_fetch.split(',') if type(content_types_to_fetch) is str else content_types_to_fetch
     for content_type in content_types_to_fetch:
         content_records_of_current_type = get_all_content_type_records(client, content_type, start_time, end_time)
         all_content_records.extend(content_records_of_current_type)
@@ -335,6 +337,8 @@ def content_records_to_incidents(content_records, start_time, end_time):
     incidents = []
     start_time_datetime = datetime.strptime(start_time, DATE_FORMAT)
     latest_creation_time_datetime = start_time_datetime
+
+    record_ids_already_found = set()
 
     for content_record in content_records:
         incident_creation_time_str = content_record['CreationTime']
@@ -348,13 +352,18 @@ def content_records_to_incidents(content_records, start_time, end_time):
             'rawJSON': json.dumps(content_record)
         }
 
+        if incident['name'] in record_ids_already_found:
+            pass
+        else:
+            record_ids_already_found.add(incident['name'])
+
         incidents.append(incident)
         if incident_creation_time_datetime > latest_creation_time_datetime:
             latest_creation_time_datetime = incident_creation_time_datetime
 
     latest_creation_time_str = datetime.strftime(latest_creation_time_datetime, DATE_FORMAT)
 
-    if len(content_records) == 0:
+    if len(content_records) == 0 or latest_creation_time_str == start_time:
         latest_creation_time_str = end_time
 
     return incidents, latest_creation_time_str
@@ -362,14 +371,9 @@ def content_records_to_incidents(content_records, start_time, end_time):
 
 def fetch_incidents(client, last_run, first_fetch_delta):
     start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_delta)
-
     content_types_to_fetch = get_content_types_to_fetch(client)
     content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
-
-    incidents, latest_creation_time = content_records_to_incidents(content_records, start_time, end_time)
-
-    latest_creation_time_str = latest_creation_time.strftime(DATE_FORMAT)
-    last_fetch = latest_creation_time_str if incidents else end_time
+    incidents, last_fetch = content_records_to_incidents(content_records, start_time, end_time)
     next_run = {'last_fetch': last_fetch}
     return next_run, incidents
 
