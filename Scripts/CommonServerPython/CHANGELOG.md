@@ -1,4 +1,7 @@
 ## [Unreleased]
+Added ***remove_empty_elements*** command.
+Added ***datetime_to_string*** command.
+Added ***safe_load_json*** command.
 Added encoding from UTF-8 for Python 2.
 
 ## [20.3.1] - 2020-03-04
