@@ -3,7 +3,7 @@ commonfields:
   id: Cisco Firepower
   version: -1
 configuration:
-- display: Server URL (e.g. https://example.com)
+- display: Server URL (e.g. https://192.168.0.1)
   name: url
   required: true
   type: 0
@@ -246,6 +246,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: false
       description: Boolean indicating whether object can be overridden.
       isArray: false
       name: overridable
@@ -358,6 +359,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: false
       description: Boolean indicating whether object values can be overridden.
       isArray: false
       name: overridable
@@ -426,7 +428,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: Boolean indicating whether object values can be overridden.
+      defaultValue: false
       description: Boolean indicating whether object values can be overridden.
       isArray: false
       name: overridable
@@ -633,6 +635,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: false
       description: Boolean indicating whether object can be overridden.
       isArray: false
       name: overridable

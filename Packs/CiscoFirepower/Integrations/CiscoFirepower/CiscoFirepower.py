@@ -4,17 +4,13 @@ from CommonServerPython import *
 from typing import Dict, Tuple, List, Union
 import urllib3
 
-"""Example for Analytics and SIEM integration
-"""
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 '''GLOBALS/PARAMS'''
 
-INTEGRATION_NAME = 'Cisco Fire Power'
-# lowercase with `-` dividers
-INTEGRATION_COMMAND_NAME = 'ciscofp'
-# No dividers
+INTEGRATION_NAME = 'Cisco Firepower'
+
 INTEGRATION_CONTEXT_NAME = 'CiscoFP'
 
 OUTPUT_KEYS_DICTIONARY = {
@@ -37,70 +33,72 @@ class Client(BaseClient):
             return_error('No valid access token')
         return
 
-    def get_list(self, limit, offset, object_path) -> Dict:
+    def get_list(self, limit: int, offset: int, object_path: str) -> Dict:
         params = {'expanded': 'true', 'limit': limit, 'offset': offset}
         suffix = f'object/{object_path}'
         return self._http_request('GET', suffix, params=params)
 
-    def list_policy_assignments(self, limit, offset) -> Dict:
+    def list_policy_assignments(self, limit: int, offset: int) -> Dict:
         params = {'expanded': 'true', 'limit': limit, 'offset': offset}
         suffix = 'assignment/policyassignments'
         return self._http_request('GET', suffix, params=params)
 
-    def get_deployable_devices(self, limit, offset) -> Dict:
+    def get_deployable_devices(self, limit: int, offset: int) -> Dict:
         params = {'expanded': 'true', 'limit': limit, 'offset': offset}
         suffix = 'deployment/deployabledevices'
         return self._http_request('GET', suffix, params=params)
 
-    def get_device_records(self, limit, offset) -> Dict:
+    def get_device_records(self, limit: int, offset: int) -> Dict:
         params = {'expanded': 'true', 'limit': limit, 'offset': offset}
         suffix = 'devices/devicerecords'
         return self._http_request('GET', suffix, params=params)
 
-    def get_network_objects(self, limit, offset, object_id) -> Dict:
+    def get_network_objects(self, limit: int, offset: int, object_id: str) -> Dict:
         end_suffix = f'/{object_id}' if object_id else f'?expanded=true&limit={limit}&offset={offset}'
         suffix = f'object/networks{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def get_hosts_objects(self, limit, offset, object_id) -> Dict:
+    def get_hosts_objects(self, limit: int, offset: int, object_id: str) -> Dict:
         end_suffix = f'/{object_id}' if object_id else f'?expanded=true&limit={limit}&offset={offset}'
         suffix = f'object/hosts{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_network_objects(self, name, value, description, overridable) -> Dict:
+    def create_network_objects(self, name: str, value: str, description: str, overridable: bool) -> Dict:
         data = {'name': name, 'value': value, 'description': description, 'overridable': overridable}
         suffix = 'object/networks'
         return self._http_request('POST', suffix, json_data=data)
 
-    def create_host_objects(self, name, value, description, overridable) -> Dict:
+    def create_host_objects(self, name: str, value: str, description: str, overridable: bool) -> Dict:
         data = {'name': name, 'value': value, 'description': description, 'overridable': overridable}
         suffix = 'object/hosts'
         return self._http_request('POST', suffix, json_data=data)
 
-    def update_network_objects(self, name, value, description, overridable, object_id) -> Dict:
+    def update_network_objects(
+            self, name: str, value: str, description: str, overridable: bool, object_id: str) -> Dict:
         data = assign_params(id=object_id, name=name, value=value, description=description, overridable=overridable)
         suffix = f'object/networks/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def update_host_objects(self, name, value, description, overridable, object_id) -> Dict:
+    def update_host_objects(self, name: str, value: str, description: str, overridable: bool, object_id: str) -> Dict:
         data = assign_params(id=object_id, name=name, value=value, description=description, overridable=overridable)
         suffix = f'object/hosts/{object_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def delete_network_objects(self, object_id) -> Dict:
+    def delete_network_objects(self, object_id: str) -> Dict:
         suffix = f'object/networks/{object_id}'
         return self._http_request('DELETE', suffix)
 
-    def delete_host_objects(self, object_id) -> Dict:
+    def delete_host_objects(self, object_id: str) -> Dict:
         suffix = f'object/hosts/{object_id}'
         return self._http_request('DELETE', suffix)
 
-    def get_network_groups_objects(self, limit, offset, object_id) -> Dict:
+    def get_network_groups_objects(self, limit: int, offset: int, object_id: str) -> Dict:
         end_suffix = f'/{object_id}' if object_id else f'?expanded=true&limit={limit}&offset={offset}'
         suffix = f'object/networkgroups{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_network_groups_objects(self, name, ids, values, description, overridable) -> Dict:
+    def create_network_groups_objects(
+            self, name: str, ids: str, values: str, description: str, overridable: bool) -> Dict:
         objects = [{'id': curr_id} for curr_id in argToList(ids)]
         values = [{'value': curr_value} for curr_value in argToList(values)]
         data = assign_params(
@@ -108,7 +106,8 @@ class Client(BaseClient):
         suffix = 'object/networkgroups'
         return self._http_request('POST', suffix, json_data=data)
 
-    def update_network_groups_objects(self, name, ids, values, group_id, description, overridable) -> Dict:
+    def update_network_groups_objects(
+            self, name: str, ids: str, values: str, group_id: str, description: str, overridable: bool) -> Dict:
         objects = [{'id': curr_id} for curr_id in argToList(ids)]
         values = [{'value': curr_value} for curr_value in argToList(values)]
         data = assign_params(name=name, id=group_id, objects=objects, literals=values,
@@ -116,21 +115,21 @@ class Client(BaseClient):
         suffix = f'object/networkgroups/{group_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def delete_network_groups_objects(self, object_id) -> Dict:
+    def delete_network_groups_objects(self, object_id: str) -> Dict:
         suffix = f'object/networkgroups/{object_id}'
         return self._http_request('DELETE', suffix)
 
-    def get_access_policy(self, limit, offset, policy_id) -> Dict:
+    def get_access_policy(self, limit: int, offset: int, policy_id: str) -> Dict:
         end_suffix = f'/{policy_id}' if policy_id else f'?expanded=true&limit={limit}&offset={offset}'
         suffix = f'policy/accesspolicies{end_suffix}'
         return self._http_request('GET', suffix)
 
-    def create_access_policy(self, name, action) -> Dict:
+    def create_access_policy(self, name: str, action: str) -> Dict:
         data = {'name': name, 'defaultAction': {'action': action}}
         suffix = 'policy/accesspolicies'
         return self._http_request('POST', suffix, json_data=data)
 
-    def update_access_policy(self, name, policy_id, action, action_id) -> Dict:
+    def update_access_policy(self, name: str, policy_id: str, action: str, action_id: str) -> Dict:
         data = {
             'name': name,
             'id': policy_id,
@@ -141,52 +140,52 @@ class Client(BaseClient):
         suffix = f'policy/accesspolicies/{policy_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
-    def delete_access_policy(self, policy_id) -> Dict:
+    def delete_access_policy(self, policy_id: str) -> Dict:
         suffix = f'policy/accesspolicies/{policy_id}'
         return self._http_request('DELETE', suffix)
 
-    def get_task_status(self, task_id) -> Dict:
+    def get_task_status(self, task_id: str) -> Dict:
         suffix = f'job/taskstatuses/{task_id}'
         return self._http_request('GET', suffix)
 
-    def create_policy_assignments(self, policy_id, device_ids, device_group_ids) -> Dict:
+    def create_policy_assignments(self, policy_id: str, device_ids: str, device_group_ids: str) -> Dict:
         targets = [{'id': curr_id, 'type': 'Device'} for curr_id in argToList(device_ids)]
         targets.extend([{'id': curr_id, 'type': 'DeviceGroup'} for curr_id in argToList(device_group_ids)])
         data_to_post = assign_params(policy={'id': policy_id}, type='PolicyAssignment', targets=targets)
         suffix = 'assignment/policyassignments'
         return self._http_request('POST', suffix, json_data=data_to_post)
 
-    def update_policy_assignments(self, policy_id, device_ids, device_group_ids) -> Dict:
+    def update_policy_assignments(self, policy_id: str, device_ids: str, device_group_ids: str) -> Dict:
         targets = [{'id': curr_id, 'type': 'Device'} for curr_id in argToList(device_ids)]
         targets.extend([{'id': curr_id, 'type': 'DeviceGroup'} for curr_id in argToList(device_group_ids)])
         data_to_post = assign_params(policy={'id': policy_id}, type='PolicyAssignment', targets=targets)
         suffix = f'assignment/policyassignments/{policy_id}'
         return self._http_request('POST', suffix, json_data=data_to_post)
 
-    def get_access_rules(self, limit, offset, policy_id, rule_id) -> Dict:
+    def get_access_rules(self, limit: int, offset: int, policy_id: str, rule_id: str) -> Dict:
         end_suffix = f'?expanded=true&limit={limit}&offset={offset}' if rule_id == '' else '/' + rule_id
         suffix = f'policy/accesspolicies/{policy_id}/accessrules{end_suffix}'
         return self._http_request('GET', suffix)
 
     def create_access_rules(
         self,
-        source_zone_object_ids,
-        destination_zone_object_ids,
-        vlan_tag_object_ids,
-        source_network_object_ids,
-        source_network_addresses,
-        destination_network_object_ids,
-        destination_network_addresses,
-        source_port_object_ids,
-        destination_port_object_ids,
-        source_security_group_tag_object_ids,
-        application_object_ids,
-        url_object_ids,
-        url_addresses,
-        enabled,
-        name,
-        policy_id,
-        action
+        source_zone_object_ids: str,
+        destination_zone_object_ids: str,
+        vlan_tag_object_ids: str,
+        source_network_object_ids: str,
+        source_network_addresses: str,
+        destination_network_object_ids: str,
+        destination_network_addresses: str,
+        source_port_object_ids: str,
+        destination_port_object_ids: str,
+        source_security_group_tag_object_ids: str,
+        application_object_ids: str,
+        url_object_ids: str,
+        url_addresses: str,
+        enabled: bool,
+        name: str,
+        policy_id: str,
+        action: str
     ) -> Dict:
         sourceZones = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
                                                         } for curr_id in argToList(source_zone_object_ids)]}
@@ -220,25 +219,25 @@ class Client(BaseClient):
 
     def update_access_rules(
             self,
-            update_strategy,
-            source_zone_object_ids,
-            destination_zone_object_ids,
-            vlan_tag_object_ids,
-            source_network_object_ids,
-            source_network_addresses,
-            destination_network_object_ids,
-            destination_network_addresses,
-            source_port_object_ids,
-            destination_port_object_ids,
-            source_security_group_tag_object_ids,
-            application_object_ids,
-            url_object_ids,
-            url_addresses,
-            enabled,
-            name,
-            policy_id,
-            action,
-            rule_id
+            update_strategy: str,
+            source_zone_object_ids: str,
+            destination_zone_object_ids: str,
+            vlan_tag_object_ids: str,
+            source_network_object_ids: str,
+            source_network_addresses: str,
+            destination_network_object_ids: str,
+            destination_network_addresses: str,
+            source_port_object_ids: str,
+            destination_port_object_ids: str,
+            source_security_group_tag_object_ids: str,
+            application_object_ids: str,
+            url_object_ids: str,
+            url_addresses: str,
+            enabled: bool,
+            name: str,
+            policy_id: str,
+            action: str,
+            rule_id: str
         ) -> Dict:
 
         suffix = f'policy/accesspolicies/{policy_id}/accessrules/{rule_id}'
@@ -347,7 +346,7 @@ def switch_list_to_list_counter(data: Union[Dict, List]) -> Union[Dict, List]:
     return new_data
 
 
-def raw_response_to_context_list(list_key, items):
+def raw_response_to_context_list(list_key: List, items: Union[Dict, List]) -> Union[Dict, List]:
     """Receives a dictionary or list of dictionaries and returns only the keys that exist in the list_key
     and changes the keys by Context Standards
 
@@ -364,7 +363,7 @@ def raw_response_to_context_list(list_key, items):
     return list_to_output
 
 
-def raw_response_to_context_network_groups(items):
+def raw_response_to_context_network_groups(items: Union[Dict, List]) -> Union[Dict, List]:
     """Receives raw response and returns Context entry to network groups command
 
     :type items: ``list`` or ``dict``
@@ -389,14 +388,14 @@ def raw_response_to_context_network_groups(items):
         ],
         'Addresses': [
             {
-                'value': obj.get('value'),
+                'Value': obj.get('value'),
                 'Type': obj.get('type')
             } for obj in items.get('literals', [])
         ]
     }
 
 
-def raw_response_to_context_policy_assignment(items):
+def raw_response_to_context_policy_assignment(items: Union[Dict, List]) -> Union[Dict, List]:
     """Receives raw response and returns Context entry to policy assignment command
 
     :type items: ``list`` or ``dict``
@@ -423,7 +422,7 @@ def raw_response_to_context_policy_assignment(items):
     }
 
 
-def raw_response_to_context_access_policy(items):
+def raw_response_to_context_access_policy(items: Union[Dict, List]) -> Union[Dict, List]:
     """Receives raw response and returns Context entry to access policy command
 
     :type items: ``list`` or ``dict``
@@ -441,7 +440,7 @@ def raw_response_to_context_access_policy(items):
     }
 
 
-def raw_response_to_context_ruls(items):
+def raw_response_to_context_ruls(items: Union[Dict, List]) -> Union[Dict, List]:
     """Receives raw response and returns Context entry to ruls command
 
     :type items: ``list`` or ``dict``
@@ -574,7 +573,6 @@ def raw_response_to_context_ruls(items):
 ''' COMMANDS '''
 
 
-@logger
 def list_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
@@ -814,7 +812,7 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
 
 
 def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'id_list' or 'value_list' in args:
+    if 'network_objects_id_list' or 'network_address_list' in args:
         name = args.get('name')
         ids = args.get('network_objects_id_list', '')
         values = args.get('network_address_list', '')
@@ -836,7 +834,7 @@ def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
 
 
 def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'id_list' or 'value_list' in args:
+    if 'network_objects_id_list' or 'network_address_list' in args:
         group_id = args.get('id')
         name = args.get('name')
         ids = args.get('network_objects_id_list', '')
@@ -1293,7 +1291,8 @@ def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dic
             f'{INTEGRATION_CONTEXT_NAME}.DeployableDevices(val.ID && val.ID === obj.ID)': context_entry
         }
         entry_white_list_count = switch_list_to_list_counter(context_entry)
-        human_readable = tableToMarkdown(title, entry_white_list_count)
+        presented_output = ['CanBeDeployed', 'UpToDate', 'DeviceID', 'DeviceName', 'DeviceType', 'Version']
+        human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any deployable devices.', {}, {}
@@ -1343,7 +1342,8 @@ def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
         f'{INTEGRATION_CONTEXT_NAME}.Deploy(val.ID && val.ID === obj.ID)': context_entry
     }
     entry_white_list_count = switch_list_to_list_counter(context_entry)
-    human_readable = tableToMarkdown(title, entry_white_list_count)
+    presented_output = ['TaskID', 'ForceDeploy', 'IgnoreWarning', 'Version', 'DeviceList']
+    human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
     return human_readable, context, raw_response
 
 
@@ -1359,7 +1359,7 @@ def get_task_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
             f'{INTEGRATION_CONTEXT_NAME}.TaskStatus(val.ID && val.ID === obj.ID)': context_entry
         }
         entry_white_list_count = switch_list_to_list_counter(context_entry)
-        human_readable = tableToMarkdown(title, entry_white_list_count)
+        human_readable = tableToMarkdown(title, entry_white_list_count, headers=['Status'])
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any status.', {}, {}

@@ -1,0 +1,3763 @@
+id: TestFirepowerPlaybook
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: TestFirePowerPlaybook_copy_1
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5de691a0-28d3-46c5-8259-59befd53b870
+    type: start
+    task:
+      id: 5de691a0-28d3-46c5-8259-59befd53b870
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: fafc98c9-5d8f-468f-830b-e6402cdbaec2
+    type: regular
+    task:
+      id: fafc98c9-5d8f-468f-830b-e6402cdbaec2
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -95
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 2ef66d92-bc6a-4199-8770-a463d6b51483
+    type: regular
+    task:
+      id: 2ef66d92-bc6a-4199-8770-a463d6b51483
+      version: -1
+      name: ciscofp-list-zones
+      script: '|||ciscofp-list-zones'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+      - "41"
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 56c078eb-70f7-4d9a-8965-dc80b3eb404b
+    type: regular
+    task:
+      id: 56c078eb-70f7-4d9a-8965-dc80b3eb404b
+      version: -1
+      name: ciscofp-list-ports
+      script: '|||ciscofp-list-ports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a241f5d4-faa5-4056-8120-3b0804fa3cc4
+    type: regular
+    task:
+      id: a241f5d4-faa5-4056-8120-3b0804fa3cc4
+      version: -1
+      name: ciscofp-list-url-categories
+      script: '|||ciscofp-list-url-categories'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 026f21bf-72bb-4269-835f-e75a0d8c2814
+    type: regular
+    task:
+      id: 026f21bf-72bb-4269-835f-e75a0d8c2814
+      version: -1
+      name: ciscofp-get-network-object
+      script: '|||ciscofp-get-network-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      limit: {}
+      object_id:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFP.Network.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTestUpdate
+          accessor: Network.ID
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 6969b4f5-b7d2-4522-82d5-46cde6953176
+    type: regular
+    task:
+      id: 6969b4f5-b7d2-4522-82d5-46cde6953176
+      version: -1
+      name: ciscofp-create-network-object
+      script: '|||ciscofp-create-network-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      description:
+        simple: my playbook test
+      name:
+        simple: playbookTest
+      overridable:
+        simple: "false"
+      value:
+        simple: 10.0.0.0/22
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: e197351e-d5fc-446c-8ab0-06757be2bf9e
+    type: regular
+    task:
+      id: e197351e-d5fc-446c-8ab0-06757be2bf9e
+      version: -1
+      name: ciscofp-update-network-object
+      script: '|||ciscofp-update-network-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      description:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFP.Network.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest
+          accessor: Network.Description
+      id:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFP.Network.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest
+          accessor: Network.ID
+      name:
+        simple: playbookTestUpdate
+      overridable:
+        simple: "true"
+      value:
+        simple: 10.0.0.0/23
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 96221dd4-3fe6-4556-8d3c-f128290aac72
+    type: regular
+    task:
+      id: 96221dd4-3fe6-4556-8d3c-f128290aac72
+      version: -1
+      name: ciscofp-get-network-groups-object
+      script: '|||ciscofp-get-network-groups-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFP.NetworkGroups.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: NetworkGroups.ID
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 1d414866-64ac-4be4-8e4e-ccb8ad11a404
+    type: regular
+    task:
+      id: 1d414866-64ac-4be4-8e4e-ccb8ad11a404
+      version: -1
+      name: ciscofp-create-network-groups-objects
+      script: '|||ciscofp-create-network-groups-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      description:
+        simple: my playbook test
+      name:
+        simple: playbookTest3
+      network_address_list:
+        simple: 8.8.8.8,4.4.4.4
+      network_objects_id_list:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFP.Network.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: Network.ID
+      overridable:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: e4c494ad-087d-402f-8db5-5a4393de8d44
+    type: regular
+    task:
+      id: e4c494ad-087d-402f-8db5-5a4393de8d44
+      version: -1
+      name: ciscofp-update-network-groups-objects
+      script: '|||ciscofp-update-network-groups-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      description:
+        simple: my playbook test
+      id:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFP.NetworkGroups.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: NetworkGroups.ID
+      name:
+        simple: playbookTestUpdate3
+      network_address_list:
+        simple: 1.2.3.4,1.2.3.5
+      network_objects_id_list:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFP.Host.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: Host.ID
+      overridable:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 406bc205-565d-4d45-86ff-54303cdafc4a
+    type: regular
+    task:
+      id: 406bc205-565d-4d45-86ff-54303cdafc4a
+      version: -1
+      name: ciscofp-delete-network-groups-objects
+      script: '|||ciscofp-delete-network-groups-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 7caac405-2c47-4e41-80a3-27a828b643fc
+    type: regular
+    task:
+      id: 7caac405-2c47-4e41-80a3-27a828b643fc
+      version: -1
+      name: ciscofp-get-host-object
+      script: '|||ciscofp-get-host-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      limit: {}
+      object_id:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFP.Host.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest2Update
+          accessor: Host.ID
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: e6444191-8ff9-4941-8482-f835ad45b7c4
+    type: regular
+    task:
+      id: e6444191-8ff9-4941-8482-f835ad45b7c4
+      version: -1
+      name: ciscofp-create-host-object
+      script: '|||ciscofp-create-host-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      description:
+        simple: my playbook test
+      name:
+        simple: playbookTest2
+      overridable:
+        simple: "false"
+      value:
+        simple: 1.2.3.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: b4424baa-12e9-431f-84df-0ca00464ebaa
+    type: regular
+    task:
+      id: b4424baa-12e9-431f-84df-0ca00464ebaa
+      version: -1
+      name: ciscofp-update-host-object
+      script: '|||ciscofp-update-host-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      description:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFP.Host.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest2
+          accessor: Host.Description
+      id:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFP.Host.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest2
+          accessor: Host.ID
+      name:
+        simple: playbookTest2Update
+      overridable:
+        simple: "true"
+      value:
+        simple: 1.2.3.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: d92b7930-9e05-4cae-8264-23e12a37b171
+    type: regular
+    task:
+      id: d92b7930-9e05-4cae-8264-23e12a37b171
+      version: -1
+      name: ciscofp-get-access-policy
+      script: '|||ciscofp-get-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFP.Policy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTestUpdate4
+          accessor: Policy.ID
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 1737da52-dfa9-41f7-8e0b-6060efe49a38
+    type: regular
+    task:
+      id: 1737da52-dfa9-41f7-8e0b-6060efe49a38
+      version: -1
+      name: ciscofp-create-access-policy
+      script: '|||ciscofp-create-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      action:
+        simple: BLOCK
+      name:
+        simple: playbookTest4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: d453159b-5397-41a6-8623-8df679641ad7
+    type: regular
+    task:
+      id: d453159b-5397-41a6-8623-8df679641ad7
+      version: -1
+      name: ciscofp-update-access-policy
+      script: '|||ciscofp-update-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      action:
+        simple: PERMIT
+      default_action_id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest4
+          accessor: DefaultActionID
+      id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest4
+          accessor: ID
+      name:
+        simple: playbookTestUpdate4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: f1470053-355e-4e95-8a7b-7e3e84374cc9
+    type: regular
+    task:
+      id: f1470053-355e-4e95-8a7b-7e3e84374cc9
+      version: -1
+      name: ciscofp-delete-access-policy
+      script: '|||ciscofp-delete-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 24d0e355-c326-4122-8a00-b84a3555fdbc
+    type: regular
+    task:
+      id: 24d0e355-c326-4122-8a00-b84a3555fdbc
+      version: -1
+      name: ciscofp-list-security-group-tags
+      script: '|||ciscofp-list-security-group-tags'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: fe4c4fe8-5c89-4f3f-8f3c-c1cf715abd03
+    type: regular
+    task:
+      id: fe4c4fe8-5c89-4f3f-8f3c-c1cf715abd03
+      version: -1
+      name: ciscofp-list-vlan-tags
+      script: '|||ciscofp-list-vlan-tags'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 7991abfd-dfc7-4130-893a-219eb0bb0fbc
+    type: regular
+    task:
+      id: 7991abfd-dfc7-4130-893a-219eb0bb0fbc
+      version: -1
+      name: ciscofp-list-vlan-tags-group
+      script: '|||ciscofp-list-vlan-tags-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 3915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: e6125043-2e80-4d60-8b5b-68e4d524a3dd
+    type: regular
+    task:
+      id: e6125043-2e80-4d60-8b5b-68e4d524a3dd
+      version: -1
+      name: ciscofp-list-applications
+      script: '|||ciscofp-list-applications'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+      - "75"
+      - "76"
+      - "77"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 2ee66b5e-9cc5-4ac5-8eff-418d6dc60333
+    type: regular
+    task:
+      id: 2ee66b5e-9cc5-4ac5-8eff-418d6dc60333
+      version: -1
+      name: ciscofp-get-access-rules
+      script: '|||ciscofp-get-access-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      policy_id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: ID
+      rule_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 61b14fb6-0102-4905-85f7-4fcac6d03b86
+    type: regular
+    task:
+      id: 61b14fb6-0102-4905-85f7-4fcac6d03b86
+      version: -1
+      name: ciscofp-create-access-rules
+      script: '|||ciscofp-create-access-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      action:
+        simple: ALLOW
+      application_object_ids: {}
+      destination_network_addresses:
+        simple: 1.2.3.5
+      destination_network_object_ids:
+        complex:
+          root: CiscoFPHost
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPHost.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: ID
+      destination_port_object_ids: {}
+      destination_zone_object_ids: {}
+      enabled:
+        simple: "true"
+      policy_id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest4
+          accessor: ID
+      rule_name:
+        simple: playbookTest5
+      source_network_addresses:
+        simple: 1.2.3.4
+      source_network_object_ids:
+        complex:
+          root: CiscoFPNetworkGroups
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPNetworkGroups.Objects.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: ID
+      source_port_object_ids: {}
+      source_security_group_tag_object_ids: {}
+      source_zone_object_ids: {}
+      url_addresses:
+        simple: www.google.com
+      url_object_ids: {}
+      vlan_tag_object_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 3fbecaf7-5d8e-4d0a-889b-692ad7fbaa95
+    type: regular
+    task:
+      id: 3fbecaf7-5d8e-4d0a-889b-692ad7fbaa95
+      version: -1
+      name: ciscofp-update-access-rules
+      script: '|||ciscofp-update-access-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      action:
+        simple: BLOCK
+      application_object_ids: {}
+      destination_network_addresses:
+        simple: 8.8.8.6
+      destination_network_object_ids: {}
+      destination_port_object_ids: {}
+      destination_zone_object_ids: {}
+      enabled:
+        simple: "true"
+      policy_id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: ID
+      rule_id:
+        complex:
+          root: CiscoFP
+          accessor: Rule.ID
+      rule_name:
+        simple: playbookTestUpdate5
+      source_network_addresses: {}
+      source_network_object_ids:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFP.Network.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: Network.ID
+      source_port_object_ids: {}
+      source_security_group_tag_object_ids: {}
+      source_zone_object_ids: {}
+      update_strategy:
+        simple: merge
+      url_addresses:
+        simple: www.google.co.il
+      url_object_ids: {}
+      vlan_tag_object_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: a6513dca-000f-4f81-846f-e15bd29e8e06
+    type: regular
+    task:
+      id: a6513dca-000f-4f81-846f-e15bd29e8e06
+      version: -1
+      name: ciscofp-delete-access-rules
+      script: '|||ciscofp-delete-access-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 5230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: fea1b587-10c4-44bc-83ee-29d61f413659
+    type: regular
+    task:
+      id: fea1b587-10c4-44bc-83ee-29d61f413659
+      version: -1
+      name: ciscofp-list-policy-assignments
+      script: '|||ciscofp-list-policy-assignments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 6065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: b0799c99-3d1b-408c-8fa4-e069c971f2c8
+    type: regular
+    task:
+      id: b0799c99-3d1b-408c-8fa4-e069c971f2c8
+      version: -1
+      name: ciscofp-create-policy-assignments
+      script: '|||ciscofp-create-policy-assignments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      device_group_ids: {}
+      device_ids:
+        simple: ${CiscoFP.DeviceRecords.ID}
+      policy_id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 9fe8303f-55ee-4d81-8eac-cff812fed34c
+    type: regular
+    task:
+      id: 9fe8303f-55ee-4d81-8eac-cff812fed34c
+      version: -1
+      name: ciscofp-get-deployable-devices
+      script: '|||ciscofp-get-deployable-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 6220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: bcb4eafd-17ed-4d39-87ec-137abbb01f1e
+    type: regular
+    task:
+      id: bcb4eafd-17ed-4d39-87ec-137abbb01f1e
+      version: -1
+      name: ciscofp-get-device-records
+      script: '|||ciscofp-get-device-records'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 5610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: d83c238b-d4e1-42aa-822d-c44eb6281e70
+    type: title
+    task:
+      id: d83c238b-d4e1-42aa-822d-c44eb6281e70
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 7190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: c73fa621-9cac-4fd5-8c69-69e2226ef992
+    type: condition
+    task:
+      id: c73fa621-9cac-4fd5-8c69-69e2226ef992
+      version: -1
+      name: verify create network object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Value
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/22
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Overridable
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 66ff8ab8-50a8-420a-8268-16030501fd5a
+    type: condition
+    task:
+      id: 66ff8ab8-50a8-420a-8268-16030501fd5a
+      version: -1
+      name: verivy list zones
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Zone.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Zone.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Zone.InterfaceMode
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 647f5936-a832-46f8-88c6-cb16618c8ee2
+    type: condition
+    task:
+      id: 647f5936-a832-46f8-88c6-cb16618c8ee2
+      version: -1
+      name: verify kist ports
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Port.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Port.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Port.Protocol
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Port.Port
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: 2ab981f8-2d82-4bad-87b8-8ee77e6d6ef6
+    type: condition
+    task:
+      id: 2ab981f8-2d82-4bad-87b8-8ee77e6d6ef6
+      version: -1
+      name: verify llist url categories
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Category.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Category.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 2aeb3cf2-3c08-412f-8ab5-39f8055a6a75
+    type: condition
+    task:
+      id: 2aeb3cf2-3c08-412f-8ab5-39f8055a6a75
+      version: -1
+      name: verify create network object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Value
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/23
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Overridable
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: ba9ac259-ca06-407b-8a6e-f00735d932c2
+    type: condition
+    task:
+      id: ba9ac259-ca06-407b-8a6e-f00735d932c2
+      version: -1
+      name: verify create network object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Value
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/23
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Overridable
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: fec0b85e-9360-4005-8aaf-38dfc71c5226
+    type: condition
+    task:
+      id: fec0b85e-9360-4005-8aaf-38dfc71c5226
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Overridable
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 85b9b5df-76f4-45f8-84c1-ad37be3d4d0c
+    type: condition
+    task:
+      id: 85b9b5df-76f4-45f8-84c1-ad37be3d4d0c
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest2Update
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Overridable
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: 2e531a59-623f-4160-821f-d79faff3081d
+    type: condition
+    task:
+      id: 2e531a59-623f-4160-821f-d79faff3081d
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest2Update
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Overridable
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: c4255397-f7d8-46da-8acd-605b27ed5e83
+    type: regular
+    task:
+      id: c4255397-f7d8-46da-8acd-605b27ed5e83
+      version: -1
+      name: Set CiscoFPPolicy
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CiscoFPPolicy
+      value:
+        simple: ${CiscoFP.Policy}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 02be1b90-cd59-48cc-8568-d18ab8c907e6
+    type: regular
+    task:
+      id: 02be1b90-cd59-48cc-8568-d18ab8c907e6
+      version: -1
+      name: Set CiscoFPHost
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CiscoFPHost
+      value:
+        simple: ${CiscoFP.Host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: 931afafc-b2ab-4e9c-872f-329595de65fe
+    type: regular
+    task:
+      id: 931afafc-b2ab-4e9c-872f-329595de65fe
+      version: -1
+      name: Set CiscoFPNetwork
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CiscoFPNetwork
+      value:
+        simple: ${CiscoFP.Network}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: 3a12ddef-b07a-4207-8c04-0b1aa1f010f1
+    type: regular
+    task:
+      id: 3a12ddef-b07a-4207-8c04-0b1aa1f010f1
+      version: -1
+      name: Set CiscoFPNetworkGroups
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CiscoFPNetworkGroups
+      value:
+        simple: ${CiscoFP.NetworkGroups}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 4780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 693c2b00-f0cc-478e-8f13-711312f8dc23
+    type: regular
+    task:
+      id: 693c2b00-f0cc-478e-8f13-711312f8dc23
+      version: -1
+      name: ciscofp-delete-access-policy
+      description: Delete access control policy
+      script: '|||ciscofp-delete-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 6550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 1aab49fa-9d24-412a-8d42-ff134685b105
+    type: regular
+    task:
+      id: 1aab49fa-9d24-412a-8d42-ff134685b105
+      version: -1
+      name: ciscofp-delete-network-groups-objects
+      description: Delete group of network objects
+      script: '|||ciscofp-delete-network-groups-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFP
+          accessor: NetworkGroups.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 6720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "65":
+    id: "65"
+    taskid: 42c03ae7-1b3e-4b2b-8704-351d70508bbb
+    type: regular
+    task:
+      id: 42c03ae7-1b3e-4b2b-8704-351d70508bbb
+      version: -1
+      name: ciscofp-delete-network-object
+      description: delete network object
+      script: '|||ciscofp-delete-network-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFP.Network.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: Network.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 6880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: 5012aaed-5bdb-46cf-82cb-c6607c383bdb
+    type: regular
+    task:
+      id: 5012aaed-5bdb-46cf-82cb-c6607c383bdb
+      version: -1
+      name: ciscofp-delete-host-object
+      description: Delete host object
+      script: '|||ciscofp-delete-host-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFPHost
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPHost.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbook
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 7040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "67":
+    id: "67"
+    taskid: eac95d65-541f-456f-8304-6d73d2fa8588
+    type: condition
+    task:
+      id: eac95d65-541f-456f-8304-6d73d2fa8588
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 4.4.4.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Network.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 2105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "68":
+    id: "68"
+    taskid: 96b2969b-c94a-4287-8827-b2414452fb45
+    type: condition
+    task:
+      id: 96b2969b-c94a-4287-8827-b2414452fb45
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 4.4.4.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Network.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 2335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "69":
+    id: "69"
+    taskid: 538ab16c-8587-43f2-84df-bd28aa525a1b
+    type: condition
+    task:
+      id: 538ab16c-8587-43f2-84df-bd28aa525a1b
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Host.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 2605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "70":
+    id: "70"
+    taskid: b84fa4bd-c9df-4f73-8150-6df3662604ec
+    type: condition
+    task:
+      id: b84fa4bd-c9df-4f73-8150-6df3662604ec
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Policy.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest4
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.DefaultActionID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 2875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "71":
+    id: "71"
+    taskid: 37320ce5-26d8-4e4a-87bd-f98b7bea7fce
+    type: condition
+    task:
+      id: 37320ce5-26d8-4e4a-87bd-f98b7bea7fce
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Policy.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest4
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.DefaultActionID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 3145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "72":
+    id: "72"
+    taskid: ad7d40a0-dbe3-4ce6-859b-d2cc1a9c66f7
+    type: condition
+    task:
+      id: ad7d40a0-dbe3-4ce6-859b-d2cc1a9c66f7
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Policy.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate4
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.DefaultActionID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 3465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "74":
+    id: "74"
+    taskid: 9c4ead20-23d4-4b68-834f-a72dfe9c9e43
+    type: condition
+    task:
+      id: 9c4ead20-23d4-4b68-834f-a72dfe9c9e43
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.SecurityGroupTags.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.SecurityGroupTags.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.SecurityGroupTags.Tag
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "75":
+    id: "75"
+    taskid: f1c2fb15-6ffd-4ed9-8914-06ea6caad1e5
+    type: condition
+    task:
+      id: f1c2fb15-6ffd-4ed9-8914-06ea6caad1e5
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.Overridable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.StartTag
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.EndTag
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "76":
+    id: "76"
+    taskid: 3d445771-5575-499e-8af6-412d5ab20d7d
+    type: condition
+    task:
+      id: 3d445771-5575-499e-8af6-412d5ab20d7d
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTagsGroup.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTagsGroup.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "77":
+    id: "77"
+    taskid: 387fa1c7-7a6f-47fd-82bc-6ef2c55277ce
+    type: condition
+    task:
+      id: 387fa1c7-7a6f-47fd-82bc-6ef2c55277ce
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.Risk
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.AppProductivity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.ApplicationTypes
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.AppCategories.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "78":
+    id: "78"
+    taskid: 702f78b5-307d-4e91-897f-a3ef0bd86de8
+    type: condition
+    task:
+      id: 702f78b5-307d-4e91-897f-a3ef0bd86de8
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Rule.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Action
+            iscontext: true
+          right:
+            value:
+              simple: ALLOW
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Enabled
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.SourceNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Rule.SourceNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.NetworkGroups.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Host.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Urls.Addresses.URL
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 5045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "79":
+    id: "79"
+    taskid: 0998ef18-e7b8-46c0-848a-d5e4d9c5947a
+    type: condition
+    task:
+      id: 0998ef18-e7b8-46c0-848a-d5e4d9c5947a
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Rule.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Action
+            iscontext: true
+          right:
+            value:
+              simple: ALLOW
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Enabled
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.SourceNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Rule.SourceNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.NetworkGroups.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Host.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Urls.Addresses.URL
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 5265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "80":
+    id: "80"
+    taskid: acac0beb-77a3-4492-8014-8e34dfb77a93
+    type: condition
+    task:
+      id: acac0beb-77a3-4492-8014-8e34dfb77a93
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Rule.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCK
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Enabled
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.SourceNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Rule.SourceNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.NetworkGroups.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Host.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Urls.Addresses.URL
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.SourceNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Network.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.6
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 5495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "81":
+    id: "81"
+    taskid: 76ed6e21-b972-429c-8ef5-1adc7f2a0fe5
+    type: condition
+    task:
+      id: 76ed6e21-b972-429c-8ef5-1adc7f2a0fe5
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.DeviceRecords.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.DeviceRecords.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.DeviceRecords.Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 5725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "82":
+    id: "82"
+    taskid: 3d43986c-c9bf-4fbf-88f3-7514128a4a7b
+    type: condition
+    task:
+      id: 3d43986c-c9bf-4fbf-88f3-7514128a4a7b
+      version: -1
+      name: verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.PolicyAssignments.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.PolicyAssignments.PolicyID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.PolicyAssignments.Targets.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 5945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "83":
+    id: "83"
+    taskid: f0ffe0ed-1647-457b-84d4-3c776d3b36be
+    type: regular
+    task:
+      id: f0ffe0ed-1647-457b-84d4-3c776d3b36be
+      version: -1
+      name: ciscofp-delete-access-policy
+      description: Delete access control policy
+      script: Cisco Firepower|||ciscofp-delete-access-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": -730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "84":
+    id: "84"
+    taskid: 0981b492-871c-4f77-896d-b3b06eb15dc8
+    type: regular
+    task:
+      id: 0981b492-871c-4f77-896d-b3b06eb15dc8
+      version: -1
+      name: ciscofp-delete-network-object
+      description: delete network object
+      script: Cisco Firepower|||ciscofp-delete-network-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFPNetwork
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPNetwork.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": -420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: 36c69f4b-6d84-421f-8583-1c2f97c9894b
+    type: regular
+    task:
+      id: 36c69f4b-6d84-421f-8583-1c2f97c9894b
+      version: -1
+      name: ciscofp-delete-host-object
+      description: Delete host object
+      script: Cisco Firepower|||ciscofp-delete-host-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFPHost
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPHost.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "86":
+    id: "86"
+    taskid: 71dc9194-f05f-4262-8849-7bac180c654c
+    type: regular
+    task:
+      id: 71dc9194-f05f-4262-8849-7bac180c654c
+      version: -1
+      name: ciscofp-get-host-object
+      description: Retrieves the groups of host objects associated with the specified
+        ID. If not input ID retrieves list of all network objects.
+      script: Cisco Firepower|||ciscofp-get-host-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      limit: {}
+      object_id: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "87":
+    id: "87"
+    taskid: fd4b5521-fc7b-457e-8a2d-8e0cd219511d
+    type: regular
+    task:
+      id: fd4b5521-fc7b-457e-8a2d-8e0cd219511d
+      version: -1
+      name: ciscofp-get-network-groups-object
+      description: Retrieves the groups of network objects and addresses associated
+        with the specified ID. If not input ID retrieves list of all network objects.
+      script: Cisco Firepower|||ciscofp-get-network-groups-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      id: {}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "88":
+    id: "88"
+    taskid: b8225e7c-53f7-43bb-8df3-bb4820433a1f
+    type: regular
+    task:
+      id: b8225e7c-53f7-43bb-8df3-bb4820433a1f
+      version: -1
+      name: ciscofp-get-network-object
+      description: Retrieves the network objects associated with the specified ID.
+        If not input ID retrieves list of all network objects.
+      script: Cisco Firepower|||ciscofp-get-network-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      limit: {}
+      object_id: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "89":
+    id: "89"
+    taskid: 2ecf8eeb-7c40-4741-8500-8769d72689ac
+    type: regular
+    task:
+      id: 2ecf8eeb-7c40-4741-8500-8769d72689ac
+      version: -1
+      name: ciscofp-get-access-policy
+      description: Retrieves the access control policy associated with the specified
+        ID. Also, retrieves list of all access control policies
+      script: Cisco Firepower|||ciscofp-get-access-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      id: {}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "90":
+    id: "90"
+    taskid: 6a4438dc-ed0e-4ff3-8901-e5b281f83906
+    type: regular
+    task:
+      id: 6a4438dc-ed0e-4ff3-8901-e5b281f83906
+      version: -1
+      name: ciscofp-delete-network-groups-objects
+      description: Delete group of network objects
+      script: Cisco Firepower|||ciscofp-delete-network-groups-objects
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFPNetworkGroups
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: CiscoFPNetworkGroups.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": -570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "91":
+    id: "91"
+    taskid: 94945e04-6abe-4190-8b49-5e15816c340d
+    type: regular
+    task:
+      id: 94945e04-6abe-4190-8b49-5e15816c340d
+      version: -1
+      name: Set CiscoFPNetworkGroups
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CiscoFPNetworkGroups
+      value:
+        simple: ${CiscoFP.NetworkGroups}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "92":
+    id: "92"
+    taskid: 14de4995-c098-4cec-86f8-f524fc014cc0
+    type: regular
+    task:
+      id: 14de4995-c098-4cec-86f8-f524fc014cc0
+      version: -1
+      name: Set CiscoFPNetwork
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CiscoFPNetwork
+      value:
+        simple: ${CiscoFP.Network}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "93":
+    id: "93"
+    taskid: 6edaee07-52c3-4b7e-84d0-98280a381245
+    type: regular
+    task:
+      id: 6edaee07-52c3-4b7e-84d0-98280a381245
+      version: -1
+      name: Set CiscoFPHost
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CiscoFPHost
+      value:
+        simple: ${CiscoFP.Host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "94":
+    id: "94"
+    taskid: dd705ab0-a5ae-4dc9-8577-b675dd2bdf06
+    type: regular
+    task:
+      id: dd705ab0-a5ae-4dc9-8577-b675dd2bdf06
+      version: -1
+      name: Set CiscoFPPolicy
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      append: {}
+      key:
+        simple: CiscoFPPolicy
+      value:
+        simple: ${CiscoFP.Policy}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "95":
+    id: "95"
+    taskid: 43910d42-f42c-44f0-8c92-f6b0b488adac
+    type: condition
+    task:
+      id: 43910d42-f42c-44f0-8c92-f6b0b488adac
+      version: -1
+      name: 'Checks if there access policy With the name playbookTest '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "96"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CiscoFPPolicy
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFPPolicy.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbookTest
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "96":
+    id: "96"
+    taskid: df719434-1f85-45ae-80dd-e05272a54778
+    type: condition
+    task:
+      id: df719434-1f85-45ae-80dd-e05272a54778
+      version: -1
+      name: 'Checks if there NetworkGroups With the name playbookTest '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "97"
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CiscoFPNetworkGroups
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFPNetworkGroups.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbookTest
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "97":
+    id: "97"
+    taskid: 155b0d52-e432-4136-8e01-ae43fd6d74a9
+    type: condition
+    task:
+      id: 155b0d52-e432-4136-8e01-ae43fd6d74a9
+      version: -1
+      name: 'Checks if there Network With the name playbookTest '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "98"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CiscoFPNetwork
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFPNetwork.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbookTest
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "98":
+    id: "98"
+    taskid: 6e916b80-8af7-42e6-86ac-ebf71e1350de
+    type: condition
+    task:
+      id: 6e916b80-8af7-42e6-86ac-ebf71e1350de
+      version: -1
+      name: 'Checks if there Host  With the name playbookTest '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CiscoFPHost
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFPHost.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbookTest
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "99":
+    id: "99"
+    taskid: 328d850f-330f-4c1d-8790-c15d27fa7ef2
+    type: regular
+    task:
+      id: 328d850f-330f-4c1d-8790-c15d27fa7ef2
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -2345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "100":
+    id: "100"
+    taskid: ff592d9a-1a78-47b2-8898-316fb8d3098b
+    type: regular
+    task:
+      id: ff592d9a-1a78-47b2-8898-316fb8d3098b
+      version: -1
+      name: ciscofp-create-policy-assignments
+      script: '|||ciscofp-create-policy-assignments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      device_group_ids: {}
+      device_ids:
+        simple: ${CiscoFP.DeviceRecords.ID}
+      policy_id:
+        complex:
+          root: CiscoFPPolicy
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFPPolicy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: to test
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 6380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 9745,
+        "width": 1850,
+        "x": -570,
+        "y": -2490
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: TestFirePowerPlaybook
