@@ -7,7 +7,6 @@ requests.packages.urllib3.disable_warnings()
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SEARCH_LIMIT = 200
-# TODO: Ask Shai whether to keep it as a dict or create a class (user class, group class etc )
 PROFILE_ARGS = [
     'firstName',
     'lastName',
@@ -487,11 +486,7 @@ def test_module(client, data_args):
     """
     uri = 'users/me'
     client._http_request(method='GET', url_suffix=uri)
-    return demisto.results('ok')
-    raise ValueError('Test OktaV2 integration failed')
-
-
-# TODO: Manage the response codes
+    return 'ok', None, None
 
 
 def unlock_user_command(client, args):
