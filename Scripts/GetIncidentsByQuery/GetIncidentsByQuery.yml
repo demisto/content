@@ -6,30 +6,28 @@ args:
   required: false
   secret: false
 - default: false
-  description: A common-separatetd list of incident types by which to filter.
+  description: A comma-separatetd list of incident types by which to filter.
   isArray: false
   name: incidentTypes
   required: false
   secret: false
 - default: false
-  description: 'The start date by which to filter incidents. Date format will be the
-      same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
-      +0200")'
+  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
-  description: 'The end date by which to filter incidents. Date format will be the
-      same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
-      +0200")'
+  description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
   isArray: false
   name: toDate
   required: false
   secret: false
 - default: false
   defaultValue: '3000'
-  description: The maximum number of incidents to fetch.
+  description: The maximum number of incidents to fetch. The default value is 3000.
   isArray: false
   name: limit
   required: false
@@ -37,7 +35,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to query and fetch incident context.
+  description: Whether to query and fetch incident context. Can be "true" or "false". The default is "false".
   isArray: false
   name: includeContext
   predefined:
@@ -48,7 +46,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: created
-  description: The incident field (created or modified) to specify for the date range.
+  description: The incident field to specify for the date range. Can be "created" or "modified". The default is "created".
   isArray: false
   name: timeField
   predefined:
@@ -57,8 +55,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of non-empty value incident field names by
-    which to filter incidents.
+  description: A comma-separated list of non-empty value incident field names by which
+    to filter incidents.
   isArray: false
   name: NonEmptyFields
   required: false
@@ -74,8 +72,15 @@ args:
   - pickle
   required: false
   secret: false
-comment: Gets a list of incident objects and the associated incident outputs that match
-  the specified query and filters. The results are returned in a structured data file.
+- default: false
+  description: A comma-separated list of fields in the object to poplulate.
+  isArray: false
+  name: populateFields
+  required: false
+  secret: false
+comment: Gets a list of incident objects and the associated incident outputs that
+  match the specified query and filters. The results are returned in a structured
+  data file.
 commonfields:
   id: GetIncidentsByQuery
   version: -1
@@ -86,9 +91,10 @@ outputs:
   description: The output file name.
   type: String
 - contextPath: GetIncidentsByQuery.FileFormat
-  description: "The output file format."
+  description: The output file format.
   type: String
 script: '-'
+subtype: python3
 system: false
 tags:
 - ml
