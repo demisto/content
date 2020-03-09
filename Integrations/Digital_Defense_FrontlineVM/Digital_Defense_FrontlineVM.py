@@ -68,7 +68,7 @@ class EndOfTime(Exception):
     pass
 
 
-def function_timeout(signum, frame):
+def function_timeout():
     '''
     Used to raise EndOfTime exception for timeout functions.
     '''
