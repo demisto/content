@@ -76,7 +76,7 @@ class Client(BaseClient):
         )
         if res and len(res) == 1:
             return res[0].get('id')
-        return_error(f'Failed to find userID for: {username} username.')
+        raise Exception(f'Failed to find userID for: {username} username.')
 
     def unlock_user(self, user_id):
         """
@@ -179,8 +179,8 @@ class Client(BaseClient):
                 'LastUpdated': group.get('lastUpdated'),
                 'LastMembershipUpdated': group.get('lastMembershipUpdated'),
                 'Type': group.get('type'),
-                'Name': group.get('profile').get('name'),
-                'Description': group.get('profile').get('description')
+                'Name': group.get('profile', {}).get('name'),
+                'Description': group.get('profile', {}).get('description')
             }
             groups.append(group)
         return groups
@@ -190,14 +190,14 @@ class Client(BaseClient):
         logs = []
         raw_logs = raw_logs if isinstance(raw_logs, list) else [raw_logs]
         for log in raw_logs:
-            if log.get('client').get('userAgent'):
-                browser = log.get('client').get('userAgent').get('browser')
+            if log.get('client', {}).get('userAgent'):
+                browser = log.get('client', {}).get('userAgent').get('browser')
                 if (not browser) or browser.lower() == 'unknown':
                     browser = 'Unknown browser'
-                os = log.get('client').get('userAgent').get('os')
+                os = log.get('client', {}).get('userAgent').get('os')
                 if (not os) or os.lower() == 'unknown':
                     os = 'Unknown OS'
-                device = log.get('client').get('device')
+                device = log.get('client', {}).get('device')
             if (not device) or device.lower() == 'unknown':
                 device = 'Unknown device'
             targets = ''
@@ -207,15 +207,15 @@ class Client(BaseClient):
             time_published = datetime.strptime(log.get('published'), '%Y-%m-%dT%H:%M:%S.%f%z').strftime("%m/%d/%Y, "
                                                                                                         "%H:%M:%S")
             log = {
-                'Actor': f"{log.get('actor').get('displayName')} ({log.get('actor').get('type')})",
-                'ActorAlternaneId': log.get('actor').get('alternateId'),
+                'Actor': f"{log.get('actor', {}).get('displayName')} ({log.get('actor', {}).get('type')})",
+                'ActorAlternaneId': log.get('actor', {}).get('alternateId'),
                 'EventInfo': log.get('displayMessage'),
-                'EventOutcome': log.get('outcome').get('result') + (
-                    f": {log.get('outcome').get('reason')}" if log.get('outcome').get('reason') else ''),
+                'EventOutcome': log.get('outcome', {}).get('result') + (
+                    f": {log.get('outcome', {}).get('reason')}" if log.get('outcome', {}).get('reason') else ''),
                 'EventSeverity': log.get('severity'),
                 'Client': f"{browser} on {os} {device}",
-                'RequestIP': log.get('client').get('ipAddress'),
-                'ChainIP': log.get('request').get('ipChain')[0].get('ip'),
+                'RequestIP': log.get('client', {}).get('ipAddress'),
+                'ChainIP': log.get('request', {}).get('ipChain')[0].get('ip'),
                 'Targets': targets or '-',
                 'Time': time_published
             }
@@ -285,9 +285,10 @@ class Client(BaseClient):
         for user in raw_users:
             user = {
                 'ID': user.get('id'),
-                'Username': user.get('profile').get('login'),
-                'DisplayName': f"{user.get('profile').get('firstName', '')} {user.get('profile').get('lastName', '')}",
-                'Email': user.get('profile').get('email'),
+                'Username': user.get('profile', {}).get('login'),
+                'DisplayName':
+                    f"{user.get('profile', {}).get('firstName', '')} {user.get('profile', {}).get('lastName', '')}",
+                'Email': user.get('profile', {}).get('email'),
                 'Status': user.get('status'),
                 'Type': 'Okta',
                 'Created': user.get('created'),
@@ -307,12 +308,12 @@ class Client(BaseClient):
             users_verbose = ''
             for user in raw_users:
                 profile = {
-                    'First Name': user.get('profile').get('firstName'),
-                    'Last Name': user.get('profile').get('lastName'),
-                    'Mobile Phone': user.get('profile').get('mobilePhone'),
-                    'Login': user.get('profile').get('login'),
-                    'Email': user.get('profile').get('email'),
-                    'Second Email': user.get('profile').get('secondEmail'),
+                    'First Name': user.get('profile', {}).get('firstName'),
+                    'Last Name': user.get('profile', {}).get('lastName'),
+                    'Mobile Phone': user.get('profile', {}).get('mobilePhone'),
+                    'Login': user.get('profile', {}).get('login'),
+                    'Email': user.get('profile', {}).get('email'),
+                    'Second Email': user.get('profile', {}).get('secondEmail'),
                 }
                 additionalData = {
                     'ID': user.get('id'),
@@ -576,14 +577,14 @@ def get_user_factors_command(client, args):
     user_id = args.get('userId')
 
     if not (args.get('username') or user_id):
-        return_error("You must supply either 'Username' or 'userId")
+        raise Exception("You must supply either 'Username' or 'userId")
 
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
 
     raw_response = client.get_user_factors(user_id)
     if not raw_response or len(raw_response) == 0:
-        return_error('No Factors found')
+        raise Exception('No Factors found')
 
     factors = client.get_readable_factors(raw_response)
     context = createContext(factors, removeNull=True)
@@ -606,7 +607,7 @@ def reset_factor_command(client, args):
     user_id = args.get('userId')
 
     if not (args.get('username') or user_id):
-        return_error("You must supply either 'Username' or 'userId")
+        raise Exception("You must supply either 'Username' or 'userId")
 
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
@@ -639,7 +640,7 @@ def add_user_to_group_command(client, args):
     user_id = args.get('userId')
 
     if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
-        return_error("Missing arguments for command")
+        raise Exception("Missing arguments for command")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
     if not group_id:
@@ -658,7 +659,7 @@ def remove_from_group_command(client, args):
     user_id = args.get('userId')
 
     if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
-        return_error("Missing arguments for command")
+        raise Exception("Missing arguments for command")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
     if not group_id:
@@ -700,7 +701,7 @@ def verify_push_factor_command(client, args):
     raw_response = client.verify_push_factor(user_id, factor_id)
     poll_link = raw_response.get('_links').get('poll')
     if not poll_link:
-        return_error('No poll link for the push factor challenge')
+        raise Exception('No poll link for the push factor challenge')
     poll_response = client.poll_verify_push(poll_link.get('href'))
 
     outputs = {
@@ -744,7 +745,7 @@ def search_command(client, args):
 
 def get_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
-        return_error("Missing arguments for command")
+        raise Exception("Missing arguments for command")
     user_term = args.get('userId') if args.get('userId') else args.get('username')
     raw_response = client.get_user(user_term)
     verbose = args.get('verbose')
@@ -799,7 +800,7 @@ def update_user_command(client, args):
 
 def get_group_members_command(client, args):
     if not (args.get('groupId') or args.get('groupName')):
-        return_error("Missing arguments for command")
+        raise Exception("Missing arguments for command")
     limit = args.get('limit')
     group_id = args.get('groupId') or client.get_group_id(args.get('groupName'))
     raw_members = client.get_group_members(group_id, limit)
@@ -927,7 +928,7 @@ def get_application_authentication_command(client, args):
 
 def delete_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
-        return_error("Missing arguments for command")
+        raise Exception("Missing arguments for command")
     user_term = args.get('userId') or args.get('username')
     # Deletes a user permanently. This operation can only be performed on users that have a DEPROVISIONED status.
     # This action cannot be recovered!This operation on a user that hasn't been deactivated
