@@ -23,6 +23,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Trend Micro Apex",
+            "playbookID": "Trend Micro Apex - Test"
+        },
+        {
             "integrations": "Blocklist_de Feed",
             "playbookID": "Blocklist_de - Test",
             "fromversion": "5.5.0"
@@ -167,6 +171,10 @@
         {
             "integrations": "PhishLabs IOC EIR",
             "playbookID": "PhishlabsIOC_EIR-Test"
+        },
+        {
+            "integrations": "Amazon DynamoDB",
+            "playbookID": "AWS_DynamoDB-Test"
         },
         {
             "integrations": "PhishLabs IOC DRP",
@@ -1253,7 +1261,8 @@
             "instance_names": "virus_total_private_api_general",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "timeout": 1400,
-            "nightly": true
+            "nightly": true,
+            "pid_threshold": 12
         },
         {
             "integrations": "VirusTotal - Private API",
@@ -2408,9 +2417,15 @@
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
             "fromversion": "4.5.0"
+        },
+        {
+           "integrations": "AlienVault OTX TAXII Feed",
+            "playbookID": "playbook-feedalienvaultotx_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
+        "Archer-Test-Playbook": "Issue 22536",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
@@ -2424,7 +2439,6 @@
         "IntSights Test": "Issue 22185",
         "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
-        "whois_test": "Issue 22174",
         "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2459,6 +2473,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Palo Alto Networks Cortex": "Issue 22300",
         "Claroty": "Issue 22255",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
@@ -2525,6 +2540,7 @@
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
+        "VirusTotal - Private API": "Issue 22638",
 
 
         "_comment": "~~~ OTHER ~~~",
