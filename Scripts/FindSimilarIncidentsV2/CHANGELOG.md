@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added support for the "\\" character in incident fields.
 
 ## [20.1.2] - 2020-01-22
 Shortened the query time range to improve index usage.
