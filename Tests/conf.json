@@ -440,14 +440,14 @@
             "playbookID": "JSONtoCSV-Test"
         },
         {
-            "integrations": "GenericSQL",
-            "playbookID": "GenericSQL - Test",
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
             "instance_names": "mysql instance",
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "GenericSQL",
-            "playbookID": "GenericSQL - Test",
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
             "instance_names": "postgreSQL instance",
             "fromversion": "5.0.0"
         },

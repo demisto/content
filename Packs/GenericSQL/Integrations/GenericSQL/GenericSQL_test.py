@@ -2,9 +2,9 @@ from .GenericSQL import Client, sql_query_execute
 import pytest
 
 args1 = {
-        'query': "select Name from city",
-        'limit': 5,
-        'skip': 0
+    'query': "select Name from city",
+    'limit': 5,
+    'skip': 0
 }
 
 raw1 = [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]
@@ -18,7 +18,6 @@ expected_output = {
                         'Query': 'select Name from city',
                         'InstanceName': 'sql_dialect_database'}}
 }
-
 
 
 @pytest.mark.parametrize('command, args, response, expected_result', [
