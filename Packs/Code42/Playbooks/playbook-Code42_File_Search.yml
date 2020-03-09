@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   '1':
     id: '1'
-    taskid: ea702e46-5871-49ef-855a-bec05fb512d5
+    taskid: f9cdb1dd-4751-462f-86cf-3943bdc1dfe5
     type: condition
     task:
-      id: ea702e46-5871-49ef-855a-bec05fb512d5
+      id: f9cdb1dd-4751-462f-86cf-3943bdc1dfe5
       version: -1
       name: Is Code42 Integration Active?
       description: ''
@@ -41,6 +41,8 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '7'
       'yes':
       - '2'
       - '3'
@@ -48,14 +50,30 @@ tasks:
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Code42
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
             iscontext: true
-          right:
-            value:
-              simple: Code42
       - - operator: isEqualString
           left:
             value:
@@ -67,7 +85,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -76,10 +94,10 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: d1b30d32-ca93-40b3-8f37-696f259ce695
+    taskid: 935cb1d6-e328-4a8e-888f-347c3b33ce11
     type: condition
     task:
-      id: d1b30d32-ca93-40b3-8f37-696f259ce695
+      id: 935cb1d6-e328-4a8e-888f-347c3b33ce11
       version: -1
       name: Does SHA256 Exist?
       description: ''
@@ -87,21 +105,23 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '7'
       'yes':
       - '5'
     separatecontext: false
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: File.SHA256
+              simple: inputs.SHA256
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 370
         }
       }
@@ -110,10 +130,10 @@ tasks:
     ignoreworker: false
   '3':
     id: '3'
-    taskid: ae66d5d2-c756-4931-8915-93b56c2f9914
+    taskid: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
     type: condition
     task:
-      id: ae66d5d2-c756-4931-8915-93b56c2f9914
+      id: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
       version: -1
       name: Does MD5 Exist?
       description: ''
@@ -121,21 +141,23 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '7'
       'yes':
       - '6'
     separatecontext: false
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: File.MD5
+              simple: inputs.MD5
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 370
         }
       }
@@ -144,12 +166,12 @@ tasks:
     ignoreworker: false
   '5':
     id: '5'
-    taskid: ff01f58e-f625-4557-8af8-64bc39c288e3
+    taskid: e03a5e72-1695-4322-8072-22f076aeceed
     type: regular
     task:
-      id: ff01f58e-f625-4557-8af8-64bc39c288e3
+      id: e03a5e72-1695-4322-8072-22f076aeceed
       version: -1
-      name: Code42 Search
+      name: Code42 Search by SHA256
       description: ''
       script: '|||code42-securitydata-search'
       type: regular
@@ -157,11 +179,11 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '7'
+      - '8'
     scriptarguments:
       exposure: {}
       hash:
-        simple: ${File.SHA256}
+        simple: ${inputs.SHA256}
       hostname: {}
       json: {}
       results: {}
@@ -170,7 +192,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 490,
           "y": 545
         }
       }
@@ -179,12 +201,12 @@ tasks:
     ignoreworker: false
   '6':
     id: '6'
-    taskid: 1e32f15f-ca6e-4b2f-8261-fc6eb0c4aa35
+    taskid: 9eda738e-0108-4e18-8d30-d3a20089c0a6
     type: regular
     task:
-      id: 1e32f15f-ca6e-4b2f-8261-fc6eb0c4aa35
+      id: 9eda738e-0108-4e18-8d30-d3a20089c0a6
       version: -1
-      name: Code42 Search
+      name: Code42 Search by MD5
       description: ''
       script: '|||code42-securitydata-search'
       type: regular
@@ -192,11 +214,11 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '7'
+      - '8'
     scriptarguments:
       exposure: {}
       hash:
-        simple: ${File.MD5}
+        simple: ${inputs.MD5}
       hostname: {}
       json: {}
       results: {}
@@ -205,7 +227,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 920,
           "y": 545
         }
       }
@@ -228,8 +250,100 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: f1a76998-25e5-4782-81e5-d46caa151544
+    type: regular
+    task:
+      id: f1a76998-25e5-4782-81e5-d46caa151544
+      version: -1
+      name: Extract Hosts
+      description: ''
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: FileHosts
+      stringify:
+        simple: 'true'
+      value:
+        complex:
+          root: Code42
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Code42.SecurityData.FileHostname
+                iscontext: true
+          accessor: SecurityData.FileHostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: 9b52020b-081b-4a3c-81c3-3912f3958d05
+    type: regular
+    task:
+      id: 9b52020b-081b-4a3c-81c3-3912f3958d05
+      version: -1
+      name: Extract Paths
+      description: ''
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: FilePaths
+      stringify:
+        simple: 'true'
+      value:
+        complex:
+          root: Code42
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Code42.SecurityData.FilePath
+                iscontext: true
+          accessor: SecurityData.FilePath
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 895
         }
       }
     note: false
@@ -240,16 +354,30 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 810,
+        "height": 1085,
+        "width": 1250,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
+inputs:
+- key: MD5
+  value: {}
+  required: false
+  description: MD5 hash to search for
+- key: SHA256
+  value: {}
+  required: false
+  description: SHA256 hash to search for
+outputs:
+- contextPath: FileHosts
+  description: Hosts where file is located
+  type: string
+- contextPath: FilePaths
+  description: Paths where file is located
+  type: string
 description: ''
-tests:
-  - Code42 File Search Test
 fromversion: 5.0.0
+tests:
+  - "Code42 File Search Test"

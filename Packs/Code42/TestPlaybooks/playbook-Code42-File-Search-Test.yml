@@ -43,7 +43,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '3'
+      - '6'
     scriptarguments:
       all:
         simple: 'yes'
@@ -57,72 +57,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '2':
-    id: '2'
-    taskid: 29d4257a-271e-4c61-8833-316a586583ad
-    type: playbook
-    task:
-      id: 29d4257a-271e-4c61-8833-316a586583ad
-      version: -1
-      name: Code42 File Search
-      playbookName: Code42 File Search
-      type: playbook
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '4'
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '3':
-    id: '3'
-    taskid: 77dbcdff-f624-45fd-8586-25dc13539d8b
-    type: regular
-    task:
-      id: 77dbcdff-f624-45fd-8586-25dc13539d8b
-      version: -1
-      name: Set File MD5 For Search
-      description: ''
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: File.MD5
-      stringify: {}
-      value:
-        simple: 72e6adccb0782b858754327292eaed22
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 390
         }
       }
     note: false
@@ -146,6 +80,76 @@ tasks:
         "position": {
           "x": 450,
           "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 3a624a27-8587-4a8a-8725-1d29ce5c045f
+    type: regular
+    task:
+      id: 3a624a27-8587-4a8a-8725-1d29ce5c045f
+      version: -1
+      name: Close Incident
+      description: ''
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 718a6d75-57ec-47cf-8177-30ec7a278fda
+    type: playbook
+    task:
+      id: 718a6d75-57ec-47cf-8177-30ec7a278fda
+      version: -1
+      name: Code42 File Search
+      playbookName: Code42 File Search
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      MD5:
+        simple: 72e6adccb0782b858754327292eaed22
+      SHA256: {}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
         }
       }
     note: false
