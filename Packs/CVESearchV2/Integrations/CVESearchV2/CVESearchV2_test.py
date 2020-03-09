@@ -1,4 +1,4 @@
-from CVESearchV2 import cve_command, cve_latest_command, valid_cve_id_format, Client
+from CVESearchV2 import cve_command, valid_cve_id_format, Client
 from CommonServerPython import DemistoException
 
 BASE_URL = 'https://cve.circl.lu/api/'
@@ -13,13 +13,6 @@ def test_wrong_path():
     except DemistoException as err:
         expected_exception_message = 'Verify that the server URL parameter is correct'
         assert expected_exception_message in str(err), 'Bad error response when bad url is given'
-
-
-def test_module():
-    client = Client(base_url=BASE_URL)
-    raw_results = cve_latest_command(client, 30)
-    results = _get_results(raw_results)
-    assert len(results) == 30, 'cve-latest command should return latest 30 cves'
 
 
 def test_bad_cve_id():
