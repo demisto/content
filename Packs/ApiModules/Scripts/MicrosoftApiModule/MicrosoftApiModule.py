@@ -15,13 +15,21 @@ class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '', auth_id: str = '', enc_key: str = '',
                  token_retrieval_url: str = '', app_name: str = '', refresh_token: str = '',
                  client_id: str = '', client_secret: str = '', scope: str = '', resource: str = '', app_url: str = '',
-                 verify: bool = True, auth_type: str = OPROXY_AUTH_TYPE, *args, **kwargs):
+                 verify: bool = True, self_deployed: bool = False, *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
         It also provides common logic to handle responses from Microsoft.
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
-        self.auth_type = auth_type
+        if not self_deployed:
+            auth_id_and_token_retrieval_url = auth_id.split('@')
+            auth_id = auth_id_and_token_retrieval_url[0]
+            if len(auth_id_and_token_retrieval_url) != 2:
+                token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+            else:
+                token_retrieval_url = auth_id_and_token_retrieval_url[1]
+
+        self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.app_url = app_url
         self.tenant_id = tenant_id
         self.auth_id = auth_id
@@ -34,48 +42,6 @@ class MicrosoftClient(BaseClient):
         self.scope = scope
         self.resource = resource
         self.verify = verify
-
-    @classmethod
-    def from_oproxy(cls, auth_id_and_token_url: str, enc_key: str, app_name: str,
-                    tenant_id: str = '', refresh_token: str = '', *args, **kwargs):
-        """
-        Args:
-            auth_id_and_token_url: Authentication ID and the oproxy url to use
-            enc_key: Encryption key
-            app_name: The application name in oproxy
-            tenant_id: The tenant ID
-            refresh_token: The current refresh token
-        Returns:
-            An instance of Microsoft Client with oproxy authentication.
-        """
-        auth_id_and_token_retrieval_url = auth_id_and_token_url.split('@')
-        auth_id = auth_id_and_token_retrieval_url[0]
-        if len(auth_id_and_token_retrieval_url) != 2:
-            token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-        else:
-            token_retrieval_url = auth_id_and_token_retrieval_url[1]
-
-        return cls(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key,  # type: ignore[misc]
-                   token_retrieval_url=token_retrieval_url, auth_type=OPROXY_AUTH_TYPE,
-                   app_name=app_name, refresh_token=refresh_token, *args, **kwargs)
-
-    @classmethod
-    def from_self_deployed(cls, tenant_id: str, client_id: str, client_secret: str, scope: str = '', resource: str = '',
-                           app_url: str = '', *args, **kwargs):
-        """
-        Args:
-            tenant_id: The self deployed tenant ID
-            client_id: The self deployed client ID
-            client_secret: The self deployed client secret
-            scope: The self deployed application scope
-            resource: The self deployed application resource
-            app_url: The self deployed application request URL
-        Returns:
-            An instance of Microsoft Client with self deployed application authentication.
-        """
-        return cls(tenant_id=tenant_id, client_id=client_id,  # type: ignore[misc]
-                   client_secret=client_secret, auth_type=SELF_DEPLOYED_AUTH_TYPE,
-                   scope=scope, resource=resource, app_url=app_url, *args, **kwargs)
 
     def http_request(self, *args, **kwargs) -> requests.Response:
         """
