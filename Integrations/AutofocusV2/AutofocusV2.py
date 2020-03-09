@@ -4,8 +4,10 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import re
 import json
 import requests
+import socket
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -973,6 +975,89 @@ def get_indicator_outputs(indicator_type, indicators, indicator_context_output):
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=raw_res)
 
 
+def check_for_ip(indicator):
+    if '-' in indicator:
+        # check for address range
+        ip1, ip2 = indicator.split('-', 1)
+
+        if re.match(ipv4Regex, ip1) and re.match(ipv4Regex, ip2):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6Regex, ip1) and re.match(ipv6Regex, ip2):
+            return FeedIndicatorType.IPv6
+
+        elif re.match(ipv4cidrRegex, ip1) and re.match(ipv4cidrRegex, ip2):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv6cidrRegex, ip1) and re.match(ipv6cidrRegex, ip2):
+            return FeedIndicatorType.IPv6CIDR
+
+        return None
+
+    if '/' in indicator:
+
+        if re.match(ipv4cidrRegex, indicator):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv6cidrRegex, indicator):
+            return FeedIndicatorType.IPv6CIDR
+
+        return None
+
+    else:
+        if re.match(ipv4Regex, indicator):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6Regex, indicator):
+            return FeedIndicatorType.IPv6
+
+    return None
+
+
+def find_indicator_type(indicator):
+    """Infer the type of the indicator.
+
+    Args:
+        indicator(str): The indicator whose type we want to check.
+
+    Returns:
+        str. The type of the indicator.
+    """
+    # trying to catch X.X.X.X:portNum
+    if ':' in indicator and '/' not in indicator:
+        sub_indicator = indicator.split(':', 1)[0]
+        ip_type = check_for_ip(sub_indicator)
+        if ip_type:
+            return ip_type
+
+    ip_type = check_for_ip(indicator)
+
+    if ip_type:
+        # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
+        if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
+            return FeedIndicatorType.URL
+
+        else:
+            return ip_type
+
+    elif re.match(sha256Regex, indicator):
+        return FeedIndicatorType.File
+
+    # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
+    elif '/' in indicator:
+        return FeedIndicatorType.URL
+
+    else:
+        return FeedIndicatorType.Domain
+
+
+def resolve_ip_address(ip):
+    if check_for_ip(ip):
+        return socket.gethostbyaddr(ip)[0]
+
+    return None
+
+
 ''' COMMANDS'''
 
 
@@ -1234,6 +1319,91 @@ def search_file_command(file):
     get_indicator_outputs(indicator_type, indicator_details, 'SHA256')
 
 
+def get_export_list_command(args):
+    # the label is the name of the export list we want to fetch.
+    # panosFormatted is a flag stating that only indicators should be returned in the list.
+    data = {
+        'label': args.get('label'),
+        'panosFormatted': True,
+        'apiKey': ''
+    }
+    results = http_request(url_suffix='/export', method='POST', data=data,
+                           err_operation=f"Failed to fetch export list: {args.get('label')}")
+
+    indicators = []
+    context_ip = []
+    context_url = []
+    context_domain = []
+    context_file = []
+    for indicator_value in results.get('export_list'):
+        indicator_type = find_indicator_type(indicator_value)
+        if indicator_type in [FeedIndicatorType.IP,
+                              FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]:
+            if '-' in indicator_value:
+                context_ip.append({
+                    'Address': indicator_value.split('-')[0]
+                })
+                context_ip.append({
+                    'Address': indicator_value.split('-')[1]
+                })
+
+            elif ":" in indicator_value:
+                context_ip.append({
+                    'Address': indicator_value.split(":", 1)[0]
+                })
+
+            else:
+                context_ip.append({
+                    'Address': indicator_value
+                })
+
+        elif indicator_type in [FeedIndicatorType.Domain]:
+            context_domain.append({
+                'Name': indicator_value
+            })
+
+        elif indicator_type in [FeedIndicatorType.File]:
+            context_file.append({
+                'SHA256': indicator_value
+            })
+
+        elif indicator_type in [FeedIndicatorType.URL]:
+            if ":" in indicator_value:
+                resolved_address = resolve_ip_address(indicator_value.split(":", 1)[0])
+                semicolon_suffix = indicator_value.split(":", 1)[1]
+                slash_suffix = None
+
+            else:
+                resolved_address = resolve_ip_address(indicator_value.split("/", 1)[0])
+                slash_suffix = indicator_value.split("/", 1)[1]
+                semicolon_suffix = None
+
+            if resolved_address:
+                if semicolon_suffix:
+                    indicator_value = resolved_address + ":" + semicolon_suffix
+
+                else:
+                    indicator_value = resolved_address + "/" + slash_suffix
+
+            context_url.append({
+                'Data': indicator_value,
+            })
+
+        indicators.append({
+            'Type': indicator_type,
+            'Value': indicator_value,
+        })
+
+    hr = tableToMarkdown(f"Export list {args.get('label')}", indicators, headers=['Type', 'Value'])
+
+    return_outputs(hr, {'AutoFocus.Indicator(val.Value == obj.Value && val.Type == obj.Type)': indicators,
+                        'IP(obj.Address == val.Address)': context_ip,
+                        'URL(obj.Data == val.Data)': context_url,
+                        'File(obj.SHA256 == val.SHA256)': context_file,
+                        'Domain(obj.Name == val.Name)': context_domain},
+                   results)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -1266,6 +1436,8 @@ try:
         top_tags_search_command()
     elif active_command == 'autofocus-top-tags-results':
         top_tags_results_command()
+    elif active_command == 'autofocus-get-export-list-indicators':
+        get_export_list_command(args)
     elif active_command == 'ip':
         search_ip_command(**args)
     elif active_command == 'domain':

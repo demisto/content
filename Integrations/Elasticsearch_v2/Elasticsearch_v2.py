@@ -11,6 +11,8 @@ from datetime import datetime
 import json
 import requests
 import warnings
+from dateutil.parser import parse
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -34,17 +36,12 @@ HTTP_ERRORS = {
 
 '''VARIABLES FOR FETCH INCIDENTS'''
 TIME_FIELD = demisto.params().get('fetch_time_field', '')
-TIME_FORMAT = demisto.params().get('fetch_time_format', '')
 FETCH_INDEX = demisto.params().get('fetch_index', '')
 FETCH_QUERY = demisto.params().get('fetch_query', '')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
 INSECURE = not demisto.params().get('insecure', False)
 TIME_METHOD = demisto.params().get('time_method', 'Simple-Date')
-
-# if timestamp than set the format to iso.
-if 'Timestamp' in TIME_METHOD:
-    TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 
 def get_timestamp_first_fetch(last_fetch):
@@ -254,9 +251,6 @@ def fetch_params_check():
     if FETCH_QUERY == '' or FETCH_QUERY is None:
         str_error.append("Query by which to fetch incidents is not configured.")
 
-    if (TIME_FORMAT == '' or TIME_FORMAT is None) and TIME_METHOD == 'Simple-Date':
-        str_error.append("Time format is not configured.")
-
     if len(str_error) > 0:
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
 
@@ -410,7 +404,7 @@ def test_func():
 
             # if not a timestamp test the conversion to datetime object
             if 'Timestamp' not in TIME_METHOD:
-                datetime.strptime(hit_date, TIME_FORMAT)
+                parse(str(hit_date))
 
             # test timestamp format and conversion to date
             else:
@@ -487,26 +481,51 @@ def results_to_incidents_datetime(response, last_fetch):
         (list).The incidents.
         (datetime).The date of the last incident brought by this fetch.
     """
-    current_fetch = last_fetch
+    last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
+    current_fetch = last_fetch_timestamp
     incidents = []
+
     for hit in response.get('hits', {}).get('hits'):
         if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
-            hit_date = datetime.strptime(str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT)
+            hit_date = parse(str(hit.get('_source')[str(TIME_FIELD)]))
+            hit_timestamp = int(hit_date.timestamp() * 1000)
 
-            if hit_date > last_fetch:
+            if hit_timestamp > last_fetch_timestamp:
                 last_fetch = hit_date
+                last_fetch_timestamp = hit_timestamp
 
             # avoid duplication due to weak time query
-            if hit_date > current_fetch:
+            if hit_timestamp > current_fetch:
                 inc = {
                     'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
                     'labels': incident_label_maker(hit.get('_source')),
-                    'occurred': hit_date.isoformat() + 'Z'
+                    # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
+                    # and sometimes as YYYY-MM-DDThh:mm:ss
+                    # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
+                    'occurred': format_to_iso(hit_date.isoformat())
                 }
                 incidents.append(inc)
 
-    return incidents, last_fetch
+    return incidents, format_to_iso(last_fetch.isoformat())
+
+
+def format_to_iso(date_string):
+    """Formatting function to make sure the date string is in YYYY-MM-DDThh:mm:ssZ format.
+
+    Args:
+        date_string(str): a date string in ISO format could be like: YYYY-MM-DDThh:mm:ss+00:00 or: YYYY-MM-DDThh:mm:ss
+
+    Returns:
+        str. A date string in the format: YYYY-MM-DDThh:mm:ssZ
+    """
+    if len(date_string) > 19 and not date_string.endswith('Z'):
+        date_string = date_string[:-6]
+
+    if not date_string.endswith('Z'):
+        date_string = date_string + 'Z'
+
+    return date_string
 
 
 def fetch_incidents():
@@ -515,21 +534,25 @@ def fetch_incidents():
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format=TIME_FORMAT, utc=False, to_timestamp=False)
-        last_fetch = datetime.strptime(str(last_fetch), TIME_FORMAT)
+        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%f', utc=False, to_timestamp=False)
+        last_fetch = parse(str(last_fetch))
+        last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
 
         # if timestamp: get the last fetch to the correct format of timestamp
         if 'Timestamp' in TIME_METHOD:
             last_fetch = get_timestamp_first_fetch(last_fetch)
+            last_fetch_timestamp = last_fetch
 
     # if method is simple date - convert the date string to datetime
     elif 'Simple-Date' == TIME_METHOD:
-        last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
+        last_fetch = parse(str(last_fetch))
+        last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
 
     es = elasticsearch_builder()
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
-    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
+    # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
+    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch_timestamp}}})
     search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
@@ -543,10 +566,9 @@ def fetch_incidents():
 
         else:
             incidents, last_fetch = results_to_incidents_datetime(response, last_fetch)
-            demisto.setLastRun({'time': datetime.strftime(last_fetch, TIME_FORMAT)})
+            demisto.setLastRun({'time': str(last_fetch)})
 
         demisto.info('extract {} incidents'.format(len(incidents)))
-
     demisto.incidents(incidents)
 
 
