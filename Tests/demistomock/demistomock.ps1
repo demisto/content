@@ -54,8 +54,8 @@ $global:InnerContext = '
       "IntegrationInstance": "",
       "BrandContext": "",
       "DockerWorkingDir": "debug/lib/temp/script103016517",
-      "ExecutionContext": {        
-        "File": [          
+      "ExecutionContext": {
+        "File": [
           {
             "SHA1": "cd49084b3f75f085d3b2769340d9800071cb24ac",
             "Type": "PDF document, version 1.3",
@@ -68,8 +68,8 @@ $global:InnerContext = '
             "Info": "application/pdf",
             "Extension": "pdf",
             "SSDeep": "192:btaomgRSfbTdiMSDi8sTc4dsQYYmJ2HbFSGvyiGCTsTFGt7UtfZ9:btwliMSGTdEYJbFHvpKct7Utj"
-          }          
-        ]        
+          }
+        ]
       },
       "Nested": 1,
       "ParentEntry": {
@@ -133,7 +133,7 @@ $global:InnerContext = '
         "status": 1,
         "email": "glichtman@paloaltonetworks.com",
         "homepage": "",
-        "investogations": {          
+        "investogations": {
           "52": {},
           "1258": {}
         },
@@ -165,15 +165,15 @@ $global:InnerContext = '
         "lastLogin": "2020-02-29T15:55:43.338458+00:00",
         "favoriteIncidents": {
           "362": {}
-        },        
+        },
         "dateFormat": "",
         "lastHomePageVisit": "0001-01-01T00:00:00Z",
         "shortcutsDisabled": false,
-        "disabled": false,        
+        "disabled": false,
         "username": "admin",
         "wasAssigned": false,
         "editorStyle": "",
-        "modified": "2020-02-29T15:56:36.229614+00:00",        
+        "modified": "2020-02-29T15:56:36.229614+00:00",
         "roles": {
           "demisto": [
             "Administrator"
@@ -325,7 +325,7 @@ $global:InnerContext = '
       },
       "ExecutionPswd": ""
     },
-    "integration": false    
+    "integration": false
   }
 '
 
@@ -335,7 +335,7 @@ $global:DemistoOutputStream = [Console]::Out
 function global:DemistoServerRequest ([hashtable]$Cmd)
 {
     $Command = $Cmd | ConvertTo-Json -Compress -Depth 20
-    Write-Debug($Command)    
+    Write-Debug $Command
     return {}
 }
 
