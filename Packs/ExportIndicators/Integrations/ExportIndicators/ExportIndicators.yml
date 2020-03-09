@@ -114,6 +114,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Don't Collapse
+      description: Wether to collapse IPs to ranges or CIDRs
       isArray: false
       name: collapse_ips
       predefined:
