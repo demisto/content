@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 
 import json
 import requests
-import dateparser
 import jwt
 
 # Disable insecure warnings
@@ -13,6 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+
 
 class Client(BaseClient):
     """
@@ -428,7 +428,6 @@ def main():
 
         elif demisto.command() == 'ms-management-list-content':
             list_content_command(client, args)
-
 
     # Log exceptions
     except Exception as e:

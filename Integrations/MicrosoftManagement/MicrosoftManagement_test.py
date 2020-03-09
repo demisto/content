@@ -1,9 +1,6 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 import pytest
 from datetime import datetime, timedelta
-from unittest.mock import mock_open
 
 ''' MOCK DATA AND RESPONSES '''
 
@@ -11,8 +8,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 TIME_ONE_MINUTE_AGO_DATETIME = datetime.now() - timedelta(minutes=1)
 TIME_ONE_MINUTE_AGO_STRING = datetime.strftime(TIME_ONE_MINUTE_AGO_DATETIME, DATE_FORMAT)
-
-
 
 TIME_24_HOURS_AGO = datetime.now() - timedelta(hours=24)
 TIME_24_HOURS_AGO_STRING = datetime.strftime(TIME_24_HOURS_AGO, DATE_FORMAT)
@@ -25,8 +20,8 @@ TIME_6_HOURS_AGO_STRING = datetime.strftime(TIME_6_HOURS_AGO, DATE_FORMAT)
 TIME_ONE_HOUR_AGO = datetime.now() - timedelta(hours=1)
 TIME_ONE_HOUR_AGO_STRING = datetime.strftime(TIME_ONE_HOUR_AGO, DATE_FORMAT)
 TEST_FETCH_FIRST_RUN = ({}, 720, 12, 0)
-TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS = ({},2880,48,24)
-TEST_FETCH_NOT_FIRST_RUN = ({'last_fetch': TIME_6_HOURS_AGO_STRING}, 2880,6,0)
+TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS = ({}, 2880, 48, 24)
+TEST_FETCH_NOT_FIRST_RUN = ({'last_fetch': TIME_6_HOURS_AGO_STRING}, 2880, 6, 0)
 FETCH_TIMES_TEST_DATA = [
     TEST_FETCH_FIRST_RUN,
     TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS,
@@ -314,6 +309,18 @@ CONTENT_RECORDS_CREATED_1_AND_6_HOURS_AGO = [
     }
 ]
 
+GET_CONTENT_RECORDS_TEST_DATA = [
+    (['audit.general'], LIST_CONTENT_AUDIT_GENERAL_RESPONSE),
+    (['audit.AzureActiveDirectory'], LIST_CONTENT_AZUREACTIVE_RESPONSE),
+    (['audit.AzureActiveDirectory', 'audit.general'], LIST_CONTENT_AZUREACTIVE_RESPONSE
+     + LIST_CONTENT_AUDIT_GENERAL_RESPONSE)]
+
+TEST_LAST_RUN_UPDATE_DATA = [
+    ([], datetime.strftime(datetime.now(), DATE_FORMAT)),
+    (CONTENT_RECORD_CREATED_48_HOURS_AGO, datetime.strftime(datetime.now(), DATE_FORMAT)),
+    (CONTENT_RECORD_CREATED_ONE_HOUR_AGO, TIME_ONE_HOUR_AGO_STRING),
+    (CONTENT_RECORDS_CREATED_1_AND_6_HOURS_AGO, TIME_ONE_HOUR_AGO_STRING)
+]
 
 GET_ACCESS_TOKEN_RESPONSE = {
     "token_type": "Bearer",
@@ -323,7 +330,9 @@ GET_ACCESS_TOKEN_RESPONSE = {
     "expires_on": "1582793586",
     "not_before": "1582789686",
     "resource": "https://manage.office.com",
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNTgyNzkzNTg2fQ.-p8gaG2vG90SHCvrDSratgPv-Bfti4iF2YTZ9AvIeJY",
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+                    "eyJ0aWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNTgyN"
+                    "zkzNTg2fQ.-p8gaG2vG90SHCvrDSratgPv-Bfti4iF2YTZ9AvIeJY",
     "refresh_token": "refresh"
 }
 
@@ -347,6 +356,7 @@ def is_time_in_expected_delta(actual_time, expected_time_delta):
     one_minute_before_expected_time = expected_time - timedelta(minutes=1)
     return one_minute_before_expected_time <= actual_time <= expected_time
 
+
 def are_dates_approximately_equal(date_a, date_b):
     date_a_datetime = datetime.strptime(date_a, DATE_FORMAT)
     date_b_datetime = datetime.strptime(date_b, DATE_FORMAT)
@@ -358,6 +368,7 @@ def are_dates_approximately_equal(date_a, date_b):
     date_b_is_almost_date_a = one_minute_before_date_a <= date_b_datetime <= date_a_datetime
 
     return date_a_is_almost_date_b or date_b_is_almost_date_a
+
 
 def http_return_data(method, url_suffix, full_url, headers, json_data):
     return json_data
@@ -372,8 +383,6 @@ def create_client():
     client = Client(base_url, username='', password='', headers='', verify=verify_certificate, proxy=proxy)
 
     return client
-
-
 
 
 ''' TESTS '''
@@ -398,16 +407,20 @@ def test_integration_context_update_after_token_request(mocker):
     from MicrosoftManagement import Client
     new_context = Client.create_new_integration_context(GET_ACCESS_TOKEN_RESPONSE)
     assert 'refresh_token' in new_context and new_context['refresh_token'] == "refresh"
-    assert 'access_token' in new_context and new_context['access_token'] == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNTgyNzkzNTg2fQ.-p8gaG2vG90SHCvrDSratgPv-Bfti4iF2YTZ9AvIeJY"
+    assert 'access_token' in new_context and new_context['access_token'] == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC" \
+                                                                            "J9.eyJ0aWQiOiIxMjM0NTY3ODkwIiwiZXhw" \
+                                                                            "IjoxNTgyNzkzNTg2fQ.-p8gaG2vG90SH" \
+                                                                            "CvrDSratgPv-Bfti4iF2YTZ9AvIeJY"
     assert 'expires_on' in new_context and new_context['expires_on'] == "1582793586"
 
 
 def test_get_access_token_data(requests_mock):
-    from MicrosoftManagement import Client
     client = create_client()
     requests_mock.post('https://login.windows.net/common/oauth2/token', json=GET_ACCESS_TOKEN_RESPONSE)
     access_token_jwt, token_data = client.get_access_token_data()
-    assert access_token_jwt == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNTgyNzkzNTg2fQ.-p8gaG2vG90SHCvrDSratgPv-Bfti4iF2YTZ9AvIeJY"
+    assert access_token_jwt == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ" \
+                               "0aWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNTgyNzk" \
+                               "zNTg2fQ.-p8gaG2vG90SHCvrDSratgPv-Bfti4iF2YTZ9AvIeJY"
     data = {
         "tid": "1234567890",
         "exp": 1582793586
@@ -415,8 +428,10 @@ def test_get_access_token_data(requests_mock):
     assert token_data == data
 
 
-@pytest.mark.parametrize('last_run, first_fetch_delta, expected_start_time_in_hours_from_now, expected_end_time_in_hours_from_now', FETCH_TIMES_TEST_DATA)
-def test_fetch_times_range(last_run, first_fetch_delta, expected_start_time_in_hours_from_now, expected_end_time_in_hours_from_now):
+@pytest.mark.parametrize('last_run, first_fetch_delta, expected_start_time_'
+                         'in_hours_from_now, expected_end_time_in_hours_from_now', FETCH_TIMES_TEST_DATA)
+def test_fetch_times_range(last_run, first_fetch_delta, expected_start_time_in_hours_from_now,
+                           expected_end_time_in_hours_from_now):
     from MicrosoftManagement import get_fetch_start_and_end_time
     fetch_start_time_str, fetch_end_time_str = get_fetch_start_and_end_time(last_run, first_fetch_delta)
 
@@ -430,9 +445,11 @@ def test_fetch_times_range(last_run, first_fetch_delta, expected_start_time_in_h
 TEST_NO_SUBSCRIPTIONS_SPECIFIED = ({}, ["audit.general", "Audit.AzureActiveDirectory"])
 TEST_SUBSCRIPTIONS_SPECIFIED = ({"content_types_to_fetch": ["audit.general"]}, ["audit.general"])
 
-@pytest.mark.parametrize('demisto_params, expected_output', [TEST_NO_SUBSCRIPTIONS_SPECIFIED, TEST_SUBSCRIPTIONS_SPECIFIED])
+
+@pytest.mark.parametrize('demisto_params, expected_output', [TEST_NO_SUBSCRIPTIONS_SPECIFIED,
+                                                             TEST_SUBSCRIPTIONS_SPECIFIED])
 def test_get_content_types_to_fetch(mocker, requests_mock, demisto_params, expected_output):
-    from MicrosoftManagement import Client, get_content_types_to_fetch
+    from MicrosoftManagement import get_content_types_to_fetch
     client = create_client()
     set_requests_mock(client, requests_mock)
     mocker.patch.object(demisto, 'params', return_value=demisto_params)
@@ -440,14 +457,9 @@ def test_get_content_types_to_fetch(mocker, requests_mock, demisto_params, expec
     assert set(get_content_types_to_fetch(client)) == set(expected_output)
 
 
-GET_CONTENT_RECORDS_TEST_DATA = [
-    (['audit.general'], LIST_CONTENT_AUDIT_GENERAL_RESPONSE),
-    (['audit.AzureActiveDirectory'], LIST_CONTENT_AZUREACTIVE_RESPONSE),
-    (['audit.AzureActiveDirectory', 'audit.general'], LIST_CONTENT_AZUREACTIVE_RESPONSE + LIST_CONTENT_AUDIT_GENERAL_RESPONSE)
-]
 @pytest.mark.parametrize('content_types, expected_results', GET_CONTENT_RECORDS_TEST_DATA)
 def test_get_all_content_records_of_specified_types(requests_mock, content_types, expected_results):
-    from MicrosoftManagement import Client, get_all_content_records_of_specified_types
+    from MicrosoftManagement import get_all_content_records_of_specified_types
     client = create_client()
     set_requests_mock(client, requests_mock)
     assert get_all_content_records_of_specified_types(client, content_types, None, None)
@@ -456,19 +468,11 @@ def test_get_all_content_records_of_specified_types(requests_mock, content_types
 def test_content_records_to_incidents_records_creation():
     from MicrosoftManagement import content_records_to_incidents
     time_now_string = datetime.strftime(datetime.now(), DATE_FORMAT)
-    incidents, latest_creation_time = content_records_to_incidents(GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL,TIME_6_HOURS_AGO_STRING, time_now_string)
+    incidents, latest_creation_time = content_records_to_incidents(GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL,
+                                                                   TIME_6_HOURS_AGO_STRING, time_now_string)
     single_incident = incidents[0]
     assert 'name' in single_incident and single_incident['name'] == "1234"
     assert 'occurred' in single_incident and single_incident['occurred'] == '2020-02-27T00:57:40'
-
-
-TEST_LAST_RUN_UPDATE_DATA = [
-    ([], datetime.strftime(datetime.now(), DATE_FORMAT)),
-    (CONTENT_RECORD_CREATED_48_HOURS_AGO, datetime.strftime(datetime.now(), DATE_FORMAT)),
-    (CONTENT_RECORD_CREATED_ONE_HOUR_AGO, TIME_ONE_HOUR_AGO_STRING),
-    (CONTENT_RECORDS_CREATED_1_AND_6_HOURS_AGO, TIME_ONE_HOUR_AGO_STRING)
-
-]
 
 
 @pytest.mark.parametrize('content_records, expected_last_run', TEST_LAST_RUN_UPDATE_DATA)
@@ -514,7 +518,8 @@ def test_start_and_stop_subscription(requests_mock, command, ):
     # This test does not assert anything, it only tests if the command matches the mocked endpoints.
 
 
-@pytest.mark.parametrize('first_fetch_delta, expected_output_prefix', [("not_an_int", "Error"), ("-1567", "Error"), ("1900", "Error"), ("1200", "ok")])
+@pytest.mark.parametrize('first_fetch_delta, expected_output_prefix', [("not_an_int", "Error"), ("-1567", "Error"),
+                                                                       ("1900", "Error"), ("1200", "ok")])
 def test_the_test_module(mocker, requests_mock, first_fetch_delta, expected_output_prefix):
     from MicrosoftManagement import test_module
     client = create_client()
@@ -554,99 +559,19 @@ def test_get_all_content_type_records(requests_mock):
     assert set(content_record_ids) == set(["1234", "567", "89"])
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def mock_get_access_token(requests_mock, access_token_resp):
     requests_mock.post('https://login.windows.net/common/oauth2/token', json=access_token_resp)
 
 
-def mock_start_subscription(requests_mock, client,  start_subscription_resp):
-    start_subscription_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/start'.format(client.tenant_id)
+def mock_start_subscription(requests_mock, client, start_subscription_resp):
+    start_subscription_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/' \
+                                  'start'.format(client.tenant_id)
     requests_mock.post(start_subscription_endpoint, json=start_subscription_resp)
 
 
 def mock_stop_subscription(requests_mock, client):
-    stop_subscription_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/stop'.format(client.tenant_id)
+    stop_subscription_endpoint = 'https://manage.office.com/api/v1.0/{}/activity/feed/subscriptions/' \
+                                 'stop'.format(client.tenant_id)
     requests_mock.post(stop_subscription_endpoint, json={})
 
 
@@ -657,9 +582,11 @@ def mock_list_subscriptions(requests_mock, client, list_subscriptions_resp):
 
 
 def mock_list_content(requests_mock):
-    list_audit_general_content_endpoint = "https://manage.office.com/api/v1.0/None/activity/feed/subscriptions/content?contentType=audit.general"
+    list_audit_general_content_endpoint = "https://manage.office.com/api/v1.0/None/activity/feed/subscriptions" \
+                                          "/content?contentType=audit.general"
     requests_mock.get(list_audit_general_content_endpoint, json=LIST_CONTENT_AUDIT_GENERAL_RESPONSE)
-    list_audit_general_content_endpoint = "https://manage.office.com/api/v1.0/None/activity/feed/subscriptions/content?contentType=audit.AzureActiveDirectory"
+    list_audit_general_content_endpoint = "https://manage.office.com/api/v1.0/None/activity/feed/subscriptions" \
+                                          "/content?contentType=audit.AzureActiveDirectory"
     requests_mock.get(list_audit_general_content_endpoint, json=LIST_CONTENT_AZUREACTIVE_RESPONSE)
 
 
@@ -683,10 +610,3 @@ def set_requests_mock(client, requests_mock, access_token_resp=GET_ACCESS_TOKEN_
     mock_list_subscriptions(requests_mock, client, list_subscriptions_resp)
     mock_list_content(requests_mock)
     mock_get_blob_data(requests_mock)
-
-
-
-
-
-
-
