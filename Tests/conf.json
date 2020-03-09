@@ -168,6 +168,10 @@
             "playbookID": "PhishlabsIOC_EIR-Test"
         },
         {
+            "integrations": "Amazon DynamoDB",
+            "playbookID": "AWS_DynamoDB-Test"
+        },
+        {
             "integrations": "PhishLabs IOC DRP",
             "playbookID": "PhishlabsIOC_DRP-Test"
         },
