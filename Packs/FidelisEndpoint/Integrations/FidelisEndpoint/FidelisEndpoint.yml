@@ -28,7 +28,7 @@ configuration:
   required: false
   type: 8
 description: This is the Hello World integration for getting started.
-display: FidelisEndpoint
+display: Fidelis Endpoint
 name: FidelisEndpoint
 script:
   commands:

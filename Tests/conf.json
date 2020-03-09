@@ -2234,6 +2234,10 @@
             "playbookID": "Tanium v2 - Test"
         },
         {
+            "integrations": "FidelisEndpoint",
+            "playbookID": "Fidelis Endpoint - Test"
+        },
+        {
           "integrations": "Office 365 Feed",
           "playbookID": "Office365_Feed_Test",
           "fromversion": "5.5.0"
