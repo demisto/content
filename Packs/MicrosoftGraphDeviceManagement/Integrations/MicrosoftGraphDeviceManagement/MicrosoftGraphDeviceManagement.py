@@ -60,14 +60,16 @@ def parse_device_action_results(raw_device_action_results: list) -> list:
     :param raw_device_action_results: The raw list of device action results
     :return: The parsed list of device action results
     """
-    return [
-        assign_params(**{
+    action_results: list = list()
+    for device_action_result in raw_device_action_results:
+        if action_result := assign_params(**{
             'Name': device_action_result.get('actionName'),
             'State': device_action_result.get('actionState'),
             'StartDateTime': device_action_result.get('startDateTime'),
             'LastUpdatedDateTime': device_action_result.get('lastUpdatedDateTime')
-        }) for device_action_result in raw_device_action_results
-    ]
+        }):
+            action_results.append(action_result)
+    return action_results
 
 
 def build_device_object(raw_device: dict) -> dict:
@@ -239,7 +241,7 @@ def convert_string_to_type(string: str) -> Union[str, bool, int]:
     """
     if string.isnumeric():
         return int(string)
-    elif string in ['true', 'false', 'True', 'False']:
+    elif string.lower() in ['true', 'false']:
         return bool(string)
     return string
 
@@ -333,12 +335,13 @@ def main():
     use_ssl: bool = not params.get('insecure', False)
     app_url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token' if self_deployed else ''
     scope: str = 'https://graph.microsoft.com/.default' if self_deployed else ''
+
     proxy: dict = handle_proxy()
+
     ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                 client_id=auth_and_token_url, enc_key=enc_key, client_secret=enc_key, app_name=app_name,
                                 app_url=app_url, scope=scope, base_url=base_url, verify=use_ssl, proxy=proxy,
                                 ok_codes=ok_codes)
-
     client: MsGraphClient = MsGraphClient(ms_client)
 
     command: str = demisto.command()

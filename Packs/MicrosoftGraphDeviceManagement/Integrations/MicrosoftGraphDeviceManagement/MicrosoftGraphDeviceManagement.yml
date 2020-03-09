@@ -809,7 +809,7 @@ script:
     - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
       description: TBD
       type: String
-  dockerimage: demisto/crypto:1.0.0.303
+  dockerimage: demisto/crypto:1.0.0.5893
   isfetch: false
   longRunning: false
   longRunningPort: false
