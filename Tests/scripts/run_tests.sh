@@ -12,6 +12,7 @@ DEMISTO_API_KEY=$temp
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 [ -n "${MEM_CHECK}" ] && MEM_CHECK=true || MEM_CHECK=false
+[ -n "${NON_AMI_RUN}" ] && IS_AMI=true || IS_AMI=false
 
 code_1=0
 code_2=0
@@ -22,7 +23,8 @@ code_1=$?
 
 if [ $code_1 -ne 1 ] ;
 then
-  python ./Tests/test_content.py -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CIRCLE_BUILD_NUM" -g "$CIRCLE_BRANCH" -m "$MEM_CHECK" --isAMI true -d "$1"
+  if
+  python ./Tests/test_content.py -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CIRCLE_BUILD_NUM" -g "$CIRCLE_BRANCH" -m "$MEM_CHECK" --isAMI "$IS_AMI" -d "$1"
 fi
 
 code_2=$?

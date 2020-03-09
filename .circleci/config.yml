@@ -317,7 +317,7 @@ jobs:
                 ./Tests/scripts/run_tests.sh "Demisto GA"
 
               else
-                ./Tests/lastest_server_build_scripts/run_tests.sh
+                ./Tests/scripts/run_tests.sh "Server Master"
             fi
       - run:
           name: Run Tests - One Before GA
