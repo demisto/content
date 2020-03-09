@@ -1176,11 +1176,11 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: "538"
+    taskid: "661"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "538"
+      id: "661"
       version: -1
       name: verify results
       type: condition
@@ -1196,7 +1196,9 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: Okta.Logs.Events.displayMessage
+              complex:
+                root: Okta
+                accessor: Logs.Events.displayMessage
             iscontext: true
           right:
             value:
@@ -1292,11 +1294,11 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: "539"
+    taskid: "662"
     type: condition
     task:
       elasticcommonfields: {}
-      id: "539"
+      id: "662"
       version: -1
       name: verify results
       type: condition
