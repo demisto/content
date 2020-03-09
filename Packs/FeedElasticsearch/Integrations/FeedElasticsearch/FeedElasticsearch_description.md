@@ -15,8 +15,8 @@
 * __Query__: Elasticsearch query to execute when fetching indicators from Elasticsearch.
 
 #### Authentication
-* __Username__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter **_api_key** followed by your API key).
-* __Password__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter you API ID).
+* __Name__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter **_api_key** here).
+* __Password__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter you API ID here).
 
 If you wish to use API Key authorization, please enter into the **Password** field your API id, and into the **Username** parameter **_api_key** followed by your API key.
 For example, for API key:cortexKey and API ID:cortexID you'll need to enter into username _api_keycortexKey and into password you'll need to enter cortexID.  
