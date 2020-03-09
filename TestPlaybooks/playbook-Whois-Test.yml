@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: c895832b-2acb-4977-8b1d-d6626d8d1004
+    taskid: 1c2e6772-bc4d-425a-82e6-a11d6bad9e48
     type: regular
     task:
-      id: c895832b-2acb-4977-8b1d-d6626d8d1004
+      id: 1c2e6772-bc4d-425a-82e6-a11d6bad9e48
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -48,7 +48,7 @@ tasks:
       - "2"
     scriptarguments:
       query:
-        simple: google.com
+        simple: google.co.uk
     separatecontext: false
     view: |-
       {
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 54c12bad-e2c8-450f-8927-f108b3ff4890
+    taskid: bd7bab9a-8d83-4880-8f67-5c5fed2a5317
     type: condition
     task:
-      id: 54c12bad-e2c8-450f-8927-f108b3ff4890
+      id: bd7bab9a-8d83-4880-8f67-5c5fed2a5317
       version: -1
       name: Check results
       type: condition
@@ -87,7 +87,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              simple: google.co.uk
       - - operator: isEqualString
           left:
             value:
@@ -386,10 +386,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 4f9a68f8-689c-42c7-8842-4227bf7879c3
+    taskid: 0091c9a9-451d-4910-8b5d-cc324efca439
     type: condition
     task:
-      id: 4f9a68f8-689c-42c7-8842-4227bf7879c3
+      id: 0091c9a9-451d-4910-8b5d-cc324efca439
       version: -1
       name: Check results
       type: condition
@@ -407,14 +407,6 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: google.com
-      - - operator: isEqualString
-          left:
-            value:
               simple: Domain.Whois.QueryStatus
             iscontext: true
           right:
@@ -423,19 +415,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Domain.Whois.TechAdmin.country
+              simple: Domain.Whois.ExpirationDate
             iscontext: true
           right:
             value:
-              simple: US
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Domain.Whois.Registrant.country
-            iscontext: true
-          right:
-            value:
-              simple: US
+              simple: 14-02-2021
     view: |-
       {
         "position": {
@@ -494,7 +478,7 @@ tasks:
       - "14"
     scriptarguments:
       domain:
-        simple: google.com
+        simple: google.co.uk
     separatecontext: false
     view: |-
       {
@@ -508,10 +492,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 50c90ecb-a8d1-42e4-8f27-c9a9edf1aa5e
+    taskid: d82c7e59-a2e2-4c88-8188-fd3d67f776c5
     type: condition
     task:
-      id: 50c90ecb-a8d1-42e4-8f27-c9a9edf1aa5e
+      id: d82c7e59-a2e2-4c88-8188-fd3d67f776c5
       version: -1
       name: Check results
       type: condition
@@ -531,15 +515,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              simple: google.co.uk
       - - operator: isEqualString
           left:
             value:
-              simple: Domain.Whois.TechAdmin.country
+              simple: Domain.Whois.ExpirationDate
             iscontext: true
           right:
             value:
-              simple: US
+              simple: 14-02-2021
     view: |-
       {
         "position": {

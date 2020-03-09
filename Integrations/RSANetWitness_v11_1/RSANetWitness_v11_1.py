@@ -788,7 +788,7 @@ def create_incident_md_table(incident):
     # if source fields exists and not empty - update incident entry 'source' field with a short string
     # representation of the source-list as value
     source_list = incident.get('sources')
-    if source_list:
+    if source_list and source_list[0]:
         incident_entry['sources'] = ', '.join(source_list)
     else:
         incident_entry['sources'] = ''

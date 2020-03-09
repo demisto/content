@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.1] - 2020-03-04
   - Fixed the setting **Use system proxy settings**, so proxies are ignored when not enabled.
   - Fixed an issue with the ***rasterize*** command in which child processes were defunct when using a proxy server.
 
