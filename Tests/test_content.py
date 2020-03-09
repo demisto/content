@@ -8,6 +8,7 @@ import argparse
 import requests
 import threading
 import subprocess
+import os
 from time import sleep
 from datetime import datetime
 
@@ -18,8 +19,8 @@ from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
-from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
-
+from Tests.test_utils import print_color, print_error, print_warning, \
+    LOG_COLORS, str2bool, server_version_compare, Docker
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -27,7 +28,7 @@ urllib3.disable_warnings()
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
@@ -81,7 +82,7 @@ class TestsSettings:
         self.specific_tests_to_run = self.parse_tests_list_arg(options.testsList)
         self.is_local_run = (self.server is not None)
 
-    @ staticmethod
+    @staticmethod
     def parse_tests_list_arg(tests_list):
         tests_to_run = tests_list.split(",") if tests_list else []
         return tests_to_run
@@ -350,7 +351,14 @@ def mock_run(tests_settings, c, proxy, failed_playbooks, integrations, playbook_
             prints_manager.add_print_job(end_mock_message, print, thread_index)
 
             return
+        elif status == PB_Status.FAILED_DOCKER_TEST:
+            error_message = 'Failed: {} failed'.format(test_message)
+            prints_manager.add_print_job(error_message, print_error, thread_index)
+            failed_playbooks.append(playbook_id)
+            end_mock_message = '------ Test {} end ------\n'.format(test_message)
+            prints_manager.add_print_job(end_mock_message, print, thread_index)
 
+            return
         else:
             mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
             prints_manager.add_print_job(mock_failed_message, print, thread_index)
@@ -497,11 +505,11 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
 def collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations):
     integrations = []
     is_nightly_integration = False
-    has_skipped_integration = False
+    test_skipped_integration = []
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
             skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
-            has_skipped_integration = True
+            test_skipped_integration.append(integration)
 
         if integration in nightly_integrations:
             is_nightly_integration = True
@@ -512,13 +520,13 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
             'params': {}
         })
 
-    return has_skipped_integration, integrations, is_nightly_integration
+    return test_skipped_integration, integrations, is_nightly_integration
 
 
 def extract_filtered_tests(is_nightly):
     if is_nightly:
         # TODO: verify this response
-        return [], False, False
+        return [], False, True
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
@@ -542,7 +550,7 @@ def load_conf_files(conf_path, secret_conf_path):
 
 def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
-                      filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                      filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
                       server_numeric_version, demisto_api_key, prints_manager, thread_index=0, is_ami=True):
     playbook_id = t['playbookID']
@@ -553,7 +561,9 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     test_message = 'playbook: ' + playbook_id
 
     test_options = {
-        'timeout': t.get('timeout', default_test_timeout)
+        'timeout': t.get('timeout', default_test_timeout),
+        'memory_threshold': t.get('memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE),
+        'pid_threshold': t.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
     }
 
     if not isinstance(integrations_conf, list):
@@ -562,8 +572,11 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
     if not isinstance(instance_names_conf, list):
         instance_names_conf = [instance_names_conf, ]
 
-    has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
+    test_skipped_integration, integrations, is_nightly_integration = collect_integrations(
         integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+
+    if playbook_id in filtered_tests:
+        playbook_skipped_integration.update(test_skipped_integration)
 
     skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
 
@@ -585,7 +598,7 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
         return
 
     # Skip integration
-    if has_skipped_integration:
+    if test_skipped_integration:
         return
 
     # Skip version mismatch test
@@ -707,6 +720,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+    playbook_skipped_integration = set([])
 
     disable_all_integrations(demisto_api_key, server, prints_manager, thread_index=thread_index)
     prints_manager.execute_thread_prints(thread_index)
@@ -725,8 +739,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         for t in mockable_tests:
             run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                              is_filter_configured,
-                              filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                              is_filter_configured, filtered_tests,
+                              skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version, demisto_api_key, prints_manager,
                               thread_index=thread_index)
@@ -746,7 +760,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                           is_filter_configured,
-                          filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                          filtered_tests, skipped_tests, secret_params, failed_playbooks, playbook_skipped_integration,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, demisto_api_key,
                           prints_manager, thread_index, is_ami)
@@ -762,6 +776,11 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
         prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
         ami.upload_mock_files(build_name, build_number)
+
+    if playbook_skipped_integration and build_name == 'master':
+        comment = 'The following integrations are skipped and critical for the test:\n {}'.\
+            format('\n- '.join(playbook_skipped_integration))
+        add_pr_comment(comment)
 
 
 def get_unmockable_tests(tests_settings):
@@ -900,6 +919,38 @@ def manage_tests(tests_settings):
         file_path = "./Tests/is_build_passed_{}.txt".format(tests_settings.serverVersion.replace(' ', ''))
         with open(file_path, "w") as is_build_passed_file:
             is_build_passed_file.write('Build passed')
+
+
+def add_pr_comment(comment):
+    token = os.environ['CONTENT_GITHUB_TOKEN']
+    branch_name = os.environ['CIRCLE_BRANCH']
+    sha1 = os.environ['CIRCLE_SHA1']
+
+    query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
+    url = 'https://api.github.com/search/issues'
+    headers = {'Authorization': 'Bearer ' + token}
+    try:
+        res = requests.get(url + query, headers=headers, verify=False)
+        res = handle_github_response(res)
+
+        if res and res.get('total_count', 0) == 1:
+            issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
+            if issue_url:
+                res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
+                handle_github_response(res)
+        else:
+            print_warning('Add pull request comment failed: There is more then one open pull request for branch {}.'
+                          .format(branch_name))
+    except Exception as e:
+        print_warning('Add pull request comment failed: {}'.format(e))
+
+
+def handle_github_response(response):
+    res_dict = response.json()
+    if not res_dict.ok:
+        print_warning('Add pull request comment failed: {}'.
+                      format(res_dict.get('message')))
+    return res_dict
 
 
 def main():
