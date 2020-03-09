@@ -2412,6 +2412,11 @@
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
             "fromversion": "4.5.0"
+        },
+        {
+           "integrations": "AlienVault OTX TAXII Feed",
+            "playbookID": "playbook-feedalienvaultotx_test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
