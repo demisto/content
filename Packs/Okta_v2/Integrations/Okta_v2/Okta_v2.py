@@ -640,7 +640,7 @@ def add_user_to_group_command(client, args):
     user_id = args.get('userId')
 
     if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
-        raise Exception("Missing arguments for command")
+        raise Exception("You must supply either 'Username' or 'userId")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
     if not group_id:
@@ -659,7 +659,7 @@ def remove_from_group_command(client, args):
     user_id = args.get('userId')
 
     if (not (args.get('username') or user_id)) or (not (args.get('groupName') or group_id)):
-        raise Exception("Missing arguments for command")
+        raise Exception("You must supply either 'Username' or 'userId' and either 'groupName' or 'groupId'")
     if not user_id:
         user_id = client.get_user_id(args.get('username'))
     if not group_id:
@@ -745,7 +745,7 @@ def search_command(client, args):
 
 def get_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
-        raise Exception("Missing arguments for command")
+        raise Exception("You must supply either 'Username' or 'userId")
     user_term = args.get('userId') if args.get('userId') else args.get('username')
     raw_response = client.get_user(user_term)
     verbose = args.get('verbose')
@@ -800,7 +800,7 @@ def update_user_command(client, args):
 
 def get_group_members_command(client, args):
     if not (args.get('groupId') or args.get('groupName')):
-        raise Exception("Missing arguments for command")
+        raise Exception("You must supply either 'groupName' or 'groupId")
     limit = args.get('limit')
     group_id = args.get('groupId') or client.get_group_id(args.get('groupName'))
     raw_members = client.get_group_members(group_id, limit)
@@ -928,7 +928,7 @@ def get_application_authentication_command(client, args):
 
 def delete_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
-        raise Exception("Missing arguments for command")
+        raise Exception("You must supply either 'Username' or 'userId")
     user_term = args.get('userId') or args.get('username')
     # Deletes a user permanently. This operation can only be performed on users that have a DEPROVISIONED status.
     # This action cannot be recovered!This operation on a user that hasn't been deactivated
