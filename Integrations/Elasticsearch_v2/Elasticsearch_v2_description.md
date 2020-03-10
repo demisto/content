@@ -1,7 +1,7 @@
 The Elasticsearch v2 integration supports Elasticsearch 6.0.0 and later.
 
 If you wish to use API Key authorization, please enter into the **Password** field your API key, and into the **Username** parameter **_api_key:** followed by your API key ID.
-For example, for API Key with ID: _VuaCfGcBCdbkQm-e5aOx_ and Key: _ui2lp2axTNmsyakw9tvNnw_ you'll need to enter into username **_api_key:VuaCfGcBCdbkQm-e5aOx** and into password you'll need to enter the value: **ui2lp2axTNmsyakw9tvNnw**. For more info about API Key management see: https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html 
+For example, for API Key with ID: _VuaCfGcBCdbkQm-e5aOx_ and key value: _ui2lp2axTNmsyakw9tvNnw_ you'll need to enter into username **_api_key_id:VuaCfGcBCdbkQm-e5aOx** and into password you'll need to enter the value: **ui2lp2axTNmsyakw9tvNnw**. For more info about API Key management see: https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html 
 
 Strings are queried using the Lucene syntax. For more information about the Lucene syntax, see: https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax
 
