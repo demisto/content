@@ -2321,7 +2321,8 @@
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 80
         },
         {
             "integrations": "Expanse",
