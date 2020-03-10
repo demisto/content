@@ -36,7 +36,7 @@ class Client(BaseClient):
 
     def __init__(self, indicator_type: str, api_token: str, sub_feeds: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, **kwargs):
+                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
