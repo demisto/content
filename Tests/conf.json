@@ -2426,7 +2426,6 @@
     ],
     "skipped_tests": {
         "Cybereason Test": "Issue 22683",
-        "Sixgill-Test": "Issue 22682",
         "CVE Search v2": "Issue 22661",
         "AbuseIPDB Test": "Issue 22658",
         "Archer-Test-Playbook": "Issue 22536",
