@@ -615,7 +615,7 @@ def reset_factor_command(client, args):
 
     raw_response = client.reset_factor(user_id, factor_id)
 
-    readable_output = f"Factor: {factor_id} deleted for {args.get('username')}"
+    readable_output = f"Factor: {factor_id} deleted"
     return (
         readable_output,
         {},
