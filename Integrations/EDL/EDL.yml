@@ -48,7 +48,7 @@ configuration:
   required: false
   type: 14
 - display: Username
-  additionalinfo: Uses basic authentication for accessing the EDL. If empty, no authentication is enforced. 
+  additionalinfo: Uses basic authentication for accessing the EDL. If empty, no authentication is enforced.
   name: credentials
   required: false
   type: 9
@@ -99,7 +99,7 @@ script:
     description: Updates values stored in the EDL (only avaialable On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.4937
+  dockerimage: demisto/teams:1.0.0.6411
   feed: false
   isfetch: false
   longRunning: true
