@@ -12,4 +12,4 @@ def test_main(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['ContentsFormat'] == formats['markdown']
-    assert results[0]['Contents'] == '[Demisto](http://demisto.com)'
+    assert results[0]['Contents']['Result'] == '[Demisto](http://demisto.com)'
