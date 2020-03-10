@@ -261,5 +261,5 @@ def test_extract_api_from_username_password_username_username():
 
 def test_extract_api_from_username_password_username_api_key():
     import FeedElasticsearch as esf
-    username = esf.API_KEY_PREFIX + 'api_key'
-    assert esf.extract_api_from_username_password(username, 'api_id') == ('api_key', 'api_id')
+    username = esf.API_KEY_PREFIX + 'api_id'
+    assert esf.extract_api_from_username_password(username, 'api_key') == ('api_id', 'api_key')
