@@ -360,7 +360,10 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
 
 
 def main():
-    client = Client(**demisto.params())
+    params = demisto.params()
+    client = Client(params.get('indicator_type'), params.get('api_token'), params.get('sub_feeds'),
+                    params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
+                    params.get('polling_timeout'), params.get('proxy'), params.get('threshold'))
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case
