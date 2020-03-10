@@ -1,6 +1,6 @@
-id: Test_Markdownify
+id: Test_HTMLtoMD
 version: -1
-name: Test_Markdownify
+name: Test_HTMLtoMD
 starttaskid: "0"
 tasks:
   "0":
@@ -34,8 +34,8 @@ tasks:
     task:
       id: 72e78c42-3525-481f-8337-5a83de3d70da
       version: -1
-      name: Markdownify
-      scriptName: Markdownify
+      name: HTMLtoMD
+      scriptName: HTMLtoMD
       type: regular
       iscommand: false
       brand: ""
@@ -77,7 +77,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Markdownify.Result
+              simple: HTMLtoMD.Result
             iscontext: true
           right:
             value:

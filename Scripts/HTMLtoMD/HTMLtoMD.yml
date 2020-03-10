@@ -7,15 +7,15 @@ args:
   secret: false
 comment: Converts HTML into Markdown.
 commonfields:
-  id: Markdownify
+  id: HTMLtoMD
   version: -1
 enabled: true
-name: Markdownify
+name: HTMLtoMD
 outputs:
-- contextPath: Markdownify.Original
+- contextPath: HTMLtoMD.Original
   description: The original HTML which was converted.
   type: String
-- contextPath: Markdownify.Result
+- contextPath: HTMLtoMD.Result
   description: The Markdown which was converted from HTML.
   type: String
 script: '-'

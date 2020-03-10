@@ -3,15 +3,15 @@ from CommonServerPython import *
 from markdownify import markdownify as md
 
 
-def markdownify_command(args):
-    html = args.get('html')
+def html_to_md_command(args):
+    html = str(args.get('html'))
     markdown = md(html)
     result = {
             "Original": str(html),
             "Result": str(markdown)
         }
     outputs = {
-        "Markdownify(val.Original == obj.Original)": result
+        "HTMLtoMD(val.Original == obj.Original)": result
     }
     demisto.results({
         'Type': entryTypes['note'],
@@ -25,9 +25,9 @@ def markdownify_command(args):
 def main():
     try:
         args = demisto.args()
-        markdownify_command(args)
+        html_to_md_command(args)
     except Exception as expt:
-        return_error(f'Failed to execute Markdownify script. Error: {str(expt)}')
+        return_error(f'Failed to execute HTMLtoMD script. Error: {str(expt)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

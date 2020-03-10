@@ -2,7 +2,7 @@ import demistomock as demisto
 
 
 def test_main(mocker):
-    from Markdownify import main
+    from HTMLtoMD import main
     mocker.patch.object(demisto, 'args', return_value={
         'html': '<a href="http://demisto.com">Demisto</a>'
     })
