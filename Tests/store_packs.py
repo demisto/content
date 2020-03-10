@@ -17,7 +17,7 @@ from Tests.test_utils import run_command, print_error, print_warning, print_colo
 # global constants
 STORAGE_BASE_PATH = "content/packs"
 CONTENT_PACKS_FOLDER = "Packs"
-IGNORED_FILES = ['__init__.py']
+IGNORED_FILES = ['__init__.py', 'ApiModules']
 IGNORED_PATHS = [os.path.join(CONTENT_PACKS_FOLDER, p) for p in IGNORED_FILES]  # Packs/__init__.py is ignored
 # the format is defined in issue #19786, may change in the future
 DIR_NAME_TO_CONTENT_TYPE = {
