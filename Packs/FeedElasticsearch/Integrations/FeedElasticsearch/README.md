@@ -13,7 +13,7 @@ Fetch indicators stored in an Elasticsearch database.
 2. Search for SharedTenantElasticsearchFeed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Server URL__: Elasticsearch database URL. 
-    * __Name__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter **_api_key:** followed by your API key ID).
+    * __Name__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter **_api_key_id:** followed by your API key ID).
     * __Password__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter your API key).    
     * __Trust any certificate (not secure)__: Ignore HTTPS certificates.
     * __Use system proxy settings__: Enable/Disable

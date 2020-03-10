@@ -18,7 +18,7 @@ from dateutil.parser import parse
 requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
-API_KEY_PREFIX = '_api_key:'
+API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')

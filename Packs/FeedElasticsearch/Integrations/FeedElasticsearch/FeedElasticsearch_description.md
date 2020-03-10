@@ -15,10 +15,10 @@
 * __Query__: Elasticsearch query to execute when fetching indicators from Elasticsearch.
 
 #### Authentication
-* __Name__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter **_api_key:** followed by your API key ID).
+* __Name__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter **_api_key_id:** followed by your API key ID).
 * __Password__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter your API key).]()
 
-If you wish to use API Key authorization, please enter into the **Password** field your API key, and into the **Name** parameter **_api_key:** followed by your API key ID.
+If you wish to use API Key authorization, please enter into the **Password** field your API key, and into the **Name** parameter **_api_key_id:** followed by your API key ID.
 For example, for API Key with ID: _VuaCfGcBCdbkQm-e5aOx_ and key value: _ui2lp2axTNmsyakw9tvNnw_ you'll need to enter into name **_api_key_id:VuaCfGcBCdbkQm-e5aOx** and into password you'll need to enter the value: **ui2lp2axTNmsyakw9tvNnw**. For more info about API Key management see: https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html
 
 #### Feed Type

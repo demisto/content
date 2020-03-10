@@ -26,7 +26,7 @@ HTTP_ERRORS = {
 
 '''VARIABLES FOR FETCH INDICATORS'''
 FETCH_SIZE = 50
-API_KEY_PREFIX = '_api_key:'
+API_KEY_PREFIX = '_api_key_id:'
 MODULE_TO_FEEDMAP_KEY = 'moduleToFeedMap'
 FEED_TYPE_GENERIC = 'Generic Feed (fill in configuration below)'
 FEED_TYPE_CORTEX = 'Cortex XSOAR Feed'
