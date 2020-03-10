@@ -333,7 +333,7 @@ class Client(BaseClient):
                     additionalData['Group'] = user.get('group')
                 users_verbose += f"### User:{profile.get('Login')}\n" \
                                  f"{tableToMarkdown('Profile', profile)}\n {tableToMarkdown('Additional Data', additionalData)}"
-                return users_verbose
+            return users_verbose
 
         else:
             users = []
@@ -348,7 +348,7 @@ class Client(BaseClient):
                     'Status': user.get('status')
                 }
                 users.append(user)
-                return users
+            return users
 
     def get_user(self, user_term):
         uri = f'users/{encode_string_results(user_term)}'
