@@ -9,6 +9,28 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+"""GLOBALS/PARAMS"""
+# List processes
+LIST_PROCESSES_WINDOWS = '2d32a530-0716-4542-afdc-8da3bd47d8bf'  # disable-secrets-detection
+LIST_PROCESSES_LINUX = '5e58a0e9-450d-4394-8360-159d5e38c280'  # disable-secrets-detection
+LIST_PROCESSES_MACOS = '020114c2-d000-4876-91b0-97f41a83b067'  # disable-secrets-detection
+
+# Kill processes
+KILL_PROCESS_WINDOWS = '8d379688-dde1-451d-8fa2-4f29c84baf97'  # disable-secrets-detection
+KILL_PROCESS_MAC_LINUX = '76577d3a-c1d7-4d10-af9e-5825c3f9d016'  # disable-secrets-detection
+
+# Delete file
+DELETE_FILE_WINDOWS = '11cb4fae-5516-4391-8a3c-eb09793cd5dd'  # disable-secrets-detection
+DELETE_FILE_MAC_LINUX = 'bead9799-401d-4b9e-adca-cf41b20c9118'  # disable-secrets-detection
+
+# Network isolation
+NETWORK_ISOLATION_WINDOWS = '1d01cc84-753d-4060-89a7-463567552a62'  # disable-secrets-detection
+NETWORK_ISOLATION_MAC_LINUX = 'fd09996a-ef56-49fb-b811-0e5da4bd07ca'  # disable-secrets-detection
+
+# Remove network isolation
+REMOVE_NETWORK_ISOLATION_WINDOWS = '99bbaea5-df18-40cc-8759-b5fb61527d5a'  # disable-secrets-detection
+REMOVE_NETWORK_ISOLATION_MAC_LINUX = '5e252298-4c50-4cdd-94c0-d6997b79157c'  # disable-secrets-detection
+
 
 class Client(BaseClient):
     """
@@ -16,15 +38,14 @@ class Client(BaseClient):
     """
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, headers: dict):
 
-        super().__init__(base_url=server_url, verify=verify)
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self._username = username
         self._password = password
-        self._proxies = handle_proxy() if proxy else None
         self._token = self._generate_token()
         self._headers = headers
 
         if self._token:
-            token = self._token['data'].get('token')
+            token = self._token
             headers.update({'Authorization': 'bearer ' + token})
 
     def _generate_token(self) -> str:
@@ -37,8 +58,12 @@ class Client(BaseClient):
             'username': self._username,
             'password': self._password
         }
-        token = self._http_request('GET', '/authenticate', params=params)
+        response = self._http_request('GET', '/authenticate', params=params)
+        token_ = response.get('data')
+        if not token_:
+            raise Exception('The token could not be generated. Make sure that the username and password are correct.')
 
+        token = token_.get('token')
         return token
 
     def test_module_request(self):
@@ -580,37 +605,29 @@ class Client(BaseClient):
 def test_module(client: Client, *_):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    Args:
-        client: HelloWorld client
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
     """
-
     client.test_module_request()
     demisto.results('ok')
-    return '', {}, {}
+    return 'ok', {}, {}
 
 
 def list_alerts_command(client: Client, args: dict):
     """get information about alerts. """
 
     skip = args.get('skip', 0)
-    limit = args.get('limit')
+    limit = args.get('limit', 50)
     sort = args.get('sort')
-    facet_search = args.get('facet_search')
+    facet_search = args.get('facet_search', '')
     start_date = args.get('start_date')
     end_date = args.get('end_date')
-    headers = ['Name', 'EndpointName', 'EndpointID', 'Source', 'ArtifactName', 'IntelName', 'Severity', 'ID',
-               'AlertDate']
+    headers = ['ID', 'Name', 'EndpointName', 'EndpointID', 'Source', 'ArtifactName', 'IntelName', 'Severity',
+               'CreateDate', 'AlertDate']
 
     contents = []
     context = []
-
     response = client.list_alerts(skip, limit, sort, facet_search, start_date, end_date)
 
-    alerts = response.get('data').get('entities')
+    alerts = response.get('data', {}).get('entities', [])
     if not alerts:
         return f'No alerts were found.', {}, {}
 
@@ -817,7 +834,7 @@ def delete_file_search_job(client: Client, args: dict):
 
 
 def list_scripts_command(client: Client, *_):
-    headers = ['Name', 'ID', 'Description']
+    headers = ['ID', 'Name', 'Description']
     response = client.list_scripts()
 
     scripts = response.get('data', {}).get('scripts', [])
@@ -837,7 +854,7 @@ def list_scripts_command(client: Client, *_):
 
 def script_manifest_command(client: Client, args: dict):
     script_id = args.get('script_id')
-    headers = ['Name', 'ID', 'Description', 'Platform', 'Command', 'Questions', 'Priority', 'TimeoutSeconds',
+    headers = ['ID', 'Name', 'Description', 'Platform', 'Command', 'Questions', 'Priority', 'TimeoutSeconds',
                'ResultColumns', 'ImpersonationUser', 'ImpersonationPassword', 'WizardOverridePassword']
     response = client.script_manifest(script_id)
     data = response.get('data', {})
@@ -888,24 +905,24 @@ def list_process_command(client: Client, args: dict):
     endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
     endpoint_id = endpoints.get('data')
     time_out = args.get('time_out')
-    os = args.get('os')
+    opearting_system = args.get('opearting_system')
     script_id = ''
 
-    if os == 'Windows':
-        script_id = '2d32a530-0716-4542-afdc-8da3bd47d8bf'  # disable-secrets-detection
+    if opearting_system == 'Windows':
+        script_id = LIST_PROCESSES_WINDOWS
 
-    if os == 'Linux':
-        script_id = '5e58a0e9-450d-4394-8360-159d5e38c280'  # disable-secrets-detection
+    if opearting_system == 'Linux':
+        script_id = LIST_PROCESSES_LINUX
 
-    if os == 'macOS':
-        script_id = '020114c2-d000-4876-91b0-97f41a83b067'  # disable-secrets-detection
+    if opearting_system == 'macOS':
+        script_id = LIST_PROCESSES_MACOS
 
     response = client.list_process(script_id, time_out, endpoint_id)
     context = {
         'ID': script_id,
         'JobID': response.get('data')
     }
-    entry_context = {'FidelisEndpoint.Script(val.ID && val.ID === obj.ID)': context}
+    entry_context = {'FidelisEndpoint.Process(val.ID && val.ID === obj.ID)': context}
 
     return 'The job has been executed successfully', entry_context, response
 
@@ -966,22 +983,22 @@ def kill_process_by_pid(client: Client, args: dict):
     endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
     endpoint_id = endpoints.get('data')
     time_out = args.get('time_out')
-    os = args.get('os')
+    opearting_system = args.get('opearting_system')
     pid = args.get('pid')
     script_id = ''
 
-    if os == 'Windows':
-        script_id = '8d379688-dde1-451d-8fa2-4f29c84baf97'  # disable-secrets-detection
+    if opearting_system == 'Windows':
+        script_id = KILL_PROCESS_WINDOWS
 
-    if os == 'Linux' or os == 'macOS':
-        script_id = '76577d3a-c1d7-4d10-af9e-5825c3f9d016'  # disable-secrets-detection
+    if opearting_system == 'Linux' or opearting_system == 'macOS':
+        script_id = KILL_PROCESS_MAC_LINUX
 
     response = client.kill_process(script_id, pid, time_out, endpoint_id)
     context = {
         'ID': script_id,
         'JobID': response.get('data')
     }
-    entry_context = {'FidelisEndpoint.Script(val.ID && val.ID === obj.ID)': context}
+    entry_context = {'FidelisEndpoint.Process(val.ID && val.ID === obj.ID)': context}
 
     return 'The job has been executed successfully', entry_context, response
 
@@ -991,15 +1008,15 @@ def delete_file_command(client: Client, args: dict):
     endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
     endpoint_id = endpoints.get('data')
     time_out = args.get('time_out')
-    os = args.get('os')
+    opearting_system = args.get('opearting_system')
     file_path = args.get('file_path')
     script_id = ''
 
-    if os == 'Windows':
-        script_id = '11cb4fae-5516-4391-8a3c-eb09793cd5dd'  # disable-secrets-detection
+    if opearting_system == 'Windows':
+        script_id = DELETE_FILE_WINDOWS
 
-    if os == 'Linux' or os == 'macOS':
-        script_id = 'bead9799-401d-4b9e-adca-cf41b20c9118'  # disable-secrets-detection
+    if opearting_system == 'Linux' or opearting_system == 'macOS':
+        script_id = DELETE_FILE_MAC_LINUX
 
     response = client.delete_file(script_id, file_path, time_out, endpoint_id)
     context = {
@@ -1016,22 +1033,22 @@ def network_isolation_command(client: Client, args: dict):
     endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
     endpoint_id = endpoints.get('data')
     time_out = args.get('time_out')
-    os = args.get('os')
+    opearting_system = args.get('opearting_system')
     allowed_server = args.get('allowed_server')
     script_id = ''
 
-    if os == 'Windows':
-        script_id = '1d01cc84-753d-4060-89a7-463567552a62'  # disable-secrets-detection
+    if opearting_system == 'Windows':
+        script_id = NETWORK_ISOLATION_WINDOWS
 
-    if os == 'Linux' or os == 'macOS':
-        script_id = 'fd09996a-ef56-49fb-b811-0e5da4bd07ca'  # disable-secrets-detection
+    if opearting_system == 'Linux' or opearting_system == 'macOS':
+        script_id = NETWORK_ISOLATION_MAC_LINUX
 
     response = client.network_isolation(script_id, allowed_server, time_out, endpoint_id)
     context = {
         'ID': script_id,
         'JobID': response.get('data')
     }
-    entry_context = {'FidelisEndpoint.Script(val.ID && val.ID === obj.ID)': context}
+    entry_context = {'FidelisEndpoint.Isolation(val.ID && val.ID === obj.ID)': context}
 
     return 'The job has been executed successfully', entry_context, response
 
@@ -1041,21 +1058,21 @@ def remove_network_isolation_command(client: Client, args: dict):
     endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
     endpoint_id = endpoints.get('data')
     time_out = args.get('time_out')
-    os = args.get('os')
+    opearting_system = args.get('opearting_system')
     script_id = ''
 
-    if os == 'Windows':
-        script_id = '99bbaea5-df18-40cc-8759-b5fb61527d5a'  # disable-secrets-detection
+    if opearting_system == 'Windows':
+        script_id = REMOVE_NETWORK_ISOLATION_WINDOWS
 
-    if os == 'Linux' or os == 'macOS':
-        script_id = '5e252298-4c50-4cdd-94c0-d6997b79157c'  # disable-secrets-detection
+    if opearting_system == 'Linux' or os == 'macOS':
+        script_id = REMOVE_NETWORK_ISOLATION_MAC_LINUX
 
     response = client.remove_network_isolation(script_id, time_out, endpoint_id)
     context = {
         'ID': script_id,
         'JobID': response.get('data')
     }
-    entry_context = {'FidelisEndpoint.Script(val.ID && val.ID === obj.ID)': context}
+    entry_context = {'FidelisEndpoint.Isolation(val.ID && val.ID === obj.ID)': context}
 
     return 'The job has been executed successfully', entry_context, response
 
@@ -1086,7 +1103,7 @@ def query_file_by_hash(client: Client, args: dict):
     logic = args.get('logic')
     file_hash = args.get('file_hash')
     if get_hash_type(file_hash) == 'Unknown':
-        return_error('Enter a valid hash format.')
+        raise Exception('Enter a valid hash format.')
     contents = []
     context = []
     response = client.query_by_hash(start_time, end_time, logic, file_hash)
@@ -1107,8 +1124,6 @@ def query_file_by_hash(client: Client, args: dict):
         })
 
         context.append({
-            "EsIndex": event.get('esIndex'),
-            "EsDocumentType": event.get('esDocumentType'),
             "EventTime": event.get('eventTime'),
             "EndpointName": event.get('endpointName'),
             "EventType": event.get('eventType'),
@@ -1134,8 +1149,7 @@ def query_file_by_hash(client: Client, args: dict):
             "FileType": event.get('fileType'),
             "FileCategory": event.get('fileCategory'),
             "EntityType": event.get('entityType'),
-            "StartTime": event.get('startTime'),
-            "Entropy": event.get('entropy')
+            "StartTime": event.get('startTime')
         })
 
     entry_context = {'FidelisEndpoint.Query(val.Hash && val.Hash === obj.Hash)': context}
@@ -1185,8 +1199,7 @@ def query_process_name_command(client: Client, args: dict):
             'ProcessStartTime': event.get('processStartTime'),
             'IndexingTime': event.get('indexingTime'),
             'EntityType': event.get('entityType'),
-            'StartTime': event.get('startTime'),
-            'Entropy': event.get('entropy')
+            'StartTime': event.get('startTime')
         })
 
     entry_context = {'FidelisEndpoint.Query(val.PID && val.PID === obj.PID)': context}
@@ -1224,8 +1237,6 @@ def query_connection_by_remote_ip(client: Client, args: dict):
         })
 
         context.append({
-            'EsIndex': event.get('esIndex'),
-            'EsDocumentType': event.get('esDocumentType'),
             'EventTime': event.get('eventTime'),
             'EndpointName': event.get('endpointName'),
             'EventType': event.get('eventType'),
@@ -1246,8 +1257,7 @@ def query_connection_by_remote_ip(client: Client, args: dict):
             'NetworkDirection': event.get('networkDirection'),
             'EntityType': event.get('entityType'),
             'StartTime': event.get('startTime'),
-            'parentHashSHA1': event.get('parentHashSHA1'),
-            'Entropy': event.get('entropy')
+            'parentHashSHA1': event.get('parentHashSHA1')
         })
 
     entry_context = {'FidelisEndpoint.Query(val.PPID && val.PPID === obj.PPID)': context}
@@ -1296,8 +1306,7 @@ def query_dns_request(client: Client, args: dict):
             'IndexingTime': event.get('indexingTime'),
             'NetworkDirection': event.get('networkDirection'),
             'EntityType': event.get('entityType'),
-            'StartTime': event.get('startTime'),
-            'Entropy': event.get('entropy')
+            'StartTime': event.get('startTime')
         })
 
     entry_context = {'FidelisEndpoint.Query(val.ParentID && val.ParentID === obj.ParentID)': context}
@@ -1346,8 +1355,7 @@ def query_by_server_ip(client: Client, args: dict):
             'IndexingTime': event.get('indexingTime'),
             'NetworkDirection': event.get('networkDirection'),
             'EntityType': event.get('entityType'),
-            'StartTime': event.get('startTime'),
-            'Entropy': event.get('entropy')
+            'StartTime': event.get('startTime')
         })
 
     entry_context = {'FidelisEndpoint.Query(val.TargetID && val.TargetID === obj.TargetID)': context}
@@ -1397,8 +1405,7 @@ def query_by_source_ip(client: Client, args: dict):
             'IndexingTime': event.get('indexingTime'),
             'NetworkDirection': event.get('networkDirection'),
             'EntityType': event.get('entityType'),
-            'StartTime': event.get('startTime'),
-            'Entropy': event.get('entropy')
+            'StartTime': event.get('startTime')
         })
 
     entry_context = {'FidelisEndpoint.Query(val.TargetID && val.TargetID === obj.TargetID)': context}
@@ -1456,8 +1463,7 @@ def query_events(client: Client, args: dict):
             'EventIndex': event.get('eventIndex'),
             'IndexingTime': event.get('indexingTime'),
             'EntityType': event.get('entityType'),
-            'StartTime': event.get('startTime'),
-            'Entropy': event.get('entropy')
+            'StartTime': event.get('startTime')
         })
 
     entry_context = {'FidelisEndpoint.Query(val.PID && val.PID === obj.PID)': context}

@@ -59,6 +59,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '50'
       description: 'The start of the time range of returned values. For example: 0001-01-01T00:00:00Z'
       isArray: false
       name: start_date
@@ -178,7 +179,7 @@ script:
       description: Is the endpoint deleted.
       type: Boolean
     - contextPath: FidelisEndpoint.Host.AREnabled
-      description: ' Is AR Enabled.'
+      description: Is AR Enabled.
       type: Boolean
     - contextPath: FidelisEndpoint.Host.AVEEnabled
       description: Is AV enabled.
@@ -462,7 +463,7 @@ script:
       default: false
       description: Ths system OS.
       isArray: false
-      name: os
+      name: opearting_system
       predefined:
       - Windows
       - Linux
@@ -481,10 +482,10 @@ script:
     execution: false
     name: fidelis-endpoint-list-processes
     outputs:
-    - contextPath: FidelisEndpoint.Script.JobID
+    - contextPath: FidelisEndpoint.Process.JobID
       description: Script data - Job ID
       type: String
-    - contextPath: FidelisEndpoint.Script.ID
+    - contextPath: FidelisEndpoint.Process.ID
       description: Script ID.
       type: String
   - arguments:
@@ -566,7 +567,7 @@ script:
       default: false
       description: System OS.
       isArray: false
-      name: os
+      name: opearting_system
       predefined:
       - Windows
       - Linux
@@ -584,10 +585,10 @@ script:
     execution: false
     name: fidelis-endpoint-kill-process
     outputs:
-    - contextPath: FidelisEndpoint.Script.JobID
+    - contextPath: FidelisEndpoint.Process.JobID
       description: Script job ID.
       type: String
-    - contextPath: FidelisEndpoint.Script.ID
+    - contextPath: FidelisEndpoint.Process.ID
       description: Script ID.
       type: String
   - arguments:
@@ -608,7 +609,7 @@ script:
       default: false
       description: System OS.
       isArray: false
-      name: os
+      name: opearting_system
       predefined:
       - Windows
       - Linux
@@ -650,7 +651,7 @@ script:
       default: false
       description: The system OS.
       isArray: false
-      name: os
+      name: opearting_system
       predefined:
       - Windows
       - Linux
@@ -668,10 +669,10 @@ script:
     execution: false
     name: fidelis-endpoint-isolate-network
     outputs:
-    - contextPath: FidelisEndpoint.Script.ID
+    - contextPath: FidelisEndpoint.Isolation.ID
       description: Script ID.
       type: String
-    - contextPath: FidelisEndpoint.Script.JobID
+    - contextPath: FidelisEndpoint.Isolation.JobID
       description: Script job ID.
       type: String
   - arguments:
@@ -692,7 +693,7 @@ script:
       default: false
       description: System OS.
       isArray: false
-      name: os
+      name: opearting_system
       predefined:
       - Windows
       - Linux
@@ -704,10 +705,10 @@ script:
     execution: false
     name: fidelis-endpoint-remove-network-isolation
     outputs:
-    - contextPath: FidelisEndpoint.Script.ID
+    - contextPath: FidelisEndpoint.Isolation.ID
       description: Script ID.
       type: String
-    - contextPath: FidelisEndpoint.Script.JobID
+    - contextPath: FidelisEndpoint.Isolation.JobID
       description: Script job ID.
       type: String
   - arguments:
@@ -822,12 +823,6 @@ script:
     - contextPath: FidelisEndpoint.Query.FileExtension
       description: File extension.
       type: String
-    - contextPath: FidelisEndpoint.Query.EsDocumentType
-      description: ES document type.
-      type: String
-    - contextPath: FidelisEndpoint.Query.EsIndex
-      description: ES index.
-      type: String
     - contextPath: FidelisEndpoint.Query.Path
       description: File path.
       type: String
@@ -855,9 +850,6 @@ script:
     - contextPath: FidelisEndpoint.Query.StartTime
       description: Event start time.
       type: Date
-    - contextPath: FidelisEndpoint.Query.Entropy
-      description: Entropy
-      type: Number
     - contextPath: FidelisEndpoint.Query.HashSHA1
       description: File SHA1
       type: String
@@ -926,6 +918,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Query process.
     execution: false
     name: fidelis-endpoint-query-process
     outputs:
@@ -934,12 +927,6 @@ script:
       type: String
     - contextPath: FidelisEndpoint.Query.EndpointName
       description: Endpoint name.
-      type: String
-    - contextPath: FidelisEndpoint.Query.EsDocumentType
-      description: ES Document Type.
-      type: String
-    - contextPath: FidelisEndpoint.Query.EsIndex
-      description: ES index.
       type: String
     - contextPath: FidelisEndpoint.Query.Path
       description: The path of the process.
@@ -968,9 +955,6 @@ script:
     - contextPath: FidelisEndpoint.Query.StartTime
       description: Process start time.
       type: Date
-    - contextPath: FidelisEndpoint.Query.Entropy
-      description: Entropy.
-      type: Number
     - contextPath: FidelisEndpoint.Query.EventType
       description: Event type.
       type: Number
@@ -1025,12 +1009,6 @@ script:
     - contextPath: FidelisEndpoint.Query.EndpointName
       description: Endpoint name.
       type: String
-    - contextPath: FidelisEndpoint.Query.EsDocumentType
-      description: ES Document Type.
-      type: String
-    - contextPath: FidelisEndpoint.Query.[1].EsIndex
-      description: ES index.
-      type: String
     - contextPath: FidelisEndpoint.Query.ParentID
       description: Process parent ID.
       type: String
@@ -1055,9 +1033,6 @@ script:
     - contextPath: FidelisEndpoint.Query.EndpointID
       description: Endpoint ID.
       type: String
-    - contextPath: FidelisEndpoint.Query.Entropy
-      description: Entropy
-      type: Number
     - contextPath: FidelisEndpoint.Query.NetworkDirection
       description: Network direction.
       type: Number
@@ -1160,9 +1135,6 @@ script:
     - contextPath: FidelisEndpoint.Query.StartTime
       description: Event start time.
       type: Date
-    - contextPath: FidelisEndpoint.Query.Entropy
-      description: Entropy.
-      type: Number
     - contextPath: FidelisEndpoint.Query.NetworkDirection
       description: Network Direction.
       type: Number
@@ -1250,9 +1222,6 @@ script:
     - contextPath: FidelisEndpoint.Query.StartTime
       description: Event start time.
       type: Date
-    - contextPath: FidelisEndpoint.Query.Entropy
-      description: Entropy.
-      type: Number
     - contextPath: FidelisEndpoint.Query.NetworkDirection
       description: Network Direction.
       type: Number
@@ -1342,9 +1311,6 @@ script:
     - contextPath: FidelisEndpoint.Query.StartTime
       description: Event start time.
       type: Date
-    - contextPath: FidelisEndpoint.Query.Entropy
-      description: Entropy.
-      type: Number
     - contextPath: FidelisEndpoint.Query.NetworkDirection
       description: Network Direction.
       type: Number
@@ -1475,7 +1441,7 @@ script:
     - contextPath: FidelisEndpoint.Query.Entropy
       description: Entropy.
       type: Number
-    - contextPath: FidelisEndpoint.Query.[0].LocalIP
+    - contextPath: FidelisEndpoint.Query.LocalIP
       description: Local IP.
       type: String
     - contextPath: FidelisEndpoint.Query.EventType
