@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Plain Text Feed",
+            "playbookID": "PlainText Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -2556,7 +2561,8 @@
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
-        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
+        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
+        "Ipstack": "reached out our monthly quota (08/03/2020)"
     },
     "nightly_integrations": [
         "Lastline v2",
