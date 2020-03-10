@@ -28,4 +28,4 @@ runas: DBotWeakRole
 runonce: false
 subtype: python3
 tests:
-- Test_Markdownify
+- Test_HTMLtoMD
