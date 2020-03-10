@@ -62,12 +62,13 @@ def parse_device_action_results(raw_device_action_results: list) -> list:
     """
     action_results: list = list()
     for device_action_result in raw_device_action_results:
-        if action_result := assign_params(**{
+        action_result = assign_params(**{
             'Name': device_action_result.get('actionName'),
             'State': device_action_result.get('actionState'),
             'StartDateTime': device_action_result.get('startDateTime'),
             'LastUpdatedDateTime': device_action_result.get('lastUpdatedDateTime')
-        }):
+        })
+        if action_result:
             action_results.append(action_result)
     return action_results
 
