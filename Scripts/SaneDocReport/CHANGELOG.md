@@ -1,5 +1,8 @@
 ## [Unreleased]
-- Fixes to the bar chart, and header fixes.
+-
+
+## [20.2.4] - 2020-02-25
+- Fixes to the bar chart and header.
 
 ## [20.2.0] - 2020-02-04
 Fixed an issue where in rare cases the investigation reports crashed.
