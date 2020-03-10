@@ -75,7 +75,7 @@ VERDICTS_TO_DBOTSCORE = {
 
 class NotFoundError(Exception):
     """ Report or File not found. """
-    def __init__(self, *args, **kwargs):  # real signature unknown
+    def __init__(self, *args):  # real signature unknown
         pass
 
 
@@ -698,7 +698,7 @@ def wildfire_get_sample(file_hash):
 
 
 def wildfire_get_sample_command():
-    if 'sha256' or 'hash' in demisto.args():
+    if 'sha256' in demisto.args() or 'hash' in demisto.args():
         sha256 = demisto.args().get('sha256', None)
     else:
         sha256 = None
