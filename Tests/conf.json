@@ -2425,7 +2425,6 @@
         }
     ],
     "skipped_tests": {
-        "Archer-Test-Playbook": "Issue 22536",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
