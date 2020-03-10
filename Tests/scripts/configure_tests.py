@@ -48,8 +48,6 @@ ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonInteg
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
-# pack_metadata.json is the local metadata for a pack
-
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
 
