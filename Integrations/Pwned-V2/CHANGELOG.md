@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [19.11.1] - 2019-11-26
 Added batch support for domain and email commands.

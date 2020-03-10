@@ -48,10 +48,22 @@ configuration:
   required: false
   type: 14
 - display: Username
-  additionalinfo: Uses basic authentication for accessing the EDL. If empty, no authentication is enforced. 
+  additionalinfo: Uses basic authentication for accessing the EDL. If empty, no authentication is enforced.
   name: credentials
   required: false
   type: 9
+- defaultvalue: 'true'
+  display: Enforce PAN-OS Compatibility
+  name: panos_compatible
+  required: false
+  type: 8
+  additionalinfo: If selected, indicator values that don't conform to PAN-OS expectations will be reformatted, otherwise the indicator values will be dropped.
+- defaultvalue: 'true'
+  display: Strip Ports from URLs
+  name: url_port_stripping
+  required: false
+  type: 8
+  additionalinfo: If selected, a URL that includes a port number will be reformatted to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service
@@ -87,7 +99,7 @@ script:
     description: Updates values stored in the EDL (only avaialable On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.4937
+  dockerimage: demisto/teams:1.0.0.6411
   feed: false
   isfetch: false
   longRunning: true
