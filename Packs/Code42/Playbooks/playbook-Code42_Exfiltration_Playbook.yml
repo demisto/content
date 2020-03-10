@@ -1,6 +1,5 @@
 id: Code42 Exfiltration Playbook
 version: -1
-fromversion: 5.0.0
 name: Code42 Exfiltration Playbook
 description: The Code42 Exfiltration playbook acts on Code42 Security Alerts, retrieves
   file event data, and allows security teams to remediate file exfiltration events
@@ -25,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 50
+          "x": 520,
+          "y": -90
         }
       }
     note: false
@@ -46,15 +45,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '4'
-      - '17'
-      - '18'
+      - '24'
+      - '25'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 195
+          "x": 520,
+          "y": 75
         }
       }
     note: false
@@ -62,124 +60,12 @@ tasks:
     - fieldname: remediationsla
       action: start
     ignoreworker: false
-  '2':
-    id: '2'
-    taskid: 4788eeef-3f1f-4f44-81ec-35c30b766139
-    type: regular
-    task:
-      id: 4788eeef-3f1f-4f44-81ec-35c30b766139
-      version: -1
-      name: Get AD User Info
-      description: ''
-      scriptName: ADGetUser
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      attributes: {}
-      customFieldData: {}
-      customFieldType: {}
-      dn: {}
-      email:
-        simple: ${incident.username}
-      extend-context:
-        simple: aduserinfo=
-      headers: {}
-      limit: {}
-      name: {}
-      nestedSearch: {}
-      userAccountControlOut: {}
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1135,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '3':
-    id: '3'
-    taskid: e808f623-6d03-4e78-8308-5e2d7a1932a7
-    type: regular
-    task:
-      id: e808f623-6d03-4e78-8308-5e2d7a1932a7
-      version: -1
-      name: Get Manager Info
-      description: ''
-      scriptName: ADGetUser
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '5'
-    scriptarguments:
-      attributes: {}
-      customFieldData: {}
-      customFieldType: {}
-      dn: {}
-      email:
-        simple: ${aduserinfo.manager}
-      headers: {}
-      limit: {}
-      name: {}
-      nestedSearch: {}
-      userAccountControlOut: {}
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1135,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: Employee Manager Email
-      output:
-        simple: ${Account.Email.Address}
-  '4':
-    id: '4'
-    taskid: c2650a82-8394-41e5-82b2-9956920ecb15
-    type: title
-    task:
-      id: c2650a82-8394-41e5-82b2-9956920ecb15
-      version: -1
-      name: Retrieve Files using Code42 (Future Action)
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '5'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 255,
-          "y": 705
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '5':
     id: '5'
-    taskid: afa2c253-0b64-4aed-82bf-7b186bda437d
+    taskid: a184e0ba-3bfb-4510-840d-6caaa4a262b1
     type: condition
     task:
-      id: afa2c253-0b64-4aed-82bf-7b186bda437d
+      id: a184e0ba-3bfb-4510-840d-6caaa4a262b1
       version: -1
       name: Review Evidence for Malicious Behavior
       description: ''
@@ -195,8 +81,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 865
+          "x": 520,
+          "y": 465
         }
       }
     note: false
@@ -217,15 +103,14 @@ tasks:
     nexttasks:
       '#none#':
       - '19'
-      - '20'
       - '22'
       - '23'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 1040
+          "x": 1000,
+          "y": 670
         }
       }
     note: false
@@ -245,13 +130,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+      - '9'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1375
+          "y": 1900
         }
       }
     note: false
@@ -259,38 +144,29 @@ tasks:
     ignoreworker: false
   '8':
     id: '8'
-    taskid: ebf7e7cd-f558-4803-8280-30323bff8389
+    taskid: 8bf6135a-41de-4f2e-81d0-f0e20621e61d
     type: regular
     task:
-      id: ebf7e7cd-f558-4803-8280-30323bff8389
+      id: 8bf6135a-41de-4f2e-81d0-f0e20621e61d
       version: -1
-      name: Close Investigation
+      name: Resolve Code42 Alert
       description: ''
-      script: Builtin|||closeInvestigation
+      script: '|||code42-alert-resolve'
       type: regular
       iscommand: true
-      brand: Builtin
+      brand: ''
     nexttasks:
       '#none#':
-      - '9'
+      - '26'
     scriptarguments:
-      assetid: {}
-      closeNotes:
-        simple: Activity was reviewed by ${incident.owner} and determined to not be
-          malicious.
-      closeReason:
-        simple: No Malicious Behavior Detected
-      code42alerttype: {}
-      emailclassification: {}
-      exfiltratedfilelist: {}
-      id: {}
-      phishingsubtype: {}
+      id:
+        simple: ${incident.labels.id}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1535
+          "x": 480,
+          "y": 2455
         }
       }
     note: false
@@ -310,13 +186,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '10'
+      - '8'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1012.5,
-          "y": 1710
+          "x": 480,
+          "y": 2260
         }
       }
     note: false
@@ -340,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
-          "y": 1855
+          "x": 480,
+          "y": 2905
         }
       }
     note: false
@@ -349,10 +225,10 @@ tasks:
     ignoreworker: false
   '11':
     id: '11'
-    taskid: 1c82bdf7-7e6a-4ed2-848a-1334445773dc
+    taskid: ab440d56-4490-45dc-8685-7a8cb5748da1
     type: regular
     task:
-      id: 1c82bdf7-7e6a-4ed2-848a-1334445773dc
+      id: ab440d56-4490-45dc-8685-7a8cb5748da1
       version: -1
       name: Locate CrowdStrike Host
       description: ''
@@ -362,503 +238,26 @@ tasks:
       brand: CrowdstrikeFalcon
     nexttasks:
       '#none#':
-      - '12'
+      - '31'
     scriptarguments:
       filter: {}
       hostname:
-        simple: ${incident.devicename}
+        complex:
+          root: incident
+          accessor: code42fileevents.oshostname
+          transformers:
+          - operator: uniq
       ids: {}
       platform_name: {}
       site_name: {}
       status: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '12':
-    id: '12'
-    taskid: d507e7b1-4bff-45f7-8f1a-8d22e76e86f9
-    type: regular
-    task:
-      id: d507e7b1-4bff-45f7-8f1a-8d22e76e86f9
-      version: -1
-      name: CrowdStrike Network Contain
-      description: ''
-      script: '|||cs-falcon-contain-host'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '9'
-    scriptarguments:
-      ids:
-        simple: ${CrowdStrike.Device.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1535
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '13':
-    id: '13'
-    taskid: b696eeda-546e-4b10-802e-a65d623ed202
-    type: regular
-    task:
-      id: b696eeda-546e-4b10-802e-a65d623ed202
-      version: -1
-      name: Get Google User Roles
-      description: ''
-      script: google|||googleapps-get-user-roles
-      type: regular
-      iscommand: true
-      brand: google
-    nexttasks:
-      '#none#':
-      - '14'
-    scriptarguments:
-      user-key:
-        simple: ${incident.employeeemail}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '14':
-    id: '14'
-    taskid: a596a7e0-2a61-4e14-88ad-d13b2b3285e9
-    type: regular
-    task:
-      id: a596a7e0-2a61-4e14-88ad-d13b2b3285e9
-      version: -1
-      name: Revoke Google User Roles
-      description: ''
-      script: '|||googleapps-revoke-user-role'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '9'
-    scriptarguments:
-      role-assignment-id:
-        simple: ${GoogleApps.Role.RoleAssignmentId}
-      token: {}
-      user-key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1535
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '16':
-    id: '16'
-    taskid: e169b0b2-5ba1-4aac-8fb9-86db9f355797
-    type: regular
-    task:
-      id: e169b0b2-5ba1-4aac-8fb9-86db9f355797
-      version: -1
-      name: Send Email To Manager
-      description: ''
-      scriptName: SendEmailToManager
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '9'
-    scriptarguments:
-      allowReply:
-        simple: 'true'
-      body:
-        simple: 'Malicious insider threat activity has been found for the following
-          users: ${incident.employeeemail}'
-      email: {}
-      manager:
-        simple: ${incident.employeemanageremail}
-      persistent: {}
-      replyEntriesTag: {}
-      request: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 1535
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '17':
-    id: '17'
-    taskid: b0c7ce9b-4a5c-4c5c-8fef-e2e77f10383c
-    type: regular
-    task:
-      id: b0c7ce9b-4a5c-4c5c-8fef-e2e77f10383c
-      version: -1
-      name: Update Incident Data
-      description: ''
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '24'
-    scriptarguments:
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      crowdstrikeseverity: {}
-      customFields: {}
-      cve: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationip: {}
-      destntdomain: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailtype: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      exfiltratedfilelist:
-        simple: ${incident.exfiltratedfiles}
-      exfiltratedfiles: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      infectedhosts: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourceip: {}
-      src: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user:
-        simple: ${incident.labels.actor}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 685,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '18':
-    id: '18'
-    taskid: 44991a99-363b-49fd-82a2-173433bf7f85
-    type: condition
-    task:
-      id: 44991a99-363b-49fd-82a2-173433bf7f85
-      version: -1
-      name: Is Active Directory Enabled?
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '5'
-      'yes':
-      - '2'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: ConfiguredModules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active Directory Query V2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1020,
-          "y": 340
+          "x": 990,
+          "y": 1195
         }
       }
     note: false
@@ -866,17 +265,19 @@ tasks:
     ignoreworker: false
   '19':
     id: '19'
-    taskid: a83c609f-aaf5-4a23-8442-a7fe3b25f5f1
+    taskid: edfaee2f-e2ef-469c-8377-2eaa79e626da
     type: condition
     task:
-      id: a83c609f-aaf5-4a23-8442-a7fe3b25f5f1
+      id: edfaee2f-e2ef-469c-8377-2eaa79e626da
       version: -1
-      name: Is Jira Enabled
+      name: Is Jira Enabled?
       description: ''
       type: condition
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '30'
       'yes':
       - '21'
     separatecontext: false
@@ -887,82 +288,31 @@ tasks:
           left:
             value:
               complex:
-                root: ConfiguredModules
+                root: modules
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: brand
+                        simple: modules.brand
                       iscontext: true
                     right:
                       value:
-                        simple: Atlassian Jira (v2)
+                        simple: jira-v2
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: status
+                        simple: modules.state
                       iscontext: true
                     right:
                       value:
                         simple: active
+                accessor: brand
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '20':
-    id: '20'
-    taskid: ead2234d-1a1f-48aa-8e70-4ea294a38c8a
-    type: condition
-    task:
-      id: ead2234d-1a1f-48aa-8e70-4ea294a38c8a
-      version: -1
-      name: Is Google Apps Enabled?
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      'yes':
-      - '13'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: ConfiguredModules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: GoogleApps
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1185
+          "x": 295,
+          "y": 1535
         }
       }
     note: false
@@ -983,7 +333,7 @@ tasks:
       brand: jira-v2
     nexttasks:
       '#none#':
-      - '9'
+      - '30'
     scriptarguments:
       assignee: {}
       description: {}
@@ -1006,8 +356,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1535
+          "x": 290,
+          "y": 1770
         }
       }
     note: false
@@ -1015,16 +365,229 @@ tasks:
     ignoreworker: false
   '22':
     id: '22'
-    taskid: 28933044-abb5-44c0-81d2-785f48484068
+    taskid: 8951bca9-832e-4728-8c99-ac8225567f4d
     type: condition
     task:
-      id: 28933044-abb5-44c0-81d2-785f48484068
+      id: 8951bca9-832e-4728-8c99-ac8225567f4d
       version: -1
       name: Is CrowdStrike Enabled?
       description: ''
       type: condition
       iscommand: false
       brand: ''
+    nexttasks:
+      '#default#':
+      - '30'
+      'yes':
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdstrikeFalcon
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '23':
+    id: '23'
+    taskid: 4b0e0316-551c-4521-8538-0c158e869f4f
+    type: condition
+    task:
+      id: 4b0e0316-551c-4521-8538-0c158e869f4f
+      version: -1
+      name: Does Manager Email Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: UserManagerEmail
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '24':
+    id: '24'
+    taskid: 2433863a-006b-466d-8806-a073c17e4b40
+    type: regular
+    task:
+      id: 2433863a-006b-466d-8806-a073c17e4b40
+      version: -1
+      name: Retrieve File Contents
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '25':
+    id: '25'
+    taskid: 048d8d85-9980-4c99-8f0c-6ec470790f3c
+    type: playbook
+    task:
+      id: 048d8d85-9980-4c99-8f0c-6ec470790f3c
+      version: -1
+      name: Active Directory - Get User Manager Details
+      description: ''
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      UserEmail:
+        simple: ${incident.labels.actor}
+      Username: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '26':
+    id: '26'
+    taskid: 31971cff-2b6f-43e3-81b5-6e21f0bebc18
+    type: regular
+    task:
+      id: 31971cff-2b6f-43e3-81b5-6e21f0bebc18
+      version: -1
+      name: Close Incident
+      description: ''
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '27':
+    id: '27'
+    taskid: ffcbeb49-e65c-4a55-88c3-379f397038a7
+    type: condition
+    task:
+      id: ffcbeb49-e65c-4a55-88c3-379f397038a7
+      version: -1
+      name: Confirm Network Contain
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '30'
+      'Yes':
+      - '32'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '28':
+    id: '28'
+    taskid: 89f7c480-e5b5-451d-8b7f-71173d1d7e6e
+    type: condition
+    task:
+      id: 89f7c480-e5b5-451d-8b7f-71173d1d7e6e
+      version: -1
+      name: Does Hostname Exist?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
     nexttasks:
       'yes':
       - '11'
@@ -1036,94 +599,183 @@ tasks:
           left:
             value:
               complex:
-                root: ConfiguredModules
+                root: incident
                 filters:
-                - - operator: isEqualString
+                - - operator: isExists
                     left:
                       value:
-                        simple: brand
+                        simple: incident.code42fileevents.oshostname
                       iscontext: true
-                    right:
-                      value:
-                        simple: CrowdstrikeFalcon
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
+                accessor: code42fileevents.oshostname
+                transformers:
+                - operator: uniq
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1185
+          "x": 990,
+          "y": 1020
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '23':
-    id: '23'
-    taskid: 6ab683e1-f0fe-4487-835f-4a787eed8409
+  '29':
+    id: '29'
+    taskid: a5672e94-6a8c-408e-8692-bbb309445390
+    type: regular
+    task:
+      id: a5672e94-6a8c-408e-8692-bbb309445390
+      version: -1
+      name: Send email to manager
+      description: ''
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Data exfiltration activity has been detected by Code42 for user ${incident.labels.actor}. File exfiltration details:
+
+          Files:
+          ${incident.code42fileevents.filename}
+
+          Paths:
+          ${incident.code42fileevents.filepath}
+
+          Exposures:
+          ${incident.code42fileevents.exposure}
+
+          If you have access to Demisto, you can view the incident details at ${inputs.DemistoInstanceURL}#/incident/${incident.id}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: ${incident.name}
+      templateParams: {}
+      to:
+        simple: ${UserManagerEmail}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '30':
+    id: '30'
+    taskid: b7694500-9c25-4a86-8033-aa4f8d07e99a
+    type: regular
+    task:
+      id: b7694500-9c25-4a86-8033-aa4f8d07e99a
+      version: -1
+      name: Confirm Remediation Is Complete
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '31':
+    id: '31'
+    taskid: d467f47c-af70-46bb-8080-cf1ddab4d7ef
     type: condition
     task:
-      id: 6ab683e1-f0fe-4487-835f-4a787eed8409
+      id: d467f47c-af70-46bb-8080-cf1ddab4d7ef
       version: -1
-      name: Does Manager Email Exist?
-      description: ''
+      name: Determine if too many hosts will be contained
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
+      '#default#':
+      - '27'
       'yes':
-      - '16'
+      - '30'
     separatecontext: false
     conditions:
     - label: 'yes'
       condition:
-      - - operator: isExists
+      - - operator: greaterThan
           left:
             value:
-              simple: incident.employeemanageremail
+              complex:
+                root: CrowdStrike
+                accessor: Device.ID
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: inputs.ContainHostsMax
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 990,
           "y": 1360
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '24':
-    id: '24'
-    taskid: 982b5e16-4bdb-4ac3-894c-7fbefee9d4bf
+  '32':
+    id: '32'
+    taskid: 6c6e0dc7-d9a4-4368-8868-a2acb0335ac4
     type: regular
     task:
-      id: 982b5e16-4bdb-4ac3-894c-7fbefee9d4bf
+      id: 6c6e0dc7-d9a4-4368-8868-a2acb0335ac4
       version: -1
-      name: Populate Exfiltrated Files List
+      name: CrowdStrike Network Contain
       description: ''
-      scriptName: PopulateExfiltratedFilesList
+      script: '|||cs-falcon-contain-host'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ''
     nexttasks:
       '#none#':
-      - '5'
+      - '30'
     scriptarguments:
-      exfiltratedfiles:
-        simple: ${incident.exfiltratedfiles}
+      ids:
+        simple: ${CrowdStrike.Device.ID}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 690
+          "x": 1115,
+          "y": 1805
         }
       }
     note: false
@@ -1134,26 +786,40 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1870,
-        "width": 2100,
+        "height": 3060,
+        "width": 1920,
         "x": 50,
-        "y": 50
+        "y": -90
       }
     }
   }
 inputs:
 - key: JiraProject
-  value: {}
+  value:
+    simple: Security
   required: false
   description: Jira Project for created incident ticket
 - key: JiraType
-  value: {}
+  value:
+    simple: Investigation
   required: false
   description: Type of Jira ticket to create
 - key: JiraSummary
-  value: {}
+  value:
+    simple: Code42 Security Alert for Demisto Incident ${incident.id}
   required: false
   description: Summary to use with Jira ticket creation
+- key: ContainHostsMax
+  value:
+    simple: '2'
+  required: false
+  description: Maximum number of network hosts to contain.
+- key: DemistoInstanceURL
+  value:
+    simple: https://sardan.demisto.works/
+  required: false
+  description: URL of Demisto instance for emails.
 outputs: []
+fromversion: 5.0.0
 tests:
 - No Test
