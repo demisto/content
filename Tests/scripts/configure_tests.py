@@ -16,7 +16,8 @@ sys.path.append(CONTENT_DIR)
 
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning  # noqa: E402
+    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, \
+    print_warning  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -124,7 +125,8 @@ def get_modified_files(files_string):
             elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
                 continue
 
-            elif SECRETS_WHITE_LIST not in file_path:
+            elif all(file not in file_path for file in
+                     (SECRETS_WHITE_LIST, PACKS_PACK_META_FILE_NAME, PACKS_WHITELIST_FILE_NAME)):
                 sample_tests.append(file_path)
 
     return (modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests,
@@ -679,7 +681,8 @@ def get_test_list(files_string, branch_name):
 
     if not tests:
         if modified_files or modified_tests_list or all_tests:
-            print_error("There is no test-playbook that checks the changes you've done, please make sure you write one.")
+            print_error(
+                "There is no test-playbook that checks the changes you've done, please make sure you write one.")
             global _FAILED
             _FAILED = True
         else:
