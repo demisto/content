@@ -228,13 +228,16 @@ class Pack(object):
             Reports, Scripts and Widgets. Each key is mapped to list of items with name and description. Several items
             have no description.
 
+        Returns:
+            bool: True is returned in case metadata file was parsed successfully, otherwise False.
+
         """
         user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
         metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
 
         if not os.path.exists(user_metadata_path):
             print_error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
-            sys.exit(1)
+            return False
 
         with open(user_metadata_path, "r") as user_metadata_file:
             user_metadata = json.load(user_metadata_file)  # loading user metadata
@@ -247,6 +250,7 @@ class Pack(object):
 
         print_color(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.",
                     LOG_COLORS.GREEN)
+        return True
 
     def parse_release_notes(self):
         """Need to implement the changelog.md parsing and changelog.json creation after design is finalized.
@@ -536,7 +540,9 @@ def main():
 
     for pack in packs_list:
         pack_content_items = collect_pack_content_items(pack.path)
-        pack.format_metadata(pack_content_items)
+        if not pack.format_metadata(pack_content_items):
+            pack.cleanup()
+            continue
         # todo finish implementation of release notes
         # pack.parse_release_notes()
         zip_pack_path = pack.zip_pack()
