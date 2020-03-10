@@ -501,7 +501,7 @@ tasks:
       - "10"
     scriptarguments:
       array:
-        simple: ${IntSights.Alerts.[0].Activities.Type}
+        simple: ${IntSights.Alerts.[1].Activities.Type}
       value:
         simple: WriteComment
     separatecontext: false
