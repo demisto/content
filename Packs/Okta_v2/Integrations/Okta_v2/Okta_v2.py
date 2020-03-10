@@ -127,7 +127,8 @@ class Client(BaseClient):
         uri = f'users/{user_id}/factors/{factor_id}'
         return self._http_request(
             method="DELETE",
-            url_suffix=uri
+            url_suffix=uri,
+            resp_type='text'
         )
 
     def set_password(self, user_id, password):
