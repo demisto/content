@@ -196,7 +196,7 @@ tasks:
       - "12"
     scriptarguments:
       alert-id:
-        simple: ${IntSights.Alerts.[0].ID}
+        simple: ${IntSights.Alerts.[1].ID}
       severity:
         simple: Low
     separatecontext: false
