@@ -13,7 +13,7 @@
     "placeholder": "",
     "description": "TLP is a set of designations used to ensure that sensitive information is shared with the appropriate audience. It employs four colors to indicate expected sharing boundaries to be applied by the recipient(s).",
     "cliName": "trafficlightprotocoltlp",
-    "type": "shortText",
+    "type": "singleSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -21,7 +21,11 @@
     "fieldCalcScript": "",
     "neverSetAsRequired": false,
     "isReadOnly": false,
-    "selectValues": null,
+	"selectValues": [
+		"Red",
+        "Yellow",
+        "Green"
+	],
     "validationRegex": "",
     "useAsKpi": false,
     "locked": false,
