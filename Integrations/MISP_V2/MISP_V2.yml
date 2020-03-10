@@ -42,7 +42,7 @@ configuration:
   required: false
   type: 16
 description: Malware information sharing platform and threat sharing.
-display: MISP V2
+display: MISP v2
 name: MISP V2
 script:
   commands:
