@@ -21,11 +21,11 @@
     "fieldCalcScript": "",
     "neverSetAsRequired": false,
     "isReadOnly": false,
-	"selectValues": [
-		"Red",
+    "selectValues": [
+        "Red",
         "Yellow",
         "Green"
-	],
+    ],
     "validationRegex": "",
     "useAsKpi": false,
     "locked": false,
