@@ -1,14 +1,16 @@
+elasticcommonfields: {}
 id: IntSights Test
-version: 38
+version: -1
 name: IntSights Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cf35c13f-a0e9-4ff1-8e30-445d5b253416
+    taskid: aa262df3-5110-4c59-82f2-87f515d80604
     type: start
     task:
-      id: cf35c13f-a0e9-4ff1-8e30-445d5b253416
+      elasticcommonfields: {}
+      id: aa262df3-5110-4c59-82f2-87f515d80604
       version: -1
       name: ""
       iscommand: false
@@ -16,7 +18,6 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -25,12 +26,18 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 399f6405-6d99-4ccc-8e1f-2286821baf15
+    taskid: 18ee74d9-5cec-4c18-8fbe-d07143109a83
     type: regular
     task:
-      id: 399f6405-6d99-4ccc-8e1f-2286821baf15
+      elasticcommonfields: {}
+      id: 18ee74d9-5cec-4c18-8fbe-d07143109a83
       version: -1
       name: intsights-get-alerts
       description: Fetch alerts
@@ -54,7 +61,6 @@ tasks:
       source-date-from: {}
       source-date-to: {}
       source-type: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -63,12 +69,18 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: 23889971-e35f-46d1-8767-9fc9400d8392
+    taskid: f7bcb89d-df55-493f-876f-b966421bfd5b
     type: regular
     task:
-      id: 23889971-e35f-46d1-8767-9fc9400d8392
+      elasticcommonfields: {}
+      id: f7bcb89d-df55-493f-876f-b966421bfd5b
       version: -1
       name: intsights-add-comment-to-alert
       description: Add comment to alert
@@ -84,7 +96,6 @@ tasks:
         simple: ${IntSights.Alerts.[0].ID}
       comment:
         simple: 'test: updating severity'
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -93,12 +104,18 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 38d5ac7e-0b0d-4bd2-8d8b-a287b8f736a9
+    taskid: fdd2a8d0-924d-43e3-8bc0-278cf5bed493
     type: regular
     task:
-      id: 38d5ac7e-0b0d-4bd2-8d8b-a287b8f736a9
+      elasticcommonfields: {}
+      id: fdd2a8d0-924d-43e3-8bc0-278cf5bed493
       version: -1
       name: intsights-get-alert-activities
       description: Get alert activities
@@ -113,7 +130,6 @@ tasks:
     scriptarguments:
       alert-id:
         simple: ${IntSights.Alerts.[0].ID}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -122,12 +138,18 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 86075ad3-fb94-4d93-8434-ce73f85109b4
+    taskid: ceb06f6c-d74a-41f4-848a-a66c9dfd9ab9
     type: regular
     task:
-      id: 86075ad3-fb94-4d93-8434-ce73f85109b4
+      elasticcommonfields: {}
+      id: ceb06f6c-d74a-41f4-848a-a66c9dfd9ab9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -142,7 +164,6 @@ tasks:
       all:
         simple: "yes"
       key: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -151,12 +172,18 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 7325e6af-bd44-4377-8377-22fe97aacdc6
+    taskid: dbcb71c2-7050-4a64-8452-da23407078a2
     type: regular
     task:
-      id: 7325e6af-bd44-4377-8377-22fe97aacdc6
+      elasticcommonfields: {}
+      id: dbcb71c2-7050-4a64-8452-da23407078a2
       version: -1
       name: intsights-update-alert-severity
       description: Change the alert's severity
@@ -172,7 +199,6 @@ tasks:
         simple: ${IntSights.Alerts.[0].ID}
       severity:
         simple: Low
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -181,12 +207,18 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: b4cf1e8c-af7b-4bae-8d2d-cc300e4a5b5e
+    taskid: 922d6cb2-f23d-4b98-8406-cee2ee49fb06
     type: regular
     task:
-      id: b4cf1e8c-af7b-4bae-8d2d-cc300e4a5b5e
+      elasticcommonfields: {}
+      id: 922d6cb2-f23d-4b98-8406-cee2ee49fb06
       version: -1
       name: intsights-get-iocs
       description: Get count totals of the available IOCs
@@ -207,7 +239,6 @@ tasks:
       source-ID: {}
       type:
         simple: Domains
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -216,12 +247,18 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 410b32c6-b3f8-48d8-85bf-5188a9b234b8
+    taskid: 5a09390e-8801-4a80-83bd-6eabd03f5e1d
     type: regular
     task:
-      id: 410b32c6-b3f8-48d8-85bf-5188a9b234b8
+      elasticcommonfields: {}
+      id: 5a09390e-8801-4a80-83bd-6eabd03f5e1d
       version: -1
       name: intsights-add-tag-to-alert
       description: Adds a tag to the alert
@@ -237,7 +274,6 @@ tasks:
         simple: ${IntSights.Alerts.[0].ID}
       tag-name:
         simple: test-tag
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -246,12 +282,18 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 34c1b9df-221d-4c5b-845c-141b37950a9e
+    taskid: 1d70981b-dad5-439d-802a-147e74c2ca07
     type: regular
     task:
-      id: 34c1b9df-221d-4c5b-845c-141b37950a9e
+      elasticcommonfields: {}
+      id: 1d70981b-dad5-439d-802a-147e74c2ca07
       version: -1
       name: closeInvestigation
       description: Close the current investigation
@@ -264,7 +306,6 @@ tasks:
       closeNotes: {}
       closeReason: {}
       id: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -273,35 +314,45 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: a81ba9c6-4575-4df7-86c1-cbeb019e05cd
-    type: regular
+    taskid: a12c01c8-9928-4506-8bf1-7aae9282faa4
+    type: condition
     task:
-      id: a81ba9c6-4575-4df7-86c1-cbeb019e05cd
+      elasticcommonfields: {}
+      id: a12c01c8-9928-4506-8bf1-7aae9282faa4
       version: -1
-      name: VerifyContext
+      name: Verify got Alerts
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "2"
+      '#default#':
       - "5"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: IntSights.Alerts=>val.length>2
-    reputationcalc: 0
+      "yes":
+      - "2"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IntSights
+                accessor: Alerts
+            iscontext: true
     view: |-
       {
         "position": {
@@ -309,12 +360,18 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 4d2d1502-894f-41f6-817e-c9329ba9707f
+    taskid: eebcb781-2fc5-45f1-8480-b32ca507639f
     type: condition
     task:
-      id: 4d2d1502-894f-41f6-817e-c9329ba9707f
+      elasticcommonfields: {}
+      id: eebcb781-2fc5-45f1-8480-b32ca507639f
       version: -1
       name: Verify alert severity is correct
       scriptName: Exists
@@ -329,7 +386,6 @@ tasks:
     scriptarguments:
       value:
         simple: ${IntSights.Alerts.[0].Status(val != 'Low')}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -338,34 +394,45 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: d53974f9-3bdc-491a-8646-f8acf7a68dd1
-    type: regular
+    taskid: 185d50f7-321a-448c-82af-b9ad995a6f44
+    type: condition
     task:
-      id: d53974f9-3bdc-491a-8646-f8acf7a68dd1
+      elasticcommonfields: {}
+      id: 185d50f7-321a-448c-82af-b9ad995a6f44
       version: -1
-      name: VerifyContext
+      name: Verify got IOCs
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
+      - "28"
+      "yes":
       - "1"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: IntSights.Iocs=>val.length>10
-    reputationcalc: 0
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IntSights
+                accessor: Iocs
+            iscontext: true
     view: |-
       {
         "position": {
@@ -373,12 +440,18 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 75f174e9-ea09-48b3-829c-a89907860f2c
+    taskid: 036b6a37-f3d2-4acf-8e56-21b57738b6fe
     type: condition
     task:
-      id: 75f174e9-ea09-48b3-829c-a89907860f2c
+      elasticcommonfields: {}
+      id: 036b6a37-f3d2-4acf-8e56-21b57738b6fe
       version: -1
       name: Verify a tag exists
       scriptName: IsValueInArray
@@ -395,7 +468,6 @@ tasks:
         simple: ${IntSights.Alerts.[0].Activities.Type}
       value:
         simple: AddTag
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -404,12 +476,18 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: cc98344c-0798-4974-8e4d-8c7102950106
+    taskid: d9521779-a95e-45b5-834a-7479766f93cb
     type: condition
     task:
-      id: cc98344c-0798-4974-8e4d-8c7102950106
+      elasticcommonfields: {}
+      id: d9521779-a95e-45b5-834a-7479766f93cb
       version: -1
       name: Verify a comment exists
       scriptName: IsValueInArray
@@ -426,7 +504,6 @@ tasks:
         simple: ${IntSights.Alerts.[0].Activities.Type}
       value:
         simple: WriteComment
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -435,12 +512,18 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 1ad18af6-01cc-4e9c-8d00-99a3ca17ec1d
+    taskid: d7d3adff-092c-46f0-8d6d-b1a010abba72
     type: regular
     task:
-      id: 1ad18af6-01cc-4e9c-8d00-99a3ca17ec1d
+      elasticcommonfields: {}
+      id: d7d3adff-092c-46f0-8d6d-b1a010abba72
       version: -1
       name: Fail
       scriptName: Print
@@ -449,7 +532,6 @@ tasks:
       brand: ""
     scriptarguments:
       value: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
@@ -460,12 +542,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 9ee08e2b-cf55-4d7e-89e5-f0e1a274e8f9
+    taskid: 3c9b434c-402c-4bed-8f3d-b507afc862bf
     type: regular
     task:
-      id: 9ee08e2b-cf55-4d7e-89e5-f0e1a274e8f9
+      elasticcommonfields: {}
+      id: 3c9b434c-402c-4bed-8f3d-b507afc862bf
       version: -1
       name: intsights-get-alerts time-delta
       script: '|||intsights-get-alerts'
@@ -499,14 +585,48 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: a10ba81c-e1d2-44c2-8fa4-41ee66e44447
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: a10ba81c-e1d2-44c2-8fa4-41ee66e44447
+      version: -1
+      name: Failed to get IOCs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed to get IOCs, please log  in the instance and verify that you
+          have IOCs.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1815,
-        "width": 1240,
-        "x": 50,
+        "width": 1690,
+        "x": 40,
         "y": 50
       }
     }
