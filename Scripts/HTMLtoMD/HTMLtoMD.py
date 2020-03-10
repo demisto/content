@@ -7,9 +7,9 @@ def html_to_md_command(args):
     html = str(args.get('html'))
     markdown = md(html)
     result = {
-            "Original": str(html),
-            "Result": str(markdown)
-        }
+        "Original": str(html),
+        "Result": str(markdown)
+    }
     outputs = {
         "HTMLtoMD(val.Original == obj.Original)": result
     }
