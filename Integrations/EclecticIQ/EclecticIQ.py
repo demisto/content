@@ -136,7 +136,7 @@ def login():
     Logins to EclecticIQ API with given credentials and sets the returned token in the headers
 
     """
-    if (re.match('^[\dabcdef]{64}$', PASSWORD)) == None:
+    if (re.match('^[\dabcdef]{64}$', PASSWORD)) is None:
         cmd_url = '/api/auth'
         cmd_json = {
             'password': PASSWORD,
