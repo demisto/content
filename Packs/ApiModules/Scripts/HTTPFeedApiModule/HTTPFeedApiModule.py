@@ -17,19 +17,22 @@ class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
                  indicator: str = '', fields: str = '{}', feed_url_to_config: dict = None, polling_timeout: int = 20,
-                 headers: list = None, proxy: bool = False, custom_fields_mapping: dict = {}, **kwargs):
+                 headers: dict = None, proxy: bool = False, custom_fields_mapping: dict = None, **kwargs):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
         :param: polling_timeout: timeout of the polling request in seconds.
             Default: 20
+        :param feed_name: The name of the feed.
         :param: custom_fields_mapping: Dict, the "fields" to be used in the indicator - where the keys
         are the *current* keys of the fields returned feed data and the *values* are the *indicator fields in Demisto*.
-        :param: headers: list, Optional list of headers to send in the request.
+        :param: headers: dict, Optional list of headers to send in the request.
         :param: ignore_regex: Python regular expression for lines that should be
             ignored. Default: *null*
-        :param: verify_cert: boolean, if *true* feed HTTPS server certificate is
-            verified. Default: *true*
+        :param: insecure: boolean, if *false* feed HTTPS server certificate is
+            verified. Default: *false*
+        :param credentials: username and password used for basic authentication.
+                            Can be also used as API key header and value by specifying _header in the username field.
         :param: encoding: encoding of the feed, if not UTF-8. See
             ``str.decode`` for options. Default: *null*, meaning do
             nothing, (Assumes UTF-8).
@@ -94,13 +97,30 @@ class Client(BaseClient):
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
             raise ValueError('Please provide an integer value for "Request Timeout"')
+
         self.headers = headers
         self.encoding = encoding
         self.feed_name = feed_name
         if not credentials:
             credentials = {}
-        self.username = credentials.get('identifier', None)
-        self.password = credentials.get('password', None)
+        self.username = None
+        self.password = None
+
+        username = credentials.get('identifier', '')
+        if username.startswith('_header:'):
+            if not self.headers:
+                self.headers = {}
+            header_field = username.split(':')
+            if len(header_field) < 2:
+                raise ValueError('An incorrect value was provided for an API key header.'
+                                 ' The correct value is "_header:<header_name>"')
+            header_name: str = header_field[1]
+            header_value: str = credentials.get('password', '')
+            self.headers[header_name] = header_value
+        else:
+            self.username = username
+            self.password = credentials.get('password', None)
+
         self.indicator_type = indicator_type
         if feed_url_to_config:
             self.feed_url_to_config = feed_url_to_config
@@ -109,6 +129,9 @@ class Client(BaseClient):
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
+
+        if custom_fields_mapping is None:
+            custom_fields_mapping = {}
         self.custom_fields_mapping = custom_fields_mapping
 
     def get_feed_config(self, fields_json: str = '', indicator_json: str = ''):
@@ -242,7 +265,7 @@ def get_indicator_fields(line, url, client: Client):
     :return: The indicator
     """
     attributes = None
-    value = None
+    value: str = ''
     indicator = None
     fields_to_extract = []
     feed_config = client.feed_url_to_config.get(url, {})
@@ -253,8 +276,6 @@ def get_indicator_fields(line, url, client: Client):
                 indicator['regex'] = re.compile(indicator['regex'])
             if 'transform' not in indicator:
                 indicator['transform'] = r'\g<0>'
-    else:
-        indicator = None
 
     if 'fields' in feed_config:
         fields = feed_config['fields']
@@ -338,12 +359,37 @@ def get_indicators_command(client: Client, args):
 
 
 def test_module(client, args):
+    indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
+    if not FeedIndicatorType.is_valid_type(indicator_type):
+        supported_values = ', '.join((
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
+        ))
+        raise ValueError(f'Indicator type of {indicator_type} is not supported. Supported values are:'
+                         f' {supported_values}')
     client.build_iterator()
     return 'ok', {}, {}
 
 
-def feed_main(feed_name, params, prefix=''):
-    params['feed_name'] = feed_name
+def feed_main(feed_name, params=None, prefix=''):
+    if not params:
+        params = assign_params(**demisto.params())
+    if 'feed_name' not in params:
+        params['feed_name'] = feed_name
     client = Client(**params)
     command = demisto.command()
     if command != 'fetch-indicators':
