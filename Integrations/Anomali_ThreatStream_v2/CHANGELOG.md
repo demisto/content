@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.1] - 2020-03-04
 Fixed an issue where inactive indicators were taken into account.
 
 ## [19.12.0] - 2019-12-10

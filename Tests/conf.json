@@ -18,6 +18,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Trend Micro Apex",
+            "playbookID": "Trend Micro Apex - Test"
+        },
+        {
             "integrations": "Blocklist_de Feed",
             "playbookID": "Blocklist_de - Test",
             "fromversion": "5.5.0"
@@ -132,6 +136,10 @@
             "timeout": 500
         },
         {
+            "integrations": "Google Vision AI",
+            "playbookID": "Google Vision API - Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test",
             "fromversion": "5.0.0"
@@ -158,6 +166,10 @@
         {
             "integrations": "PhishLabs IOC EIR",
             "playbookID": "PhishlabsIOC_EIR-Test"
+        },
+        {
+            "integrations": "Amazon DynamoDB",
+            "playbookID": "AWS_DynamoDB-Test"
         },
         {
             "integrations": "PhishLabs IOC DRP",
@@ -358,6 +370,10 @@
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
+        },
+        {
+            "integrations": "CVE Search v2",
+            "playbookID": "CVE Search v2 - Test"
         },
         {
             "integrations": "CVE Search",
@@ -703,11 +719,19 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500,
-            "pid_threshold": 6
+            "timeout": 500
         },
         {
             "playbookID": "CutTransformerTest"
+        },
+        {
+            "playbookID": "Default - Test",
+            "integrations": [
+              "ThreatQ v2",
+              "AlienVault OTX v2",
+              "Demisto REST API"
+            ],
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -813,8 +837,7 @@
         {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 150
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
@@ -977,14 +1000,12 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 120
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 120
+            "instance_names": "ewv2_regular"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -1002,8 +1023,7 @@
         {
             "playbookID": "process_email_-_generic_-_test",
             "integrations": "Rasterize",
-            "timeout": 240,
-            "pid_threshold": 18
+            "timeout": 240
         },
         {
             "integrations": "activedir",
@@ -1183,14 +1203,12 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewv2_regular",
-            "memory_threshold": 200
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewsv2_separate_process",
-            "memory_threshold": 150
+            "instance_names": "ewsv2_separate_process"
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1238,7 +1256,8 @@
             "instance_names": "virus_total_private_api_general",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
             "timeout": 1400,
-            "nightly": true
+            "nightly": true,
+            "pid_threshold": 12
         },
         {
             "integrations": "VirusTotal - Private API",
@@ -2031,8 +2050,7 @@
         },
         {
             "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest",
-            "pid_threshold": 24
+            "playbookID": "RasterizeImageTest"
         },
         {
             "integrations": "Ipstack",
@@ -2217,8 +2235,7 @@
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
           "fromversion": "4.5.0",
-          "instance_names": "ewv2_regular",
-          "memory_threshold": 65
+          "instance_names": "ewv2_regular"
         },
         {
           "integrations": "QRadar",
@@ -2397,16 +2414,18 @@
             "fromversion": "4.5.0"
         },
         {
-            "playbookID": "ExtractDomainAndFQDNFromUrlAndEmail-Test",
+           "integrations": "AlienVault OTX TAXII Feed",
+            "playbookID": "playbook-feedalienvaultotx_test",
             "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
+        "Archer-Test-Playbook": "Issue 22536",
+        "Office365_Feed_Test": "Issue 22517",
+        "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
         "Send Investigation Summary Reports": "Issue 22299",
-        "Palo Alto Networks Cortex Test": "Issue 22298",
         "test-Expanse": "Expanse should provide domain that they have in their system",
-        "Test-VulnDB": "Issue 22232",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
         "Akamai_WAF_SIEM-Test": "Issue 22225",
@@ -2415,7 +2434,6 @@
         "IntSights Test": "Issue 22185",
         "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
-        "whois_test": "Issue 22174",
         "PostgreSQL Test": "Issue 22172",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2432,7 +2450,6 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 19838",
         "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
         "Cofense Triage Test": "Creds only works on demo4",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
@@ -2450,6 +2467,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Palo Alto Networks Cortex": "Issue 22300",
         "Claroty": "Issue 22255",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
@@ -2511,10 +2529,12 @@
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
         "LogRhythm": "Issue 21672",
+        "SecBI": "Issue 22545",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tenable.sc": "unstable instance",
+        "VirusTotal - Private API": "Issue 22638",
 
 
         "_comment": "~~~ OTHER ~~~",
@@ -2591,6 +2611,18 @@
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233",
-        "Google Chronicle Backstory": "SDK"
+        "Google Chronicle Backstory": "SDK",
+        "Google Vision AI": "SDK"
+    },
+    "docker_thresholds": {
+        "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
+        "images": {
+            "demisto/chromium": {
+                "pid_threshold": 11
+            },
+            "demisto/py-ews:2.0": {
+                "memory_threshold": 150
+            }
+        }
     }
 }

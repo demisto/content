@@ -10,23 +10,21 @@ import numpy as np
 from PIL import Image
 import tempfile
 from io import BytesIO
-import sys
 import base64
 import time
 import subprocess
 import traceback
 import re
+import os
 
-PROXY = demisto.getParam('proxy')
-
-if PROXY:
-    HTTP_PROXY = os.environ.get('http_proxy')
-    HTTPS_PROXY = os.environ.get('https_proxy')
+# Chrome respects proxy env params
+handle_proxy()
+# Make sure our python code doesn't go through a proxy when communicating with chrome webdriver
+os.environ['no_proxy'] = 'localhost,127.0.0.1'
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_PAGE_LOAD_TIME = int(demisto.params().get('max_page_load_time', 180))
-DEFAULT_STDOUT = sys.stdout
 
 URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for one of several reasons. " \
                 "You can choose to receive this message as error/warning in the instance settings\n"
@@ -34,6 +32,7 @@ EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when ther
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
 CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'  # noqa
+DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
     '--no-sandbox',
     '--headless',
@@ -44,12 +43,14 @@ DEFAULT_CHROME_OPTIONS = [
     '--start-fullscreen',
     '--ignore-certificate-errors',
     '--disable-dev-shm-usage',
-    '--verbose',
-    '--log-path=chromedriver.log',
     f'--user-agent={CHROME_USER_AGENT}'
 ]
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
+
+
+def return_err_or_warn(msg):
+    return_error(msg) if WITH_ERRORS else return_warning(msg, exit=True)
 
 
 def opt_name(opt):
@@ -69,6 +70,7 @@ def merge_options(default_options, user_options):
     user_options = re.split(r'(?<!\\),', user_options) if user_options else list()
     if not user_options:  # nothing to do
         return default_options
+    demisto.debug(f'user chrome options: {user_options}')
     options = []
     remove_opts = []
     for opt in user_options:
@@ -87,7 +89,7 @@ def merge_options(default_options, user_options):
 def check_response(driver):
     EMPTY_PAGE = '<html><head></head><body></body></html>'
     if driver.page_source == EMPTY_PAGE:
-        return_error(EMPTY_RESPONSE_ERROR_MSG) if WITH_ERRORS else return_warning(EMPTY_RESPONSE_ERROR_MSG, exit=True)
+        return_err_or_warn(EMPTY_RESPONSE_ERROR_MSG)
 
 
 def init_driver(offline_mode=False):
@@ -96,20 +98,16 @@ def init_driver(offline_mode=False):
     """
     demisto.debug(f'Creating chrome driver. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
     try:
-        with tempfile.TemporaryFile() as log:
-            sys.stdout = log  # type: ignore
-            chrome_options = webdriver.ChromeOptions()
-            for opt in merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS):
-                chrome_options.add_argument(opt)
-
-            driver = webdriver.Chrome(options=chrome_options)
-            if offline_mode:
-                driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
-
+        chrome_options = webdriver.ChromeOptions()
+        for opt in merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS):
+            chrome_options.add_argument(opt)
+        driver = webdriver.Chrome(options=chrome_options, service_args=[
+            f'--log-path={DRIVER_LOG}',
+        ])
+        if offline_mode:
+            driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
     except Exception as ex:
-        return_error(str(ex))
-    finally:
-        sys.stdout = DEFAULT_STDOUT
+        return_error(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
 
     demisto.debug('Creating chrome driver - COMPLETED')
     return driver
@@ -187,15 +185,15 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
     except (InvalidArgumentException, NoSuchElementException) as ex:
         if 'invalid argument' in str(ex):
             err_msg = URL_ERROR_MSG + str(ex)
-            return_error(err_msg) if WITH_ERRORS else return_warning(err_msg, exit=True)
+            return_err_or_warn(err_msg)
         else:
-            return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex), exit=True)
+            return_err_or_warn(f'Invalid exception: {ex}\nTrace:{traceback.format_exc()}')
     except TimeoutException as ex:
-        err_msg = f'Timeout exception with max load time of: {page_load_time} seconds. {ex}'
-        return_error(err_msg) if WITH_ERRORS else return_warning(err_msg, exit=True)
+        return_err_or_warn(f'Timeout exception with max load time of: {page_load_time} seconds. {ex}')
     except Exception as ex:
-        demisto.error("General exception when doing rasterize: {}. Trace: {}".format(ex, traceback.format_exc()))
-        return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex), exit=True)
+        err_str = f'General error: {ex}\nTrace:{traceback.format_exc()}'
+        demisto.error(err_str)
+        return_err_or_warn(err_str)
     finally:
         quit_driver_and_reap_children(driver)
 
@@ -297,10 +295,6 @@ def rasterize_command():
     if not (url.startswith('http')):
         url = f'http://{url}'
     filename = f'url.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
-    proxy_flag = ""
-    if PROXY:
-        proxy_flag = f"--proxy={HTTPS_PROXY if url.startswith('https') else HTTP_PROXY}"  # type: ignore
-    demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load)
     res = fileResult(filename=filename, data=output)
@@ -383,6 +377,8 @@ def module_test():
 
 def main():
     try:
+        with open(DRIVER_LOG, 'w'):
+            pass  # truncate the log file
         if demisto.command() == 'test-module':
             module_test()
 
@@ -402,10 +398,12 @@ def main():
             return_error('Unrecognized command')
 
     except Exception as ex:
-        return_error(str(ex))
-
-    finally:  # just to be extra safe
-        sys.stdout = DEFAULT_STDOUT
+        return_err_or_warn(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
+    finally:
+        if is_debug_mode():
+            demisto.debug(f'os.environ: {os.environ}')
+            with open(DRIVER_LOG, 'r') as log:
+                demisto.debug('Driver log:' + log.read())
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:

@@ -566,3 +566,6 @@ def searchIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '
 
 def getIndexHash():
     return ''
+
+def getLicenseID():
+    return ''
