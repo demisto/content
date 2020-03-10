@@ -382,7 +382,7 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    base_url = 'https://manage.office.com/api/v1.0/'
+    base_url = demisto.params().get("base_url", "https://manage.office.com/api/v1.0/")
     verify_certificate = not demisto.params().get('insecure', False)
 
     first_fetch_delta = demisto.params().get('first_fetch_delta', '1440').strip()
