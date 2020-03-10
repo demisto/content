@@ -822,8 +822,6 @@ def get_group_members_command(client, args):
         raw_members
     )
 
-    return raw_members
-
 
 def list_groups_command(client, args):
     raw_response = client.list_groups(args)
