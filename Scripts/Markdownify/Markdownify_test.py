@@ -1,12 +1,11 @@
-from Markdownify import markdownify_command
+import demistomock as demisto
 
 
-def test_markdownify_command():
-    args = {
+def test_main(mocker):
+    from Markdownify import main
+    mocker.patch.object(demisto, 'args', return_value={
         'html': '<a href="http://demisto.com">Demisto</a>'
-    }
-
-    readable_output, outputs, raw_response = markdownify_command(args)
-
-    assert readable_output == '[Demisto](http://demisto.com)'
-    assert raw_response == '[Demisto](http://demisto.com)'
+    })
+    mocker.patch.object(demisto, 'results')
+    result_entry = main()
+    assert '[Demisto](http://demisto.com)' in result_entry['HumanReadable']
