@@ -188,7 +188,6 @@ def pentera_get_task_run_full_action_report_command(client: Client, args, access
         res_list: List[dict] = []
         for ordered_dict in full_action_report_list:
             full_date_to_convert = ordered_dict['Time']
-            LOG(f'full_date_to_convert: {full_date_to_convert}')
             full_date_list = full_date_to_convert.split(' ')
             year, month, day = _parse_date(full_date_list[0], '-')
             hours, minutes, seconds = _parse_date(full_date_list[1], ':')
