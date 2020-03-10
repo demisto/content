@@ -3,7 +3,7 @@ commonfields:
   id: Fidelis EDR
   version: -1
 configuration:
-- display: Server URL (e.g. https://domain/endpoint)
+- display: Server URL (e.g. https://abcde.fideliscloud.com/)
   name: url
   required: true
   type: 0

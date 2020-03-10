@@ -1424,7 +1424,7 @@ def query_events(client: Client, args: dict):
     contents = []
     context = []
 
-    response = client.query_events(start_time, end_time, logic ,column, value, entity_type)
+    response = client.query_events(start_time, end_time, logic, column, value, entity_type)
     events = response.get('events', [])
 
     for event in events:
