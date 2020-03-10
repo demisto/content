@@ -5,7 +5,7 @@ name: UnEscapeURLs
 script: |-
     function format_url(input) {
         // Check if it is a Microsoft ATP Safe Link
-        var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url=/;
+        var atp_link_re = /(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url=/;
         if (atp_link_re.test(input)) {
             var index_of_param_section = 1;
             var url_as_parts = input.split("?");
