@@ -21,7 +21,7 @@ configuration:
   type: 0
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
   important threats from everyday commodity attacks.
-display: Palo Alto Networks AutoFocus V2
+display: Palo Alto Networks AutoFocus v2
 name: AutoFocus V2
 script:
   commands:
