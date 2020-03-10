@@ -2426,7 +2426,6 @@
     ],
     "skipped_tests": {
         "CVE Search v2": "Issue 22661",
-        "whois_test": "Issue 22660",
         "AbuseIPDB Test": "Issue 22658",
         "Archer-Test-Playbook": "Issue 22536",
         "Office365_Feed_Test": "Issue 22517",
