@@ -1,11 +1,11 @@
 args:
 - default: true
-  description: HTML to convert to Markdown
+  description: HTML to convert to Markdown.
   isArray: false
   name: html
   required: true
   secret: false
-comment: Converts HTML into Markdown.
+comment: Converts HTML to Markdown.
 commonfields:
   id: HTMLtoMD
   version: -1
@@ -13,10 +13,10 @@ enabled: true
 name: HTMLtoMD
 outputs:
 - contextPath: HTMLtoMD.Original
-  description: The original HTML which was converted.
+  description: The original HTML that was converted to Markdown.
   type: String
 - contextPath: HTMLtoMD.Result
-  description: The Markdown which was converted from HTML.
+  description: The Markdown that was converted from the passed HTML.
   type: String
 script: '-'
 system: false
