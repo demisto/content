@@ -870,7 +870,7 @@ script:
       secret: false
     deprecated: false
     description: Update user with a given login, all fields are optional, fields which
-      are not set will not be overriden.
+      are not set will not be overridden.
     execution: true
     name: okta-update-user
   - arguments:
