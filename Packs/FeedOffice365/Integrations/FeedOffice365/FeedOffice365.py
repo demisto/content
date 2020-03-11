@@ -96,26 +96,6 @@ class Client(BaseClient):
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
         return result
 
-    def check_indicator_type(self, indicator):
-        """Checks the indicator type.
-           The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
-
-        Args:
-            indicator: indicator value
-
-        Returns:
-            The type of the indicator
-        """
-        if re.match(ipv4cidrRegex, indicator):
-            return FeedIndicatorType.CIDR
-        if re.match(ipv6cidrRegex, indicator):
-            return FeedIndicatorType.IPv6CIDR
-        if re.match(ipv4Regex, indicator):
-            return FeedIndicatorType.IP
-        if re.match(ipv6Regex, indicator):
-            return FeedIndicatorType.IPv6
-        return FeedIndicatorType.Domain
-
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
@@ -155,7 +135,8 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
             values = item.get(indicator_type_lower)
         if values:
             for value in values:
-                type_ = client.check_indicator_type(value)
+                ip_indicator_type = FeedIndicatorType.ip_to_indicator_type(value)
+                type_ = ip_indicator_type if ip_indicator_type else FeedIndicatorType.Domain
                 raw_data = {
                     'value': value,
                     'type': type_,
@@ -169,7 +150,11 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     "rawJSON": raw_data,
                     "fields": {
                         "port": argToList(item.get('tcpPorts', '')),
-                        "subfeed": item.get('serviceArea', '')
+                        "subfeed": item.get('serviceArea', ''),
+                        "office365expressroute": item.get('expressRoute', ''),
+                        "office365category": item.get('category', ''),
+                        "office365required": item.get('required', ''),
+                        "description": item.get('notes', ''),
                     }
                 })
 
