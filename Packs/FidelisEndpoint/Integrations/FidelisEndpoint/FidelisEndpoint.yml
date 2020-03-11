@@ -23,6 +23,20 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Fetch incidents query
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- display: severity
+  name: severity
+  required: false
+  type: 0
 description: Fidelis Endpoint provides advanced endpoint detection and response (EDR)
   across Windows, Mac and Linux OSes for faster threat remediation.
 display: Fidelis EDR
@@ -153,21 +167,27 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Search for endpoints based on an IP Address
+      description: The IP address to search gor.
       isArray: false
-      name: ip
-      required: true
+      name: ip_address
+      required: false
+      secret: false
+    - default: false
+      description: The host name to search for
+      isArray: false
+      name: host
+      required: false
       secret: false
     deprecated: false
-    description: Search for endpoints based on an IP Address
+    description: Search for endpoints based on an IP Address or host  name.
     execution: false
     name: fidelis-endpoint-host-info
     outputs:
-    - contextPath: FidelisEndpoint.Host.AgentID
-      description: The Agent ID.
+    - contextPath: FidelisEndpoint.Host.AgentVersion
+      description: The Agent version.
       type: String
-    - contextPath: FidelisEndpoint.Host.ActiveDirectoryID
-      description: Active directory ID.
+    - contextPath: FidelisEndpoint.Host.MacAddress
+      description: Host MAC address.
       type: String
     - contextPath: FidelisEndpoint.Host.OS
       description: Endpoint OS.
@@ -175,48 +195,39 @@ script:
     - contextPath: FidelisEndpoint.Host.IpAddress
       description: Endpoint IP Address.
       type: String
-    - contextPath: FidelisEndpoint.Host.IsDeleted
-      description: Is the endpoint deleted.
+    - contextPath: FidelisEndpoint.Host.Isolated
+      description: Is the endpoint isolated.
       type: Boolean
-    - contextPath: FidelisEndpoint.Host.AREnabled
-      description: Is AR Enabled.
-      type: Boolean
-    - contextPath: FidelisEndpoint.Host.AVEEnabled
-      description: Is AV enabled.
+    - contextPath: FidelisEndpoint.Host.AV_Enabled
+      description: Is AV Enabled.
       type: Boolean
     - contextPath: FidelisEndpoint.Host.HostName
       description: Host name.
       type: String
-    - contextPath: FidelisEndpoint.Host.AgentVersion
-      description: Agent version
-      type: String
+    - contextPath: FidelisEndpoint.Host.AgentInstalled
+      description: Is an agent has been installed
+      type: Boolean
     - contextPath: FidelisEndpoint.Host.Groups
       description: Endpoint groups
       type: String
-    - contextPath: FidelisEndpoint.Host.CreatedDate
-      description: Host create date.
-      type: Date
     - contextPath: FidelisEndpoint.Host.LastContactDate
       description: Host last contact date.
       type: Date
     - contextPath: FidelisEndpoint.Host.ID
       description: Host ID.
       type: String
-    - contextPath: FidelisEndpoint.Host.Description
-      description: Host description.
-      type: String
     - contextPath: FidelisEndpoint.Host.ProcessorName
       description: Processor name.
       type: String
-    - contextPath: FidelisEndpoint.Host.RamSize
-      description: Ram size.
-      type: Number
+    - contextPath: FidelisEndpoint.Host.OnNetwork
+      description: Is the host on network.
+      type: Boolean
   - arguments:
     - default: false
       description: The host to search the file in (for multiple hosts use (comma separated)
       isArray: true
       name: host
-      required: true
+      required: false
       secret: false
     - default: false
       description: MD5 to search for (for multiple hashes use (comma separated)
@@ -296,7 +307,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the job results metadata (max 50 results)
+    description: Get the job results metadata (max 50 results).
     execution: false
     name: fidelis-endpoint-file-search-result-metadata
     outputs:
@@ -623,7 +634,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Script execution - delete file.
+    description: Delete a file at the specified path.
     execution: false
     name: fidelis-endpoint-delete-file
     outputs:
@@ -803,6 +814,13 @@ script:
       name: file_hash
       required: true
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Query behaviours - query file by hash.
     execution: false
@@ -917,6 +935,13 @@ script:
       name: process_name
       required: true
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Query process.
     execution: false
@@ -997,6 +1022,13 @@ script:
       isArray: false
       name: remote_ip
       required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to return.
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
     description: Query connection by remote IP.
@@ -1097,6 +1129,13 @@ script:
       name: url
       required: true
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Query by DNS request.
     execution: false
@@ -1183,6 +1222,13 @@ script:
       isArray: false
       name: remote_ip
       required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to return.
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
     description: Query DNS by server IP.
@@ -1271,7 +1317,14 @@ script:
       description: The domain to query
       isArray: false
       name: domain
-      required: true
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to return.
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
     description: Query DNS by source IP.
@@ -1382,7 +1435,17 @@ script:
       required: true
       secret: false
     - default: false
+      description: 'The operator describes how the "value" relates to the "field"
+        (for exmaple: "=", "!=", ">", "<")'
       isArray: false
+      name: operator
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to return.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false

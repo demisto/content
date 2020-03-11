@@ -4,6 +4,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # IMPORTS
 
 import requests
+from typing import Dict, Tuple, List, Optional, Any, Union
 
 
 # Disable insecure warnings
@@ -75,7 +76,8 @@ class Client(BaseClient):
         suffix = '/alerts/getalertsV2'
         self._http_request('GET', suffix, params={'take': 1})
 
-    def list_alerts(self, skip: int, limit: int, sort: str, facet_search: str, start_date, end_date):
+    def list_alerts(self, skip: int = None, limit: int = None, sort: str = None, facet_search: str = None,
+                    start_date=None, end_date=None):
 
         url_suffix = '/alerts/getalertsV2'
         params = assign_params(
@@ -89,12 +91,17 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix, params=params)
 
-    def get_host_info(self, ip: str):
+    def get_host_info(self, host_name: str, ip_address: str):
 
-        url_suffix = '/endpoints/search'
-        body = assign_params(ip=ip)
+        if host_name:
+            url_suffix = '/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={%22searchFields%22:' \
+                         '[{%22fieldName%22:%22HostName%22,%22values%22:[{%22value%22:%22'+host_name+'%22}]}]}'
 
-        return self._http_request('POST', url_suffix, json_data=body)
+        if ip_address:
+            url_suffix = '/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={%22searchFields%22:' \
+                         '[{%22fieldName%22:%22IpAddress%22,%22values%22:[{%22value%22:%22'+ip_address+'%22}]}]}'
+
+        return self._http_request('GET', url_suffix)
 
     def search_file(self, host, md5, file_extension, file_path, file_size):
 
@@ -149,23 +156,23 @@ class Client(BaseClient):
 
         url_suffix = '/jobs/createTask'
         body = {
-            "queueExpirationInhours": None,
-            "wizardOverridePassword": False,
-            "impersonationUser": None,
-            "impersonationPassword": None,
-            "priority": None,
-            "timeoutInSeconds": time_out,
-            "packageId": script_id,
-            "endpoints": endpoint_ip,
-            "isPlaybook": False,
-            "taskOptions": [
+            'queueExpirationInhours': None,
+            'wizardOverridePassword': False,
+            'impersonationUser': None,
+            'impersonationPassword': None,
+            'priority': None,
+            'timeoutInSeconds': time_out,
+            'packageId': script_id,
+            'endpoints': endpoint_ip,
+            'isPlaybook': False,
+            'taskOptions': [
                 {
-                    "integrationOutputFormat": None,
-                    "scriptId": script_id,
-                    "questions": [
+                    'integrationOutputFormat': None,
+                    'scriptId': script_id,
+                    'questions': [
                         {
-                            "paramNumber": 1,
-                            "answer": answer,
+                            'paramNumber': 1,
+                            'answer': answer,
                         }
                     ]
                 }
@@ -180,37 +187,37 @@ class Client(BaseClient):
 
         body = ip
 
-        return self._http_request('POST', url_suffix, json_data=body)
+        return self._http_request('POST', url_suffix, data=body)
 
     def list_process(self, script_id: str, time_out: int, endpoint_ip):
 
         url_suffix = '/jobs/createTask'
         body = {
-            "queueExpirationInhours": None,
-            "wizardOverridePassword": False,
-            "impersonationUser": None,
-            "impersonationPassword": None,
-            "priority": None,
-            "timeoutInSeconds": time_out,
-            "packageId": script_id,
-            "endpoints": endpoint_ip,
-            "isPlaybook": False,
-            "taskOptions": [
+            'queueExpirationInhours': None,
+            'wizardOverridePassword': False,
+            'impersonationUser': None,
+            'impersonationPassword': None,
+            'priority': None,
+            'timeoutInSeconds': time_out,
+            'packageId': script_id,
+            'endpoints': endpoint_ip,
+            'isPlaybook': False,
+            'taskOptions': [
                 {
-                    "integrationOutputFormat": None,
-                    "scriptId": script_id,
-                    "questions": [
+                    'integrationOutputFormat': None,
+                    'scriptId': script_id,
+                    'questions': [
                         {
-                            "paramNumber": 1,
-                            "answer": True,
+                            'paramNumber': 1,
+                            'answer': True,
                         },
                         {
-                            "paramNumber": 2,
-                            "answer": True,
+                            'paramNumber': 2,
+                            'answer': True,
                         },
                         {
-                            "paramNumber": 3,
-                            "answer": True
+                            'paramNumber': 3,
+                            'answer': True
                         }
                     ]
                 }
@@ -229,23 +236,23 @@ class Client(BaseClient):
 
         url_suffix = '/jobs/createTask'
         body = {
-            "queueExpirationInhours": None,
-            "wizardOverridePassword": False,
-            "impersonationUser": None,
-            "impersonationPassword": None,
-            "priority": None,
-            "timeoutInSeconds": time_out,
-            "packageId": script_id,
-            "endpoints": endpoint_ip,
-            "isPlaybook": False,
-            "taskOptions": [
+            'queueExpirationInhours': None,
+            'wizardOverridePassword': False,
+            'impersonationUser': None,
+            'impersonationPassword': None,
+            'priority': None,
+            'timeoutInSeconds': time_out,
+            'packageId': script_id,
+            'endpoints': endpoint_ip,
+            'isPlaybook': False,
+            'taskOptions': [
                 {
-                    "integrationOutputFormat": None,
-                    "scriptId": script_id,
-                    "questions": [
+                    'integrationOutputFormat': None,
+                    'scriptId': script_id,
+                    'questions': [
                         {
-                            "paramNumber": 1,
-                            "answer": pid
+                            'paramNumber': 1,
+                            'answer': pid
                         }
                     ]
                 }
@@ -258,23 +265,23 @@ class Client(BaseClient):
 
         url_suffix = '/jobs/createTask'
         body = {
-            "queueExpirationInhours": None,
-            "wizardOverridePassword": False,
-            "impersonationUser": None,
-            "impersonationPassword": None,
-            "priority": None,
-            "timeoutInSeconds": time_out,
-            "packageId": script_id,
-            "endpoints": endpoint_ip,
-            "isPlaybook": False,
-            "taskOptions": [
+            'queueExpirationInhours': None,
+            'wizardOverridePassword': False,
+            'impersonationUser': None,
+            'impersonationPassword': None,
+            'priority': None,
+            'timeoutInSeconds': time_out,
+            'packageId': script_id,
+            'endpoints': endpoint_ip,
+            'isPlaybook': False,
+            'taskOptions': [
                 {
-                    "integrationOutputFormat": None,
-                    "scriptId": script_id,
-                    "questions": [
+                    'integrationOutputFormat': None,
+                    'scriptId': script_id,
+                    'questions': [
                         {
-                            "paramNumber": 1,
-                            "answer": file_path
+                            'paramNumber': 1,
+                            'answer': file_path
                         }
                     ]
                 }
@@ -287,23 +294,23 @@ class Client(BaseClient):
 
         url_suffix = '/jobs/createTask'
         body = {
-            "queueExpirationInhours": None,
-            "wizardOverridePassword": False,
-            "impersonationUser": None,
-            "impersonationPassword": None,
-            "priority": None,
-            "timeoutInSeconds": time_out,
-            "packageId": script_id,
-            "endpoints": endpoint_ip,
-            "isPlaybook": False,
-            "taskOptions": [
+            'queueExpirationInhours': None,
+            'wizardOverridePassword': False,
+            'impersonationUser': None,
+            'impersonationPassword': None,
+            'priority': None,
+            'timeoutInSeconds': time_out,
+            'packageId': script_id,
+            'endpoints': endpoint_ip,
+            'isPlaybook': False,
+            'taskOptions': [
                 {
-                    "integrationOutputFormat": None,
-                    "scriptId": script_id,
-                    "questions": [
+                    'integrationOutputFormat': None,
+                    'scriptId': script_id,
+                    'questions': [
                         {
-                            "paramNumber": 1,
-                            "answer": allowed_server
+                            'paramNumber': 1,
+                            'answer': allowed_server
                         }
                     ]
                 }
@@ -316,20 +323,20 @@ class Client(BaseClient):
 
         url_suffix = '/jobs/createTask'
         body = {
-            "queueExpirationInhours": None,
-            "wizardOverridePassword": False,
-            "impersonationUser": None,
-            "impersonationPassword": None,
-            "priority": None,
-            "timeoutInSeconds": time_out,
-            "packageId": script_id,
-            "endpoints": endpoint_ip,
-            "isPlaybook": False,
-            "taskOptions": [
+            'queueExpirationInhours': None,
+            'wizardOverridePassword': False,
+            'impersonationUser': None,
+            'impersonationPassword': None,
+            'priority': None,
+            'timeoutInSeconds': time_out,
+            'packageId': script_id,
+            'endpoints': endpoint_ip,
+            'isPlaybook': False,
+            'taskOptions': [
                 {
-                    "integrationOutputFormat": None,
-                    "scriptId": script_id,
-                    "questions": [
+                    'integrationOutputFormat': None,
+                    'scriptId': script_id,
+                    'questions': [
                         {}
                     ]
                 }
@@ -344,262 +351,261 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def query_by_hash(self, start_time: str, end_time: str, logic: str, file_hash: str):
+    def query_by_hash(self, limit: int, start_time: str, end_time: str, logic: str, file_hash: str):
 
         url_suffix = '/v2/events'
+        params = assign_params(pageSize=limit)
         body = {
-            "dateRange": {
-                "start": start_time,
-                "end": end_time
+            'dateRange': {
+                'start': start_time,
+                'end': end_time
             },
-            "resultFields":
-                ["endpointName", "eventType", "processStartTime", "parentName", "pid", "name", "path", "user", "hash",
-                 "parameters"],
+            'resultFields':
+                ['endpointName', 'eventType', 'processStartTime', 'parentName', 'pid', 'name', 'path', 'user', 'hash',
+                 'parameters'],
 
-            "criteriaV3": {
-                "relationshipFilter": None,
-                "entityType": "file",
-                "filter": {
-                    "filterType": "composite",
-                    "logic": logic,
-                    "filters": [
+            'criteriaV3': {
+                'relationshipFilter': None,
+                'entityType': 'file',
+                'filter': {
+                    'filterType': 'composite',
+                    'logic': logic,
+                    'filters': [
                         {
-                            "filterType": "criteria",
-                            "column": "hash",
-                            "operator": "=",
-                            "value": file_hash
+                            'filterType': 'criteria',
+                            'column': 'hash',
+                            'operator': '=',
+                            'value': file_hash
                         }
                     ]
                 }
             }
         }
-        response = self._http_request('POST', url_suffix, json_data=body)
+        response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
-            return_error(response.get('error'))
-        if 'data' in response:
-            return response.get('data')
-        return {}
+            raise Exception(response.get('error'))
+        return response
 
-    def query_by_process_name(self, start_time: str, end_time: str, logic: str, process_name: str):
+    def query_by_process_name(self, limit: int, start_time: str, end_time: str, logic: str, process_name: str):
 
-        url_suffix = '/v2/events?pageSize=1000'
+        url_suffix = '/v2/events'
+        params = assign_params(pageSize=limit)
         body = {
-            "dateRange": {
-                "start": start_time,
-                "end": end_time
+            'dateRange': {
+                'start': start_time,
+                'end': end_time
             },
-            "resultFields":
-                ["endpointName", "eventType", "processStartTime", "parentName", "pid", "name", "path", "user", "hash",
-                 "parameters"],
+            'resultFields':
+                ['endpointName', 'eventType', 'processStartTime', 'parentName', 'pid', 'name', 'path', 'user', 'hash',
+                 'parameters'],
 
-            "criteriaV3": {
-                "relationshipFilter": None,
-                "entityType": "process",
-                "filter": {
-                    "filterType": "composite",
-                    "logic": logic,
-                    "filters": [
+            'criteriaV3': {
+                'relationshipFilter': None,
+                'entityType': 'process',
+                'filter': {
+                    'filterType': 'composite',
+                    'logic': logic,
+                    'filters': [
                         {
-                            "filterType": "criteria",
-                            "column": "name",
-                            "operator": "=",
-                            "value": process_name
+                            'filterType': 'criteria',
+                            'column': 'name',
+                            'operator': '=',
+                            'value': process_name
                         }
                     ]
                 }
             }
         }
-        response = self._http_request('POST', url_suffix, json_data=body)
+        response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
-            return_error(response.get('error'))
-        if 'data' in response:
-            return response.get('data')
-        return {}
+            raise Exception(response.get('error'))
+        return response
 
-    def query_by_remote_ip(self, start_time: str, end_time: str, logic: str, remote_ip: str):
+    def query_by_remote_ip(self, limit: int, start_time: str, end_time: str, logic: str, remote_ip: str):
 
-        url_suffix = '/v2/events?pageSize=1000'
+        url_suffix = '/v2/events'
+        params = assign_params(pageSize=limit)
         body = {
-            "dateRange": {
-                "start": start_time,
-                "end": end_time
+            'dateRange': {
+                'start': start_time,
+                'end': end_time
             },
-            "resultFields":
-                ["endpointName", "eventType", "endpointId", "parentName", "ppid", "user", "localIP", "localPort",
-                 "remoteIP", "remotePort", "processStartTime", "firstEventTime", "lastEventTime",
-                 "protocol", "parentHashSHA1"],
+            'resultFields':
+                ['endpointName', 'eventType', 'endpointId', 'parentName', 'ppid', 'user', 'localIP', 'localPort',
+                 'remoteIP', 'remotePort', 'processStartTime', 'firstEventTime', 'lastEventTime',
+                 'protocol', 'parentHashSHA1'],
 
-            "criteriaV3": {
-                "relationshipFilter": None,
-                "entityType": "network",
-                "filter": {
-                    "filterType": "composite",
-                    "logic": logic,
-                    "filters": [
+            'criteriaV3': {
+                'relationshipFilter': None,
+                'entityType': 'network',
+                'filter': {
+                    'filterType': "composite",
+                    'logic': logic,
+                    'filters': [
                         {
-                            "filterType": "criteria",
-                            "column": "remoteIP",
-                            "operator": "=",
-                            "value": remote_ip
+                            'filterType': 'criteria',
+                            'column': 'remoteIP',
+                            'operator': '=',
+                            'value': remote_ip
                         }
                     ]
                 }
             }
         }
-        response = self._http_request('POST', url_suffix, json_data=body)
+        response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
-            return_error(response.get('error'))
-        if 'data' in response:
-            return response.get('data')
-        return {}
+            raise Exception(response.get('error'))
 
-    def query_by_dns_request(self, start_time: str, end_time: str, logic: str, url: str):
+        return response
 
-        url_suffix = '/v2/events?pageSize=1000'
+    def query_by_dns_request(self, limit: int, start_time: str, end_time: str, logic: str, url: str):
+
+        url_suffix = '/v2/events'
+        params = assign_params(pageSize=limit)
         body = {
-            "dateRange": {
-                "start": start_time,
-                "end": end_time
+            'dateRange': {
+                'start': start_time,
+                'end': end_time
             },
-            "resultFields":
-                ["endpointName"],
+            'resultFields':
+                ['endpointName'],
 
-            "criteriaV3": {
-                "relationshipFilter": None,
-                "entityType": "dns",
-                "filter": {
-                    "filterType": "composite",
-                    "logic": logic,
-                    "filters": [
+            'criteriaV3': {
+                'relationshipFilter': None,
+                'entityType': 'dns',
+                'filter': {
+                    'filterType': 'composite',
+                    'logic': logic,
+                    'filters': [
                         {
-                            "filterType": "criteria",
-                            "column": "dnsQuestion",
-                            "operator": '=~',
-                            "value": url
+                            'filterType': 'criteria',
+                            'column': 'dnsQuestion',
+                            'operator': '=~',
+                            'value': url
                         }
                     ]
                 }
             }
         }
-        response = self._http_request('POST', url_suffix, json_data=body)
+        response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
-            return_error(response.get('error'))
-        if 'data' in response:
-            return response.get('data')
-        return {}
+            raise Exception(response.get('error'))
 
-    def query_by_dns_server_ip(self, start_time: str, end_time: str, logic: str, remote_ip: str):
+        return response
 
-        url_suffix = '/v2/events?pageSize=1000'
+    def query_by_dns_server_ip(self, limit: int, start_time: str, end_time: str, logic: str, remote_ip: str):
+
+        url_suffix = '/v2/events'
+        params = assign_params(pageSize=limit)
         body = {
-            "dateRange": {
-                "start": start_time,
-                "end": end_time
+            'dateRange': {
+                'start': start_time,
+                'end': end_time
             },
-            "resultFields":
-                ["endpointName"],
+            'resultFields':
+                ['endpointName'],
 
-            "criteriaV3": {
-                "relationshipFilter": None,
-                "entityType": "dns",
-                "filter": {
-                    "filterType": "composite",
-                    "logic": logic,
-                    "filters": [
+            'criteriaV3': {
+                'relationshipFilter': None,
+                'entityType': 'dns',
+                'filter': {
+                    'filterType': 'composite',
+                    'logic': logic,
+                    'filters': [
                         {
-                            "filterType": "criteria",
-                            "column": "remoteIP",
-                            "operator": '=',
-                            "value": remote_ip
+                            'filterType': 'criteria',
+                            'column': 'remoteIP',
+                            'operator': '=',
+                            'value': remote_ip
                         }
                     ]
                 }
             }
         }
-        response = self._http_request('POST', url_suffix, json_data=body)
+        response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
-            return_error(response.get('error'))
-        if 'data' in response:
-            return response.get('data')
-        return {}
+            raise Exception(response.get('error'))
 
-    def query_by_dns_source_ip(self, start_time: str, end_time: str, logic: str, source_ip: str, domain: str):
+        return response
 
-        url_suffix = '/v2/events?pageSize=1000'
+    def query_by_dns_source_ip(self, limit: int, start_time: str, end_time: str, logic: str, source_ip: str, domain: str):
+
+        url_suffix = '/v2/events'
+        params = assign_params(pageSize=limit)
         body = {
-            "dateRange": {
-                "start": start_time,
-                "end": end_time
+            'dateRange': {
+                'start': start_time,
+                'end': end_time
             },
-            "resultFields":
-                ["endpointName"],
+            'resultFields':
+                ['endpointName'],
 
-            "criteriaV3": {
-                "relationshipFilter": None,
-                "entityType": "dns",
-                "filter": {
-                    "filterType": "composite",
-                    "logic": logic,
-                    "filters": [
+            'criteriaV3': {
+                'relationshipFilter': None,
+                'entityType': 'dns',
+                'filter': {
+                    'filterType': 'composite',
+                    'logic': logic,
+                    'filters': [
                         {
-                            "filterType": "criteria",
-                            "column": "dnsQuestion",
-                            "operator": "=~",
-                            "value": domain
+                            'filterType': 'criteria',
+                            'column': 'dnsQuestion',
+                            'operator': '=~',
+                            'value': domain
                         },
                         {
-                            "filterType": "criteria",
-                            "column": "localIP",
-                            "operator": '=',
-                            "value": source_ip
+                            'filterType': 'criteria',
+                            'column': 'localIP',
+                            'operator': '=',
+                            'value': source_ip
                         }
                     ]
                 }
             }
         }
-        response = self._http_request('POST', url_suffix, json_data=body)
+        response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
-            return_error(response.get('error'))
-        if 'data' in response:
-            return response.get('data')
-        return {}
+            raise Exception(response.get('error'))
 
-    def query_events(self, start_time: str, end_time: str, logic: str, column: str, value: str, entity_type: str):
+        return response
+
+    def query_events(self, limit: int, start_time: str, end_time: str, logic: str, column: str, value: str, entity_type: str,
+                     operator: str):
 
         url_suffix = '/v2/events'
+        params = assign_params(pageSize=limit)
         body = {
-            "dateRange": {
-                "start": start_time,
-                "end": end_time
+            'dateRange': {
+                'start': start_time,
+                'end': end_time
             },
-            "resultFields":
-                ["endpointName", "eventType", "processStartTime", "parentName", "pid", "name", "path", "user", "hash",
-                 " parameters"],
+            'resultFields':
+                ['endpointName', 'eventType', 'processStartTime', 'parentName', 'pid', 'name', 'path', 'user', 'hash',
+                 'parameters'],
 
-            "criteriaV3": {
-                "relationshipFilter": None,
-                "entityType": entity_type,
-                "filter": {
-                    "filterType": "composite",
-                    "logic": logic,
-                    "filters": [
+            'criteriaV3': {
+                'relationshipFilter': None,
+                'entityType': entity_type,
+                'filter': {
+                    'filterType': 'composite',
+                    'logic': logic,
+                    'filters': [
                         {
-                            "filterType": "criteria",
-                            "column": column,
-                            "operator": '=',
-                            "value": value
+                            'filterType': 'criteria',
+                            'column': column,
+                            'operator': operator,
+                            'value': value
                         }
                     ]
                 }
             }
         }
 
-        response = self._http_request('POST', url_suffix, json_data=body)
+        response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
-            return_error(response.get('error'))
-        if 'data' in response:
-            return response.get('data')
-        return {}
+            raise Exception(response.get('error'))
+
+        return response
 
 
 def test_module(client: Client, *_):
@@ -678,57 +684,49 @@ def list_alerts_command(client: Client, args: dict):
 
 
 def host_info_command(client: Client, args: dict):
-    ip = args.get('ip')
+
+    ip_address = args.get('ip_address')
+    host = args.get('host')
+
+    if not host and not ip_address:
+        raise Exception('You must provide either ip_address or host')
 
     contents = []
-    context = []
-
-    response = client.get_host_info(ip)
+    headers = ['ID', 'HostName', 'IpAddress', 'OS', 'MacAddress', 'Isolated', 'LastContactDate', 'AgentInstalled',
+               'AgentVersion', 'OnNetwork', 'AV_Enabled', 'Groups', 'ProcessorName']
+    response = client.get_host_info(host, ip_address)
     hosts = response.get('data')
     if not hosts:
-        return f'No hosts was found for ip address {ip}', {}, {}
-    for host in hosts:
+        return f'No hosts was found', {}, {}
+
+    host_info = hosts.get('entities', [])
+    for host in host_info:
         contents.append({
             'HostName': host.get('hostName'),
             'ID': host.get('id'),
             'IpAddress': host.get('ipAddress'),
             'OS': host.get('os'),
-            'ProcessorName': host.get('processorName'),
-            'RamSize': host.get('ramSize'),
-            'AgentID': host.get('agentId'),
-            'AgentVersion': host.get('agentVersion'),
-            'CreatedDate': host.get('createdDate')
-        })
-
-        context.append({
-            'HostName': host.get('hostName'),
-            'ID': host.get('id'),
-            'IpAddress': host.get('ipAddress'),
-            'Description': host.get('description'),
-            'ActiveDirectoryID': host.get('activeDirectoryId'),
+            'MacAddress': host.get('macAddress'),
             'LastContactDate': host.get('lastContactDate'),
-            'CreatedDate': host.get('createdDate'),
-            'AgentID': host.get('agentId'),
+            'AgentInstalled': host.get('agentInstalled'),
             'AgentVersion': host.get('agentVersion'),
+            'AV_Enabled': host.get('aV_Enabled'),
+            'Isolated': host.get('isolated'),
+            'OnNetwork': host.get('onNetwork'),
             'Groups': host.get('groups'),
-            'OS': host.get('os'),
-            'ProcessorName': host.get('processorName'),
-            'RamSize': host.get('ramSize'),
-            'AVEEnabled': host.get('aV_Enabled'),
-            'AREnabled': host.get('aR_Enabled'),
-            'IsDeleted': host.get('isDeleted'),
+            'ProcessorName': host.get('processorName')
         })
 
-    entry_context = {'FidelisEndpoint.Host(val.ID && val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Fidelis Endpoint Hosts Info', contents, removeNull=True)
+    entry_context = {'FidelisEndpoint.Host(val.ID && val.ID === obj.ID)': contents}
+    human_readable = tableToMarkdown('Fidelis Endpoint Host Info', contents, headers=headers, removeNull=True)
 
-    return human_readable, entry_context, hosts
+    return human_readable, entry_context, response
 
 
 def file_search(client: Client, args: dict):
     """ search for files on multiple hosts, using file hash, extension, file size, and other search criteria."""
 
-    host = argToList(args.get('host'))
+    host = argToList(args.get('host', ['']))
     md5 = argToList(args.get('md5'))
     file_extension = argToList(args.get('file_extension', ''))
     file_path = argToList(args.get('file_path', ''))
@@ -775,7 +773,7 @@ def file_search_status(client: Client, args: dict):
 
 
 def file_search_reasult_metadata(client: Client, args: dict):
-    """Get the job results metadata (max 50 results)"""
+    """Get the job results metadata"""
 
     job_id = args.get('job_id')
     job_result_id = args.get('job_result_id')
@@ -821,7 +819,7 @@ def file_search_reasult_metadata(client: Client, args: dict):
 def get_file(client: Client, args: dict):
     file_id = args.get('file_id')
     response = client.get_file(file_id)
-    attachment_file = fileResult('Fidelis_Endpoint.txt', response)
+    attachment_file = fileResult('Fidelis_Endpoint.zip', response)
 
     return attachment_file
 
@@ -836,8 +834,10 @@ def delete_file_search_job(client: Client, args: dict):
 def list_scripts_command(client: Client, *_):
     headers = ['ID', 'Name', 'Description']
     response = client.list_scripts()
-
-    scripts = response.get('data', {}).get('scripts', [])
+    res = response.get('data', {})
+    scripts = res.get('scripts', [])
+    if not scripts:
+        raise Exception('No scripts were found.')
     contents = []
     for script in scripts:
         contents.append({
@@ -1102,12 +1102,16 @@ def query_file_by_hash(client: Client, args: dict):
     end_time = args.get('end_time')
     logic = args.get('logic')
     file_hash = args.get('file_hash')
+    limit = args.get('limit')
     if get_hash_type(file_hash) == 'Unknown':
         raise Exception('Enter a valid hash format.')
     contents = []
     context = []
-    response = client.query_by_hash(start_time, end_time, logic, file_hash)
-    events = response.get('events', [])
+    response = client.query_by_hash(limit, start_time, end_time, logic, file_hash)
+    res = response.get('data', {})
+    events = res.get('events', [])
+    if not events:
+        raise Exception(f'No events were found for file_hash {file_hash}')
 
     for event in events:
         contents.append({
@@ -1124,32 +1128,32 @@ def query_file_by_hash(client: Client, args: dict):
         })
 
         context.append({
-            "EventTime": event.get('eventTime'),
-            "EndpointName": event.get('endpointName'),
-            "EventType": event.get('eventType'),
-            "ParentID": event.get('parentId'),
-            "TargetID": event.get('targetId'),
-            "ParentName": event.get('parentName'),
-            "Name": event.get('name'),
-            "Path": event.get('path'),
-            "Hash": event.get('hash'),
-            "Size": event.get('size'),
-            "FileVersion": event.get('fileVersion'),
-            "Signature": event.get('signature'),
-            "SignedTime": event.get('signedTime'),
-            "CertificateSubjectName": event.get('certificateSubjectName'),
-            "CertificateIssuerName": event.get('certificateIssuerName'),
-            "CertificatePublisher": event.get('certificatePublisher'),
-            "HashSHA1": event.get('hashSHA1'),
-            "HashSHA256": event.get('hashSHA256'),
-            "ProcessStartTime": event.get('processStartTime'),
-            "EventIndex": event.get('eventIndex'),
-            "IndexingTime": event.get('indexingTime'),
-            "FileExtension": event.get('fileExtension'),
-            "FileType": event.get('fileType'),
-            "FileCategory": event.get('fileCategory'),
-            "EntityType": event.get('entityType'),
-            "StartTime": event.get('startTime')
+            'EventTime': event.get('eventTime'),
+            'EndpointName': event.get('endpointName'),
+            'EventType': event.get('eventType'),
+            'ParentID': event.get('parentId'),
+            'TargetID': event.get('targetId'),
+            'ParentName': event.get('parentName'),
+            'Name': event.get('name'),
+            'Path': event.get('path'),
+            'Hash': event.get('hash'),
+            'Size': event.get('size'),
+            'FileVersion': event.get('fileVersion'),
+            'Signature': event.get('signature'),
+            'SignedTime': event.get('signedTime'),
+            'CertificateSubjectName': event.get('certificateSubjectName'),
+            'CertificateIssuerName': event.get('certificateIssuerName'),
+            'CertificatePublisher': event.get('certificatePublisher'),
+            'HashSHA1': event.get('hashSHA1'),
+            'HashSHA256': event.get('hashSHA256'),
+            'ProcessStartTime': event.get('processStartTime'),
+            'EventIndex': event.get('eventIndex'),
+            'IndexingTime': event.get('indexingTime'),
+            'FileExtension': event.get('fileExtension'),
+            'FileType': event.get('fileType'),
+            'FileCategory': event.get('fileCategory'),
+            'EntityType': event.get('entityType'),
+            'StartTime': event.get('startTime')
         })
 
     entry_context = {'FidelisEndpoint.Query(val.Hash && val.Hash === obj.Hash)': context}
@@ -1162,11 +1166,15 @@ def query_process_name_command(client: Client, args: dict):
     end_time = args.get('end_time')
     logic = args.get('logic')
     process_name = args.get('process_name')
+    limit = args.get('limit')
     contents = []
     context = []
 
-    response = client.query_by_process_name(start_time, end_time, logic, process_name)
-    events = response.get('events', [])
+    response = client.query_by_process_name(limit, start_time, end_time, logic, process_name)
+    res = response.get('data', {})
+    events = res.get('events', [])
+    if not events:
+        raise Exception(f'No events were found for the process {process_name}')
 
     for event in events:
         contents.append({
@@ -1212,11 +1220,15 @@ def query_connection_by_remote_ip(client: Client, args: dict):
     end_time = args.get('end_time')
     logic = args.get('logic')
     remote_ip = args.get('remote_ip')
+    limit = args.get('limit')
     contents = []
     context = []
 
-    response = client.query_by_remote_ip(start_time, end_time, logic, remote_ip)
-    events = response.get('events', [])
+    response = client.query_by_remote_ip(limit, start_time, end_time, logic, remote_ip)
+    res = response.get('data', {})
+    events = res.get('events', [])
+    if not events:
+        raise Exception(f'No events were found for the IP address {remote_ip}')
 
     for event in events:
         contents.append({
@@ -1271,11 +1283,15 @@ def query_dns_request(client: Client, args: dict):
     end_time = args.get('end_time')
     logic = args.get('logic')
     url = args.get('url')
+    limit = args.get('limit')
     contents = []
     context = []
 
-    response = client.query_by_dns_request(start_time, end_time, logic, url)
-    events = response.get('events', [])
+    response = client.query_by_dns_request(limit, start_time, end_time, logic, url)
+    res = response.get('data', {})
+    events = res.get('events', [])
+    if not events:
+        raise Exception(f'No events were found for the URL {url}')
 
     for event in events:
         contents.append({
@@ -1320,11 +1336,15 @@ def query_by_server_ip(client: Client, args: dict):
     end_time = args.get('end_time')
     logic = args.get('logic')
     remote_ip = args.get('remote_ip')
+    limit = args.get('limit')
     contents = []
     context = []
 
-    response = client.query_by_dns_server_ip(start_time, end_time, logic, remote_ip)
-    events = response.get('events', [])
+    response = client.query_by_dns_server_ip(limit, start_time, end_time, logic, remote_ip)
+    res = response.get('data', {})
+    events = res.get('events', [])
+    if not events:
+        raise Exception(f'No events were found for the IP address {remote_ip}')
 
     for event in events:
         contents.append({
@@ -1369,23 +1389,28 @@ def query_by_source_ip(client: Client, args: dict):
     end_time = args.get('end_time')
     logic = args.get('logic')
     source_ip = args.get('source_ip')
-    domain = args.get('domain')
+    domain = args.get('domain', '')
+    limit = args.get('limit')
     contents = []
     context = []
-
-    response = client.query_by_dns_source_ip(start_time, end_time, logic, source_ip, domain)
-    events = response.get('events', [])
+    headers = ['EndpointName', 'LocalIP', 'LocalPort', 'RemoteIP', 'RemotePort', 'ProcessStartTime', 'DnsQuestion',
+               'DnsAnswer']
+    response = client.query_by_dns_source_ip(limit, start_time, end_time, logic, source_ip, domain)
+    res = response.get('data', {})
+    events = res.get('events', [])
+    if not events:
+        raise Exception(f'No events were found')
 
     for event in events:
         contents.append({
             'EndpointName': event.get('endpointName'),
-            'EventType': event.get('eventType'),
-            'ParentID': event.get('parentId'),
             'ProcessStartTime': event.get('processStartTime'),
             'LocalIP': event.get('localIP'),
             'LocalPort': event.get('localPort'),
             'RemoteIP': event.get('remoteIP'),
-            'RemotePort': event.get('remotePort')
+            'RemotePort': event.get('remotePort'),
+            'DnsQuestion': event.get('dnsQuestion'),
+            'DnsAnswer': event.get('dnsAnswer')
         })
 
         context.append({
@@ -1410,7 +1435,7 @@ def query_by_source_ip(client: Client, args: dict):
 
     entry_context = {'FidelisEndpoint.Query(val.TargetID && val.TargetID === obj.TargetID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint query results for the DNS request by source IP', contents,
-                                     removeNull=True)
+                                     headers=headers, removeNull=True)
     return human_readable, entry_context, events
 
 
@@ -1421,11 +1446,16 @@ def query_events(client: Client, args: dict):
     entity_type = args.get('entity_type')
     column = args.get('column')
     value = args.get('value')
+    operator = args.get('operator')
+    limit = args.get('limit')
     contents = []
     context = []
 
-    response = client.query_events(start_time, end_time, logic, column, value, entity_type)
-    events = response.get('events', [])
+    response = client.query_events(limit, start_time, end_time, logic, column, value, entity_type, operator)
+    res = response.get('data', {})
+    events = res.get('events', [])
+    if not events:
+        raise Exception(f'No events were found')
 
     for event in events:
         contents.append({
@@ -1472,6 +1502,55 @@ def query_events(client: Client, args: dict):
     return human_readable, entry_context, events
 
 
+def alert_severity_to_dbot_score(severity_str):
+    """Converts an severity string to DBot score representation
+        alert severity. Can be one of:
+        Low    ->  1
+        Medium ->  2
+        High   ->  3
+
+    Args:
+        severity_str: String representation of severity.
+
+    Returns:
+        Dbot representation of severity
+    """
+    severity_str = severity_str.lower()
+    if severity_str == 'low':
+        return 1
+    if severity_str == 'medium':
+        return 2
+    elif severity_str == 'high':
+        return 3
+    return 0
+
+
+def fetch_incidents(client: Client, fetch_time: Optional[str], severity: str, last_run: Dict) -> Tuple[List, Dict]:
+    if not last_run:  # if first time running
+        new_last_run = {'time': fetch_time}
+    else:
+        new_last_run = last_run
+    incidents: list = list()
+    response = client.list_alerts()
+    alerts = response.get('data', {}).get('entities', [])
+    if alerts:
+        last_incident_id = last_run.get('id', 0)
+        # Creates incident entry
+        incidents = [{
+            'name': f"Fidlie Endpoint alert: {alert.get('id')}",
+            'occurred': alert.get('createDate'),
+            'severity': alert_severity_to_dbot_score(alert.get('severity')),
+            'rawJSON': json.dumps(alert)
+        } for alert in alerts if alert.get('id') > last_incident_id and alert.get('severity') == severity]
+        # New incidents fetched
+        if incidents:
+            last_incident_timestamp = incidents[-1].get('occurred')
+            last_incident_id = alerts[-1].get('id')
+            new_last_run = {'time': last_incident_timestamp, 'id': last_incident_id}
+    # Return results
+    return incidents, new_last_run
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1496,6 +1575,12 @@ def main():
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
+        elif demisto.command() == 'fetch-incidents':
+            fetch_time = demisto.params().get('fetch_time')
+            severity = demisto.params().get('severity', 'Medium')
+            incidents, last_run = fetch_incidents(client, severity, fetch_time, last_run=demisto.getLastRun())  # type: ignore
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
 
         elif demisto.command() == 'fidelis-endpoint-list-alerts':
             return_outputs(*list_alerts_command(client, demisto.args()))
