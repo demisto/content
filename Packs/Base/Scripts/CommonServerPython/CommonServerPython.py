@@ -25,9 +25,6 @@ try:
 except Exception:
     pass
 
-# when returning an entry using `demisto.results` or `return_outputs` that has timeline data,
-# use the TIMELINE_CATEGORY constant as the value for the "Category" field of the timeline dictionary
-TIMELINE_CATEGORY = 'Integration Update'
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
