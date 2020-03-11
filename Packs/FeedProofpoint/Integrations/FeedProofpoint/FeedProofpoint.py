@@ -84,18 +84,23 @@ class Client(BaseClient):
                     item["category_name"] = self._CATEGORY_NAME[int(category) - 1]
                 except (KeyError, IndexError):
                     item["category_name"] = "Unknown"
+
                 # add type/value to item.
                 if "domain" in item:
                     item["type"] = FeedIndicatorType.Domain
+                    indicator_value = item.get("domain", "")
                     # As part of the domain feed, also DomainGlob indicators will be returned, so we are checking if the
                     # domain has '*' in their value
-                    indicator_value = str(item.get("domain", ""))
-                    if '*' in indicator_value:
+                    if indicator_value and '*' in indicator_value:
                         item["type"] = FeedIndicatorType.DomainGlob
-                    item["value"] = indicator_value
                 elif "ip" in item:
                     item["type"] = FeedIndicatorType.IP
-                    item["value"] = item.get("ip")
+                    indicator_value = item.get("ip", "")
+
+                # domain key was present but value was None
+                if not indicator_value:
+                    continue
+                item["value"] = indicator_value
                 yield item
 
     @staticmethod
