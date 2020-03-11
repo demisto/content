@@ -578,7 +578,7 @@ def get_senders_list():
 
 ''' EXECUTION CODE '''
 
-# login()
+login()
 
 LOG('command is %s' % (demisto.command(), ))
 

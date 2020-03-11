@@ -117,82 +117,121 @@ script:
     outputs:
     - contextPath: Proofpoint.SmartSearch.SMIMERecipients
       type: string
+      description: Search results SMIME recipients
     - contextPath: Proofpoint.SmartSearch.FID
       type: string
+      description: Search results FID
     - contextPath: Proofpoint.SmartSearch.MessageID
       type: string
+      description: Search results email message ID
     - contextPath: Proofpoint.SmartSearch.Proofpoint.SmartSearch.Suborg
       type: string
+      description: Search results sub organization
     - contextPath: Proofpoint.SmartSearch.Agent
       type: string
+      description: Search results email agent
     - contextPath: Proofpoint.SmartSearch.AttachmentNames
       type: string
+      description: Search results email attachment names
     - contextPath: Proofpoint.SmartSearch.MoudleID
       type: string
+      description: Search results module ID
     - contextPath: Proofpoint.SmartSearch.MessageSize
       type: string
+      description: Search results email message size
     - contextPath: Proofpoint.SmartSearch.SpamScore
       type: string
+      description: Search results email spam score
     - contextPath: Proofpoint.SmartSearch.GUID
       type: string
+      description: Search results GUID
     - contextPath: Proofpoint.SmartSearch.QuarantineRule
       type: string
+      description: Search results email message quarantine rule
     - contextPath: Proofpoint.SmartSearch.VirusNames
       type: string
+      description: Search results virus names
     - contextPath: Proofpoint.SmartSearch.Subject
       type: string
+      description: Search results email subject
     - contextPath: Proofpoint.SmartSearch.QID
       type: string
+      description: Search results QID
     - contextPath: Proofpoint.SmartSearch.FinalAction
       type: string
+      description: Search results email final action
     - contextPath: Proofpoint.SmartSearch.DispositionAction
       type: string
+      description: Search results email disposition action
     - contextPath: Proofpoint.SmartSearch.SID
       type: string
+      description: Search results SID
     - contextPath: Proofpoint.SmartSearch.SendmailToStat
       type: string
+      description: Search results sent email to stats
     - contextPath: Proofpoint.SmartSearch.Date
       type: date
+      description: Search results date
     - contextPath: Proofpoint.SmartSearch.PERecipients
       type: string
+      description: Search results email PE recipients
     - contextPath: Proofpoint.SmartSearch.FQIN
       type: string
+      description: Search results email FQIN
     - contextPath: Proofpoint.SmartSearch.FinalRule
       type: string
+      description: Search results email final rule
     - contextPath: Proofpoint.SmartSearch.SendmailStat
       type: string
+      description: Search results email stats
     - contextPath: Proofpoint.SmartSearch.MessageSplit
       type: string
+      description: Search results email split message
     - contextPath: Proofpoint.SmartSearch.Duration
       type: string
+      description: Search results duration time
     - contextPath: Proofpoint.SmartSearch.SendmailAction
       type: string
+      description: Search results sent mail action
     - contextPath: Proofpoint.SmartSearch.Sender
       type: string
+      description: Search results email sender
     - contextPath: Proofpoint.SmartSearch.SendmailIPAddress
       type: string
+      description: Search results send mail IP address
     - contextPath: Proofpoint.SmartSearch.SendmailTo
       type: string
+      description: Search results send mail to
     - contextPath: Proofpoint.SmartSearch.Recipients
       type: string
+      description: Search results recipients
     - contextPath: Proofpoint.SmartSearch.SendmailRawLog
       type: string
+      description: Search results send mail raw log
     - contextPath: Proofpoint.SmartSearch.TLS
       type: string
+      description: Search results TLS
     - contextPath: Proofpoint.SmartSearch.QuarantineFolder
       type: string
+      description: Search results quarantine folder
     - contextPath: Proofpoint.SmartSearch.RawLog
       type: string
+      description: Search results raw log
     - contextPath: Proofpoint.SmartSearch.DispositionSmtpProfile
       type: string
+      description: Search results disposition SMTP profile
     - contextPath: Proofpoint.SmartSearch.PolicyRoutes
       type: string
+      description: Search results policy routes
     - contextPath: Proofpoint.SmartSearch.MessageEncrypted
       type: string
+      description: Search results encrypted message
     - contextPath: Proofpoint.SmartSearch.SenderHost
       type: string
+      description: Search results sender hosr
     - contextPath: Proofpoint.SmartSearch.SMIMRecipientsSigned
       type: string
+      description: Search results SMIME recipient signed
     description: Searches for emails.
   - name: proofpoint-quarantine-folders
     arguments: []
@@ -234,7 +273,7 @@ script:
       required: true
       description: Email to remove from safe senders list
     description: Removes an email address from safe senders list.
-  dockerimage: demisto/bs4:latest
+  dockerimage: demisto/bs4:1.0.0.6538
   runonce: false
   subtype: python2
 beta: true
