@@ -1,6 +1,6 @@
-Manages F5 firewall rules
+Use the F5 Firewall integration to manage your F5 firewall rules.
 This integration was integrated and tested with version xx of F5 firewall
-## Configure F5 firewall on Demisto
+## Configure F5 Firewall on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for F5 firewall.
@@ -19,11 +19,10 @@ This integration was integrated and tested with version xx of F5 firewall
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### f5-create-policy
+### Create a firewall policy
 ***
-Creates an F5 firewall policy
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Creates an F5 firewall policy.
+
 ##### Base Command
 
 `f5-create-policy`
@@ -68,11 +67,10 @@ There is no context output for this command.
 ##### Human Readable Output
 
 
-### f5-list-rules
+### List all rules for a policy
 ***
-List all the rules of a specific policy
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Lists all the rules of a specific policy
+
 ##### Base Command
 
 `f5-list-rules`
@@ -80,7 +78,7 @@ List all the rules of a specific policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy-name | The policy name that the rules displayed are associated with | Required | 
+| policy-name | The policy name that the rules displayed are associated with. | Required | 
 
 
 ##### Context Output
@@ -90,14 +88,11 @@ There is no context output for this command.
 ##### Command Example
 ``` ```
 
-##### Human Readable Output
 
-
-### f5-modify-rule
+### Modify the rule for a policy
 ***
-Modifies an F5 rule in a specific policy
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Modifies an F5 rule in a specific policy.
+
 ##### Base Command
 
 `f5-modify-rule`
@@ -105,8 +100,8 @@ Modifies an F5 rule in a specific policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| The policy name the rule is associated with | policy-name | Required | 
-| rule-name | The rule name to modify | Required | 
+| The policy name the rule is associated with. | policy-name | Required | 
+| rule-name | The rule name to modify. | Required | 
 
 
 ##### Context Output
@@ -119,9 +114,9 @@ There is no context output for this command.
 ##### Human Readable Output
 
 
-### f5-del-rule
+### Delete a rule
 ***
-Delete an F5 rule
+Delete an F5 rule.
 ##### Required Permissions
 **FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
@@ -131,8 +126,8 @@ Delete an F5 rule
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy-name | The policy name the rule is associated with | Required | 
-| rule-name | The rule name to delete | Required | 
+| policy-name | The policy name the rule is associated with. | Required | 
+| rule-name | The name of the rule to delete. | Required | 
 
 
 ##### Context Output
@@ -142,14 +137,11 @@ There is no context output for this command.
 ##### Command Example
 ``` ```
 
-##### Human Readable Output
 
-
-### f5-modify-global-policy
+### Add a policy to a global policy
 ***
-Add specific policy to global policy
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Adds the specified policy to a global policy.
+
 ##### Base Command
 
 `f5-modify-global-policy`
@@ -157,7 +149,7 @@ Add specific policy to global policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| enforcedPolicy | The new enforced policy to add to global policy | Required | 
+| enforcedPolicy | The new enforced policy to add to the global policy. | Required | 
 
 
 ##### Context Output
@@ -170,19 +162,16 @@ There is no context output for this command.
 ##### Human Readable Output
 
 
-### f5-show-global-policy
+### Get a global policy
 ***
-Display global policy
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Display global policy.
+
 ##### Base Command
 
 `f5-show-global-policy`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 ##### Context Output
 
@@ -191,14 +180,12 @@ There is no context output for this command.
 ##### Command Example
 ``` ```
 
-##### Human Readable Output
 
 
-### f5-del-policy
+### Delete a policy
 ***
-Delete a policy
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Deletes a policy.
+
 ##### Base Command
 
 `f5-del-policy`
@@ -206,7 +193,7 @@ Delete a policy
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy-name | The policy name to delete | Required | 
+| policy-name | The name of the policy to delete. | Required | 
 
 
 ##### Context Output
@@ -219,11 +206,10 @@ There is no context output for this command.
 ##### Human Readable Output
 
 
-### f5-list-all-user-sessions
+### Get a list of all user sessions
 ***
-Lists all the sessions with client ip for the given username
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Lists all the sessions with client IP for the given username.
+
 ##### Base Command
 
 `f5-list-all-user-sessions`
@@ -231,7 +217,7 @@ Lists all the sessions with client ip for the given username
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource-ip | Client IP address | Required | 
+| resource-ip | Client IP address. | Required | 
 
 
 ##### Context Output
@@ -241,9 +227,3 @@ There is no context output for this command.
 ##### Command Example
 ``` ```
 
-##### Human Readable Output
-
-
-## Additional Information
-
-## Known Limitations
