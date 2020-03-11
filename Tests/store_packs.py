@@ -146,7 +146,8 @@ class Pack(object):
         is_deprecated = user_metadata.get('deprecated', False)
         pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
         pack_metadata['certification'] = user_metadata.get('certification', '')
-        pack_metadata['price'] = int(user_metadata.get('price', 0))
+        price = user_metadata.get('price', 0)
+        pack_metadata['price'] = int(price) if isinstance(price, int) else 0
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
@@ -157,10 +158,10 @@ class Pack(object):
         pack_metadata['contentItems'] = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in pack_content_items.items()
                                          if k in DIR_NAME_TO_CONTENT_TYPE and v}
         # todo collect all integrations display name
-        pack_metadata["integrations"] = []
-        pack_metadata["useCases"] = input_to_list(user_metadata.get('useCases'))
-        pack_metadata["keywords"] = input_to_list(user_metadata.get('keywords'))
-        pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
+        pack_metadata['integrations'] = []
+        pack_metadata['useCases'] = input_to_list(user_metadata.get('useCases'))
+        pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
+        pack_metadata['dependencies'] = user_metadata.get('dependencies')
 
         return pack_metadata
 
