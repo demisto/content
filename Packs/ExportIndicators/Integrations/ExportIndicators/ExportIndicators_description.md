@@ -4,6 +4,7 @@ There are two ways that you can access the Export Indicators Service.
 ### Access the Export Indicators Service by URL and Port (HTTP)
 In a web browser, go to **http://*demisto_address*:*listen_port***.
 
+In case of several Export Indicators Service integration instances - make sure to use **different listening ports** to separate the outbound feeds.
 
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
