@@ -1,1 +1,21 @@
-{}
+{
+  "name": "Pentera",
+  "description": "An Integration with Pentera by Pcysys",
+  "support": "demisto",
+  "serverMinVersion": "3.5.0",
+  "currentVersion": "1.0.0",
+  "author": "demisto",
+  "url": "https://www.demisto.com",
+  "email": "",
+  "categories": [],
+  "tags": [],
+  "created": "datetime.utcnow().strftime(Initiator.DATE_FORMAT)",
+  "updated": "datetime.utcnow().strftime(Initiator.DATE_FORMAT)",
+  "beta": false,
+  "deprecated": false,
+  "certification": "certified",
+  "useCases": [],
+  "keywords": [],
+  "price": 0,
+  "dependencies": {}
+}
