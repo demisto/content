@@ -421,3 +421,19 @@ class TestHelperFunctions:
             assert returned_output == "type=ip\n\"1.2.3.4:89/wget\" \"AutoFocus Feed\"\n\"" \
                                       "https://www.demisto.com/cool\" \"AutoFocus V2,VirusTotal," \
                                       "Alien Vault OTX TAXII Feed\""
+
+    @pytest.mark.validate_basic_authentication
+    def test_create_splunk_out_format(self):
+        from ExportIndicators import create_splunk_out_format, CTX_VALUES_KEY
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+
+            # listed category does not exist - all results should be in default category
+            returned_dict = create_splunk_out_format(iocs=iocs_json)
+            returned_output = json.loads(returned_dict.get(CTX_VALUES_KEY))
+
+            assert returned_output[0].get('indicator') == '1.2.3.4:89/wget'
+            assert isinstance(returned_output[0].get('value'), dict)
+
+            assert returned_output[1].get('indicator') == 'https://www.demisto.com/cool'
+            assert isinstance(returned_output[1].get('value'), dict)
