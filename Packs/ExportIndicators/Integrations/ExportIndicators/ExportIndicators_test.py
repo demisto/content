@@ -296,10 +296,10 @@ class TestHelperFunctions:
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_1(self):
         """Test CSV out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_CSV
+        from ExportIndicators import create_values_out_dict, FORMAT_CSV, DONT_COLLAPSE
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            csv_out = create_values_out_dict(iocs_json, FORMAT_CSV)
+            csv_out, _ = create_values_out_dict(iocs_json, FORMAT_CSV, DONT_COLLAPSE)
             # assert len(csv_out) == IOC_RES_LEN + 1
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
                 expected_csv_out = iocs_out_f.read()
@@ -312,7 +312,8 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_out_dict, FORMAT_JSON, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.load(iocs_json_f)
-            json_out = json.loads(create_values_out_dict(iocs_json, FORMAT_JSON).get(CTX_VALUES_KEY))
+            result_dict, _ = create_values_out_dict(iocs_json, FORMAT_JSON)
+            json_out = json.loads(result_dict.get(CTX_VALUES_KEY))
             assert json_out == iocs_json
 
     @pytest.mark.create_values_out_dict
@@ -321,7 +322,8 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_out_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            json_seq_out = create_values_out_dict(iocs_json, FORMAT_JSON_SEQ).get(CTX_VALUES_KEY)
+            result_dict, _ = create_values_out_dict(iocs_json, FORMAT_JSON_SEQ)
+            json_seq_out = result_dict.get(CTX_VALUES_KEY)
             for seq_line in json_seq_out.split('\n'):
                 assert json.loads(seq_line) in iocs_json
 
@@ -331,7 +333,8 @@ class TestHelperFunctions:
         from ExportIndicators import create_values_out_dict, FORMAT_TEXT, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            text_out = create_values_out_dict(iocs_json, FORMAT_TEXT).get(CTX_VALUES_KEY)
+            result_dict, _ = create_values_out_dict(iocs_json, FORMAT_TEXT)
+            text_out = result_dict.get(CTX_VALUES_KEY)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_txt_f:
                 iocs_txt_json = json.load(iocs_txt_f)
                 for line in text_out.split('\n'):
