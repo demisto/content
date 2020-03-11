@@ -331,6 +331,21 @@ script:
     - contextPath: Account.Type
       description: Account type returned by search - Okta
       type: String
+    - contextPath: Account.Status
+      description: Okta account current status
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was changed
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the users's password was last changed
+      type: Date
   - arguments:
     - default: false
       description: Okta username in which to get information
@@ -376,6 +391,18 @@ script:
     - contextPath: Account.Status
       description: Okta account status.
       type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was changed
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the users's password was last changed
+      type: Date
   - arguments:
     - default: false
       description: First name of the user(givenName)
@@ -643,6 +670,21 @@ script:
     - contextPath: Account.Type
       description: Type of created account - Okta.
       type: String
+    - contextPath: Account.Status
+      description: Okta account current status
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was changed
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the users's password was last changed
+      type: Date
   - arguments:
     - default: false
       description: First name of the user (given name).
@@ -921,8 +963,23 @@ script:
       description: Okta account display name
       type: String
     - contextPath: Account.Type
-      description: Account typr - Okta
+      description: Account type - Okta
       type: String
+    - contextPath: Account.Status
+      description: Okta account current status
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was changed
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the users's password was last changed
+      type: Date
   - arguments:
     - default: false
       description: Searches the name property of groups for matching value
