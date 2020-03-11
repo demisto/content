@@ -33,8 +33,10 @@ FORMAT_ARG_PANOSURL = 'panosurl'
 FORMAT_ARG_BLUECOAT = 'bluecoat'
 FORMAT_ARG_PROXYSG = 'proxysg'
 FORMAT_MWG: str = 'McAfee Web Gateway'
-FORMAT_PROXYSG = "Symantec ProxySG"
-FORMAT_PANOSURL = "PAN-OS URL"
+FORMAT_PROXYSG: str = "Symantec ProxySG"
+FORMAT_PANOSURL: str = "PAN-OS URL"
+FORMAT_SPLUNK: str = 'Splunk'
+FORMAT_ARG_SPLUNK: str = 'splunk'
 CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, json-seq, csv, mgw, panosurl and proxysg'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
@@ -246,6 +248,20 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
     return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
 
 
+def create_splunk_out_format(iocs: list):
+    formatted_indicators = []  # type:List
+    for indicator_data in iocs:
+        splunk_format_indicator = {
+            "indicator": indicator_data.get('value')
+        }
+        del indicator_data['value']
+
+        splunk_format_indicator["value"] = indicator_data
+        formatted_indicators.append(splunk_format_indicator)
+
+    return {CTX_VALUES_KEY: json.dumps(formatted_indicators)}
+
+
 def add_indicator_to_category(indicator, category, category_dict):
     if category in category_dict.keys():
         category_dict[category].append(indicator)
@@ -319,6 +335,9 @@ def create_values_out_dict(iocs: list, request_args: RequestArguments) -> dict:
 
     if request_args.out_format == FORMAT_MWG:
         return create_mwg_out_format(iocs, request_args.mwg_type)
+
+    if request_args.out_format == FORMAT_SPLUNK:
+        return create_splunk_out_format(iocs)
 
     if request_args.out_format == FORMAT_JSON:  # handle json separately
         iocs_list = [ioc for ioc in iocs]
@@ -464,7 +483,7 @@ def get_request_args(params):
 
     if out_format not in [FORMAT_PROXYSG, FORMAT_PANOSURL, FORMAT_TEXT, FORMAT_JSON, FORMAT_CSV,
                           FORMAT_JSON_SEQ, FORMAT_MWG, FORMAT_ARG_BLUECOAT, FORMAT_ARG_MWG, FORMAT_ARG_PANOSURL,
-                          FORMAT_ARG_PROXYSG]:
+                          FORMAT_ARG_PROXYSG, FORMAT_ARG_PANOSURL, FORMAT_SPLUNK, FORMAT_ARG_SPLUNK]:
         raise DemistoException(CTX_FORMAT_ERR_MSG)
 
     elif out_format in [FORMAT_ARG_PROXYSG, FORMAT_ARG_BLUECOAT]:
@@ -475,6 +494,9 @@ def get_request_args(params):
 
     elif out_format == FORMAT_ARG_PANOSURL:
         out_format = FORMAT_PANOSURL
+
+    elif out_format == FORMAT_ARG_SPLUNK:
+        out_format = FORMAT_SPLUNK
 
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
                             category_attribute)
