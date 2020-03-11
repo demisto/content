@@ -1,5 +1,5 @@
 ## [Unreleased]
-Adding URL decoding for **hybrid-analysis-quick-scan-url** command.
+Added URL decoding for the **hybrid-analysis-quick-scan-url** command.
 
 ## [19.11.1] - 2019-11-26
   - Added the **jobID**, **sha256** and **environmentID** arguments to the ***hybrid-analysis-get-report-status*** command.
