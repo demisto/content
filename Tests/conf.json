@@ -2427,7 +2427,7 @@
     ],
     "skipped_tests": {
         "Cybereason Test": "Issue 22683",
-        "CVE Search v2": "Issue 22661",
+        "CVE Search v2 - Test": "Issue 22661",
         "AbuseIPDB Test": "Issue 22658",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
