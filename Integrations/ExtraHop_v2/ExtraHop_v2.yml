@@ -2,7 +2,7 @@ commonfields:
   id: ExtraHop v2
   version: -1
 name: ExtraHop v2
-display: ExtraHop Reveal(x)
+display: ExtraHop Reveal(x) v2
 category: Network Security
 description: Network detection and response. Complete visibility of network communications
   at enterprise scale, real-time threat detections backed by machine learning, and

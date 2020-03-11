@@ -59,7 +59,7 @@ configuration:
   required: false
   type: 13
 description: The Open source distributed streaming platform
-display: Kafka V2
+display: Kafka v2
 name: Kafka V2
 script:
   commands:
