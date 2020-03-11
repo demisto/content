@@ -5,6 +5,7 @@
     - s - The first index from which to fetch indicators.
     - v - The output format for indicators.
     - q - The query that defines which indicators to fetch.
+    - tr - Whether to collapse IPs to ranges or CIDRs.
 
   - Added support for IP ranges and CIDR collapse
 
