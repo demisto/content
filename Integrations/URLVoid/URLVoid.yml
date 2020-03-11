@@ -1,0 +1,1122 @@
+commonfields:
+  id: urlvoid
+  version: -1
+name: urlvoid
+display: urlvoid
+category: Data Enrichment & Threat Intelligence
+description: urlvoid wraps up a number of services such as ipvoid & urlvoid
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: API KEY
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Good Reputation (Percentage)
+  name: good
+  defaultvalue: "10"
+  type: 0
+  required: true
+  additionalinfo: If the percentage of detections is BELOW this value, the indicator
+    is considered GOOD
+- display: Suspicious Reputation (Percentage)
+  name: suspicious
+  defaultvalue: "30"
+  type: 0
+  required: true
+  additionalinfo: If the percentage of detections is ABOVE this value, the indicator
+    is considered SUSPICIOUS
+- display: Bad Reputation (Percentage)
+  name: bad
+  defaultvalue: "60"
+  type: 0
+  required: true
+  additionalinfo: If the percentage of detections is ABOVE this value, the indicator
+    is considered BAD
+- display: Malicious
+  name: malicious
+  defaultvalue: suspicious
+  type: 15
+  required: true
+  options:
+  - suspicious
+  - bad
+  additionalinfo: Consider the indicator malicious if either "suspicious" or "bad"
+script:
+  script: ''
+  type: python
+  commands:
+  - name: urlvoid-ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP to query.
+    outputs:
+    - contextPath: IP
+    - contextPath: IP.Address
+      type: string
+    - contextPath: IP.DetectionEngines
+      type: number
+    - contextPath: IP.Geo
+    - contextPath: IP.Geo.Country
+      type: string
+    - contextPath: IP.Geo.Description
+      type: string
+    - contextPath: IP.Geo.Location
+      type: string
+    - contextPath: IP.Hostname
+      type: string
+    - contextPath: IP.PositiveDetections
+      type: number
+    - contextPath: DBotScore
+    - contextPath: DBotScore.Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      type: number
+    - contextPath: DBotScore.Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      type: string
+    - contextPath: 'URLVoid.IP.anonymity.is_hosting '
+      type: boolean
+    - contextPath: URLVoid.IP.anonymity.is_proxy
+      type: boolean
+    - contextPath: URLVoid.IP.anonymity.is_tor
+      type: boolean
+    - contextPath: URLVoid.IP.anonymity.is_vpn
+      type: boolean
+    - contextPath: URLVoid.IP.anonymity.is_webproxy
+      type: boolean
+    - contextPath: URLVoid.IP.blacklists.detection_rate
+      type: string
+    - contextPath: URLVoid.IP.blacklists.detections
+      type: number
+    - contextPath: URLVoid.IP.blacklists.engines.detected
+      type: boolean
+    - contextPath: URLVoid.IP.blacklists.engines.elapsed
+      type: string
+    - contextPath: URLVoid.IP.blacklists.engines.engine
+      type: string
+    - contextPath: URLVoid.IP.blacklists.engines.reference
+      type: string
+    - contextPath: URLVoid.IP.blacklists.engines_count
+      type: number
+    - contextPath: URLVoid.IP.blacklists.scantime
+      type: string
+    - contextPath: URLVoid.IP.information.isp
+      type: string
+    - contextPath: URLVoid.IP.information.latitude
+      type: string
+    - contextPath: URLVoid.IP.information.reverse_dns
+      type: string
+    - contextPath: URLVoid.IP.information.longitude
+      type: string
+    - contextPath: URLVoid.IP.information.country_calling_code
+      type: string
+    - contextPath: URLVoid.IP.information.country_name
+      type: string
+    - contextPath: URLVoid.IP.information.region_name
+      type: string
+    - contextPath: URLVoid.IP.information.country_code
+      type: string
+    - contextPath: URLVoid.IP.information.continent_name
+      type: string
+    - contextPath: URLVoid.IP.information.continent_code
+      type: string
+    - contextPath: URLVoid.IP.information.country_currency
+      type: string
+    - contextPath: URLVoid.IP.information.city_name
+      type: string
+    - contextPath: URLVoid.IP.ip
+      type: string
+    description: Returns the reputation and extended context of the IP.
+  - name: urlvoid-domain
+    arguments:
+    - name: domain
+      required: true
+      description: The Domain to query.
+    outputs:
+    - contextPath: Domain
+    - contextPath: Domain.DNS
+      type: string
+    - contextPath: Domain.DetectionEngines
+      type: number
+    - contextPath: Domain.Name
+      type: string
+    - contextPath: Domain.PositiveDetections
+      type: number
+    - contextPath: DBotScore
+    - contextPath: DBotScore.Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      type: number
+    - contextPath: DBotScore.Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      type: string
+    - contextPath: URLVoid.Domain.alexa_top_100k
+      type: boolean
+    - contextPath: URLVoid.Domain.domain_length
+      type: number
+    - contextPath: URLVoid.Domain.server.isp
+      type: string
+    - contextPath: URLVoid.Domain.server.ip
+      type: string
+    - contextPath: URLVoid.Domain.server.latitude
+      type: string
+    - contextPath: URLVoid.Domain.server.reverse_dns
+      type: string
+    - contextPath: URLVoid.Domain.server.longitude
+      type: string
+    - contextPath: URLVoid.Domain.server.country_name
+      type: string
+    - contextPath: URLVoid.Domain.server.region_name
+      type: string
+    - contextPath: URLVoid.Domain.server.country_code
+      type: string
+    - contextPath: URLVoid.Domain.server.continent_name
+      type: string
+    - contextPath: URLVoid.Domain.server.continent_code
+      type: string
+    - contextPath: URLVoid.Domain.server.city_name
+      type: string
+    - contextPath: URLVoid.Domain.alexa_top_250k
+      type: boolean
+    - contextPath: URLVoid.Domain.alexa_top_10k
+      type: boolean
+    - contextPath: URLVoid.Domain.most_abused_tld
+      type: boolean
+    - contextPath: URLVoid.Domain.host
+      type: string
+    - contextPath: URLVoid.Domain.blacklists.detection_rate
+      type: string
+    - contextPath: URLVoid.Domain.blacklists.detections
+      type: number
+    - contextPath: URLVoid.Domain.blacklists.engines.confidence
+      type: string
+    - contextPath: URLVoid.Domain.blacklists.engines.detected
+      type: boolean
+    - contextPath: URLVoid.Domain.blacklists.engines.elapsed
+      type: string
+    - contextPath: URLVoid.Domain.blacklists.engines.engine
+      type: string
+    - contextPath: URLVoid.Domain.blacklists.engines.reference
+      type: string
+    - contextPath: URLVoid.Domain.blacklists.engines_count
+      type: number
+    - contextPath: URLVoid.Domain.blacklists.scantime
+      type: string
+    - contextPath: URLVoid.Domain.category.is_anonymizer
+      type: boolean
+    - contextPath: URLVoid.Domain.category.is_free_dynamic_dns
+      type: boolean
+    - contextPath: URLVoid.Domain.category.is_free_hosting
+      type: boolean
+    - contextPath: URLVoid.Domain.category.is_url_shortener
+      type: boolean
+    description: Returns the reputation of the domain.
+  - name: urlvoid-url
+    arguments:
+    - name: url
+      required: true
+      description: The URL to query.
+    outputs:
+    - contextPath: URL
+    - contextPath: URL.Data
+      type: string
+    - contextPath: URL.DetectionEngines
+      type: number
+    - contextPath: URL.PositiveDetections
+      type: number
+    - contextPath: DBotScore
+    - contextPath: DBotScore.Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      type: number
+    - contextPath: DBotScore.Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      type: string
+    - contextPath: URLVoid.URL.risk_score.result
+      type: number
+    - contextPath: URLVoid.URL.domain_blacklist.detections
+      type: number
+    - contextPath: URLVoid.URL.domain_blacklist.engines.detected
+      type: boolean
+    - contextPath: URLVoid.URL.domain_blacklist.engines.name
+      type: string
+    - contextPath: URLVoid.URL.domain_blacklist.engines.reference
+      type: string
+    - contextPath: URLVoid.URL.geo_location.countries
+      type: string
+    - contextPath: URLVoid.URL.server_details.isp
+      type: string
+    - contextPath: URLVoid.URL.server_details.ip
+      type: string
+    - contextPath: URLVoid.URL.server_details.latitude
+      type: string
+    - contextPath: URLVoid.URL.server_details.longitude
+      type: string
+    - contextPath: URLVoid.URL.server_details.hostname
+      type: string
+    - contextPath: URLVoid.URL.server_details.country_name
+      type: string
+    - contextPath: URLVoid.URL.server_details.region_name
+      type: string
+    - contextPath: URLVoid.URL.server_details.country_code
+      type: string
+    - contextPath: URLVoid.URL.server_details.continent_name
+      type: string
+    - contextPath: URLVoid.URL.server_details.continent_code
+      type: string
+    - contextPath: URLVoid.URL.server_details.city_name
+      type: string
+    - contextPath: URLVoid.URL.response_headers.server
+      type: string
+    - contextPath: URLVoid.URL.response_headers.code
+      type: number
+    - contextPath: URLVoid.URL.response_headers.content-type
+      type: string
+    - contextPath: URLVoid.URL.response_headers.date
+      type: date
+    - contextPath: URLVoid.URL.response_headers.cache-control
+      type: string
+    - contextPath: URLVoid.URL.response_headers.host-header
+      type: string
+    - contextPath: URLVoid.URL.response_headers.status
+      type: string
+    - contextPath: URLVoid.URL.response_headers.x-redirect-by
+      type: string
+    - contextPath: URLVoid.URL.response_headers.expires
+      type: date
+    - contextPath: URLVoid.URL.response_headers.location
+      type: string
+    - contextPath: URLVoid.URL.response_headers.content-length
+      type: string
+    - contextPath: URLVoid.URL.response_headers.upgrade
+      type: string
+    - contextPath: URLVoid.URL.response_headers.connection
+      type: string
+    - contextPath: URLVoid.URL.security_checks.is_windows_exe_file_on_ipv4
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_credit_card_form
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_windows_exe_file_on_free_hosting
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_linux_elf_file_on_ipv4
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_linux_elf_file_on_free_hosting
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_masked_windows_exe_file
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_zip_on_directory_listing
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_masked_linux_elf_file
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_sinkholed_domain
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_suspended_page
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_suspicious_file_extension
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_uncommon_clickable_url
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_suspicious_content
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_risky_geo_location
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_php_on_directory_listing
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_doc_on_directory_listing
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_doc_on_directory_listing
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_empty_page_title
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_login_form
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_robots_noindex
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_suspicious_domain
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_windows_exe_file_on_free_dynamic_dns
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_most_abused_tld
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_linux_elf_file_on_free_dynamic_dns
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_suspicious_url_pattern
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_valid_https
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_exe_on_directory_listing
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_pdf_on_directory_listing
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_host_an_ipv4
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_domain_blacklisted
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_china_country
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_windows_exe_file
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_masked_file
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_email_address_on_url_query
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_phishing_heuristic
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_non_standard_port
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_linux_elf_file
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_defaced_heuristic
+      type: boolean
+    - contextPath: URLVoid.URL.security_checks.is_directory_listing
+      type: boolean
+    - contextPath: URLVoid.URL.dns_records.mx.records.country_code
+      type: string
+    - contextPath: URLVoid.URL.dns_records.ns.records.country_name
+      type: string
+    - contextPath: URLVoid.URL.dns_records.ns.records.ip
+      type: string
+    - contextPath: URLVoid.URL.dns_records.ns.records.isp
+      type: string
+    - contextPath: URLVoid.URL.dns_records.ns.records.target
+      type: string
+    - contextPath: URLVoid.URL.redirection.external
+      type: boolean
+    - contextPath: URLVoid.URL.redirection.found
+      type: boolean
+    - contextPath: URLVoid.URL.redirection.url
+      type: string
+    - contextPath: URLVoid.URL.url
+      type: string
+    - contextPath: URLVoid.URL.url_parts.host
+      type: string
+    - contextPath: URLVoid.URL.url_parts.host_nowww
+      type: string
+    - contextPath: URLVoid.URL.url_parts.path
+      type: string
+    - contextPath: URLVoid.URL.url_parts.port
+      type: number
+    - contextPath: URLVoid.URL.url_parts.query
+      type: string
+    - contextPath: URLVoid.URL.url_parts.scheme
+      type: string
+    - contextPath: URLVoid.URL.site_category.is_anonymizer
+      type: boolean
+    - contextPath: URLVoid.URL.site_category.is_free_dynamic_dns
+      type: boolean
+    - contextPath: URLVoid.URL.site_category.is_free_hosting
+      type: boolean
+    - contextPath: URLVoid.URL.site_category.is_torrent
+      type: boolean
+    - contextPath: URLVoid.URL.site_category.is_url_shortener
+      type: boolean
+    - contextPath: URLVoid.URL.site_category.is_vpn_provider
+      type: boolean
+    - contextPath: URLVoid.URL.web_page.description
+      type: string
+    - contextPath: URLVoid.URL.web_page.keywords
+      type: string
+    - contextPath: URLVoid.URL.web_page.title
+      type: string
+    - contextPath: URLVoid.URL.html_forms.credit_card_field_present
+      type: boolean
+    - contextPath: URLVoid.URL.html_forms.email_field_present
+      type: boolean
+    - contextPath: URLVoid.URL.html_forms.number_of_total_forms
+      type: number
+    - contextPath: URLVoid.URL.html_forms.number_of_total_input_fields
+      type: number
+    - contextPath: URLVoid.URL.html_forms.password_field_present
+      type: boolean
+    - contextPath: URLVoid.URL.html_forms.two_text_inputs_in_a_form
+      type: boolean
+    - contextPath: URLVoid.URL.file_type.extension
+      type: string
+    - contextPath: URLVoid.URL.file_type.headers
+      type: string
+    - contextPath: URLVoid.URL.file_type.signature
+      type: string
+    description: Returns the reputation of the URL.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP to query.
+    outputs:
+    - contextPath: IP
+    - contextPath: IP.Address
+      type: string
+    - contextPath: IP.DetectionEngines
+      type: number
+    - contextPath: IP.Geo
+    - contextPath: IP.Geo.Country
+      type: string
+    - contextPath: IP.Geo.Description
+      type: string
+    - contextPath: IP.Geo.Location
+      type: string
+    - contextPath: IP.Hostname
+      type: string
+    - contextPath: IP.PositiveDetections
+      type: number
+    - contextPath: DBotScore
+    - contextPath: DBotScore.Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      type: number
+    - contextPath: DBotScore.Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      type: string
+    description: Returns the reputation of the IP.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The Domain to query.
+    outputs:
+    - contextPath: Domain
+    - contextPath: Domain.DNS
+      type: string
+    - contextPath: Domain.DetectionEngines
+      type: number
+    - contextPath: Domain.Name
+      type: string
+    - contextPath: Domain.PositiveDetections
+      type: number
+    - contextPath: DBotScore
+    - contextPath: DBotScore.Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      type: number
+    - contextPath: DBotScore.Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      type: string
+    description: Returns the reputation of the domain.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: The URL to query.
+    outputs:
+    - contextPath: URL
+    - contextPath: URL.Data
+      type: string
+    - contextPath: URL.DetectionEngines
+      type: number
+    - contextPath: URL.PositiveDetections
+      type: number
+    - contextPath: URL.RiskScore
+      type: number
+    - contextPath: URL.Score
+      type: string
+    - contextPath: DBotScore
+    - contextPath: DBotScore.Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      type: number
+    - contextPath: DBotScore.Type
+      type: string
+    - contextPath: DBotScore.URL
+      type: string
+    - contextPath: DBotScore.Vendor
+      type: string
+    description: Returns the reputation of the URL.
+  - name: urlvoid-dns-lookup
+    arguments:
+    - name: host
+      required: true
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - A
+      - AAAA
+      - MX
+      - NS
+      - DMARK
+      - Reverse
+      - TXT
+      - ANY
+      - CNAME
+      - SOA
+      - SRV
+      - CAA
+      description: The DNS record type to lookup
+      defaultValue: A
+    outputs:
+    - contextPath: URLVoid.DNS
+    - contextPath: URLVoid.DNS.items.host
+      type: string
+    - contextPath: URLVoid.DNS.items.class
+      type: string
+    - contextPath: URLVoid.DNS.items.ttl
+      type: number
+    - contextPath: URLVoid.DNS.items.type
+      type: string
+    - contextPath: URLVoid.DNS.items.ip
+      type: string
+    - contextPath: URLVoid.DNS.found
+      type: boolean
+    - contextPath: URLVoid.DNS.count
+      type: number
+    - contextPath: URLVoid.DNS.items.ipv6
+      type: string
+    - contextPath: URLVoid.DNS.items.pri
+      type: number
+    - contextPath: URLVoid.DNS.items.target
+      type: string
+    - contextPath: URLVoid.DNS.items.txt
+      type: string
+    - contextPath: URLVoid.DNS.items.entries
+      type: unknown
+    - contextPath: URLVoid.DNS.items.mname
+      type: string
+    - contextPath: URLVoid.DNS.items.rname
+      type: string
+    - contextPath: URLVoid.DNS.items.serial
+      type: number
+    - contextPath: URLVoid.DNS.items.refresh
+      type: number
+    - contextPath: URLVoid.DNS.items.retry
+      type: number
+    - contextPath: URLVoid.DNS.items.expire
+      type: number
+    - contextPath: URLVoid.DNS.items.minimum-ttl
+      type: number
+    - contextPath: URLVoid.DNS.items.weight
+      type: number
+    - contextPath: URLVoid.DNS.items.port
+      type: number
+    - contextPath: URLVoid.DNS.items.flags
+      type: number
+    - contextPath: URLVoid.DNS.items.tag
+      type: string
+    - contextPath: URLVoid.DNS.items.value
+      type: string
+    description: Gets DNS records of a host.
+  - name: urlvoid-ssl-info
+    arguments:
+    - name: host
+      required: true
+      description: Host to lookup SSL.
+    outputs:
+    - contextPath: URLVoid.SSL
+    - contextPath: URLVoid.SSL.found
+      type: boolean
+    - contextPath: URLVoid.SSL.fingerprint
+      type: string
+    - contextPath: URLVoid.SSL.deprecated_issuer
+      type: boolean
+    - contextPath: URLVoid.SSL.expired
+      type: boolean
+    - contextPath: URLVoid.SSL.valid_peer
+      type: boolean
+    - contextPath: URLVoid.SSL.host
+      type: string
+    - contextPath: URLVoid.SSL.name_match
+      type: boolean
+    - contextPath: URLVoid.SSL.debug_message
+      type: string
+    - contextPath: URLVoid.SSL.blacklisted
+      type: boolean
+    - contextPath: URLVoid.SSL.valid
+      type: boolean
+    - contextPath: URLVoid.SSL.details
+    - contextPath: URLVoid.SSL.details.extensions
+    - contextPath: URLVoid.SSL.details.extensions.authority_info_access
+      type: string
+    - contextPath: URLVoid.SSL.details.extensions.authority_key_identifier
+      type: string
+    - contextPath: URLVoid.SSL.details.extensions.basic_constraints
+      type: string
+    - contextPath: URLVoid.SSL.details.extensions.certificate_policies
+      type: string
+    - contextPath: URLVoid.SSL.details.extensions.crl_distribution_points
+      type: string
+    - contextPath: URLVoid.SSL.details.extensions.extended_key_usage
+      type: string
+    - contextPath: URLVoid.SSL.details.extensions.key_usage
+      type: string
+    - contextPath: URLVoid.SSL.details.extensions.subject_key_identifier
+      type: string
+    - contextPath: URLVoid.SSL.details.hash
+      type: string
+    - contextPath: URLVoid.SSL.details.issuer
+    - contextPath: URLVoid.SSL.details.issuer.common_name
+      type: string
+    - contextPath: URLVoid.SSL.details.issuer.country
+      type: string
+    - contextPath: URLVoid.SSL.details.issuer.location
+      type: string
+    - contextPath: URLVoid.SSL.details.issuer.organization
+      type: string
+    - contextPath: URLVoid.SSL.details.issuer.organization_unit
+      type: string
+    - contextPath: URLVoid.SSL.details.issuer.state
+      type: string
+    - contextPath: URLVoid.SSL.details.signature
+    - contextPath: URLVoid.SSL.details.signature.serial
+      type: string
+    - contextPath: URLVoid.SSL.details.signature.serial_hex
+      type: string
+    - contextPath: URLVoid.SSL.details.signature.type
+      type: string
+    - contextPath: URLVoid.SSL.details.subject
+    - contextPath: URLVoid.SSL.details.subject.postal_code
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.street
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.name
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.organization_unit
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.state
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.organization
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.location
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.alternative_names
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.country
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.category
+      type: string
+    - contextPath: URLVoid.SSL.details.subject.common_name
+      type: string
+    - contextPath: URLVoid.SSL.details.validity
+    - contextPath: URLVoid.SSL.details.validity.days_left
+      type: number
+    - contextPath: URLVoid.SSL.details.validity.valid_from
+      type: date
+    - contextPath: URLVoid.SSL.details.validity.valid_from_timestamp
+      type: date
+    - contextPath: URLVoid.SSL.details.validity.valid_to
+      type: date
+    - contextPath: URLVoid.SSL.details.validity.valid_to_timestamp
+      type: date
+    - contextPath: URLVoid.SSL.details.version
+      type: string
+    description: Get useful SSL information from a remote host
+  - name: urlvoid-email-verify
+    arguments:
+    - name: email
+      required: true
+      description: Email address to lookup
+    outputs:
+    - contextPath: URLVoid.Email
+    - contextPath: URLVoid.Email.email
+      type: string
+    - contextPath: URLVoid.Email.valid_format
+      type: boolean
+    - contextPath: URLVoid.Email.username
+      type: string
+    - contextPath: URLVoid.Email.role_address
+      type: boolean
+    - contextPath: URLVoid.Email.suspicious_username
+      type: boolean
+    - contextPath: URLVoid.Email.dirty_words_username
+      type: boolean
+    - contextPath: URLVoid.Email.domain
+      type: string
+    - contextPath: URLVoid.Email.valid_tld
+      type: boolean
+    - contextPath: URLVoid.Email.disposable
+      type: boolean
+    - contextPath: URLVoid.Email.has_mx_records
+      type: boolean
+    - contextPath: URLVoid.Email.free_email
+      type: boolean
+    - contextPath: URLVoid.Email.russian_free_email
+      type: boolean
+    - contextPath: URLVoid.Email.china_free_email
+      type: boolean
+    - contextPath: URLVoid.Email.suspicious_domain
+      type: boolean
+    - contextPath: URLVoid.Email.did_you_mean
+      type: string
+    - contextPath: URLVoid.Email.dirty_words_domain
+      type: boolean
+    - contextPath: URLVoid.Email.domain_popular
+      type: boolean
+    - contextPath: URLVoid.Email.risky_tld
+      type: boolean
+    - contextPath: URLVoid.Email.police_domain
+      type: boolean
+    - contextPath: URLVoid.Email.government_domain
+      type: boolean
+    - contextPath: URLVoid.Email.educational_domain
+      type: boolean
+    - contextPath: URLVoid.Email.should_block
+      type: boolean
+    - contextPath: URLVoid.Email.score
+      type: number
+    description: Checks if an email is disposable, if it has MX records and more.
+  - name: urlvoid-threatlog
+    arguments:
+    - name: host
+      required: true
+      description: The host the check
+    outputs:
+    - contextPath: URLVoid.ThreatLog.detected
+      type: boolean
+    - contextPath: URLVoid.ThreatLog.host
+      type: string
+    - contextPath: URLVoid.ThreatLog.scantime
+      type: string
+    - contextPath: Domain.Name
+      type: string
+    description: Check if a website is present on ThreatLog database
+  - name: urlvoid-parked-domain
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to check
+    outputs:
+    - contextPath: URLVoid.ParkedDomain.host
+      type: string
+    - contextPath: URLVoid.ParkedDomain.parked_domain
+      type: boolean
+    - contextPath: Domain.Name
+      type: string
+    description: Detect if a domain (i.e google.com) is actually parked
+  - name: urlvoid-domain-age
+    arguments:
+    - name: domain
+      required: true
+      description: The domain to check
+    outputs:
+    - contextPath: URLVoid.DomainAge.debug_message
+      type: string
+    - contextPath: URLVoid.DomainAge.domain_age_found
+      type: boolean
+    - contextPath: URLVoid.DomainAge.domain_age_in_days
+      type: number
+    - contextPath: URLVoid.DomainAge.domain_age_in_months
+      type: number
+    - contextPath: URLVoid.DomainAge.domain_age_in_years
+      type: number
+    - contextPath: URLVoid.DomainAge.domain_creation_date
+      type: string
+    - contextPath: URLVoid.DomainAge.domain_registered
+      type: string
+    - contextPath: URLVoid.DomainAge.host
+      type: string
+    - contextPath: Domain.CreationDate
+      type: string
+    - contextPath: Domain.Name
+      type: string
+    description: Get the registration date of a domain and the domain age in days
+  - name: urlvoid-url-to-image
+    arguments:
+    - name: url
+      required: true
+      description: URL to capture screenshot of
+    outputs:
+    - contextPath: File.Size
+      type: number
+    - contextPath: File.SHA1
+      type: string
+    - contextPath: File.SHA256
+      type: string
+    - contextPath: File.SHA512
+      type: string
+    - contextPath: File.Name
+      type: string
+    - contextPath: File.SSDeep
+      type: string
+    - contextPath: File.EntryID
+      type: string
+    - contextPath: File.Info
+      type: string
+    - contextPath: File.Type
+      type: string
+    - contextPath: File.MD5
+      type: string
+    - contextPath: File.Extension
+      type: string
+    description: Capture a high-quality screenshot of any website or URL
+  - name: urlvoid-url-to-pdf
+    arguments:
+    - name: url
+      required: true
+      description: URL to create PDF of
+    outputs:
+    - contextPath: File.Size
+      type: number
+    - contextPath: File.SHA1
+      type: string
+    - contextPath: File.SHA256
+      type: string
+    - contextPath: File.SHA512
+      type: string
+    - contextPath: File.Name
+      type: string
+    - contextPath: File.SSDeep
+      type: string
+    - contextPath: File.EntryID
+      type: string
+    - contextPath: File.Info
+      type: string
+    - contextPath: File.Type
+      type: string
+    - contextPath: File.MD5
+      type: string
+    - contextPath: File.Extension
+      type: string
+    description: Convert an URL info high-quality and printable PDF document
+  - name: urlvoid-url-to-html
+    arguments:
+    - name: url
+      required: true
+      description: URL to create PDF of
+    outputs:
+    - contextPath: File.Size
+      type: number
+    - contextPath: File.SHA1
+      type: string
+    - contextPath: File.SHA256
+      type: string
+    - contextPath: File.SHA512
+      type: string
+    - contextPath: File.Name
+      type: string
+    - contextPath: File.SSDeep
+      type: string
+    - contextPath: File.EntryID
+      type: string
+    - contextPath: File.Info
+      type: string
+    - contextPath: File.Type
+      type: string
+    - contextPath: File.MD5
+      type: string
+    - contextPath: File.Extension
+      type: string
+    description: Get the body of an html page after javascript has been executed
+  - name: urlvoid-site-trustworthiness
+    arguments:
+    - name: host
+      required: true
+      description: The host to check
+    outputs:
+    - contextPath: URLVoid.SiteTrust.domain_blacklist.detections
+      type: number
+    - contextPath: URLVoid.SiteTrust.domain_blacklist.engines.detected
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.domain_blacklist.engines.name
+      type: string
+    - contextPath: URLVoid.SiteTrust.domain_blacklist.engines.reference
+      type: string
+    - contextPath: URLVoid.SiteTrust.geo_location.countries
+    - contextPath: URLVoid.SiteTrust.domain_age.domain_age_in_days
+      type: number
+    - contextPath: URLVoid.SiteTrust.domain_age.domain_age_in_months
+      type: number
+    - contextPath: URLVoid.SiteTrust.domain_age.domain_age_in_years
+      type: number
+    - contextPath: URLVoid.SiteTrust.domain_age.domain_creation_date
+      type: string
+    - contextPath: URLVoid.SiteTrust.domain_age.found
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.server_details.isp
+      type: string
+    - contextPath: URLVoid.SiteTrust.server_details.ip
+      type: string
+    - contextPath: URLVoid.SiteTrust.server_details.latitude
+      type: number
+    - contextPath: URLVoid.SiteTrust.server_details.longitude
+      type: number
+    - contextPath: URLVoid.SiteTrust.server_details.hostname
+      type: string
+    - contextPath: URLVoid.SiteTrust.server_details.country_name
+      type: string
+    - contextPath: URLVoid.SiteTrust.server_details.region_name
+      type: string
+    - contextPath: URLVoid.SiteTrust.server_details.country_code
+      type: string
+    - contextPath: URLVoid.SiteTrust.server_details.continent_name
+      type: string
+    - contextPath: URLVoid.SiteTrust.server_details.continent_code
+      type: string
+    - contextPath: URLVoid.SiteTrust.server_details.city_name
+      type: string
+    - contextPath: URLVoid.SiteTrust.response_headers.server
+      type: string
+    - contextPath: URLVoid.SiteTrust.response_headers.content-encoding
+      type: string
+    - contextPath: URLVoid.SiteTrust.response_headers.code
+      type: number
+    - contextPath: URLVoid.SiteTrust.response_headers.content-type
+      type: string
+    - contextPath: URLVoid.SiteTrust.response_headers.date
+      type: date
+    - contextPath: URLVoid.SiteTrust.response_headers.vary
+      type: string
+    - contextPath: URLVoid.SiteTrust.response_headers.status
+      type: string
+    - contextPath: URLVoid.SiteTrust.response_headers.x-amz-rid
+      type: string
+    - contextPath: URLVoid.SiteTrust.response_headers.content-length
+      type: string
+    - contextPath: URLVoid.SiteTrust.response_headers.connection
+      type: string
+    - contextPath: URLVoid.SiteTrust.host
+      type: string
+    - contextPath: URLVoid.SiteTrust.security_checks.is_website_popular
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_suspended_site
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_domain_recent
+      type: string
+    - contextPath: URLVoid.SiteTrust.security_checks.is_heuristic_pattern
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_sinkholed_domain
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_risky_geo_location
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_empty_page_title
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_robots_noindex
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_suspicious_domain
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_most_abused_tld
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_valid_https
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_domain_blacklisted
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_email_configured
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_china_country
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_directory_listing
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.security_checks.is_free_email
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.trust_score.result
+      type: number
+    - contextPath: URLVoid.SiteTrust.dns_records
+    - contextPath: URLVoid.SiteTrust.redirection.external
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.redirection.found
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.redirection.url
+      type: string
+    - contextPath: URLVoid.SiteTrust.url_parts.host
+      type: string
+    - contextPath: URLVoid.SiteTrust.url_parts.host_nowww
+      type: string
+    - contextPath: URLVoid.SiteTrust.url_parts.path
+      type: string
+    - contextPath: URLVoid.SiteTrust.url_parts.port
+      type: string
+    - contextPath: URLVoid.SiteTrust.url_parts.query
+      type: string
+    - contextPath: URLVoid.SiteTrust.url_parts.scheme
+      type: string
+    - contextPath: URLVoid.SiteTrust.ecommerce_platform.is_magento
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.ecommerce_platform.is_opencart
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.ecommerce_platform.is_prestashop
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.ecommerce_platform.is_shopify
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.ecommerce_platform.is_woocommerce
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.ecommerce_platform.is_zencart
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.web_page.description
+      type: string
+    - contextPath: URLVoid.SiteTrust.web_page.keywords
+      type: string
+    - contextPath: URLVoid.SiteTrust.web_page.title
+      type: string
+    - contextPath: URLVoid.SiteTrust.targeted_brands.patagonia
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.rolex
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.timberland
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.hugoboss
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.moncler
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.longchamp
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.abercrombie
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.montblanc
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.carhartt
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.rayban
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.drmartens
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.hermes
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.oakley
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.michaelkors
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.louisvuitton
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.birkenstock
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.adidas
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.vans
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.ralphlauren
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.mulberry
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.converse
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.versace
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.ugg
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.nike
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.swarovski
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.peuterey
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.cartier
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.pandora
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.burberry
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.gucci
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.salomon
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.liujo
+      type: boolean
+    - contextPath: URLVoid.SiteTrust.targeted_brands.truereligion
+      type: boolean
+    description: A smart API to accurately check the trustworthiness of a website
+  dockerimage: demisto/python3:3.7.4.977
+  runonce: false
+  subtype: python3
