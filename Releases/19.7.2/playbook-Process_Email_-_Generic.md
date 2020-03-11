@@ -1,1 +1,0 @@
-Fixing bug - not rendering an image when there is no HTML in the email.
