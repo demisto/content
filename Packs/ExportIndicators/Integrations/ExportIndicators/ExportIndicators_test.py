@@ -13,15 +13,14 @@ class TestHelperFunctions:
     @pytest.mark.get_outbound_ioc_values
     def test_get_outbound_ioc_values_1(self, mocker):
         """Test on_demand"""
-        from ExportIndicators import get_outbound_ioc_values
+        from ExportIndicators import get_outbound_ioc_values, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
             mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
+            request_args = RequestArguments(query='', out_format='text', limit=50, offset=0)
             ioc_list = get_outbound_ioc_values(
-                out_format='text',
                 on_demand=True,
-                limit=50,
-                offset=0
+                request_args=request_args
             )
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
@@ -37,11 +36,10 @@ class TestHelperFunctions:
             mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            request_args = ei.RequestArguments(query='', out_format='text', limit=50, offset=0)
             ioc_list = ei.get_outbound_ioc_values(
-                out_format='text',
                 on_demand=False,
-                limit=50,
-                offset=0,
+                request_args=request_args,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -58,11 +56,10 @@ class TestHelperFunctions:
             mocker.patch.object(demisto, 'getIntegrationContext', return_value={"last_output": iocs_text_dict})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            request_args = ei.RequestArguments(query='', out_format='text', limit=50, offset=0)
             ioc_list = ei.get_outbound_ioc_values(
-                out_format='text',
                 on_demand=False,
-                limit=50,
-                offset=0,
+                request_args=request_args,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -82,12 +79,10 @@ class TestHelperFunctions:
                                                                                 "last_format": "text"})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            request_args = ei.RequestArguments(query='type:ip', out_format='text', limit=50, offset=0)
             ioc_list = ei.get_outbound_ioc_values(
-                out_format='text',
-                indicator_query="type:ip",
                 on_demand=False,
-                limit=50,
-                offset=0,
+                request_args=request_args,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -107,12 +102,10 @@ class TestHelperFunctions:
                                                                                 "last_format": "text"})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            request_args = ei.RequestArguments(query='type:ip', out_format='text', limit=50, offset=0)
             ioc_list = ei.get_outbound_ioc_values(
-                out_format='text',
-                indicator_query="type:ip",
                 on_demand=False,
-                limit=50,
-                offset=0,
+                request_args=request_args,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -132,12 +125,10 @@ class TestHelperFunctions:
                                                                                 "last_format": "text"})
             mocker.patch.object(ei, 'refresh_outbound_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            request_args = ei.RequestArguments(query='type:ip', out_format='text', limit=50, offset=0)
             ioc_list = ei.get_outbound_ioc_values(
-                out_format='text',
-                indicator_query="type:ip",
                 on_demand=False,
-                limit=50,
-                offset=0,
+                request_args=request_args,
                 cache_refresh_rate='1 minute'
             )
             for ioc_row in ioc_list:
@@ -203,7 +194,8 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            ei_vals = ei.refresh_outbound_context(indicator_query='', out_format='text')
+            request_args = ei.RequestArguments(query='', out_format='text')
+            ei_vals = ei.refresh_outbound_context(request_args)
             for ioc in iocs_json:
                 ip = ioc.get('value')
                 assert ip in ei_vals
@@ -215,7 +207,8 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            ei_vals = ei.refresh_outbound_context(indicator_query='', out_format='json')
+            request_args = ei.RequestArguments(query='', out_format='json')
+            ei_vals = ei.refresh_outbound_context(request_args)
             assert isinstance(ei_vals, str)
             ei_vals = json.loads(ei_vals)
             assert iocs_json == ei_vals
@@ -227,7 +220,8 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            ei_vals = ei.refresh_outbound_context(indicator_query='', out_format='csv')
+            request_args = ei.RequestArguments(query='', out_format='csv')
+            ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
                 assert iocs_out == ei_vals
@@ -239,7 +233,8 @@ class TestHelperFunctions:
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            ei_vals = ei.refresh_outbound_context(indicator_query='', out_format='json-seq')
+            request_args = ei.RequestArguments(query='', out_format='json-seq')
+            ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
                 assert iocs_out == ei_vals
@@ -296,10 +291,11 @@ class TestHelperFunctions:
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_1(self):
         """Test CSV out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_CSV
+        from ExportIndicators import create_values_out_dict, FORMAT_CSV, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            csv_out = create_values_out_dict(iocs_json, FORMAT_CSV)
+            request_args = RequestArguments(query='', out_format=FORMAT_CSV)
+            csv_out = create_values_out_dict(iocs_json, request_args)
             # assert len(csv_out) == IOC_RES_LEN + 1
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
                 expected_csv_out = iocs_out_f.read()
@@ -309,29 +305,32 @@ class TestHelperFunctions:
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_2(self):
         """Test JSON out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_JSON, CTX_VALUES_KEY
+        from ExportIndicators import create_values_out_dict, FORMAT_JSON, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.load(iocs_json_f)
-            json_out = json.loads(create_values_out_dict(iocs_json, FORMAT_JSON).get(CTX_VALUES_KEY))
+            request_args = RequestArguments(query='', out_format=FORMAT_JSON)
+            json_out = json.loads(create_values_out_dict(iocs_json, request_args).get(CTX_VALUES_KEY))
             assert json_out == iocs_json
 
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_3(self):
         """Test JSON_SEQ out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY
+        from ExportIndicators import create_values_out_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            json_seq_out = create_values_out_dict(iocs_json, FORMAT_JSON_SEQ).get(CTX_VALUES_KEY)
+            request_args = RequestArguments(query='', out_format=FORMAT_JSON_SEQ)
+            json_seq_out = create_values_out_dict(iocs_json, request_args).get(CTX_VALUES_KEY)
             for seq_line in json_seq_out.split('\n'):
                 assert json.loads(seq_line) in iocs_json
 
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_4(self):
         """Test TEXT out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_TEXT, CTX_VALUES_KEY
+        from ExportIndicators import create_values_out_dict, FORMAT_TEXT, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            text_out = create_values_out_dict(iocs_json, FORMAT_TEXT).get(CTX_VALUES_KEY)
+            request_args = RequestArguments(query='', out_format=FORMAT_TEXT)
+            text_out = create_values_out_dict(iocs_json, request_args).get(CTX_VALUES_KEY)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_txt_f:
                 iocs_txt_json = json.load(iocs_txt_f)
                 for line in text_out.split('\n'):

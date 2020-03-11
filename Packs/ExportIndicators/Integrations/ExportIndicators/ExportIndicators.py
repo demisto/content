@@ -35,7 +35,7 @@ FORMAT_ARG_PROXYSG = 'proxysg'
 FORMAT_MWG: str = 'McAfee Web Gateway'
 FORMAT_PROXYSG = "Symantec ProxySG"
 FORMAT_PANOSURL = "PAN-OS URL"
-CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text,json,json-seq,csv'
+CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, json-seq, csv, mgw, panosurl and proxysg'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
 CTX_MWG_TYPE_ERR_MSG: str = 'The McAFee Web Gateway type can only be one of the following: string,' \
@@ -47,6 +47,57 @@ _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
 _INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
+
+'''Request Arguments Class'''
+
+
+class RequestArguments:
+    def __init__(self, query: str, out_format: str = FORMAT_TEXT, limit: int = 10000, offset: int = 0,
+                 mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
+                 category_default: str = 'bc_category', category_attribute: str = ''):
+        self.query = query
+        self.out_format = out_format
+        self.limit = limit
+        self.offset = offset
+        self.mwg_type = mwg_type
+        self.strip_port = strip_port
+        self.drop_invalids = drop_invalids
+        self.category_default = category_default
+        self.category_attribute = []  # type:List
+
+        if category_attribute is not None:
+            category_attribute_list = category_attribute.split(',')
+
+            if len(category_attribute_list) != 1 or '' not in category_attribute_list:
+                self.category_attribute = category_attribute_list
+
+    def is_request_change(self, last_update_data):
+        if self.limit != last_update_data.get('last_limit'):
+            return True
+
+        elif self.offset != last_update_data.get('last_offset'):
+            return True
+
+        elif self.out_format != last_update_data.get('last_format'):
+            return True
+
+        elif self.mwg_type != last_update_data.get('mwg_type'):
+            return True
+
+        elif self.drop_invalids != last_update_data.get('drop_invalids'):
+            return True
+
+        elif self.strip_port != last_update_data.get('strip_port'):
+            return True
+
+        elif self.category_default != last_update_data.get('category_default'):
+            return True
+
+        elif self.category_attribute != last_update_data.get('category_attribute'):
+            return True
+
+        return False
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -82,32 +133,29 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0, offset: int = 0, mwg_type="string",
-                             drop_invalids=False, strip_port=False, category_default='bc_category',
-                             category_attribute='') -> str:
+def refresh_outbound_context(request_args: RequestArguments) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
-    iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
-    out_dict = create_values_out_dict(iocs, out_format, mwg_type=mwg_type,
-                                      strip_port=strip_port, drop_invalids=drop_invalids,
-                                      category_default=category_default, category_attribute=category_attribute)
-    out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
+    # poll indicators into list from demisto
+    iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
+    out_dict = create_values_out_dict(iocs, request_args)
+    out_dict[CTX_MIMETYPE_KEY] = 'application/json' if request_args.out_format == FORMAT_JSON else 'text/plain'
     demisto.setIntegrationContext({
         "last_output": out_dict,
         'last_run': date_to_timestamp(now),
-        'last_limit': limit,
-        'last_offset': offset,
-        'last_format': out_format,
-        'last_query': indicator_query,
+        'last_limit': request_args.limit,
+        'last_offset': request_args.offset,
+        'last_format': request_args.out_format,
+        'last_query': request_args.query,
         'current_iocs': iocs,
-        'mwg_type': mwg_type,
-        'drop_invalids': drop_invalids,
-        'strip_port': strip_port,
-        'category_default': category_default,
-        'category_attribute': category_attribute
+        'mwg_type': request_args.mwg_type,
+        'drop_invalids': request_args.drop_invalids,
+        'strip_port': request_args.strip_port,
+        'category_default': request_args.category_default,
+        'category_attribute': request_args.category_attribute
     })
     return out_dict[CTX_VALUES_KEY]
 
@@ -208,15 +256,9 @@ def add_indicator_to_category(indicator, category, category_dict):
     return category_dict
 
 
-def create_proxysg_out_format(iocs: list, category_default='bc_category', category_attribute=''):
+def create_proxysg_out_format(iocs: list, category_attribute: list, category_default='bc_category'):
     formatted_indicators = ''
     category_dict = {}  # type:Dict
-    if not category_attribute:
-        category_attribute = ''
-    category_attribute = category_attribute.split(',')
-
-    if len(category_attribute) == 1 and '' in category_attribute:
-        category_attribute = []
 
     for indicator in iocs:
         if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
@@ -264,39 +306,37 @@ def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
     return {CTX_VALUES_KEY: string_formatted_indicators}
 
 
-def create_values_out_dict(iocs: list, out_format: str, mwg_type: str = "string",
-                           drop_invalids=False, strip_port=False, category_default='bc_category',
-                           category_attribute='') -> dict:
+def create_values_out_dict(iocs: list, request_args: RequestArguments) -> dict:
     """
     Create a dictionary for output values using the selected format (json, json-seq, text, csv, McAfee Web Gateway,
     Symantec ProxySG, panosurl)
     """
-    if out_format == FORMAT_PANOSURL:
-        return panos_url_formatting(iocs, drop_invalids, strip_port)
+    if request_args.out_format == FORMAT_PANOSURL:
+        return panos_url_formatting(iocs, request_args.drop_invalids, request_args.strip_port)
 
-    if out_format == FORMAT_PROXYSG:
-        return create_proxysg_out_format(iocs, category_default, category_attribute)
+    if request_args.out_format == FORMAT_PROXYSG:
+        return create_proxysg_out_format(iocs, request_args.category_attribute, request_args.category_default)
 
-    if out_format == FORMAT_MWG:
-        return create_mwg_out_format(iocs, mwg_type)
+    if request_args.out_format == FORMAT_MWG:
+        return create_mwg_out_format(iocs, request_args.mwg_type)
 
-    if out_format == FORMAT_JSON:  # handle json separately
+    if request_args.out_format == FORMAT_JSON:  # handle json separately
         iocs_list = [ioc for ioc in iocs]
         return {CTX_VALUES_KEY: json.dumps(iocs_list)}
 
     else:
         formatted_indicators = []
-        if out_format == FORMAT_CSV and len(iocs) > 0:  # add csv keys as first item
+        if request_args.out_format == FORMAT_CSV and len(iocs) > 0:  # add csv keys as first item
             headers = list(iocs[0].keys())
             formatted_indicators.append(list_to_str(headers))
         for ioc in iocs:
             value = ioc.get('value')
             if value:
-                if out_format == FORMAT_TEXT:
+                if request_args.out_format == FORMAT_TEXT:
                     formatted_indicators.append(value)
-                elif out_format == FORMAT_JSON_SEQ:
+                elif request_args.out_format == FORMAT_JSON_SEQ:
                     formatted_indicators.append(json.dumps(ioc))
-                elif out_format == FORMAT_CSV:
+                elif request_args.out_format == FORMAT_CSV:
                     # wrap csv values with " to escape them
                     values = list(ioc.values())
                     formatted_indicators.append(list_to_str(values, map_func=lambda val: f'"{val}"'))
@@ -309,42 +349,8 @@ def get_outbound_mimetype() -> str:
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
-def is_request_change(limit, offset, out_format=FORMAT_TEXT, last_update_data={}, mwg_type: str = "string",
-                      drop_invalids=False, strip_port=False, category_default='bc_category',
-                      category_attribute='') -> bool:
-    """ Checks for changes in the request params
-
-    Args:
-        limit (int): limit on how many indicators should be exported.
-        offset (int): the index of the indicator from which the list should be exported.
-        out_format (str): the requested output format.
-        last_update_data (dict): the cached params for the last request.
-        mwg_type (str): the type indicated in the Mcafee Gateway format.
-        drop_invalids (bool): Whether to drop invalid indicators in PANOS format.
-        strip_port (bool): Whether to strip ports from url indicators in PANOS format.
-        category_default (str): the defualt category in ProxySG format.
-        category_attribute (str):the categories to print in ProxySG format.
-
-    Returns:
-        bool. True if limit/offset/out_format params have changed since the last request, False otherwise.
-    """
-    last_limit = last_update_data.get('last_limit')
-    last_offset = last_update_data.get('last_offset')
-    last_format = last_update_data.get('last_format')
-    last_mwg_type = last_update_data.get('mwg_type')
-    last_drop_invalids = last_update_data.get('drop_invalids')
-    last_strip_port = last_update_data.get('strip_port')
-    last_category_default = last_update_data.get('category_default')
-    last_category_attribute = last_update_data.get('category_attribute')
-
-    return (out_format != last_format or limit != last_limit or offset != last_offset or last_mwg_type != mwg_type
-            or last_drop_invalids != drop_invalids or last_strip_port != strip_port
-            or last_category_default != category_default or last_category_attribute != category_attribute)
-
-
-def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format=FORMAT_TEXT, last_update_data={},
-                            cache_refresh_rate=None, mwg_type: str = "string", drop_invalids=False, strip_port=False,
-                            category_default='bc_category', category_attribute='') -> str:
+def get_outbound_ioc_values(on_demand, request_args: RequestArguments,
+                            last_update_data={}, cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the list
     """
@@ -354,44 +360,37 @@ def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_fo
 
     # on_demand ignores cache
     if on_demand:
-        if is_request_change(limit, offset, out_format, last_update_data, mwg_type, drop_invalids, strip_port,
-                             category_default, category_attribute):
-            values_str = get_ioc_values_str_from_context(current_iocs, out_format, limit, offset)
+        if request_args.is_request_change(last_update_data):
+            values_str = get_ioc_values_str_from_context(request_args=request_args, iocs=current_iocs)
 
         else:
-            values_str = get_ioc_values_str_from_context()
+            values_str = get_ioc_values_str_from_context(request_args=request_args)
 
     else:
         if last_update:
             # takes the cache_refresh_rate amount of time back since run time.
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            if last_update <= cache_time or is_request_change(limit, offset, out_format, last_update_data) or \
-                    indicator_query != last_query:
-                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset,
-                                                      mwg_type=mwg_type, drop_invalids=drop_invalids,
-                                                      strip_port=strip_port, category_default=category_default,
-                                                      category_attribute=category_attribute)
+            if last_update <= cache_time or request_args.is_request_change(last_update_data) or \
+                    request_args.query != last_query:
+                values_str = refresh_outbound_context(request_args=request_args)
             else:
-                values_str = get_ioc_values_str_from_context()
+                values_str = get_ioc_values_str_from_context(request_args=request_args)
         else:
-            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset,
-                                                  mwg_type=mwg_type, drop_invalids=drop_invalids, strip_port=strip_port,
-                                                  category_default=category_default, category_attribute=category_attribute)
+            values_str = refresh_outbound_context(request_args)
 
     return values_str
 
 
-def get_ioc_values_str_from_context(iocs=None, new_format: str = FORMAT_TEXT,
-                                    limit: int = 10000, offset: int = 0) -> str:
+def get_ioc_values_str_from_context(request_args: RequestArguments, iocs=None) -> str:
     """
     Extracts output values from cache
     """
     if iocs:
-        if offset > len(iocs):
+        if request_args.offset > len(iocs):
             return ''
 
-        iocs = iocs[offset: limit + offset]
-        returned_dict = create_values_out_dict(iocs, new_format)
+        iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
+        returned_dict = create_values_out_dict(iocs, request_args=request_args)
         current_cache = demisto.getIntegrationContext()
         current_cache['last_output'] = returned_dict
         demisto.setIntegrationContext(current_cache)
@@ -450,10 +449,10 @@ def get_request_args(params):
     category_attribute = request.args.get('ca', params.get('category_attribute', ''))
 
     # handle flags
-    if strip_port == '':
+    if strip_port is not None and strip_port == '':
         strip_port = True
 
-    if drop_invalids == '':
+    if drop_invalids is not None and drop_invalids == '':
         drop_invalids = True
 
     # prevent given empty params
@@ -477,18 +476,8 @@ def get_request_args(params):
     elif out_format == FORMAT_ARG_PANOSURL:
         out_format = FORMAT_PANOSURL
 
-    results = {
-        'limit': limit,
-        'offset': offset,
-        'out_format': out_format,
-        'query': query,
-        'mwg_type': mwg_type,
-        'strip_port': strip_port,
-        'drop_invalids': drop_invalids,
-        'category_default': category_default,
-        'category_attribute': category_attribute
-    }
-    return results
+    return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
+                            category_attribute)
 
 
 @APP.route('/', methods=['GET'])
@@ -512,25 +501,17 @@ def route_list_values() -> Response:
         request_args = get_request_args(params)
 
         values = get_outbound_ioc_values(
-            out_format=request_args.get('out_format'),
             on_demand=params.get('on_demand'),
-            limit=request_args.get('limit'),
-            offset=request_args.get('offset'),
             last_update_data=demisto.getIntegrationContext(),
-            indicator_query=request_args.get('query'),
             cache_refresh_rate=params.get('cache_refresh_rate'),
-            mwg_type=request_args.get('mwg_type'),
-            strip_port=request_args.get('strip_port'),
-            drop_invalids=request_args.get('drop_invalids'),
-            category_default=request_args.get('category_default'),
-            category_attribute=request_args.get('category_attribute')
+            request_args=request_args
         )
 
         mimetype = get_outbound_mimetype()
         return Response(values, status=200, mimetype=mimetype)
 
-    except Exception as e:
-        return Response(str(e) + traceback.format_exc(), status=400, mimetype='text/plain')
+    except Exception:
+        return Response(traceback.format_exc(), status=400, mimetype='text/plain')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -629,9 +610,11 @@ def update_outbound_command(args, params):
     drop_invalids = args.get('drop_invalids') == 'True'
     category_attribute = args.get('category_attribute')
     category_default = args.get('category_default')
-    indicators = refresh_outbound_context(query, out_format, limit=limit, offset=offset, mwg_type=mwg_type, strip_port=strip_port,
-                                          drop_invalids=drop_invalids, category_default=category_default,
-                                          category_attribute=category_attribute)
+
+    request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
+                                    category_default, category_attribute)
+
+    indicators = refresh_outbound_context(request_args)
     hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
     return hr, {}, indicators
