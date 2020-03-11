@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Created an automation to convert html to markdown
+Created an automation script that converts the passed HTML to Markdown.
