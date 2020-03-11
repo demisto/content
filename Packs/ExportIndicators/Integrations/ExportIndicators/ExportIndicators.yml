@@ -18,6 +18,7 @@ configuration:
   - McAfee Web Gateway
   - Symantec ProxySG
   - PAN-OS URL
+  - Splunk
   required: false
   type: 15
 - defaultvalue: '10000'
@@ -131,6 +132,7 @@ script:
       - McAfee Web Gateway
       - Symantec ProxySG
       - PAN-OS URL
+      - Splunk
       required: false
       secret: false
     - default: false
