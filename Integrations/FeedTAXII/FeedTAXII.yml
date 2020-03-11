@@ -77,7 +77,7 @@ configuration:
   name: subscription_id
   required: false
   type: 0
-- display: Username
+- display: Name (To use API key go to ?->Authentication)
   name: credentials
   required: false
   type: 9
