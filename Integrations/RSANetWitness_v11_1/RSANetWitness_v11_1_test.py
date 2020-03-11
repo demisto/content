@@ -9,7 +9,7 @@ INCIDENT_NEW = {
         },
         "openRemediationTaskCount": 0,
         "sources": [
-            "NetWitness Investigate"
+            None
         ],
         "id": "INC-3",
         "journalEntries": None,
@@ -240,3 +240,21 @@ def test_fetch_incidents_fetch_with_last_fetched_id(mocker):
     # assert fetch
     assert len(fetched_inc) == 1
     assert fetched_inc[0]['labels'][0]['value'] == '"{}"'.format(INCIDENT_NEW['items'][0]['id'])
+
+
+def test_get_incident(mocker):
+    def mock_demisto():
+        mock_args = {
+            'incidentId': 'INC-3'
+        }
+        mocker.patch.object(demisto, 'args', return_value=mock_args)
+        mocker.patch.object(demisto, 'results')
+        mocker.patch('RSANetWitness_v11_1.get_incident_request', return_value=INCIDENT_NEW['items'][0])
+
+    mock_demisto()
+    from RSANetWitness_v11_1 import get_incident
+
+    get_incident()
+    results = demisto.results.call_args[0]
+    # assert results
+    assert "INC-3" in results[0]['HumanReadable']
