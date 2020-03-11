@@ -2610,8 +2610,8 @@ script:
         } else {
             fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
         }
-        var incidentId = dataArgs.incidentId.toString();
-        if (incidentId){
+        var incidentId = dataArgs.incidentId;
+        if (incidentId.toString()){
             contentId = getContentIdsFromIncIds(appId, incidentId)[0];
         }
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
@@ -3010,8 +3010,8 @@ script:
 
         var appId = dataArgs.applicationId;
         var contentId = dataArgs.contentId;
-        var incidentId = dataArgs.incidentId.toString();
-        if (incidentId){
+        var incidentId = dataArgs.incidentId;
+        if (incidentId.toString()){
             contentId = getContentIdsFromIncIds(appId, incidentId)[0];
         }
         var token = getAuthToken();
