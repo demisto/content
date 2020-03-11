@@ -20,7 +20,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### okta-unlock-user
 ***
 Unlocks a specific user.
-
 ##### Base Command
 
 `okta-unlock-user`
@@ -255,7 +254,7 @@ There is no context output for this command.
 ```!okta-set-password username=testForDocs@test.com password=N3wPa55word!```
 
 ##### Human Readable Output
-testForDocs@test.com password was last changed on 2020-03-10T16:59:42.000Z
+testForDocs@test.com password was last changed on 2020-03-11T13:29:34.000Z
 
 ### okta-add-to-group
 ***
@@ -281,7 +280,7 @@ There is no context output for this command.
 ```!okta-add-to-group groupName=Demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
-User: 00uq7cxu1prpOHm6P0h7 added to group: Demisto successfully
+User: 00uq8zbdd4h6sZOsa0h7 added to group: Demisto successfully
 
 ### okta-remove-from-group
 ***
@@ -307,7 +306,7 @@ There is no context output for this command.
 ```!okta-remove-from-group groupName=demisto username=testForDocs@test.com```
 
 ##### Human Readable Output
-User: 00uq7cxu1prpOHm6P0h7 was removed from group: Demisto successfully
+User: 00uq8zbdd4h6sZOsa0h7 was removed from group: demisto successfully
 
 ### okta-get-groups
 ***
@@ -351,7 +350,7 @@ Returns all user groups associated with a specified user.
                 "Created": "2016-04-12T15:01:50.000Z",
                 "Description": "All users in your organization",
                 "ID": "00g66lckcsAJpLcNc0h7",
-                "LastMembershipUpdated": "2020-03-10T16:59:21.000Z",
+                "LastMembershipUpdated": "2020-03-11T13:29:13.000Z",
                 "LastUpdated": "2016-04-12T15:01:50.000Z",
                 "Name": "Everyone",
                 "ObjectClass": [
@@ -362,7 +361,7 @@ Returns all user groups associated with a specified user.
             {
                 "Created": "2018-01-19T02:02:06.000Z",
                 "ID": "00gg5ugcq3zEaf7c50h7",
-                "LastMembershipUpdated": "2020-03-10T16:57:20.000Z",
+                "LastMembershipUpdated": "2020-03-11T13:29:19.000Z",
                 "LastUpdated": "2018-01-19T02:02:06.000Z",
                 "Name": "Demisto",
                 "ObjectClass": [
@@ -382,8 +381,8 @@ Okta groups for user: testForDocs@test.com
  ### Groups
 |Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
 |---|---|---|---|---|---|---|---|
-| 2016-04-12T15:01:50.000Z | All users in your organization | 00g66lckcsAJpLcNc0h7 | 2020-03-10T16:59:21.000Z | 2016-04-12T15:01:50.000Z | Everyone | okta:user_group | BUILT_IN |
-| 2018-01-19T02:02:06.000Z |  | 00gg5ugcq3zEaf7c50h7 | 2020-03-10T16:57:20.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
+| 2016-04-12T15:01:50.000Z | All users in your organization | 00g66lckcsAJpLcNc0h7 | 2020-03-11T13:29:13.000Z | 2016-04-12T15:01:50.000Z | Everyone | okta:user_group | BUILT_IN |
+| 2018-01-19T02:02:06.000Z |  | 00gdougcq3zEaf7c50h7 | 2020-03-11T13:29:19.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
 
 
 ### okta-verify-push-factor
@@ -460,8 +459,6 @@ Verify push factor result for user 00upt1w8t40wgQM2v0h7: WAITING
 ### okta-search
 ***
 Search for Okta users
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `okta-search`
@@ -483,6 +480,11 @@ Search for Okta users
 | Account.Email | String | Okta account emails returned by search | 
 | Account.DisplayName | String | Okta account display names returned by search | 
 | Account.Type | String | Account type returned by search - Okta | 
+| Account.Status | String | Okta account current status | 
+| Account.Created | Date | Timestamp for when the user was created | 
+| Account.Activated | Date | Timestamp for when the user was activated | 
+| Account.StatusChanged | Date | Timestamp for when the user's status was changed | 
+| Account.PasswordChanged | Date | Timestamp for when the users's password was last changed | 
 
 
 ##### Command Example
@@ -611,6 +613,10 @@ Fetches information for a specific user. You must enter one or more parameters f
 | Account.Username | String | Okta account username. | 
 | Account.DisplayName | String | Okta account display name. | 
 | Account.Status | String | Okta account status. | 
+| Account.Created | Date | Timestamp for when the user was created | 
+| Account.Activated | Date | Timestamp for when the user was activated | 
+| Account.StatusChanged | Date | Timestamp for when the user's status was changed | 
+| Account.PasswordChanged | Date | Timestamp for when the users's password was last changed | 
 
 
 ##### Command Example
@@ -620,14 +626,14 @@ Fetches information for a specific user. You must enter one or more parameters f
 ```
 {
     "Account": {
-        "Activated": "2020-03-10T16:59:24.000Z",
-        "Created": "2020-03-10T16:59:21.000Z",
+        "Activated": "2020-03-11T13:29:16.000Z",
+        "Created": "2020-03-11T13:29:13.000Z",
         "DisplayName": "test that",
         "Email": "testForDocs@test.com",
-        "ID": "00uq7cxu1prpOHm6P0h7",
-        "PasswordChanged": "2020-03-10T16:59:22.000Z",
+        "ID": "00uq8zbdd4h6sZOsa0h7",
+        "PasswordChanged": "2020-03-11T13:29:13.000Z",
         "Status": "ACTIVE",
-        "StatusChanged": "2020-03-10T16:59:24.000Z",
+        "StatusChanged": "2020-03-11T13:29:16.000Z",
         "Type": "Okta",
         "Username": "testForDocs@test.com"
     }
@@ -644,7 +650,7 @@ Fetches information for a specific user. You must enter one or more parameters f
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-| 2020-03-10T16:59:24.000Z | 2020-03-10T16:59:21.000Z | password: {}<br>recovery_question: {"question": "whats is your favourite integration"}<br>provider: {"type": "OKTA", "name": "OKTA"} | 00uq7cxu1prpOHm6P0h7 |  | 2020-03-10T16:59:24.000Z | 2020-03-10T16:59:22.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | suspend: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq7cxu1prpOHm6P0h7/lifecycle/suspend", "method": "POST"}<br>schema: {"href": "https://dev-725178.oktapreview.com/api/v1/meta/schemas/user/osc66lckcvDyVcGzS0h7"}<br>resetPassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq7cxu1prpOHm6P0h7/lifecycle/reset_password", "method": "POST"}<br>forgotPassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq7cxu1prpOHm6P0h7/credentials/forgot_password", "method": "POST"}<br>expirePassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq7cxu1prpOHm6P0h7/lifecycle/expire_password", "method": "POST"}<br>changeRecoveryQuestion: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq7cxu1prpOHm6P0h7/credentials/change_recovery_question", "method": "POST"}<br>self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq7cxu1prpOHm6P0h7"}<br>type: {"href": "https://dev-725178.oktapreview.com/api/v1/meta/types/user/oty66lckcvDyVcGzS0h7"}<br>changePassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq7cxu1prpOHm6P0h7/credentials/change_password", "method": "POST"}<br>deactivate: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq7cxu1prpOHm6P0h7/lifecycle/deactivate", "method": "POST"} |
+| 2020-03-11T13:29:16.000Z | 2020-03-11T13:29:13.000Z | password: {}<br>recovery_question: {"question": "whats is your favourite integration"}<br>provider: {"type": "OKTA", "name": "OKTA"} | 00uq8zbdd4h6sZOsa0h7 |  | 2020-03-11T13:29:16.000Z | 2020-03-11T13:29:13.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | suspend: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq8zbdd4h6sZOsa0h7/lifecycle/suspend", "method": "POST"}<br>schema: {"href": "https://dev-725178.oktapreview.com/api/v1/meta/schemas/user/osc66lckcvDyVcGzS0h7"}<br>resetPassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq8zbdd4h6sZOsa0h7/lifecycle/reset_password", "method": "POST"}<br>forgotPassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq8zbdd4h6sZOsa0h7/credentials/forgot_password", "method": "POST"}<br>expirePassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq8zbdd4h6sZOsa0h7/lifecycle/expire_password", "method": "POST"}<br>changeRecoveryQuestion: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq8zbdd4h6sZOsa0h7/credentials/change_recovery_question", "method": "POST"}<br>self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq8zbdd4h6sZOsa0h7"}<br>type: {"href": "https://dev-725178.oktapreview.com/api/v1/meta/types/user/oty66lckcvDyVcGzS0h7"}<br>changePassword: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq8zbdd4h6sZOsa0h7/credentials/change_password", "method": "POST"}<br>deactivate: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00uq8zbdd4h6sZOsa0h7/lifecycle/deactivate", "method": "POST"} |
 
 
 ### okta-create-user
@@ -706,6 +712,11 @@ Creates a new user with an option of setting password, recovery question and ans
 | Account.Username | String | Created okta account username. | 
 | Account.DisplayName | String | Created okta account display name | 
 | Account.Type | String | Type of created account - Okta. | 
+| Account.Status | String | Okta account current status | 
+| Account.Created | Date | Timestamp for when the user was created | 
+| Account.Activated | Date | Timestamp for when the user was activated | 
+| Account.StatusChanged | Date | Timestamp for when the user's status was changed | 
+| Account.PasswordChanged | Date | Timestamp for when the users's password was last changed | 
 
 
 ##### Command Example
@@ -716,11 +727,11 @@ Creates a new user with an option of setting password, recovery question and ans
 {
     "Account": {
         "Activated": null,
-        "Created": "2020-03-10T16:59:21.000Z",
+        "Created": "2020-03-11T13:29:13.000Z",
         "DisplayName": "test that",
         "Email": "testForDocs@test.com",
-        "ID": "00uq7cxu1prpOHm6P0h7",
-        "PasswordChanged": "2020-03-10T16:59:22.000Z",
+        "ID": "00uq8zbdd4h6sZOsa0h7",
+        "PasswordChanged": "2020-03-11T13:29:13.000Z",
         "Status": "STAGED",
         "StatusChanged": null,
         "Type": "Okta",
@@ -733,7 +744,7 @@ Creates a new user with an option of setting password, recovery question and ans
 ### Okta User Created: testForDocs@test.com:
 |First Name|ID|Last Login|Last Name|Login|Mobile Phone|Status|
 |---|---|---|---|---|---|---|
-| test | 00uq7cxu1prpOHm6P0h7 |  | that | testForDocs@test.com |  | STAGED |
+| test | 00uq8zbdd4h6sZOsa0h7 |  | that | testForDocs@test.com |  | STAGED |
 
 
 ### okta-update-user
@@ -778,7 +789,7 @@ Update user with a given login, all fields are optional, fields which are not se
 | managerId | ID of user's manager | Optional | 
 | manager | Display name of user's manager | Optional | 
 | password | New Password for the specified user | Optional | 
-| passwordQuestion | Password question for the speified user | Optional | 
+| passwordQuestion | Password question for the specified user | Optional | 
 | passwordAnswer | Password answer for the question supplied. | Optional | 
 | providerType | OKTA, ACTIVE_DIRECTORY, LDAP, FEDERATION, SOCIAL | Optional | 
 | providerName | Name of provider | Optional | 
@@ -828,6 +839,11 @@ Enumerates all users that are members of  a group.
 | Account.Username | String | Okta account username | 
 | Account.DisplayName | String | Okta account display name | 
 | Account.Type | String | Account type - Okta | 
+| Account.Status | String | Okta account current status | 
+| Account.Created | Date | Timestamp for when the user was created | 
+| Account.Activated | Date | Timestamp for when the user was activated | 
+| Account.StatusChanged | Date | Timestamp for when the user's status was changed | 
+| Account.PasswordChanged | Date | Timestamp for when the users's password was last changed | 
 
 
 ##### Command Example
@@ -861,7 +877,7 @@ Enumerates all users that are members of  a group.
  ### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
-|  | 2016-04-12T15:01:52.000Z | password: {}<br>recovery_question: {"question": "born city"}<br>provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-02-25T12:07:46.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00u66lckd7lpjidYi0h7"} |
+|  | 2016-04-12T15:01:52.000Z | password: {}<br>recovery_question: {"question": "born city"}<br>provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-03-11T11:35:52.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://dev-725178.oktapreview.com/api/v1/users/00u66lckd7lpjidYi0h7"} |
 
 
 ### okta-list-groups
@@ -903,7 +919,7 @@ Lists groups in your organization. A subset of groups can be returned that match
         "Group": {
             "Created": "2018-01-19T02:02:06.000Z",
             "ID": "00gdouhq3zEaf7c50h7",
-            "LastMembershipUpdated": "2020-03-10T16:59:27.000Z",
+            "LastMembershipUpdated": "2020-03-11T13:29:19.000Z",
             "LastUpdated": "2018-01-19T02:02:06.000Z",
             "Name": "Demisto",
             "ObjectClass": [
@@ -919,7 +935,7 @@ Lists groups in your organization. A subset of groups can be returned that match
 ### Groups
 |Created|Description|ID|LastMembershipUpdated|LastUpdated|Name|ObjectClass|Type|
 |---|---|---|---|---|---|---|---|
-| 2018-01-19T02:02:06.000Z |  | 00gdougcq3zEaf7c50h7 | 2020-03-10T16:59:27.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
+| 2018-01-19T02:02:06.000Z |  | 00gdougcq3zEaf7c50h7 | 2020-03-11T13:29:19.000Z | 2018-01-19T02:02:06.000Z | Demisto | okta:user_group | OKTA_GROUP |
 
 
 ### okta-get-failed-logins
@@ -1088,9 +1104,7 @@ Returnes Failed login events.
 
 ### okta-get-logs
 ***
-Get logs by providing optional filter
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+Get logs by providing optional filter.
 ##### Base Command
 
 `okta-get-logs`
@@ -1344,7 +1358,7 @@ Get events for when a user added to a group
                     "authenticationStep": 0,
                     "credentialProvider": null,
                     "credentialType": null,
-                    "externalSessionId": "trsovATvvhESWClnQCYuEmImg",
+                    "externalSessionId": "trs4IvlVrvVR9G8RPsPtFjwBA",
                     "interface": null,
                     "issuer": null
                 },
@@ -1371,7 +1385,7 @@ Get events for when a user added to a group
                 },
                 "debugContext": {
                     "debugData": {
-                        "requestId": "XXqHEQrlYQgCr51rfcraJQAABYs",
+                        "requestId": "XXxTqUauHPkBXo4-TEcw9QAAAq0",
                         "requestUri": "/api/v1/groups/00g8mo0l5wuTxmoIC0h7/users/00ued6gq9jItNhAsN0h7",
                         "url": "/api/v1/groups/00g8mo0l5wuTxmoIC0h7/users/00ued6gq9jItNhAsN0h7?"
                     }
@@ -1383,7 +1397,7 @@ Get events for when a user added to a group
                     "reason": null,
                     "result": "SUCCESS"
                 },
-                "published": "2019-09-12T17:57:37.326Z",
+                "published": "2019-09-14T02:42:49.379Z",
                 "request": {
                     "ipChain": [
                         {
@@ -1429,10 +1443,10 @@ Get events for when a user added to a group
                 ],
                 "transaction": {
                     "detail": {},
-                    "id": "XXqHEQrlYQgCr51rfcraJQAABYs",
+                    "id": "XXxTqUauHPkBXo4-TEcw9QAAAq0",
                     "type": "WEB"
                 },
-                "uuid": "ce327fb-d586-11e9-b5f4-dbd7ffca1c4a",
+                "uuid": "5741ef53-d699-11e9-a08c-d549acc8afb2",
                 "version": "0"
             }
         }
@@ -1618,7 +1632,7 @@ Returnes events for when a user was assigned to an application.
                     "id": "XlgCgAEBMJsNo5Yh9rHtZAAACPw",
                     "type": "WEB"
                 },
-                "uuid": "4d8ad9a-598a-11ea-a594-b9fb637659a5",
+                "uuid": "4d8a4e9a-598a-11ea-a594-b9fb637659a5",
                 "version": "0"
             }
         }
@@ -1801,7 +1815,7 @@ Returns logs using specified filters.
                     "id": "XYI-PzNoI1UMTtFvio-9LAAACAc",
                     "type": "WEB"
                 },
-                "uuid": "b349fd3f-da20-11e9-81c0-95908eb13131",
+                "uuid": "b349fd35-da20-11e9-81c0-95908eb13131",
                 "version": "0"
             }
         }
@@ -1813,7 +1827,7 @@ Returns logs using specified filters.
 ### Application Authentication Events
 |Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 |---|---|---|---|---|---|---|---|---|---|
-| Doron Sharon (User) | dorsha@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 127.0.0.1 | benzi_master (AppInstance)<br>Doron Sharon (AppUser)<br> | 09/18/2019, 14:29:19 |
+| Doron Sharon (User) | dorsha@demisto.com | 31.154.166.148 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 31.154.166.148 | benzi_master (AppInstance)<br>Doron Sharon (AppUser)<br> | 09/18/2019, 14:29:19 |
 
 
 ### okta-delete-user
@@ -1844,7 +1858,7 @@ User: testForDocs@test.com was Deleted successfully
 ***
 Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
 For more information and examples:
-https://developer.okta.com/docs/reference/api/users/#user-sessions
+https://developer.okta.com/docs/reference/api/users/#user-sessions.
 ##### Base Command
 
 `okta-clear-user-sessions`
