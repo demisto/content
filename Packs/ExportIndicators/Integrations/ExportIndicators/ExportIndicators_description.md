@@ -20,7 +20,17 @@ Use the following arguments in the URL to change the request:
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?n=50
 2. **s** - The starting entry index from which to export the indicators.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50
-3. **v** - The output format. Supports `text`, `csv`, `json` and `json-seq`.
+3. **v** - The output format. Supports `text`, `csv`, `json`, `json-seq`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`).
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json
 4. **q** - The query used to retrieve indicators from the system.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"
+5. **t** - Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex.
+ * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip
+6. **sp** - Only with `panosurl` format. If set will strip ports off URLs, otherwise will ignore URLs with ports.
+ * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&sp 
+7. **di** -  Only with `panosurl` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written.
+ * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&di
+8. **cd** - Only with `proxysg` format. The default category for the exported indicators.
+ * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&cd=default_category
+9. **ca** - Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category.
+ * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&ca=category1,category2
