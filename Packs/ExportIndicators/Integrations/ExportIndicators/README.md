@@ -53,8 +53,13 @@ Use the following arguments in the URL to change the request:
 | --- | --- | --- |
 | n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?n=50 |
 | s | The starting entry index from which to export the indicators. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50 |
-| v | The output format. Supports `text`, `csv`, `json` and `json-seq` | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
+| v | The output format. Supports `text`, `csv`, `json`, `json-seq`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
 | q | The query used to retrieve indicators from the system. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source" |
+| t | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip |
+| sp | Only with `panosurl` format. If set will strip ports off URLs, otherwise will ignore URLs with ports. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&sp |
+| di | Only with `panosurl` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&di |
+| cd | Only with `proxysg` format. The default category for the exported indicators. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&cd=default_category |
+| ca | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&ca=category1,category2 |
 
 ##### Base Command
 
