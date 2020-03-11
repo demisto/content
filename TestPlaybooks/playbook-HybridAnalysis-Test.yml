@@ -985,7 +985,7 @@ tasks:
       elasticcommonfields: {}
       id: 03af2856-166f-4f3d-8718-c281393f1c38
       version: -1
-      name: Untitled Task
+      name: hybrid-analysis-submit-url with key=value URL
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
