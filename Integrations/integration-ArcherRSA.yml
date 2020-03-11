@@ -2610,7 +2610,7 @@ script:
         } else {
             fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
         }
-        var incidentId = dataArgs.incidentId;
+        var incidentId = dataArgs.incidentId.toString();
         if (incidentId){
             contentId = getContentIdsFromIncIds(appId, incidentId)[0];
         }
@@ -3010,7 +3010,7 @@ script:
 
         var appId = dataArgs.applicationId;
         var contentId = dataArgs.contentId;
-        var incidentId = dataArgs.incidentId;
+        var incidentId = dataArgs.incidentId.toString();
         if (incidentId){
             contentId = getContentIdsFromIncIds(appId, incidentId)[0];
         }
