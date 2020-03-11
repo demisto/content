@@ -2,8 +2,8 @@ id: NetOps - Firewall Version and Content Upgrade
 version: -1
 fromversion: 5.0.0
 name: NetOps - Firewall Version and Content Upgrade
-description: Network operation playbook that updates the version and the content of
-  the firewall. Superuser is requiered in order to update PAN-OS version.
+description: Network operations playbook that updates the version and content of
+  the firewall. You must have Superuser permissions to update the PAN-OS version.
 starttaskid: "0"
 tasks:
   "0":
@@ -39,7 +39,7 @@ tasks:
       id: e540b70a-08b7-4979-8266-aa503a1e3500
       version: -1
       name: Download the latest content update
-      description: Download the latest content update
+      description: Downloads the latest content update.
       script: Panorama|||panorama-download-latest-content-update
       type: regular
       iscommand: true
@@ -69,7 +69,7 @@ tasks:
       id: dac55564-0c88-4e85-80e0-74af6b9b4990
       version: -1
       name: Check on the content download status
-      description: Check content update download status
+      description: Checks content update download status.
       script: Panorama|||panorama-content-update-download-status
       type: regular
       iscommand: true
@@ -103,7 +103,7 @@ tasks:
       id: b28debf8-d54b-42b3-841c-5ebfad3cfde6
       version: -1
       name: Install the latest content update
-      description: Install the latest content update
+      description: Installs the latest content update.
       script: Panorama|||panorama-install-latest-content-update
       type: regular
       iscommand: true
@@ -133,7 +133,7 @@ tasks:
       id: c342a8fd-a87d-4057-8edb-35ecc623ff88
       version: -1
       name: Check on the content installation status
-      description: Content update install status
+      description: Checks on the content update install status.
       script: Panorama|||panorama-content-update-install-status
       type: regular
       iscommand: true
@@ -167,7 +167,7 @@ tasks:
       id: 5f5091be-db9d-4914-80ff-5b4b151a1400
       version: -1
       name: Check for the latest PAN-OS software
-      description: Check/refresh PAN-OS software version from repository
+      description: Checks the PAN-OS software version from the repository.
       script: Panorama|||panorama-check-latest-panos-software
       type: regular
       iscommand: true
@@ -196,7 +196,7 @@ tasks:
       id: 90d3c358-46d3-4ea6-8508-2cddf6e962e5
       version: -1
       name: Download the latest PAN-OS software update
-      description: Download target PAN-OS version to be installed
+      description: Downloads target PAN-OS version to be installed.
       script: Panorama|||panorama-download-panos-version
       type: regular
       iscommand: true
@@ -228,7 +228,7 @@ tasks:
       id: 4f33c545-4fd5-485e-8b92-cc3e4689412e
       version: -1
       name: Install the latest PAN-OS software update
-      description: Install target PAN-OS version
+      description: Installs the target PAN-OS version.
       script: Panorama|||panorama-install-panos-version
       type: regular
       iscommand: true
@@ -260,7 +260,7 @@ tasks:
       id: 28a4fb31-0ae2-40e4-804d-692bd0aca523
       version: -1
       name: Check on the PAN-OS software installation status
-      description: PAN-OS install status
+      description: Checks the PAN-OS installation status.
       script: Panorama|||panorama-install-panos-status
       type: regular
       iscommand: true
@@ -293,7 +293,7 @@ tasks:
       id: ebcba4bf-20e6-40f5-87b5-410847e31c04
       version: -1
       name: Reboot the firewall
-      description: Reboot Firewall device
+      description: Reboots the Firewall device.
       script: Panorama|||panorama-device-reboot
       type: regular
       iscommand: true
@@ -586,7 +586,7 @@ inputs:
       root: incident
       accessor: targetfirewallversion
   required: false
-  description: Target PAN-OS version to upgrade
+  description: Target PAN-OS version to which to upgrade.
 outputs: []
 tests:
   - No Tests

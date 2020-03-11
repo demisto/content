@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Changed search alerts API v1 call to API v2 call.
 
 ## [20.1.0] - 2020-01-07
 Added the *Maximum number of incidents to fetch* parameter, which specifies the maximum number of incidents to create per fetch.
