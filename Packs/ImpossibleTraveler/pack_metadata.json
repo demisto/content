@@ -1,0 +1,75 @@
+{
+    "name": "Impossible Traveler",
+    "description": "Investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler).",
+    "support": "demisto",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        ""
+    ],
+    "created": "2020-03-09T17:08:23Z",
+    "updated": "2020-03-09T17:08:23Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": "",
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "minVersion": "1.0.0",
+            "name": "Base",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "minVersion": "1.0.0",
+            "name": "Active_Directory_Query",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          },
+        "CalculateGeoDistance": {
+            "mandatory": true,
+            "minVersion": "1.0.0",
+            "name": "CalculateGeoDistance",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          },
+        "CalculateTimeDifference": {
+            "mandatory": true,
+            "minVersion": "1.0.0",
+            "name": "CalculateTimeDifference",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          },
+        "Ipstack": {
+            "mandatory": false,
+            "minVersion": "1.0.0",
+            "name": "Ipstack",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          },
+        "ipinfo": {
+            "mandatory": false,
+            "minVersion": "1.0.0",
+            "name": "ipinfo",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          },
+        "rasterize": {
+            "mandatory": true,
+            "minVersion": "1.0.0",
+            "name": "rasterize",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          }
+    }
+}
