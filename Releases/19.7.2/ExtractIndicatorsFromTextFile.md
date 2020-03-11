@@ -1,1 +1,0 @@
-- Fixed a bug where the script would throw an error for certain texts with "\\" character
