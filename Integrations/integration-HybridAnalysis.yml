@@ -630,10 +630,7 @@ script:
 
     //Quick Scan commands
     function quickScanUrl(scan_type, url, endpoint) {
-        url = url.replace('?', '%3F');
-        url = url.replace('=', '%3D');
-        url = url.replace('&', '%26');
-        var body = 'scan_type=' + scan_type + '&url=' + url;
+        var body = 'scan_type=' + scan_type + '&url=' + encodeURIComponent(url);
         return sendRequest('POST', endpoint, body);
     }
 
