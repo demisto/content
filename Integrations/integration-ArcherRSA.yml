@@ -2611,8 +2611,8 @@ script:
             fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
         }
         var incidentId = dataArgs.incidentId;
-        if (incidentId.toString()){
-            contentId = getContentIdsFromIncIds(appId, incidentId)[0];
+        if (incidentId){
+            contentId = getContentIdsFromIncIds(appId, incidentId.toString())[0];
         }
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
@@ -2736,7 +2736,7 @@ script:
         var incidentId = args.incidentId;
 
         if (incidentId){
-            contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
+            contentId = getContentIdsFromIncIds(applicationId, incidentId.toString())[0];
         }
         extendAppIdMapping(applicationId);
         var rawResponse = getRecordSendSoapRequest(command, applicationId, contentId);
@@ -3011,8 +3011,8 @@ script:
         var appId = dataArgs.applicationId;
         var contentId = dataArgs.contentId;
         var incidentId = dataArgs.incidentId;
-        if (incidentId.toString()){
-            contentId = getContentIdsFromIncIds(appId, incidentId)[0];
+        if (incidentId){
+            contentId = getContentIdsFromIncIds(appId, incidentId.toString())[0];
         }
         var token = getAuthToken();
         var soap =  deleteContentSoapRequest(token, appId, contentId);
@@ -3320,7 +3320,7 @@ script:
         var associatedField = args.associatedField;
 
         if (incidentId){
-            contentIdsFromInc = getContentIdsFromIncIds(applicationId, incidentId);
+            contentIdsFromInc = getContentIdsFromIncIds(applicationId, incidentId.toString());
             if (contentIdsFromInc.length > 0){
                 contentId = contentIdsFromInc[0];
             } else {
@@ -3377,7 +3377,7 @@ script:
         }
 
         if (incidentId){
-            contentId = getContentIdsFromIncIds(applicationId, incidentId)[0];
+            contentId = getContentIdsFromIncIds(applicationId, incidentId.toString())[0];
         }
         var value = args.value;
 
