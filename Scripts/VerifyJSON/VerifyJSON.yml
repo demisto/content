@@ -1,17 +1,17 @@
 args:
 - default: false
-  description: 'JSON string to verfiy'
+  description: 'JSON string to verfiy.'
   isArray: false
   name: json
   required: true
   secret: false
 - default: false
-  description: 'Optional schema to validate the JSON input against'
+  description: 'Optional schema against which to validate the JSON input.'
   isArray: false
   name: schema
   required: false
   secret: false
-comment: Verfiy a JSON string is valid and optionally verify against a provided schema. Utilizes Powershell's Test-JSON cmdlet. 
+comment: Verifies if the supplied JSON string is valid and optionally verifies against a provided schema. The script utilizes Powershell's Test-JSON cmdlet. 
 commonfields:
   id: VerifyJSON
   version: -1
@@ -21,7 +21,7 @@ script: '-'
 system: false
 outputs:
   - contextPath: VerifyJSON.Result
-    description: Result of verifying the passed JSON
+    description: Whether the passed JSON was verified.
     type: boolean
 tags:
 - JSON
