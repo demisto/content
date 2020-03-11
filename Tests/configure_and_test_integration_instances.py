@@ -549,10 +549,11 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
             err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release)
             err_details += '"{}" but release "{}" and assetId "{}" were '.format(cd_asset_id, release, asset_id)
             err_details += 'retrieved from the instance post installation.'
-            prints_manager.add_print_job('Content Update was Unsuccessful:\n{}'.format(err_details), print_error,
-                                         thread_index)
+            prints_manager.add_print_job(
+                'Content Update to version: {} was Unsuccessful:\n{}'.format(release, err_details),
+                print_error, thread_index)
             prints_manager.execute_thread_prints(thread_index)
-            sys.exit(1)
+            os._exit(1)
 
 
 def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
@@ -828,7 +829,7 @@ def main():
                                   new_integrations_names, prints_manager)
     prints_manager.execute_thread_prints(0)
     if not success:
-        sys.exit(1)
+        sys.exit(2)
 
 
 if __name__ == '__main__':
