@@ -1290,9 +1290,8 @@ def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dic
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.DeployableDevices(val.ID && val.ID === obj.ID)': context_entry
         }
-        entry_white_list_count = switch_list_to_list_counter(context_entry)
         presented_output = ['CanBeDeployed', 'UpToDate', 'DeviceID', 'DeviceName', 'DeviceType', 'Version']
-        human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
+        human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any deployable devices.', {}, {}
@@ -1358,8 +1357,7 @@ def get_task_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.TaskStatus(val.ID && val.ID === obj.ID)': context_entry
         }
-        entry_white_list_count = switch_list_to_list_counter(context_entry)
-        human_readable = tableToMarkdown(title, entry_white_list_count, headers=['Status'])
+        human_readable = tableToMarkdown(title, context_entry, headers=['Status'])
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any status.', {}, {}
