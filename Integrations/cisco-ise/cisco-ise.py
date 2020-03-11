@@ -78,7 +78,7 @@ def translate_group_id(group_id):
     Translates group ID to group name
     """
 
-    api_endpoint = "/ers/config/identitygroup/1"
+    api_endpoint = f"/ers/config/identitygroup/{group_id}"
     identity_group = http_request('GET', api_endpoint)['IdentityGroup']
     return identity_group['name']
 

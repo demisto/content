@@ -621,4 +621,4 @@ script:
       description: "Indicator's priority level by TruSTAR - LOW, MEDIUM or HIGH"
       type: string
     description: Check Domain reputation on TruStar
-  dockerimage: demisto/trustar
+  dockerimage: demisto/trustar:latest
