@@ -662,7 +662,6 @@ def panorama_push_status_command():
         if job.get('result', '') == 'OK':
             push_status_output['Status'] = 'Completed'
         else:
-            # job['result'] == 'FAIL'
             push_status_output['Status'] = 'Failed'
 
         devices = job.get('devices')
