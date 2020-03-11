@@ -1,0 +1,26 @@
+{
+    "displayName": "FeedSharedTenantElasticsearc",
+    "description": "Fetch Indicators shared by other tenants in a Multi Tenant Elasticsearch environment.",
+    "support": "demisto",
+    "serverMinVersion": "5.5.0",
+    "currentVersion": "1.0.0",
+    "author": "Dean Arbel",
+    "url": "",
+    "email": "darbel@paloaltonetworks.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Elasticsearch",
+        "share indicators",
+        "MT"
+    ],
+    "created": "2020-02-18T12:47:47Z",
+    "updated": "2020-02-18T12:47:47Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "",
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {}
+}
