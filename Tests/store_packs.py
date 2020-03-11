@@ -148,8 +148,8 @@ class Pack(object):
         pack_metadata['certification'] = user_metadata.get('certification', '')
         try:
             pack_metadata['price'] = int(user_metadata.get('price'))
-        except:
-            print_warning(f"{pack_id} pack price is not valid. The price was set to 0")
+        except Exception as e:
+            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional details {e}")
             pack_metadata['price'] = 0
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
