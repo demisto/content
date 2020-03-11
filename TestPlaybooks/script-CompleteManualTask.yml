@@ -3,19 +3,24 @@ commonfields:
   version: -1
 name: CompleteManualTask
 script: |
-  task_type = demisto.args().get('type', 'regular')
-  args =  {
-              "incidentId": demisto.args()['id'],
+  args = demisto.args()
+  task_type = args.get('type', 'regular')
+  task_name = args.get('name')
+
+  search_args =  {
+              "incidentId": args['id'],
               "states": "Waiting",
               "raw-response": "true"
           }
 
-  resCmdName = demisto.executeCommand("DemistoGetIncidentTasksByState", args)
+  resCmdName = demisto.executeCommand("DemistoGetIncidentTasksByState", search_args)
   contents = resCmdName[0].get("Contents", {})
-  demisto.debug('found the following wating commands on investigation {}:\n{}'.format(demisto.args()['id'], contents))
+  demisto.debug('found the following waiting commands on investigation {}:\n{}'.format(args['id'], contents))
   tasks = [i.get('id', 0) for i in contents if i.get('type', '') == task_type]
+  if task_name:
+      tasks = [i.get('id', 0) for i in contents if i.get('name') == task_name]
 
-  if len(tasks) > 0:
+  if tasks:
       closing_args = { "id": tasks[0] }
       if task_type == 'condition':
           closing_args['input'] = demisto.args().get('closing_option')
@@ -36,7 +41,11 @@ args:
   description: Type of manual task. Can be regular or condition.
 - name: closing_option
   description: Relevant only for conditional tasks.
+- name: name
+  description: Name of manual task.
 scripttarget: 0
+subtype: python3
+pswd: ""
 runonce: false
 tests:
   - No test
