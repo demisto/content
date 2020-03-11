@@ -209,7 +209,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "No":
+      '#default#':
       - "8"
       "Yes":
       - "7"
