@@ -1,9 +1,9 @@
 {
-  "name": "## FILL OUT MANUALLY ##",
-  "description": "## FILL OUT MANUALLY ##",
+  "name": "Indeni",
+  "description": "Indeni is a turn-key automated monitoring providing visibility for security infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced experience, to deliver automation of tedious tasks with integration with your existing processes.\ndisplay: Indeni",
   "support": "demisto",
-  "serverMinVersion": "## FILL OUT MANUALLY #",
-  "currentVersion": "PACK_INITIAL_VERSION",
+  "serverMinVersion": "5.0.0",
+  "currentVersion": "1.0.0",
   "author": "demisto",
   "url": "https://www.demisto.com",
   "email": "",
