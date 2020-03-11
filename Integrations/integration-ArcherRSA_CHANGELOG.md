@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where **archer-update-record** and **archer-delete-record** commands failed on numeric incident ids
 
 ## [19.12.1] - 2019-12-25
 Fixed an issue where reports generated from the **GenerateInvestigationReport** script failed to upload to RSA Archer.
