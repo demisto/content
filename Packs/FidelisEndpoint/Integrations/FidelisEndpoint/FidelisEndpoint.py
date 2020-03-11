@@ -1,10 +1,12 @@
+import dateparser
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # IMPORTS
 
 import requests
-from typing import Dict, Tuple, List, Optional, Any, Union
+from typing import Dict, Tuple, List, Optional, Union
 
 
 # Disable insecure warnings
@@ -94,11 +96,11 @@ class Client(BaseClient):
 
         if host_name:
             url_suffix = '/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={%22searchFields%22:' \
-                         '[{%22fieldName%22:%22HostName%22,%22values%22:[{%22value%22:%22'+host_name+'%22}]}]}'
+                         '[{%22fieldName%22:%22HostName%22,%22values%22:[{%22value%22:%22' + host_name + '%22}]}]}'
 
         if ip_address:
             url_suffix = '/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={%22searchFields%22:' \
-                         '[{%22fieldName%22:%22IpAddress%22,%22values%22:[{%22value%22:%22'+ip_address+'%22}]}]}'
+                         '[{%22fieldName%22:%22IpAddress%22,%22values%22:[{%22value%22:%22' + ip_address + '%22}]}]}'
 
         return self._http_request('GET', url_suffix)
 
@@ -350,7 +352,8 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def query_by_hash(self, limit: int, start_time: str, end_time: str, logic: str, file_hash: str):
+    def query_by_hash(self, limit: int, start_time: Union[None, int, float],
+                      end_time: Union[None, int, float], logic: str, file_hash: str):
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -385,7 +388,8 @@ class Client(BaseClient):
             raise Exception(response.get('error'))
         return response
 
-    def query_by_process_name(self, limit: int, start_time: str, end_time: str, logic: str, process_name: str):
+    def query_by_process_name(self, limit: int, start_time: Union[None, int, float],
+                              end_time: Union[None, int, float], logic: str, process_name: str):
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -420,7 +424,8 @@ class Client(BaseClient):
             raise Exception(response.get('error'))
         return response
 
-    def query_by_remote_ip(self, limit: int, start_time: str, end_time: str, logic: str, remote_ip: str):
+    def query_by_remote_ip(self, limit: int, start_time: Union[None, int, float],
+                           end_time: Union[None, int, float], logic: str, remote_ip: str):
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -457,7 +462,8 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_request(self, limit: int, start_time: str, end_time: str, logic: str, url: str):
+    def query_by_dns_request(self, limit: int, start_time: Union[None, int, float],
+                             end_time: Union[None, int, float], logic: str, url: str):
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -492,7 +498,8 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_server_ip(self, limit: int, start_time: str, end_time: str, logic: str, remote_ip: str):
+    def query_by_dns_server_ip(self, limit: int, start_time: Union[None, int, float],
+                               end_time: Union[None, int, float], logic: str, remote_ip: str):
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -527,7 +534,8 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_source_ip(self, limit: int, start_time: str, end_time: str, logic: str, source_ip: str, domain: str):
+    def query_by_dns_source_ip(self, limit: int, start_time: Union[None, int, float],
+                               end_time: Union[None, int, float], logic: str, source_ip: str, domain: str):
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -568,8 +576,8 @@ class Client(BaseClient):
 
         return response
 
-    def query_events(self, limit: int, start_time: str, end_time: str, logic: str, column: str, value: str, entity_type: str,
-                     operator: str):
+    def query_events(self, limit: int, start_time: Union[None, int, float], end_time: Union[None, int, float],
+                     logic: str, column: str, value: str, entity_type: str, operator: str):
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -1095,9 +1103,36 @@ def script_job_status(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
+def arg_to_timestamp(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp that str - we just convert it to int
+        return int(arg)
+    if isinstance(arg, str):
+        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
+        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(f'Invalid date: {arg_name}')
+
+        return int(date.timestamp() * 1000)
+    if isinstance(arg, (int, float)):
+        return arg
+
+
 def query_file_by_hash(client: Client, args: dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = arg_to_timestamp(
+        arg=args.get('start_time'),
+        arg_name='start_time'
+    )
+    end_time = arg_to_timestamp(
+        arg=args.get('end_time'),
+        arg_name='end_time'
+    )
     logic = args.get('logic')
     file_hash = args.get('file_hash')
     limit = args.get('limit')
@@ -1160,8 +1195,14 @@ def query_file_by_hash(client: Client, args: dict):
 
 
 def query_process_name_command(client: Client, args: dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = arg_to_timestamp(
+        arg=args.get('start_time'),
+        arg_name='start_time'
+    )
+    end_time = arg_to_timestamp(
+        arg=args.get('end_time'),
+        arg_name='end_time'
+    )
     logic = args.get('logic')
     process_name = args.get('process_name')
     limit = args.get('limit')
@@ -1214,8 +1255,14 @@ def query_process_name_command(client: Client, args: dict):
 
 
 def query_connection_by_remote_ip(client: Client, args: dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = arg_to_timestamp(
+        arg=args.get('start_time'),
+        arg_name='start_time'
+    )
+    end_time = arg_to_timestamp(
+        arg=args.get('end_time'),
+        arg_name='end_time'
+    )
     logic = args.get('logic')
     remote_ip = args.get('remote_ip')
     limit = args.get('limit')
@@ -1277,8 +1324,14 @@ def query_connection_by_remote_ip(client: Client, args: dict):
 
 
 def query_dns_request(client: Client, args: dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = arg_to_timestamp(
+        arg=args.get('start_time'),
+        arg_name='start_time'
+    )
+    end_time = arg_to_timestamp(
+        arg=args.get('end_time'),
+        arg_name='end_time'
+    )
     logic = args.get('logic')
     url = args.get('url')
     limit = args.get('limit')
@@ -1330,8 +1383,14 @@ def query_dns_request(client: Client, args: dict):
 
 
 def query_by_server_ip(client: Client, args: dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = arg_to_timestamp(
+        arg=args.get('start_time'),
+        arg_name='start_time'
+    )
+    end_time = arg_to_timestamp(
+        arg=args.get('end_time'),
+        arg_name='end_time'
+    )
     logic = args.get('logic')
     remote_ip = args.get('remote_ip')
     limit = args.get('limit')
@@ -1383,8 +1442,14 @@ def query_by_server_ip(client: Client, args: dict):
 
 
 def query_by_source_ip(client: Client, args: dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = arg_to_timestamp(
+        arg=args.get('start_time'),
+        arg_name='start_time'
+    )
+    end_time = arg_to_timestamp(
+        arg=args.get('end_time'),
+        arg_name='end_time'
+    )
     logic = args.get('logic')
     source_ip = args.get('source_ip')
     domain = args.get('domain', '')
@@ -1438,8 +1503,14 @@ def query_by_source_ip(client: Client, args: dict):
 
 
 def query_events(client: Client, args: dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = arg_to_timestamp(
+        arg=args.get('start_time'),
+        arg_name='start_time'
+    )
+    end_time = arg_to_timestamp(
+        arg=args.get('end_time'),
+        arg_name='end_time'
+    )
     logic = args.get('logic')
     entity_type = args.get('entity_type')
     column = args.get('column')

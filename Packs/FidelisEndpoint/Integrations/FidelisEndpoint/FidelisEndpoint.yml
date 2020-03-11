@@ -781,15 +781,23 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The start time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: earliest event time in the system).'
+      description: |-
+        The start time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: most recent event time in the system).'
+      description: |-
+        The end time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
       required: false
@@ -902,15 +910,23 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'The start time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: earliest event time in the system).'
+      description: |-
+        The start time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: most recent event time in the system).'
+      description: |-
+        The end time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
       required: false
@@ -990,15 +1006,23 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'The start time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: earliest event time in the system).'
+      description: |-
+        The start time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: most recent event time in the system).'
+      description: |-
+        The end time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
       required: false
@@ -1096,15 +1120,23 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The start time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: earliest event time in the system).'
+      description: |-
+        The start time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: most recent event time in the system).'
+      description: |-
+        The end time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
       required: false
@@ -1190,15 +1222,23 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'The start time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: earliest event time in the system).'
+      description: |-
+        The start time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: most recent event time in the system).'
+      description: |-
+        The end time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
       required: false
@@ -1284,15 +1324,23 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'The start time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: earliest event time in the system).'
+      description: |-
+        The start time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: most recent event time in the system).'
+      description: |-
+        The end time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
       required: false
@@ -1384,15 +1432,23 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'The start time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: earliest event time in the system).'
+      description: |-
+        The start time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system in UTC format. For example:
-        0001-01-01T00:00:00Z (default: most recent event time in the system).'
+      description: |-
+        The end time of the event in the system.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
       required: false
