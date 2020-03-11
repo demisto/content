@@ -3,9 +3,9 @@ version: -1
 fromversion: 5.5.0
 name: ArcSight Add Url Indicators
 description: This playbook queries indicators based on a pre-defined query and adds
-  the found indicators to a ArcSight Active list. To query indicators, go to playbook
-  inputs, choose “from indicators” and set your query. for example "type:ip". Your Active
-  List (resource) ID should also be defined in the playbook inputs.
+  the found indicators to an ArcSight Active list. To query indicators, go to playbook
+  inputs, choose “from indicators” and set your query. For example "type:ip". Your Active
+  List (resource) ID must also be defined in the playbook inputs.
 starttaskid: "0"
 tasks:
   "0":
@@ -294,7 +294,7 @@ inputs:
 - key: ArcSightUrlActiveListID
   value: {}
   required: false
-  description: ID the the Url Active List resource as appears in the ArcSight UI.
+  description: ID of the Url Active List resource as it appears in the ArcSight user interface.
   playbookInputQuery: null
 - key: ArcsightUrlValueFieldName
   value: {}
