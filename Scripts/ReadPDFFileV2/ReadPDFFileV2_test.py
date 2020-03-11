@@ -153,3 +153,9 @@ def test_build_readpdf_entry_object_empty_extract(mocker):
     pdf_file = {'Text': 'test'}
     res = build_readpdf_entry_object(pdf_file, {}, '', '', '', '')
     assert res[0]['HumanReadable'] == '### Metadata\n\n### URLs\n\n### Text\n'
+
+
+def test_get_urls_from_binary_file():
+    from ReadPDFFileV2 import get_urls_from_binary_file
+    urls = get_urls_from_binary_file(f'{CWD}/text-with-images.pdf')
+    assert len(urls) == 10
