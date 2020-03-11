@@ -10,3 +10,5 @@ tags:
 comment: Common code that will be merged into each PowerShell script/integration when it runs
 system: true
 fromversion: 5.5.0
+tests:
+  - PowerShellCommon-Test
