@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Plain Text Feed",
+            "playbookID": "PlainText Feed - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Fastly Feed",
             "playbookID": "Fastly Feed Test",
             "fromversion": "5.5.0"
@@ -2199,9 +2204,15 @@
             "playbookID": "Elasticsearch_v2_test"
         },
         {
-            "integrations": "Elasticsearch v2",
-            "instance_names": "es_v7",
-            "playbookID": "Elasticsearch_Fetch_Indicators_Test",
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_demisto_feed",
+            "playbookID": "Elasticsearch_Fetch_Demisto_Indicators_Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ElasticsearchFeed",
+            "instance_names": "es_generic_feed",
+            "playbookID": "Elasticsearch_Fetch_Custom_Indicators_Test",
             "fromversion": "5.5.0"
         },
         {
@@ -2324,7 +2335,8 @@
             "integrations": "Recorded Future Feed",
             "playbookID": "RecordedFutureFeed - Test",
             "timeout": 1000,
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 80
         },
         {
             "integrations": "Expanse",
@@ -2428,7 +2440,6 @@
         }
     ],
     "skipped_tests": {
-        "Archer-Test-Playbook": "Issue 22536",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
@@ -2436,7 +2447,6 @@
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "Akamai_WAF_SIEM-Test": "Issue 22225",
         "EmailReputationTest": "Issue 22187",
         "test_Qradar": "Issue 22186",
         "IntSights Test": "Issue 22185",
@@ -2503,7 +2513,6 @@
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
-        "CrowdstrikeFalcon": "Issue 19833",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
@@ -2561,7 +2570,8 @@
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
-        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
+        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
+        "Ipstack": "reached out our monthly quota (08/03/2020)"
     },
     "nightly_integrations": [
         "Lastline v2",
