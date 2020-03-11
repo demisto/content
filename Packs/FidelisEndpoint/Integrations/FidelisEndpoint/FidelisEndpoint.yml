@@ -45,48 +45,44 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Index of the starting row returned. Defaults to 0.
-      isArray: false
-      name: skip
-      required: false
-      secret: false
-    - default: false
-      description: Limits the number of alerts returned. Defaults to all.
+      defaultValue: '10'
+      description: Limits the number of alerts returned.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
+      defaultValue: CreatedDate Descending
       description: |-
-        Sorts the result before applying take and skip. Defaults to “CreatedDate
-        Descending”.
+        Sorts the result before applying take and skip.
         Can be any property name of the alert object.
       isArray: false
       name: sort
       required: false
       secret: false
     - default: false
-      description: A filter applied on results of the get operation. Defaults to empty
-        string.
+      description: 'A filter applied on results of the get operation. '
       isArray: false
       name: facet_search
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'The start of the time range of returned values. For example: 0001-01-01T00:00:00Z'
+      description: 'The start of the time range of returned values in UTC format.
+        For example: 0001-01-01T00:00:00Z'
       isArray: false
       name: start_date
       required: false
       secret: false
     - default: false
-      description: 'The end of the time range of returned values. For example: 0001-01-01T00:00:00Z'
+      description: 'The end of the time range of returned values in UTC format. For
+        example: 0001-01-01T00:00:00Z'
       isArray: false
       name: end_date
       required: false
       secret: false
     deprecated: false
-    description: get information about alerts.
+    description: Returns all alert in the system.
     execution: false
     name: fidelis-endpoint-list-alerts
     outputs:
@@ -646,7 +642,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The endpoint IP to isolate. '
+      description: The endpoint IP to isolate.
       isArray: false
       name: endpoint_ip
       required: true
@@ -670,7 +666,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The server that can communicate with the isolated endpoint.
+      description: The server ip that can communicate with the isolated endpoint.
       isArray: false
       name: allowed_server
       required: true
@@ -785,15 +781,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The start time of the event in the system(default: earliest event
-        time in the system).'
+      description: 'The start time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: earliest event time in the system).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system(default: most recent event
-        time in the system).'
+      description: 'The end time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: most recent event time in the system).'
       isArray: false
       name: end_time
       required: false
@@ -822,7 +818,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Query behaviours - query file by hash.
+    description: Query file by its hash.
     execution: false
     name: fidelis-endpoint-query-file
     outputs:
@@ -906,15 +902,15 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'The start time of the event in the system(default: earliest event
-        time in the system).'
+      description: 'The start time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: earliest event time in the system).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system(default: most recent event
-        time in the system).'
+      description: 'The end time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: most recent event time in the system).'
       isArray: false
       name: end_time
       required: false
@@ -994,15 +990,15 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'The start time of the event in the system(default: earliest event
-        time in the system).'
+      description: 'The start time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: earliest event time in the system).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system(default: most recent event
-        time in the system).'
+      description: 'The end time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: most recent event time in the system).'
       isArray: false
       name: end_time
       required: false
@@ -1100,15 +1096,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The start time of the event in the system(default: earliest event
-        time in the system).'
+      description: 'The start time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: earliest event time in the system).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system(default: most recent event
-        time in the system).'
+      description: 'The end time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: most recent event time in the system).'
       isArray: false
       name: end_time
       required: false
@@ -1194,15 +1190,15 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'The start time of the event in the system(default: earliest event
-        time in the system).'
+      description: 'The start time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: earliest event time in the system).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the event in the system(default: most recent event
-        time in the system).'
+      description: 'The end time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: most recent event time in the system).'
       isArray: false
       name: end_time
       required: false
@@ -1288,11 +1284,15 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: 'The start time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: earliest event time in the system).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
+      description: 'The end time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: most recent event time in the system).'
       isArray: false
       name: end_time
       required: false
@@ -1384,11 +1384,15 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: 'The start time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: earliest event time in the system).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
+      description: 'The end time of the event in the system in UTC format. For example:
+        0001-01-01T00:00:00Z (default: most recent event time in the system).'
       isArray: false
       name: end_time
       required: false

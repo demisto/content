@@ -76,12 +76,11 @@ class Client(BaseClient):
         suffix = '/alerts/getalertsV2'
         self._http_request('GET', suffix, params={'take': 1})
 
-    def list_alerts(self, skip: int = None, limit: int = None, sort: str = None, facet_search: str = None,
+    def list_alerts(self, limit: int = None, sort: str = None, facet_search: str = None,
                     start_date=None, end_date=None):
 
         url_suffix = '/alerts/getalertsV2'
         params = assign_params(
-            skip=skip,
             take=limit,
             sort=sort,
             facetSearch=facet_search,
@@ -620,7 +619,6 @@ def test_module(client: Client, *_):
 def list_alerts_command(client: Client, args: dict):
     """get information about alerts. """
 
-    skip = args.get('skip', 0)
     limit = args.get('limit', 50)
     sort = args.get('sort')
     facet_search = args.get('facet_search', '')
@@ -631,7 +629,7 @@ def list_alerts_command(client: Client, args: dict):
 
     contents = []
     context = []
-    response = client.list_alerts(skip, limit, sort, facet_search, start_date, end_date)
+    response = client.list_alerts(limit, sort, facet_search, start_date, end_date)
 
     alerts = response.get('data', {}).get('entities', [])
     if not alerts:
