@@ -7,8 +7,6 @@ type: powershell
 tags:
 - infra
 - server
-comment: Common code that will be merged into each server script when it runs
+comment: Common code that will be merged into each PowerShell script/integration when it runs
 system: true
 fromversion: 5.5.0
-tests:
-  - No test - TODO
