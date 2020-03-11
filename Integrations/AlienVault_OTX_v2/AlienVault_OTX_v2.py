@@ -200,7 +200,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
             dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
-                'Type': arg,
+                'Type': 'ip',
                 'Vendor': 'AlienVault OTX v2'
             })
     if not raws:
