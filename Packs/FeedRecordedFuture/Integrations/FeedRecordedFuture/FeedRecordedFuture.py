@@ -34,16 +34,16 @@ class Client(BaseClient):
     headers = {'X-RF-User-Agent': 'Demisto',
                'content-type': 'application/json'}
 
-    def __init__(self, indicator_type: str, api_token: str, sub_feeds: list, risk_rule: str = None,
+    def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
                  polling_timeout: int = 20, proxy: bool = False, threshold: int = 65):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
              api_token: string, the api token for RecordedFuture.
-             sub_feeds: list, the sub feeds from RecordedFuture.
-             risk_rule: string, an optional argument to the 'ConnectApi' sub feed request.
-             fusion_file_path: string, an optional argument to the 'Fusion' sub feed request.
+             services: list, the services from RecordedFuture.
+             risk_rule: string, an optional argument to the 'ConnectApi' service request.
+             fusion_file_path: string, an optional argument to the 'Fusion' service request.
              insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
              polling_timeout: timeout of the polling request in seconds. Default: 20
              proxy: Sets whether use proxy when sending requests
@@ -59,20 +59,20 @@ class Client(BaseClient):
         self.risk_rule = risk_rule if risk_rule != "" else None
         self.fusion_file_path = fusion_file_path if fusion_file_path != "" else None
         self.api_token = self.headers['X-RFToken'] = api_token
-        self.sub_feeds = sub_feeds
+        self.services = services
         self.indicator_type = indicator_type
         self.threshold = int(threshold)
 
-    def _build_request(self, sub_feed, indicator_type):
+    def _build_request(self, service, indicator_type):
         """Builds the request for the Recorded Future feed.
         Args:
-            sub_feed (str): The sub feed from recorded future. Can be 'connectApi' or 'fusion'
+            service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
             indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
 
         Returns:
             requests.PreparedRequest: The prepared request which will be sent to the server
         """
-        if sub_feed == 'connectApi':
+        if service == 'connectApi':
             if self.risk_rule is None:
                 url = self.BASE_URL + indicator_type + '/risklist'
             else:
@@ -85,7 +85,7 @@ class Client(BaseClient):
                 params=self.PARAMS
             )
 
-        elif sub_feed == 'fusion':
+        elif service == 'fusion':
             url = self.BASE_URL + 'fusion/files/?path='
             if self.fusion_file_path is None:
                 fusion_path = '/public/risklists/default_' + indicator_type + '_risklist.csv'
@@ -99,17 +99,17 @@ class Client(BaseClient):
                                         params=self.PARAMS)
         return response.prepare()
 
-    def build_iterator(self, sub_feed, indicator_type):
+    def build_iterator(self, service, indicator_type):
         """Retrieves all entries from the feed.
         Args:
-            sub_feed (str): The sub feed from recorded future. Can be 'connectApi' or 'fusion'
+            service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
             indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
 
         Returns:
             csv.DictReader: Iterates the csv returned from the api request
         """
         _session = requests.Session()
-        prepared_request = self._build_request(sub_feed, indicator_type)
+        prepared_request = self._build_request(service, indicator_type)
         # this is to honour the proxy environment variables
         rkwargs = _session.merge_environment_settings(
             prepared_request.url,
@@ -162,9 +162,9 @@ class Client(BaseClient):
             None in success, Error otherwise
         """
         if self.risk_rule is not None:
-            if 'connectApi' not in self.sub_feeds:
-                return_error("You entered a risk rule but the 'connectApi' sub feed is not chosen. "
-                             "Add the 'connectApi' sub feed to the list or remove the risk rule.")
+            if 'connectApi' not in self.services:
+                return_error("You entered a risk rule but the 'connectApi' service is not chosen. "
+                             "Add the 'connectApi' service to the list or remove the risk rule.")
 
             elif not is_valid_risk_rule(self, self.risk_rule):
                 return_error("The given risk rule does not exist, "
@@ -172,9 +172,9 @@ class Client(BaseClient):
                              "To see all available risk rules run the '!rf-get-risk-rules' command.")
 
         if self.fusion_file_path is not None:
-            if 'fusion' not in self.sub_feeds:
-                return_error("You entered a fusion file path but the 'fusion' sub feed is not chosen. "
-                             "Add the 'fusion' sub feed to the list or remove the fusion file path.")
+            if 'fusion' not in self.services:
+                return_error("You entered a fusion file path but the 'fusion' service is not chosen. "
+                             "Add the 'fusion' service to the list or remove the fusion file path.")
 
 
 def is_valid_risk_rule(client: Client, risk_rule):
@@ -206,8 +206,8 @@ def test_module(client: Client, args: dict) -> Tuple[str, dict, dict]:
 
     client.run_parameters_validations()
 
-    for sub_feed in client.sub_feeds:
-        client.build_iterator(sub_feed, client.indicator_type)
+    for service in client.services:
+        client.build_iterator(service, client.indicator_type)
     return 'ok', {}, {}
 
 
@@ -291,8 +291,8 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
         list. List of indicators from the feed
     """
     indicators = []
-    for sub_feed in client.sub_feeds:
-        iterator = client.build_iterator(sub_feed, indicator_type)
+    for service in client.services:
+        iterator = client.build_iterator(service, indicator_type)
         for item in itertools.islice(iterator, limit):  # if limit is None the iterator will iterate all of the items.
             raw_json = dict(item)
             evidence_details = json.loads(item.get('EvidenceDetails')).get('EvidenceDetails')
@@ -364,7 +364,7 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
 
 def main():
     params = demisto.params()
-    client = Client(params.get('indicator_type'), params.get('api_token'), params.get('sub_feeds'),
+    client = Client(params.get('indicator_type'), params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'))
     command = demisto.command()

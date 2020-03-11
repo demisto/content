@@ -3,7 +3,7 @@ commonfields:
   id: Bambenek Consulting Feed
   version: -1
 configuration:
-- display: Sub-Feeds
+- display: Services
   name: url
   options:
   - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
@@ -39,7 +39,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
 - display: ""
@@ -108,7 +108,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.1.6442
   feed: true
   isfetch: false
   longRunning: false
