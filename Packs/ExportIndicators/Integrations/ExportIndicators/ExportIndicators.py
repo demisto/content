@@ -5,7 +5,7 @@ import json
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any, cast, Dict
+from typing import Callable, List, Any, cast, Dict, Tuple
 from base64 import b64decode
 from netaddr import IPAddress, iprange_to_cidrs
 
@@ -30,6 +30,8 @@ FORMAT_JSON: str = 'json'
 CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text,json,json-seq,csv'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
+CTX_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 0 - Dont Collapse, ' \
+                            '1 - Collapse to Ranges, 2 - Collapse to CIDRS'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
 
@@ -79,7 +81,27 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     """
     now = datetime.now()
     iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
-    out_dict = create_values_out_dict(iocs, out_format, collapse_ips=collapse_ips)
+    out_dict, actual_indicator_amount = create_values_out_dict(iocs, out_format, collapse_ips=collapse_ips)
+
+    # re-polling in case ip collapse caused a lack in results
+    while collapse_ips != DONT_COLLAPSE and actual_indicator_amount < limit:
+        # from where to start the new poll and how many results should be fetched
+        new_offset = len(iocs) + offset + actual_indicator_amount - 1
+        new_limit = limit - actual_indicator_amount
+
+        # poll additional indicators into list from demisto
+        new_iocs = find_indicators_with_limit(indicator_query, new_limit, new_offset)
+
+        # in case no additional indicators exist - exit
+        if len(new_iocs) == 0:
+            break
+
+        # add the new results to the existing results
+        iocs += new_iocs
+
+        # reformat the output
+        out_dict, actual_indicator_amount = create_values_out_dict(iocs, out_format, collapse_ips=collapse_ips)
+
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     demisto.setIntegrationContext({
         "last_output": out_dict,
@@ -191,13 +213,13 @@ def ips_to_ranges(ips: list, collapse_ips):
     return ip_ranges
 
 
-def create_values_out_dict(iocs: list, out_format: str, collapse_ips=DONT_COLLAPSE) -> dict:
+def create_values_out_dict(iocs: list, out_format: str, collapse_ips=DONT_COLLAPSE) -> Tuple[dict, int]:
     """
     Create a dictionary for output values using the selected format (json, json-seq, text, csv)
     """
     if out_format == FORMAT_JSON:  # handle json separately
         iocs_list = [ioc for ioc in iocs]
-        return {CTX_VALUES_KEY: json.dumps(iocs_list)}
+        return {CTX_VALUES_KEY: json.dumps(iocs_list)}, len(iocs)
     else:
         ipv4_formatted_indicators = []
         ipv6_formatted_indicators = []
@@ -231,7 +253,7 @@ def create_values_out_dict(iocs: list, out_format: str, collapse_ips=DONT_COLLAP
             ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, collapse_ips)
             formatted_indicators.extend(ipv6_formatted_indicators)
 
-    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
+    return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}, len(formatted_indicators)
 
 
 def get_outbound_mimetype() -> str:
@@ -303,7 +325,7 @@ def get_ioc_values_str_from_context(iocs=None, new_format: str = FORMAT_TEXT,
             return ''
 
         iocs = iocs[offset: limit + offset]
-        returned_dict = create_values_out_dict(iocs, new_format)
+        returned_dict, _ = create_values_out_dict(iocs, new_format)
         current_cache = demisto.getIntegrationContext()
         current_cache['last_output'] = returned_dict
         demisto.setIntegrationContext(current_cache)
@@ -355,6 +377,18 @@ def get_request_args(params):
     offset = try_parse_integer(request.args.get('s', 0), CTX_OFFSET_ERR_MSG)
     out_format = request.args.get('v', params.get('format', 'text'))
     query = request.args.get('q', params.get('indicators_query'))
+    collapse_ips = request.args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
+
+    if collapse_ips is not None and collapse_ips not in [DONT_COLLAPSE, COLLAPSE_TO_CIDR, COLLAPSE_TO_RANGES]:
+        collapse_ips = try_parse_integer(collapse_ips, CTX_COLLAPSE_ERR_MSG)
+        if collapse_ips == 0:
+            collapse_ips = DONT_COLLAPSE
+
+        elif collapse_ips == 1:
+            collapse_ips = COLLAPSE_TO_RANGES
+
+        elif collapse_ips == 2:
+            collapse_ips = COLLAPSE_TO_CIDR
 
     # prevent given empty params
     if len(query) == 0:
@@ -366,7 +400,7 @@ def get_request_args(params):
     if out_format not in ['text', 'json', 'json-seq', 'csv']:
         raise DemistoException(CTX_FORMAT_ERR_MSG)
 
-    return limit, offset, out_format, query
+    return limit, offset, out_format, query, collapse_ips
 
 
 @APP.route('/', methods=['GET'])
@@ -387,7 +421,7 @@ def route_list_values() -> Response:
                 demisto.debug(err_msg)
                 return Response(err_msg, status=401)
 
-        limit, offset, out_format, query = get_request_args(params)
+        limit, offset, out_format, query, collapse_ips = get_request_args(params)
 
         values = get_outbound_ioc_values(
             out_format=out_format,
@@ -397,7 +431,7 @@ def route_list_values() -> Response:
             last_update_data=demisto.getIntegrationContext(),
             indicator_query=query,
             cache_refresh_rate=params.get('cache_refresh_rate'),
-            collapse_ips=params.get('collapse_ips')
+            collapse_ips=collapse_ips
         )
 
         mimetype = get_outbound_mimetype()
