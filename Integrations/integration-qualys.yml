@@ -1110,7 +1110,7 @@ script:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
     - contextPath: Qualys.Scan.Reference
-      description: Sacn ref
+      description: Scan ref
     - contextPath: Qualys.Scan.REF
         description: Scan REF
     - contextPath: Qualys.Scan.Type
@@ -1329,7 +1329,7 @@ script:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
     - contextPath: Qualys.Scan.Reference
-      description: Sacn ref
+      description: Scan ref
     - contextPath: Qualys.Scan.REF
       description: Scan REF
     - contextPath: Qualys.Scan.Type
@@ -1511,7 +1511,7 @@ script:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
     - contextPath: Qualys.Scan.Reference
-      description: Sacn ref
+      description: Scan ref
     - contextPath: Qualys.Scan.REF
       description: Scan REF
     - contextPath: Qualys.Scan.Type
@@ -1951,7 +1951,7 @@ script:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
     - contextPath: Qualys.Scan.Reference
-      description: Sacn ref
+      description: Scan ref
     - contextPath: Qualys.Scan.REF
       description: Scan REF
     - contextPath: Qualys.Scan.Type
