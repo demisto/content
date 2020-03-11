@@ -1,6 +1,6 @@
 {
     "displayName": "OktaV2",
-    "description": "",
+    "description": "Integration with Okta's cloud-based identity management service\n",
     "support": "demisto",
     "serverMinVersion": "",
     "currentVersion": "1.0.0",
