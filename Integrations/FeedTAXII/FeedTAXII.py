@@ -503,15 +503,13 @@ class TAXIIClient(object):
         self.collection = collection
 
         # authentication
-        if not credentials:
-            credentials = {}
-
-        if '_header' in credentials.get('identifier', None):
-            self.api_key = credentials.get('identifier', None)
-            self.api_header = credentials.get('password', None)
-        else:
-            self.username = credentials.get('identifier', None)
-            self.password = credentials.get('password', None)
+        if credentials:
+            if '_header:' in credentials.get('identifier', None):
+                self.api_header = credentials.get('identifier', None).split('_header:')[1]
+                self.api_key = credentials.get('password', None)
+            else:
+                self.username = credentials.get('identifier', None)
+                self.password = credentials.get('password', None)
 
     def _send_request(self, url, headers, data, stream=False):
         if self.api_key is not None and self.api_header is not None:
