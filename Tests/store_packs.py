@@ -164,7 +164,7 @@ class Pack(object):
         pack_metadata['integrations'] = []
         pack_metadata['useCases'] = input_to_list(user_metadata.get('useCases'))
         pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
-        pack_metadata['dependencies'] = user_metadata.get('dependencies')
+        pack_metadata['dependencies'] = user_metadata.get('dependencies', {})
 
         return pack_metadata
 
