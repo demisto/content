@@ -355,7 +355,7 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
             })
             dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
-                'Score': str(calculate_dbot_score(raw_response.get('pulse_info'))),
+                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
                 'Type': 'url',
                 'Vendor': 'AlienVault OTX v2'
             })
