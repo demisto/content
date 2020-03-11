@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [20.2.0] - 2020-02-04
 - Enhanced `kafka-fetch-partitions` description to be more descriptive. 

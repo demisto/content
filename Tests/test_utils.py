@@ -34,21 +34,25 @@ def print_warning(warning_str):
     print_color(warning_str, LOG_COLORS.YELLOW)
 
 
-def run_command(command, is_silenced=True, exit_on_error=True):
+def run_command(command, is_silenced=True, exit_on_error=True, use_shell=False):
     """Run a bash command in the shell.
 
     Args:
         command (string): The string of the command you want to execute.
         is_silenced (bool): Whether to print command output.
         exit_on_error (bool): Whether to exit on command error.
+        use_shell (bool): Whether use shell to executed command through the shell.
 
     Returns:
         string. The output of the command you are trying to execute.
     """
+    if not use_shell:
+        command = command.split()
+
     if is_silenced:
-        p = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        p = Popen(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=use_shell)
     else:
-        p = Popen(command.split())
+        p = Popen(command)
 
     output, err = p.communicate()
     if err:
@@ -343,6 +347,66 @@ def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
 
 
+def collect_pack_content_items(pack_path):
+    """Collects specific pack content items.
+
+    """
+    YML_SUPPORTED_DIRS = [
+        "Scripts",
+        "Integrations",
+        "Playbooks"
+    ]
+    data = {}
+
+    for directory in os.listdir(pack_path):
+        if not os.path.isdir(os.path.join(pack_path, directory)) or directory == "TestPlaybooks":
+            continue
+
+        dir_data = []
+        dir_path = os.path.join(pack_path, directory)
+
+        for dir_file in os.listdir(dir_path):
+            file_path = os.path.join(dir_path, dir_file)
+            if dir_file.endswith('.json') or dir_file.endswith('.yml'):
+                file_info = {}
+
+                with open(file_path, 'r') as file_data:
+                    if directory in YML_SUPPORTED_DIRS:
+                        new_data = yaml.safe_load(file_data)
+                    else:
+                        new_data = json.load(file_data)
+
+                    if directory == 'Layouts':
+                        file_info['name'] = new_data.get('TypeName', '')
+                    elif directory == 'Integrations':
+                        file_info['name'] = new_data.get('display', '')
+                    elif directory == "Classifiers":
+                        file_info['name'] = new_data.get('id', '')
+                    else:
+                        file_info['name'] = new_data.get('name', '')
+
+                    if new_data.get('description', ''):
+                        file_info['description'] = new_data.get('description', '')
+                    if new_data.get('comment', ''):
+                        file_info['description'] = new_data.get('comment', '')
+
+                    if directory == "Integrations":
+                        integration_commands = new_data.get('script', {}).get('commands', [])
+                        file_info['commands'] = [{'name': c.get('name', ''), 'description': c.get('description', '')}
+                                                 for c in integration_commands]
+
+                    dir_data.append(file_info)
+
+        data[directory] = dir_data
+
+    return data
+
+
+def input_to_list(input_data):
+    input_data = input_data if input_data else []
+    return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+
+
 class Docker:
     """ Client for running docker commands on remote machine using ssh connection.
 
@@ -497,6 +561,16 @@ class Docker:
         return stdout, stderr
 
     @classmethod
+    def get_image_for_container_id(cls, server_ip, container_id):
+        cmd = cls._build_ssh_command(server_ip, "sudo docker inspect -f {{.Config.Image}} " + container_id,
+                                     force_tty=False)
+        stdout, stderr = cls.run_shell_command(cmd)
+        if stderr:
+            print_warning("Received stderr from docker inspect command. Additional information: {}".format(stderr))
+        res = stdout or ""
+        return res.strip()
+
+    @classmethod
     def get_integration_image(cls, integration_config):
         """ Returns docker image of integration that was configured using rest api call via demisto_client
 
@@ -576,15 +650,17 @@ class Docker:
         return stdout
 
     @classmethod
-    def check_resource_usage(cls, server_url, docker_images, memory_threshold, pids_threshold):
+    def check_resource_usage(cls, server_url, docker_images, def_memory_threshold, def_pid_threshold,
+                             docker_thresholds):
         """
         Executes docker stats command on remote machine and returns error message in case of exceeding threshold.
 
         Args:
             server_url (str): Target machine full url.
             docker_images (set): Set of docker images to check their resource usage.
-            memory_threshold (int): Memory threshold of specific docker container, in Mib.
-            pids_threshold (int): PIDs threshold of specific docker container, in Mib.
+            def_memory_threshold (int): Memory threshold of specific docker container, in Mib.
+            def_pids_threshold (int): PIDs threshold of specific docker container, in Mib.
+            docker_thresholds: thresholds per docker image
 
         Returns:
             str: The error message. Empty in case that resource check passed.
@@ -600,7 +676,16 @@ class Docker:
             container_id = container_stat['container_id']
             memory_usage = container_stat['memory_usage']
             pids_usage = container_stat['pids']
+            image_full = cls.get_image_for_container_id(server_ip,
+                                                        container_id)  # get full name (ex: demisto/slack:1.0.0.4978)
+            image_name = image_full.split(':')[0]  # just the name such as demisto/slack
 
+            memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold') or docker_thresholds.get(
+                image_name, {}).get('memory_threshold') or def_memory_threshold)
+            pid_threshold = (docker_thresholds.get(image_full, {}).get('pid_threshold')
+                             or docker_thresholds.get(image_name, {}).get('pid_threshold') or def_pid_threshold)
+            print("Checking container: {} (image: {}) for memory: {} pid: {} thresholds ...".format(
+                container_name, image_full, memory_threshold, pid_threshold))
             if memory_usage > memory_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the memory threshold, '
                                   'configured: {} MiB and actual memory usage is {} MiB.\n'
@@ -608,12 +693,12 @@ class Docker:
                                   'in conf.json with value that is greater than {}\n'
                                   .format(container_name, memory_threshold, memory_usage, memory_usage))
                 failed_memory_test = True
-            if pids_usage > pids_threshold:
+            if pids_usage > pid_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the pids threshold, '
                                   'configured: {} and actual pid number is {}.\n'
                                   'Fix container pid usage or add `pid_threshold` key to failed test '
                                   'in conf.json with value that is greater than {}\n'
-                                  .format(container_name, pids_threshold, pids_usage, pids_usage))
+                                  .format(container_name, pid_threshold, pids_usage, pids_usage))
                 additional_pid_info = cls.get_docker_pid_info(server_ip, container_id)
                 if additional_pid_info:
                     error_message += 'Additional pid information:\n{}'.format(additional_pid_info)
