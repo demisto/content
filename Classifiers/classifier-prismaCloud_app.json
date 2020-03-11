@@ -44,7 +44,7 @@
                 "AWS CloudTrail Misconfiguration": {
                         "dontMapEventToLabels": false,
                         "internalMapping": {
-                                "Account": {
+                                "Account Name:": {
                                         "complex": {
                                                 "accessor": "account",
                                                 "filters": [],
@@ -61,10 +61,6 @@
                                                 "transformers": []
                                         },
                                         "simple": ""
-                                },
-                                "Account Name": {
-                                        "complex": null,
-                                        "simple": "resource.account"
                                 },
                                 "Alert ID": {
                                         "complex": null,
