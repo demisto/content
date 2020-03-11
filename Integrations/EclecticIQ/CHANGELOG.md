@@ -1,2 +1,2 @@
 ## [Unreleased]
- - Added 2FA auth compatibility. Starting with EclecticIQ version 2.7 users can use either password or token for authentication
+Added support for two-factor authentication. Starting with EclecticIQ version 2.7 users can use either a password or token for authentication.
