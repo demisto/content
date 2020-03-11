@@ -236,7 +236,7 @@ def get_urls_from_binary_file(file_path):
     """Reading from the binary pdf in the pdf_text_output_path and returns a list of the urls in the file"""
     with open(file_path, 'rb') as file:
         # the urls usually appear in the form: '/URI (url)'
-        urls = re.findall(r'/URI \((.*?)\)', str(file.read()))
+        urls = re.findall(r'/URI ?\((.*?)\)', str(file.read()))
 
     binary_file_urls = set()
     # make sure the urls match the url regex
