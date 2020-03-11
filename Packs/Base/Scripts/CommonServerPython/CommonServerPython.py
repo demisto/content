@@ -28,6 +28,7 @@ except Exception:
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
+
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
@@ -761,19 +762,28 @@ def aws_table_to_markdown(response, table_header):
     :return: Markdown formatted table as a string.
     :rtype: str
     """
-    if not isinstance(response, dict):
-        return tableToMarkdown(table_header, response)
-    elif len(response) != 1:
-        return tableToMarkdown(table_header, response)
-    elif not isinstance(response[list(response.keys())[0]], dict) and \
-            not isinstance(response[list(response.keys())[0]], list):
-        return tableToMarkdown(table_header, response)
-    elif not isinstance(response[list(response.keys())[0]], list):
-        return tableToMarkdown(table_header, response[list(response.keys())[0]])
-    elif not isinstance(response[list(response.keys())[0]][0], str):
-        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(response[list(response.keys())[0]], dict) or isinstance(
+                    response[list(response.keys())[0]], list):
+                if isinstance(response[list(response.keys())[0]], list):
+                    list_response = response[list(response.keys())[0]]
+                    if isinstance(list_response[0], str):
+                        human_readable = tableToMarkdown(
+                            table_header, response)
+                    else:
+                        human_readable = tableToMarkdown(
+                            table_header, response[list(response.keys())[0]])
+                else:
+                    human_readable = tableToMarkdown(
+                        table_header, response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown(table_header, response)
+        else:
+            human_readable = tableToMarkdown(table_header, response)
     else:
-        return tableToMarkdown(table_header, response[list(response.keys())[0]])
+        human_readable = tableToMarkdown(table_header, response)
+    return human_readable
 
 
 class IntegrationLogger(object):
