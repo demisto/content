@@ -429,7 +429,8 @@ class Client:
                 'Bcc': bcc,
                 'Subject': subject,
                 'Body': body,
-                'Mailbox': to
+                'Mailbox': to,
+                'BodyHTML': bodyHtml
             })
 
         headers = ['Type', 'ID', 'To', 'From', 'Cc', 'Bcc', 'Subject', 'Body', 'Labels',
