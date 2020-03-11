@@ -8,7 +8,7 @@ To connect the TAXII Feed integration to a TAXII server you'll need to configure
 subscription a *Subscription ID* value. From then on, both the Consumer and the Server refer to this subscription in messages using this Subscription ID value.
 * **Poll Service** (Optional) - Used by a TAXII Client to request information from a TAXII Server. If not provided, will be fetched from the discovery service.
 
-#Authentication
+# Authentication
 * **Username + Password** - Username and Password for TAXII servers that require basic authentication. 
 These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format:
 `_header:<header_name>` in the **Username** field and the header value in the **Password** field.
