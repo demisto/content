@@ -69,8 +69,9 @@ class TestMetadata:
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=empty_metadata, pack_content_items={},
                                                     pack_id='test_pack_id')
 
-        assert parsed_metadata['name'] == ""
+        assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
+        assert parsed_metadata['description'] == "test_pack_id"
         assert parsed_metadata['supportDetails'] == {}
 
 
