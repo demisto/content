@@ -19,6 +19,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     * __Update On Demand Only__: When set to true, will only update the service indicators via **eis-update** command.
     * __Refresh Rate__: How often to refresh the export indicators list (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
+    * __Collapse IPs__: Whether to collapse IPs and if so - to ranges or CIDRs
     * __Long Running Instance__: Must be set to true, otherwise the service will be available.
     * __Listen Port__: Will run the *Export Indicators Service* on this port from within Demisto
     * __Certificate (Required for HTTPS)__: HTTPS Certificate provided by pasting its values into this field.
@@ -45,6 +46,8 @@ Use the following arguments in the URL to change the request:
 | s | The starting entry index from which to export the indicators. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50 |
 | v | The output format. Supports `text`, `csv`, `json` and `json-seq` | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
 | q | The query used to retrieve indicators from the system. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source" |
+| tr | Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1 |
+
 
 ##### Base Command
 
@@ -57,7 +60,8 @@ Use the following arguments in the URL to change the request:
 | format | The output format. | Optional | 
 | list_size | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | Optional | 
 | offset | The starting entry index from which to export the indicators. | Optional |
-| print_indicators | If set to true will print the indicators the that were saved to the export indicators service | Required | 
+| print_indicators | If set to true will print the indicators the that were saved to the export indicators service | Required |
+| collapse_ips | Whether to collapse IPs, and if so - to ranges or CIDRs | Optional |
  
 
 ##### Context Output
