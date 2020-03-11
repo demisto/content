@@ -57,6 +57,13 @@
             "certification": "certified",
             "author": "Cortex XSOAR"
           },
+        "ipinfo": {
+            "mandatory": false,
+            "minVersion": "1.0.0",
+            "name": "ipinfo",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          },
         "rasterize": {
             "mandatory": true,
             "minVersion": "1.0.0",
