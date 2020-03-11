@@ -42,8 +42,8 @@ tasks:
     task:
       id: bd7547a2-2f55-4a7e-8489-86e8d492730f
       version: -1
-      name: Disable the users 2nd access key
-      description: Marks access keys as "inactive"
+      name: Disable the user's 2nd access key
+      description: Marks access key as "inactive"
       script: '|||aws-iam-update-access-key'
       type: regular
       iscommand: true
@@ -109,8 +109,8 @@ tasks:
       id: c63ad7ca-3d92-4db2-858b-a22fc1dc3f1c
       version: -1
       name: Print credential report
-      description: Outputs user's credential report which contains access key attributes
-        and  user login profile
+      description: Outputs user's credential report, which contains access key attributes
+        and user login profile.
       scriptName: Print
       type: regular
       iscommand: false
@@ -218,7 +218,7 @@ tasks:
       id: 55f84bcc-d85c-4f7a-8f0a-ca6a2286f0c1
       version: -1
       name: Execute remediation
-      description: Determine the appropriate remediation to execute.
+      description: Determine the appropriate course for remediation.
       type: condition
       iscommand: false
       brand: ""
