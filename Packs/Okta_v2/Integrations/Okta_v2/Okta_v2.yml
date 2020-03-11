@@ -918,7 +918,7 @@ script:
       description: Okta account username
       type: String
     - contextPath: Account.DisplayName
-      description: Okta account dispay name
+      description: Okta account display name
       type: String
     - contextPath: Account.Type
       description: Account typr - Okta
