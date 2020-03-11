@@ -37,7 +37,7 @@ script:
     name: okta-unlock-user
   - arguments:
     - default: false
-      description: Deactivates speified user.
+      description: Deactivates specified user.
       isArray: false
       name: username
       required: true
@@ -149,7 +149,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The new pssword to set for thr user
+      description: The new password to set for thr user
       isArray: false
       name: password
       required: true
@@ -839,7 +839,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Password question for the speified user
+      description: Password question for the specified user
       isArray: false
       name: passwordQuestion
       required: false
