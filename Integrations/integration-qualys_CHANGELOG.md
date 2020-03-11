@@ -1,7 +1,5 @@
 ## [Unreleased]
-
-## [20.3.8] - 2020-03-08
-Add `REF` field in context mapping
+Added `REF` field in context mapping
 
 ## [20.2.4] - 2020-02-25
 Fixed incorrect argument name in the ***qualys-schedule-scan-list*** command.
