@@ -806,6 +806,13 @@ script:
       name: endpoint_name
       required: false
       secret: false
+    - default: false
+      description: Additional answer for the script to run Get the answer from script-manifest
+        command).
+      isArray: false
+      name: additional_answer
+      required: false
+      secret: false
     deprecated: false
     description: Execute script.
     execution: false
@@ -1502,6 +1509,12 @@ script:
       description: Limit of results to return.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Add additional filter to the query (for example: pid=1234)'
+      isArray: false
+      name: additional_filter
       required: false
       secret: false
     deprecated: false

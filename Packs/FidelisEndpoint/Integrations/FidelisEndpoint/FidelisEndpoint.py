@@ -5,8 +5,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 # IMPORTS
 
 import requests
-from typing import Dict, Tuple, List, Optional, Union
-
+from typing import Dict, Tuple, List, Optional, Union, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -152,7 +151,8 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def execute_script(self, script_id: str, endpoint_ip: str, answer: Union[str, int], time_out: int) -> Dict:
+    def execute_script(self, script_id: str, endpoint_ip: str, answer: Union[str, int], time_out: int,
+                       additional_answer: Union[None, str]) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -172,7 +172,11 @@ class Client(BaseClient):
                     'questions': [
                         {
                             'paramNumber': 1,
-                            'answer': answer,
+                            'answer': answer
+                        },
+                        {
+                            'paramNumber': 2,
+                            'answer': additional_answer,
                         }
                     ]
                 }
@@ -585,10 +589,12 @@ class Client(BaseClient):
         return response
 
     def query_events(self, limit: int, start_time: Union[None, int, float], end_time: Union[None, int, float],
-                     logic: str, column: str, value: str, entity_type: str, operator: str) -> Dict:
+                     logic: str, column: str, value: str, entity_type: str, operator: str,
+                     additional_filter) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
+
         body = {
             'dateRange': {
                 'start': start_time,
@@ -615,6 +621,9 @@ class Client(BaseClient):
                 }
             }
         }
+
+        if additional_filter:
+            body['criteriaV3']['filter']['filters'].append(additional_filter)
 
         response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
@@ -902,6 +911,7 @@ def execute_script_command(client: Client, args: dict):
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
     answer = args.get('answer')
+    additional_answer = args.get('additional_answer', '')
 
     if endpoint_ip:
         endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
@@ -914,7 +924,7 @@ def execute_script_command(client: Client, args: dict):
     if not endpoint_ip and not endpoint_name:
         raise Exception('You must provide either endpoint_ip or endpoint_name')
 
-    response = client.execute_script(script_id, endpoint_id, answer, time_out)
+    response = client.execute_script(script_id, endpoint_id, answer, time_out, additional_answer)
     context = {
         'ID': script_id,
         'JobID': response.get('data')
@@ -1527,10 +1537,20 @@ def query_events(client: Client, args: dict):
     value = args.get('value')
     operator = args.get('operator')
     limit = args.get('limit')
+    additional_filter = args.get('additional_filter')
+    if additional_filter:
+        add_filter = additional_filter.split()
+        add_filter = {
+            'filterType': 'criteria',
+            'column': add_filter[0],
+            'operator': add_filter[1],
+            'value': add_filter[2]
+        }
     contents = []
     context = []
 
-    response = client.query_events(limit, start_time, end_time, logic, column, value, entity_type, operator)
+    response = client.query_events(limit, start_time, end_time, logic, column, value, entity_type, operator,
+                                   add_filter)
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
