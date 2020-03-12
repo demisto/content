@@ -21,6 +21,6 @@ dockerimage: demisto/tld:1.0.0.6256
 runas: DBotWeakRole
 runonce: false
 subtype: python3
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
   - ExtractDomainAndFQDNFromUrlAndEmail-Test
