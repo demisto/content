@@ -1013,10 +1013,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 2da529cd-75f9-4733-869c-9a61beced8f8
+    taskid: 1eca3a38-79bc-4c9f-8e4d-2b4cf95ee52b
     type: regular
     task:
-      id: 2da529cd-75f9-4733-869c-9a61beced8f8
+      id: 1eca3a38-79bc-4c9f-8e4d-2b4cf95ee52b
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1029,7 +1029,7 @@ tasks:
       - "5"
     scriptarguments:
       seconds:
-        simple: "15"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -1045,10 +1045,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 712f7358-820f-4be2-8e29-f15db17f28b3
+    taskid: 9a60d19f-ad7c-4640-8462-e3e6990fbb53
     type: regular
     task:
-      id: 712f7358-820f-4be2-8e29-f15db17f28b3
+      id: 9a60d19f-ad7c-4640-8462-e3e6990fbb53
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1061,7 +1061,7 @@ tasks:
       - "6"
     scriptarguments:
       seconds:
-        simple: "15"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -1077,10 +1077,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 453e1bbe-c56f-47bd-81a3-0b0bf27af3fb
+    taskid: 64a17413-5494-441e-8279-763c01a72ae5
     type: regular
     task:
-      id: 453e1bbe-c56f-47bd-81a3-0b0bf27af3fb
+      id: 64a17413-5494-441e-8279-763c01a72ae5
       version: -1
       name: Sleep
       description: Sleep for X seconds
