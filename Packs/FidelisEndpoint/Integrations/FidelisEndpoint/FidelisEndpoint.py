@@ -1,5 +1,4 @@
-import dateparser
-
+# type: ignore
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -153,7 +152,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def execute_script(self, script_id: str, endpoint_ip: str, answer: str, time_out: int) -> Dict:
+    def execute_script(self, script_id: str, endpoint_ip: str, answer: Union[str, int], time_out: int) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -832,7 +831,7 @@ def file_search_reasult_metadata(client: Client, args: dict):
 
 
 def get_file(client: Client, args: dict):
-    file_id = args.get('file_id')
+    file_id: str = args.get('file_id')
     response = client.get_file(file_id)
     attachment_file = fileResult('Fidelis_Endpoint.zip', response)
 
