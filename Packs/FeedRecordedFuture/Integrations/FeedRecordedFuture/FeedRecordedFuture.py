@@ -225,6 +225,9 @@ def get_indicator_type(indicator_type, item):
     elif indicator_type == 'hash':
         return FeedIndicatorType.File
     elif indicator_type == 'domain':
+        # If * is in the domain it is of type DomainGlob
+        if '*' in item.get('Name'):
+            return FeedIndicatorType.DomainGlob
         return FeedIndicatorType.Domain
     elif indicator_type == 'url':
         return FeedIndicatorType.URL
