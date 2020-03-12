@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added **DomainGlob** to the feed's indicators.
+Added the **DomainGlob** indicator type to the feed's output when domains are returned.
