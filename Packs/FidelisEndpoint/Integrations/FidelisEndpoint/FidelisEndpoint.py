@@ -182,15 +182,23 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def convert_ip_to_endpoint_id(self, ip: str):
+    def convert_ip_to_endpoint_id(self, ip: Union[str, list]):
 
         url_suffix = '/endpoints/endpointidsbyip'
 
         body = ip
 
-        return self._http_request('POST', url_suffix, data=body)
+        return self._http_request('POST', url_suffix, json_data=body)
 
-    def list_process(self, script_id: str, time_out: int, endpoint_ip):
+    def convert_name_to_endpoint_id(self, endpoint_name: Union[str, list]):
+
+        url_suffix = '/endpoints/endpointidsbyname'
+
+        body = endpoint_name
+
+        return self._http_request('POST', url_suffix, json_data=body)
+
+    def list_process(self, script_id: str, time_out: int, endpoint_id):
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -201,7 +209,7 @@ class Client(BaseClient):
             'priority': None,
             'timeoutInSeconds': time_out,
             'packageId': script_id,
-            'endpoints': endpoint_ip,
+            'endpoints': endpoint_id,
             'isPlaybook': False,
             'taskOptions': [
                 {
@@ -892,9 +900,19 @@ def execute_script_command(client: Client, args: dict):
     script_id = args.get('script_id')
     time_out = args.get('time_out')
     endpoint_ip = argToList(args.get('endpoint_ip'))
-    endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-    endpoint_id = endpoints.get('data')
+    endpoint_name = argToList(args.get('endpoint_name'))
     answer = args.get('answer')
+
+    if endpoint_ip:
+        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
+        endpoint_id = endpoints.get('data')
+
+    if endpoint_name:
+        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
+        endpoint_id = endpoints.get('data')
+
+    if not endpoint_ip and not endpoint_name:
+        raise Exception('You must provide either endpoint_ip or endpoint_name')
 
     response = client.execute_script(script_id, endpoint_id, answer, time_out)
     context = {
@@ -908,8 +926,19 @@ def execute_script_command(client: Client, args: dict):
 
 def list_process_command(client: Client, args: dict):
     endpoint_ip = argToList(args.get('endpoint_ip'))
-    endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-    endpoint_id = endpoints.get('data')
+    endpoint_name = argToList(args.get('endpoint_name'))
+
+    if endpoint_ip:
+        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
+        endpoint_id = endpoints.get('data')
+
+    if endpoint_name:
+        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
+        endpoint_id = endpoints.get('data')
+
+    if not endpoint_ip and not endpoint_name:
+        raise Exception('You must provide either endpoint_ip or endpoint_name')
+
     time_out = args.get('time_out')
     opearting_system = args.get('opearting_system')
     script_id = ''
@@ -986,8 +1015,19 @@ def get_script_result(client: Client, args: dict):
 
 def kill_process_by_pid(client: Client, args: dict):
     endpoint_ip = argToList(args.get('endpoint_ip'))
-    endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-    endpoint_id = endpoints.get('data')
+    endpoint_name = argToList(args.get('endpoint_name'))
+
+    if endpoint_ip:
+        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
+        endpoint_id = endpoints.get('data')
+
+    if endpoint_name:
+        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
+        endpoint_id = endpoints.get('data')
+
+    if not endpoint_ip and not endpoint_name:
+        raise Exception('You must provide either endpoint_ip or endpoint_name')
+
     time_out = args.get('time_out')
     opearting_system = args.get('opearting_system')
     pid = args.get('pid')
@@ -1011,8 +1051,19 @@ def kill_process_by_pid(client: Client, args: dict):
 
 def delete_file_command(client: Client, args: dict):
     endpoint_ip = argToList(args.get('endpoint_ip'))
-    endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-    endpoint_id = endpoints.get('data')
+    endpoint_name = argToList(args.get('endpoint_name'))
+
+    if endpoint_ip:
+        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
+        endpoint_id = endpoints.get('data')
+
+    if endpoint_name:
+        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
+        endpoint_id = endpoints.get('data')
+
+    if not endpoint_ip and not endpoint_name:
+        raise Exception('You must provide either endpoint_ip or endpoint_name')
+
     time_out = args.get('time_out')
     opearting_system = args.get('opearting_system')
     file_path = args.get('file_path')
@@ -1036,8 +1087,19 @@ def delete_file_command(client: Client, args: dict):
 
 def network_isolation_command(client: Client, args: dict):
     endpoint_ip = argToList(args.get('endpoint_ip'))
-    endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-    endpoint_id = endpoints.get('data')
+    endpoint_name = argToList(args.get('endpoint_name'))
+
+    if endpoint_ip:
+        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
+        endpoint_id = endpoints.get('data')
+
+    if endpoint_name:
+        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
+        endpoint_id = endpoints.get('data')
+
+    if not endpoint_ip and not endpoint_name:
+        raise Exception('You must provide either endpoint_ip or endpoint_name')
+
     time_out = args.get('time_out')
     opearting_system = args.get('opearting_system')
     allowed_server = args.get('allowed_server')
@@ -1061,8 +1123,19 @@ def network_isolation_command(client: Client, args: dict):
 
 def remove_network_isolation_command(client: Client, args: dict):
     endpoint_ip = argToList(args.get('endpoint_ip'))
-    endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-    endpoint_id = endpoints.get('data')
+    endpoint_name = argToList(args.get('endpoint_name'))
+
+    if endpoint_ip:
+        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
+        endpoint_id = endpoints.get('data')
+
+    if endpoint_name:
+        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
+        endpoint_id = endpoints.get('data')
+
+    if not endpoint_ip and not endpoint_name:
+        raise Exception('You must provide either endpoint_ip or endpoint_name')
+
     time_out = args.get('time_out')
     opearting_system = args.get('opearting_system')
     script_id = ''

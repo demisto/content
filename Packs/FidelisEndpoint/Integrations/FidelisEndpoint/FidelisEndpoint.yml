@@ -464,7 +464,7 @@ script:
       description: Endpoint IP.
       isArray: true
       name: endpoint_ip
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -482,6 +482,12 @@ script:
       description: Script time out in seconds
       isArray: false
       name: time_out
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint name.
+      isArray: false
+      name: endpoint_name
       required: false
       secret: false
     deprecated: false
@@ -561,7 +567,7 @@ script:
       description: The endpoint IP.
       isArray: false
       name: endpoint_ip
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '300'
@@ -587,6 +593,12 @@ script:
       name: pid
       required: true
       secret: false
+    - default: false
+      description: The name of the endpoint.
+      isArray: false
+      name: endpoint_name
+      required: false
+      secret: false
     deprecated: false
     description: Kill process by process ID.
     execution: false
@@ -603,7 +615,7 @@ script:
       description: Endpoint IP.
       isArray: false
       name: endpoint_ip
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '300'
@@ -629,6 +641,12 @@ script:
       name: file_path
       required: true
       secret: false
+    - default: false
+      description: The name of the endpoint.
+      isArray: false
+      name: endpoint_name
+      required: false
+      secret: false
     deprecated: false
     description: Delete a file at the specified path.
     execution: false
@@ -645,7 +663,7 @@ script:
       description: The endpoint IP to isolate.
       isArray: false
       name: endpoint_ip
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '300'
@@ -671,6 +689,12 @@ script:
       name: allowed_server
       required: true
       secret: false
+    - default: false
+      description: The name of the endpoint.
+      isArray: false
+      name: endpoint_name
+      required: false
+      secret: false
     deprecated: false
     description: Isolate an endpoint from the network.
     execution: false
@@ -687,7 +711,7 @@ script:
       description: The isolated endpoint IP.
       isArray: false
       name: endpoint_ip
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '300'
@@ -706,6 +730,12 @@ script:
       - Linux
       - macOS
       required: true
+      secret: false
+    - default: false
+      description: The name of the endpoint.
+      isArray: false
+      name: endpoint_name
+      required: false
       secret: false
     deprecated: false
     description: Remove the endpoint isolation.
@@ -760,13 +790,19 @@ script:
       description: Endpoint IP. The endpoint to run the script on.
       isArray: false
       name: endpoint_ip
-      required: true
+      required: false
       secret: false
     - default: false
       description: What script to run. Get the answer from script-manifest command).
       isArray: false
       name: answer
       required: true
+      secret: false
+    - default: false
+      description: The name of the endpoint.
+      isArray: false
+      name: endpoint_name
+      required: false
       secret: false
     deprecated: false
     description: Execute script.
