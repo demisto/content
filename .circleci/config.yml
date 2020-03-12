@@ -34,7 +34,7 @@ jobs:
             echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
             if [ ! -e "venv" ]; then
               echo "installing venv"
-              NO_HOOKS=1 .hooks/bootstrap
+              NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
               source ./venv/bin/activate
               pip install -r .circleci/build-requirements.txt
               pip3 install -r .circleci/build-requirements.txt
