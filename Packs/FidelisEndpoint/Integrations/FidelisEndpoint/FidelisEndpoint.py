@@ -694,7 +694,7 @@ def list_alerts_command(client: Client, args: dict):
     entry_context = {'FidelisEndpoint.Alert(val.AlertID && val.AlertID === obj.AlertID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint Alerts', contents, headers, removeNull=True)
 
-    return human_readable, entry_context, alerts
+    return human_readable, entry_context, response
 
 
 def host_info_command(client: Client, args: dict):
@@ -783,7 +783,7 @@ def file_search_status(client: Client, args: dict):
 
     human_readable = f'Fidelis Endpoint file search status is: {status}'
 
-    return human_readable, entry_context, data
+    return human_readable, entry_context, response
 
 
 def file_search_reasult_metadata(client: Client, args: dict):
@@ -863,7 +863,7 @@ def list_scripts_command(client: Client, *_):
     entry_context = {'FidelisEndpoint.Script(val.ID && val.ID === obj.ID)': contents}
     human_readable = tableToMarkdown('Fidelis Endpoint scripts', contents, headers)
 
-    return human_readable, entry_context, scripts
+    return human_readable, entry_context, response
 
 
 def script_manifest_command(client: Client, args: dict):
@@ -940,16 +940,16 @@ def list_process_command(client: Client, args: dict):
         raise Exception('You must provide either endpoint_ip or endpoint_name')
 
     time_out = args.get('time_out')
-    opearting_system = args.get('opearting_system')
+    operating_system = args.get('operating_system')
     script_id = ''
 
-    if opearting_system == 'Windows':
+    if operating_system == 'Windows':
         script_id = LIST_PROCESSES_WINDOWS
 
-    if opearting_system == 'Linux':
+    if operating_system == 'Linux':
         script_id = LIST_PROCESSES_LINUX
 
-    if opearting_system == 'macOS':
+    if operating_system == 'macOS':
         script_id = LIST_PROCESSES_MACOS
 
     response = client.list_process(script_id, time_out, endpoint_id)
@@ -1029,14 +1029,14 @@ def kill_process_by_pid(client: Client, args: dict):
         raise Exception('You must provide either endpoint_ip or endpoint_name')
 
     time_out = args.get('time_out')
-    opearting_system = args.get('opearting_system')
+    operating_system = args.get('operating_system')
     pid = args.get('pid')
     script_id = ''
 
-    if opearting_system == 'Windows':
+    if operating_system == 'Windows':
         script_id = KILL_PROCESS_WINDOWS
 
-    if opearting_system == 'Linux' or opearting_system == 'macOS':
+    if operating_system == 'Linux' or operating_system == 'macOS':
         script_id = KILL_PROCESS_MAC_LINUX
 
     response = client.kill_process(script_id, pid, time_out, endpoint_id)
@@ -1065,14 +1065,14 @@ def delete_file_command(client: Client, args: dict):
         raise Exception('You must provide either endpoint_ip or endpoint_name')
 
     time_out = args.get('time_out')
-    opearting_system = args.get('opearting_system')
+    operating_system = args.get('operating_system')
     file_path = args.get('file_path')
     script_id = ''
 
-    if opearting_system == 'Windows':
+    if operating_system == 'Windows':
         script_id = DELETE_FILE_WINDOWS
 
-    if opearting_system == 'Linux' or opearting_system == 'macOS':
+    if operating_system == 'Linux' or operating_system == 'macOS':
         script_id = DELETE_FILE_MAC_LINUX
 
     response = client.delete_file(script_id, file_path, time_out, endpoint_id)
@@ -1101,14 +1101,14 @@ def network_isolation_command(client: Client, args: dict):
         raise Exception('You must provide either endpoint_ip or endpoint_name')
 
     time_out = args.get('time_out')
-    opearting_system = args.get('opearting_system')
+    operating_system = args.get('operating_system')
     allowed_server = args.get('allowed_server')
     script_id = ''
 
-    if opearting_system == 'Windows':
+    if operating_system == 'Windows':
         script_id = NETWORK_ISOLATION_WINDOWS
 
-    if opearting_system == 'Linux' or opearting_system == 'macOS':
+    if operating_system == 'Linux' or operating_system == 'macOS':
         script_id = NETWORK_ISOLATION_MAC_LINUX
 
     response = client.network_isolation(script_id, allowed_server, time_out, endpoint_id)
@@ -1137,13 +1137,13 @@ def remove_network_isolation_command(client: Client, args: dict):
         raise Exception('You must provide either endpoint_ip or endpoint_name')
 
     time_out = args.get('time_out')
-    opearting_system = args.get('opearting_system')
+    operating_system = args.get('operating_system')
     script_id = ''
 
-    if opearting_system == 'Windows':
+    if operating_system == 'Windows':
         script_id = REMOVE_NETWORK_ISOLATION_WINDOWS
 
-    if opearting_system == 'Linux' or os == 'macOS':
+    if operating_system == 'Linux' or os == 'macOS':
         script_id = REMOVE_NETWORK_ISOLATION_MAC_LINUX
 
     response = client.remove_network_isolation(script_id, time_out, endpoint_id)
@@ -1264,7 +1264,7 @@ def query_file_by_hash(client: Client, args: dict):
 
     entry_context = {'FidelisEndpoint.Query(val.Hash && val.Hash === obj.Hash)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint file hash query results', contents, removeNull=True)
-    return human_readable, entry_context, events
+    return human_readable, entry_context, response
 
 
 def query_process_name_command(client: Client, args: dict):
@@ -1324,7 +1324,7 @@ def query_process_name_command(client: Client, args: dict):
 
     entry_context = {'FidelisEndpoint.Query(val.PID && val.PID === obj.PID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint process results', contents, removeNull=True)
-    return human_readable, entry_context, events
+    return human_readable, entry_context, response
 
 
 def query_connection_by_remote_ip(client: Client, args: dict):
@@ -1393,7 +1393,7 @@ def query_connection_by_remote_ip(client: Client, args: dict):
     entry_context = {'FidelisEndpoint.Query(val.PPID && val.PPID === obj.PPID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint query results for connection by remote IP', contents,
                                      removeNull=True)
-    return human_readable, entry_context, events
+    return human_readable, entry_context, response
 
 
 def query_dns_request(client: Client, args: dict):
@@ -1452,7 +1452,7 @@ def query_dns_request(client: Client, args: dict):
     entry_context = {'FidelisEndpoint.Query(val.ParentID && val.ParentID === obj.ParentID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint query results for the DNS request', contents,
                                      removeNull=True)
-    return human_readable, entry_context, events
+    return human_readable, entry_context, response
 
 
 def query_by_server_ip(client: Client, args: dict):
@@ -1511,7 +1511,7 @@ def query_by_server_ip(client: Client, args: dict):
     entry_context = {'FidelisEndpoint.Query(val.TargetID && val.TargetID === obj.TargetID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint query results for the DNS request by server IP', contents,
                                      removeNull=True)
-    return human_readable, entry_context, events
+    return human_readable, entry_context, response
 
 
 def query_by_source_ip(client: Client, args: dict):
@@ -1572,7 +1572,7 @@ def query_by_source_ip(client: Client, args: dict):
     entry_context = {'FidelisEndpoint.Query(val.TargetID && val.TargetID === obj.TargetID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint query results for the DNS request by source IP', contents,
                                      headers=headers, removeNull=True)
-    return human_readable, entry_context, events
+    return human_readable, entry_context, response
 
 
 def query_events(client: Client, args: dict):
@@ -1641,7 +1641,7 @@ def query_events(client: Client, args: dict):
     entry_context = {'FidelisEndpoint.Query(val.PID && val.PID === obj.PID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint query events result', contents,
                                      removeNull=True)
-    return human_readable, entry_context, events
+    return human_readable, entry_context, response
 
 
 def alert_severity_to_dbot_score(severity_str):

@@ -163,13 +163,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The IP address to search gor.
+      description: The IP address to search for.
       isArray: false
       name: ip_address
       required: false
       secret: false
     - default: false
-      description: The host name to search for
+      description: The host name to search for.
       isArray: false
       name: host
       required: false
@@ -470,7 +470,7 @@ script:
       default: false
       description: Ths system OS.
       isArray: false
-      name: opearting_system
+      name: operating_system
       predefined:
       - Windows
       - Linux
@@ -544,6 +544,7 @@ script:
       description: Script matches
       type: Number
     - contextPath: FidelisEndpoint.ScriptResult.IsHidden
+      description: Is the endpoint hidden.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.GroupID
       type: String
@@ -580,7 +581,7 @@ script:
       default: false
       description: System OS.
       isArray: false
-      name: opearting_system
+      name: operating_system
       predefined:
       - Windows
       - Linux
@@ -628,7 +629,7 @@ script:
       default: false
       description: System OS.
       isArray: false
-      name: opearting_system
+      name: operating_system
       predefined:
       - Windows
       - Linux
@@ -676,7 +677,7 @@ script:
       default: false
       description: The system OS.
       isArray: false
-      name: opearting_system
+      name: operating_system
       predefined:
       - Windows
       - Linux
@@ -724,7 +725,7 @@ script:
       default: false
       description: System OS.
       isArray: false
-      name: opearting_system
+      name: operating_system
       predefined:
       - Windows
       - Linux
@@ -1525,7 +1526,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value to query.
+      description: The value to query (can be ip, hash, file path etc)
       isArray: false
       name: value
       required: true
@@ -1619,7 +1620,7 @@ script:
       description: Entity type.
       type: Number
   dockerimage: demisto/python3:3.7.4.2245
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
