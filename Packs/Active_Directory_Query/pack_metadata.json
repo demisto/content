@@ -19,7 +19,7 @@
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Active Directory"],
     "price": 0,
     "dependencies": {
         "Base": {
