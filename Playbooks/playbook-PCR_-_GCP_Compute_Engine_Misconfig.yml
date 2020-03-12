@@ -511,4 +511,4 @@ inputs:
   description: Grab the Prima Cloud policy Id.
 outputs: []
 tests:
-- No Tes
+- No Test
