@@ -2440,6 +2440,7 @@
         }
     ],
     "skipped_tests": {
+        "Google Chronicle Backstory Reputation - Test": "Issue 22720",
         "AutoFocus V2 test": "Issue 22721",
         "Cybereason Test": "Issue 22683",
         "CVE Search v2 - Test": "Issue 22661",
