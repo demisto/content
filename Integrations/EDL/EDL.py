@@ -8,6 +8,7 @@ from typing import Callable, List, Any, Dict, cast
 from base64 import b64decode
 from copy import deepcopy
 import re
+from netaddr import IPAddress, iprange_to_cidrs
 
 
 class Handler:
@@ -30,6 +31,10 @@ _PROTOCOL_RE = re.compile('^(?:[a-z]+:)*//')
 _PORT_RE = re.compile(r'^((?:[a-z]+:)*//([a-z0-9\-\.]+)|([a-z0-9\-\.]+))(?:\:[0-9]+)*')
 _URL_WITHOUT_PORT = r'\g<1>'
 _INVALID_TOKEN_RE = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
+
+DONT_COLLAPSE = "Don't Collapse"
+COLLAPSE_TO_CIDR = "To CIDRS"
+COLLAPSE_TO_RANGES = "To Ranges"
 
 ''' HELPER FUNCTIONS '''
 
@@ -65,7 +70,7 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_edl_context(indicator_query: str, limit: int = 0,
+def refresh_edl_context(indicator_query: str, limit: int = 0, collapse_ips: str = DONT_COLLAPSE,
                         panos_compatible: bool = True, url_port_stripping: bool = True) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
@@ -74,26 +79,42 @@ def refresh_edl_context(indicator_query: str, limit: int = 0,
         indicator_query (str): Query that determines which indicators to include in
             the EDL (Cortex XSOAR indicator query syntax)
         limit (int): The maximum number of indicators to include in the EDL
+        collapse_ips (str): Whether to collapse IPs to Ranges or CIDRs or not at all
         panos_compatible (bool): Whether to make the indicators PANOS compatible or not
         url_port_stripping (bool): Whether to strip the port from URL indicators (if a port is present) or not
 
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
+    offset = 0
     # poll indicators into edl from demisto
-    iocs = find_indicators_to_limit(indicator_query, limit, panos_compatible, url_port_stripping)
-    out_dict = create_values_out_dict(iocs)
-    save_context(now, out_dict)
+    iocs = find_indicators_to_limit(indicator_query, limit, offset, panos_compatible, url_port_stripping)
+    out_dict, actual_indicator_amount = create_values_out_dict(iocs, collapse_ips=collapse_ips)
+
+    while collapse_ips != DONT_COLLAPSE and actual_indicator_amount < limit:
+        # from where to start the new poll and how many results should be fetched
+        new_offset = len(iocs) + offset + actual_indicator_amount - 1
+        new_limit = limit - actual_indicator_amount
+
+        # poll additional indicators into list from demisto
+        new_iocs = find_indicators_to_limit(indicator_query, new_limit, new_offset)
+
+        # in case no additional indicators exist - exit
+        if len(new_iocs) == 0:
+            break
+
+        # add the new results to the existing results
+        iocs += new_iocs
+
+        # reformat the output
+        out_dict, actual_indicator_amount = create_values_out_dict(iocs, collapse_ips=collapse_ips)
+
+    out_dict["last_run"] = date_to_timestamp(now)
+    demisto.setIntegrationContext(out_dict)
     return out_dict[EDL_VALUES_KEY]
 
 
-def save_context(now: datetime, out_dict: dict):
-    """Saves EDL state and refresh time to context"""
-    demisto.setLastRun({'last_run': date_to_timestamp(now)})
-    demisto.setIntegrationContext(out_dict)
-
-
-def find_indicators_to_limit(indicator_query: str, limit: int,
+def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0,
                              panos_compatible: bool = True, url_port_stripping: bool = False) -> list:
     """
     Finds indicators using demisto.searchIndicators
@@ -102,16 +123,32 @@ def find_indicators_to_limit(indicator_query: str, limit: int,
         indicator_query (str): Query that determines which indicators to include in
             the EDL (Cortex XSOAR indicator query syntax)
         limit (int): The maximum number of indicators to include in the EDL
+        offset (int): The stating index from which to fetch incidents
         panos_compatible (bool): Whether to make the indicators PANOS compatible or not
         url_port_stripping (bool): Whether to strip the port from URL indicators (if a port is present) or not
 
     Returns:
         list: The IoCs list up until the amount set by 'limit'
     """
-    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit,
+    if offset:
+        next_page = int(offset / PAGE_SIZE)
+
+        # set the offset from the starting page
+        offset_in_page = offset - (PAGE_SIZE * next_page)
+
+    else:
+        next_page = 0
+        offset_in_page = 0
+
+    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit, next_page=next_page,
                                             panos_compatible=panos_compatible,
                                             url_port_stripping=url_port_stripping)
-    return iocs[:limit]
+
+    # if offset in page is bigger than the amount of results returned return empty list
+    if len(iocs) <= offset_in_page:
+        return []
+
+    return iocs[offset_in_page:limit + offset_in_page]
 
 
 def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0,
@@ -167,20 +204,97 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
     return iocs, next_page
 
 
-def create_values_out_dict(iocs: list) -> dict:
+def ips_to_ranges(ips: list, collapse_ips):
+    ip_ranges = []
+    ips_range_groups = []  # type:List
+    ips = sorted(ips)
+    for ip in ips:
+        appended = False
+        if len(ips_range_groups) == 0:
+            ips_range_groups.append([ip])
+            continue
+
+        for group in ips_range_groups:
+            if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
+                group.append(ip)
+                sorted(group)
+                appended = True
+
+        if not appended:
+            ips_range_groups.append([ip])
+
+    for group in ips_range_groups:
+        # handle single ips
+        if len(group) == 1:
+            ip_ranges.append(str(group[0]))
+            continue
+
+        min_ip = group[0]
+        max_ip = group[-1]
+        if collapse_ips == COLLAPSE_TO_RANGES:
+            ip_ranges.append(str(min_ip) + "-" + str(max_ip))
+
+        elif collapse_ips == COLLAPSE_TO_CIDR:
+            moved_ip = False
+            # CIDR must begin with and even LSB
+            # if the first ip does not - separate it from the rest of the range
+            if (int(str(min_ip).split('.')[-1]) % 2) != 0:
+                ip_ranges.append(str(min_ip))
+                min_ip = group[1]
+                moved_ip = True
+
+            # CIDR must end with uneven LSB
+            # if the last ip does not - separate it from the rest of the range
+            if (int(str(max_ip).split('.')[-1]) % 2) == 0:
+                ip_ranges.append(str(max_ip))
+                max_ip = group[-2]
+                moved_ip = True
+
+            # if both min and max ips were shifted and there are only 2 ips in the range
+            # we added both ips by the shift and now we move to the next  range
+            if moved_ip and len(group) == 2:
+                continue
+
+            else:
+                ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
+
+    return ip_ranges
+
+
+def create_values_out_dict(iocs: list, collapse_ips: str = DONT_COLLAPSE) -> dict:
     """
     Create a dictionary for output values
     """
     formatted_indicators = []
+    ipv4_formatted_indicators = []
+    ipv6_formatted_indicators = []
     for ioc in iocs:
         value = ioc.get('value')
+        type = ioc.get('indicator_type')
         if value:
-            formatted_indicators.append(value)
-    return {EDL_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
+            if collapse_ips != DONT_COLLAPSE and type == 'IP':
+                ipv4_formatted_indicators.append(IPAddress(value))
+
+            elif collapse_ips != DONT_COLLAPSE and type == 'IPv6':
+                ipv6_formatted_indicators.append(IPAddress(value))
+
+            else:
+                formatted_indicators.append(value)
+
+    if len(ipv4_formatted_indicators) > 0:
+        ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, collapse_ips)
+        formatted_indicators.extend(ipv4_formatted_indicators)
+
+    if len(ipv6_formatted_indicators) > 0:
+        ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, collapse_ips)
+        formatted_indicators.extend(ipv6_formatted_indicators)
+
+    return {EDL_VALUES_KEY: list_to_str(formatted_indicators, '\n')}, len(formatted_indicators)
 
 
 def get_edl_ioc_values(on_demand, limit, indicator_query='', last_run=None, cache_refresh_rate=None,
-                       panos_compatible: bool = True, url_port_stripping: bool = False) -> str:
+                       collapse_ips: str = DONT_COLLAPSE, panos_compatible: bool = True,
+                       url_port_stripping: bool = False) -> str:
     """
     Get the ioc list to return in the edl
     """
@@ -193,13 +307,15 @@ def get_edl_ioc_values(on_demand, limit, indicator_query='', last_run=None, cach
             if last_run <= cache_time:
                 values_str = refresh_edl_context(indicator_query, limit=limit,
                                                  panos_compatible=panos_compatible,
-                                                 url_port_stripping=url_port_stripping)
+                                                 url_port_stripping=url_port_stripping,
+                                                 collapse_ips=collapse_ips)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
             values_str = refresh_edl_context(indicator_query, limit=limit,
                                              panos_compatible=panos_compatible,
-                                             url_port_stripping=url_port_stripping)
+                                             url_port_stripping=url_port_stripping,
+                                             collapse_ips=collapse_ips)
     return values_str
 
 
@@ -269,11 +385,12 @@ def route_edl_values() -> Response:
     values = get_edl_ioc_values(
         on_demand=params.get('on_demand'),
         limit=try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG),
-        last_run=demisto.getLastRun().get('last_run'),
+        last_run=demisto.getIntegrationContext().get('last_run'),
         indicator_query=params.get('indicators_query'),
         cache_refresh_rate=params.get('cache_refresh_rate'),
         panos_compatible=panos_compatible,
-        url_port_stripping=url_port_stripping
+        url_port_stripping=url_port_stripping,
+        collapse_ips=params.get('collapse_ips')
     )
     return Response(values, status=200, mimetype='text/plain')
 
@@ -365,7 +482,8 @@ def update_edl_command(args, params):
     limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
     query = args.get('query')
-    indicators = refresh_edl_context(query, limit=limit)
+    collapse_ips = args.get('collapse_ips')
+    indicators = refresh_edl_context(query, limit=limit, collapse_ips=collapse_ips)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'EDL was updated successfully'
     return hr, {}, indicators
