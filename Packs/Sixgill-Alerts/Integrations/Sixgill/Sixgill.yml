@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 5.0.0
 commonfields:
   id: Sixgill
   version: -1
@@ -52,7 +51,7 @@ configuration:
 description: Fetching Sixgill's alerts as incidents, Sixgill provides alerts that
   are based on organization assets, enabling you to take proactive steps to eliminate
   and mitigate your threats.
-display: Sixgill
+display: Sixgill Alerts
 name: Sixgill
 script:
   commands:
@@ -64,9 +63,9 @@ script:
       name: maxIndicators
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Fetching Sixgill's DarkFeed Threat Intelligence indicators
-    execution: false
+    execution: true
     name: sixgill-get-indicators
     outputs:
     - contextPath: InfoFile.EntryID
@@ -87,7 +86,8 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the report file
       type: String
-  dockerimage: demisto/sixgill:1.0.0.5676
+  dockerimage: demisto/sixgill:1.0.0.6122
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -95,3 +95,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0

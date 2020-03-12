@@ -8,7 +8,8 @@ import requests
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_alert_client import SixgillAlertClient
-from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
+from sixgill.sixgill_feed_client import SixgillFeedClient
+from sixgill.sixgill_constants import FeedStream
 from sixgill.sixgill_utils import is_indicator
 from typing import Dict, List, Any
 
@@ -72,7 +73,9 @@ def test_module():
     """
     Performs basic Auth request
     """
-    response = SixgillAuthRequest(demisto.params()['client_id'], demisto.params()['client_secret']).send()
+    session = requests.Session()
+    response = session.send(request=SixgillAuthRequest(demisto.params()['client_id'],
+                                                       demisto.params()['client_secret']).prepare(), verify=False)
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
 
@@ -83,7 +86,7 @@ def fetch_incidents():
     max_incidents = get_limit(demisto.params().get('maxIncidents', MAX_INCIDENTS), MAX_INCIDENTS)
 
     sixgill_alerts_client = SixgillAlertClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                               CHANNEL_CODE, bulk_size=max_incidents, logger=demisto)
+                                               CHANNEL_CODE, demisto, max_incidents)
 
     filter_alerts_kwargs = get_incident_init_params()
 
@@ -105,8 +108,8 @@ def fetch_incidents():
 def sixgill_get_indicators_command():
     max_indicators = get_limit(demisto.args().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
 
-    sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                                    CHANNEL_CODE, bulk_size=max_indicators, logger=demisto)
+    sixgill_darkfeed_client = SixgillFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
+                                                CHANNEL_CODE, FeedStream.DARKFEED, demisto, max_indicators)
 
     bundle = sixgill_darkfeed_client.get_bundle()
     sixgill_darkfeed_client.commit_indicators()
