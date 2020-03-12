@@ -715,6 +715,7 @@ def host_info_command(client: Client, args: dict):
         raise Exception('You must provide either ip_address or host')
 
     contents = []
+    context_standards = []
     headers = ['ID', 'HostName', 'IpAddress', 'OS', 'MacAddress', 'Isolated', 'LastContactDate', 'AgentInstalled',
                'AgentVersion', 'OnNetwork', 'AV_Enabled', 'Groups', 'ProcessorName']
     response = client.get_host_info(host, ip_address)
@@ -740,7 +741,19 @@ def host_info_command(client: Client, args: dict):
             'ProcessorName': host.get('processorName')
         })
 
-    entry_context = {'FidelisEndpoint.Host(val.ID && val.ID === obj.ID)': contents}
+        context_standards.append({
+            'HostName': host.get('hostName'),
+            'ID': host.get('id'),
+            'IpAddress': host.get('ipAddress'),
+            'OS': host.get('os'),
+            'MACAddress': host.get('macAddress'),
+            'Processor': host.get('processorName')
+        })
+
+    entry_context = {
+        'FidelisEndpoint.Host(val.ID && val.ID === obj.ID)': contents,
+        'Endpoint': context_standards
+    }
     human_readable = tableToMarkdown('Fidelis Endpoint Host Info', contents, headers=headers, removeNull=True)
 
     return human_readable, entry_context, response

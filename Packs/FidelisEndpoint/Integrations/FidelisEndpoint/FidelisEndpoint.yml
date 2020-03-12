@@ -218,6 +218,24 @@ script:
     - contextPath: FidelisEndpoint.Host.OnNetwork
       description: Is the host on network.
       type: Boolean
+    - contextPath: Endpoint.HostName
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Endpoint.IpAddress
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The MAC address of the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: Endpoint.Processor
+      description: The model of the processor.
+      type: String
   - arguments:
     - default: false
       description: The host to search the file in (for multiple hosts use (comma separated)
