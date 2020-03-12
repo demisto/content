@@ -6,7 +6,7 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.3.1"
+      CONTENT_VERSION: "20.3.2"
       SERVER_VERSION: "5.0.1"
       GIT_SHA1: "7a14892ad6e15e67675289815e957e50b4cc2f09" # guardrails-disable-line disable-secrets-detection
     steps:
