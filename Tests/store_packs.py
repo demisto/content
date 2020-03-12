@@ -124,9 +124,9 @@ class Pack(object):
         pack_metadata = {}
         # part of old packs are initialized with empty list
         user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-        pack_metadata['name'] = user_metadata.get('name', '')
+        pack_metadata['name'] = user_metadata.get('name') if user_metadata.get('name') else pack_id
         pack_metadata['id'] = pack_id
-        pack_metadata['description'] = user_metadata.get('description', '')
+        pack_metadata['description'] = user_metadata.get('description') if user_metadata.get('description') else pack_id
         pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
         pack_metadata['support'] = user_metadata.get('support', '')
@@ -146,7 +146,11 @@ class Pack(object):
         is_deprecated = user_metadata.get('deprecated', False)
         pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
         pack_metadata['certification'] = user_metadata.get('certification', '')
-        pack_metadata['price'] = int(user_metadata.get('price', 0))
+        try:
+            pack_metadata['price'] = int(user_metadata.get('price'))
+        except Exception as e:
+            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional details {e}")
+            pack_metadata['price'] = 0
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
@@ -157,10 +161,10 @@ class Pack(object):
         pack_metadata['contentItems'] = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in pack_content_items.items()
                                          if k in DIR_NAME_TO_CONTENT_TYPE and v}
         # todo collect all integrations display name
-        pack_metadata["integrations"] = []
-        pack_metadata["useCases"] = input_to_list(user_metadata.get('useCases'))
-        pack_metadata["keywords"] = input_to_list(user_metadata.get('keywords'))
-        pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
+        pack_metadata['integrations'] = []
+        pack_metadata['useCases'] = input_to_list(user_metadata.get('useCases'))
+        pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
+        pack_metadata['dependencies'] = user_metadata.get('dependencies', {})
 
         return pack_metadata
 
