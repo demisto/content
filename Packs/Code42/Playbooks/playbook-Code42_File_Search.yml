@@ -1,6 +1,8 @@
 id: Code42 File Search
 version: -1
 name: Code42 File Search
+description: This playbook searches for files via Code42 security events by either
+  MD5 or SHA256 hash. The data is output to the Code42.SecurityData context for use.
 starttaskid: '0'
 tasks:
   '0':
@@ -21,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 50
+          "x": 280,
+          "y": -140
         }
       }
     note: false
@@ -30,10 +32,10 @@ tasks:
     ignoreworker: false
   '1':
     id: '1'
-    taskid: f9cdb1dd-4751-462f-86cf-3943bdc1dfe5
+    taskid: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
     type: condition
     task:
-      id: f9cdb1dd-4751-462f-86cf-3943bdc1dfe5
+      id: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
       version: -1
       name: Is Code42 Integration Active?
       description: ''
@@ -59,7 +61,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: modules.brand
+                        simple: brand
                       iscontext: true
                     right:
                       value:
@@ -67,12 +69,11 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: modules.state
+                        simple: state
                       iscontext: true
                     right:
                       value:
                         simple: active
-                accessor: brand
             iscontext: true
       - - operator: isEqualString
           left:
@@ -85,8 +86,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 195
+          "x": 280,
+          "y": 160
         }
       }
     note: false
@@ -121,7 +122,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 20,
           "y": 370
         }
       }
@@ -157,7 +158,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 532.5,
           "y": 370
         }
       }
@@ -179,7 +180,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '8'
+      - '7'
     scriptarguments:
       exposure: {}
       hash:
@@ -192,8 +193,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 545
+          "x": 20,
+          "y": 630
         }
       }
     note: false
@@ -214,7 +215,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '8'
+      - '7'
     scriptarguments:
       exposure: {}
       hash:
@@ -227,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 545
+          "x": 532.5,
+          "y": 630
         }
       }
     note: false
@@ -250,100 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '8':
-    id: '8'
-    taskid: f1a76998-25e5-4782-81e5-d46caa151544
-    type: regular
-    task:
-      id: f1a76998-25e5-4782-81e5-d46caa151544
-      version: -1
-      name: Extract Hosts
-      description: ''
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '9'
-    scriptarguments:
-      append:
-        simple: 'false'
-      key:
-        simple: FileHosts
-      stringify:
-        simple: 'true'
-      value:
-        complex:
-          root: Code42
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: Code42.SecurityData.FileHostname
-                iscontext: true
-          accessor: SecurityData.FileHostname
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 705,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '9':
-    id: '9'
-    taskid: 9b52020b-081b-4a3c-81c3-3912f3958d05
-    type: regular
-    task:
-      id: 9b52020b-081b-4a3c-81c3-3912f3958d05
-      version: -1
-      name: Extract Paths
-      description: ''
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '7'
-    scriptarguments:
-      append:
-        simple: 'false'
-      key:
-        simple: FilePaths
-      stringify:
-        simple: 'true'
-      value:
-        complex:
-          root: Code42
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: Code42.SecurityData.FilePath
-                iscontext: true
-          accessor: SecurityData.FilePath
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 705,
-          "y": 895
+          "x": 280,
+          "y": 1040
         }
       }
     note: false
@@ -354,30 +263,34 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 1250,
-        "x": 50,
-        "y": 50
+        "height": 1245,
+        "width": 892.5,
+        "x": 20,
+        "y": -140
       }
     }
   }
 inputs:
 - key: MD5
-  value: {}
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
   required: false
   description: MD5 hash to search for
 - key: SHA256
-  value: {}
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
   required: false
   description: SHA256 hash to search for
 outputs:
-- contextPath: FileHosts
-  description: Hosts where file is located
-  type: string
-- contextPath: FilePaths
-  description: Paths where file is located
-  type: string
-description: ''
+- contextPath: Code42.SecurityData
+  description: Returned File Results
+  type: unknown
 fromversion: 5.0.0
-tests:
-  - "Code42 File Search Test"

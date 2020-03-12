@@ -8,10 +8,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: cb09ea8c-7a68-4162-8756-87cb4b5155d9
+    taskid: ab4c0d6a-996e-415c-8f44-8a76d279ca15
     type: start
     task:
-      id: cb09ea8c-7a68-4162-8756-87cb4b5155d9
+      id: ab4c0d6a-996e-415c-8f44-8a76d279ca15
       version: -1
       name: ''
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     ignoreworker: false
   '1':
     id: '1'
-    taskid: 0dae8dde-9ba6-4d0a-8562-cfd2fa65e06b
+    taskid: e588a1bf-ad9e-4755-8e55-efba11ad1aff
     type: title
     task:
-      id: 0dae8dde-9ba6-4d0a-8562-cfd2fa65e06b
+      id: e588a1bf-ad9e-4755-8e55-efba11ad1aff
       version: -1
       name: Start Remediation Timer
       type: title
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   '5':
     id: '5'
-    taskid: a184e0ba-3bfb-4510-840d-6caaa4a262b1
+    taskid: e0da957a-46bb-44b9-8ea6-408e043cae88
     type: condition
     task:
-      id: a184e0ba-3bfb-4510-840d-6caaa4a262b1
+      id: e0da957a-46bb-44b9-8ea6-408e043cae88
       version: -1
       name: Review Evidence for Malicious Behavior
       description: ''
@@ -90,10 +90,10 @@ tasks:
     ignoreworker: false
   '6':
     id: '6'
-    taskid: 4204c1f9-a75a-424f-8906-4dcb71189bf9
+    taskid: b6a7b214-a52b-48cc-8c0b-bc966c11ff90
     type: title
     task:
-      id: 4204c1f9-a75a-424f-8906-4dcb71189bf9
+      id: b6a7b214-a52b-48cc-8c0b-bc966c11ff90
       version: -1
       name: Malicious Behavior Determined
       type: title
@@ -118,10 +118,10 @@ tasks:
     ignoreworker: false
   '7':
     id: '7'
-    taskid: 382104d4-9021-49d8-8848-c0233d0e17b8
+    taskid: 2c7eb57c-ee9b-4059-8b73-34bdb9963ca0
     type: title
     task:
-      id: 382104d4-9021-49d8-8848-c0233d0e17b8
+      id: 2c7eb57c-ee9b-4059-8b73-34bdb9963ca0
       version: -1
       name: Benign Behavior Determined
       type: title
@@ -144,10 +144,10 @@ tasks:
     ignoreworker: false
   '8':
     id: '8'
-    taskid: 8bf6135a-41de-4f2e-81d0-f0e20621e61d
+    taskid: b8a80acb-a2f7-4899-88e7-16382828b9b4
     type: regular
     task:
-      id: 8bf6135a-41de-4f2e-81d0-f0e20621e61d
+      id: b8a80acb-a2f7-4899-88e7-16382828b9b4
       version: -1
       name: Resolve Code42 Alert
       description: ''
@@ -174,10 +174,10 @@ tasks:
     ignoreworker: false
   '9':
     id: '9'
-    taskid: 4def18a6-b969-4f29-8c9b-ea7a97004000
+    taskid: 1905e906-499f-4c14-8ec1-9c02eb6ef22a
     type: title
     task:
-      id: 4def18a6-b969-4f29-8c9b-ea7a97004000
+      id: 1905e906-499f-4c14-8ec1-9c02eb6ef22a
       version: -1
       name: Stop Remediation Timer
       type: title
@@ -202,10 +202,10 @@ tasks:
     ignoreworker: false
   '10':
     id: '10'
-    taskid: 6c5e4d9e-bfd6-4bff-80f7-4ea8a329af9b
+    taskid: 2b0168b7-3d35-470d-8902-5517dc8e9164
     type: title
     task:
-      id: 6c5e4d9e-bfd6-4bff-80f7-4ea8a329af9b
+      id: 2b0168b7-3d35-470d-8902-5517dc8e9164
       version: -1
       name: Done
       type: title
@@ -225,10 +225,10 @@ tasks:
     ignoreworker: false
   '11':
     id: '11'
-    taskid: ab440d56-4490-45dc-8685-7a8cb5748da1
+    taskid: 99490d9a-6acf-41de-8d77-1266f5d63d7f
     type: regular
     task:
-      id: ab440d56-4490-45dc-8685-7a8cb5748da1
+      id: 99490d9a-6acf-41de-8d77-1266f5d63d7f
       version: -1
       name: Locate CrowdStrike Host
       description: ''
@@ -265,10 +265,10 @@ tasks:
     ignoreworker: false
   '19':
     id: '19'
-    taskid: edfaee2f-e2ef-469c-8377-2eaa79e626da
+    taskid: 9bfcad2c-62a7-4c59-8140-1e5ba45199bd
     type: condition
     task:
-      id: edfaee2f-e2ef-469c-8377-2eaa79e626da
+      id: 9bfcad2c-62a7-4c59-8140-1e5ba45199bd
       version: -1
       name: Is Jira Enabled?
       description: ''
@@ -320,10 +320,10 @@ tasks:
     ignoreworker: false
   '21':
     id: '21'
-    taskid: 0dbd8661-9b0c-47fc-88bc-1b05752f81e5
+    taskid: 47b1400e-6d83-483c-875f-7cac4b335481
     type: regular
     task:
-      id: 0dbd8661-9b0c-47fc-88bc-1b05752f81e5
+      id: 47b1400e-6d83-483c-875f-7cac4b335481
       version: -1
       name: Create Jira Incident Ticket
       description: ''
@@ -356,8 +356,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 1770
+          "x": 295,
+          "y": 1780
         }
       }
     note: false
@@ -365,12 +365,12 @@ tasks:
     ignoreworker: false
   '22':
     id: '22'
-    taskid: 8951bca9-832e-4728-8c99-ac8225567f4d
+    taskid: 86aaec3f-7f38-4d4d-800b-406ca59605bd
     type: condition
     task:
-      id: 8951bca9-832e-4728-8c99-ac8225567f4d
+      id: 86aaec3f-7f38-4d4d-800b-406ca59605bd
       version: -1
-      name: Is CrowdStrike Enabled?
+      name: Can host be contained?
       description: ''
       type: condition
       iscommand: false
@@ -379,7 +379,7 @@ tasks:
       '#default#':
       - '30'
       'yes':
-      - '28'
+      - '11'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -393,7 +393,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: modules.brand
+                        simple: brand
                       iscontext: true
                     right:
                       value:
@@ -401,12 +401,16 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: modules.state
+                        simple: state
                       iscontext: true
                     right:
                       value:
                         simple: active
-                accessor: brand
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: incident.code42fileevents.oshostname
             iscontext: true
     view: |-
       {
@@ -420,10 +424,10 @@ tasks:
     ignoreworker: false
   '23':
     id: '23'
-    taskid: 4b0e0316-551c-4521-8538-0c158e869f4f
+    taskid: ce5fa797-bd44-48ba-8ebe-62cbe6f986e5
     type: condition
     task:
-      id: 4b0e0316-551c-4521-8538-0c158e869f4f
+      id: ce5fa797-bd44-48ba-8ebe-62cbe6f986e5
       version: -1
       name: Does Manager Email Exist?
       description: ''
@@ -431,8 +435,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '30'
       'yes':
-      - '29'
+      - '33'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -445,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1590,
-          "y": 1535
+          "x": 1570,
+          "y": 1195
         }
       }
     note: false
@@ -454,16 +460,16 @@ tasks:
     ignoreworker: false
   '24':
     id: '24'
-    taskid: 2433863a-006b-466d-8806-a073c17e4b40
+    taskid: 50db689b-2583-4a22-844c-868914c79e80
     type: regular
     task:
-      id: 2433863a-006b-466d-8806-a073c17e4b40
+      id: 50db689b-2583-4a22-844c-868914c79e80
       version: -1
       name: Retrieve File Contents
+      description: ''
       type: regular
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#none#':
       - '5'
@@ -480,10 +486,10 @@ tasks:
     ignoreworker: false
   '25':
     id: '25'
-    taskid: 048d8d85-9980-4c99-8f0c-6ec470790f3c
+    taskid: 9bccb9d7-118b-4a63-8e1d-288a4fe993a2
     type: playbook
     task:
-      id: 048d8d85-9980-4c99-8f0c-6ec470790f3c
+      id: 9bccb9d7-118b-4a63-8e1d-288a4fe993a2
       version: -1
       name: Active Directory - Get User Manager Details
       description: ''
@@ -496,7 +502,7 @@ tasks:
       - '5'
     scriptarguments:
       UserEmail:
-        simple: ${incident.labels.actor}
+        simple: ${incident.employeeemail}
       Username: {}
     separatecontext: true
     loop:
@@ -515,10 +521,10 @@ tasks:
     ignoreworker: false
   '26':
     id: '26'
-    taskid: 31971cff-2b6f-43e3-81b5-6e21f0bebc18
+    taskid: 335b248d-7a04-4514-8890-57e3913dcdfa
     type: regular
     task:
-      id: 31971cff-2b6f-43e3-81b5-6e21f0bebc18
+      id: 335b248d-7a04-4514-8890-57e3913dcdfa
       version: -1
       name: Close Incident
       description: ''
@@ -550,16 +556,16 @@ tasks:
     ignoreworker: false
   '27':
     id: '27'
-    taskid: ffcbeb49-e65c-4a55-88c3-379f397038a7
+    taskid: 10331857-eb12-46fa-8f1d-6f6239d4ac61
     type: condition
     task:
-      id: ffcbeb49-e65c-4a55-88c3-379f397038a7
+      id: 10331857-eb12-46fa-8f1d-6f6239d4ac61
       version: -1
       name: Confirm Network Contain
+      description: ''
       type: condition
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#default#':
       - '30'
@@ -576,56 +582,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '28':
-    id: '28'
-    taskid: 89f7c480-e5b5-451d-8b7f-71173d1d7e6e
-    type: condition
-    task:
-      id: 89f7c480-e5b5-451d-8b7f-71173d1d7e6e
-      version: -1
-      name: Does Hostname Exist?
-      type: condition
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      'yes':
-      - '11'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: incident
-                filters:
-                - - operator: isExists
-                    left:
-                      value:
-                        simple: incident.code42fileevents.oshostname
-                      iscontext: true
-                accessor: code42fileevents.oshostname
-                transformers:
-                - operator: uniq
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 990,
-          "y": 1020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '29':
     id: '29'
-    taskid: a5672e94-6a8c-408e-8692-bbb309445390
+    taskid: 7387a45c-92d3-44ca-8f63-f66ec2b6ebaa
     type: regular
     task:
-      id: a5672e94-6a8c-408e-8692-bbb309445390
+      id: 7387a45c-92d3-44ca-8f63-f66ec2b6ebaa
       version: -1
       name: Send email to manager
       description: ''
@@ -673,8 +635,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1590,
-          "y": 1710
+          "x": 1570,
+          "y": 1805
         }
       }
     note: false
@@ -682,16 +644,16 @@ tasks:
     ignoreworker: false
   '30':
     id: '30'
-    taskid: b7694500-9c25-4a86-8033-aa4f8d07e99a
+    taskid: ea60127b-366c-4a94-85db-339b32ca66c5
     type: regular
     task:
-      id: b7694500-9c25-4a86-8033-aa4f8d07e99a
+      id: ea60127b-366c-4a94-85db-339b32ca66c5
       version: -1
       name: Confirm Remediation Is Complete
+      description: ''
       type: regular
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#none#':
       - '9'
@@ -708,16 +670,16 @@ tasks:
     ignoreworker: false
   '31':
     id: '31'
-    taskid: d467f47c-af70-46bb-8080-cf1ddab4d7ef
+    taskid: a7815436-cc18-4236-8833-318204036b2a
     type: condition
     task:
-      id: d467f47c-af70-46bb-8080-cf1ddab4d7ef
+      id: a7815436-cc18-4236-8833-318204036b2a
       version: -1
-      name: Determine if too many hosts will be contained
+      name: Determine if network contain should be bypassed based on host count
+      description: ''
       type: condition
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#default#':
       - '27'
@@ -740,6 +702,11 @@ tasks:
             value:
               simple: inputs.ContainHostsMax
             iscontext: true
+        - operator: isNotExists
+          left:
+            value:
+              simple: CrowdStrike.Device
+            iscontext: true
     view: |-
       {
         "position": {
@@ -752,10 +719,10 @@ tasks:
     ignoreworker: false
   '32':
     id: '32'
-    taskid: 6c6e0dc7-d9a4-4368-8868-a2acb0335ac4
+    taskid: 9e908ce6-7623-4a06-865b-3725d5bab3e1
     type: regular
     task:
-      id: 6c6e0dc7-d9a4-4368-8868-a2acb0335ac4
+      id: 9e908ce6-7623-4a06-865b-3725d5bab3e1
       version: -1
       name: CrowdStrike Network Contain
       description: ''
@@ -781,13 +748,113 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '33':
+    id: '33'
+    taskid: df73e338-6ae3-4d35-8d01-76e97fc62866
+    type: condition
+    task:
+      id: df73e338-6ae3-4d35-8d01-76e97fc62866
+      version: -1
+      name: Is email integration enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '30'
+      'yes':
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Mail Sender (New)
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS Mail Sender
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 3060,
-        "width": 1920,
+        "width": 1900,
         "x": 50,
         "y": -90
       }
@@ -816,10 +883,8 @@ inputs:
   description: Maximum number of network hosts to contain.
 - key: DemistoInstanceURL
   value:
-    simple: https://sardan.demisto.works/
+    simple: https://example.com/
   required: false
   description: URL of Demisto instance for emails.
 outputs: []
 fromversion: 5.0.0
-tests:
-- No Test

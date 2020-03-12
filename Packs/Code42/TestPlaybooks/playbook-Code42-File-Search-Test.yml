@@ -79,7 +79,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 800
+          "y": 1120
         }
       }
     note: false
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 640
+          "y": 930
         }
       }
     note: false
@@ -135,7 +135,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '5'
+      - '7'
     scriptarguments:
       MD5:
         simple: 72e6adccb0782b858754327292eaed22
@@ -155,13 +155,79 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 02b14138-3f7d-462b-88f0-69b955df1e84
+    type: condition
+    task:
+      id: 02b14138-3f7d-462b-88f0-69b955df1e84
+      version: -1
+      name: Check for results
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Code42.SecurityData
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: bc250878-f5e6-4ab5-8d4a-f3b4f73c726c
+    type: regular
+    task:
+      id: bc250878-f5e6-4ab5-8d4a-f3b4f73c726c
+      version: -1
+      name: Print Error Message
+      description: ''
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      message:
+        simple: 'Test failure: search did not return any results'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 815,
-        "width": 380,
+        "height": 1135,
+        "width": 530,
         "x": 450,
         "y": 50
       }
