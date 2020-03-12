@@ -1,1 +1,0 @@
-Bug fix: typo in playbook argument description. should be rules, not rule.
