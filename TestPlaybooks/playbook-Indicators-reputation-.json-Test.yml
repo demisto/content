@@ -1878,7 +1878,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: containsGeneral
           left:
             value:
               simple: IPv6.Address
@@ -1886,7 +1886,7 @@ tasks:
           right:
             value:
               simple: 2001:db8:85a3:8d3:1319:8a2e:370:7348
-      - - operator: containsString
+      - - operator: containsGeneral
           left:
             value:
               simple: IPv6.Address
@@ -1926,7 +1926,7 @@ tasks:
       key:
         simple: invalid_ipv6s
       value:
-        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::"'
+        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::", "::", "tag::event"'
     separatecontext: false
     view: |-
       {
@@ -1989,7 +1989,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: notContainsString
+      - - operator: notContainsGeneral
           left:
             value:
               simple: IPv6.Address
@@ -1997,14 +1997,30 @@ tasks:
           right:
             value:
               simple: 2001:0db8:0000:0000:0000:ff00:0042:83292
-      - - operator: notContainsString
+      - - operator: notContainsGeneral
           left:
             value:
               simple: IPv6.Address
             iscontext: true
           right:
             value:
-              simple: '2g01:111:f406:1805::'
+              simple: '::'
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2001:0db8:0000:0000:0000:ff00:0042:83292
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IPv6.Address
+            iscontext: true
+          right:
+            value:
+              simple: 'tag::event'
     view: |-
       {
         "position": {
