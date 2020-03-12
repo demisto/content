@@ -1330,13 +1330,13 @@
         {
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles",
-            "instance_names": "ms_graph_groups_dev",
+            "instance_names": "ms_graph_files_dev",
             "fromVersion": "5.0.0"
         },
         {
             "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles",
-            "instance_names": "ms_graph_groups_prod",
+            "instance_names": "ms_graph_files_prod",
             "fromVersion": "5.0.0"
         },
         {
