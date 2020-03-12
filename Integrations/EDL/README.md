@@ -24,6 +24,7 @@ This integration provides External Dynamic List (EDL) as a service for the syste
 | Listen Port | Will run the *External Dynamic List* on this port from within Demisto | True |
 | Certificate (Required for HTTPS) | HTTPS Certificate provided by pasting its value into this field. | False |
 | Private Key (Required for HTTPS | HTTPS private key provided by pasting its value into this field. | False |
+| Collapse IPs | Whether to collapse IPs, and if so - to ranges or CIDRs. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -43,6 +44,7 @@ Updates values stored in the EDL (only avaialable On-Demand).
 | query | The query used to retrieve indicators from the system. | Required | 
 | edl_size | The maximum number of entries in the EDL. If no value is provided, will use the value specified in the EDL Size parameter configured in the instance configuration. | Optional | 
 | print_indicators | Boolean | Required | 
+| collapse_ips | Whether to collapse IPs, and if so - to ranges or CIDRs. | Optional |
 
 
 ##### Context Output
