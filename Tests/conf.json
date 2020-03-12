@@ -2440,7 +2440,6 @@
         }
     ],
     "skipped_tests": {
-        "AutoFocus V2 test": "Issue 22721",
         "Cybereason Test": "Issue 22683",
         "CVE Search v2 - Test": "Issue 22661",
         "AbuseIPDB Test": "Issue 22658",
