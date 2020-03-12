@@ -1576,6 +1576,14 @@
             "playbookID": "STIXParserTest"
         },
         {
+            "playbookID": "VerifyJSON - Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "PowerShellCommon-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Detonate URL - Generic Test",
             "timeout": 2000,
             "nightly": true,
@@ -2432,6 +2440,10 @@
         }
     ],
     "skipped_tests": {
+        "AutoFocus V2 test": "Issue 22721",
+        "Cybereason Test": "Issue 22683",
+        "CVE Search v2 - Test": "Issue 22661",
+        "AbuseIPDB Test": "Issue 22658",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
@@ -2558,6 +2570,7 @@
         "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
+        "XFE_v2": "Issue 22715",
         "AlphaSOC Wisdom": "API key has expired",
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
