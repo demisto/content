@@ -1,1 +1,0 @@
-Improved connection failure logging.

@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8e16b379-cb61-4031-8228-94da2c3c1e80
+    taskid: d5a155c3-7dbe-4fcd-88f3-393891485890
     type: start
     task:
-      id: 8e16b379-cb61-4031-8228-94da2c3c1e80
+      id: d5a155c3-7dbe-4fcd-88f3-393891485890
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +27,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: e6d73b39-e595-44e9-857b-8d44e6c48354
+    taskid: 628eefe3-5c76-4c4b-8b1a-3c601ede42a4
     type: regular
     task:
-      id: e6d73b39-e595-44e9-857b-8d44e6c48354
+      id: 628eefe3-5c76-4c4b-8b1a-3c601ede42a4
       version: -1
       name: Get Users Detail
       script: '|||duoadmin-get-users'
@@ -56,12 +58,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 7ed5425d-04fa-48a9-8785-7337a94c3e7a
+    taskid: 8f23b807-f566-4a80-82fb-8b789020b127
     type: regular
     task:
-      id: 7ed5425d-04fa-48a9-8785-7337a94c3e7a
+      id: 8f23b807-f566-4a80-82fb-8b789020b127
       version: -1
       name: Get User2 Logs
       script: '|||duoadmin-get-authentication-logs-by-user'
@@ -88,12 +92,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 26dcdc13-0858-4d4d-8f85-a909410cfd0f
+    taskid: 5f90ae6b-f0bf-49a7-8d8e-133e9231977e
     type: title
     task:
-      id: 26dcdc13-0858-4d4d-8f85-a909410cfd0f
+      id: 5f90ae6b-f0bf-49a7-8d8e-133e9231977e
       version: -1
       name: Check if two different users have different auth logs
       type: title
@@ -113,12 +119,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: d23c0bac-e60f-4314-8217-09d5c2de460b
+    taskid: 818eecd7-c9bb-4239-8255-398969e10852
     type: regular
     task:
-      id: d23c0bac-e60f-4314-8217-09d5c2de460b
+      id: 818eecd7-c9bb-4239-8255-398969e10852
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -146,12 +154,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 37576cdb-912a-41f6-8bb8-0416199da432
+    taskid: b3ec79cb-57d7-448c-8818-1b372cbfaf88
     type: condition
     task:
-      id: 37576cdb-912a-41f6-8bb8-0416199da432
+      id: b3ec79cb-57d7-448c-8818-1b372cbfaf88
       version: -1
       name: Are auth logs a part of user details?
       type: condition
@@ -181,12 +191,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 7509e240-1086-4f3f-820f-a3e67f25c55a
+    taskid: 0646e6c0-d72a-4df4-8735-d3cf474a7362
     type: title
     task:
-      id: 7509e240-1086-4f3f-820f-a3e67f25c55a
+      id: 0646e6c0-d72a-4df4-8735-d3cf474a7362
       version: -1
       name: User Devices Operations
       type: title
@@ -206,12 +218,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: fae485d6-5428-4224-848c-0ad7fe3dd3d4
+    taskid: de27dc01-916d-4d59-8483-a08bf27ffabe
     type: title
     task:
-      id: fae485d6-5428-4224-848c-0ad7fe3dd3d4
+      id: de27dc01-916d-4d59-8483-a08bf27ffabe
       version: -1
       name: User Logs
       type: title
@@ -231,12 +245,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 9ca2449b-24e4-4d1d-839b-8016aacc3af5
+    taskid: 4a16da49-c497-43aa-8b6d-9151bd387aaf
     type: title
     task:
-      id: 9ca2449b-24e4-4d1d-839b-8016aacc3af5
+      id: 4a16da49-c497-43aa-8b6d-9151bd387aaf
       version: -1
       name: Devices
       type: title
@@ -256,12 +272,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: cf5efc6f-123e-493f-8ab0-13847fc24676
+    taskid: 88255fc2-33a8-4a6a-837d-9eab7eef238a
     type: regular
     task:
-      id: cf5efc6f-123e-493f-8ab0-13847fc24676
+      id: 88255fc2-33a8-4a6a-837d-9eab7eef238a
       version: -1
       name: Get All Devices
       script: '|||duoadmin-get-devices'
@@ -282,12 +300,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: 013c40e8-5522-4dde-8751-e68c34dd27e0
+    taskid: 40227007-b965-46fa-8e25-8ae41e38b20f
     type: condition
     task:
-      id: 013c40e8-5522-4dde-8751-e68c34dd27e0
+      id: 40227007-b965-46fa-8e25-8ae41e38b20f
       version: -1
       name: Are phones a part of the DuoAdmin object?
       type: condition
@@ -334,12 +354,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: d21d1b45-1728-47a6-8c00-05b0dd65e63c
+    taskid: 5e0f585c-6016-411a-8988-50e686f66f98
     type: regular
     task:
-      id: d21d1b45-1728-47a6-8c00-05b0dd65e63c
+      id: 5e0f585c-6016-411a-8988-50e686f66f98
       version: -1
       name: Get User Phones
       script: '|||duoadmin-get-devices-by-user'
@@ -363,12 +385,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 3c21a874-4644-4d8e-8201-4c136bd5d58b
+    taskid: f12d17ea-9ece-43ac-881a-ebe4b544ae73
     type: condition
     task:
-      id: 3c21a874-4644-4d8e-8201-4c136bd5d58b
+      id: f12d17ea-9ece-43ac-881a-ebe4b544ae73
       version: -1
       name: Does the user have a phone?
       type: condition
@@ -418,12 +442,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: 4ff8939c-5e45-4426-8b8d-25183b980fa2
+    taskid: dca96d4b-996c-41af-8828-8d4e9e4fce39
     type: regular
     task:
-      id: 4ff8939c-5e45-4426-8b8d-25183b980fa2
+      id: dca96d4b-996c-41af-8828-8d4e9e4fce39
       version: -1
       name: Get User Phones
       script: '|||duoadmin-get-devices-by-user'
@@ -447,12 +473,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 6c7cf726-e235-4dae-8d13-b9182c13b9f1
+    taskid: 7febf8f6-a202-4224-80e7-d8a10e8f5bf8
     type: regular
     task:
-      id: 6c7cf726-e235-4dae-8d13-b9182c13b9f1
+      id: 7febf8f6-a202-4224-80e7-d8a10e8f5bf8
       version: -1
       name: Dissociate the phone from the user
       script: '|||duoadmin-dissociate-device-from-user'
@@ -478,12 +506,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 00aeed1b-e5f3-4ae4-840e-e82442ff4157
+    taskid: 1873a847-d9e4-47e0-8386-a652a46b83d4
     type: condition
     task:
-      id: 00aeed1b-e5f3-4ae4-840e-e82442ff4157
+      id: 1873a847-d9e4-47e0-8386-a652a46b83d4
       version: -1
       name: Does the user still has a phone?
       type: condition
@@ -533,12 +563,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: cd37b4f8-654d-4c1b-86ad-4201abe4ea6d
+    taskid: 653afee5-51f1-4e2b-8eb2-6a8956297a95
     type: title
     task:
-      id: cd37b4f8-654d-4c1b-86ad-4201abe4ea6d
+      id: 653afee5-51f1-4e2b-8eb2-6a8956297a95
       version: -1
       name: U2F Tokens
       type: title
@@ -558,12 +590,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: b44b8cd7-b424-44e9-8960-1b64cdfe8a3d
+    taskid: e2382114-7cbb-4317-8b81-bad9a50faae3
     type: regular
     task:
-      id: b44b8cd7-b424-44e9-8960-1b64cdfe8a3d
+      id: e2382114-7cbb-4317-8b81-bad9a50faae3
       version: -1
       name: Get User Tokens
       description: |-
@@ -591,12 +625,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: 6d98f7a5-f2c2-4225-8ec3-9c5d14bd5d4b
+    taskid: adc71739-96f3-4791-84d6-f74edf5ea5b0
     type: condition
     task:
-      id: 6d98f7a5-f2c2-4225-8ec3-9c5d14bd5d4b
+      id: adc71739-96f3-4791-84d6-f74edf5ea5b0
       version: -1
       name: Does the user have a U2F token?
       type: condition
@@ -648,12 +684,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: 3be53fa9-8801-40d8-860a-7e9e8cb3c6e2
+    taskid: 4ccc1a79-85d3-4ef2-81d5-c13e674b203a
     type: regular
     task:
-      id: 3be53fa9-8801-40d8-860a-7e9e8cb3c6e2
+      id: 4ccc1a79-85d3-4ef2-81d5-c13e674b203a
       version: -1
       name: Delete the token
       script: '|||duoadmin-delete-u2f-token'
@@ -704,12 +742,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
-    taskid: 01258beb-207d-499e-8dff-3c952959a5aa
+    taskid: e49beec9-f9f9-4381-8a91-0d1399615185
     type: condition
     task:
-      id: 01258beb-207d-499e-8dff-3c952959a5aa
+      id: e49beec9-f9f9-4381-8a91-0d1399615185
       version: -1
       name: Does the user still have a token
       type: condition
@@ -759,12 +799,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
-    taskid: ac577d09-66b9-4521-8e47-cdf21e5cbd9e
+    taskid: 566dac57-2414-4597-8cdb-d879e085b21b
     type: regular
     task:
-      id: ac577d09-66b9-4521-8e47-cdf21e5cbd9e
+      id: 566dac57-2414-4597-8cdb-d879e085b21b
       version: -1
       name: Get User Tokens
       description: |-
@@ -792,12 +834,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
-    taskid: c046658c-d2df-4350-8b64-4c69a3c1bcd0
+    taskid: a655df04-93b7-480a-834e-d35dc7adc7e0
     type: regular
     task:
-      id: c046658c-d2df-4350-8b64-4c69a3c1bcd0
+      id: a655df04-93b7-480a-834e-d35dc7adc7e0
       version: -1
       name: Associate a dummy phone
       script: '|||duoadmin-associate-device-to-user'
@@ -823,12 +867,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
-    taskid: 9efcf80c-6ec7-4c27-83a3-16735e0eb8ad
+    taskid: 2eedc889-7d09-445f-8fe6-2d4401ba9370
     type: regular
     task:
-      id: 9efcf80c-6ec7-4c27-83a3-16735e0eb8ad
+      id: 2eedc889-7d09-445f-8fe6-2d4401ba9370
       version: -1
       name: Get User0 Logs
       description: Returns authentication logs associated with a user. Limited to
@@ -858,12 +904,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "43":
     id: "43"
-    taskid: f5ae69a7-0a39-484d-8eb4-8c68eed25435
+    taskid: 9112a52b-28ab-4df2-862f-830206ade49c
     type: title
     task:
-      id: f5ae69a7-0a39-484d-8eb4-8c68eed25435
+      id: 9112a52b-28ab-4df2-862f-830206ade49c
       version: -1
       name: done
       type: title
@@ -880,14 +928,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "45":
     id: "45"
-    taskid: 6d2ab6bd-cf01-47b6-87ba-a640566d8e58
+    taskid: 7afdefc8-d22a-4483-8cfd-af628e4e66d5
     type: condition
     task:
-      id: 6d2ab6bd-cf01-47b6-87ba-a640566d8e58
+      id: 7afdefc8-d22a-4483-8cfd-af628e4e66d5
       version: -1
-      name: Check if User0 doesn't exist and User2 does exist
+      name: Check that user0 and user2 auth_logs are different
       type: condition
       iscommand: false
       brand: ""
@@ -900,15 +950,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEmpty
+      - - operator: notIn
           left:
             value:
               complex:
                 root: DuoAdmin
-                accessor: UserDetails.[0].auth_logs
+                accessor: UserDetails.[0].auth_logs.[0]
             iscontext: true
-      - - operator: isNotEmpty
-          left:
+          right:
             value:
               complex:
                 root: DuoAdmin
@@ -924,12 +973,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "46":
     id: "46"
-    taskid: 09668ea7-38b0-4527-8ca9-8ad7a2fd04d7
+    taskid: e7d58b8b-a87b-44cb-82e2-4a24632f39d4
     type: regular
     task:
-      id: 09668ea7-38b0-4527-8ca9-8ad7a2fd04d7
+      id: e7d58b8b-a87b-44cb-82e2-4a24632f39d4
       version: -1
       name: Print Error in case of two users have the same auth logs
       description: Prints an error entry with a given message
@@ -955,6 +1006,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

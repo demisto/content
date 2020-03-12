@@ -1,4 +1,12 @@
 ## [Unreleased]
+Improved handling in cases where a field value is None.
+
+## [20.2.4] - 2020-02-25
+  - Added 2 new commands:
+    - ***panorama-register-user-tag***
+    - ***panorama-unregister-user-tag***
+
+## [20.2.3] - 2020-02-18
   - Fixed an issue in ***panorama-get-service*** where the *name* argument should be mandatory.
   - Fixed an issue in ***panorama-create-rule*** and ***panorama-create-block-rule*** commands.
   - Added the *category* argument to the ***panorama-create-rule*** command.

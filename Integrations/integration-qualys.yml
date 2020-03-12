@@ -1495,7 +1495,7 @@ script:
     arguments:
     - name: id
       description: The ID of the scan schedule you want to display.
-    - name: The ID of the scan schedule you want to display.
+    - name: active
       auto: PREDEFINED
       predefined:
       - "0"

@@ -11,7 +11,7 @@ configuration:
   name: cert_file
   required: true
   type: 12
-- display: Client private key path (e.g., /usr/config/client.key)
+- display: Client private key content (e.g. `client.key`)
   name: private_key
   required: true
   type: 14
@@ -58,13 +58,13 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Indicator
-      description: ' The indicator that was tested.'
+      description: The indicator that was tested.
       type: String
     - contextPath: File.Malicious.Description
       description: A description explaining why the file was determined to be malicious.
@@ -147,7 +147,8 @@ script:
     - contextPath: File.References.Date
       description: The time the system first referenced the file.
       type: Unknown
-  dockerimage: demisto/dxl
+  dockerimage: demisto/dxl2:1.0.0.5698
+  dockerimage45: demisto/dxl
   isfetch: false
   runonce: false
   script: '-'
