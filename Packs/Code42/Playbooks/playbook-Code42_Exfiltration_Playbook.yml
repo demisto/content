@@ -888,3 +888,5 @@ inputs:
   description: URL of Demisto instance for emails.
 outputs: []
 fromversion: 5.0.0
+tests:
+- No Test
