@@ -60,7 +60,7 @@ configuration:
   hidden: false
   name: collapse_ips
   options:
-  - Don't Collapse
+  - 'Should Collapse IPs:'
   - To CIDRS
   - To Ranges
   required: false
@@ -120,7 +120,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Don't Collapse
-      description: Wether to collapse IPs to ranges or CIDRs
+      description: Whether to collapse IPs to ranges or CIDRs.
       isArray: false
       name: collapse_ips
       predefined:
