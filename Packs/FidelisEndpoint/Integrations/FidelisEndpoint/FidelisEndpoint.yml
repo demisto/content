@@ -547,6 +547,7 @@ script:
       description: Is the endpoint hidden.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.GroupID
+      description: The group ID.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.Tags
       description: Script tags
@@ -1584,3 +1585,4 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
