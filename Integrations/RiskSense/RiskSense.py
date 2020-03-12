@@ -1401,7 +1401,7 @@ def get_app_detail_hr(app_detail_dict):
 
     hr += tableToMarkdown('Ticket(s) (' + str(len(app_detail_dict.get('tickets', []))) + '):',
                           get_ticket_detail_hr(app_detail_dict.get('tickets', [])),
-                          ['TicketNumber', 'TicketStatus', 'DeepLink', 'Type', 'ConnectorName'], removeNull=True)
+                          ['Ticket Number', 'Ticket Status', 'Deep Link', 'Type', 'Connector Name'], removeNull=True)
 
     app_description = app_detail_dict.get('description', '')
     if app_description:
