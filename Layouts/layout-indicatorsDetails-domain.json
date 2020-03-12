@@ -479,35 +479,6 @@
                         "w": 1,
                         "x": 2,
                         "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": true,
-                        "i": "default-main-4cf6af20-525e-11ea-b1d8-5d4e1b5a11fa",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "recordedfutureevidencedetails",
-                                "height": 106,
-                                "id": "65e9b540-525e-11ea-b1d8-5d4e1b5a11fa",
-                                "index": 0,
-                                "listId": "default-main-4cf6af20-525e-11ea-b1d8-5d4e1b5a11fa",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Custom Feed Details",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 10
                     }
                 ],
                 "type": "custom"
