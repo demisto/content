@@ -1,5 +1,4 @@
 category: Database
-toversion: 5.4.9
 commonfields:
   id: Elasticsearch v2
   version: -1
@@ -8,7 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username for server login
+- additionalinfo: Provide Username + Passoword instead of API key + API ID
+  display: Username for server login
   name: credentials
   required: false
   type: 9
@@ -48,11 +48,20 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
-  display: The maximum number of results to return per fetch
+  display: The maximum number of results to return per fetch. The default is 50.
   name: fetch_size
   required: false
   type: 0
-description: "Search and analyze Data in Real Time. \n Supports version 6 and up."
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: "Search for and analyze data in real time. \n Supports version 6 and\
+  \ later."
 display: Elasticsearch v2
 name: Elasticsearch v2
 script:
@@ -65,7 +74,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The string to query. Strings are queried using Lucene syntax.
+      description: The string to query (in Lucene syntax).
       isArray: false
       name: query
       predefined:
@@ -73,8 +82,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields of a document to fetch. Leaving
-        the fields empty fetches the entire document.
+      description: A comma-separated list of document fields to fetch. If empty, the
+        entire document is fetched.
       isArray: true
       name: fields
       required: false
@@ -180,7 +189,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The string to query. Strings are queried using the Lucene syntax.
+      description: The string to query (in Lucene syntax).
       isArray: false
       name: query
       predefined:
@@ -188,8 +197,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields of a document to fetch. If
-        empty, fetches the entire document.
+      description: A comma-separated list of document fields to fetch. If empty, fetches
+        the entire document.
       isArray: true
       name: fields
       required: false
