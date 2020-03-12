@@ -1,1 +1,21 @@
-{}
+{
+  "name": "McAfee Active Response",
+  "description": " Connect to MAR using its DXL client",
+  "support": "demisto",
+  "serverMinVersion": "5.0.0",
+  "currentVersion": "1.0.0",
+  "author": "demisto",
+  "url": "https://www.demisto.com",
+  "email": "",
+  "categories": [],
+  "tags": [],
+  "created": "2020-03-10T08:37:18Z",
+  "updated": "2020-03-10T08:37:18Z",
+  "beta": false,
+  "deprecated": false,
+  "certification": "certified",
+  "useCases": [],
+  "keywords": [],
+  "price": 0,
+  "dependencies": {}
+}
