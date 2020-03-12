@@ -1,4 +1,7 @@
 ## [Unreleased]
+  - Shortened the period of time that tokens are considered valid to avoid auth errors.
+  - Fixes an issue related to the `ip` command where an error is generated if the API returns a partial response.
+  - Adds friendly values for various empty fields returned by the `domain` command.
   - Updated the Authorization header for the Events API to use the correct token.
   - Added a User-Agent header to assist with diagnostics/debugging.
 
