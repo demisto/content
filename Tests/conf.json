@@ -2,9 +2,10 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-                {
+        {
             "integrations": "Cisco Firepower",
-            "playbookID": "TestFirepowerPlaybook"
+            "playbookID": "TestFirepowerPlaybook",
+            "timeout": 1000
         },
         {
             "integrations": "Blocklist_de Feed",

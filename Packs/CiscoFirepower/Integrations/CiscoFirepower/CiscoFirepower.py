@@ -168,29 +168,29 @@ class Client(BaseClient):
         return self._http_request('GET', suffix)
 
     def create_access_rules(
-        self,
-        source_zone_object_ids: str,
-        destination_zone_object_ids: str,
-        vlan_tag_object_ids: str,
-        source_network_object_ids: str,
-        source_network_addresses: str,
-        destination_network_object_ids: str,
-        destination_network_addresses: str,
-        source_port_object_ids: str,
-        destination_port_object_ids: str,
-        source_security_group_tag_object_ids: str,
-        application_object_ids: str,
-        url_object_ids: str,
-        url_addresses: str,
-        enabled: bool,
-        name: str,
-        policy_id: str,
-        action: str
+            self,
+            source_zone_object_ids: str,
+            destination_zone_object_ids: str,
+            vlan_tag_object_ids: str,
+            source_network_object_ids: str,
+            source_network_addresses: str,
+            destination_network_object_ids: str,
+            destination_network_addresses: str,
+            source_port_object_ids: str,
+            destination_port_object_ids: str,
+            source_security_group_tag_object_ids: str,
+            application_object_ids: str,
+            url_object_ids: str,
+            url_addresses: str,
+            enabled: bool,
+            name: str,
+            policy_id: str,
+            action: str
     ) -> Dict:
         sourceZones = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
-                                                        } for curr_id in argToList(source_zone_object_ids)]}
+                                    } for curr_id in argToList(source_zone_object_ids)]}
         destinationZones = {'objects': [{'id': curr_id, 'type': 'SecurityZone'
-                                                             } for curr_id in argToList(destination_zone_object_ids)]}
+                                         } for curr_id in argToList(destination_zone_object_ids)]}
         vlanTags = {'objects': [{'id': curr_id, 'type': 'vlanTags'} for curr_id in argToList(vlan_tag_object_ids)]}
         sourceNetworks = assign_params(
             objects=[{'id': curr_id, 'type': 'NetworkGroup'} for curr_id in argToList(source_network_object_ids)],
@@ -199,13 +199,13 @@ class Client(BaseClient):
             objects=[{'id': curr_id, 'type': 'NetworkGroup'} for curr_id in argToList(destination_network_object_ids)],
             literals=[{'value': curr_id, 'type': 'Host'} for curr_id in argToList(destination_network_addresses)])
         sourcePorts = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
-                                                        } for curr_id in argToList(source_port_object_ids)]}
+                                    } for curr_id in argToList(source_port_object_ids)]}
         destinationPorts = {'objects': [{'id': curr_id, 'type': 'ProtocolPortObject'
-                                                             } for curr_id in argToList(destination_port_object_ids)]}
+                                         } for curr_id in argToList(destination_port_object_ids)]}
         sourceSecurityGroupTags = {'objects': [{'id': curr_id, 'type': 'SecurityGroupTag'
                                                 } for curr_id in argToList(source_security_group_tag_object_ids)]}
         applications = {'applications': [{'id': curr_id, 'type': 'Application'
-                                                              } for curr_id in argToList(application_object_ids)]}
+                                          } for curr_id in argToList(application_object_ids)]}
         urls = assign_params(
             objects=[{'id': curr_id, 'type': 'Url'} for curr_id in argToList(url_object_ids)],
             literals=[{'url': curr_id, 'type': 'Url'} for curr_id in argToList(url_addresses)])
@@ -238,34 +238,34 @@ class Client(BaseClient):
             policy_id: str,
             action: str,
             rule_id: str
-        ) -> Dict:
+    ) -> Dict:
 
         suffix = f'policy/accesspolicies/{policy_id}/accessrules/{rule_id}'
 
-        sourceZones = assign_params(objects=[{'id': curr_id, 'type': 'SecurityZone'
-                                    } for curr_id in argToList(source_zone_object_ids)])
-        destinationZones = assign_params(objects=[{'id': curr_id, 'type': 'SecurityZone'
-                                         } for curr_id in argToList(destination_zone_object_ids)])
-        vlanTags = assign_params(objects=[{'id': curr_id, 'type': 'vlanTags'
-                                 } for curr_id in argToList(vlan_tag_object_ids)])
+        sourceZones = assign_params(
+            objects=[{'id': curr_id, 'type': 'SecurityZone'} for curr_id in argToList(source_zone_object_ids)])
+        destinationZones = assign_params(
+            objects=[{'id': curr_id, 'type': 'SecurityZone'} for curr_id in argToList(destination_zone_object_ids)])
+        vlanTags = assign_params(
+            objects=[{'id': curr_id, 'type': 'vlanTags'} for curr_id in argToList(vlan_tag_object_ids)])
         sourceNetworks = assign_params(
             objects=[{'id': curr_id, 'type': 'NetworkGroup'} for curr_id in argToList(source_network_object_ids)],
             literals=[{'value': curr_id, 'type': 'Host'} for curr_id in argToList(source_network_addresses)])
         destinationNetworks = assign_params(
             objects=[{'id': curr_id, 'type': 'NetworkGroup'} for curr_id in argToList(destination_network_object_ids)],
             literals=[{'value': curr_id, 'type': 'Host'} for curr_id in argToList(destination_network_addresses)])
-        sourcePorts = assign_params(objects=[{'id': curr_id, 'type': 'ProtocolPortObject'
-                                                        } for curr_id in argToList(source_port_object_ids)])
-        destinationPorts = assign_params(objects=[{'id': curr_id, 'type': 'ProtocolPortObject'
-                                                             } for curr_id in argToList(destination_port_object_ids)])
-        sourceSecurityGroupTags = assign_params(objects=[{'id': curr_id, 'type': 'SecurityGroupTag'
-                                                } for curr_id in argToList(source_security_group_tag_object_ids)])
-        applications = assign_params(applications=[{'id': curr_id, 'type': 'Application'
-                                                              } for curr_id in argToList(application_object_ids)])
+        sourcePorts = assign_params(
+            objects=[{'id': curr_id, 'type': 'ProtocolPortObject'} for curr_id in argToList(source_port_object_ids)])
+        destinationPorts = assign_params(
+            objects=[{'id': curr_id, 'type': 'ProtocolPortObject'} for curr_id in
+                     argToList(destination_port_object_ids)])
+        sourceSecurityGroupTags = assign_params(objects=[{'id': curr_id, 'type': 'SecurityGroupTag'} for curr_id in
+                                                         argToList(source_security_group_tag_object_ids)])
+        applications = assign_params(
+            applications=[{'id': curr_id, 'type': 'Application'} for curr_id in argToList(application_object_ids)])
         urls = assign_params(
             objects=[{'id': curr_id, 'type': 'Url'} for curr_id in argToList(url_object_ids)],
             literals=[{'url': curr_id, 'type': 'Url'} for curr_id in argToList(url_addresses)])
-
         data = assign_params(name=name, action=action, id=rule_id, enabled=enabled, sourceZones=sourceZones,
                              destinationZones=destinationZones, vlanTags=vlanTags, sourceNetworks=sourceNetworks,
                              destinationNetworks=destinationNetworks, sourcePorts=sourcePorts,
@@ -299,7 +299,7 @@ class Client(BaseClient):
 
     def deploy_to_devices(self, force_deploy, ignore_warning, version, device_ids) -> Dict:
         data_to_post = assign_params(forceDeploy=force_deploy, ignoreWarning=ignore_warning, version=version,
-                                            deviceList=argToList(device_ids))
+                                     deviceList=argToList(device_ids))
         suffix = 'deployment/deploymentrequests'
         return self._http_request('POST', suffix, json_data=data_to_post)
 
@@ -409,8 +409,8 @@ def raw_response_to_context_policy_assignment(items: Union[Dict, List]) -> Union
     return {
         'Name': items.get('name'),
         'ID': items.get('id'),
-        'PolicyName':  items.get('policy', {}).get('name', ''),
-        'PolicyID':  items.get('policy', {}).get('id', ''),
+        'PolicyName': items.get('policy', {}).get('name', ''),
+        'PolicyID': items.get('policy', {}).get('id', ''),
         'PolicyDescription': items.get('policy', {}).get('description', ''),
         'Targets': [
             {
@@ -462,109 +462,109 @@ def raw_response_to_context_ruls(items: Union[Dict, List]) -> Union[Dict, List]:
         'Category': items.get('metadata', {}).get('category', ''),
         'Urls': {
             'Addresses': [{
-                    'URL': obj.get('url', '')
-                }for obj in items.get('urls', {}).get('literals', [])
+                'URL': obj.get('url', '')
+            } for obj in items.get('urls', {}).get('literals', [])
             ],
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', '')
-                } for obj in items.get('urls', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', '')
+            } for obj in items.get('urls', {}).get('objects', [])
             ]
         },
         'VlanTags': {
             'Numbers': [{
-                    'EndTag': obj.get('endTag', ''),
-                    'StartTag': obj.get('startTag', '')
-                } for obj in items.get('vlanTags', {}).get('literals', [])
+                'EndTag': obj.get('endTag', ''),
+                'StartTag': obj.get('startTag', '')
+            } for obj in items.get('vlanTags', {}).get('literals', [])
             ],
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', ''),
-                    'Type': obj.get('type', '')
-                } for obj in items.get('vlanTags', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', ''),
+                'Type': obj.get('type', '')
+            } for obj in items.get('vlanTags', {}).get('objects', [])
             ]
         },
         'SourceZones': {
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', ''),
-                    'Type': obj.get('type', '')
-                } for obj in items.get('sourceZones', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', ''),
+                'Type': obj.get('type', '')
+            } for obj in items.get('sourceZones', {}).get('objects', [])
             ]
         },
         'Applications': [{
-                'Name': obj.get('name', ''),
-                'ID': obj.get('id', '')
-            } for obj in items.get('applications', {}).get('applications', [])
+            'Name': obj.get('name', ''),
+            'ID': obj.get('id', '')
+        } for obj in items.get('applications', {}).get('applications', [])
         ],
         'DestinationZones': {
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', ''),
-                    'Type': obj.get('type', '')
-                } for obj in items.get('destinationZones', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', ''),
+                'Type': obj.get('type', '')
+            } for obj in items.get('destinationZones', {}).get('objects', [])
             ]
         },
         'SourceNetworks': {
             'Addresses': [{
-                    'Type': obj.get('type', ''),
-                    'Value': obj.get('value', '')
-                }for obj in items.get('sourceNetworks', {}).get('literals', [])
+                'Type': obj.get('type', ''),
+                'Value': obj.get('value', '')
+            } for obj in items.get('sourceNetworks', {}).get('literals', [])
             ],
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', ''),
-                    'Type': obj.get('type', '')
-                } for obj in items.get('sourceNetworks', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', ''),
+                'Type': obj.get('type', '')
+            } for obj in items.get('sourceNetworks', {}).get('objects', [])
             ]
         },
         'DestinationNetworks': {
             'Addresses': [{
-                    'Type': obj.get('type', ''),
-                    'Value': obj.get('value', '')
-                } for obj in items.get('destinationNetworks', {}).get('literals', [])
+                'Type': obj.get('type', ''),
+                'Value': obj.get('value', '')
+            } for obj in items.get('destinationNetworks', {}).get('literals', [])
             ],
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', ''),
-                    'Type': obj.get('type', '')
-                } for obj in items.get('destinationNetworks', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', ''),
+                'Type': obj.get('type', '')
+            } for obj in items.get('destinationNetworks', {}).get('objects', [])
             ]
         },
         'SourcePorts': {
             'Addresses': [{
-                    'Port': obj.get('port', ''),
-                    'Protocol': obj.get('protocol', '')
-                } for obj in items.get('sourcePorts', {}).get('literals', [])
+                'Port': obj.get('port', ''),
+                'Protocol': obj.get('protocol', '')
+            } for obj in items.get('sourcePorts', {}).get('literals', [])
             ],
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', ''),
-                    'Type': obj.get('type', ''),
-                    'Protocol': obj.get('protocol', '')
-                } for obj in items.get('sourcePorts', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', ''),
+                'Type': obj.get('type', ''),
+                'Protocol': obj.get('protocol', '')
+            } for obj in items.get('sourcePorts', {}).get('objects', [])
             ]
         },
         'DestinationPorts': {
             'Addresses': [{
-                    'Port': obj.get('port', ''),
-                    'Protocol': obj.get('protocol', '')
-                } for obj in items.get('destinationPorts', {}).get('literals', [])
+                'Port': obj.get('port', ''),
+                'Protocol': obj.get('protocol', '')
+            } for obj in items.get('destinationPorts', {}).get('literals', [])
             ],
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', ''),
-                    'Type': obj.get('type', ''),
-                    'Protocol': obj.get('protocol', '')
-                } for obj in items.get('destinationPorts', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', ''),
+                'Type': obj.get('type', ''),
+                'Protocol': obj.get('protocol', '')
+            } for obj in items.get('destinationPorts', {}).get('objects', [])
             ]
         },
         'SourceSecurityGroupTags': {
             'Objects': [{
-                    'Name': obj.get('name', ''),
-                    'ID': obj.get('id', ''),
-                    'Type': obj.get('type', '')
-                } for obj in items.get('sourceSecurityGroupTags', {}).get('objects', [])
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id', ''),
+                'Type': obj.get('type', '')
+            } for obj in items.get('sourceSecurityGroupTags', {}).get('objects', [])
             ]
         }
     }
@@ -581,15 +581,15 @@ def list_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if items:
         title = f'{INTEGRATION_NAME} - List zones:'
         context_entry = [{
-                'ID': item.get('id', ''),
-                'Name': item.get('name', ''),
-                'InterfaceMode': item.get('interfaceMode', ''),
-                'Interfaces': [{
-                        'Name': obj.get('name', ''),
-                        'ID': obj.get('id' '')
-                    }for obj in item.get('interfaces', {})
-                ]
-            }for item in items
+            'ID': item.get('id', ''),
+            'Name': item.get('name', ''),
+            'InterfaceMode': item.get('interfaceMode', ''),
+            'Interfaces': [{
+                'Name': obj.get('name', ''),
+                'ID': obj.get('id' '')
+            } for obj in item.get('interfaces', {})
+            ]
+        } for item in items
         ]
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Zone(val.ID && val.ID === obj.ID)': context_entry
@@ -812,12 +812,12 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
 
 
 def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'network_objects_id_list' or 'network_address_list' in args:
-        name = args.get('name')
-        ids = args.get('network_objects_id_list', '')
-        values = args.get('network_address_list', '')
-        description = args.get('description', '')
-        overridable = args.get('overridable', '')
+    name = args.get('name')
+    ids = args.get('network_objects_id_list', '')
+    values = args.get('network_address_list', '')
+    description = args.get('description', '')
+    overridable = args.get('overridable', '')
+    if ids or values:
         raw_response = client.create_network_groups_objects(name, ids, values, description, overridable)
         title = f'{INTEGRATION_NAME} - network group has been created.'
         context_entry = raw_response_to_context_network_groups(raw_response)
@@ -834,13 +834,13 @@ def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
 
 
 def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    if 'network_objects_id_list' or 'network_address_list' in args:
-        group_id = args.get('id')
-        name = args.get('name')
-        ids = args.get('network_objects_id_list', '')
-        values = args.get('network_address_list', '')
-        description = args.get('description', '')
-        overridable = args.get('overridable', '')
+    group_id = args.get('id')
+    name = args.get('name')
+    ids = args.get('network_objects_id_list', '')
+    values = args.get('network_address_list', '')
+    description = args.get('description', '')
+    overridable = args.get('overridable', '')
+    if ids or values:
         raw_response = client.update_network_groups_objects(name, ids, values, group_id, description, overridable)
         title = f'{INTEGRATION_NAME} - network group has been updated.'
         context_entry = raw_response_to_context_network_groups(raw_response)
@@ -1121,22 +1121,22 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     action = args.get('action', '')
 
     raw_response = client.create_access_rules(source_zone_object_ids,
-                                                destination_zone_object_ids,
-                                                vlan_tag_object_ids,
-                                                source_network_object_ids,
-                                                source_network_addresses,
-                                                destination_network_object_ids,
-                                                destination_network_addresses,
-                                                source_port_object_ids,
-                                                destination_port_object_ids,
-                                                source_security_group_tag_object_ids,
-                                                application_object_ids,
-                                                url_object_ids,
-                                                url_addresses,
-                                                enabled,
-                                                name,
-                                                policy_id,
-                                                action)
+                                              destination_zone_object_ids,
+                                              vlan_tag_object_ids,
+                                              source_network_object_ids,
+                                              source_network_addresses,
+                                              destination_network_object_ids,
+                                              destination_network_addresses,
+                                              source_port_object_ids,
+                                              destination_port_object_ids,
+                                              source_security_group_tag_object_ids,
+                                              application_object_ids,
+                                              url_object_ids,
+                                              url_addresses,
+                                              enabled,
+                                              name,
+                                              policy_id,
+                                              action)
     title = f'{INTEGRATION_NAME} - the new access rule:'
     context_entry = raw_response_to_context_ruls(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
@@ -1278,13 +1278,13 @@ def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dic
     items = raw_response.get('items')
     if items:
         context_entry = [{
-                'CanBeDeployed': item.get('canBeDeployed', ''),
-                'UpToDate': item.get('upToDate', ''),
-                'DeviceID': item.get('device', {}).get('id', ''),
-                'DeviceName': item.get('device', {}).get('name', ''),
-                'DeviceType': item.get('device', {}).get('type', ''),
-                'Version': item.get('version', '')
-            }for item in items
+            'CanBeDeployed': item.get('canBeDeployed', ''),
+            'UpToDate': item.get('upToDate', ''),
+            'DeviceID': item.get('device', {}).get('id', ''),
+            'DeviceName': item.get('device', {}).get('name', ''),
+            'DeviceType': item.get('device', {}).get('type', ''),
+            'Version': item.get('version', '')
+        } for item in items
         ]
         title = f'{INTEGRATION_NAME} - List of deployable devices:'
         context = {
@@ -1304,12 +1304,12 @@ def get_device_records_command(client: Client, args: Dict) -> Tuple[str, Dict, D
     items = raw_response.get('items')
     if items:
         context_entry = [{
-                'ID': item.get('id', ''),
-                'Name': item.get('name', ''),
-                'HostName': item.get('hostName', ''),
-                'Type': item.get('type', ''),
-                'DeviceGroupID': item.get('deviceGroup', {}).get('id', '')
-            } for item in items
+            'ID': item.get('id', ''),
+            'Name': item.get('name', ''),
+            'HostName': item.get('hostName', ''),
+            'Type': item.get('type', ''),
+            'DeviceGroupID': item.get('deviceGroup', {}).get('id', '')
+        } for item in items
         ]
         title = f'{INTEGRATION_NAME} - List of device records:'
         context = {
