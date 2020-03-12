@@ -20,7 +20,7 @@ JS_PRIVATE_FUNCS = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRec
 
 PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                     "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                    "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
+                    "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException",
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
                     "IndicatorType", "IP", "Domain", "DBotScore", "EntryType", "EntryFormat", "CommandResults",
                     "old_demisto_results", "new_demisto_results", "abstractmethod"]
@@ -155,10 +155,18 @@ def create_py_documentation(path, origin, language):
             else:
                 try:
                     y = parser.parse_docstring(docstring)
-
                     y["name"] = a
-                    y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
-                        else PY_IRREGULAR_FUNCS[a]["argList"]
+
+                    if inspect.isclass(ns.get(a)):
+                        y["argList"] = list(inspect.getargspec(ns.get(a).__init__))[0] \
+                            if PY_IRREGULAR_FUNCS.get(a, None) is None \
+                            else PY_IRREGULAR_FUNCS[a]["argList"]
+
+                        # init will contains self, so remove the self from the arg list
+                        y["argList"].remove('self')
+                    else:
+                        y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if PY_IRREGULAR_FUNCS.get(a, None) is None \
+                            else PY_IRREGULAR_FUNCS[a]["argList"]
 
                     x.append(y)
                 except parser.MethodParsingException as ex:

@@ -1656,10 +1656,30 @@ class Indicator(object):
 
 class CommandResults:
     """
-    This class should contain results of an integration command or a script
+    CommandResults class - use to return results to warroom
+
+    :type outputs_prefix: ``str``
+    :param outputs_prefix: should be identical to the prefix in the yml contextPath in yml file. for example:
+            CortexXDR.Incident
+
+    :type outputs_key_field: ``str``
+    :param outputs_key_field: primary key field in the main object
+
+    :type outputs: ``list`` or ``dict``
+    :param outputs: the data to be returned and will be set to context
+
+    :type indicators:
+    :param indicators:
+
+    :type readable_output:
+    :param raw_response:
+
+    :return: None
+    :rtype: ``None``
     """
     def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
                  raw_response=None):
+
         # type: (str, str, object, list, str, Any) -> None
         self.indicators = indicators
 
@@ -1708,6 +1728,19 @@ class CommandResults:
 
 
 class DBotScore(Indicator):
+    """
+    DBotScore class
+
+    Args:
+        indicator: indicator value, ip, hash, domain, url, etc
+        indicator_type: use DBotScoreType class
+        integration_name: integration name
+        score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
+        malicious_description: if the indicator is malicious and have explanation for it then set it to this field
+
+    :return: None
+    :rtype: ``None``
+    """
     NONE = 0
     GOOD = 1
     SUSPICIOUS = 2
@@ -1716,6 +1749,7 @@ class DBotScore(Indicator):
     CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
     def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None):
+
         if not DBotScoreType.is_valid_type(indicator_type):
             raise TypeError('indicator_type must be of type DBotScoreType enum')
 
@@ -1750,7 +1784,7 @@ class DBotScore(Indicator):
 
 class IP(Indicator):
     """
-    IP indicator - https://demisto.pan.dev/docs/context-standards#ip
+    IP indicator - https://xsoar.pan.dev/docs/context-standards#ip
     """
     CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
@@ -1848,7 +1882,7 @@ class FileSignature(object):
 
 class File(Indicator):
     """ ignore docstring
-    File indicator - https://demisto.pan.dev/docs/context-standards#file
+    File indicator - https://xsoar.pan.dev/docs/context-standards#file
     """
     CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
                    'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
@@ -1945,7 +1979,9 @@ class File(Indicator):
 
 class CVE(Indicator):
     """
-    CVE indicator - https://demisto.pan.dev/docs/context-standards#cve
+    CVE indicator - https://xsoar.pan.dev/docs/context-standards#cve
+
+    ret
     """
     CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
@@ -1991,8 +2027,8 @@ class CVE(Indicator):
 
 
 class URL(Indicator):
-    """ ignore docstring
-    URL indicator - https://demisto.pan.dev/docs/context-standards#url
+    """
+    URL indicator - https://xsoar.pan.dev/docs/context-standards#url
     """
     CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
@@ -2105,7 +2141,7 @@ class WHOIS(object):
 
 class Domain(Indicator):
     """ ignore docstring
-    Domain indicator - https://demisto.pan.dev/docs/context-standards#domain
+    Domain indicator - https://xsoar.pan.dev/docs/context-standards#domain
     """
     CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
