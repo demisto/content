@@ -20,7 +20,7 @@
     "certification": "certified",
     "useCases": [],
     "keywords": [],
-    "price": "",
+    "price": 0,
     "dependencies": {
         "Base": {
             "mandatory": true,
