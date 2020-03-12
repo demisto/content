@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any, Dict, cast
+from typing import Callable, List, Any, Dict, cast, Tuple
 from base64 import b64decode
 from copy import deepcopy
 import re
@@ -261,7 +261,7 @@ def ips_to_ranges(ips: list, collapse_ips):
     return ip_ranges
 
 
-def create_values_out_dict(iocs: list, collapse_ips: str = DONT_COLLAPSE) -> dict:
+def create_values_out_dict(iocs: list, collapse_ips: str = DONT_COLLAPSE) -> Tuple[dict, int]:
     """
     Create a dictionary for output values
     """
