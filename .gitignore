@@ -11,8 +11,13 @@ CommonServerPython.py
 *Module.py
 !Packs/ApiModules/Scripts/*/*Module.py
 !Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
+!Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
 CommonServerUserPython.py
+CommonServerPowerShell.ps1
 demistomock.py
+demistomock.ps1
+!Tests/demistomock/demistomock.py
+!Tests/demistomock/demistomock.ps1
 Tests/filter_file.txt
 Tests/id_set.json
 .mypy_cache
