@@ -135,7 +135,7 @@ class DBotScoreType(object):
     Enum: contains all the indicator types, used DBotScore.Type)
     """
     IP = 'ip'
-    HASH = 'hash'
+    FILE = 'file'
     DOMAIN = 'domain'
     URL = 'url'
 
