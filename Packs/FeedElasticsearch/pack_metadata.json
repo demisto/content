@@ -1,26 +1,33 @@
 {
-    "displayName": "FeedSharedTenantElasticsearc",
-    "description": "Fetch Indicators shared by other tenants in a Multi Tenant Elasticsearch environment.",
-    "support": "demisto",
+    "name": "Elasticsearch Feed",
+    "description": "Indicators feed from Elasticsearch database",
+    "support": "Cortex XSOAR",
     "serverMinVersion": "5.5.0",
     "currentVersion": "1.0.0",
-    "author": "Dean Arbel",
-    "url": "",
-    "email": "darbel@paloaltonetworks.com",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Elasticsearch",
-        "share indicators",
-        "MT"
+        ""
     ],
-    "created": "2020-02-18T12:47:47Z",
-    "updated": "2020-02-18T12:47:47Z",
+    "created": "2020-03-09T16:04:45Z",
+    "updated": "2020-03-09T16:04:45Z",
     "beta": false,
     "deprecated": false,
-    "certification": "",
+    "certification": "certified",
     "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+    "keywords": ["Elasticsearch", "Feed"],
+    "price": 0,
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "minVersion": "1.0.0",
+            "name": "Base",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          }
+    }
 }
