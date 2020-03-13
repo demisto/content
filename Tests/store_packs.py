@@ -653,9 +653,9 @@ def print_packs_summary(packs_list):
         skipped_packs_table = _build_summary_table(skipped_packs)
         print_warning(skipped_packs_table)
     if failed_packs:
-        print_warning(f"Number of failed packs: {len(failed_packs)}")
+        print_error(f"Number of failed packs: {len(failed_packs)}")
         failed_packs_table = _build_summary_table(failed_packs)
-        print_warning(failed_packs_table)
+        print_error(failed_packs_table)
 
 
 def option_handler():
