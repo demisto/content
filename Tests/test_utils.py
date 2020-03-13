@@ -357,7 +357,7 @@ def collect_pack_content_items(pack_path):
         "Playbooks"
     ]
     data = {}
-    task_status = False
+    task_status = True
 
     try:
         for directory in os.listdir(pack_path):
@@ -399,9 +399,8 @@ def collect_pack_content_items(pack_path):
                         dir_data.append(file_info)
 
             data[directory] = dir_data
-
-        task_status = True
     except Exception as e:
+        task_status = False
         print_error("Failed to collect pack content items at path :{}\n. Additional info {}".format(pack_path, e))
     finally:
         return task_status, data
