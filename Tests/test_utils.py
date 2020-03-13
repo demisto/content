@@ -357,49 +357,54 @@ def collect_pack_content_items(pack_path):
         "Playbooks"
     ]
     data = {}
+    task_status = False
 
-    for directory in os.listdir(pack_path):
-        if not os.path.isdir(os.path.join(pack_path, directory)) or directory == "TestPlaybooks":
-            continue
+    try:
+        for directory in os.listdir(pack_path):
+            if not os.path.isdir(os.path.join(pack_path, directory)) or directory == "TestPlaybooks":
+                continue
 
-        dir_data = []
-        dir_path = os.path.join(pack_path, directory)
+            dir_data = []
+            dir_path = os.path.join(pack_path, directory)
 
-        for dir_file in os.listdir(dir_path):
-            file_path = os.path.join(dir_path, dir_file)
-            if dir_file.endswith('.json') or dir_file.endswith('.yml'):
-                file_info = {}
+            for dir_file in os.listdir(dir_path):
+                file_path = os.path.join(dir_path, dir_file)
+                if dir_file.endswith('.json') or dir_file.endswith('.yml'):
+                    file_info = {}
 
-                with open(file_path, 'r') as file_data:
-                    if directory in YML_SUPPORTED_DIRS:
-                        new_data = yaml.safe_load(file_data)
-                    else:
-                        new_data = json.load(file_data)
+                    with open(file_path, 'r') as file_data:
+                        if directory in YML_SUPPORTED_DIRS:
+                            new_data = yaml.safe_load(file_data)
+                        else:
+                            new_data = json.load(file_data)
 
-                    if directory == 'Layouts':
-                        file_info['name'] = new_data.get('TypeName', '')
-                    elif directory == 'Integrations':
-                        file_info['name'] = new_data.get('display', '')
-                    elif directory == "Classifiers":
-                        file_info['name'] = new_data.get('id', '')
-                    else:
-                        file_info['name'] = new_data.get('name', '')
+                        if directory == 'Layouts':
+                            file_info['name'] = new_data.get('TypeName', '')
+                        elif directory == 'Integrations':
+                            file_info['name'] = new_data.get('display', '')
+                            integration_commands = new_data.get('script', {}).get('commands', [])
+                            file_info['commands'] = [
+                                {'name': c.get('name', ''), 'description': c.get('description', '')}
+                                for c in integration_commands]
+                        elif directory == "Classifiers":
+                            file_info['name'] = new_data.get('id', '')
+                        else:
+                            file_info['name'] = new_data.get('name', '')
 
-                    if new_data.get('description', ''):
-                        file_info['description'] = new_data.get('description', '')
-                    if new_data.get('comment', ''):
-                        file_info['description'] = new_data.get('comment', '')
+                        if new_data.get('description', ''):
+                            file_info['description'] = new_data.get('description', '')
+                        if new_data.get('comment', ''):
+                            file_info['description'] = new_data.get('comment', '')
 
-                    if directory == "Integrations":
-                        integration_commands = new_data.get('script', {}).get('commands', [])
-                        file_info['commands'] = [{'name': c.get('name', ''), 'description': c.get('description', '')}
-                                                 for c in integration_commands]
+                        dir_data.append(file_info)
 
-                    dir_data.append(file_info)
+            data[directory] = dir_data
 
-        data[directory] = dir_data
-
-    return data
+        task_status = True
+    except Exception as e:
+        print_error("Failed to collect pack content items at path :{}\n. Additional info {}".format(pack_path, e))
+    finally:
+        return task_status, data
 
 
 def input_to_list(input_data):
