@@ -45,8 +45,7 @@ There is no context output for this command.
 ### f5-create-rule
 ***
 Creates a rule in a specific policy
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `f5-create-rule`
@@ -100,7 +99,7 @@ Modifies an F5 rule in a specific policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| The policy name the rule is associated with. | policy-name | Required | 
+| policy-name | The policy name the rule is associated with. | Required |
 | rule-name | The rule name to modify. | Required | 
 
 
@@ -117,8 +116,7 @@ There is no context output for this command.
 ### Delete a rule
 ***
 Delete an F5 rule.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `f5-del-rule`
