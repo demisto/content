@@ -88,7 +88,7 @@ class Pack(object):
         self._pack_path = pack_path
         self._pack_repo_path = os.path.join(PACKS_FULL_PATH, pack_name)
         self._status = None
-        self._public_url = ""
+        self._relative_storage_path = ""
 
     @property
     def name(self):
@@ -119,12 +119,12 @@ class Pack(object):
         self._status = status_value
 
     @property
-    def public_url(self):
-        return self._public_url
+    def relative_storage_path(self):
+        return self._relative_storage_path
 
-    @public_url.setter
-    def public_url(self, url_value):
-        self._public_url = url_value
+    @relative_storage_path.setter
+    def relative_storage_path(self, path_value):
+        self._relative_storage_path = path_value
 
     def _get_latest_version(self):
         """Return latest semantic version of the pack.
@@ -269,7 +269,7 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
 
-            self.public_url = blob.public_url
+            self.relative_storage_path = blob.name
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
             return task_status, False
@@ -629,7 +629,7 @@ def _build_summary_table(packs_input_list):
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.public_url, pack.latest_version, pack_status_message]
+        row = [index, pack.name, pack.relative_storage_path, pack.latest_version, pack_status_message]
         table.add_row(row)
 
     return table
