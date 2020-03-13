@@ -277,7 +277,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: Didn't get proper score for indicator
+        simple: 'Didn''t get proper score for indicator. Expected: 2, Got: ${res_score.DBotScore.[0].Score}'
     separatecontext: false
     view: |-
       {
