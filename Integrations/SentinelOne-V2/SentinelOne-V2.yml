@@ -45,7 +45,7 @@ configuration:
   required: false
   type: 0
 description: End point protection
-display: SentinelOne V2
+display: SentinelOne v2
 name: SentinelOne V2
 script:
   commands:

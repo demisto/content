@@ -1,0 +1,33 @@
+{
+    "name": "ipinfo",
+    "description": "Use the ipinfo.io API to get data about an IP address",
+    "support": "Cortex XSOAR",
+    "serverMinVersion": "5.0.0",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        ""
+    ],
+    "created": "2020-03-11T09:36:20Z",
+    "updated": "2020-03-11T09:36:20Z",
+    "beta": false,
+    "deprecated": false,
+    "certification": "certified",
+    "useCases": [],
+    "keywords": [],
+    "price": 0,
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "minVersion": "1.0.0",
+            "name": "Base",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+          }
+    }
+}
