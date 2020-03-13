@@ -7,6 +7,7 @@ import shutil
 import uuid
 import yaml
 import enum
+import prettytable
 import google.auth
 from google.cloud import storage
 from distutils.util import strtobool
@@ -260,7 +261,7 @@ class Pack(object):
             if existing_files and not override_pack:
                 print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
                 print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                return task_status, False
+                return task_status, True
 
             pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
             blob = storage_bucket.blob(pack_full_path)
@@ -271,11 +272,11 @@ class Pack(object):
             self.public_url = blob.public_url
             print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
 
-            return task_status, True
+            return task_status, False
         except Exception as e:
             task_status = False
             print_error(f"Failed in uploading {self._pack_name} pack to gcs.\nAdditional info: {e}")
-            return task_status, False
+            return task_status, True
 
     def format_metadata(self, pack_content_items, integration_images):
         """Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
@@ -621,10 +622,40 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     print_color(f"Finished uploading {Pack.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
 
 
+def _build_summary_table(packs_input_list):
+    table_fields = ["Index", "Pack Name", "Public uploaded URL", "Version", "Status"]
+    table = prettytable.PrettyTable()
+    table.field_names = table_fields
+
+    for index, pack in enumerate(packs_input_list, start=1):
+        pack_status_message = PackStatus[pack.status].value
+        row = [index, pack.name, pack.public_url, pack.latest_version, pack_status_message]
+        table.add_row(row)
+
+    return table
+
+
 def print_packs_summary(packs_list):
-    for pack in packs_list:
-        print(pack.status)
-        print(pack.public_url)
+    successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
+    skipped_packs = [pack for pack in packs_list if pack.status == PackStatus.PACK_ALREADY_EXISTS.name]
+    failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
+
+    print("\n")
+    print("--------------------------- Packs Upload Summary ---------------------------")
+    print(f"Total number of packs: {len(packs_list)}")
+
+    if successful_packs:
+        print_color(f"Number of successful uploaded packs: {len(successful_packs)}", LOG_COLORS.GREEN)
+        successful_packs_table = _build_summary_table(successful_packs)
+        print_color(successful_packs_table, LOG_COLORS.GREEN)
+    if skipped_packs:
+        print_warning(f"Number of skipped packs: {len(skipped_packs)}")
+        skipped_packs_table = _build_summary_table(skipped_packs)
+        print_warning(skipped_packs_table)
+    if failed_packs:
+        print_warning(f"Number of failed packs: {len(failed_packs)}")
+        failed_packs_table = _build_summary_table(failed_packs)
+        print_warning(failed_packs_table)
 
 
 def option_handler():
@@ -684,19 +715,19 @@ def main():
     for pack in packs_list:
         task_status, integration_images = pack.upload_integration_images(storage_bucket)
         if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.value
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
         task_status, pack_content_items = collect_pack_content_items(pack.path)
         if not task_status:
-            pack.status = PackStatus.FAILED_COLLECT_ITEMS.value
+            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
 
         task_status = pack.format_metadata(pack_content_items, integration_images)
         if not task_status:
-            pack.status = PackStatus.FAILED_METADATA_PARSING.value
+            pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
@@ -705,38 +736,38 @@ def main():
 
         task_status, zip_pack_path = pack.zip_pack()
         if not task_status:
-            pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.value
+            pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
             pack.cleanup()
             continue
 
         task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
                                                                      override_pack)
         if not task_status:
-            pack.status = PackStatus.FAILED_UPLOADING_PACK.value
+            pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()
             continue
 
         # in case that pack already exist at cloud storage path, skipped further steps
-        if not skipped_pack_uploading:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.value
+        if skipped_pack_uploading:
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
 
         task_status = pack.prepare_for_index_upload()
         if not task_status:
-            pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.value
+            pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
             pack.cleanup()
             continue
 
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
         if not task_status:
-            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.value
+            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
             continue
 
         # detected index update
         index_was_updated = True
-        pack.status = PackStatus.SUCCESS.value
+        pack.status = PackStatus.SUCCESS.name
         pack.cleanup()
 
     if index_was_updated:
