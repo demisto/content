@@ -83,7 +83,8 @@ def get_latest_id(alerts_data):
 
     return latest_id
 
-    ''' COMMANDS FUNCTIONS '''
+
+''' COMMANDS FUNCTIONS '''
 
 
 def show_alert(alert_id):
