@@ -212,6 +212,14 @@ class FeedIndicatorType(object):
         )
 
     @staticmethod
+    def list_all_supported_indicators():
+        indicator_types = []
+        for key, val in vars(FeedIndicatorType).items():
+            if not key.startswith('__') and type(val) == str:
+                indicator_types.append(val)
+        return  indicator_types
+
+    @staticmethod
     def ip_to_indicator_type(ip):
         """Returns the indicator type of the input IP.
 
@@ -235,8 +243,6 @@ class FeedIndicatorType(object):
 
         else:
             return None
-
-
 
 
 # ===== Fix fetching credentials from vault instances =====

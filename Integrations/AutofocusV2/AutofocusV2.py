@@ -1511,6 +1511,7 @@ def get_export_list_command(args):
         'panosFormatted': True,
         'apiKey': ''
     }
+
     results = http_request(url_suffix='/export', method='POST', data=data,
                            err_operation=f"Failed to fetch export list: {args.get('label')}")
 
