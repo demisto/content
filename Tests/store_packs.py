@@ -392,7 +392,7 @@ class Pack(object):
                     for pack_file in target_folder_files:
                         if pack_file.startswith('.'):
                             continue
-                        elif pack_file.endswith('.png'):
+                        elif pack_file.endswith('_image.png'):
                             image_data['repo_image_path'] = os.path.join(root, pack_file)
                         elif pack_file.endswith('.yml'):
                             with open(os.path.join(root, pack_file), 'r') as integration_file:
