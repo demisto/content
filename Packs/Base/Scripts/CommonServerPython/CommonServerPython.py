@@ -2079,6 +2079,8 @@ class FileSignature(object):
 
 class File(Indicator):
     """
+    File indicator class - https://xsoar.pan.dev/docs/context-standards#file
+
     :type name: ``str``
     :param name: The full file name (including file extension).
 
