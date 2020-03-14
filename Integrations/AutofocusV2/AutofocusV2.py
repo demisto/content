@@ -1462,7 +1462,7 @@ def search_file_command(file):
         score = calculate_dbot_score(raw_res, indicator_type)
         dbot_score = DBotScore(
             indicator=sha256,
-            indicator_type=DBotScoreType.HASH,
+            indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
             score=score
         )

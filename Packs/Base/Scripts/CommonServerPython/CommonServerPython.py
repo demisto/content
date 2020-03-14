@@ -132,7 +132,7 @@ thresholds = {
 
 
 class DBotScoreType(object):
-    """ ignore docstring
+    """
     Enum: contains all the indicator types, used DBotScore.Type)
     """
     IP = 'ip'
@@ -146,7 +146,7 @@ class DBotScoreType(object):
 
         return _type in (
             DBotScoreType.IP,
-            DBotScoreType.HASH,
+            DBotScoreType.FILE,
             DBotScoreType.DOMAIN,
             DBotScoreType.URL
         )
@@ -1842,12 +1842,20 @@ class DBotScore(Indicator):
     """
     DBotScore class
 
-    Args:
-        indicator: indicator value, ip, hash, domain, url, etc
-        indicator_type: use DBotScoreType class
-        integration_name: integration name
-        score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
-        malicious_description: if the indicator is malicious and have explanation for it then set it to this field
+    :type indicator: ``str``
+    :param indicator: indicator value, ip, hash, domain, url, etc
+
+    :type indicator_type: ``DBotScoreType``
+    :param indicator_type: use DBotScoreType class
+
+    :type integration_name: ``str``
+    :param integration_name: integration name
+
+    :type score: ``DBotScore``
+    :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
+
+    :type malicious_description: ``str``
+    :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
 
     :return: None
     :rtype: ``None``
@@ -1895,7 +1903,41 @@ class DBotScore(Indicator):
 
 class IP(Indicator):
     """
-    IP indicator - https://xsoar.pan.dev/docs/context-standards#ip
+    IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
+
+    :type ip: ``str``
+    :param ip:
+
+    :type asn: ``str``
+    :param asn:
+
+    :type hostname: ``str``
+    :param hostname:
+
+    :type geo_latitude: ``str``
+    :param geo_latitude:
+
+    :type geo_longitude: ``str``
+    :param geo_longitude:
+
+    :type geo_country: ``str``
+    :param geo_country:
+
+    :type geo_description: ``str``
+    :param geo_description:
+
+    :type detection_engines: ``str``
+    :param detection_engines:
+
+    :type positive_engines: ``str``
+    :param positive_engines:
+
+    :type dbot_score: ``str``
+    :param dbot_score:
+
+    :return: None
+    :rtype: ``None``
+
     """
     CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
@@ -1970,9 +2012,32 @@ class IP(Indicator):
 
 
 class FileSignature(object):
-    """ ignore docstring
+    """
+    FileSignature class
+
+    :type authentihash: ``str``
+    :param authentihash: The authentication hash.
+
+    :type copyright: ``str``
+    :param copyright: Copyright information.
+
+    :type description: ``str``
+    :param description: A description of the signature.
+
+    :type file_version: ``str``
+    :param file_version: The file version.
+
+    :type internal_name: ``str``
+    :param internal_name: The internal name of the file.
+
+    :type original_name: ``str``
+    :param original_name: The original name of the file.
+
+    :return: None
+    :rtype: ``None``
     """
     def __init(self, authentihash, copyright, description, file_version, internal_name, original_name):
+
         self.authentihash = authentihash
         self.copyright = copyright
         self.description = description
@@ -1992,8 +2057,66 @@ class FileSignature(object):
 
 
 class File(Indicator):
-    """ ignore docstring
-    File indicator - https://xsoar.pan.dev/docs/context-standards#file
+    """
+    :type name: ``str``
+    :param name: The full file name (including file extension).
+
+    :type entry_id: ``str``
+    :param entry_id: The ID for locating the file in the War Room.
+
+    :type size: ``int``
+    :param size: The size of the file in bytes.
+
+    :type md5: ``str``
+    :param md5: The MD5 hash of the file.
+
+    :type sha1: ``str``
+    :param sha1: The SHA1 hash of the file.
+
+    :type sha256: ``str``
+    :param sha256: The SHA256 hash of the file.
+
+    :type sha512: ``str``
+    :param sha512: The SHA512 hash of the file.
+
+    :type ssdeep: ``str``
+    :param ssdeep: The ssdeep hash of the file (same as displayed in file entries).
+
+    :type extension: ``str``
+    :param extension: The file extension, for example: "xls".
+
+    :type file_type: ``str``
+    :param file_type: The file type, as determined by libmagic (same as displayed in file entries).
+
+    :type hostname: ``str``
+    :param hostname: The name of the host where the file was found. Should match Path.
+
+    :type path: ``str``
+    :param path: The path where the file is located.
+
+    :type company: ``str``
+    :param company: The name of the company that released a binary.
+
+    :type product_name: ``str``
+    :param product_name: The name of the product to which this file belongs.
+
+    :type digital_signature__publisher: ``str``
+    :param digital_signature__publisher: The publisher of the digital signature for the file.
+
+    :type signature: ``FileSignature``
+    :param signature: File signature class
+
+    :type actor: ``str``
+    :param actor: The actor reference.
+
+    :type tags: ``str``
+    :param tags: Tags of the file.
+
+    :type dbot_score: ``DBotScore``
+    :param dbot_score: If file has a score then create and set a DBotScore object
+
+    :rtype: ``None``
+    :return: None
     """
     CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
                    'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
@@ -2002,7 +2125,8 @@ class File(Indicator):
 
     def __init__(self, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None, sha512=None, ssdeep=None,
                  extension=None, file_type=None, hostname=None, path=None, company=None, product_name=None,
-                 digital_signature__publisher=None, signature=None, author=None, tags=None, dbot_score=None):
+                 digital_signature__publisher=None, signature=None, actor=None, tags=None, dbot_score=None):
+
         self.name = name
         self.entry_id = entry_id
         self.size = size
@@ -2019,7 +2143,7 @@ class File(Indicator):
         self.product_name = product_name
         self.digital_signature__publisher = digital_signature__publisher
         self.signature = signature
-        self.author = author
+        self.actor = actor
         self.tags = tags
 
         self.dbot_score = dbot_score
@@ -2066,8 +2190,8 @@ class File(Indicator):
             }
         if self.signature:
             file_context['Signature'] = self.signature.to_context()
-        if self.author:
-            file_context['Author'] = self.author
+        if self.actor:
+            file_context['Actor'] = self.actor
         if self.tags:
             file_context['Tags'] = self.tags
 
@@ -2090,13 +2214,32 @@ class File(Indicator):
 
 class CVE(Indicator):
     """
-    CVE indicator - https://xsoar.pan.dev/docs/context-standards#cve
+    CVE indicator class - https://xsoar.pan.dev/docs/context-standards#cve
 
-    ret
+    :type id: ``str``
+    :param id: The ID of the CVE, for example: "CVE-2015-1653".
+
+    :type cvss: ``str``
+    :param cvss: The CVSS of the CVE, for example: "10.0".
+
+    :type published: ``str``
+    :param published: The timestamp of when the CVE was published.
+
+    :type modified: ``str``
+    :param modified: The timestamp of when the CVE was last modified.
+
+    :type description: ``str``
+    :param description: A description of the CVE.
+
+    :return: None
+    :rtype: ``None``
+
     """
     CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
     def __init__(self, id, cvss, published, modified, description):
+        # type (str, str, str, str, str) -> None
+
         self.id = id
         self.cvss = cvss
         self.published = published
@@ -2553,6 +2696,7 @@ emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
