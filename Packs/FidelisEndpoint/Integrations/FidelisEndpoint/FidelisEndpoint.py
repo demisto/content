@@ -112,25 +112,25 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def file_search_status(self, job_id: str, job_result_id: str) -> Dict:
+    def file_search_status(self, job_id: str = None, job_result_id: str = None) -> Dict:
 
         url_suffix = f'/jobs/getjobstatus/{job_id}/{job_result_id}'
 
         return self._http_request('GET', url_suffix)
 
-    def file_search_results_metadata(self, job_id: str, job_result_id: str) -> Dict:
+    def file_search_results_metadata(self, job_id: str = None, job_result_id: str = None) -> Dict:
 
         url_suffix = f'/jobs/{job_id}/jobresults/{job_result_id}'
 
         return self._http_request('GET', url_suffix)
 
-    def get_file(self, file_id: str) -> Union[str, bytes]:
+    def get_file(self, file_id: str = None) -> Union[str, bytes]:
 
         url_suffix = f'/files/{file_id}'
 
         return self._http_request('GET', url_suffix, resp_type='content')
 
-    def delete_job(self, job_id) -> Dict:
+    def delete_job(self, job_id: str = None) -> Dict:
 
         url_suffix = f'/jobs/{job_id}'
 
@@ -142,14 +142,14 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def script_manifest(self, script_id: str) -> Dict:
+    def script_manifest(self, script_id: str = None) -> Dict:
 
         url_suffix = f'/packages/{script_id}?type=Manifest'
 
         return self._http_request('GET', url_suffix)
 
-    def execute_script(self, script_id: str, endpoint_ip: str, answer: Union[str, int], time_out: int,
-                       additional_answer: Union[None, str]) -> Dict:
+    def execute_script(self, script_id: str = None, endpoint_ip: str = None, answer: Union[str, int] = None,
+                       time_out: int = None, additional_answer: Union[None, str] = None) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -198,7 +198,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def list_process(self, script_id: str, time_out: int, endpoint_id) -> Dict:
+    def list_process(self, script_id: str = None, time_out: int = None, endpoint_id: str = None) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -235,13 +235,14 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def script_job_results(self, job_id: str) -> Dict:
+    def script_job_results(self, job_id: str = None) -> Dict:
 
         url_suffix = f'/jobresults/{job_id}'
 
         return self._http_request('POST', url_suffix)
 
-    def kill_process(self, script_id: str, pid: int, time_out: int, endpoint_ip) -> Dict:
+    def kill_process(self, script_id: str = None, pid: int = None, time_out: int = None,
+                     endpoint_ip=None) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -270,7 +271,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def delete_file(self, script_id: str, file_path: str, time_out: int, endpoint_ip) -> Dict:
+    def delete_file(self, script_id: str = None, file_path: str = None, time_out: int = None, endpoint_ip=None) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -506,8 +507,9 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_server_ip(self, limit: int, start_time: Union[None, int, float],
-                               end_time: Union[None, int, float], logic: str, remote_ip: str) -> Dict:
+    def query_by_dns_server_ip(self, limit: int = None, start_time: Union[None, int, float] = None,
+                               end_time: Union[None, int, float] = None, logic: str = None,
+                               remote_ip: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -584,9 +586,10 @@ class Client(BaseClient):
 
         return response
 
-    def query_events(self, limit: int, start_time: Union[None, int, float], end_time: Union[None, int, float],
-                     logic: str, column: str, value: str, entity_type: str, operator: str,
-                     additional_filter) -> Dict:
+    def query_events(self, limit: int = None, start_time: Union[None, int, float] = None,
+                     end_time: Union[None, int, float] = None, logic: str = None, column: str = None,
+                     value: str = None, entity_type: str = None, operator: str = None,
+                     additional_filter = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -662,7 +665,7 @@ def test_module(client: Client, *_):
     return '', {}, {}
 
 
-def list_alerts_command(client: Client, args: dict)  -> Tuple[str, Dict, Dict]:
+def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', '50')
     sort = args.get('sort')
     facet_search = args.get('facet_search', '')
@@ -725,7 +728,7 @@ def list_alerts_command(client: Client, args: dict)  -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def host_info_command(client: Client, args: dict)  -> Tuple[str, Dict, Dict]:
+def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     ip_address = args.get('ip_address')
     host = args.get('host')
@@ -778,7 +781,7 @@ def host_info_command(client: Client, args: dict)  -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def file_search(client: Client, args: dict)  -> Tuple[str, Dict, Dict]:
+def file_search(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """ Search for files on multiple hosts, using file hash, extension, file size, and other search criteria."""
 
     host = argToList(args.get('host', ['']))
