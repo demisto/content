@@ -300,7 +300,8 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def network_isolation(self, script_id: str, allowed_server: str, time_out: int, endpoint_ip) -> Dict:
+    def network_isolation(self, script_id: str = None, allowed_server: str = None, time_out: int = None,
+                          endpoint_ip=None) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body = {
@@ -329,7 +330,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def remove_network_isolation(self, script_id: str, time_out: int, endpoint_ip) -> Dict:
+    def remove_network_isolation(self, script_id: str = None, time_out: int = None, endpoint_ip=None) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body: dict = {
@@ -355,14 +356,14 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def get_script_job_status(self, job_result_id: str) -> Dict:
+    def get_script_job_status(self, job_result_id: str = None) -> Dict:
 
         url_suffix = f'/jobs/getjobtargets/{job_result_id}'
 
         return self._http_request('GET', url_suffix)
 
-    def query_by_hash(self, limit: int, start_time: Union[None, int, float],
-                      end_time: Union[None, int, float], logic: str, file_hash: str) -> Dict:
+    def query_by_hash(self, limit: int = None, start_time: Union[None, int, float] = None,
+                      end_time: Union[None, int, float] = None, logic: str = None, file_hash: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -397,8 +398,9 @@ class Client(BaseClient):
             raise Exception(response.get('error'))
         return response
 
-    def query_by_process_name(self, limit: int, start_time: Union[None, int, float],
-                              end_time: Union[None, int, float], logic: str, process_name: str) -> Dict:
+    def query_by_process_name(self, limit: int = None, start_time: Union[None, int, float] = None,
+                              end_time: Union[None, int, float] = None, logic: str = None,
+                              process_name: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -433,8 +435,8 @@ class Client(BaseClient):
             raise Exception(response.get('error'))
         return response
 
-    def query_by_remote_ip(self, limit: int, start_time: Union[None, int, float],
-                           end_time: Union[None, int, float], logic: str, remote_ip: str) -> Dict:
+    def query_by_remote_ip(self, limit: int = None, start_time: Union[None, int, float] = None,
+                           end_time: Union[None, int, float] = None, logic: str = None, remote_ip: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -471,8 +473,8 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_request(self, limit: int, start_time: Union[None, int, float],
-                             end_time: Union[None, int, float], logic: str, url: str) -> Dict:
+    def query_by_dns_request(self, limit: int = None, start_time: Union[None, int, float] = None,
+                             end_time: Union[None, int, float] = None, logic: str = None, url: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -544,8 +546,9 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_source_ip(self, limit: int, start_time: Union[None, int, float],
-                               end_time: Union[None, int, float], logic: str, source_ip: str, domain: str) -> Dict:
+    def query_by_dns_source_ip(self, limit: int = None, start_time: Union[None, int, float] = None,
+                               end_time: Union[None, int, float] = None, logic: str = None, source_ip: str = None,
+                               domain: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -589,7 +592,7 @@ class Client(BaseClient):
     def query_events(self, limit: int = None, start_time: Union[None, int, float] = None,
                      end_time: Union[None, int, float] = None, logic: str = None, column: str = None,
                      value: str = None, entity_type: str = None, operator: str = None,
-                     additional_filter = None) -> Dict:
+                     additional_filter=None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
