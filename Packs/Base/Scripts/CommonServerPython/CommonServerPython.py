@@ -217,7 +217,7 @@ class FeedIndicatorType(object):
         for key, val in vars(FeedIndicatorType).items():
             if not key.startswith('__') and type(val) == str:
                 indicator_types.append(val)
-        return  indicator_types
+        return indicator_types
 
     @staticmethod
     def ip_to_indicator_type(ip):
@@ -748,7 +748,7 @@ def encode_string_results(text):
         return text
     try:
         return str(text)
-    except UnicodeEncodeError as exception:
+    except UnicodeEncodeError:
         return text.encode("utf8", "replace")
 
 
@@ -770,18 +770,18 @@ def safe_load_json(json_object):
             safe_json = json.loads(json_object)
         except ValueError as e:
             return_error(
-                'Unable to parse JSON string. Please verify the JSON is valid. - '+str(e))
+                'Unable to parse JSON string. Please verify the JSON is valid. - ' + str(e))
     else:
         try:
             path = demisto.getFilePath(json_object)
             with open(path['path'], 'rb') as data:
                 try:
                     safe_json = json.load(data)
-                except:  # lgtm [py/catch-base-exception]
+                except Exception:  # lgtm [py/catch-base-exception]
                     safe_json = json.loads(data.read())
         except Exception as e:
             return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
-                         'ID is correct. - '+str(e))
+                         'ID is correct. - ' + str(e))
     return safe_json
 
 
@@ -1791,7 +1791,7 @@ class CommandResults:
     def __init__(self, outputs_prefix, outputs_key_field, outputs, indicators=None, readable_output=None,
                  raw_response=None):
 
-        # type: (str, str, object, list, str, Any) -> None
+        # type: (str, str, object, list, str, object) -> None
         self.indicators = indicators
 
         self.outputs_prefix = outputs_prefix
@@ -1867,6 +1867,8 @@ class DBotScore(Indicator):
 
     CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
+    CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
+
     def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None):
 
         if not DBotScoreType.is_valid_type(indicator_type):
@@ -1890,9 +1892,16 @@ class DBotScore(Indicator):
             DBotScore.BAD
         )
 
+    @staticmethod
+    def get_context_path():
+        if get_demisto_version().get('version') >= '5.5.0':
+            return DBotScore.CONTEXT_PATH
+        else:
+            DBotScore.CONTEXT_PATH_PRIOR_V5_5
+
     def to_context(self):
         return {
-            DBotScore.CONTEXT_PATH: {
+            DBotScore.get_context_path(): {
                 'Indicator': self.indicator,
                 'Type': self.indicator_type,
                 'Vendor': self.integration_name,
@@ -1906,33 +1915,33 @@ class IP(Indicator):
     IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
 
     :type ip: ``str``
-    :param ip:
+    :param ip: IP address
 
     :type asn: ``str``
-    :param asn:
+    :param asn: The autonomous system name for the IP address, for example: "AS8948".
 
     :type hostname: ``str``
-    :param hostname:
+    :param hostname: The hostname that is mapped to this IP address.
 
     :type geo_latitude: ``str``
-    :param geo_latitude:
+    :param geo_latitude: The geolocation where the IP address is located, in the format: latitude
 
     :type geo_longitude: ``str``
-    :param geo_longitude:
+    :param geo_longitude: The geolocation where the IP address is located, in the format: longitude.
 
     :type geo_country: ``str``
-    :param geo_country:
+    :param geo_country: The country in which the IP address is located.
 
     :type geo_description: ``str``
-    :param geo_description:
+    :param geo_description: Additional information about the location.
 
-    :type detection_engines: ``str``
-    :param detection_engines:
+    :type detection_engines: ``int``
+    :param detection_engines: The total number of engines that checked the indicator.
 
-    :type positive_engines: ``str``
-    :param positive_engines:
+    :type positive_engines: ``int``
+    :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
-    :type dbot_score: ``str``
+    :type dbot_score: ``DBotScore``
     :param dbot_score:
 
     :return: None
@@ -2194,7 +2203,6 @@ class File(Indicator):
             file_context['Actor'] = self.actor
         if self.tags:
             file_context['Tags'] = self.tags
-
 
         if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
             file_context['Malicious'] = {
@@ -2485,6 +2493,8 @@ class Domain(Indicator):
 
 
 old_demisto_results = demisto.results
+
+
 def new_demisto_results(results):
     if results is None:
         # backward compatibility reasons
