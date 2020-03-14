@@ -1,16 +1,14 @@
-# type: ignore
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
-# IMPORTS
+"""GLOBALS/PARAMS"""
 
 import requests
-from typing import Dict, Tuple, List, Optional, Union, Any
+from typing import Dict, Tuple, List, Optional, Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-"""GLOBALS/PARAMS"""
 # List processes
 LIST_PROCESSES_WINDOWS = '2d32a530-0716-4542-afdc-8da3bd47d8bf'  # disable-secrets-detection
 LIST_PROCESSES_LINUX = '5e58a0e9-450d-4394-8360-159d5e38c280'  # disable-secrets-detection
@@ -60,11 +58,10 @@ class Client(BaseClient):
             'password': self._password
         }
         response = self._http_request('GET', '/authenticate', params=params)
-        token_ = response.get('data')
-        if not token_:
-            raise Exception('The token could not be generated. Make sure that the username and password are correct.')
+        if response.get('error'):
+            raise Exception(response.get('error'))
+        token = response.get('data', {}).get('token', '')
 
-        token = token_.get('token')
         return token
 
     def test_module_request(self):
@@ -90,7 +87,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix, params=params)
 
-    def get_host_info(self, host_name: str, ip_address: str):
+    def get_host_info(self, host_name: Union[None, str], ip_address: Union[None, str]):
 
         if host_name:
             url_suffix = '/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={%22searchFields%22:' \
@@ -127,7 +124,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def get_file(self, file_id: str) -> Dict:
+    def get_file(self, file_id: str) -> Union[str, bytes]:
 
         url_suffix = f'/files/{file_id}'
 
@@ -334,7 +331,7 @@ class Client(BaseClient):
     def remove_network_isolation(self, script_id: str, time_out: int, endpoint_ip) -> Dict:
 
         url_suffix = '/jobs/createTask'
-        body = {
+        body: dict = {
             'queueExpirationInhours': None,
             'wizardOverridePassword': False,
             'impersonationUser': None,
@@ -430,7 +427,6 @@ class Client(BaseClient):
                 }
             }
         }
-        print(body)
         response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
             raise Exception(response.get('error'))
@@ -632,19 +628,42 @@ class Client(BaseClient):
         return response
 
 
+def alert_severity_to_dbot_score(severity_str: str):
+    """Converts an severity string to DBot score representation
+        alert severity. Can be one of:
+        Low    ->  1
+        Medium ->  2
+        High, Critical   ->  3
+
+    Args:
+        severity_str: String representation of severity.
+
+    Returns:
+        Dbot representation of severity
+    """
+    severity_str = severity_str.lower()
+    if severity_str == 'low':
+        return 1
+    elif severity_str == 'medium':
+        return 2
+    elif severity_str == 'high':
+        return 3
+    elif severity_str == 'critical':
+        return 3
+    return 0
+
+
 def test_module(client: Client, *_):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
     client.test_module_request()
     demisto.results('ok')
-    return 'ok', {}, {}
+    return '', {}, {}
 
 
-def list_alerts_command(client: Client, args: dict):
-    """get information about alerts. """
-
-    limit = args.get('limit', 50)
+def list_alerts_command(client: Client, args: dict)  -> Tuple[str, Dict, Dict]:
+    limit = args.get('limit', '50')
     sort = args.get('sort')
     facet_search = args.get('facet_search', '')
     start_date = args.get('start_date')
@@ -706,20 +725,20 @@ def list_alerts_command(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def host_info_command(client: Client, args: dict):
+def host_info_command(client: Client, args: dict)  -> Tuple[str, Dict, Dict]:
 
     ip_address = args.get('ip_address')
     host = args.get('host')
 
     if not host and not ip_address:
-        raise Exception('You must provide either ip_address or host')
+        return f'You must provide either ip_address or host', {}, {}
 
     contents = []
     context_standards = []
     headers = ['ID', 'HostName', 'IpAddress', 'OS', 'MacAddress', 'Isolated', 'LastContactDate', 'AgentInstalled',
                'AgentVersion', 'OnNetwork', 'AV_Enabled', 'Groups', 'ProcessorName']
     response = client.get_host_info(host, ip_address)
-    hosts = response.get('data')
+    hosts = response.get('data', {})
     if not hosts:
         return f'No hosts was found', {}, {}
 
@@ -759,13 +778,13 @@ def host_info_command(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def file_search(client: Client, args: dict):
-    """ search for files on multiple hosts, using file hash, extension, file size, and other search criteria."""
+def file_search(client: Client, args: dict)  -> Tuple[str, Dict, Dict]:
+    """ Search for files on multiple hosts, using file hash, extension, file size, and other search criteria."""
 
     host = argToList(args.get('host', ['']))
     md5 = argToList(args.get('md5'))
-    file_extension = argToList(args.get('file_extension', ''))
-    file_path = argToList(args.get('file_path', ''))
+    file_extension = argToList(args.get('file_extension'))
+    file_path = argToList(args.get('file_path'))
     file_size = {
         'value': int(args.get('file_size')),
         'quantifier': 'greaterThan'
@@ -784,7 +803,7 @@ def file_search(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def file_search_status(client: Client, args: dict):
+def file_search_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Get the file search job status"""
 
     job_id = args.get('job_id')
@@ -808,11 +827,12 @@ def file_search_status(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def file_search_reasult_metadata(client: Client, args: dict):
+def file_search_reasult_metadata(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     """Get the job results metadata"""
 
     job_id = args.get('job_id')
     job_result_id = args.get('job_result_id')
+    headers = ['ID', 'FileName', 'FilePath', 'MD5Hash', 'FileSize', 'HostName', 'HostIP', 'AgentID']
 
     response = client.file_search_results_metadata(job_id, job_result_id)
     if not response.get('success'):
@@ -847,33 +867,33 @@ def file_search_reasult_metadata(client: Client, args: dict):
         'FidelisEndpoint.File(val.ID && val.ID === obj.ID)': contents,
         'File': file_standards
     }
-    human_readable = tableToMarkdown('Fidelis Endpoint file results metadata', contents, removeNull=True)
+    human_readable = tableToMarkdown('Fidelis Endpoint file results metadata', contents, headers=headers, removeNull=True)
 
     return human_readable, entry_context, response
 
 
-def get_file(client: Client, args: dict):
-    file_id: str = args.get('file_id')
+def get_file_command(client: Client, args: dict):
+    file_id: str = str(args.get('file_id'))
     response = client.get_file(file_id)
     attachment_file = fileResult('Fidelis_Endpoint.zip', response)
 
     return attachment_file
 
 
-def delete_file_search_job(client: Client, args: dict):
+def delete_file_search_job_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     job_id = args.get('job_id')
     response = client.delete_job(job_id)
 
     return 'The job was successfully deleted', {}, response
 
 
-def list_scripts_command(client: Client, *_):
+def list_scripts_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
     headers = ['ID', 'Name', 'Description']
     response = client.list_scripts()
     res = response.get('data', {})
     scripts = res.get('scripts', [])
     if not scripts:
-        raise Exception('No scripts were found.')
+        return 'No scripts were found.', {}, {}
     contents = []
     for script in scripts:
         contents.append({
@@ -888,7 +908,7 @@ def list_scripts_command(client: Client, *_):
     return human_readable, entry_context, response
 
 
-def script_manifest_command(client: Client, args: dict):
+def script_manifest_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     script_id = args.get('script_id')
     headers = ['ID', 'Name', 'Description', 'Platform', 'Command', 'Questions', 'Priority', 'TimeoutSeconds',
                'ResultColumns', 'ImpersonationUser', 'ImpersonationPassword', 'WizardOverridePassword']
@@ -918,7 +938,7 @@ def script_manifest_command(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def execute_script_command(client: Client, args: dict):
+def execute_script_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     script_id = args.get('script_id')
     time_out = args.get('time_out')
     endpoint_ip = argToList(args.get('endpoint_ip'))
@@ -934,8 +954,11 @@ def execute_script_command(client: Client, args: dict):
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
         endpoint_id = endpoints.get('data')
 
+    if endpoint_name and endpoint_ip:
+        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
+
     if not endpoint_ip and not endpoint_name:
-        raise Exception('You must provide either endpoint_ip or endpoint_name')
+        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
 
     response = client.execute_script(script_id, endpoint_id, answer, time_out, additional_answer)
     context = {
@@ -947,7 +970,7 @@ def execute_script_command(client: Client, args: dict):
     return 'The job has been executed successfully', entry_context, response
 
 
-def list_process_command(client: Client, args: dict):
+def list_process_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
 
@@ -959,8 +982,11 @@ def list_process_command(client: Client, args: dict):
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
         endpoint_id = endpoints.get('data')
 
+    if endpoint_name and endpoint_ip:
+        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
+
     if not endpoint_ip and not endpoint_name:
-        raise Exception('You must provide either endpoint_ip or endpoint_name')
+        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
 
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
@@ -992,10 +1018,12 @@ def get_script_result(client: Client, args: dict):
 
     response = client.script_job_results(job_id)
     hits = response.get('data', {}).get('hits', {}).get('hits', [])
+    if not hits:
+        return 'No results were found', {}, {}
     contents = []
     context = []
     for hit in hits:
-        source_ = hit.get('_source')
+        source_ = hit.get('_source', {})
         contents.append({
             'Path': source_.get('Path'),
             'User': source_.get('User'),
@@ -1036,7 +1064,7 @@ def get_script_result(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def kill_process_by_pid(client: Client, args: dict):
+def kill_process_by_pid(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
 
@@ -1048,8 +1076,11 @@ def kill_process_by_pid(client: Client, args: dict):
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
         endpoint_id = endpoints.get('data')
 
+    if endpoint_name and endpoint_ip:
+        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
+
     if not endpoint_ip and not endpoint_name:
-        raise Exception('You must provide either endpoint_ip or endpoint_name')
+        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
 
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
@@ -1072,7 +1103,7 @@ def kill_process_by_pid(client: Client, args: dict):
     return 'The job has been executed successfully', entry_context, response
 
 
-def delete_file_command(client: Client, args: dict):
+def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
 
@@ -1084,8 +1115,11 @@ def delete_file_command(client: Client, args: dict):
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
         endpoint_id = endpoints.get('data')
 
+    if endpoint_name and endpoint_ip:
+        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
+
     if not endpoint_ip and not endpoint_name:
-        raise Exception('You must provide either endpoint_ip or endpoint_name')
+        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
 
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
@@ -1108,7 +1142,7 @@ def delete_file_command(client: Client, args: dict):
     return 'The job has been executed successfully', entry_context, response
 
 
-def network_isolation_command(client: Client, args: dict):
+def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
 
@@ -1120,8 +1154,11 @@ def network_isolation_command(client: Client, args: dict):
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
         endpoint_id = endpoints.get('data')
 
+    if endpoint_name and endpoint_ip:
+        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
+
     if not endpoint_ip and not endpoint_name:
-        raise Exception('You must provide either endpoint_ip or endpoint_name')
+        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
 
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
@@ -1144,7 +1181,7 @@ def network_isolation_command(client: Client, args: dict):
     return 'The job has been executed successfully', entry_context, response
 
 
-def remove_network_isolation_command(client: Client, args: dict):
+def remove_network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
 
@@ -1156,8 +1193,11 @@ def remove_network_isolation_command(client: Client, args: dict):
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
         endpoint_id = endpoints.get('data')
 
+    if endpoint_name and endpoint_ip:
+        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
+
     if not endpoint_ip and not endpoint_name:
-        raise Exception('You must provide either endpoint_ip or endpoint_name')
+        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
 
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
@@ -1179,7 +1219,7 @@ def remove_network_isolation_command(client: Client, args: dict):
     return 'The job has been executed successfully', entry_context, response
 
 
-def script_job_status(client: Client, args: dict):
+def script_job_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     job_result_id = args.get('job_result_id')
     contents = []
     response = client.get_script_job_status(job_result_id)
@@ -1199,7 +1239,7 @@ def script_job_status(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def query_file_by_hash(client: Client, args: dict):
+def query_file_by_hash(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1213,7 +1253,7 @@ def query_file_by_hash(client: Client, args: dict):
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        raise Exception(f'No events were found for file_hash {file_hash}')
+        return f'No events were found for file_hash {file_hash}', {}, {}
 
     for event in events:
         contents.append({
@@ -1263,12 +1303,14 @@ def query_file_by_hash(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def query_process_name_command(client: Client, args: dict):
+def query_process_name_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
     process_name = args.get('process_name')
     limit = args.get('limit')
+    headers = ['PID', 'EndpointName', 'Name', 'Path', 'User', 'Hash', 'ProcessStartTime', 'Parameters', 'ParentName',
+               'EventType']
     contents = []
     context = []
 
@@ -1276,7 +1318,7 @@ def query_process_name_command(client: Client, args: dict):
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        raise Exception(f'No events were found for the process {process_name}')
+        return f'No events were found for the process {process_name}', {}, {}
 
     for event in events:
         contents.append({
@@ -1313,11 +1355,11 @@ def query_process_name_command(client: Client, args: dict):
         })
 
     entry_context = {'FidelisEndpoint.Query(val.PID && val.PID === obj.PID)': context}
-    human_readable = tableToMarkdown('Fidelis Endpoint process results', contents, removeNull=True)
+    human_readable = tableToMarkdown('Fidelis Endpoint process results', contents, headers=headers, removeNull=True)
     return human_readable, entry_context, response
 
 
-def query_connection_by_remote_ip(client: Client, args: dict):
+def query_connection_by_remote_ip_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1330,7 +1372,7 @@ def query_connection_by_remote_ip(client: Client, args: dict):
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        raise Exception(f'No events were found for the IP address {remote_ip}')
+        return f'No events were found for the IP address {remote_ip}', {}, {}
 
     for event in events:
         contents.append({
@@ -1380,7 +1422,7 @@ def query_connection_by_remote_ip(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def query_dns_request(client: Client, args: dict):
+def query_dns_request_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1393,7 +1435,7 @@ def query_dns_request(client: Client, args: dict):
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        raise Exception(f'No events were found for the URL {url}')
+        return f'No events were found for the URL {url}', {}, {}
 
     for event in events:
         contents.append({
@@ -1433,7 +1475,7 @@ def query_dns_request(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def query_by_server_ip(client: Client, args: dict):
+def query_by_server_ip_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1446,7 +1488,7 @@ def query_by_server_ip(client: Client, args: dict):
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        raise Exception(f'No events were found for the IP address {remote_ip}')
+        return f'No events were found for the IP address {remote_ip}', {}, {}
 
     for event in events:
         contents.append({
@@ -1486,7 +1528,7 @@ def query_by_server_ip(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def query_by_source_ip(client: Client, args: dict):
+def query_by_source_ip(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1501,7 +1543,7 @@ def query_by_source_ip(client: Client, args: dict):
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        raise Exception(f'No events were found')
+        return f'No events were found', {}, {}
 
     for event in events:
         contents.append({
@@ -1541,7 +1583,7 @@ def query_by_source_ip(client: Client, args: dict):
     return human_readable, entry_context, response
 
 
-def query_events(client: Client, args: dict):
+def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1567,7 +1609,7 @@ def query_events(client: Client, args: dict):
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
-        raise Exception(f'No events were found')
+        return f'No events were found', {}, {}
 
     for event in events:
         contents.append({
@@ -1612,29 +1654,6 @@ def query_events(client: Client, args: dict):
     human_readable = tableToMarkdown('Fidelis Endpoint query events result', contents,
                                      removeNull=True)
     return human_readable, entry_context, response
-
-
-def alert_severity_to_dbot_score(severity_str):
-    """Converts an severity string to DBot score representation
-        alert severity. Can be one of:
-        Low    ->  1
-        Medium ->  2
-        High   ->  3
-
-    Args:
-        severity_str: String representation of severity.
-
-    Returns:
-        Dbot representation of severity
-    """
-    severity_str = severity_str.lower()
-    if severity_str == 'low':
-        return 1
-    if severity_str == 'medium':
-        return 2
-    elif severity_str == 'high':
-        return 3
-    return 0
 
 
 def fetch_incidents(client: Client, fetch_time: Optional[str], severity: str, last_run: Dict) -> Tuple[List, Dict]:
@@ -1710,10 +1729,10 @@ def main():
             return_outputs(*file_search_reasult_metadata(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-get-file':
-            demisto.results(get_file(client, demisto.args()))
+            demisto.results(get_file_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-delete-file-search-job':
-            return_outputs(*delete_file_search_job(client, demisto.args()))
+            return_outputs(*delete_file_search_job_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-list-scripts':
             return_outputs(*list_scripts_command(client, demisto.args()))
@@ -1752,13 +1771,13 @@ def main():
             return_outputs(*query_process_name_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-query-connection-by-remote-ip':
-            return_outputs(*query_connection_by_remote_ip(client, demisto.args()))
+            return_outputs(*query_connection_by_remote_ip_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-query-by-dns':
-            return_outputs(*query_dns_request(client, demisto.args()))
+            return_outputs(*query_dns_request_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-query-dns-by-server-ip':
-            return_outputs(*query_by_server_ip(client, demisto.args()))
+            return_outputs(*query_by_server_ip_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-query-dns-by-source-ip':
             return_outputs(*query_by_source_ip(client, demisto.args()))

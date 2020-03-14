@@ -52,7 +52,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: CreatedDate Descending
       description: |-
         Sorts the result before applying take and skip.
         Can be any property name of the alert object.
@@ -1530,7 +1529,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Add additional filter to the query (for example: pid=1234)'
+      description: 'Add additional filter to the query (for example: pid = 1234, hash
+        != abcde)'
       isArray: false
       name: additional_filter
       required: false
