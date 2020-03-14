@@ -133,12 +133,24 @@ thresholds = {
 
 class DBotScoreType(object):
     """
-    Enum: contains all the indicator types, used DBotScore.Type)
+    Enum: contains all the indicator types
+
+    DBotScoreType.IP
+    DBotScoreType.FILE
+    DBotScoreType.DOMAIN
+    DBotScoreType.URL
+
+    :return: None
+    :rtype: ``None``
     """
     IP = 'ip'
     FILE = 'file'
     DOMAIN = 'domain'
     URL = 'url'
+
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
 
     @classmethod
     def is_valid_type(cls, _type):
@@ -2045,7 +2057,7 @@ class FileSignature(object):
     :return: None
     :rtype: ``None``
     """
-    def __init(self, authentihash, copyright, description, file_version, internal_name, original_name):
+    def __init__(self, authentihash, copyright, description, file_version, internal_name, original_name):
 
         self.authentihash = authentihash
         self.copyright = copyright
@@ -2291,6 +2303,22 @@ class CVE(Indicator):
 class URL(Indicator):
     """
     URL indicator - https://xsoar.pan.dev/docs/context-standards#url
+
+    :type url: ``str``
+    :param url: The URL
+
+    :type detection_engines: ``int``
+    :param detection_engines: The total number of engines that checked the indicator.
+
+    :type positive_detections: ``int``
+    :param positive_detections: The number of engines that positively detected the indicator as malicious.
+
+    :type dbot_score: ``DBotScore``
+    :param dbot_score: If URL has reputation then create DBotScore object
+
+    :return: None
+    :rtype: ``None``
+
     """
     CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
