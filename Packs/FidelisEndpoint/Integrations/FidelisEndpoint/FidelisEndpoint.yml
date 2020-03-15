@@ -541,6 +541,7 @@ script:
       description: Is the endpoint hidden.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.GroupID
+      description: Group ID.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.Tags
       description: Script tags

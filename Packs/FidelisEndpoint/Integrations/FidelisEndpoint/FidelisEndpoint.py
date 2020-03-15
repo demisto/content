@@ -88,12 +88,12 @@ class Client(BaseClient):
     def get_host_info(self, host_name: Union[None, str], ip_address: Union[None, str]):
 
         if host_name:
-            url_suffix = '/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={%22searchFields%22:' \
-                         '[{%22fieldName%22:%22HostName%22,%22values%22:[{%22value%22:%22' + host_name + '%22}]}]}'
+            url_suffix = f'/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={{%22searchFields%22: \
+                             [{{%22fieldName%22:%22HostName%22,%22values%22:[{{%22value%22:%22{host_name}%22}}]}}]}}'
 
         if ip_address:
-            url_suffix = '/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={%22searchFields%22:' \
-                         '[{%22fieldName%22:%22IpAddress%22,%22values%22:[{%22value%22:%22' + ip_address + '%22}]}]}'
+            url_suffix = f'/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={{%22searchFields%22: \
+                         [{{%22fieldName%22:%22IpAddress%22,%22values%22:[{{%22value%22:%22{ip_address}%22}}]}}]}}'
 
         return self._http_request('GET', url_suffix)
 
@@ -180,7 +180,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def convert_ip_to_endpoint_id(self, ip: Union[str, list] = None) -> Dict:
+    def convert_ip_to_endpoint_id(self, ip: list = None) -> Dict:
 
         url_suffix = '/endpoints/endpointidsbyip'
 
@@ -188,11 +188,11 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def convert_name_to_endpoint_id(self, endpoint_name: Union[str, list]) -> Dict:
+    def convert_name_to_endpoint_id(self, endpoint_name: list = None) -> Dict:
 
         url_suffix = '/endpoints/endpointidsbyname'
 
-        body = endpoint_name
+        body = [endpoint_name]
 
         return self._http_request('POST', url_suffix, json_data=body)
 
@@ -650,31 +650,6 @@ def get_endpoint_id(client: Client, endpoint_ip=None, endpoint_name=None):
     return endpoint_id
 
 
-def alert_severity_to_dbot_score(severity_str: str):
-    """Converts an severity string to DBot score representation
-        alert severity. Can be one of:
-        Low    ->  1
-        Medium ->  2
-        High, Critical   ->  3
-
-    Args:
-        severity_str: String representation of severity.
-
-    Returns:
-        Dbot representation of severity
-    """
-    severity_str = severity_str.lower()
-    if severity_str == 'low':
-        return 1
-    elif severity_str == 'medium':
-        return 2
-    elif severity_str == 'high':
-        return 3
-    elif severity_str == 'critical':
-        return 3
-    return 0
-
-
 def test_module(client: Client, *_):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -808,7 +783,7 @@ def file_search(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     file_path = argToList(args.get('file_path'))
     try:
         file_size = {
-            'value': int(args.get('file_size')),
+            'value': int(args.get('file_size')),  # type: ignore
             'quantifier': 'greaterThan'
         }
     except Exception as e:
@@ -840,7 +815,7 @@ def file_search_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     contents = {
         'JobID': job_id,
         'JobResultID': job_result_id,
-        'Status': data.get('status')
+        'Status': data.get('status', 'Unclassified')
     }
     status = data.get('status')
 
@@ -1613,7 +1588,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], severity: str, la
         incidents = [{
             'name': f"Fidlie Endpoint alert: {alert.get('id')}",
             'occurred': alert.get('createDate'),
-            'severity': alert_severity_to_dbot_score(alert.get('severity')),
+            'severity': alert.get('severity'),
             'rawJSON': json.dumps(alert)
         } for alert in alerts if alert.get('id') > last_incident_id and alert.get('severity') == severity]
         # New incidents fetched
