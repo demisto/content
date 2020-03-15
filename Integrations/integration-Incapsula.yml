@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: User system proxy settings
+- display: Use system proxy settings
   name: proxy
   defaultvalue: "true"
   type: 8
@@ -1619,5 +1619,6 @@ script:
     arguments: []
     description: Use this operation to retrieve a list of all the client applications
   # Infrastructure Protection Test Alerts
-
 system: true
+tests:
+- No test
