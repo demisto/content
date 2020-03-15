@@ -2,20 +2,9 @@ import pytest
 from freezegun import freeze_time
 import json
 import CommonServerPython
-from MicrosoftGraphFiles import (
-    epoch_seconds,
-    get_encrypted,
-    remove_identity_key,
-    url_validation,
-    parse_key_to_context,
-    delete_file_command,
-    download_file_command,
-    list_share_point_sites_command,
-    list_drive_content_command,
-    create_new_folder_command,
-    list_drives_in_site_command,
-    Client,
-)
+from MicrosoftGraphFiles import epoch_seconds, get_encrypted, remove_identity_key, url_validation, \
+    parse_key_to_context, delete_file_command, download_file_command, list_sharepoint_sites_command, \
+    list_drive_content_command, create_new_folder_command, list_drives_in_site_command, Client
 
 
 with open("test_data/response.json", "rb") as test_data:
@@ -255,7 +244,7 @@ def test_delete_file(command, args, response, expected_result, mocker):
     "command, args, response, expected_result",
     [
         (
-            list_share_point_sites_command,
+            list_sharepoint_sites_command,
             {},
             commands_responses["list_tenant_sites"],
             commands_expected_results["list_tenant_sites"],
