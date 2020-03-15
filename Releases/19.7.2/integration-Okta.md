@@ -1,1 +1,0 @@
-Fixed bug where filters were being double encoded and returning failure to apply filter.
