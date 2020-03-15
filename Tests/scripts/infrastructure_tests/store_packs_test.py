@@ -38,7 +38,7 @@ USER_PACK_METADATA = {
 class TestMetadata:
     def test_validate_fields_of_parsed_metadata(self):
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=USER_PACK_METADATA, pack_content_items={},
-                                                    pack_id='test_pack_id')
+                                                    pack_id='test_pack_id', integration_images=[])
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -67,10 +67,11 @@ class TestMetadata:
     @pytest.mark.parametrize("empty_metadata", [{}, []])
     def test_parsed_metadata_empty_input(self, empty_metadata):
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=empty_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id')
+                                                    pack_id='test_pack_id', integration_images=[])
 
-        assert parsed_metadata['name'] == ""
+        assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
+        assert parsed_metadata['description'] == "test_pack_id"
         assert parsed_metadata['supportDetails'] == {}
 
 
