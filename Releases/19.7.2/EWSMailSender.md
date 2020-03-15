@@ -1,1 +1,0 @@
-- Added support for embedding inline images in emails.
