@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added the 'Prisma Cloud Remediation - AWS IAM User Policy Misconfiguration' sub-playbook.
 
 
 ## [19.11.1] - 2019-11-26
