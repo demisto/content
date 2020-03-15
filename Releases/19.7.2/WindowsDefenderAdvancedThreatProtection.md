@@ -1,1 +1,0 @@
-- Missing key 'isAadJoined' from API responses is disregarded.

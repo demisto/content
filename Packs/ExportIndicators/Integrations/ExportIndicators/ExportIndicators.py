@@ -28,7 +28,9 @@ FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
+CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text,json,json-seq,csv'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
+CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
 
@@ -66,31 +68,49 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0) -> str:
+def refresh_outbound_context(indicator_query: str, out_format: str, limit: int = 0, offset: int = 0) -> str:
     """
     Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
-    iocs = find_indicators_with_limit(indicator_query, limit)  # poll indicators into list from demisto
+    iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
     out_dict = create_values_out_dict(iocs, out_format)
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
-    save_context(now, out_dict)
+    demisto.setIntegrationContext({
+        "last_output": out_dict,
+        'last_run': date_to_timestamp(now),
+        'last_limit': limit,
+        'last_offset': offset,
+        'last_format': out_format,
+        'last_query': indicator_query,
+        'current_iocs': iocs
+    })
     return out_dict[CTX_VALUES_KEY]
 
 
-def save_context(now: datetime, out_dict: dict):
-    """Saves export_iocs state and refresh time to context"""
-    demisto.setLastRun({'last_run': date_to_timestamp(now)})
-    demisto.setIntegrationContext(out_dict)
-
-
-def find_indicators_with_limit(indicator_query: str, limit: int) -> list:
+def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
-    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit)
-    return iocs[:limit]
+    # calculate the starting page (each page holds 200 entries)
+    if offset:
+        next_page = int(offset / PAGE_SIZE)
+
+        # set the offset from the starting page
+        offset_in_page = offset - (PAGE_SIZE * next_page)
+
+    else:
+        next_page = 0
+        offset_in_page = 0
+
+    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
+
+    # if offset in page is bigger than the amount of results returned return empty list
+    if len(iocs) <= offset_in_page:
+        return []
+
+    return iocs[offset_in_page:limit + offset_in_page]
 
 
 def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
@@ -138,36 +158,80 @@ def create_values_out_dict(iocs: list, out_format: str) -> dict:
 
 def get_outbound_mimetype() -> str:
     """Returns the mimetype of the export_iocs"""
-    ctx = demisto.getIntegrationContext()
+    ctx = demisto.getIntegrationContext().get('last_output')
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
-def get_outbound_ioc_values(on_demand, limit, indicator_query='', out_format='text', last_run=None,
+def is_request_change(limit, offset, out_format=FORMAT_TEXT, last_update_data={}) -> bool:
+    """ Checks for changes in the request params
+
+    Args:
+        limit (int): limit on how many indicators should be exported.
+        offset (int): the index of the indicator from which the list should be exported.
+        out_format (str): the requested output format.
+        last_update_data (dict): the cached params for the last request.
+
+    Returns:
+        bool. True if limit/offset/out_format params have changed since the last request, False otherwise.
+    """
+    last_limit = last_update_data.get('last_limit')
+    last_offset = last_update_data.get('last_offset')
+    last_format = last_update_data.get('last_format')
+
+    return out_format != last_format or limit != last_limit or offset != last_offset
+
+
+def get_outbound_ioc_values(on_demand, limit, offset, indicator_query='', out_format=FORMAT_TEXT, last_update_data={},
                             cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the list
     """
+    last_update = last_update_data.get('last_run')
+    last_query = last_update_data.get('last_query')
+    current_iocs = last_update_data.get('current_iocs')
+
     # on_demand ignores cache
     if on_demand:
-        values_str = get_ioc_values_str_from_context()
+        if is_request_change(limit, offset, out_format, last_update_data):
+            values_str = get_ioc_values_str_from_context(current_iocs, out_format, limit, offset)
+
+        else:
+            values_str = get_ioc_values_str_from_context()
+
     else:
-        if last_run:
+        if last_update:
+            # takes the cache_refresh_rate amount of time back since run time.
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            if last_run <= cache_time:
-                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit)
+            if last_update <= cache_time or is_request_change(limit, offset, out_format, last_update_data) or \
+                    indicator_query != last_query:
+                values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
             else:
                 values_str = get_ioc_values_str_from_context()
         else:
-            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit)
+            values_str = refresh_outbound_context(indicator_query, out_format, limit=limit, offset=offset)
+
     return values_str
 
 
-def get_ioc_values_str_from_context() -> str:
+def get_ioc_values_str_from_context(iocs=None, new_format: str = FORMAT_TEXT,
+                                    limit: int = 10000, offset: int = 0) -> str:
     """
     Extracts output values from cache
     """
-    cache_dict = demisto.getIntegrationContext()
-    return cache_dict.get(CTX_VALUES_KEY, '')
+    if iocs:
+        if offset > len(iocs):
+            return ''
+
+        iocs = iocs[offset: limit + offset]
+        returned_dict = create_values_out_dict(iocs, new_format)
+        current_cache = demisto.getIntegrationContext()
+        current_cache['last_output'] = returned_dict
+        demisto.setIntegrationContext(current_cache)
+
+    else:
+        returned_dict = demisto.getIntegrationContext().get('last_output', {})
+
+    return returned_dict.get(CTX_VALUES_KEY, '')
 
 
 def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
@@ -206,33 +270,60 @@ def validate_basic_authentication(headers: dict, username: str, password: str) -
 ''' ROUTE FUNCTIONS '''
 
 
+def get_request_args(params):
+    limit = try_parse_integer(request.args.get('n', params.get('list_size', 10000)), CTX_LIMIT_ERR_MSG)
+    offset = try_parse_integer(request.args.get('s', 0), CTX_OFFSET_ERR_MSG)
+    out_format = request.args.get('v', params.get('format', 'text'))
+    query = request.args.get('q', params.get('indicators_query'))
+
+    # prevent given empty params
+    if len(query) == 0:
+        query = params.get('indicators_query')
+
+    if len(out_format) == 0:
+        out_format = params.get('format', 'text')
+
+    if out_format not in ['text', 'json', 'json-seq', 'csv']:
+        raise DemistoException(CTX_FORMAT_ERR_MSG)
+
+    return limit, offset, out_format, query
+
+
 @APP.route('/', methods=['GET'])
 def route_list_values() -> Response:
     """
     Main handler for values saved in the integration context
     """
-    params = demisto.params()
+    try:
+        params = demisto.params()
 
-    credentials = params.get('credentials') if params.get('credentials') else {}
-    username: str = credentials.get('identifier', '')
-    password: str = credentials.get('password', '')
-    if username and password:
-        headers: dict = cast(Dict[Any, Any], request.headers)
-        if not validate_basic_authentication(headers, username, password):
-            err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
-            demisto.debug(err_msg)
-            return Response(err_msg, status=401)
+        credentials = params.get('credentials') if params.get('credentials') else {}
+        username: str = credentials.get('identifier', '')
+        password: str = credentials.get('password', '')
+        if username and password:
+            headers: dict = cast(Dict[Any, Any], request.headers)
+            if not validate_basic_authentication(headers, username, password):
+                err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
+                demisto.debug(err_msg)
+                return Response(err_msg, status=401)
 
-    values = get_outbound_ioc_values(
-        out_format=params.get('format'),
-        on_demand=params.get('on_demand'),
-        limit=try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG),
-        last_run=demisto.getLastRun().get('last_run'),
-        indicator_query=params.get('indicators_query'),
-        cache_refresh_rate=params.get('cache_refresh_rate')
-    )
-    mimetype = get_outbound_mimetype()
-    return Response(values, status=200, mimetype=mimetype)
+        limit, offset, out_format, query = get_request_args(params)
+
+        values = get_outbound_ioc_values(
+            out_format=out_format,
+            on_demand=params.get('on_demand'),
+            limit=limit,
+            offset=offset,
+            last_update_data=demisto.getIntegrationContext(),
+            indicator_query=query,
+            cache_refresh_rate=params.get('cache_refresh_rate')
+        )
+
+        mimetype = get_outbound_mimetype()
+        return Response(values, status=200, mimetype=mimetype)
+
+    except Exception as e:
+        return Response(str(e), status=400, mimetype='text/plain')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -339,7 +430,8 @@ def update_outbound_command(args, params):
     print_indicators = args.get('print_indicators')
     query = args.get('query')
     out_format = args.get('format')
-    indicators = refresh_outbound_context(query, out_format, limit=limit)
+    offset = args.get('offset')
+    indicators = refresh_outbound_context(query, out_format, limit=limit, offset=offset)
     hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
     return hr, {}, indicators
