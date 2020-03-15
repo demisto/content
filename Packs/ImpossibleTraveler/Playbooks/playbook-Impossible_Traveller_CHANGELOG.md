@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed an issue with sending an email to the manager of the user.
 
 ## [19.11.1] - 2019-11-26
 The countries from which the user logged in are now saved in incident fields and are displayed in the layout.
