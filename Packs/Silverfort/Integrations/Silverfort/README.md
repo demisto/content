@@ -1,31 +1,31 @@
 ## Overview
 ---
-Silverfort protects organizations from data breaches by delivering strong authentication across entire corporate networks and cloud environments, without requiring any modifications to endpoints or servers. Using patent-pending technology, Silverfort enables multi-factor authentication and AI-driven adaptive authentication even for systems that don’t support it today – including proprietary systems, critical infrastructure, shared folders, IoT devices and more – using an agentless approach.
+Silverfort protects organizations from data breaches by delivering strong authentication across entire corporate networks and cloud environments, without requiring any modifications to endpoints or servers. Using patent-pending technology, Silverfort's agentless approach enables multi-factor authentication and AI-driven adaptive authentication even for systems that don’t support it today, including proprietary systems, critical infrastructure, shared folders, IoT devices, and more.
 <br>Use Silverfort integration to get & update Silverfort risk severity.
-<br>This integration was integrated and tested with version 12.2 of Silverfort
+<br>This integration was integrated and tested with Silverfort version 12.2.
 ## Silverfort Playbook
 ---
-- Get the risk information and block the user in case the risk is 'high' or 'critical'
-- Update the Silverfort user risk
+- Get risk information and block the user if the risk is 'high' or 'critical'
+- Update the Silverfort user risk level
 ## Use Cases
 ---
 
-- Consuming Silverfort user and server risk levels
-- Enriching Silverfort risk engine and allowing to trigger MFA on risky entities
+- Consume Silverfort user and server risk levels
+- Enrich the Silverfort risk engine and trigger MFA on risky entities
 ## Configure Silverfort on Demisto
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Silverfort.
 3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
+    * __Name__: a textual name for the integration instance
     * __Server URL__
     * __APIKEY__
     * __Trust any certificate (not secure)__
-4. Click __Test__ to validate the URLs, token, and connection.
+4. Click __Test__ to validate the URL, token, and connection.
 - To generate an API token:
-    1. From the Silverfort Admin Console, navigate to Settings > Advanced.
-    2. In the Authentication Tokens section, click Generate Token.
+    1. From the Silverfort Admin Console, navigate to __Settings__ > __Advanced__.
+    2. In the Authentication Tokens section, click __Generate Token__.
     3. Copy the generated token and save it in a safe place.
 ## Commands
 ---
@@ -46,11 +46,14 @@ User risk commands - get the user entity risk
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | upn | User principal name | Optional | 
-| email | Email | Optional | 
+| email | Email address | Optional | 
 | sam_account | Sam account | Optional | 
 | domain | Domain | Optional | 
 
-* One of [upn, sam account & domain, sam account & domain] is required.
+Specify one of the following:
+* upn
+* email address and domain, or
+* sam account and domain.
 
 ##### Context Output
 
@@ -143,13 +146,17 @@ User risk commands - update the user entity risk
 | upn | User principal name | Optional | 
 | risk_name | Risk name | Required | 
 | severity | Severity | Required | 
-| valid_for | How many days the risk will be valid for | Required | 
+| valid_for | Number of days the risk will be valid for | Required | 
 | description | Risk description | Required | 
 | email | Email | Optional | 
 | sam_account | Sam account | Optional | 
 | domain | Domain | Optional | 
 
-* One of [upn, sam account & domain, sam account & domain] is required.
+
+Specify one of the following:
+* upn
+* email address and domain, or
+* sam account and domain.
 
 ##### Context Output
 
@@ -177,7 +184,7 @@ Resource risk commands - update the resource entity risk
 | domain_name | Domain name | Required | 
 | risk_name | Risk name | Required | 
 | severity | Severity | Required | 
-| valid_for | How many days the severity will be relevant for | Required | 
+| valid_for | Number of days the severity will be relevant for | Required | 
 | description | Short description about the risk | Required | 
 
 
