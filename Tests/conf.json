@@ -496,6 +496,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "Microsoft SQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall",
             "playbookID": "palo_alto_firewall_test_pb",

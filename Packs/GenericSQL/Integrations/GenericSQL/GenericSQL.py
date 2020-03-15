@@ -9,7 +9,7 @@ import sqlalchemy
 import pymysql
 from sqlalchemy.sql import text
 
-# explain why?
+# In order to use and convert from pymysql to MySQL this line is necessary
 pymysql.install_as_MySQLdb()
 
 
@@ -43,7 +43,7 @@ class Client:
         elif dialect == "Oracle":
             module = "oracle"
         elif dialect == "Microsoft SQL Server":
-            module = "mssql"
+            module = "mssql+pyodbc"
         else:
             module = str(dialect)
         return module
@@ -56,8 +56,11 @@ class Client:
         try:
             module = self._convert_dialect_to_module(self.dialect)
             db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
+            if self.dialect == "Microsoft SQL Server":
+                db_preferences +="?driver=FreeTDS"
             if self.connect_parameters:
                 db_preferences += f'?{self.connect_parameters}'
+            demisto.log(db_preferences)
             return sqlalchemy.create_engine(db_preferences).connect()
         except Exception as err:
             raise Exception(err)
@@ -162,13 +165,14 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
 def main():
     params = demisto.params()
     dialect = params.get('dialect')
-    port = params.get('port', generate_default_port_by_dialect(dialect))
+    port = params.get('port')
+    if port is None:
+        port = generate_default_port_by_dialect(dialect)
     user = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
     host = params.get('host')
     database = params.get('dbname')
     connect_parameters = params.get('connect_parameters')
-
     try:
         command = demisto.command()
         LOG(f'Command being called in SQL is: {command}')
