@@ -36,28 +36,21 @@ class Client(BaseClient):
     Client to use in the Fidelis Endpoint integration. Overrides BaseClient
     """
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):
-
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
-        self._username = username
-        self._password = password
-        self._token = self._generate_token()
+        token = self._generate_token(username, password)
+        self._headers = {'Authorization': f'Bearer {token}'}
 
-        headers = {'ContentType': 'appliaction/json'}
-        if self._token:
-            token = self._token
-            headers.update({'Authorization': 'bearer ' + token})
-
-        self._headers = headers
-
-    def _generate_token(self) -> str:
+    def _generate_token(self, username: str, password: str) -> str:
         """Generate a token
-
+        Arguments:
+            username {str} -- Fidelis username to retrieve token with
+            password {str} -- Fidelis password to retrieve token with
         Returns:
             token valid for 10 minutes
         """
         params = {
-            'username': self._username,
-            'password': self._password
+            'username': username,
+            'password': password
         }
         response = self._http_request('GET', '/authenticate', params=params)
         if response.get('error'):
