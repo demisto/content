@@ -14,7 +14,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     * __Name__: a textual name for the integration instance.
     * __Indicator Query__: The query to run to update its list. To view expected results, you can run the following command from the Demisto CLI
     `!findIndicators query=<your query>`
-    * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
+    * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, XSAOR json, XSAOR json-seq, XSOAR csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
     * __List Size__: Max amount of entries in the service instance.
     * __Update On Demand Only__: When set to true, will only update the service indicators via **eis-update** command.
     * __Refresh Rate__: How often to refresh the export indicators list (<number> <time unit>, e.g., 12 hours, 7 days, 3
@@ -53,7 +53,7 @@ Use the following arguments in the URL to change the request:
 | --- | --- | --- |
 | n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?n=50 |
 | s | The starting entry index from which to export the indicators. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50 |
-| v | The output format. Supports `text`, `csv`, `json`, `json-seq`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
+| v | The output format. Supports `text`, `csv`, `json`, `json-seq`,`xsoar-json`, `xsoar-seq`, `xsoar-csv`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json |
 | q | The query used to retrieve indicators from the system. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source" |
 | t | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip |
 | sp | Only with `panosurl` format. If set will strip ports off URLs, otherwise will ignore URLs with ports. | https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=panosurl&sp |
