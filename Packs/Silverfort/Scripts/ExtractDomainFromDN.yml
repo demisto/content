@@ -1,0 +1,38 @@
+commonfields:
+  id: e4a0e923-6940-4a17-8f04-bb9d859929fc
+  version: 4
+name: ExtractDomainFromDN
+script: |
+  dn = demisto.args()["dn"]
+  domain_parts = []
+  try:
+      for key in (k for k in dn.split(",") if k.startswith("DC=")):
+          domain_parts.append(key.split("=")[1])
+  except Exception:
+      LOG.exception("Failed extracting domain name: {}".format(repr(dn)))
+
+  result = '.'.join(domain_parts)
+  outputs = {
+      'Domain': result
+  }
+
+  return_outputs (
+      result,
+      {'Account(val.Domain == obj.Domain)': { 'Domain': outputs}},
+      result  # raw response - the original response
+  )
+type: python
+tags: []
+enabled: true
+args:
+- name: dn
+  required: true
+  description: Distinguished name
+outputs:
+- contextPath: Account.Domain
+  description: Domain
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.1.6120
+runas: DBotWeakRole
