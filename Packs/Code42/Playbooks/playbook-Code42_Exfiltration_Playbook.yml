@@ -702,10 +702,10 @@ tasks:
             value:
               simple: inputs.ContainHostsMax
             iscontext: true
-        - operator: isNotExists
+        - operator: isExists
           left:
             value:
-              simple: CrowdStrike.Device
+              simple: CrowdStrike.Device.ID
             iscontext: true
     view: |-
       {
