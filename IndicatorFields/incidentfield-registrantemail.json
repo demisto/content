@@ -25,7 +25,9 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
-    "Domain"
+    "Domain",
+    "IP",
+    "IPv6"
   ],
   "caseInsensitive": true,
   "columns": null,

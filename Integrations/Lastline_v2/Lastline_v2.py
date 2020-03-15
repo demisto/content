@@ -78,8 +78,7 @@ class Client(BaseClient):
         file_params = demisto.getFilePath(entry_id)
         self.command_params['md5'] = file_hash(file_params.get('path'))
         result = self.http_request('/analysis/submit/file',
-                                   headers={'Content-Type': 'multipart/form-data'},
-                                   files={file_params.get('name'): file_params.get('path')})
+                                   file_to_upload=file_params.get('path'))
         human_readable, context_entry = report_generator(result)
         return human_readable, context_entry, result
 
@@ -113,8 +112,12 @@ class Client(BaseClient):
             task_list.append([uuid, task_time.replace(' ', 'T'), status])
         return task_list
 
-    def http_request(self, path: str, headers=None, files=None) -> Dict:
-        result: Dict = self._http_request('POST', path, params=self.command_params, headers=headers, files=files)
+    def http_request(self, path: str, headers=None, file_to_upload=None) -> Dict:
+        if file_to_upload:
+            with open(file_to_upload, 'rb') as _file:
+                file_to_upload = {'file': (file_to_upload, _file.read())}
+
+        result: Dict = self._http_request('POST', path, params=self.command_params, headers=headers, files=file_to_upload)
         lastline_exception_handler(result)
         return result
 
@@ -156,7 +159,7 @@ def report_generator(result: Dict, threshold=None):
     score = result['data'].get('score')
     uuid = result['data'].get('task_uuid')
     submission_time = result['data'].get('submission')
-    indicator = context_entry['DBotScore'].get('Indicator')
+    indicator = context_entry.get('DBotScore', {}).get('Indicator', 'None')
     if score is not None:
         meta_data = f'**Score: {score}**\n\nTask UUID: {uuid}\nSubmission Time: {submission_time}'
     else:

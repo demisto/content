@@ -1,5 +1,4 @@
 category: Utilities
-fromversion: 4.5.0
 commonfields:
   id: BPA
   version: -1
@@ -7,11 +6,6 @@ configuration:
 - display: Panorama Server URL (e.g., https://192.168.0.1)
   name: server
   required: true
-  type: 0
-- defaultvalue: '443'
-  display: Panorama Server Port (e.g., 443)
-  name: port
-  required: false
   type: 0
 - display: Panorama API Key
   name: key
@@ -29,7 +23,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
+description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama
+  configurations and compares them to the best practices.
 display: BPA
 name: BPA
 script:
@@ -72,6 +67,7 @@ script:
       description: The list of checks.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -81,3 +77,4 @@ script:
   type: python
 tests:
 - Test-BPA
+fromversion: 4.5.0

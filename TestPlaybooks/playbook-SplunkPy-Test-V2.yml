@@ -90,7 +90,8 @@ tasks:
       app:
         simple: demisto
       batch_limit: {}
-      earliest_time: {}
+      earliest_time:
+        simple: "-1000d"
       event_limit:
         simple: "1"
       latest_time: {}

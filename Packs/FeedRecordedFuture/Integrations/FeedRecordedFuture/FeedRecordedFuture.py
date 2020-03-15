@@ -36,7 +36,7 @@ class Client(BaseClient):
 
     def __init__(self, indicator_type: str, api_token: str, sub_feeds: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, **kwargs):
+                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
@@ -225,6 +225,9 @@ def get_indicator_type(indicator_type, item):
     elif indicator_type == 'hash':
         return FeedIndicatorType.File
     elif indicator_type == 'domain':
+        # If * is in the domain it is of type DomainGlob
+        if '*' in item.get('Name'):
+            return FeedIndicatorType.DomainGlob
         return FeedIndicatorType.Domain
     elif indicator_type == 'url':
         return FeedIndicatorType.URL
@@ -299,11 +302,16 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int]):
             raw_json['type'] = get_indicator_type(indicator_type, item)
             raw_json['score'] = score = client.calculate_indicator_score(item['Risk'])
             raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(item['Risk'])
+            lower_case_evidence_details_keys = []
+            for rule in evidence_details:
+                rule = dict((k.lower(), v) for k, v in rule.items())
+                lower_case_evidence_details_keys.append(rule)
+
             indicators.append({
                 "value": value,
                 "type": raw_json['type'],
                 "rawJSON": raw_json,
-                "fields": {'recordedfutureevidencedetails': evidence_details},
+                "fields": {'recordedfutureevidencedetails': lower_case_evidence_details_keys},
                 "score": score
             })
 
@@ -355,7 +363,10 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
 
 
 def main():
-    client = Client(**demisto.params())
+    params = demisto.params()
+    client = Client(params.get('indicator_type'), params.get('api_token'), params.get('sub_feeds'),
+                    params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
+                    params.get('polling_timeout'), params.get('proxy'), params.get('threshold'))
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case
