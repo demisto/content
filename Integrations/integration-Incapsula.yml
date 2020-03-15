@@ -1181,6 +1181,11 @@ script:
       description: Rule ID.
     - name: name
       description: Rule name.
+    - name: enable
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
       description: When true, the rule will be enabled. Set to false to disable.
     description: Use this operation to delete a rule (Delivery Rules or IncapRules).
   - name: incap-list-site-rules
