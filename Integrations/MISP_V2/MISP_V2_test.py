@@ -1,3 +1,6 @@
+import pytest
+
+
 def mock_misp(mocker):
     from pymisp import ExpandedPyMISP
     mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
@@ -156,13 +159,83 @@ def test_build_misp_complex_filter(mocker):
     assert actual == expected
 
 
-def test_data_filtering(mocker):
-    mock_misp(mocker)
-    mocker.patch('MISP_V2.DATA_KEYS_TO_SAVE', ['Category', 'EventID', 'UUID'])
+class TestFilterKeys:
+    def test_keys_not_selected_include_all(self, mocker, datadir):
+        from MISP_V2 import demisto, filter_misp_response
+        import json
+        mocker.patch.object(demisto, 'params')
+        demisto.params.return_value = {
+            "context_select": [],
+            "metadata": True,
+            "related_events": True
+        }
 
-    import test_constants
-    from MISP_V2 import build_context
+        raw_misp = json.load(fp=open(datadir['raw_misp.json']))
+        actual = filter_misp_response(misp_response=raw_misp)
+        excpected = raw_misp
 
-    full_response = test_constants.full_response_before_filtering
-    filtered_response = test_constants.response_after_filtering_category_eventid_uuid
-    assert build_context(full_response) == filtered_response
+        assert actual == excpected
+
+    def test_keys_not_selected_metadata_not_include_related_include(self, mocker, datadir):
+        from MISP_V2 import demisto, filter_misp_response
+        import json
+        mocker.patch.object(demisto, 'params')
+        demisto.params.return_value = {
+            "context_select": [],
+            "metadata": False,
+            "related_events": True
+        }
+
+        raw_misp = json.load(fp=open(datadir['raw_misp.json']))
+        actual = filter_misp_response(misp_response=raw_misp)
+        excpected = json.load(fp=open(datadir['filtered_misp.json']))
+
+        assert actual == excpected
+
+    def test_keys_not_selected_metadata_not_include_related_not_include(self, mocker, datadir):
+        from MISP_V2 import demisto, filter_misp_response
+        import json
+        mocker.patch.object(demisto, 'params')
+        demisto.params.return_value = {
+            "context_select": [],
+            "metadata": False,
+            "related_events": False
+        }
+
+        raw_misp = json.load(fp=open(datadir['raw_misp.json']))
+        actual = filter_misp_response(misp_response=raw_misp)
+        excpected = json.load(fp=open(datadir['filtered_misp.json']))
+
+        assert actual == excpected
+
+    def test_keys_not_selected_metadata_include_related_not_include(self, mocker, datadir):
+        from MISP_V2 import demisto, filter_misp_response
+        import json
+        mocker.patch.object(demisto, 'params')
+        demisto.params.return_value = {
+            "context_select": [],
+            "metadata": True,
+            "related_events": False
+        }
+
+        raw_misp = json.load(fp=open(datadir['raw_misp.json']))
+        actual = filter_misp_response(misp_response=raw_misp)
+        excpected = json.load(fp=open(datadir['filtered_misp.json']))
+
+        assert actual == excpected
+
+    def test_keys_selected_metadata_include_related_not_include(self, mocker, datadir):
+        from MISP_V2 import demisto, filter_misp_response
+        import json
+        mocker.patch.object(demisto, 'params')
+        demisto.params.return_value = {
+            "context_select": ['Category', 'org_id'],
+            "metadata": True,
+            "related_events": False
+        }
+
+        raw_misp = json.load(fp=open(datadir['raw_misp.json']))
+        actual = filter_misp_response(misp_response=raw_misp)
+        excpected = json.load(fp=open(datadir['filtered_misp.json']))
+
+        assert actual == excpected

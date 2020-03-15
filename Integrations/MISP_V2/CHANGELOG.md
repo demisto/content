@@ -1,5 +1,8 @@
 ## [Unreleased]
--
+- Fixing context filtering.
+- Add metadata disable option - Metadata == Galaxy, Tag
+- Fixing proxy issue.
+- Param option for correlation.
 
 ## [20.2.4] - 2020-02-25
 Fixed default value for the ***PREDEFINED*** argument in the ***misp-search*** command.

@@ -1,0 +1,679 @@
+[
+  {
+    "Event": {
+      "orgc_id": "4",
+      "extends_uuid": "",
+      "id": "3382",
+      "threat_level_id": "2",
+      "ShadowAttribute": [],
+      "uuid": "5cdb1512-30a0-462b-824c-18f10a590e94",
+      "Object": [
+        {
+          "comment": "",
+          "template_uuid": "xxxxxx",
+          "description": "xxxxxx",
+          "deleted": false,
+          "Attribute": [
+            {
+              "category": "Network activity",
+              "comment": "",
+              "ShadowAttribute": [],
+              "uuid": "xxxxxx",
+              "deleted": false,
+              "timestamp": "xxxxxx",
+              "to_ids": true,
+              "object_id": "xxxxxx",
+              "id": "xxxxxx",
+              "event_id": "xxxxxx",
+              "Tag": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ],
+              "sharing_group_id": "0",
+              "value": "xxxxxx",
+              "disable_correlation": true,
+              "object_relation": "url",
+              "type": "url",
+              "distribution": "5",
+              "Galaxy": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ]
+            },
+            {
+              "category": "Network activity",
+              "comment": "",
+              "ShadowAttribute": [],
+              "uuid": "xxxxxx",
+              "deleted": false,
+              "timestamp": "xxxxxx",
+              "to_ids": true,
+              "object_id": "xxxxxx",
+              "id": "xxxxxx",
+              "event_id": "xxxxxx",
+              "Tag": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ],
+              "sharing_group_id": "0",
+              "value": "xxxxxx",
+              "disable_correlation": true,
+              "object_relation": "url",
+              "type": "url",
+              "distribution": "5",
+              "Galaxy": []
+            }
+          ],
+          "template_version": "7",
+          "uuid": "xxxxxx",
+          "meta-category": "network",
+          "event_id": "xxxxxx",
+          "ObjectReference": [],
+          "sharing_group_id": "0",
+          "timestamp": "xxxxxx",
+          "distribution": "5",
+          "id": "xxxxxx",
+          "name": "url"
+        },
+        {
+          "comment": "",
+          "template_uuid": "xxxxxx",
+          "description": "xxxxxx",
+          "deleted": false,
+          "Attribute": [
+            {
+              "category": "Network activity",
+              "comment": "",
+              "ShadowAttribute": [],
+              "uuid": "xxxxxx",
+              "deleted": false,
+              "timestamp": "xxxxxx",
+              "to_ids": true,
+              "object_id": "xxxxxx",
+              "id": "xxxxxx",
+              "event_id": "xxxxxx",
+              "Tag": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ],
+              "sharing_group_id": "0",
+              "value": "xxxxxx",
+              "disable_correlation": true,
+              "object_relation": "url",
+              "type": "url",
+              "distribution": "5",
+              "Galaxy": []
+            },
+            {
+              "category": "Network activity",
+              "comment": "",
+              "ShadowAttribute": [],
+              "uuid": "xxxxxx",
+              "deleted": false,
+              "timestamp": "xxxxxx",
+              "to_ids": true,
+              "object_id": "xxxxxx",
+              "id": "xxxxxx",
+              "event_id": "xxxxxx",
+              "Tag": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ],
+              "sharing_group_id": "0",
+              "value": "xxxxxx",
+              "disable_correlation": true,
+              "object_relation": "url",
+              "type": "url",
+              "distribution": "5",
+              "Galaxy": []
+            }
+          ],
+          "template_version": "7",
+          "uuid": "xxxxxx",
+          "meta-category": "network",
+          "event_id": "3382",
+          "ObjectReference": [],
+          "sharing_group_id": "0",
+          "timestamp": "xxxxxx",
+          "distribution": "5",
+          "id": "xxxxxx",
+          "name": "url"
+        }
+      ],
+      "timestamp": "xxxxxx",
+      "Org": {
+        "uuid": "xxxxxx",
+        "id": "4",
+        "name": "xxxxxx"
+      },
+      "RelatedEvent": [],
+      "sharing_group_id": "0",
+      "Orgc": {
+        "uuid": "xxxxxx",
+        "id": "4",
+        "name": "xxxxxx"
+      },
+      "date": "2019-05-12",
+      "disable_correlation": false,
+      "info": "xxxxxx",
+      "locked": false,
+      "publish_timestamp": "0",
+      "Attribute": [
+        {
+          "category": "Internal reference",
+          "comment": "xxxxxx",
+          "ShadowAttribute": [],
+          "uuid": "xxxxxx",
+          "deleted": false,
+          "timestamp": "xxxxxx",
+          "to_ids": false,
+          "object_id": "0",
+          "id": "xxxxxx",
+          "event_id": "xxxxxx",
+          "Tag": [
+            {
+              "hide_tag": false,
+              "exportable": true,
+              "name": "xxxxxx",
+              "colour": "xxxxxx",
+              "numerical_value": null,
+              "user_id": "0",
+              "id": "xxxxxx"
+            },
+            {
+              "hide_tag": false,
+              "exportable": true,
+              "name": "xxxxxx",
+              "colour": "xxxxxx",
+              "numerical_value": null,
+              "user_id": "0",
+              "id": "xxxxxx"
+            }
+          ],
+          "sharing_group_id": "0",
+          "value": "xxxxxx",
+          "disable_correlation": true,
+          "object_relation": null,
+          "type": "other",
+          "distribution": "5",
+          "Galaxy": []
+        },
+        {
+          "category": "Internal reference",
+          "comment": "xxxxxx",
+          "ShadowAttribute": [],
+          "uuid": "xxxxxx",
+          "deleted": false,
+          "timestamp": "xxxxxx",
+          "to_ids": false,
+          "object_id": "0",
+          "id": "xxxxxx",
+          "event_id": "xxxxxx",
+          "Tag": [
+            {
+              "hide_tag": false,
+              "exportable": true,
+              "name": "xxxxxx",
+              "colour": "xxxxxx",
+              "numerical_value": null,
+              "user_id": "0",
+              "id": "xxxxxx"
+            },
+            {
+              "hide_tag": false,
+              "exportable": true,
+              "name": "xxxxxx",
+              "colour": "xxxxxx",
+              "numerical_value": null,
+              "user_id": "0",
+              "id": "xxxxxx"
+            }
+          ],
+          "sharing_group_id": "0",
+          "value": "xxxxxx",
+          "disable_correlation": true,
+          "object_relation": null,
+          "type": "other",
+          "distribution": "5",
+          "Galaxy": []
+        }
+      ],
+      "attribute_count": "xxxxxx",
+      "org_id": "xxxxxx",
+      "analysis": "0",
+      "Tag": [
+        {
+          "hide_tag": false,
+          "exportable": true,
+          "name": "xxxxxx",
+          "colour": "xxxxxx",
+          "numerical_value": null,
+          "user_id": "0",
+          "id": "xxxxxx"
+        },
+        {
+          "hide_tag": false,
+          "exportable": true,
+          "name": "xxxxxx",
+          "colour": "xxxxxx",
+          "numerical_value": null,
+          "user_id": "0",
+          "id": "xxxxxx"
+        }
+      ],
+      "published": false,
+      "distribution": "1",
+      "proposal_email_lock": false,
+      "Galaxy": []
+    }
+  },
+  {
+    "Event": {
+      "orgc_id": "4",
+      "extends_uuid": "",
+      "id": "3382",
+      "threat_level_id": "2",
+      "ShadowAttribute": [],
+      "uuid": "5cdb1512-30a0-462b-824c-18f10a590e94",
+      "Object": [
+        {
+          "comment": "",
+          "template_uuid": "xxxxxx",
+          "description": "xxxxxx",
+          "deleted": false,
+          "Attribute": [
+            {
+              "category": "Network activity",
+              "comment": "",
+              "ShadowAttribute": [],
+              "uuid": "xxxxxx",
+              "deleted": false,
+              "timestamp": "xxxxxx",
+              "to_ids": true,
+              "object_id": "xxxxxx",
+              "id": "xxxxxx",
+              "event_id": "xxxxxx",
+              "Tag": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ],
+              "sharing_group_id": "0",
+              "value": "xxxxxx",
+              "disable_correlation": true,
+              "object_relation": "url",
+              "type": "url",
+              "distribution": "5",
+              "Galaxy": []
+            },
+            {
+              "category": "Network activity",
+              "comment": "",
+              "ShadowAttribute": [],
+              "uuid": "xxxxxx",
+              "deleted": false,
+              "timestamp": "xxxxxx",
+              "to_ids": true,
+              "object_id": "xxxxxx",
+              "id": "xxxxxx",
+              "event_id": "xxxxxx",
+              "Tag": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ],
+              "sharing_group_id": "0",
+              "value": "xxxxxx",
+              "disable_correlation": true,
+              "object_relation": "url",
+              "type": "url",
+              "distribution": "5",
+              "Galaxy": []
+            }
+          ],
+          "template_version": "7",
+          "uuid": "xxxxxx",
+          "meta-category": "network",
+          "event_id": "xxxxxx",
+          "ObjectReference": [],
+          "sharing_group_id": "0",
+          "timestamp": "xxxxxx",
+          "distribution": "5",
+          "id": "xxxxxx",
+          "name": "url"
+        },
+        {
+          "comment": "",
+          "template_uuid": "xxxxxx",
+          "description": "xxxxxx",
+          "deleted": false,
+          "Attribute": [
+            {
+              "category": "Network activity",
+              "comment": "",
+              "ShadowAttribute": [],
+              "uuid": "xxxxxx",
+              "deleted": false,
+              "timestamp": "xxxxxx",
+              "to_ids": true,
+              "object_id": "xxxxxx",
+              "id": "xxxxxx",
+              "event_id": "xxxxxx",
+              "Tag": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ],
+              "sharing_group_id": "0",
+              "value": "xxxxxx",
+              "disable_correlation": true,
+              "object_relation": "url",
+              "type": "url",
+              "distribution": "5",
+              "Galaxy": []
+            },
+            {
+              "category": "Network activity",
+              "comment": "",
+              "ShadowAttribute": [],
+              "uuid": "xxxxxx",
+              "deleted": false,
+              "timestamp": "xxxxxx",
+              "to_ids": true,
+              "object_id": "xxxxxx",
+              "id": "xxxxxx",
+              "event_id": "xxxxxx",
+              "Tag": [
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                },
+                {
+                  "hide_tag": false,
+                  "exportable": true,
+                  "name": "xxxxxx",
+                  "colour": "xxxxxx",
+                  "numerical_value": null,
+                  "user_id": "xxxxxx",
+                  "id": "xxxxxx"
+                }
+              ],
+              "sharing_group_id": "0",
+              "value": "xxxxxx",
+              "disable_correlation": true,
+              "object_relation": "url",
+              "type": "url",
+              "distribution": "5",
+              "Galaxy": []
+            }
+          ],
+          "template_version": "7",
+          "uuid": "xxxxxx",
+          "meta-category": "network",
+          "event_id": "3382",
+          "ObjectReference": [],
+          "sharing_group_id": "0",
+          "timestamp": "xxxxxx",
+          "distribution": "5",
+          "id": "xxxxxx",
+          "name": "url"
+        }
+      ],
+      "timestamp": "xxxxxx",
+      "Org": {
+        "uuid": "xxxxxx",
+        "id": "4",
+        "name": "xxxxxx"
+      },
+      "RelatedEvent": ["test"],
+      "sharing_group_id": "0",
+      "Orgc": {
+        "uuid": "xxxxxx",
+        "id": "4",
+        "name": "xxxxxx"
+      },
+      "date": "2019-05-12",
+      "disable_correlation": false,
+      "info": "xxxxxx",
+      "locked": false,
+      "publish_timestamp": "0",
+      "Attribute": [
+        {
+          "category": "Internal reference",
+          "comment": "xxxxxx",
+          "ShadowAttribute": [],
+          "uuid": "xxxxxx",
+          "deleted": false,
+          "timestamp": "xxxxxx",
+          "to_ids": false,
+          "object_id": "0",
+          "id": "xxxxxx",
+          "event_id": "xxxxxx",
+          "Tag": [
+            {
+              "hide_tag": false,
+              "exportable": true,
+              "name": "xxxxxx",
+              "colour": "xxxxxx",
+              "numerical_value": null,
+              "user_id": "0",
+              "id": "xxxxxx"
+            },
+            {
+              "hide_tag": false,
+              "exportable": true,
+              "name": "xxxxxx",
+              "colour": "xxxxxx",
+              "numerical_value": null,
+              "user_id": "0",
+              "id": "xxxxxx"
+            }
+          ],
+          "sharing_group_id": "0",
+          "value": "xxxxxx",
+          "disable_correlation": true,
+          "object_relation": null,
+          "type": "other",
+          "distribution": "5",
+          "Galaxy": []
+        },
+        {
+          "category": "Internal reference",
+          "comment": "xxxxxx",
+          "ShadowAttribute": [],
+          "uuid": "xxxxxx",
+          "deleted": false,
+          "timestamp": "xxxxxx",
+          "to_ids": false,
+          "object_id": "0",
+          "id": "xxxxxx",
+          "event_id": "xxxxxx",
+          "Tag": [
+            {
+              "hide_tag": false,
+              "exportable": true,
+              "name": "xxxxxx",
+              "colour": "xxxxxx",
+              "numerical_value": null,
+              "user_id": "0",
+              "id": "xxxxxx"
+            },
+            {
+              "hide_tag": false,
+              "exportable": true,
+              "name": "xxxxxx",
+              "colour": "xxxxxx",
+              "numerical_value": null,
+              "user_id": "0",
+              "id": "xxxxxx"
+            }
+          ],
+          "sharing_group_id": "0",
+          "value": "xxxxxx",
+          "disable_correlation": true,
+          "object_relation": null,
+          "type": "other",
+          "distribution": "5",
+          "Galaxy": []
+        }
+      ],
+      "attribute_count": "xxxxxx",
+      "org_id": "xxxxxx",
+      "analysis": "0",
+      "Tag": [
+        {
+          "hide_tag": false,
+          "exportable": true,
+          "name": "xxxxxx",
+          "colour": "xxxxxx",
+          "numerical_value": null,
+          "user_id": "0",
+          "id": "xxxxxx"
+        },
+        {
+          "hide_tag": false,
+          "exportable": true,
+          "name": "xxxxxx",
+          "colour": "xxxxxx",
+          "numerical_value": null,
+          "user_id": "0",
+          "id": "xxxxxx"
+        }
+      ],
+      "published": false,
+      "distribution": "1",
+      "proposal_email_lock": false,
+      "Galaxy": []
+    }
+  }
+]

@@ -32,7 +32,6 @@ USE_SSL = not demisto.params().get('insecure')
 proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
-DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
 
 """
 dict format :
@@ -126,6 +125,71 @@ DISTRIBUTION_NUMBERS = {
     'All_communities': 3
 }
 ''' HELPER FUNCTIONS '''
+
+
+def filter_obj(obj: dict, is_att: bool = True) -> dict:
+    """ Filter Event, Attribute
+
+    Args:
+        obj(dict): dictionary MISP event or attribute.
+        is_att: True if dict represent Attribute otherwise Event (False)
+
+    Returns:
+        dict: Filtered dict by configuration.
+    """
+    metadata_state = demisto.params().get('metadata')
+    related_events_state = demisto.params().get('related_events')
+    selected_keys: List[str] = [item.lower() for item in demisto.params().get('context_select')]
+    ignored_keys_metadata: List[str] = ["Galaxy", "Tag"]
+    ignored_keys_related_events: List[str] = ["RelatedEvent"]
+
+    for dict_key in list(obj.keys()):
+        if dict_key in ignored_keys_metadata:
+            if not metadata_state:
+                obj[dict_key] = []
+            else:
+                continue
+        elif dict_key in ignored_keys_related_events:
+            if not related_events_state:
+                obj[dict_key] = []
+            else:
+                continue
+        elif is_att and selected_keys and dict_key not in selected_keys:
+            obj.pop(dict_key)
+
+    return obj
+
+
+def filter_misp_response(misp_response: List[dict]) -> List[dict]:
+    """ Filter MISP response -
+        Remove from Attributes and Objects the following keys if exists:
+         1. MetaData keys - Galaxy, Tags (The keys both determine classification by publisher)
+         2. Selected keys - Removing all not selected keys in response.
+         3. Related events - Remove related events if not chosen.
+
+    Args:
+        misp_response(list): valid response of MISP client using PyMisp
+
+    Returns:
+        list: Filtered response
+    """
+    metadata_state = demisto.params().get('metadata')
+    related_events_state = demisto.params().get('related_events')
+    selected_keys: List[str] = [item.lower() for item in demisto.params().get('context_select')]
+
+    if not related_events_state or not metadata_state or selected_keys:
+        for i in range(len(misp_response)):
+            # Filter Misp Event object
+            misp_response[i]['Event']: dict = filter_obj(misp_response[i]['Event'], is_att=False)
+            # Filter Misp Attribute object
+            misp_response[i]['Event']['Attribute'] = [filter_obj(att) for att in
+                                                      misp_response[i]['Event']['Attribute']]
+            # Filter Misp Object object
+            for j in range(len(misp_response[i]['Event']['Object'])):
+                misp_response[i]['Event']['Object'][j]['Attribute'] = [filter_obj(att) for att in
+                                                                       misp_response[i]['Event']['Object'][j]['Attribute']]
+
+    return misp_response
 
 
 def extract_error(error: list) -> List[dict]:
@@ -232,25 +296,6 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
     return obj_to_build
 
 
-def remove_unselected_context_keys(context_data):
-    for attribute in context_data['Attribute']:
-        for key in list(attribute.keys()):
-            if key not in DATA_KEYS_TO_SAVE:
-                del attribute[key]
-
-
-def arrange_context_according_to_user_selection(context_data):
-    if not DATA_KEYS_TO_SAVE:
-        return
-
-    # each event has it's own attributes
-    remove_unselected_context_keys(context_data[0])
-
-    # each related event has it's own attributes
-    for obj in context_data[0]['Object']:
-        remove_unselected_context_keys(obj)
-
-
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
     """
     Gets a MISP's response and building it to be in context. If missing key, will return the one written.
@@ -326,7 +371,6 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
                 {'Name': tag.get('name')} for tag in events[i].get('Tag')
             ]
     events = replace_keys(events)  # type: ignore
-    arrange_context_according_to_user_selection(events)  # type: ignore
     return events  # type: ignore
 
 
@@ -610,7 +654,7 @@ def create_event(ret_only_event_id: bool = False) -> Union[int, None]:
     # add attribute
     add_attribute(event_id=event_id, internal=True)
 
-    event = MISP.search(eventid=event_id)
+    event = filter_misp_response(MISP.search(eventid=event_id))
 
     md = f"## MISP create event\nNew event with ID: {event_id} has been successfully created.\n"
     ec = {
@@ -670,7 +714,7 @@ def add_attribute(event_id: int = None, internal: bool = None):
     MISP.update_event(event=event)
     if internal:
         return
-    event = MISP.search(eventid=args.get('id'))
+    event = filter_misp_response(MISP.search(eventid=args.get('id')))
     md = f"## MISP add attribute\nNew attribute: {args.get('value')} was added to event id {args.get('id')}.\n"
     ec = {
         MISP_PATH: build_context(event)
@@ -728,7 +772,7 @@ def get_urls_events():
 
 
 def check_url(url):
-    response = MISP.search(value=url, type_attribute='url')
+    response = filter_misp_response(MISP.search(value=url, type_attribute='url'))
 
     if response:
         dbot_list = list()
@@ -867,7 +911,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     if 'tags' in args:
         args['tags'] = build_misp_complex_filter(args['tags'])
 
-    response = MISP.search(**args)
+    response = filter_misp_response(MISP.search(**args))
     if response:
         response_for_context = build_context(response)
 
@@ -933,7 +977,7 @@ def add_tag():
     tag = demisto.args().get('tag')
 
     MISP.tag(uuid, tag)
-    event = MISP.search(uuid=uuid)
+    event = filter_misp_response(MISP.search(uuid=uuid))
     ec = {
         MISP_PATH: build_context(event)
     }
