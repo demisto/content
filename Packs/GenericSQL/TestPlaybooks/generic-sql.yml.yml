@@ -1,6 +1,6 @@
-id: generic-sql
-version: -1
-name: generic-sql
+id: 1ac750b0-87af-43fd-8cbe-49bb71db62a8
+version: 33
+name: generic-sql-forall
 starttaskid: "0"
 tasks:
   "0":
@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -310
+          "y": -660
         }
       }
     note: false
@@ -31,12 +31,12 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 7de877cc-098d-4459-8567-8036266cd4ca
+    taskid: 7e2c9eb5-ed78-43c3-8665-c8e90151faea
     type: regular
     task:
-      id: 7de877cc-098d-4459-8567-8036266cd4ca
+      id: 7e2c9eb5-ed78-43c3-8665-c8e90151faea
       version: -1
-      name: query
+      name: Select query - show all test table
       script: Generic SQL|||query
       type: regular
       iscommand: true
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 30
+          "y": -330
         }
       }
     note: false
@@ -67,12 +67,12 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 0935ee64-bf98-42c3-86be-b5c93714f79b
+    taskid: ad3417d6-fef0-4b46-8681-8e65aa1bfb03
     type: condition
     task:
-      id: 0935ee64-bf98-42c3-86be-b5c93714f79b
+      id: ad3417d6-fef0-4b46-8681-8e65aa1bfb03
       version: -1
-      name: Check query
+      name: Select query check
       type: condition
       iscommand: false
       brand: ""
@@ -81,6 +81,7 @@ tasks:
       - "13"
       "yes":
       - "3"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -97,7 +98,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 180
+          "y": -170
         }
       }
     note: false
@@ -107,33 +108,35 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: efca38bd-4d0b-421c-8ff2-1324865bd4a0
+    taskid: dbc219e1-2aa3-40f1-8334-e4a6c9322cdf
     type: regular
     task:
-      id: efca38bd-4d0b-421c-8ff2-1324865bd4a0
+      id: dbc219e1-2aa3-40f1-8334-e4a6c9322cdf
       version: -1
-      name: query
+      name: Insert query in mssql syntax with bind variables values
       script: Generic SQL|||query
       type: regular
       iscommand: true
       brand: Generic SQL
     nexttasks:
       '#none#':
-      - "16"
+      - "21"
     scriptarguments:
       bind_variables_names: {}
-      bind_variables_values: {}
+      bind_variables_values:
+        simple: '"playbook,test"'
       limit: {}
       query:
-        simple: Insert into TestTable(ID, LastName, FirstName) values (11511, 'playbook',
-          'test')
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, ? ,
+          ?)
       skip: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 480
+          "y": 75
         }
       }
     note: false
@@ -143,10 +146,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: e8f8ac1b-aed2-42aa-87cf-3f2c19ad6c26
+    taskid: 5226b465-c7c1-4727-8bd2-3c7ae20cb296
     type: condition
     task:
-      id: e8f8ac1b-aed2-42aa-87cf-3f2c19ad6c26
+      id: 5226b465-c7c1-4727-8bd2-3c7ae20cb296
       version: -1
       name: Check insert
       type: condition
@@ -154,7 +157,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+      - "24"
       "yes":
       - "9"
     separatecontext: false
@@ -168,12 +171,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "5"
+              simple: "6"
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 940
+          "y": 790
         }
       }
     note: false
@@ -183,12 +186,12 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: a9543f15-8f5e-4bcf-8fdc-8f55dfede4a3
+    taskid: 921f3987-a9b7-4fc7-8acd-ce63d5c01cd2
     type: regular
     task:
-      id: a9543f15-8f5e-4bcf-8fdc-8f55dfede4a3
+      id: 921f3987-a9b7-4fc7-8acd-ce63d5c01cd2
       version: -1
-      name: query
+      name: Select query - show all test table
       script: Generic SQL|||query
       type: regular
       iscommand: true
@@ -209,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 785
+          "y": 635
         }
       }
     note: false
@@ -219,32 +222,32 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 019d0763-addf-402c-86f8-2ad28b9690c8
+    taskid: 314b682f-1728-4dde-8bde-d099fd2ac8bd
     type: regular
     task:
-      id: 019d0763-addf-402c-86f8-2ad28b9690c8
+      id: 314b682f-1728-4dde-8bde-d099fd2ac8bd
       version: -1
-      name: query
+      name: Delete query id=11211
       script: Generic SQL|||query
       type: regular
       iscommand: true
       brand: Generic SQL
     nexttasks:
       '#none#':
-      - "17"
+      - "22"
     scriptarguments:
       bind_variables_names: {}
       bind_variables_values: {}
       limit: {}
       query:
-        simple: Delete FROM TestTable WHERE ID=11511
+        simple: Delete FROM TestTable WHERE ID=11211
       skip: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1180
+          "y": 990
         }
       }
     note: false
@@ -254,12 +257,12 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: b04e6fcd-7411-4031-8ae9-e53aa75bda0a
+    taskid: 8d603cd1-d044-4a9f-8076-a2d9723eb195
     type: regular
     task:
-      id: b04e6fcd-7411-4031-8ae9-e53aa75bda0a
+      id: 8d603cd1-d044-4a9f-8076-a2d9723eb195
       version: -1
-      name: query
+      name: Select query - show all test table
       script: Generic SQL|||query
       type: regular
       iscommand: true
@@ -372,8 +375,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 480
+          "x": -10,
+          "y": 55
         }
       }
     note: false
@@ -409,7 +412,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -120
+          "y": -490
         }
       }
     note: false
@@ -445,7 +448,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 635
+          "y": 465
         }
       }
     note: false
@@ -489,41 +492,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "18":
-    id: "18"
-    taskid: 20ee811e-1025-4da4-8de7-9b8440e0a07e
-    type: regular
-    task:
-      id: 20ee811e-1025-4da4-8de7-9b8440e0a07e
-      version: -1
-      name: query
-      script: Generic SQL|||query
-      type: regular
-      iscommand: true
-      brand: Generic SQL
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      bind_variables_names: {}
-      bind_variables_values: {}
-      limit: {}
-      query:
-        simple: Delete FROM TestTable WHERE ID=11511
-      skip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -20,
-          "y": 1170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
     id: "19"
     taskid: a56f2e7f-560a-4e68-84b1-e1f38acfc572
@@ -544,8 +512,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 1320
+          "x": -10,
+          "y": 1310
         }
       }
     note: false
@@ -582,17 +550,199 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "21":
+    id: "21"
+    taskid: 4c2c0872-2eaf-4436-8439-897872af36c7
+    type: regular
+    task:
+      id: 4c2c0872-2eaf-4436-8439-897872af36c7
+      version: -1
+      name: Insert query bind variables - values and names
+      script: Generic SQL|||query
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      bind_variables_names:
+        simple: x,y
+      bind_variables_values:
+        simple: '"playbook,test"'
+      limit: {}
+      query:
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11211, :x ,
+          :y)
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 5c90e7f7-d8d2-4bba-8a1f-68aa0763aaf0
+    type: regular
+    task:
+      id: 5c90e7f7-d8d2-4bba-8a1f-68aa0763aaf0
+      version: -1
+      name: Delete query id=11311
+      script: Generic SQL|||query
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      bind_variables_names: {}
+      bind_variables_values: {}
+      limit: {}
+      query:
+        simple: Delete FROM TestTable WHERE ID=11311
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: a40836e4-f077-4e81-8771-acef4010c856
+    type: regular
+    task:
+      id: a40836e4-f077-4e81-8771-acef4010c856
+      version: -1
+      name: Insert query in mysql/postgresql syntax with bind variables values
+      script: Generic SQL|||query
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      bind_variables_names: {}
+      bind_variables_values:
+        simple: '"playbook,test"'
+      limit: {}
+      query:
+        simple: INSERT into TestTable(ID, LastName, FirstName) VALUES (11311, %s ,
+          %s)
+      skip: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: d297e246-d299-4e7f-8be2-7ed0eb0c30a9
+    type: regular
+    task:
+      id: d297e246-d299-4e7f-8be2-7ed0eb0c30a9
+      version: -1
+      name: Delete query getting back to origin table
+      script: Generic SQL|||query
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      bind_variables_names: {}
+      bind_variables_values: {}
+      limit: {}
+      query:
+        simple: Delete FROM TestTable WHERE ID=11211
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 7aec4546-9d2e-4609-8fa2-19b839402616
+    type: regular
+    task:
+      id: 7aec4546-9d2e-4609-8fa2-19b839402616
+      version: -1
+      name: Delete query getting back to origin table
+      script: Generic SQL|||query
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      bind_variables_names: {}
+      bind_variables_values: {}
+      limit: {}
+      query:
+        simple: Delete FROM TestTable WHERE ID=11311
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2245,
-        "width": 860,
-        "x": -30,
-        "y": -310
+        "height": 2595,
+        "width": 1380,
+        "x": -10,
+        "y": -660
       }
     }
   }
 inputs: []
 outputs: []
+sourceplaybookid: 2423b55c-3218-4119-8323-319df9820ea8
