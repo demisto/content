@@ -42,7 +42,7 @@ CHECKED_TYPES_REGEXES = [
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
-             "scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
+             "Packs/Base/Scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
              "scripts/script-CommonUserServer.yml", "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"]
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated

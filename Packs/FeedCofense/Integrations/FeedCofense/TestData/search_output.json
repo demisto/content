@@ -117,6 +117,19 @@
             "roleDescription": "Location from which a payload is obtained",
             "data": "example.com",
             "data_1": "example.com"
+          },
+          {
+            "malwareFamily": {
+              "familyName": "OfficeMacro",
+              "description": "Microsoft Office documents with macro scripting for malware delivery"
+            },
+            "impact": "Moderate",
+            "confidence": 0,
+            "blockType": "Domain Name",
+            "role": "Payload",
+            "roleDescription": "Location from which a payload is obtained",
+            "data": "*example.com",
+            "data_1": "*example.com"
           }
         ],
         "campaignBrandSet": [
