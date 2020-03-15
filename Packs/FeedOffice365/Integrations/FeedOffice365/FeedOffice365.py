@@ -108,13 +108,17 @@ class Client(BaseClient):
         """
         if re.match(ipv4cidrRegex, indicator):
             return FeedIndicatorType.CIDR
-        if re.match(ipv6cidrRegex, indicator):
+        elif re.match(ipv6cidrRegex, indicator):
             return FeedIndicatorType.IPv6CIDR
-        if re.match(ipv4Regex, indicator):
+        elif re.match(ipv4Regex, indicator):
             return FeedIndicatorType.IP
-        if re.match(ipv6Regex, indicator):
+        elif re.match(ipv6Regex, indicator):
             return FeedIndicatorType.IPv6
-        return FeedIndicatorType.Domain
+        elif '*' in indicator:
+            return FeedIndicatorType.DomainGlob
+        # domain
+        else:
+            return FeedIndicatorType.Domain
 
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
