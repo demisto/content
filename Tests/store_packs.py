@@ -5,6 +5,9 @@ import argparse
 import warnings
 import shutil
 import uuid
+import yaml
+import enum
+import prettytable
 import google.auth
 from google.cloud import storage
 from distutils.util import strtobool
@@ -15,10 +18,15 @@ from Tests.test_utils import run_command, print_error, print_warning, print_colo
     collect_pack_content_items, input_to_list
 
 # global constants
-STORAGE_BASE_PATH = "content/packs"
-CONTENT_PACKS_FOLDER = "Packs"
-IGNORED_FILES = ['__init__.py', 'ApiModules']
-IGNORED_PATHS = [os.path.join(CONTENT_PACKS_FOLDER, p) for p in IGNORED_FILES]  # Packs/__init__.py is ignored
+STORAGE_BASE_PATH = "content/packs"  # base path for packs in gcs
+CONTENT_PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
+IGNORED_FILES = ['__init__.py', 'ApiModules']  # files to ignore inside Packs folder
+IGNORED_PATHS = [os.path.join(CONTENT_PACKS_FOLDER, p) for p in IGNORED_FILES]
+CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../..'))  # full path to content root repo
+PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, CONTENT_PACKS_FOLDER)  # full path to Packs folder in content repo
+INTEGRATIONS_FOLDER = "Integrations"  # integrations folder name inside pack
+USE_GCS_RELATIVE_PATH = False  # whether to use relative path in uploaded to gcs images
+
 # the format is defined in issue #19786, may change in the future
 DIR_NAME_TO_CONTENT_TYPE = {
     "Classifiers": "classifier",
@@ -33,6 +41,21 @@ DIR_NAME_TO_CONTENT_TYPE = {
     "Scripts": "automation",
     "Widgets": "widget"
 }
+
+
+class PackStatus(enum.Enum):
+    """Enum of pack upload status, is used in printing upload summary.
+
+    """
+    SUCCESS = "Successfully uploaded pack data to gcs"
+    FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
+    FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
+    FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
+    FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
+    FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
+    FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
+    FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
+    PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
 
 
 class Pack(object):
@@ -51,6 +74,7 @@ class Pack(object):
         METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
         USER_METADATA (str); user metadata file name, the one that located in content repo.
         INDEX_NAME (str): pack's index name, may be changed in the future.
+        EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
 
     """
     PACK_INITIAL_VERSION = "1.0.0"
@@ -66,6 +90,9 @@ class Pack(object):
     def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
         self._pack_path = pack_path
+        self._pack_repo_path = os.path.join(PACKS_FULL_PATH, pack_name)
+        self._status = None
+        self._relative_storage_path = ""
 
     @property
     def name(self):
@@ -81,9 +108,33 @@ class Pack(object):
 
     @property
     def latest_version(self):
-        """str: Pack latest version from sorted keys of changelog.json file.
+        """str: pack latest version from sorted keys of changelog.json file.
         """
         return self._get_latest_version()
+
+    @property
+    def status(self):
+        """str: current status of the packs.
+        """
+        return self._status
+
+    @status.setter
+    def status(self, status_value):
+        """setter of pack current status.
+        """
+        self._status = status_value
+
+    @property
+    def relative_storage_path(self):
+        """str: relative gcs path of uploaded pack.
+        """
+        return self._relative_storage_path
+
+    @relative_storage_path.setter
+    def relative_storage_path(self, path_value):
+        """setter of relative gcs path of uploaded pack.
+        """
+        self._relative_storage_path = path_value
 
     def _get_latest_version(self):
         """Return latest semantic version of the pack.
@@ -109,13 +160,14 @@ class Pack(object):
             return pack_versions[0].vstring
 
     @staticmethod
-    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id):
+    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images):
         """Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
             user_metadata (dict): user metadata that was created in pack initialization.
             pack_content_items (dict): content items located inside specific pack.
             pack_id (str): pack unique identifier.
+            integration_images (list): list of gcs uploaded integration images.
 
         Returns:
             dict: parsed pack metadata.
@@ -124,9 +176,9 @@ class Pack(object):
         pack_metadata = {}
         # part of old packs are initialized with empty list
         user_metadata = {} if isinstance(user_metadata, list) else user_metadata
-        pack_metadata['name'] = user_metadata.get('name', '')
+        pack_metadata['name'] = user_metadata.get('name') if user_metadata.get('name') else pack_id
         pack_metadata['id'] = pack_id
-        pack_metadata['description'] = user_metadata.get('description', '')
+        pack_metadata['description'] = user_metadata.get('description') if user_metadata.get('description') else pack_id
         pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
         pack_metadata['support'] = user_metadata.get('support', '')
@@ -146,7 +198,11 @@ class Pack(object):
         is_deprecated = user_metadata.get('deprecated', False)
         pack_metadata['deprecated'] = bool(strtobool(is_beta)) if isinstance(is_deprecated, str) else is_deprecated
         pack_metadata['certification'] = user_metadata.get('certification', '')
-        pack_metadata['price'] = int(user_metadata.get('price', 0))
+        try:
+            pack_metadata['price'] = int(user_metadata.get('price'))
+        except Exception as e:
+            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional details {e}")
+            pack_metadata['price'] = 0
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
         pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
@@ -156,11 +212,11 @@ class Pack(object):
         pack_metadata['categories'] = input_to_list(user_metadata.get('categories'))
         pack_metadata['contentItems'] = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in pack_content_items.items()
                                          if k in DIR_NAME_TO_CONTENT_TYPE and v}
-        # todo collect all integrations display name
-        pack_metadata["integrations"] = []
-        pack_metadata["useCases"] = input_to_list(user_metadata.get('useCases'))
-        pack_metadata["keywords"] = input_to_list(user_metadata.get('keywords'))
-        pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
+        # todo collect all dependencies integrations display name
+        pack_metadata['integrations'] = integration_images
+        pack_metadata['useCases'] = input_to_list(user_metadata.get('useCases'))
+        pack_metadata['keywords'] = input_to_list(user_metadata.get('keywords'))
+        pack_metadata['dependencies'] = user_metadata.get('dependencies', {})
 
         return pack_metadata
 
@@ -168,28 +224,34 @@ class Pack(object):
         """Zips pack folder and excludes not wanted directories.
 
         Returns:
+            bool: whether the operation succeeded.
             str: full path to created pack zip.
-
         """
         zip_pack_path = f"{self._pack_path}.zip"
+        task_status = False
 
-        with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
-            for root, dirs, files in os.walk(self._pack_path, topdown=True):
-                dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
+        try:
+            with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
+                for root, dirs, files in os.walk(self._pack_path, topdown=True):
+                    dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
 
-                for f in files:
-                    full_file_path = os.path.join(root, f)
-                    relative_file_path = os.path.relpath(full_file_path, self._pack_path)
-                    pack_zip.write(filename=full_file_path, arcname=relative_file_path)
+                    for f in files:
+                        full_file_path = os.path.join(root, f)
+                        relative_file_path = os.path.relpath(full_file_path, self._pack_path)
+                        pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
-        print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
-
-        return zip_pack_path
+            task_status = True
+            print_color(f"Finished zipping {self._pack_name} pack.", LOG_COLORS.GREEN)
+        except Exception as e:
+            print_error(f"Failed in zipping {self._pack_name} folder.\n Additional info: {e}")
+        finally:
+            return task_status, zip_pack_path
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
         The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
+        If flag override_pack is set to True, pack will forced for upload.
 
         Args:
             zip_pack_path (str): full path to pack zip artifact.
@@ -198,27 +260,37 @@ class Pack(object):
             override_pack (bool): whether to override existing pack.
 
         Returns:
-            bool: True is pack was successfully uploaded. False in case that packs already exists at the bucket.
+            bool: whether the operation succeeded.
+            bool: True in case of pack existence at targeted path and upload was skipped, otherwise returned False.
 
         """
-        version_pack_path = os.path.join(STORAGE_BASE_PATH, self._pack_name, latest_version)
-        existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
+        task_status = True
 
-        if existing_files and not override_pack:
-            print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
-            print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-            return False
+        try:
+            version_pack_path = os.path.join(STORAGE_BASE_PATH, self._pack_name, latest_version)
+            existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
-        pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
-        blob = storage_bucket.blob(pack_full_path)
+            if existing_files and not override_pack:
+                print_warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
+                print_warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+                return task_status, True
 
-        with open(zip_pack_path, "rb") as pack_zip:
-            blob.upload_from_file(pack_zip)
-        print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
+            pack_full_path = f"{version_pack_path}/{self._pack_name}.zip"
+            blob = storage_bucket.blob(pack_full_path)
 
-        return True
+            with open(zip_pack_path, "rb") as pack_zip:
+                blob.upload_from_file(pack_zip)
 
-    def format_metadata(self, pack_content_items):
+            self.relative_storage_path = blob.name
+            print_color(f"Uploaded {self._pack_name} pack to {pack_full_path} path.", LOG_COLORS.GREEN)
+
+            return task_status, False
+        except Exception as e:
+            task_status = False
+            print_error(f"Failed in uploading {self._pack_name} pack to gcs.\nAdditional info: {e}")
+            return task_status, True
+
+    def format_metadata(self, pack_content_items, integration_images):
         """Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -227,6 +299,8 @@ class Pack(object):
             Classifiers, Dashboards, IncidentFields, IncidentTypes, IndicatorFields, Integrations, Layouts, Playbooks,
             Reports, Scripts and Widgets. Each key is mapped to list of items with name and description. Several items
             have no description.
+            integration_images (list): list of uploaded integration images with integration display name and image gcs
+            public url.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -243,7 +317,8 @@ class Pack(object):
             user_metadata = json.load(user_metadata_file)  # loading user metadata
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
-                                                           pack_id=self._pack_name)
+                                                           pack_id=self._pack_name,
+                                                           integration_images=integration_images)
 
         with open(metadata_path, "w") as metadata_file:
             json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -271,19 +346,107 @@ class Pack(object):
     def prepare_for_index_upload(self):
         """Removes and leaves only necessary files in pack folder.
 
+        Returns:
+            bool: whether the operation succeeded.
         """
+        task_status = False
         files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
 
-        for file_or_folder in os.listdir(self._pack_path):
-            files_or_folder_path = os.path.join(self._pack_path, file_or_folder)
+        try:
+            for file_or_folder in os.listdir(self._pack_path):
+                files_or_folder_path = os.path.join(self._pack_path, file_or_folder)
 
-            if file_or_folder in files_to_leave:
-                continue
+                if file_or_folder in files_to_leave:
+                    continue
 
-            if os.path.isdir(files_or_folder_path):
-                shutil.rmtree(files_or_folder_path)
-            else:
-                os.remove(files_or_folder_path)
+                if os.path.isdir(files_or_folder_path):
+                    shutil.rmtree(files_or_folder_path)
+                else:
+                    os.remove(files_or_folder_path)
+
+            task_status = True
+        except Exception as e:
+            print_error(f"Failed in preparing index for upload in {self._pack_name} pack.\n Additional info: {e}")
+        finally:
+            return task_status
+
+    def _search_for_images(self, target_folder, folder_depth=2):
+        """Searches for png files in targeted folder.
+
+        Args:
+            target_folder (str): full path to directory to search.
+            folder_depth (int): depth of traversal inside target folder.
+
+        Returns:
+            list: list of dictionaries that include image path and display name of integration, example:
+            [{'repo_image_path': image_path, 'display_name': integration_display_name},...]
+        """
+        target_folder_path = os.path.join(self._pack_repo_path, target_folder)
+        local_repo_images = []
+
+        if os.path.exists(target_folder_path):
+            for (root, _, target_folder_files) in os.walk(target_folder_path, topdown=True):
+                image_data = {}
+
+                if root[len(target_folder_path):].count(os.sep) < folder_depth:
+                    for pack_file in target_folder_files:
+                        if pack_file.startswith('.'):
+                            continue
+                        elif pack_file.endswith('_image.png'):
+                            image_data['repo_image_path'] = os.path.join(root, pack_file)
+                        elif pack_file.endswith('.yml'):
+                            with open(os.path.join(root, pack_file), 'r') as integration_file:
+                                integration_yml = yaml.safe_load(integration_file)
+                                image_data['display_name'] = integration_yml.get('display', '')
+
+                    if image_data:
+                        local_repo_images.append(image_data)
+
+        return local_repo_images
+
+    def upload_integration_images(self, storage_bucket):
+        """Uploads pack integrations images to gcs.
+
+        The returned result of integration section are defined in issue #19786.
+
+        Args:
+            storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
+
+        Returns:
+            bool: whether the operation succeeded.
+            list: list of dictionaries with uploaded pack integration images.
+
+        """
+        task_status = True
+        uploaded_integration_images = []
+
+        try:
+            pack_local_images = self._search_for_images(target_folder=INTEGRATIONS_FOLDER)
+
+            if not pack_local_images:
+                return uploaded_integration_images  # returned empty list if not images found
+
+            pack_storage_root_path = os.path.join(STORAGE_BASE_PATH, self._pack_name)
+
+            for image_data in pack_local_images:
+                image_local_path = image_data.get('repo_image_path')
+                image_name = os.path.basename(image_local_path)
+                image_storage_path = os.path.join(pack_storage_root_path, image_name)
+                pack_image_blob = storage_bucket.blob(image_storage_path)
+
+                with open(image_local_path, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+                    uploaded_integration_images.append({
+                        'name': image_data.get('display_name', ''),
+                        'imagePath': pack_image_blob.name if USE_GCS_RELATIVE_PATH else pack_image_blob.public_url
+                    })
+
+            print(f"Uploaded {len(pack_local_images)} images for {self._pack_name} pack.")
+        except Exception as e:
+            task_status = False
+            print_error(f"Failed to upload {self._pack_name} pack integration images. Additional info\n: {e}")
+        finally:
+            return task_status, uploaded_integration_images
 
     def cleanup(self):
         """Finalization action, removes extracted pack folder.
@@ -309,15 +472,12 @@ def get_modified_packs(specific_packs=""):
 
     """
     if specific_packs.lower() == "all":
-        content_root_path = os.path.abspath(os.path.join(__file__, '../..'))
-        content_packs_path = os.path.join(content_root_path, CONTENT_PACKS_FOLDER)
-
-        if os.path.exists(content_packs_path):
-            all_packs = {p for p in os.listdir(content_packs_path) if p not in IGNORED_FILES}
+        if os.path.exists(PACKS_FULL_PATH):
+            all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
             print(f"Number of selected packs is: {len(all_packs)}")
             return all_packs
         else:
-            print(f"Folder {CONTENT_PACKS_FOLDER} was not found at the following path: {content_packs_path}")
+            print(f"Folder {CONTENT_PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
             sys.exit(1)
 
     elif specific_packs:
@@ -410,8 +570,6 @@ def download_and_extract_index(storage_bucket, extract_destination_path):
         with ZipFile(download_index_path, 'r') as index_zip:
             index_zip.extractall(extract_destination_path)
 
-        # index_folder_path = os.path.join(extract_destination_path, Pack.INDEX_NAME)
-
         if not os.path.exists(index_folder_path):
             print_error(f"Failed creating {Pack.INDEX_NAME} folder with extracted data.")
             sys.exit(1)
@@ -434,14 +592,24 @@ def update_index_folder(index_folder_path, pack_name, pack_path):
         pack_name (str): pack folder name to copy.
         pack_path (str): pack folder full path.
 
+    Returns:
+        bool: whether the operation succeeded.
     """
-    index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
-                                   os.path.isdir(os.path.join(index_folder_path, d))]
-    index_pack_path = os.path.join(index_folder_path, pack_name)
+    task_status = False
 
-    if pack_name in index_folder_subdirectories:
-        shutil.rmtree(index_pack_path)
-    shutil.copytree(pack_path, index_pack_path)
+    try:
+        index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
+                                       os.path.isdir(os.path.join(index_folder_path, d))]
+        index_pack_path = os.path.join(index_folder_path, pack_name)
+
+        if pack_name in index_folder_subdirectories:
+            shutil.rmtree(index_pack_path)
+        shutil.copytree(pack_path, index_pack_path)
+        task_status = True
+    except Exception as e:
+        print_error(f"Failed in updating index folder for {pack_name} pack\n. Additional info: {e}")
+    finally:
+        return task_status
 
 
 def upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number):
@@ -482,6 +650,57 @@ def upload_index_to_storage(index_folder_path, extract_destination_path, index_b
     index_blob.upload_from_filename(index_zip_path)
     shutil.rmtree(index_folder_path)
     print_color(f"Finished uploading {Pack.INDEX_NAME}.zip to storage.", LOG_COLORS.GREEN)
+
+
+def _build_summary_table(packs_input_list):
+    """Build summary table from pack list
+
+    Args:
+        packs_input_list (list): list of Packs
+
+    Returns:
+        PrettyTable: table with upload result of packs.
+
+    """
+    table_fields = ["Index", "Pack Name", "Public uploaded URL", "Version", "Status"]
+    table = prettytable.PrettyTable()
+    table.field_names = table_fields
+
+    for index, pack in enumerate(packs_input_list, start=1):
+        pack_status_message = PackStatus[pack.status].value
+        row = [index, pack.name, pack.relative_storage_path, pack.latest_version, pack_status_message]
+        table.add_row(row)
+
+    return table
+
+
+def print_packs_summary(packs_list):
+    """Prints summary of packs uploaded to gcs.
+
+    Args:
+        packs_list (list): list of initialized packs.
+
+    """
+    successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
+    skipped_packs = [pack for pack in packs_list if pack.status == PackStatus.PACK_ALREADY_EXISTS.name]
+    failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
+
+    print("\n")
+    print("--------------------------------------- Packs Upload Summary ---------------------------------------")
+    print(f"Total number of packs: {len(packs_list)}")
+
+    if successful_packs:
+        print_color(f"Number of successful uploaded packs: {len(successful_packs)}", LOG_COLORS.GREEN)
+        successful_packs_table = _build_summary_table(successful_packs)
+        print_color(successful_packs_table, LOG_COLORS.GREEN)
+    if skipped_packs:
+        print_warning(f"Number of skipped packs: {len(skipped_packs)}")
+        skipped_packs_table = _build_summary_table(skipped_packs)
+        print_warning(skipped_packs_table)
+    if failed_packs:
+        print_error(f"Number of failed packs: {len(failed_packs)}")
+        failed_packs_table = _build_summary_table(failed_packs)
+        print_error(failed_packs_table)
 
 
 def option_handler():
@@ -539,29 +758,70 @@ def main():
     index_was_updated = False  # indicates whether one or more index folders were updated
 
     for pack in packs_list:
-        pack_content_items = collect_pack_content_items(pack.path)
-        if not pack.format_metadata(pack_content_items):
-            pack.cleanup()
-            continue
-        # todo finish implementation of release notes
-        # pack.parse_release_notes()
-        zip_pack_path = pack.zip_pack()
-        uploaded_successfully = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
-                                                       override_pack)
-        # in case that pack already exist at cloud storage path, skipped further steps
-        if not uploaded_successfully:
+        task_status, integration_images = pack.upload_integration_images(storage_bucket)
+        if not task_status:
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        pack.prepare_for_index_upload()
-        update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
-        index_was_updated = True  # detected index update
+        task_status, pack_content_items = collect_pack_content_items(pack.path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
+            pack.cleanup()
+            continue
+
+        task_status = pack.format_metadata(pack_content_items, integration_images)
+        if not task_status:
+            pack.status = PackStatus.FAILED_METADATA_PARSING.name
+            pack.cleanup()
+            continue
+
+        # todo finish implementation of release notes
+        # pack.parse_release_notes()
+
+        task_status, zip_pack_path = pack.zip_pack()
+        if not task_status:
+            pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+            pack.cleanup()
+            continue
+
+        task_status, skipped_pack_uploading = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
+                                                                     override_pack)
+        if not task_status:
+            pack.status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack.cleanup()
+            continue
+
+        # in case that pack already exist at cloud storage path, skipped further steps
+        if skipped_pack_uploading:
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.cleanup()
+            continue
+
+        task_status = pack.prepare_for_index_upload()
+        if not task_status:
+            pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
+            pack.cleanup()
+            continue
+
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+            pack.cleanup()
+            continue
+
+        # detected index update
+        index_was_updated = True
+        pack.status = PackStatus.SUCCESS.name
         pack.cleanup()
 
     if index_was_updated:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number)
     else:
         print_warning(f"Skipping uploading index.zip to storage.")
+
+    # summary of packs status
+    print_packs_summary(packs_list)
 
 
 if __name__ == '__main__':
