@@ -1,5 +1,6 @@
 id: test_MsGraphFiles
 version: -1
+fromversion: "5.0.0"
 contentitemfields:
   propagationLabels: []
 name: test_MsGraphFiles
@@ -1573,4 +1574,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
