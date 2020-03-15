@@ -15,6 +15,9 @@ configuration:
   - json
   - json-seq
   - csv
+  - XSOAR json
+  - XSOAR json-seq
+  - XSOAR csv
   - McAfee Web Gateway
   - Symantec ProxySG
   - PAN-OS URL
@@ -132,6 +135,9 @@ script:
       - json
       - json-seq
       - csv
+      - XSOAR json
+      - XSOAR json-seq
+      - XSOAR csv
       - McAfee Web Gateway
       - Symantec ProxySG
       - PAN-OS URL
