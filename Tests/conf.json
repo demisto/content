@@ -2440,7 +2440,6 @@
         }
     ],
     "skipped_tests": {
-        "Google Chronicle Backstory Reputation - Test": "Issue 22720",
         "AutoFocus V2 test": "Issue 22721",
         "Cybereason Test": "Issue 22683",
         "CVE Search v2 - Test": "Issue 22661",
@@ -2571,6 +2570,7 @@
         "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
+        "Google Chronicle Backstory": "Issue 22720",
         "XFE_v2": "Issue 22715",
         "AlphaSOC Wisdom": "API key has expired",
         "AWS - Athena - Beta": "Issue 19834",
