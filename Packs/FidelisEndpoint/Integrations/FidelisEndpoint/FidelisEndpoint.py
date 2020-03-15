@@ -73,7 +73,7 @@ class Client(BaseClient):
         suffix = '/alerts/getalertsV2'
         self._http_request('GET', suffix, params={'take': 1})
 
-    def list_alerts(self, limit: int = None, sort: str = None, facet_search: str = None,
+    def list_alerts(self, limit: str = None, sort: str = None, facet_search: str = None,
                     start_date=None, end_date=None) -> Dict:
 
         url_suffix = '/alerts/getalertsV2'
@@ -362,7 +362,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def query_by_hash(self, limit: int = None, start_time: Union[None, int, float] = None,
+    def query_by_hash(self, limit: str = None, start_time: Union[None, int, float] = None,
                       end_time: Union[None, int, float] = None, logic: str = None, file_hash: str = None) -> Dict:
 
         url_suffix = '/v2/events'
@@ -398,7 +398,7 @@ class Client(BaseClient):
             raise Exception(response.get('error'))
         return response
 
-    def query_by_process_name(self, limit: int = None, start_time: Union[None, int, float] = None,
+    def query_by_process_name(self, limit: str = None, start_time: Union[None, int, float] = None,
                               end_time: Union[None, int, float] = None, logic: str = None,
                               process_name: str = None) -> Dict:
 
@@ -435,7 +435,7 @@ class Client(BaseClient):
             raise Exception(response.get('error'))
         return response
 
-    def query_by_remote_ip(self, limit: int = None, start_time: Union[None, int, float] = None,
+    def query_by_remote_ip(self, limit: str = None, start_time: Union[None, int, float] = None,
                            end_time: Union[None, int, float] = None, logic: str = None, remote_ip: str = None) -> Dict:
 
         url_suffix = '/v2/events'
@@ -473,7 +473,7 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_request(self, limit: int = None, start_time: Union[None, int, float] = None,
+    def query_by_dns_request(self, limit: str = None, start_time: Union[None, int, float] = None,
                              end_time: Union[None, int, float] = None, logic: str = None, url: str = None) -> Dict:
 
         url_suffix = '/v2/events'
@@ -509,7 +509,7 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_server_ip(self, limit: int = None, start_time: Union[None, int, float] = None,
+    def query_by_dns_server_ip(self, limit: str = None, start_time: Union[None, int, float] = None,
                                end_time: Union[None, int, float] = None, logic: str = None,
                                remote_ip: str = None) -> Dict:
 
@@ -546,7 +546,7 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_source_ip(self, limit: int = None, start_time: Union[None, int, float] = None,
+    def query_by_dns_source_ip(self, limit: str = None, start_time: Union[None, int, float] = None,
                                end_time: Union[None, int, float] = None, logic: str = None, source_ip: str = None,
                                domain: str = None) -> Dict:
 
@@ -589,7 +589,7 @@ class Client(BaseClient):
 
         return response
 
-    def query_events(self, limit: int = None, start_time: Union[None, int, float] = None,
+    def query_events(self, limit: str = None, start_time: Union[None, int, float] = None,
                      end_time: Union[None, int, float] = None, logic: str = None, column: str = None,
                      value: str = None, entity_type: str = None, operator: str = None,
                      additional_filter=None) -> Dict:
@@ -625,13 +625,31 @@ class Client(BaseClient):
         }
 
         if additional_filter:
-            body['criteriaV3']['filter']['filters'].append(additional_filter)
+            body['criteriaV3']['filter']['filters'].append(additional_filter)  # type: ignore
 
         response = self._http_request('POST', url_suffix, params=params, json_data=body)
         if response.get('error'):
             raise Exception(response.get('error'))
 
         return response
+
+
+def get_endpoint_id(client: Client, endpoint_ip=None, endpoint_name=None):
+    if endpoint_name and endpoint_ip:
+        raise Exception('You must provide only one argument endpoint_ip or endpoint_name')
+
+    if not endpoint_ip and not endpoint_name:
+        raise Exception('You must provide either endpoint_ip or endpoint_name')
+
+    if endpoint_ip:
+        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
+        endpoint_id = endpoints.get('data')
+
+    if endpoint_name:
+        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
+        endpoint_id = endpoints.get('data')
+
+    return endpoint_id
 
 
 def alert_severity_to_dbot_score(severity_str: str):
@@ -844,6 +862,8 @@ def file_search_reasult_metadata(client: Client, args: dict) -> Tuple[str, Dict,
     if not response.get('success'):
         return f'Could not find results for this job ID.', {}, {}
     data = response.get('data', {}).get('jobResultInfos', [])
+    if not data:
+        return 'Check the job status, it might be still running', {}, {}
     contents = {}
     file_standards = {}
     for item in data:
@@ -951,20 +971,7 @@ def execute_script_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]
     endpoint_name = argToList(args.get('endpoint_name'))
     answer = args.get('answer')
     additional_answer = args.get('additional_answer', '')
-
-    if endpoint_ip:
-        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name:
-        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name and endpoint_ip:
-        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
-
-    if not endpoint_ip and not endpoint_name:
-        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
+    endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
 
     response = client.execute_script(script_id, endpoint_id, answer, time_out, additional_answer)
     context = {
@@ -979,21 +986,7 @@ def execute_script_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]
 def list_process_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
-
-    if endpoint_ip:
-        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name:
-        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name and endpoint_ip:
-        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
-
-    if not endpoint_ip and not endpoint_name:
-        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
-
+    endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
     script_id = ''
@@ -1073,21 +1066,7 @@ def get_script_result(client: Client, args: dict):
 def kill_process_by_pid(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
-
-    if endpoint_ip:
-        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name:
-        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name and endpoint_ip:
-        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
-
-    if not endpoint_ip and not endpoint_name:
-        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
-
+    endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
     pid = args.get('pid')
@@ -1112,21 +1091,7 @@ def kill_process_by_pid(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
-
-    if endpoint_ip:
-        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name:
-        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name and endpoint_ip:
-        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
-
-    if not endpoint_ip and not endpoint_name:
-        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
-
+    endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
     file_path = args.get('file_path')
@@ -1151,21 +1116,7 @@ def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
-
-    if endpoint_ip:
-        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name:
-        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name and endpoint_ip:
-        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
-
-    if not endpoint_ip and not endpoint_name:
-        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
-
+    endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
     allowed_server = args.get('allowed_server')
@@ -1190,21 +1141,7 @@ def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Di
 def remove_network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     endpoint_ip = argToList(args.get('endpoint_ip'))
     endpoint_name = argToList(args.get('endpoint_name'))
-
-    if endpoint_ip:
-        endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name:
-        endpoints = client.convert_name_to_endpoint_id(endpoint_name)
-        endpoint_id = endpoints.get('data')
-
-    if endpoint_name and endpoint_ip:
-        return 'You must provide only one argument endpoint_ip or endpoint_name', {}, {}
-
-    if not endpoint_ip and not endpoint_name:
-        return 'You must provide either endpoint_ip or endpoint_name', {}, {}
-
+    endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
     time_out = args.get('time_out')
     operating_system = args.get('operating_system')
     script_id = ''
