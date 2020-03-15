@@ -202,12 +202,12 @@ class TestHelperFunctions:
 
     @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_2(self, mocker):
-        """Test out_format=json"""
+        """Test out_format= XSOAR json"""
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='json')
+            request_args = ei.RequestArguments(query='', out_format='XSOAR json')
             ei_vals = ei.refresh_outbound_context(request_args)
             assert isinstance(ei_vals, str)
             ei_vals = json.loads(ei_vals)
@@ -215,12 +215,12 @@ class TestHelperFunctions:
 
     @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_3(self, mocker):
-        """Test out_format=csv"""
+        """Test out_format=xsoar-csv"""
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='csv')
+            request_args = ei.RequestArguments(query='', out_format='XSOAR csv')
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
@@ -228,6 +228,34 @@ class TestHelperFunctions:
 
     @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_4(self, mocker):
+        """Test out_format=XSOAR json-seq"""
+        import ExportIndicators as ei
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            request_args = ei.RequestArguments(query='', out_format='XSOAR json-seq')
+            ei_vals = ei.refresh_outbound_context(request_args)
+            with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq.txt', 'r') as iocs_out_f:
+                iocs_out = iocs_out_f.read()
+                assert iocs_out == ei_vals
+
+    @pytest.mark.refresh_outbound_context
+    def test_refresh_outbound_context_5(self, mocker):
+        """Test out_format=json"""
+        import ExportIndicators as ei
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            request_args = ei.RequestArguments(query='', out_format='json')
+            ei_vals = ei.refresh_outbound_context(request_args)
+            assert isinstance(ei_vals, str)
+            ei_vals = json.loads(ei_vals)
+            with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json.json', 'r') as iocs_json_out_f:
+                iocs_json_out = json.loads(iocs_json_out_f.read())
+                assert iocs_json_out == ei_vals
+
+    @pytest.mark.refresh_outbound_context
+    def test_refresh_outbound_context_6(self, mocker):
         """Test out_format=json-seq"""
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
@@ -235,9 +263,24 @@ class TestHelperFunctions:
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
             request_args = ei.RequestArguments(query='', out_format='json-seq')
             ei_vals = ei.refresh_outbound_context(request_args)
-            with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq.txt', 'r') as iocs_out_f:
+            with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq_old.txt', 'r') as iocs_out_f:
                 iocs_out = iocs_out_f.read()
-                assert iocs_out == ei_vals
+                for iocs_out_line in iocs_out.split('\n'):
+                    assert iocs_out_line in ei_vals
+
+    @pytest.mark.refresh_outbound_context
+    def test_refresh_outbound_context_7(self, mocker):
+        """Test out_format=csv"""
+        import ExportIndicators as ei
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            request_args = ei.RequestArguments(query='', out_format='csv')
+            ei_vals = ei.refresh_outbound_context(request_args)
+            with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv_old.txt', 'r') as iocs_out_f:
+                iocs_out = iocs_out_f.read()
+                for ioc in iocs_out.split('\n'):
+                    assert ioc in ei_vals
 
     @pytest.mark.find_indicators_with_limit
     def test_find_indicators_with_limit_1(self, mocker):
@@ -290,11 +333,11 @@ class TestHelperFunctions:
 
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_1(self):
-        """Test CSV out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_CSV, RequestArguments
+        """Test XSOAR CSV out"""
+        from ExportIndicators import create_values_out_dict, FORMAT_XSOAR_CSV, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', out_format=FORMAT_CSV)
+            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_CSV)
             csv_out = create_values_out_dict(iocs_json, request_args)
             # assert len(csv_out) == IOC_RES_LEN + 1
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
@@ -304,21 +347,21 @@ class TestHelperFunctions:
 
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_2(self):
-        """Test JSON out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_JSON, CTX_VALUES_KEY, RequestArguments
+        """Test XSOAR JSON out"""
+        from ExportIndicators import create_values_out_dict, FORMAT_XSOAR_JSON, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.load(iocs_json_f)
-            request_args = RequestArguments(query='', out_format=FORMAT_JSON)
+            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_JSON)
             json_out = json.loads(create_values_out_dict(iocs_json, request_args).get(CTX_VALUES_KEY))
             assert json_out == iocs_json
 
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_3(self):
-        """Test JSON_SEQ out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
+        """Test XSOAR JSON_SEQ out"""
+        from ExportIndicators import create_values_out_dict, FORMAT_XSOAR_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', out_format=FORMAT_JSON_SEQ)
+            request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_JSON_SEQ)
             json_seq_out = create_values_out_dict(iocs_json, request_args).get(CTX_VALUES_KEY)
             for seq_line in json_seq_out.split('\n'):
                 assert json.loads(seq_line) in iocs_json
@@ -335,6 +378,45 @@ class TestHelperFunctions:
                 iocs_txt_json = json.load(iocs_txt_f)
                 for line in text_out.split('\n'):
                     assert line in iocs_txt_json
+
+    @pytest.mark.create_values_out_dict
+    def test_create_values_out_dict_5(self):
+        """Test JSON out"""
+        from ExportIndicators import create_values_out_dict, FORMAT_JSON, CTX_VALUES_KEY, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.load(iocs_json_f)
+            request_args = RequestArguments(query='', out_format=FORMAT_JSON)
+            json_out = json.loads(create_values_out_dict(iocs_json, request_args).get(CTX_VALUES_KEY))
+            with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json.json', 'r') as iocs_json_out_f:
+                iocs_json_out = json.loads(iocs_json_out_f.read())
+                assert iocs_json_out == json_out
+
+    @pytest.mark.create_values_out_dict
+    def test_create_values_out_dict_6(self):
+        """Test JSON_SEQ out"""
+        from ExportIndicators import create_values_out_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            request_args = RequestArguments(query='', out_format=FORMAT_JSON_SEQ)
+            json_seq_out = create_values_out_dict(iocs_json, request_args).get(CTX_VALUES_KEY)
+            with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json.json', 'r') as iocs_json_out_f:
+                iocs_json_out = json.load(iocs_json_out_f)
+                for seq_line in json_seq_out.split('\n'):
+                    assert json.loads(seq_line) in iocs_json_out
+
+    @pytest.mark.create_values_out_dict
+    def test_create_values_out_dict_7(self):
+        """Test CSV out"""
+        from ExportIndicators import create_values_out_dict, FORMAT_CSV, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            request_args = RequestArguments(query='', out_format=FORMAT_CSV)
+            csv_out = create_values_out_dict(iocs_json, request_args)
+            # assert len(csv_out) == IOC_RES_LEN + 1
+            with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv_old.txt', 'r') as iocs_out_f:
+                expected_csv_out = iocs_out_f.read()
+                for csv_line in csv_out.values():
+                    assert csv_line in expected_csv_out
 
     @pytest.mark.validate_basic_authentication
     def test_validate_basic_authentication(self):
@@ -423,13 +505,13 @@ class TestHelperFunctions:
                                       "Alien Vault OTX TAXII Feed\""
 
     @pytest.mark.validate_basic_authentication
-    def test_create_splunk_out_format(self):
-        from ExportIndicators import create_splunk_out_format, CTX_VALUES_KEY
+    def test_create_json_out_format(self):
+        from ExportIndicators import create_json_out_format, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
             # listed category does not exist - all results should be in default category
-            returned_dict = create_splunk_out_format(iocs=iocs_json)
+            returned_dict = create_json_out_format(iocs=iocs_json)
             returned_output = json.loads(returned_dict.get(CTX_VALUES_KEY))
 
             assert returned_output[0].get('indicator') == '1.2.3.4:89/wget'

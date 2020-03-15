@@ -24,6 +24,7 @@ DEMISTO_LOGGER: Handler = Handler()
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
 CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
+
 FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
@@ -35,8 +36,13 @@ FORMAT_ARG_PROXYSG = 'proxysg'
 FORMAT_MWG: str = 'McAfee Web Gateway'
 FORMAT_PROXYSG: str = "Symantec ProxySG"
 FORMAT_PANOSURL: str = "PAN-OS URL"
-FORMAT_SPLUNK: str = 'Splunk'
-FORMAT_ARG_SPLUNK: str = 'splunk'
+FORMAT_XSOAR_JSON: str = 'XSOAR json'
+FORMAT_ARG_XSOAR_JSON: str = 'xsoar'
+FORMAT_XSOAR_JSON_SEQ: str = 'XSOAR json-seq'
+FORAMT_ARG_XSOAR_JSON_SEQ: str = 'xsoar-seq'
+FORMAT_XSOAR_CSV: str = 'XSOAR csv'
+FORMAT_ARG_XSOAR_CSV: str = 'xsoar-csv'
+
 CTX_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, json-seq, csv, mgw, panosurl and proxysg'
 CTX_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 CTX_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
@@ -44,6 +50,11 @@ CTX_MWG_TYPE_ERR_MSG: str = 'The McAFee Web Gateway type can only be one of the 
                             ' applcontrol, dimension, category, ip, mediatype, number, regex'
 CTX_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
+
+MIMETYPE_JSON_SEQ: str = 'application/json-seq'
+MIMETYPE_JSON: str = 'application/json'
+MIMETYPE_CSV: str = 'text/csv'
+MIMETYPE_TEXT: str = 'text/plain'
 
 _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
@@ -144,7 +155,18 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     # poll indicators into list from demisto
     iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
     out_dict = create_values_out_dict(iocs, request_args)
-    out_dict[CTX_MIMETYPE_KEY] = 'application/json' if request_args.out_format == FORMAT_JSON else 'text/plain'
+    if request_args.out_format == FORMAT_JSON:
+        out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
+
+    elif request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
+        out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_CSV
+
+    elif request_args.out_format in [FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
+        out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON_SEQ
+
+    else:
+        out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_TEXT
+
     demisto.setIntegrationContext({
         "last_output": out_dict,
         'last_run': date_to_timestamp(now),
@@ -248,18 +270,23 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
     return {CTX_VALUES_KEY: list_to_str(formatted_indicators, '\n')}
 
 
-def create_splunk_out_format(iocs: list):
+def create_json_out_format(iocs: list):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
-        splunk_format_indicator = {
-            "indicator": indicator_data.get('value')
-        }
-        del indicator_data['value']
-
-        splunk_format_indicator["value"] = indicator_data
-        formatted_indicators.append(splunk_format_indicator)
+        json_format_indicator = json_format_single_indicator(indicator_data)
+        formatted_indicators.append(json_format_indicator)
 
     return {CTX_VALUES_KEY: json.dumps(formatted_indicators)}
+
+
+def json_format_single_indicator(indicator: dict):
+    json_format_indicator = {
+        "indicator": indicator.get("value")
+    }
+    del indicator["value"]
+
+    json_format_indicator["value"] = indicator
+    return json_format_indicator
 
 
 def add_indicator_to_category(indicator, category, category_dict):
@@ -336,26 +363,36 @@ def create_values_out_dict(iocs: list, request_args: RequestArguments) -> dict:
     if request_args.out_format == FORMAT_MWG:
         return create_mwg_out_format(iocs, request_args.mwg_type)
 
-    if request_args.out_format == FORMAT_SPLUNK:
-        return create_splunk_out_format(iocs)
+    if request_args.out_format == FORMAT_JSON:
+        return create_json_out_format(iocs)
 
-    if request_args.out_format == FORMAT_JSON:  # handle json separately
+    if request_args.out_format == FORMAT_XSOAR_JSON:
         iocs_list = [ioc for ioc in iocs]
         return {CTX_VALUES_KEY: json.dumps(iocs_list)}
 
     else:
         formatted_indicators = []
-        if request_args.out_format == FORMAT_CSV and len(iocs) > 0:  # add csv keys as first item
+        if request_args.out_format == FORMAT_XSOAR_CSV and len(iocs) > 0:  # add csv keys as first item
             headers = list(iocs[0].keys())
             formatted_indicators.append(list_to_str(headers))
+
+        elif request_args.out_format == FORMAT_CSV and len(iocs) > 0:
+            formatted_indicators.append('indicator')
+
         for ioc in iocs:
             value = ioc.get('value')
             if value:
-                if request_args.out_format == FORMAT_TEXT:
+                if request_args.out_format in [FORMAT_TEXT, FORMAT_CSV]:
                     formatted_indicators.append(value)
-                elif request_args.out_format == FORMAT_JSON_SEQ:
+
+                elif request_args.out_format == FORMAT_XSOAR_JSON_SEQ:
                     formatted_indicators.append(json.dumps(ioc))
-                elif request_args.out_format == FORMAT_CSV:
+
+                elif request_args.out_format == FORMAT_JSON_SEQ:
+                    json_format_indicator = json_format_single_indicator(ioc)
+                    formatted_indicators.append(json.dumps(json_format_indicator))
+
+                elif request_args.out_format == FORMAT_XSOAR_CSV:
                     # wrap csv values with " to escape them
                     values = list(ioc.values())
                     formatted_indicators.append(list_to_str(values, map_func=lambda val: f'"{val}"'))
@@ -483,7 +520,8 @@ def get_request_args(params):
 
     if out_format not in [FORMAT_PROXYSG, FORMAT_PANOSURL, FORMAT_TEXT, FORMAT_JSON, FORMAT_CSV,
                           FORMAT_JSON_SEQ, FORMAT_MWG, FORMAT_ARG_BLUECOAT, FORMAT_ARG_MWG, FORMAT_ARG_PANOSURL,
-                          FORMAT_ARG_PROXYSG, FORMAT_ARG_PANOSURL, FORMAT_SPLUNK, FORMAT_ARG_SPLUNK]:
+                          FORMAT_ARG_PROXYSG, FORMAT_ARG_PANOSURL, FORMAT_XSOAR_JSON, FORMAT_ARG_XSOAR_JSON,
+                          FORMAT_XSOAR_JSON_SEQ, FORAMT_ARG_XSOAR_JSON_SEQ, FORMAT_XSOAR_CSV, FORMAT_ARG_XSOAR_CSV]:
         raise DemistoException(CTX_FORMAT_ERR_MSG)
 
     elif out_format in [FORMAT_ARG_PROXYSG, FORMAT_ARG_BLUECOAT]:
@@ -495,8 +533,14 @@ def get_request_args(params):
     elif out_format == FORMAT_ARG_PANOSURL:
         out_format = FORMAT_PANOSURL
 
-    elif out_format == FORMAT_ARG_SPLUNK:
-        out_format = FORMAT_SPLUNK
+    elif out_format == FORMAT_ARG_XSOAR_JSON:
+        out_format = FORMAT_XSOAR_JSON
+
+    elif out_format == FORAMT_ARG_XSOAR_JSON_SEQ:
+        out_format = FORMAT_XSOAR_JSON_SEQ
+
+    elif out_format == FORMAT_ARG_XSOAR_CSV:
+        out_format = FORMAT_XSOAR_CSV
 
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
                             category_attribute)
