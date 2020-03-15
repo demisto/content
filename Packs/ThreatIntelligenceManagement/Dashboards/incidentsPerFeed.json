@@ -1,0 +1,7 @@
+ {
+   "id": "incidentPerFeed",
+   "name": "DailyTotalSales",
+   "dataType": "scripts",
+   "widgetType": "table",
+   "query": "GetIncidentsPerFeed"
+}
