@@ -1,1 +1,0 @@
-- Fixed an issue when fetching incidents in which multiple incidents with the same ticket ID were fetched.
