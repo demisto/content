@@ -1,7 +1,7 @@
 {
     "name": "Active Directory Query v2",
     "description": "Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).",
-    "support": "demisto",
+    "support": "Cortex XSOAR",
     "serverMinVersion": "1.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -10,17 +10,15 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        ""
-    ],
+    "tags": [],
     "created": "2020-03-09T14:47:00Z",
     "updated": "2020-03-09T14:47:00Z",
     "beta": false,
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": [],
-    "price": "",
+    "keywords": ["Active Directory"],
+    "price": 0,
     "dependencies": {
         "Base": {
             "mandatory": true,
