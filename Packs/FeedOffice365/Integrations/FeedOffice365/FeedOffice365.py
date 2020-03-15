@@ -96,6 +96,30 @@ class Client(BaseClient):
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
         return result
 
+    def check_indicator_type(self, indicator):
+        """Checks the indicator type.
+           The indicator type can be classified as one of the following values: CIDR, IPv6CIDR, IP, IPv6 or Domain.
+
+        Args:
+            indicator: indicator value
+
+        Returns:
+            The type of the indicator
+        """
+        if re.match(ipv4cidrRegex, indicator):
+            return FeedIndicatorType.CIDR
+        elif re.match(ipv6cidrRegex, indicator):
+            return FeedIndicatorType.IPv6CIDR
+        elif re.match(ipv4Regex, indicator):
+            return FeedIndicatorType.IP
+        elif re.match(ipv6Regex, indicator):
+            return FeedIndicatorType.IPv6
+        elif '*' in indicator:
+            return FeedIndicatorType.DomainGlob
+        # domain
+        else:
+            return FeedIndicatorType.Domain
+
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
@@ -135,8 +159,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
             values = item.get(indicator_type_lower)
         if values:
             for value in values:
-                ip_indicator_type = FeedIndicatorType.ip_to_indicator_type(value)
-                type_ = ip_indicator_type if ip_indicator_type else FeedIndicatorType.Domain
+                type_ = client.check_indicator_type(value)
                 raw_data = {
                     'value': value,
                     'type': type_,
