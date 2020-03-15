@@ -1,0 +1,17 @@
+args:
+- default: false
+  isArray: false
+  name: from
+  required: false
+  secret: false
+commonfields:
+  id: GetIncidentsPerFeed
+  version: -1
+enabled: false
+name: GetIncidentsPerFeed
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.1.6120

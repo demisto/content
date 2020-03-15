@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 def get_default_from_date(date_range):
     from_date, _ = parse_date_range(date_range=date_range)
     str_from_date = from_date.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -9,10 +10,20 @@ def get_default_from_date(date_range):
 
 
 def get_all_incidents(from_date):
-    # from_date = '2020-03-26T00:00:00Z'
-    cmd_res = demisto.executeCommand("getIncidents", {"fromdate": from_date})[0]['Contents']['data']
-    # print(json.dumps(cmd_res))
-    return cmd_res
+    contents = demisto.executeCommand("getIncidents", {"fromdate": from_date})[0]['Contents']
+    incidents = contents['data']
+    size = len(incidents)
+    total = contents['total']
+    page = 1
+
+    while total > size:
+        contents = demisto.executeCommand("getIncidents", {"fromdate": from_date, "page": page})[0]['Contents']
+        new_incidents = contents['data']
+        incidents = incidents + new_incidents
+        size = len(incidents)
+        page = page + 1
+
+    return incidents
 
 
 def get_feeds_for_incident(incident_id):
@@ -39,11 +50,6 @@ def get_incidents_per_feed(from_date):
         sum_number_of_feeds_for_an_incident(incident_id, feed_counter)
     return feed_counter
 
-
-# fetched_iocs = demisto.searchIndicators(query='sourceBrands:*Feed* incident.id:*')['iocs']
-# demisto.results({'iocs': fetched_iocs})
-# feed_counter = {}
-# sum_number_of_feeds_for_an_incident('87217', feed_counter)
 
 default_from_date = get_default_from_date('30 days')
 from_date = demisto.args().get('from', default_from_date)
