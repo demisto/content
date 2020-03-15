@@ -56,7 +56,7 @@ def main():
                 try:
                     res = requests.request(method=method, url=(host + path), verify=False)
                 except Exception as e:
-                    print_warning(f'Encountered error: {e}\nWill retry this step later.')
+                    print_warning('Encountered error: {}\nWill retry this step later.'.format(str(e)))
                     continue
                 if res.status_code == 200:
                     print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
