@@ -2340,6 +2340,38 @@
         {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Apps - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Detail - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Finding Detail - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Hosts - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Findings - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Unique Cves - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Unique Open Findings - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Apps Detail - Test"
         }
     ],
     "skipped_tests": {
