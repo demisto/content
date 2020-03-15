@@ -847,6 +847,7 @@ tasks:
       id: 95531409-41f0-4a0a-84f2-cb6df69074f3
       version: -1
       name: Test enrichment of md5 or sha 256 does exist
+      description: "Test enrichment of md5 or sha 256 does exist"
       type: condition
       iscommand: false
       brand: ""
