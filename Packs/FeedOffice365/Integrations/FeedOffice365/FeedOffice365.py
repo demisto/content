@@ -169,13 +169,13 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     "service": item.get('serviceArea', '')
                 }
 
-                if item.get('expressRoute', None):
+                if item.get('expressRoute'):
                     indicator_mapping_fields["office365expressroute"] = item.get('expressRoute')
-                if item.get('category', ''):
+                if item.get('category'):
                     indicator_mapping_fields["office365category"] = item.get('category')
-                if item.get('required', None):
+                if item.get('required'):
                     indicator_mapping_fields["office365required"] = item.get('required')
-                if item.get('notes', ''):
+                if item.get('notes'):
                     indicator_mapping_fields["description"] = item.get('notes')
 
                 indicators.append({
