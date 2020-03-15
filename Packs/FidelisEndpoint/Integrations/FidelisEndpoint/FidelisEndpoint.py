@@ -37,11 +37,10 @@ class Client(BaseClient):
     """
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, headers: dict):
 
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
         self._username = username
         self._password = password
         self._token = self._generate_token()
-        self._headers = headers
 
         if self._token:
             token = self._token
