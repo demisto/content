@@ -76,6 +76,7 @@ class Pack(object):
         USER_METADATA (str); user metadata file name, the one that located in content repo.
         INDEX_NAME (str): pack's index name, may be changed in the future.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
+        AUTHOR_IMAGE_NAME (str): author image file name.
 
     """
     PACK_INITIAL_VERSION = "1.0.0"
