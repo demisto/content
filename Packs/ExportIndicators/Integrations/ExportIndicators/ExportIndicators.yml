@@ -125,7 +125,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: text
-      description: The output format. Can be "text", "json", "json-seq", "csv", "PAN-OS
+      description: The output format. Can be "text", "json", "json-seq", "csv", "XOSAR json", "XSOAR json-seq", "XSOAR csv", "PAN-OS
         URL", "McAfee Web Gateway" and "Symantec ProxySG".
       isArray: false
       name: format
