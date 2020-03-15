@@ -85,6 +85,7 @@ class Pack(object):
     README = "README.md"
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
+    AUTHOR_IMAGE_NAME = "Author_image.png"
     INDEX_NAME = "index"
     EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
 
@@ -237,7 +238,8 @@ class Pack(object):
                     dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
 
                     for f in files:
-                        if f.startswith('.'):
+                        # skipping unzipping of unwanted files
+                        if f.startswith('.') or f in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
                             print_warning(f"Skipping zipping {f} for {self._pack_name} pack")
                             continue
 
