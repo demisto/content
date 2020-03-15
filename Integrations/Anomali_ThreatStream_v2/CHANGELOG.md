@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Fixed reputation commands with array input.
+Fixed reputation commands with array input.
 
 ## [20.3.1] - 2020-03-04
 Fixed an issue where inactive indicators were taken into account.
