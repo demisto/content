@@ -20,7 +20,7 @@ Use the following arguments in the URL to change the request:
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?n=50
 2. **s** - The starting entry index from which to export the indicators.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50
-3. **v** - The output format. Supports `text`, `csv`, `json`, `json-seq`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`).
+3. **v** - The output format. Supports `text`, `csv`, `json`, `json-seq`,`xsoar-json`, `xsoar-seq`, `xsoar-csv`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`).
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?v=json
 4. **q** - The query used to retrieve indicators from the system.
  * Example: https://{demisto_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"
