@@ -33,6 +33,7 @@ class AddressObject(object):
     Implements address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/AddressObj/AddressObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         indicator = props.find('Address_Value')
@@ -76,6 +77,7 @@ class DomainNameObject(object):
     Implements domain object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/DomainNameObj/DomainNameObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         dtype = props.get('type', 'FQDN')
@@ -97,6 +99,7 @@ class FileObject(object):
     Implements file object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/FileObj/FileObjectType/
     """
+
     @staticmethod
     def _decode_basic_props(props):
         result = {}
@@ -158,6 +161,7 @@ class URIObject(object):
     Implements URI object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/URIObj/URIObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         utype = props.get('type', 'URL')
@@ -183,6 +187,7 @@ class SocketAddressObject(object):
     Implements socket address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/SocketAddressObj/SocketAddressObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         ip = props.get('ip_address', None)
@@ -196,6 +201,7 @@ class LinkObject(object):
     Implements link object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/LinkObj/LinkObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         ltype = props.get('type', 'URL')
@@ -222,6 +228,7 @@ class HTTPSessionObject(object):
     Implements http session object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/HTTPSessionObj/HTTPSessionObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
         if 'http_request_response' in props.keys():
@@ -461,8 +468,8 @@ class Taxii11(object):
 
 class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
-                 discovery_service: str = '', poll_service: str = None, collection: str = None, api_key: str = None,
-                 api_header: str = None, credentials: dict = None, **kwargs):
+                 discovery_service: str = '', poll_service: str = None, collection: str = None,
+                 credentials: dict = None, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
@@ -471,8 +478,6 @@ class TAXIIClient(object):
         :param discovery_service: TAXII server discovery service
         :param poll_service: TAXII poll service
         :param collection: TAXII collection
-        :param api_key: TAXII server API key
-        :param api_header: TAXII server API key header
         :param credentials: Username and password dict for basic auth
         :param kwargs:
         """
@@ -498,12 +503,13 @@ class TAXIIClient(object):
         self.collection = collection
 
         # authentication
-        self.api_key = api_key
-        self.api_header = api_header
-        if not credentials:
-            credentials = {}
-        self.username = credentials.get('identifier', None)
-        self.password = credentials.get('password', None)
+        if credentials:
+            if '_header:' in credentials.get('identifier', None):
+                self.api_header = credentials.get('identifier', None).split('_header:')[1]
+                self.api_key = credentials.get('password', None)
+            else:
+                self.username = credentials.get('identifier', None)
+                self.password = credentials.get('password', None)
 
     def _send_request(self, url, headers, data, stream=False):
         if self.api_key is not None and self.api_header is not None:
