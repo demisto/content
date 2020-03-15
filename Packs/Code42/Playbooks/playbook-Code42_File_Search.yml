@@ -358,6 +358,7 @@ outputs:
 - contextPath: Code42.SecurityData.SharingTypeAdded
   description: Type of sharing added to file
 - contextPath: File
+  description: The file object.
   type: unknown
 - contextPath: File.Name
   description: File name
