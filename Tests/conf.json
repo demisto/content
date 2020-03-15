@@ -1327,7 +1327,19 @@
             "playbookID": "Microsoft Graph Groups - Test",
             "instance_names": "ms_graph_groups_prod"
         },
-                {
+        {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "instance_names": "ms_graph_files_dev",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "instance_names": "ms_graph_files_prod",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test",
             "instance_names": "ms_graph_calendar_dev"
