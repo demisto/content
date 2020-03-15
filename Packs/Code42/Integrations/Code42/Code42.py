@@ -113,7 +113,7 @@ class Code42Client(BaseClient):
     """
 
     def __init__(self, sdk, base_url, auth, verify=True, proxy=False):
-        super().__init__(base_url, verify=True, proxy=False)
+        super().__init__(base_url, verify=verify, proxy=proxy)
         # Create the Code42 SDK instnace
         self._sdk = sdk.create_using_local_account(base_url, auth[0], auth[1])
         py42.settings.set_user_agent_suffix("Demisto")
