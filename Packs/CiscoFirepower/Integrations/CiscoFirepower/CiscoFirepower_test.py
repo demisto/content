@@ -48,57 +48,46 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_LIST = [
 ]
 
 INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_NETWORK_GROUPS = [({
-                                                          "description": " ",
-                                                          "id": "69fa2a3a-4487-4e3c-816f-4098f684826e",
-                                                          "links": {
-                                                              "self": "https:/api/fmc_config/v1/domain/e276abec-e0f2-11e3"
-                                                          },
-                                                          "literals": [
-                                                              {
-                                                                  "type": "Network",
-                                                                  "value": "0.0.0.0/0"
-                                                              },
-                                                              {
-                                                                  "type": "Host",
-                                                                  "value": "::/0"
-                                                              }
-                                                          ],
-                                                          "metadata": {
-                                                              "domain": {
-                                                                  "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
-                                                                  "name": "Global",
-                                                                  "type": "Domain"
-                                                              },
-                                                              "lastUser": {
-                                                                  "name": "admin"
-                                                              },
-                                                              "readOnly": {
-                                                                  "reason": "SYSTEM",
-                                                                  "state": 'true'
-                                                              },
-                                                              "timestamp": '1521658703283'
-                                                          },
-                                                          "name": "any",
-                                                          "overridable": 'false',
-                                                          "type": "NetworkGroup"
-                                                      },
-                                                      {
-                                                          "Name": "any",
-                                                          "ID": "69fa2a3a-4487-4e3c-816f-4098f684826e",
-                                                          "Overridable": 'false',
-                                                          "Description": " ",
-                                                          'Objects': [],
-                                                          "Addresses": [
-                                                              {
-                                                                  "Value": "0.0.0.0/0",
-                                                                  "Type": "Network"
-                                                              },
-                                                              {
-                                                                  "Value": "::/0",
-                                                                  "Type": "Host"
-                                                              }
-                                                          ]
-                                                      }
+      "description": " ",
+      "id": "69fa2a3a-4487-4e3c-816f-4098f684826e",
+      "links": {"self": "https:/api/fmc_config/v1/domain/e276abec-e0f2-11e3"},
+      "literals": [{"type": "Network", "value": "0.0.0.0/0"}, {"type": "Host", "value": "::/0"}],
+      "metadata": {
+          "domain": {
+              "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+              "name": "Global",
+              "type": "Domain"
+          },
+          "lastUser": {
+              "name": "admin"
+          },
+          "readOnly": {
+              "reason": "SYSTEM",
+              "state": 'true'
+          },
+          "timestamp": '1521658703283'
+      },
+      "name": "any",
+      "overridable": 'false',
+      "type": "NetworkGroup"
+  },
+  {
+      "Name": "any",
+      "ID": "69fa2a3a-4487-4e3c-816f-4098f684826e",
+      "Overridable": 'false',
+      "Description": " ",
+      'Objects': [],
+      "Addresses": [
+          {
+              "Value": "0.0.0.0/0",
+              "Type": "Network"
+          },
+          {
+              "Value": "::/0",
+              "Type": "Host"
+          }
+      ]
+  }
 )
 ]
 
@@ -106,9 +95,7 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_POLICY_ASSIGNMENT = [
     (
         {
             "id": "000C29A8-BA3B-0ed3-0000-124554069675",
-            "links": {
-                "self": "https:/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f"
-            },
+            "links": {"self": "https:/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f"},
             "name": "BPS-Testing",
             "policy": {
                 "id": "000C29A8-BA3B-0ed3-0000-124554069675",
@@ -119,7 +106,7 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_POLICY_ASSIGNMENT = [
                 {
                     "id": "43e032dc-07c5-11ea-b83d-d5fdc079bf65",
                     "keepLocalEvents": 'false',
-                    "name": "FTD_10.8.49.209",
+                    "name": "FTD_CircleCI builds are failing on Setup Instance - I’m investigating this209",
                     "type": "Device"
                 }
             ],
@@ -189,103 +176,106 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_ACCESS_POLICY = [
     )
 ]
 
-INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_RULS = [(
-    {
-        "action": "BLOCK",
-        "destinationNetworks": {
-            "literals": [
-                {
-                    "type": "Host",
-                    "value": "8.8.8.2"
-                },
-                {
-                    "type": "Host",
-                    "value": "4.4.4.8"
-                }
-            ]
-        },
-        "enableSyslog": 'false',
-        "enabled": 'false',
-        "id": "000C29A8-BA3B-0ed3-0000-000268443653",
-        "links": {
-            "self": "https:/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy"
-        },
-        "logBegin": 'false',
-        "logEnd": 'false',
-        "logFiles": 'false',
-        "metadata": {
-            "accessPolicy": {
-                "id": "000C29A8-BA3B-0ed3-0000-085899346038",
-                "name": "Performance Test Policy without AMP",
-                "type": "AccessPolicy"
+INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_RULS = [
+    (
+        {
+            "action": "BLOCK",
+            "destinationNetworks": {
+                "literals": [
+                    {
+                        "type": "Host",
+                        "value": "8.8.8.2"
+                    },
+                    {
+                        "type": "Host",
+                        "value": "4.4.4.8"
+                    }
+                ]
             },
-            "category": "--Undefined--",
-            "domain": {
-                "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
-                "name": "Global",
-                "type": "Domain"
+            "enableSyslog": 'false',
+            "enabled": 'false',
+            "id": "000C29A8-BA3B-0ed3-0000-000268443653",
+            "links": {
+                "self": "https:/api/fmc_config/v1/domain/e276abec-e0f2-11e3-8169-6d9ed49b625f/policy"
             },
-            "ruleIndex": '5',
-            "section": "Default",
-            "timestamp": '1582462113800'
-        },
-        "name": "newUpdateTest",
-        "sendEventsToFMC": 'false',
-        "sourceNetworks": {
-            "literals": [
-                {
-                    "type": "Host",
-                    "value": "10.0.0.1"
+            "logBegin": 'false',
+            "logEnd": 'false',
+            "logFiles": 'false',
+            "metadata": {
+                "accessPolicy": {
+                    "id": "000C29A8-BA3B-0ed3-0000-085899346038",
+                    "name": "Performance Test Policy without AMP",
+                    "type": "AccessPolicy"
                 },
-                {
-                    "type": "Host",
-                    "value": "8.8.8.6"
-                }
-            ]
-        },
-        "type": "AccessRule",
-        "urls": {
-            "literals": [
-                {
-                    "type": "Url",
-                    "url": "google.com"
+                "category": "--Undefined--",
+                "domain": {
+                    "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                    "name": "Global",
+                    "type": "Domain"
                 },
-                {
-                    "type": "Url",
-                    "url": "google.co.il"
-                }
-            ]
+                "ruleIndex": '5',
+                "section": "Default",
+                "timestamp": '1582462113800'
+            },
+            "name": "newUpdateTest",
+            "sendEventsToFMC": 'false',
+            "sourceNetworks": {
+                "literals": [
+                    {
+                        "type": "Host",
+                        "value": "10.0.0.1"
+                    },
+                    {
+                        "type": "Host",
+                        "value": "8.8.8.6"
+                    }
+                ]
+            },
+            "type": "AccessRule",
+            "urls": {
+                "literals": [
+                    {
+                        "type": "Url",
+                        "url": "google.com"
+                    },
+                    {
+                        "type": "Url",
+                        "url": "google.co.il"
+                    }
+                ]
+            },
+            "variableSet": {
+                "id": "76fa83ea-c972-11e2-8be8-8e45bb1343c0",
+                "name": "Default-Set",
+                "type": "VariableSet"
+            },
+            "vlanTags": {}
         },
-        "variableSet": {
-            "id": "76fa83ea-c972-11e2-8be8-8e45bb1343c0",
-            "name": "Default-Set",
-            "type": "VariableSet"
-        },
-        "vlanTags": {}
-    },
-    {
-        'Action': 'BLOCK',
-        'Applications': [],
-        'Category': '--Undefined--',
-        'DestinationNetworks': {'Addresses': [{'Type': 'Host', 'Value': '8.8.8.2'},
-                                              {'Type': 'Host', 'Value': '4.4.4.8'}], 'Objects': []},
-        'DestinationPorts': {'Addresses': [], 'Objects': []},
-        'DestinationZones': {'Objects': []},
-        'Enabled': 'false',
-        'ID': '000C29A8-BA3B-0ed3-0000-000268443653',
-        'Name': 'newUpdateTest',
-        'RuleIndex': '5',
-        'Section': 'Default',
-        'SendEventsToFMC': 'false',
-        'SourceNetworks': {
-            'Addresses': [{'Type': 'Host', 'Value': '10.0.0.1'}, {'Type': 'Host', 'Value': '8.8.8.6'}],
-            'Objects': []},
-        'SourcePorts': {'Addresses': [], 'Objects': []},
-        'SourceSecurityGroupTags': {'Objects': []},
-        'SourceZones': {'Objects': []},
-        'Urls': {'Addresses': [{'URL': 'google.com'}, {'URL': 'google.co.il'}], 'Objects': []},
-        'VlanTags': {'Numbers': [], 'Objects': []}}
-)]
+        {
+            'Action': 'BLOCK',
+            'Applications': [],
+            'Category': '--Undefined--',
+            'DestinationNetworks': {'Addresses': [{'Type': 'Host', 'Value': '8.8.8.2'},
+                                                  {'Type': 'Host', 'Value': '4.4.4.8'}], 'Objects': []},
+            'DestinationPorts': {'Addresses': [], 'Objects': []},
+            'DestinationZones': {'Objects': []},
+            'Enabled': 'false',
+            'ID': '000C29A8-BA3B-0ed3-0000-000268443653',
+            'Name': 'newUpdateTest',
+            'RuleIndex': '5',
+            'Section': 'Default',
+            'SendEventsToFMC': 'false',
+            'SourceNetworks': {
+                'Addresses': [{'Type': 'Host', 'Value': '10.0.0.1'}, {'Type': 'Host', 'Value': '8.8.8.6'}],
+                'Objects': []},
+            'SourcePorts': {'Addresses': [], 'Objects': []},
+            'SourceSecurityGroupTags': {'Objects': []},
+            'SourceZones': {'Objects': []},
+            'Urls': {'Addresses': [{'URL': 'google.com'}, {'URL': 'google.co.il'}], 'Objects': []},
+            'VlanTags': {'Numbers': [], 'Objects': []}
+        }
+    )
+]
 
 """ TESTS FUNCTION """
 

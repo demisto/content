@@ -42,7 +42,7 @@ configuration:
   required: false
   type: 16
 description: Malware information sharing platform and threat sharing.
-display: MISP V2
+display: MISP v2
 name: MISP V2
 script:
   commands:
@@ -115,7 +115,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: '''false'''
+      defaultValue: 'false'
       description: Return only the attributes set with the "to_ids" flag
       isArray: false
       name: to_ids

@@ -132,6 +132,9 @@ class Client(BaseClient):
             value = block.get("data_1", {}).get("url")
         else:
             value = block.get("data_1")
+            # If a domain has '*' in the value it is of type domainGlob
+            if indicator_type == FeedIndicatorType.Domain and '*' in value:
+                indicator_type = FeedIndicatorType.DomainGlob
         return indicator_type, value
 
     @classmethod
@@ -157,8 +160,27 @@ class Client(BaseClient):
             block["value"] = value
             block["type"] = indicator
             block["threat_id"] = threat_id
+            malware_family: dict = block.get("malwarefamily", {})
+            ip_detail: dict = block.get("ipDetail", {})
             if indicator:
-                results.append({"value": value, "type": indicator, "rawJSON": block})
+                results.append({
+                    "value": value,
+                    "type": indicator,
+                    "rawJSON": block,
+                    "fields": {
+                        "name": threat_id,
+                        "malwarefamily": malware_family.get("familyName"),
+                        "description": malware_family.get("description"),
+                        "feedoriginalseverity": block.get("impact"),
+                        "feedthreattypes": {
+                            "threatcategoryconfidence": block.get("confidence"),
+                            "threatcategory": block.get("role")
+                        },
+                        "geocountry": ip_detail.get("countryIsoCode"),
+                        "geolocation": f'{ip_detail.get("latitude", "")},{ip_detail.get("longitude", "")}' if ip_detail
+                        else ""
+                    }
+                })
 
         return results
 

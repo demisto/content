@@ -34,21 +34,25 @@ def print_warning(warning_str):
     print_color(warning_str, LOG_COLORS.YELLOW)
 
 
-def run_command(command, is_silenced=True, exit_on_error=True):
+def run_command(command, is_silenced=True, exit_on_error=True, use_shell=False):
     """Run a bash command in the shell.
 
     Args:
         command (string): The string of the command you want to execute.
         is_silenced (bool): Whether to print command output.
         exit_on_error (bool): Whether to exit on command error.
+        use_shell (bool): Whether use shell to executed command through the shell.
 
     Returns:
         string. The output of the command you are trying to execute.
     """
+    if not use_shell:
+        command = command.split()
+
     if is_silenced:
-        p = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        p = Popen(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=use_shell)
     else:
-        p = Popen(command.split())
+        p = Popen(command)
 
     output, err = p.communicate()
     if err:
@@ -343,6 +347,70 @@ def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
 
 
+def collect_pack_content_items(pack_path):
+    """Collects specific pack content items.
+
+    """
+    YML_SUPPORTED_DIRS = [
+        "Scripts",
+        "Integrations",
+        "Playbooks"
+    ]
+    data = {}
+    task_status = True
+
+    try:
+        for directory in os.listdir(pack_path):
+            if not os.path.isdir(os.path.join(pack_path, directory)) or directory == "TestPlaybooks":
+                continue
+
+            dir_data = []
+            dir_path = os.path.join(pack_path, directory)
+
+            for dir_file in os.listdir(dir_path):
+                file_path = os.path.join(dir_path, dir_file)
+                if dir_file.endswith('.json') or dir_file.endswith('.yml'):
+                    file_info = {}
+
+                    with open(file_path, 'r') as file_data:
+                        if directory in YML_SUPPORTED_DIRS:
+                            new_data = yaml.safe_load(file_data)
+                        else:
+                            new_data = json.load(file_data)
+
+                        if directory == 'Layouts':
+                            file_info['name'] = new_data.get('TypeName', '')
+                        elif directory == 'Integrations':
+                            file_info['name'] = new_data.get('display', '')
+                            integration_commands = new_data.get('script', {}).get('commands', [])
+                            file_info['commands'] = [
+                                {'name': c.get('name', ''), 'description': c.get('description', '')}
+                                for c in integration_commands]
+                        elif directory == "Classifiers":
+                            file_info['name'] = new_data.get('id', '')
+                        else:
+                            file_info['name'] = new_data.get('name', '')
+
+                        if new_data.get('description', ''):
+                            file_info['description'] = new_data.get('description', '')
+                        if new_data.get('comment', ''):
+                            file_info['description'] = new_data.get('comment', '')
+
+                        dir_data.append(file_info)
+
+            data[directory] = dir_data
+    except Exception as e:
+        task_status = False
+        print_error("Failed to collect pack content items at path :{}\n. Additional info {}".format(pack_path, e))
+    finally:
+        return task_status, data
+
+
+def input_to_list(input_data):
+    input_data = input_data if input_data else []
+    return input_data if isinstance(input_data, list) else [s for s in input_data.split(',') if s]
+
+
 class Docker:
     """ Client for running docker commands on remote machine using ssh connection.
 
@@ -355,10 +423,33 @@ class Docker:
     MEMORY_USAGE = 'MemUsage'
     PIDS_USAGE = 'PIDs'
     CONTAINER_NAME = 'Name'
-    DEFAULT_CONTAINER_MEMORY_USAGE = 50
+    CONTAINER_ID = 'ID'
+    DEFAULT_CONTAINER_MEMORY_USAGE = 75
     DEFAULT_CONTAINER_PIDS_USAGE = 3
     REMOTE_MACHINE_USER = 'ec2-user'
     SSH_OPTIONS = 'ssh -o StrictHostKeyChecking=no'
+
+    @classmethod
+    def _build_ssh_command(cls, server_ip, remote_command, force_tty=False):
+        """Add and returns ssh prefix and escapes remote command
+
+            Args:
+                server_ip (str): remote machine ip to connect using ssh.
+                remote_command (str): command to execute in remote machine.
+                force_tty (bool): adds -t flag in order to force tty allocation.
+
+            Returns:
+                str: full ssh command
+
+        """
+        remote_server = '{}@{}'.format(cls.REMOTE_MACHINE_USER, server_ip)
+        ssh_prefix = '{} {}'.format(cls.SSH_OPTIONS, remote_server)
+        if force_tty:
+            ssh_prefix += ' -t'
+        # escaping the remote command with single quotes
+        cmd = "{} '{}'".format(ssh_prefix, remote_command)
+
+        return cmd
 
     @classmethod
     def _build_stats_cmd(cls, server_ip, docker_images):
@@ -384,10 +475,7 @@ class Docker:
         pipe = ' | '
         grep_command = 'grep -Ei "{}"'.format('|'.join(docker_images_regex))
         remote_command = docker_command + pipe + grep_command
-        remote_server = '{}@{}'.format(cls.REMOTE_MACHINE_USER, server_ip)
-        ssh_prefix = '{} {}'.format(cls.SSH_OPTIONS, remote_server)
-        # escaping the remote command with single quotes
-        cmd = "{} '{}'".format(ssh_prefix, remote_command)
+        cmd = cls._build_ssh_command(server_ip, remote_command)
 
         return cmd
 
@@ -403,9 +491,24 @@ class Docker:
                 str: String of docker kill command on remote machine.
         """
         remote_command = 'sudo docker kill {}'.format(container_name)
-        remote_server = '{}@{}'.format(cls.REMOTE_MACHINE_USER, server_ip)
-        ssh_prefix = '{} {}'.format(cls.SSH_OPTIONS, remote_server)
-        cmd = "{} '{}'".format(ssh_prefix, remote_command)
+        cmd = cls._build_ssh_command(server_ip, remote_command)
+
+        return cmd
+
+    @classmethod
+    def _build_pid_info_cmd(cls, server_ip, container_id):
+        """Constructs docker exec ps command string to run on remote machine.
+
+            Args:
+                server_ip (str): Remote machine ip to connect using ssh.
+                container_id (str): Docker container id.
+
+            Returns:
+                str: String of docker exec ps command on remote machine.
+
+        """
+        remote_command = 'sudo docker exec -it {} ps -fe'.format(container_id)
+        cmd = cls._build_ssh_command(server_ip, remote_command, force_tty=True)
 
         return cmd
 
@@ -433,13 +536,43 @@ class Docker:
                 else:
                     mib_usage = float(memory_usage_stats.replace('mib', '').strip())
 
-                pids_number = int(container_stat.get(cls.PIDS_USAGE))
-                container_name = container_stat.get(cls.CONTAINER_NAME)
-                stats_result.append({'memory_usage': mib_usage, 'pids': pids_number, 'container_name': container_name})
+                stats_result.append({
+                    'memory_usage': mib_usage,
+                    'pids': int(container_stat.get(cls.PIDS_USAGE)),
+                    'container_name': container_stat.get(cls.CONTAINER_NAME),
+                    'container_id': container_stat.get(cls.CONTAINER_ID)
+                })
         except Exception as e:
             print_warning("Failed in parsing docker stats result, returned empty list. Additional info: {}".format(e))
         finally:
             return stats_result
+
+    @classmethod
+    def run_shell_command(cls, cmd):
+        """Executes shell command and returns outputs of the process.
+
+            Args:
+                cmd (str): command to execute.
+
+            Returns:
+                str: stdout of the executed command.
+                str: stderr of the executed command.
+
+        """
+        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
+        stdout, stderr = process.communicate()
+
+        return stdout, stderr
+
+    @classmethod
+    def get_image_for_container_id(cls, server_ip, container_id):
+        cmd = cls._build_ssh_command(server_ip, "sudo docker inspect -f {{.Config.Image}} " + container_id,
+                                     force_tty=False)
+        stdout, stderr = cls.run_shell_command(cmd)
+        if stderr:
+            print_warning("Received stderr from docker inspect command. Additional information: {}".format(stderr))
+        res = stdout or ""
+        return res.strip()
 
     @classmethod
     def get_integration_image(cls, integration_config):
@@ -452,7 +585,7 @@ class Docker:
                       default python2 and python3 images are returned.
 
         """
-        integration_script = integration_config.get('configuration', {}).get('integrationScript', {})
+        integration_script = integration_config.get('configuration', {}).get('integrationScript', {}) or {}
         integration_type = integration_script.get('type')
         docker_image = integration_script.get('dockerImage')
 
@@ -475,8 +608,7 @@ class Docker:
                 list: List of dictionaries with parsed container memory statistics.
         """
         cmd = cls._build_stats_cmd(server_ip, docker_images)
-        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
-        stdout, stderr = process.communicate()
+        stdout, stderr = cls.run_shell_command(cmd)
 
         if stderr:
             print_warning("Failed running docker stats command. Additional information: {}".format(stderr))
@@ -494,23 +626,45 @@ class Docker:
 
         """
         cmd = cls._build_kill_cmd(server_ip, container_name)
-
-        process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
-        stdout, stderr = process.communicate()
+        _, stderr = cls.run_shell_command(cmd)
 
         if stderr:
             print_warning("Failed killing container: {}\nAdditional information: {}".format(container_name, stderr))
 
     @classmethod
-    def check_resource_usage(cls, server_url, docker_images, memory_threshold, pids_threshold):
+    def get_docker_pid_info(cls, server_ip, container_id):
+        """Executes docker exec ps command on remote machine using ssh.
+
+            Args:
+                server_ip (str): The remote server ip address.
+                container_id (str): Docker container id.
+
+            Returns:
+                str: output of executed command.
+        """
+        cmd = cls._build_pid_info_cmd(server_ip, container_id)
+        stdout, stderr = cls.run_shell_command(cmd)
+
+        if stderr:
+            ignored_warning_message = "Connection to {} closed".format(server_ip)
+            if ignored_warning_message not in stderr:
+                print_warning("Failed getting pid info for container id: {}.\nAdditional information: {}".
+                              format(container_id, stderr))
+
+        return stdout
+
+    @classmethod
+    def check_resource_usage(cls, server_url, docker_images, def_memory_threshold, def_pid_threshold,
+                             docker_thresholds):
         """
         Executes docker stats command on remote machine and returns error message in case of exceeding threshold.
 
         Args:
             server_url (str): Target machine full url.
             docker_images (set): Set of docker images to check their resource usage.
-            memory_threshold (int): Memory threshold of specific docker container, in Mib.
-            pids_threshold (int): PIDs threshold of specific docker container, in Mib.
+            def_memory_threshold (int): Memory threshold of specific docker container, in Mib.
+            def_pids_threshold (int): PIDs threshold of specific docker container, in Mib.
+            docker_thresholds: thresholds per docker image
 
         Returns:
             str: The error message. Empty in case that resource check passed.
@@ -523,18 +677,35 @@ class Docker:
         for container_stat in containers_stats:
             failed_memory_test = False
             container_name = container_stat['container_name']
+            container_id = container_stat['container_id']
             memory_usage = container_stat['memory_usage']
             pids_usage = container_stat['pids']
+            image_full = cls.get_image_for_container_id(server_ip,
+                                                        container_id)  # get full name (ex: demisto/slack:1.0.0.4978)
+            image_name = image_full.split(':')[0]  # just the name such as demisto/slack
 
+            memory_threshold = (docker_thresholds.get(image_full, {}).get('memory_threshold') or docker_thresholds.get(
+                image_name, {}).get('memory_threshold') or def_memory_threshold)
+            pid_threshold = (docker_thresholds.get(image_full, {}).get('pid_threshold')
+                             or docker_thresholds.get(image_name, {}).get('pid_threshold') or def_pid_threshold)
+            print("Checking container: {} (image: {}) for memory: {} pid: {} thresholds ...".format(
+                container_name, image_full, memory_threshold, pid_threshold))
             if memory_usage > memory_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the memory threshold, '
                                   'configured: {} MiB and actual memory usage is {} MiB.\n'
-                                  .format(container_name, memory_threshold, memory_usage))
+                                  'Fix container memory usage or add `memory_threshold` key to failed test '
+                                  'in conf.json with value that is greater than {}\n'
+                                  .format(container_name, memory_threshold, memory_usage, memory_usage))
                 failed_memory_test = True
-            if pids_usage > pids_threshold:
+            if pids_usage > pid_threshold:
                 error_message += ('Failed docker resource test. Docker container {} exceeded the pids threshold, '
-                                  'configured: {} and actual pid number is {}.\n'.
-                                  format(container_name, pids_threshold, pids_usage))
+                                  'configured: {} and actual pid number is {}.\n'
+                                  'Fix container pid usage or add `pid_threshold` key to failed test '
+                                  'in conf.json with value that is greater than {}\n'
+                                  .format(container_name, pid_threshold, pids_usage, pids_usage))
+                additional_pid_info = cls.get_docker_pid_info(server_ip, container_id)
+                if additional_pid_info:
+                    error_message += 'Additional pid information:\n{}'.format(additional_pid_info)
                 failed_memory_test = True
 
             if failed_memory_test:

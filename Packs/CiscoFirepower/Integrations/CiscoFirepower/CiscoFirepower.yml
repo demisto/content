@@ -246,7 +246,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
+      defaultValue: 'false'
       description: Boolean indicating whether object can be overridden.
       isArray: false
       name: overridable
@@ -359,7 +359,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
+      defaultValue: 'false'
       description: Boolean indicating whether object values can be overridden.
       isArray: false
       name: overridable
@@ -428,7 +428,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
+      defaultValue: 'false'
       description: Boolean indicating whether object values can be overridden.
       isArray: false
       name: overridable
@@ -635,7 +635,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
+      defaultValue: 'false'
       description: Boolean indicating whether object can be overridden.
       isArray: false
       name: overridable
@@ -944,13 +944,13 @@ script:
       type: String
     - contextPath: CiscoFP.VlanTags.Name
       description: Name of vlan tag
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.VlanTags.Overridable
       description: Boolean indicating whether object values can be overridden
-      type: Unknown
+      type: Boolean
     - contextPath: CiscoFP.VlanTags.Description
       description: Description of vlan tag
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.VlanTags.StartTag
       description: Start tag number
       type: Number
@@ -981,34 +981,34 @@ script:
     outputs:
     - contextPath: CiscoFP.VlanTagsGroup.Name
       description: Name of group
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.VlanTagsGroup.ID
       description: ID of group
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.VlanTagsGroup.Description
       description: Description of object
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.VlanTagsGroup.Overridable
       description: Boolean indicating whether object values can be overridden
-      type: Unknown
+      type: Boolean
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Name
       description: Name of object
       type: String
     - contextPath: CiscoFP.VlanTagsGroup.Objects.ID
       description: ID of object
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Description
       description: Description of vlan tag
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Overridable
       description: Boolean indicating whether object values can be overridden
-      type: Unknown
+      type: Boolean
     - contextPath: CiscoFP.VlanTagsGroup.Objects.StartTag
       description: Start tag number
-      type: Unknown
+      type: Number
     - contextPath: CiscoFP.VlanTagsGroup.Objects.EndTag
       description: End tag number
-      type: Unknown
+      type: Number
   - arguments:
     - default: false
       description: |-
@@ -1042,7 +1042,7 @@ script:
       type: String
     - contextPath: CiscoFP.Applications.AppProductivity
       description: AppProductivity of Application
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.Applications.ApplicationTypes
       description: Application Type
       type: String
@@ -1970,7 +1970,7 @@ script:
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
       description: policy assignments name
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
       description: policy description
       type: String
@@ -2018,7 +2018,7 @@ script:
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
       description: policy assignments name
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
       description: policy description
       type: String
@@ -2066,7 +2066,7 @@ script:
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
       description: policy assignments name
-      type: Unknown
+      type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
       description: policy description
       type: String
@@ -2231,7 +2231,7 @@ script:
     outputs:
     - contextPath: CiscoFP.TaskStatus.Status
       description: task status
-      type: Unknown
+      type: String
   dockerimage: demisto/python3:3.8.1.5734
   feed: false
   isfetch: false

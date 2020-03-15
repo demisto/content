@@ -3,12 +3,13 @@ import copy
 import time
 from pprint import pformat
 import uuid
+import ast
 import urllib
 import urllib3
-import ast
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
+import json
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS, Docker
 from Tests.scripts.constants import PB_Status
@@ -110,7 +111,7 @@ def __create_integration_instance(client, integration_name, integration_instance
     configuration = __get_integration_config(client, integration_name, prints_manager,
                                              thread_index=thread_index)
     if not configuration:
-        return None, 'No configuration'
+        return None, 'No configuration', None
 
     module_configuration = configuration['configuration']
     if not module_configuration:
@@ -164,13 +165,13 @@ def __create_integration_instance(client, integration_name, integration_instance
             integration_name, conn_err
         )
         prints_manager.add_print_job(error_message, print_error, thread_index)
-        return None, error_message
+        return None, error_message, None
 
     if res[1] != 200:
         error_message = 'create instance failed with status code ' + str(res[1])
         prints_manager.add_print_job(error_message, print_error, thread_index)
         prints_manager.add_print_job(pformat(res[0]), print_error, thread_index)
-        return None, error_message
+        return None, error_message, None
 
     integration_config = ast.literal_eval(res[0])
     module_instance['id'] = integration_config['id']
@@ -426,6 +427,9 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
     module_instances = []
     test_docker_images = set()
 
+    with open("./Tests/conf.json", 'r') as conf_file:
+        docker_thresholds = json.load(conf_file).get('docker_thresholds', {}).get('images', {})
+
     for integration in integrations:
         integration_name = integration.get('name', None)
         integration_instance_name = integration.get('instance_name', '')
@@ -485,8 +489,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         playbook_state = __get_investigation_playbook_state(client, investigation_id, prints_manager,
                                                             thread_index=thread_index)
 
-        if playbook_state == PB_Status.COMPLETED or playbook_state == \
-                PB_Status.NOT_SUPPORTED_VERSION:
+        if playbook_state in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION):
             break
         if playbook_state == PB_Status.FAILED:
             if is_mock_run:
@@ -515,8 +518,9 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         pids_threshold = options.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
         error_message = Docker.check_resource_usage(server_url=server_url,
                                                     docker_images=test_docker_images,
-                                                    memory_threshold=memory_threshold,
-                                                    pids_threshold=pids_threshold)
+                                                    def_memory_threshold=memory_threshold,
+                                                    def_pid_threshold=pids_threshold,
+                                                    docker_thresholds=docker_thresholds)
 
         if error_message:
             prints_manager.add_print_job(error_message, print_error, thread_index)
@@ -525,7 +529,7 @@ def test_integration(client, server_url, integrations, playbook_id, prints_manag
         prints_manager.add_print_job("Skipping docker container memory resource check for test {}".format(playbook_id),
                                      print_warning, thread_index)
 
-    test_pass = playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION
+    test_pass = playbook_state in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
     if test_pass:
         # delete incident
         __delete_incident(client, incident, prints_manager, thread_index=thread_index)

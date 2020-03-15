@@ -84,13 +84,23 @@ class Client(BaseClient):
                     item["category_name"] = self._CATEGORY_NAME[int(category) - 1]
                 except (KeyError, IndexError):
                     item["category_name"] = "Unknown"
+
                 # add type/value to item.
                 if "domain" in item:
                     item["type"] = FeedIndicatorType.Domain
-                    item["value"] = item.get("domain")
+                    indicator_value = item.get("domain", "")
+                    # As part of the domain feed, also DomainGlob indicators will be returned, so we are checking if the
+                    # domain has '*' in their value
+                    if indicator_value and '*' in indicator_value:
+                        item["type"] = FeedIndicatorType.DomainGlob
                 elif "ip" in item:
                     item["type"] = FeedIndicatorType.IP
-                    item["value"] = item.get("ip")
+                    indicator_value = item.get("ip", "")
+
+                # domain key was present but value was None
+                if not indicator_value:
+                    continue
+                item["value"] = indicator_value
                 yield item
 
     @staticmethod
@@ -99,8 +109,14 @@ class Client(BaseClient):
             "value": item["value"],
             "type": item["type"],
             "rawJSON": item,
-            "CustomFields": {
-                "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports")
+            "fields": {
+                "port": item.get("ports", "").split() if isinstance(item.get("ports"), str) else item.get("ports"),
+                "firstseenbyfeed": item.get("first_seen", ""),
+                "lastseenbyfeed": item.get("last_seen", ""),
+                "feedthreattypes": {
+                    "threatcategory": item.get("category_name", ""),
+                    "threatcategoryconfidence": item.get("score", "")
+                }
             }
         }
 
