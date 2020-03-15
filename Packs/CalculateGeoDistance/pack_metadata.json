@@ -1,25 +1,23 @@
 {
     "name": "Calculate Geo Distance",
     "description": "Compute the distance between two sets of coordinates, in miles.",
-    "support": "demisto",
+    "support": "Cortex XSOAR",
     "serverMinVersion": "1.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
-    "url": "",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Utilities"
     ],
-    "tags": [
-        ""
-    ],
+    "tags": [],
     "created": "2020-03-09T15:04:49Z",
     "updated": "2020-03-09T15:04:49Z",
     "beta": false,
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Geo"],
     "price": 0,
     "dependencies": {
         "Base": {
