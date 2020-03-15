@@ -990,8 +990,8 @@ tasks:
       key:
         simple: invalid_urls
       value:
-        simple: '"http://-a.b.co", "http://3628126748", "http://.www.foo.bar/",, "http:// shouldfail.com", "http://foo.bar/foo(bar)baz
-          quux", "http://-error-.invalid/"'
+        simple: '"http://3628126748", "http://.www.foo.bar/",, "http:// shouldfail.com", "http://foo.bar/foo(bar)baz
+          quux"'
     separatecontext: false
     view: |-
       {
@@ -1061,14 +1061,6 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://-a.b.co
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
               simple: http://3628126748
       - - operator: notContainsGeneral
           left:
@@ -1094,14 +1086,6 @@ tasks:
           right:
             value:
               simple: http://foo.bar/foo(bar)baz quux
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://-error-.invalid/
     view: |-
       {
         "position": {
