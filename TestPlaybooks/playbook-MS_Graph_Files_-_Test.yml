@@ -1,5 +1,5 @@
 id: test_MsGraphFiles
-version: 8
+version: -1
 contentitemfields:
   propagationLabels: []
 name: test_MsGraphFiles
@@ -825,7 +825,7 @@ tasks:
       version: -1
       name: Test List Sites
       description: Returns a list of the tenant Sites
-      script: Microsoft_Graph_Files|||msgraph-list-share-point-sites
+      script: Microsoft_Graph_Files|||msgraph-list-sharepoint-sites
       type: regular
       iscommand: true
       brand: Microsoft_Graph_Files
