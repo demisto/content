@@ -30,59 +30,59 @@ class MsGraphClient:
     def __init__(self, ms_client):
         self.ms_client = ms_client
 
-    def list_managed_devices(self, args: dict) -> Tuple[list, Any]:
+    def list_managed_devices(self, limit: int) -> Tuple[list, Any]:
         url_suffix: str = '/deviceManagement/managedDevices'
-        limit: int = try_parse_integer(args.get('limit', 10), err_msg='This value for limit must be an integer.')
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', [])[:limit], raw_response
 
-    def get_managed_device(self, args: dict) -> Tuple[Any, str]:
-        device_id: str = str(args.get("device_id"))
+    def get_managed_device(self, device_id: str) -> Tuple[Any, str]:
         url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
         return self.ms_client.http_request('GET', url_suffix), device_id
 
-    def make_action(self, args: dict, action: str, body: str = None) -> None:
-        url_suffix: str = f'deviceManagement/managedDevices/{args.get("device_id")}/{action}'
+    def make_action(self, device_id: str, action: str, body: str = None) -> None:
+        url_suffix: str = f'deviceManagement/managedDevices/{device_id}/{action}'
         self.ms_client.http_request('POST', url_suffix, data=body, resp_type=EMPTY_RESP_TYPE)
 
-    def delete_user_from_shared_apple_device(self, args: dict, action: str) -> None:
-        body: dict = {'userPrincipalName': args.get('user_principal_name')}
-        self.make_action(args, action, json.dumps(body))
+    def delete_user_from_shared_apple_device(self, user_principal_name: str, device_id: str, action: str) -> None:
+        body: dict = {'userPrincipalName': user_principal_name}
+        self.make_action(device_id, action, json.dumps(body))
 
-    def clean_windows_device(self, args: dict, action: str) -> None:
-        body: dict = {'keepUserData': bool(args.get('keep_user_data'))}
-        self.make_action(args, action, json.dumps(body))
+    def clean_windows_device(self, keep_user_data: bool, device_id: str, action: str) -> None:
+        body: dict = {'keepUserData': keep_user_data}
+        self.make_action(device_id, action, json.dumps(body))
 
-    def windows_device_defender_scan(self, args: dict, action: str) -> None:
-        body: dict = {'quickScan': bool(args.get('quick_scan'))}
-        self.make_action(args, action, json.dumps(body))
+    def windows_device_defender_scan(self, quick_scan: bool, device_id: str, action: str) -> None:
+        body: dict = {'quickScan': quick_scan}
+        self.make_action(device_id, action, json.dumps(body))
 
-    def wipe_device(self, args: dict, action: str) -> None:
+    def wipe_device(self, keep_enrollment_data: bool, keep_user_data: bool, mac_os_unlock_code: str,
+                    device_id: str, action: str) -> None:
         body: dict = {
-            'keepEnrollmentData': bool(args.get('keep_enrollment_data')),
-            'keepUserData': bool(args.get('keep_user_data'))
+            'keepEnrollmentData': keep_enrollment_data,
+            'keepUserData': keep_user_data
         }
-        mac_os_unlock_code: str = str(args.get('mac_os_unlock_code'))
         if mac_os_unlock_code:
             body['macOsUnlockCode'] = mac_os_unlock_code
-        self.make_action(args, action, json.dumps(body))
+        self.make_action(device_id, action, json.dumps(body))
 
-    def update_windows_device_account(self, args: dict, action: str) -> None:
+    def update_windows_device_account(self, device_account_password: str, password_rotation_enabled: bool,
+                                      calendar_sync_enabled: bool, device_account_email: str, exchange_server: str,
+                                      session_initiation_protocal_address: str, device_id: str, action: str) -> None:
         body: dict = {
             'updateWindowsDeviceAccountActionParameter': {
                 '@odata.type': 'microsoft.graph.updateWindowsDeviceAccountActionParameter',
                 'deviceAccount': {
                     '@odata.type': 'microsoft.graph.windowsDeviceAccount',
-                    'password': args.get('device_account_password')
+                    'password': device_account_password
                 },
-                'passwordRotationEnabled': bool(args.get('password_rotation_enabled')),
-                'calendarSyncEnabled': bool(args.get('calendar_sync_enabled')),
-                'deviceAccountEmail': args.get('device_account_email'),
-                'exchangeServer': args.get('exchange_server'),
-                'sessionInitiationProtocalAddress': args.get('session_initiation_protocal_address')
+                'passwordRotationEnabled': password_rotation_enabled,
+                'calendarSyncEnabled': calendar_sync_enabled,
+                'deviceAccountEmail': device_account_email,
+                'exchangeServer': exchange_server,
+                'sessionInitiationProtocalAddress': session_initiation_protocal_address
             }
         }
-        self.make_action(args, action, json.dumps(body))
+        self.make_action(device_id, action, json.dumps(body))
 
 
 ''' HELPER FUNCTIONS '''
@@ -228,7 +228,8 @@ def build_device_human_readable(device: dict) -> dict:
 
 
 def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
-    list_raw_devices, raw_response = client.list_managed_devices(args)
+    limit: int = try_parse_integer(args.get('limit', 10), err_msg='This value for limit must be an integer.')
+    list_raw_devices, raw_response = client.list_managed_devices(limit)
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
     list_devices_hr: list = [build_device_human_readable(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
@@ -239,7 +240,8 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
 
 
 def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
-    raw_response, device_id = client.get_managed_device(args)
+    device_id: str = str(args.get('device_id'))
+    raw_response, device_id = client.get_managed_device(device_id)
     device: dict = build_device_object(raw_response)
     device_hr: dict = build_device_human_readable(raw_response)
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
@@ -251,92 +253,124 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
 
 
 def disable_lost_mode_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'disableLostMode')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'disableLostMode')
     return_outputs('Device disable lost mode action activated successfully.', {}, {})
 
 
 def locate_device_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'locateDevice')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'locateDevice')
     return_outputs('Locate device action activated successfully.', {}, {})
 
 
 def sync_device_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'syncDevice')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'syncDevice')
     return_outputs('Sync device action activated successfully.', {}, {})
 
 
 def device_reboot_now_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'rebootNow')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'rebootNow')
     return_outputs('Device reboot now action activated successfully.', {}, {})
 
 
 def device_shutdown_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'shutDown')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'shutDown')
     return_outputs('Device shutdown action activated successfully.', {}, {})
 
 
 def device_bypass_activation_lock_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'bypassActivationLock')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'bypassActivationLock')
     return_outputs('Device bypass activation lock action activated successfully.', {}, {})
 
 
 def device_retire_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'retire')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'retire')
     return_outputs('Retire device action activated successfully.', {}, {})
 
 
 def device_reset_passcode_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'resetPasscode')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'resetPasscode')
     return_outputs('Device reset passcode action activated successfully.', {}, {})
 
 
 def device_remote_lock_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'remoteLock')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'remoteLock')
     return_outputs('Device remote lock action activated successfully.', {}, {})
 
 
 def device_request_remote_assistance_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'requestRemoteAssistance')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'requestRemoteAssistance')
     return_outputs('Device request remote assistance action activated successfully.', {}, {})
 
 
 def device_recover_passcode_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'recoverPasscode')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'recoverPasscode')
     return_outputs('Device recover passcode action activated successfully.', {}, {})
 
 
 def logout_shared_apple_device_active_user_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'logoutSharedAppleDeviceActiveUser')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'logoutSharedAppleDeviceActiveUser')
     return_outputs('Logout shard apple device active user action activated successfully.', {}, {})
 
 
 def delete_user_from_shared_apple_device_command(client: MsGraphClient, args: dict) -> None:
-    client.delete_user_from_shared_apple_device(args, 'deleteUserFromSharedAppleDevice')
+    user_principal_name: str = str(args.get('user_principal_name'))
+    device_id: str = str(args.get('device_id'))
+    client.delete_user_from_shared_apple_device(user_principal_name, device_id, 'deleteUserFromSharedAppleDevice')
     return_outputs('Delete user from shared apple device action activated successfully.', {}, {})
 
 
 def windows_device_defender_update_signatures_command(client: MsGraphClient, args: dict) -> None:
-    client.make_action(args, 'windowsDefenderUpdateSignatures')
+    device_id: str = str(args.get('device_id'))
+    client.make_action(device_id, 'windowsDefenderUpdateSignatures')
     return_outputs('Windows device defender update signatures action activated successfully.', {}, {})
 
 
 def clean_windows_device_command(client: MsGraphClient, args: dict) -> None:
-    client.clean_windows_device(args, 'cleanWindowsDevice')
+    keep_user_data: bool = bool(args.get('keep_user_data'))
+    device_id: str = str(args.get('device_id'))
+    client.clean_windows_device(keep_user_data, device_id, 'cleanWindowsDevice')
     return_outputs('Clean windows device action activated successfully.', {}, {})
 
 
 def windows_device_defender_scan_command(client: MsGraphClient, args: dict) -> None:
-    client.windows_device_defender_scan(args, 'windowsDefenderScan')
+    quick_scan: bool = bool(args.get('quick_scan'))
+    device_id: str = str(args.get('device_id'))
+    client.windows_device_defender_scan(quick_scan, device_id, 'windowsDefenderScan')
     return_outputs('Windows device defender scan action activated successfully.', {}, {})
 
 
 def wipe_device_command(client: MsGraphClient, args: dict) -> None:
-    client.wipe_device(args, 'wipe')
+    keep_enrollment_data: bool = bool(args.get('keep_enrollment_data'))
+    keep_user_data: bool = bool(args.get('keep_user_data'))
+    mac_os_unlock_code: str = str(args.get('mac_os_unlock_code'))
+    device_id: str = str(args.get('device_id'))
+    client.wipe_device(keep_enrollment_data, keep_user_data, mac_os_unlock_code, device_id, 'wipe')
     return_outputs('Wipe device action activated successfully.', {}, {})
 
 
 def update_windows_device_account_command(client: MsGraphClient, args: dict) -> None:
-    client.update_windows_device_account(args, 'updateWindowsDeviceAccount')
+    device_account_password: str = str(args.get('device_account_password'))
+    password_rotation_enabled: bool = bool(args.get('password_rotation_enabled'))
+    calendar_sync_enabled: bool = bool(args.get('calendar_sync_enabled'))
+    device_account_email: str = str(args.get('device_account_email'))
+    exchange_server: str = str(args.get('exchange_server'))
+    session_initiation_protocal_address: str = str(args.get('session_initiation_protocal_address'))
+    device_id: str = str(args.get('device_id'))
+    client.update_windows_device_account(device_account_password, password_rotation_enabled, calendar_sync_enabled,
+                                         device_account_email, exchange_server, session_initiation_protocal_address,
+                                         device_id, 'updateWindowsDeviceAccount')
     return_outputs('Update windows device account action activated successfully.', {}, {})
 
 
