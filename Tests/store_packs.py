@@ -8,6 +8,7 @@ import uuid
 import yaml
 import enum
 import prettytable
+import fnmatch
 import google.auth
 from google.cloud import storage
 from distutils.util import strtobool
@@ -236,6 +237,16 @@ class Pack(object):
                     dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
 
                     for f in files:
+                        if f.startswith('.'):
+                            print_warning(f"Skipping zipping {f} for {self._pack_name} pack")
+                            continue
+
+                        current_directory = root.split(os.path.sep)[-1]
+
+                        if current_directory == 'Misc' and not fnmatch.fnmatch(f, 'reputation-*.json'):
+                            # reputation in old format aren't supported in 6.0.0 server version
+                            print_warning(f"Skipped zipping {f} for {self._pack_name} pack")
+
                         full_file_path = os.path.join(root, f)
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
