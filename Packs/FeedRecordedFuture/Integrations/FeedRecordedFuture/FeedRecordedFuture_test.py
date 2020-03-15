@@ -18,6 +18,8 @@ GET_INDICATOR_TYPE_INPUTS = [
                           ('RiskString', '5/12'), ('EvidenceDetails', '{"EvidenceDetails": []}')]), 'File'),
     ('domain', OrderedDict([('Name', 'domaintools.com'), ('Risk', '89'), ('RiskString', '5/12'),
                             ('EvidenceDetails', '{"EvidenceDetails": []}')]), 'Domain'),
+    ('domain', OrderedDict([('Name', '*domaintools.com'), ('Risk', '89'), ('RiskString', '5/12'),
+                            ('EvidenceDetails', '{"EvidenceDetails": []}')]), 'DomainGlob'),
     ('url', OrderedDict([('Name', 'www.securityadvisor.io'), ('Risk', '89'), ('RiskString', '5/12'),
                          ('EvidenceDetails', '{"EvidenceDetails": []}')]), 'URL')
 ]
@@ -34,6 +36,15 @@ build_iterator_answer_domain = [
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'domaintools.com',
         'Risk': '97',
+        'RiskString': '4/37'
+    }
+]
+
+build_iterator_answer_domain_glob = [
+    {
+        'EvidenceDetails': '{"EvidenceDetails": []}',
+        'Name': '*domaintools.com',
+        'Risk': '92',
         'RiskString': '4/37'
     }
 ]
@@ -69,6 +80,7 @@ build_iterator_answer_url = [
 GET_INDICATOR_INPUTS = [
     ('ip', build_iterator_answer_ip, '192.168.1.1', 'IP'),
     ('domain', build_iterator_answer_domain, 'domaintools.com', 'Domain'),
+    ('domain', build_iterator_answer_domain_glob, '*domaintools.com', 'DomainGlob'),
     ('hash', build_iterator_answer_hash, '52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
     ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL')
 ]
