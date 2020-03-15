@@ -1,4 +1,5 @@
 ## [Unreleased]
+Associated to new 'AWS CloudTrail Misconfiguration' incident type.
 
 
 ## [20.2.0] - 2020-02-04
