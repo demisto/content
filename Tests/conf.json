@@ -2429,6 +2429,38 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Apps - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Detail - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Finding Detail - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Hosts - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Findings - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Unique Cves - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Unique Open Findings - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Apps Detail - Test"
+        },
+        {
             "integrations": "Indeni",
             "playbookID": "Indeni_test",
             "fromversion": "5.0.0"
@@ -2497,6 +2529,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "Claroty": "Issue 22255",
         "AWS - IAM": "Issue 21401",
