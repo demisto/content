@@ -95,7 +95,7 @@ def create_risk_json(args):
         valid_for = args.get('valid_for')
         valid_for = int(valid_for)
     except Exception:
-        raise Exception('@@valid_for must be a positive number greater than 1')
+        raise Exception('valid_for must be a positive number greater than 1')
     risk_name = args.get('risk_name')
     severity = args.get('severity')
     description = args.get('description')
