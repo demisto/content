@@ -73,14 +73,12 @@ class Client(BaseClient):
         suffix = '/alerts/getalertsV2'
         self._http_request('GET', suffix, params={'take': 1})
 
-    def list_alerts(self, limit: str = None, sort: str = None, facet_search: str = None,
-                    start_date=None, end_date=None) -> Dict:
+    def list_alerts(self, limit: str = None, sort: str = None, start_date=None, end_date=None) -> Dict:
 
         url_suffix = '/alerts/getalertsV2'
         params = assign_params(
             take=limit,
             sort=sort,
-            facetSearch=facet_search,
             startDate=start_date,
             endDate=end_date
         )
@@ -99,7 +97,7 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def search_file(self, host, md5, file_extension, file_path, file_size) -> Dict:
+    def search_file(self, host=None, md5=None, file_extension=None, file_path=None, file_size=None) -> Dict:
 
         url_suffix = '/files/search'
         body = assign_params(
@@ -182,7 +180,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def convert_ip_to_endpoint_id(self, ip: Union[str, list]) -> Dict:
+    def convert_ip_to_endpoint_id(self, ip: Union[str, list] = None) -> Dict:
 
         url_suffix = '/endpoints/endpointidsbyip'
 
@@ -689,7 +687,6 @@ def test_module(client: Client, *_):
 def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', '50')
     sort = args.get('sort')
-    facet_search = args.get('facet_search', '')
     start_date = args.get('start_date')
     end_date = args.get('end_date')
     headers = ['ID', 'Name', 'EndpointName', 'EndpointID', 'Source', 'ArtifactName', 'IntelName', 'Severity',
@@ -697,7 +694,7 @@ def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     contents = []
     context = []
-    response = client.list_alerts(limit, sort, facet_search, start_date, end_date)
+    response = client.list_alerts(limit, sort, start_date, end_date)
 
     alerts = response.get('data', {}).get('entities', [])
     if not alerts:
@@ -809,10 +806,13 @@ def file_search(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     md5 = argToList(args.get('md5'))
     file_extension = argToList(args.get('file_extension'))
     file_path = argToList(args.get('file_path'))
-    file_size = {
-        'value': int(args.get('file_size')),
-        'quantifier': 'greaterThan'
-    }
+    try:
+        file_size = {
+            'value': int(args.get('file_size')),
+            'quantifier': 'greaterThan'
+        }
+    except Exception as e:
+        raise Exception(e)
 
     response = client.search_file(host, md5, file_extension, file_path, file_size)
     data = response.get('data', {})
@@ -1174,7 +1174,7 @@ def script_job_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
             'JobResultID': result.get('jobResultId'),
             'Name': result.get('name'),
             'Status': result.get('status'),
-            'JobName': response.get('data').get('jobName')
+            'JobName': response.get('data').get('jobName')  # type: ignore
         })
     entry_context = {'FidelisEndpoint.ScriptResult(val.JobResultID && val.JobResultID === obj.JobResultID)': contents}
     human_readable = tableToMarkdown('Fidelis Endpoint script job status', contents, removeNull=True)
@@ -1618,9 +1618,8 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], severity: str, la
         } for alert in alerts if alert.get('id') > last_incident_id and alert.get('severity') == severity]
         # New incidents fetched
         if incidents:
-            last_incident_timestamp = incidents[-1].get('occurred')
             last_incident_id = alerts[-1].get('id')
-            new_last_run = {'time': last_incident_timestamp, 'id': last_incident_id}
+            new_last_run.update({'id': last_incident_id})
     # Return results
     return incidents, new_last_run
 

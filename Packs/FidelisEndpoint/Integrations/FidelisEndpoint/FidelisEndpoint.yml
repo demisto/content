@@ -52,17 +52,12 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: CreatedDate Descending
       description: |-
         Sorts the result before applying take and skip.
         Can be any property name of the alert object.
       isArray: false
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: 'A filter applied on results of the get operation. '
-      isArray: false
-      name: facet_search
       required: false
       secret: false
     - default: false
@@ -217,24 +212,6 @@ script:
     - contextPath: FidelisEndpoint.Host.OnNetwork
       description: Is the host on network.
       type: Boolean
-    - contextPath: Endpoint.HostName
-      description: The hostname that is mapped to this endpoint.
-      type: String
-    - contextPath: Endpoint.ID
-      description: The unique ID within the tool retrieving the endpoint.
-      type: String
-    - contextPath: Endpoint.IpAddress
-      description: The IP address of the endpoint.
-      type: String
-    - contextPath: Endpoint.MACAddress
-      description: The MAC address of the endpoint.
-      type: String
-    - contextPath: Endpoint.OS
-      description: Endpoint OS.
-      type: String
-    - contextPath: Endpoint.Processor
-      description: The model of the processor.
-      type: String
   - arguments:
     - default: false
       description: The host to search the file in (for multiple hosts use (comma separated)
@@ -564,7 +541,6 @@ script:
       description: Is the endpoint hidden.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.GroupID
-      description: The group ID.
       type: String
     - contextPath: FidelisEndpoint.ScriptResult.Tags
       description: Script tags
@@ -821,13 +797,6 @@ script:
       description: The name of the endpoint.
       isArray: false
       name: endpoint_name
-      required: false
-      secret: false
-    - default: false
-      description: Additional answer for the script to run Get the answer from script-manifest
-        command).
-      isArray: false
-      name: additional_answer
       required: false
       secret: false
     deprecated: false
@@ -1526,13 +1495,6 @@ script:
       description: Limit of results to return.
       isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'Add additional filter to the query (for example: pid = 1234, hash
-        != abcde)'
-      isArray: false
-      name: additional_filter
       required: false
       secret: false
     deprecated: false
