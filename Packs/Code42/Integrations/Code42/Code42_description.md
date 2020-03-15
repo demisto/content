@@ -7,4 +7,4 @@ To configure this integration, you will need to create a local (non-SSO) user wi
 * Customer Cloud Admin
 * Security Center User + (Org Security Viewer or Cross Org Security Viewer)
 
-Once this user is set up, use the username and password to configure the Code42 integration.
+After this user is set up, use the username and password to configure the Code42 integration.
