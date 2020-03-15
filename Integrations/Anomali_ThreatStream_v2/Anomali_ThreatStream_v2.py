@@ -187,7 +187,7 @@ def search_indicator_by_params(params, searchable_value):
 
     if not indicators_data['objects']:
         demisto.results(F"No intelligence has been found for {searchable_value}")
-        sys.exit()
+        return None
 
     return find_worst_indicator(indicators_data['objects'])
 
@@ -395,6 +395,9 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     """
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(params, ip)
+    if not indicator:
+        return
+
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     ip_context = get_ip_context(indicator, threshold)
@@ -426,6 +429,9 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     """
     params = build_params(value=domain, type="domain", status=status, limit=0)
     indicator = search_indicator_by_params(params, domain)
+    if not indicator:
+        return
+
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     domain_context = get_domain_context(indicator, threshold)
@@ -457,6 +463,9 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     """
     params = build_params(value=file, type="md5", status=status, limit=0)
     indicator = search_indicator_by_params(params, file)
+    if not indicator:
+        return
+
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     file_context = get_file_context(indicator, threshold)
@@ -492,6 +501,9 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     """
     params = build_params(value=url, type="url", status=status, limit=0)
     indicator = search_indicator_by_params(params, url)
+    if not indicator:
+        return
+
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     domain_context = get_url_context(indicator, threshold)
@@ -515,6 +527,9 @@ def get_email_reputation(email, threshold=None, status="active,inactive"):
     """
     params = build_params(value=email, type="email", status=status, limit=0)
     indicator = search_indicator_by_params(params, email)
+    if not indicator:
+        return
+
     threshold = threshold or DEFAULT_THRESHOLD
     dbot_context = get_dbot_context(indicator, threshold)
     threat_email_context = get_threat_generic_context(indicator)

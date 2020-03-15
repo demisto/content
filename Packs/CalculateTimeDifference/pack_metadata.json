@@ -1,25 +1,23 @@
 {
     "name": "Calculate Time Difference",
     "description": "Calculate the time difference, in minutes",
-    "support": "demisto",
+    "support": "Cortex XSOAR",
     "serverMinVersion": "1.0.0",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
-    "url": "",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Utilities"
     ],
-    "tags": [
-        ""
-    ],
+    "tags": [],
     "created": "2020-03-09T16:04:45Z",
     "updated": "2020-03-09T16:04:45Z",
     "beta": false,
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Time Difference"],
     "price": 0,
     "dependencies": {
         "Base": {
