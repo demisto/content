@@ -2488,6 +2488,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "Palo Alto Networks Cortex": "Issue 22300",
         "Claroty": "Issue 22255",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
