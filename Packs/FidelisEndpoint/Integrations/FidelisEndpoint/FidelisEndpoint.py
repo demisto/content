@@ -35,16 +35,19 @@ class Client(BaseClient):
     """
     Client to use in the Fidelis Endpoint integration. Overrides BaseClient
     """
-    def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool, headers: dict):
+    def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):
 
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self._username = username
         self._password = password
         self._token = self._generate_token()
 
+        headers = {'ContentType': 'appliaction/json'}
         if self._token:
             token = self._token
             headers.update({'Authorization': 'bearer ' + token})
+
+        self._headers = headers
 
     def _generate_token(self) -> str:
         """Generate a token
@@ -90,7 +93,7 @@ class Client(BaseClient):
             url_suffix = f'/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={{%22searchFields%22: \
                              [{{%22fieldName%22:%22HostName%22,%22values%22:[{{%22value%22:%22{host_name}%22}}]}}]}}'
 
-        if ip_address:
+        elif ip_address:
             url_suffix = f'/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={{%22searchFields%22: \
                          [{{%22fieldName%22:%22IpAddress%22,%22values%22:[{{%22value%22:%22{ip_address}%22}}]}}]}}'
 
@@ -642,7 +645,7 @@ def get_endpoint_id(client: Client, endpoint_ip=None, endpoint_name=None):
         endpoints = client.convert_ip_to_endpoint_id(endpoint_ip)
         endpoint_id = endpoints.get('data')
 
-    if endpoint_name:
+    elif endpoint_name:
         endpoints = client.convert_name_to_endpoint_id(endpoint_name)
         endpoint_id = endpoints.get('data')
 
@@ -968,10 +971,10 @@ def list_process_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     if operating_system == 'Windows':
         script_id = LIST_PROCESSES_WINDOWS
 
-    if operating_system == 'Linux':
+    elif operating_system == 'Linux':
         script_id = LIST_PROCESSES_LINUX
 
-    if operating_system == 'macOS':
+    elif operating_system == 'macOS':
         script_id = LIST_PROCESSES_MACOS
 
     response = client.list_process(script_id, time_out, endpoint_id)
@@ -1049,7 +1052,7 @@ def kill_process_by_pid(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     if operating_system == 'Windows':
         script_id = KILL_PROCESS_WINDOWS
 
-    if operating_system == 'Linux' or operating_system == 'macOS':
+    elif operating_system == 'Linux' or operating_system == 'macOS':
         script_id = KILL_PROCESS_MAC_LINUX
 
     response = client.kill_process(script_id, pid, time_out, endpoint_id)
@@ -1074,7 +1077,7 @@ def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     if operating_system == 'Windows':
         script_id = DELETE_FILE_WINDOWS
 
-    if operating_system == 'Linux' or operating_system == 'macOS':
+    elif operating_system == 'Linux' or operating_system == 'macOS':
         script_id = DELETE_FILE_MAC_LINUX
 
     response = client.delete_file(script_id, file_path, time_out, endpoint_id)
@@ -1099,7 +1102,7 @@ def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Di
     if operating_system == 'Windows':
         script_id = NETWORK_ISOLATION_WINDOWS
 
-    if operating_system == 'Linux' or operating_system == 'macOS':
+    elif operating_system == 'Linux' or operating_system == 'macOS':
         script_id = NETWORK_ISOLATION_MAC_LINUX
 
     response = client.network_isolation(script_id, allowed_server, time_out, endpoint_id)
@@ -1123,7 +1126,7 @@ def remove_network_isolation_command(client: Client, args: dict) -> Tuple[str, D
     if operating_system == 'Windows':
         script_id = REMOVE_NETWORK_ISOLATION_WINDOWS
 
-    if operating_system == 'Linux' or os == 'macOS':
+    elif operating_system == 'Linux' or os == 'macOS':
         script_id = REMOVE_NETWORK_ISOLATION_MAC_LINUX
 
     response = client.remove_network_isolation(script_id, time_out, endpoint_id)
@@ -1611,12 +1614,10 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
 
     proxy = demisto.params().get('proxy', False)
-    headers = {'ContentType': 'appliaction/json'}
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-        client = Client(base_url, username=username, password=password, verify=verify_certificate, proxy=proxy,
-                        headers=headers)
+        client = Client(base_url, username=username, password=password, verify=verify_certificate, proxy=proxy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

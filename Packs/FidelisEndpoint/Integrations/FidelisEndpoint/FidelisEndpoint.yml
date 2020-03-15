@@ -52,7 +52,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: CreatedDate Descending
       description: |-
         Sorts the result before applying take and skip.
         Can be any property name of the alert object.
@@ -1573,7 +1572,7 @@ script:
       description: Entity type.
       type: Number
   dockerimage: demisto/python3:3.7.4.2245
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
