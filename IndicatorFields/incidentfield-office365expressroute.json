@@ -17,7 +17,7 @@
   "version": -1,
   "unmapped": false,
   "hidden": false,
-  "type": "shortText",
+  "type": "boolean",
   "breachScript": "",
   "editForm": true,
   "description": "",
