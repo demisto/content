@@ -47,48 +47,50 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_LIST = [
     ),
 ]
 
-INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_NETWORK_GROUPS = [({
-      "description": " ",
-      "id": "69fa2a3a-4487-4e3c-816f-4098f684826e",
-      "links": {"self": "https:/api/fmc_config/v1/domain/e276abec-e0f2-11e3"},
-      "literals": [{"type": "Network", "value": "0.0.0.0/0"}, {"type": "Host", "value": "::/0"}],
-      "metadata": {
-          "domain": {
-              "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
-              "name": "Global",
-              "type": "Domain"
-          },
-          "lastUser": {
-              "name": "admin"
-          },
-          "readOnly": {
-              "reason": "SYSTEM",
-              "state": 'true'
-          },
-          "timestamp": '1521658703283'
-      },
-      "name": "any",
-      "overridable": 'false',
-      "type": "NetworkGroup"
-  },
-  {
-      "Name": "any",
-      "ID": "69fa2a3a-4487-4e3c-816f-4098f684826e",
-      "Overridable": 'false',
-      "Description": " ",
-      'Objects': [],
-      "Addresses": [
-          {
-              "Value": "0.0.0.0/0",
-              "Type": "Network"
-          },
-          {
-              "Value": "::/0",
-              "Type": "Host"
-          }
-      ]
-  }
-)
+INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_NETWORK_GROUPS = [
+    (
+        {
+              "description": " ",
+              "id": "69fa2a3a-4487-4e3c-816f-4098f684826e",
+              "links": {"self": "https:/api/fmc_config/v1/domain/e276abec-e0f2-11e3"},
+              "literals": [{"type": "Network", "value": "0.0.0.0/0"}, {"type": "Host", "value": "::/0"}],
+              "metadata": {
+                  "domain": {
+                      "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                      "name": "Global",
+                      "type": "Domain"
+                  },
+                  "lastUser": {
+                      "name": "admin"
+                  },
+                  "readOnly": {
+                      "reason": "SYSTEM",
+                      "state": 'true'
+                  },
+                  "timestamp": '1521658703283'
+              },
+              "name": "any",
+              "overridable": 'false',
+              "type": "NetworkGroup"
+        },
+        {
+              "Name": "any",
+              "ID": "69fa2a3a-4487-4e3c-816f-4098f684826e",
+              "Overridable": 'false',
+              "Description": " ",
+              'Objects': [],
+              "Addresses": [
+                  {
+                      "Value": "0.0.0.0/0",
+                      "Type": "Network"
+                  },
+                  {
+                      "Value": "::/0",
+                      "Type": "Host"
+                  }
+              ]
+        }
+    )
 ]
 
 INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_POLICY_ASSIGNMENT = [
