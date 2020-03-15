@@ -8,7 +8,7 @@ description: |
   Remediation:
    - GCP VM instances have serial port access enabled
    - GCP VM instances have block project-wide SSH keys feature disabled
-   - GCP VM Instances without any Custom metadata information
+   - GCP VM instances without any custom metadata information
 starttaskid: "0"
 tasks:
   "0":
@@ -44,7 +44,7 @@ tasks:
       id: 223e678e-d65d-4337-87b9-3233b3da80d5
       version: -1
       name: Is Google Cloud Compute integration enabled?
-      description: Check that Google Cloud Compute integration is enabled.
+      description: Verifies that the Google Cloud Compute integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -125,7 +125,7 @@ tasks:
       id: 29d44dce-2e00-46c3-8523-b4aaf1c1352c
       version: -1
       name: Is there a policy to remediate?
-      description: Check for a Prisma Cloud policy Id.
+      description: Checks for a Prisma Cloud policy ID.
       type: condition
       iscommand: false
       brand: ""
@@ -162,7 +162,7 @@ tasks:
       id: 33d179f1-0884-41ba-82fb-f8cff80516da
       version: -1
       name: Update Compute Engine automatically?
-      description: Auto remediate?
+      description: Determines if the compute engine is updated automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -204,7 +204,7 @@ tasks:
       id: 16fb9188-5edd-4d99-814a-33090e0b03d2
       version: -1
       name: Auto remediate?
-      description: Remediate automatically or manually update?
+      description: Determines if the event is automatically remediated or manually updated.
       type: condition
       iscommand: false
       brand: ""
@@ -248,8 +248,8 @@ tasks:
       id: e8bff3c4-de53-4a71-8bcc-1ff7082b5737
       version: -1
       name: Execute playbook
-      description: Execute the appropriate remediation sub-playbook based on the Prisma
-        Cloud policy Id.
+      description: Executes the appropriate remediation sub-playbook based on the Prisma
+        Cloud policy ID.
       type: condition
       iscommand: false
       brand: ""
@@ -333,7 +333,7 @@ tasks:
       id: fb37a3ed-6884-4601-8841-f9414cf4a2ac
       version: -1
       name: Close investigation
-      description: Close the current incident.
+      description: Closes the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -378,7 +378,7 @@ tasks:
 
          - GCP VM instances have serial port access enabled
          - GCP VM instances have block project-wide SSH keys feature disabled
-         - GCP VM Instances without any Custom metadata information
+         - GCP VM instances without any custom metadata information
       playbookName: Prisma Cloud Remediation - GCP Compute Engine Instance Misconfiguration
       type: playbook
       iscommand: false
