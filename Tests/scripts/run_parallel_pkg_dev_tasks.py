@@ -81,9 +81,9 @@ def main():
         get_dev_requirements(3.7)
     # run CommonServer non parallel to avoid conflicts
     # when we modify the file for mypy includes
-    if 'Scripts/CommonServerPython' in pkgs_to_run:
-        pkgs_to_run.remove('Scripts/CommonServerPython')
-        res = run_dev_task('Scripts/CommonServerPython', params)
+    if 'Packs/Base/Scripts/CommonServerPython' in pkgs_to_run:
+        pkgs_to_run.remove('Packs/Base/Scripts/CommonServerPython')
+        res = run_dev_task('Packs/Base/Scripts/CommonServerPython', params)
         handle_run_res(res, fail_pkgs, good_pkgs)
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures_submit = [executor.submit(run_dev_task, dir, params) for dir in pkgs_to_run]
