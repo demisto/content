@@ -110,7 +110,7 @@ script:
     execution: false
     name: blocklist_de-get-indicators
     outputs:
-  dockerimage: demisto/python3:3.8.1.6442
+  dockerimage: demisto/python3:3.8.1.6615
   feed: true
   isfetch: false
   longRunning: false

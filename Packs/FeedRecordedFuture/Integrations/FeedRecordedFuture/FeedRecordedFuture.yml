@@ -183,7 +183,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.8.1.6442
+  dockerimage: demisto/python3:3.8.1.6615
   feed: true
   isfetch: false
   longRunning: false
