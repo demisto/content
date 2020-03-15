@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue where detections with no positive value was was treated as malicious.
+Fixed an issue where detections with no positive value were treated as malicious.
 
 
 ## [19.12.0] - 2019-12-10
