@@ -216,9 +216,9 @@ def createPsDocumentation(path, origin, language):
 
 def main(argv):
     jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
-    pyDoc, isErrorPy = createPyDocumentation('./Scripts/CommonServerPython/CommonServerPython.py',
+    pyDoc, isErrorPy = createPyDocumentation('./Packs/Base/Scripts/CommonServerPython/CommonServerPython.py',
                                              'CommonServerPython', 'python')
-    psDoc, isErrorPS = createPsDocumentation('./Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
+    psDoc, isErrorPS = createPsDocumentation('./Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1',
                                              'CommonServerPowerShell', 'powershell')
     finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
 

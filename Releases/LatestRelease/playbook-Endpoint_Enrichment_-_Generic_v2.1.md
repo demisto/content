@@ -1,1 +1,0 @@
-Enrichment using CrowdStrike FalconHost is now done directly using tasks instead of using a sub-playbook. Improved endpoint enrichment playbook visually.
