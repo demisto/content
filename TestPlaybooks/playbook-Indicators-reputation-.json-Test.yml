@@ -1876,7 +1876,7 @@ tasks:
       key:
         simple: invalid_ipv6s
       value:
-        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::", "::", "tag::event"'
+        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::", "tag::event"'
     separatecontext: false
     view: |-
       {
@@ -1947,14 +1947,6 @@ tasks:
           right:
             value:
               simple: 2001:0db8:0000:0000:0000:ff00:0042:83292
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: IPv6.Address
-            iscontext: true
-          right:
-            value:
-              simple: '::'
       - - operator: notContainsGeneral
           left:
             value:
