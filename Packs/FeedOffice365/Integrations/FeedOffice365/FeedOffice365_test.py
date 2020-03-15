@@ -39,6 +39,8 @@ def test_commands(command, args, response, length, mocker):
         indicator_type = indicator_json.get('type')
         assert indicator_val
         if indicator_type == 'Domain':
-            pass
+            assert args.get('indicator_type') != 'IPs'
+        elif indicator_type == 'DomainGlob':
+            assert args.get('indicator_type') != 'IPs'
         else:  # ip
             assert args.get('indicator_type') != 'URLs'
