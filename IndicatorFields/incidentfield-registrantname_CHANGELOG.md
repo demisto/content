@@ -1,2 +1,2 @@
 ## [Unreleased]
-Associated field with ***IP***, ***CIDR***, ***IPv6***, ***IPv6CIDR*** Indicator types.
+Associated field with ***IP***, ***IPv6*** Indicator types.

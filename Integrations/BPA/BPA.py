@@ -20,7 +20,10 @@ class LightPanoramaClient(BaseClient):
      not the BPA service.
     '''
     def __init__(self, server, port, api_key, verify, proxy):
-        super().__init__(server.rstrip('/:') + ':' + port + '/', verify, proxy)
+        if port is None:
+            super().__init__(server + '/', verify, proxy)
+        else:
+            super().__init__(server.rstrip('/:') + ':' + port + '/', verify, proxy)
         self.api_key = api_key
 
     def simple_op_request(self, cmd):
@@ -201,7 +204,7 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     panorama_server = demisto.params().get('server')
-    panorama_port = demisto.params().get('port')
+    panorama_port = demisto.params().get('port', None)
     panorama_api_key = demisto.params().get('key')
     bpa_token = demisto.params().get('token')
     verify = not demisto.params().get('insecure', False)
