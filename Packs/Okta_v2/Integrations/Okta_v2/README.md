@@ -1827,7 +1827,7 @@ Returns logs using specified filters.
 ### Application Authentication Events
 |Actor|ActorAlternaneId|ChainIP|Client|EventInfo|EventOutcome|EventSeverity|RequestIP|Targets|Time|
 |---|---|---|---|---|---|---|---|---|---|
-| Doron Sharon (User) | dorsha@demisto.com | 31.154.166.148 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 31.154.166.148 | benzi_master (AppInstance)<br>Doron Sharon (AppUser)<br> | 09/18/2019, 14:29:19 |
+| Doron Sharon (User) | dorsha@demisto.com | 127.0.0.1 | CHROME on Mac OS X Computer | User single sign on to app | SUCCESS | INFO | 31.154.166.148 | benzi_master (AppInstance)<br>Doron Sharon (AppUser)<br> | 09/18/2019, 14:29:19 |
 
 
 ### okta-delete-user
