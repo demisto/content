@@ -2651,7 +2651,7 @@ def detach_internet_gateway_command(args):
 
     response = client.detach_internet_gateway(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('Subnet sucessfully deleted')
+        demisto.results('Internet gateway sucessfully detached')
 
 
 def delete_subnet_command(args):
@@ -2699,7 +2699,7 @@ def delete_internet_gateway_command(args):
 
     response = client.delete_internet_gateway(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('Subnet sucessfully modified')
+        demisto.results('Internet gateway sucessfully deleted')
 
 
 def describe_internet_gateway_command(args):
