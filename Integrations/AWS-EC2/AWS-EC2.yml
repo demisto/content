@@ -5,15 +5,6 @@ name: AWS - EC2
 display: AWS - EC2
 category: IT Services
 description: Amazon Web Services Elastic Compute Cloud (EC2)
-detaileddescription: "Before you can use AWS EC2, you need to perform several configuration
-  steps in your AWS environment.\n\n### Prerequisites\n- Attach an instance profile
-  with the required permissions to the Demisto server or engine that is running \non
-  your AWS environment.\n- Instance profile requires minimum permission: sts:AssumeRole.\n-
-  Instance profile requires permission to assume the roles needed by the AWS integrations.\n\n###
-  Configure AWS Settings\n- Create an IAM Role for the Instance Profile.\n- Attach
-  a Role to the Instance Profile.\n- Configure the Necessary IAM Roles that the AWS
-  Integration Can Assume.\n\nFor detailed instructions, [see the AWS Integrations
-  Configuration Guide](https://support.demisto.com/hc/en-us/articles/360005686854-AWS-Integrations-Configuration-Guide).\n"
 configuration:
 - display: AWS Default Region
   name: defaultRegion
@@ -3031,7 +3022,7 @@ script:
       description: The ICMP type. A value of -1 means all types.
     - name: Ipv6CidrBlock
       description: The IPv6 network range to allow or deny, in CIDR notation (for
-        example 2001:db8:1234:1a00::/64 ).
+        example 2001:db8:1234:1a00::/64 ).  # disable-secrets-detection
     - name: NetworkAclId
       required: true
       description: The ID of the network ACL.
@@ -4025,5 +4016,6 @@ script:
       Elastic IP addresses or public IPv4 addresses.
   dockerimage: demisto/boto3:1.9.55
   runonce: false
+  subtype: python2
 tests:
 - 2142f8de-29d5-4288-8426-0db39abe988b
