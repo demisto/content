@@ -10,16 +10,14 @@
     "categories": [
         "Messaging"
     ],
-    "tags": [
-        "Slack"
-    ],
+    "tags": ["Slack"],
     "created": "2020-03-15T17:02:40Z",
     "updated": "2020-03-15T17:02:40Z",
     "beta": false,
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Slack"],
     "price": "0",
     "dependencies": {}
 }
