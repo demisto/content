@@ -1,5 +1,5 @@
 ## [Unreleased]
-fixed device mode(l)
+Fixed missing letter in device mode(l)
 
 ## [20.2.3] - 2020-02-18
 #### New Playbook
