@@ -66,24 +66,27 @@ def determine_servers_urls(ami_env):
     return server_urls
 
 
-def get_server_numeric_version(ami_env):
+def get_server_numeric_version(ami_env, prints_manager):
     """
     Gets the current server version
     Arguments:
         ami_env: (str)
             AMI version name.
+        prints_manager: (ParallelPrintsManager)
             Print manager object.
+
     Returns:
         (str) Server numeric version
     """
     images_file_name = './Tests/images_data.txt'
     if not os.path.isfile(images_file_name):
-        print_warning('Did not find image data file.')
+        prints_manager.add_print_job('Did not find image data file.', print_warning, 0)
         return '99.99.98'  # latest
     with open(images_file_name, 'r') as image_data_file:
         image_data = [line for line in image_data_file if line.startswith(ami_env)]
         if len(image_data) != 1:
-            print_warning('Did not get one image data for server version, got {}'.format(image_data))
+            warning_message = 'Did not get one image data for server version, got {}'.format(image_data)
+            prints_manager.add_print_job(warning_message, print_warning, 0)
             return '99.99.98'
         else:
             server_numeric_version = re.findall(r'Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
@@ -91,8 +94,10 @@ def get_server_numeric_version(ami_env):
                 server_numeric_version = server_numeric_version[0]
             else:
                 server_numeric_version = '99.99.98'  # latest
-            print('Server image info: {}'.format(image_data[0]))
-            print('Server version: {}'.format(server_numeric_version))
+            server_image_message = 'Server image info: {}'.format(image_data[0])
+            prints_manager.add_print_job(server_image_message, print_color, 0, LOG_COLORS.GREEN)
+            server_version_message = 'Server version: {}'.format(server_numeric_version)
+            prints_manager.add_print_job(server_version_message, print_color, 0, LOG_COLORS.GREEN)
             return server_numeric_version
 
 
@@ -161,16 +166,26 @@ def configure_integration_instance(integration, client, prints_manager):
         (dict): Configured integration instance
     """
     integration_name = integration.get('name')
-    print('Configuring instance for integration "{}"\n'.format(integration_name))
+    prints_manager.add_print_job('Configuring instance for integration "{}"\n'.format(integration_name),
+                                 print_color, 0, LOG_COLORS.GREEN)
+    prints_manager.execute_thread_prints(0)
     integration_instance_name = integration.get('instance_name', '')
     integration_params = integration.get('params')
     is_byoi = integration.get('byoi', True)
+    validate_test = integration.get('validate_test', True)
 
     integration_configuration = __get_integration_config(client, integration_name, prints_manager)
     prints_manager.execute_thread_prints(0)
     if not integration_configuration:
         return None
 
+    # In the integration configuration in content-test-conf conf.json, the test_validate flag was set to false
+    if not validate_test:
+        skipping_configuration_message = \
+            "Skipping configuration for integration: {} (it has test_validate set to false)".format(integration_name)
+        prints_manager.add_print_job(skipping_configuration_message, print_warning, 0)
+        prints_manager.execute_thread_prints(0)
+        return None
     module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                           integration_instance_name, is_byoi)
     return module_instance
@@ -256,23 +271,31 @@ def is_content_update_in_progress(client, prints_manager, thread_index):
         return response_data
 
 
-def get_content_version_details(client):
+def get_content_version_details(client, prints_manager, thread_index):
     """Make request for details about the content installed on the demisto instance.
 
     Args:
         client (demisto_client): The configured client to use.
+        prints_manager (ParallelPrintsManager): Print manager object
+        thread_index (int): The thread index
 
     Returns:
         (tuple): The release version and asset ID of the content installed on the demisto instance.
     """
     host = client.api_client.configuration.host
-    print('\nMaking "POST" request to server - "{}" to check installed content.'.format(host))
+    installed_content_message = '\nMaking "POST" request to server - "{}" to check installed content.'.format(host)
+    prints_manager.add_print_job(installed_content_message, print_color, thread_index, LOG_COLORS.GREEN)
 
     # make request to installed content details
     response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/installed',
                                                                         method='POST')
 
-    result_object = ast.literal_eval(response_data)
+    try:
+        result_object = ast.literal_eval(response_data)
+    except ValueError as err:
+        print_error('failed to parse response from demisto. response is {}.\nError:\n{}'.format(response_data, err))
+        return '', 0
+
     if status_code >= 300 or status_code < 200:
         message = result_object.get('message', '')
         msg = "Failed to check if installed content details - with status code " + str(status_code) + '\n' + message
@@ -334,6 +357,7 @@ def set_integration_params(integrations, secret_params, instance_names):
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
+            integration['validate_test'] = matched_integration_params.get('validate_test', True)
 
     return True
 
@@ -513,7 +537,7 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
     else:
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
-        release, asset_id = get_content_version_details(client)
+        release, asset_id = get_content_version_details(client, prints_manager, thread_index)
         with open('content-descriptor.json', 'r') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
@@ -525,13 +549,15 @@ def update_content_on_demisto_instance(client, server, prints_manager, thread_in
             err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release)
             err_details += '"{}" but release "{}" and assetId "{}" were '.format(cd_asset_id, release, asset_id)
             err_details += 'retrieved from the instance post installation.'
-            prints_manager.add_print_job('Content Update was Unsuccessful:\n{}'.format(err_details), print_error,
-                                         thread_index)
+            prints_manager.add_print_job(
+                'Content Update to version: {} was Unsuccessful:\n{}'.format(release, err_details),
+                print_error, thread_index)
             prints_manager.execute_thread_prints(thread_index)
-            sys.exit(1)
+            os._exit(1)
 
 
-def report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names):
+def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
+                        new_integrations_names, prints_manager):
     """Prints errors and/or warnings if there are any and returns whether whether testing was successful or not.
 
     Args:
@@ -541,15 +567,36 @@ def report_tests_status(preupdate_fails, postupdate_fails, new_integrations_name
         postupdate_fails (set): List of tuples of integrations that failed the "Test" button after content was
             updated on the demisto instance where each tuple is comprised of the integration name and the name
             of the instance that was configured for that integration which failed.
+        preupdate_success (set): List of tuples of integrations that succeeded the "Test" button prior to content
+            being updated on the demisto instance where each tuple is comprised of the integration name and the
+            name of the instance that was configured for that integration which failed.
+        postupdate_success (set): List of tuples of integrations that succeeded the "Test" button after content was
+            updated on the demisto instance where each tuple is comprised of the integration name and the name
+            of the instance that was configured for that integration which failed.
         new_integrations_names (list): List of the names of integrations that are new since the last official
             content release and that will only be present on the demisto instance after the content update is
             performed.
+        prints_manager: (ParallelPrintsManager)
+            Print manager object
 
     Returns:
         (bool): False if there were integration instances that succeeded prior to the content update and then
             failed after content was updated, otherwise True.
     """
     testing_status = True
+
+    # a "Test" can be either successful both before and after content update(succeeded_pre_and_post variable),
+    # fail on one of them(mismatched_statuses variable), or on both(failed_pre_and_post variable)
+    succeeded_pre_and_post = preupdate_success.intersection(postupdate_success)
+    if succeeded_pre_and_post:
+        succeeded_message = '\nIntegration instances that had ("Test" Button) succeeded' \
+                            ' both before and after the content update'
+        prints_manager.add_print_job(succeeded_message, print_color, 0, LOG_COLORS.GREEN)
+        for instance_name, integration_of_instance in succeeded_pre_and_post:
+            prints_manager.add_print_job(
+                'Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name),
+                print_color, 0, LOG_COLORS.GREEN)
+
     failed_pre_and_post = preupdate_fails.intersection(postupdate_fails)
     mismatched_statuses = preupdate_fails.symmetric_difference(postupdate_fails)
     failed_only_after_update = []
@@ -562,15 +609,17 @@ def report_tests_status(preupdate_fails, postupdate_fails, new_integrations_name
 
     # warnings but won't fail the build step
     if failed_but_is_new:
-        print_warning('New Integrations ("Test" Button) Failures')
+        prints_manager.add_print_job('New Integrations ("Test" Button) Failures', print_warning, 0)
         for instance_name, integration_of_instance in failed_but_is_new:
-            print_warning('Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name))
+            prints_manager.add_print_job(
+                'Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name), print_warning, 0)
     if failed_pre_and_post:
         failure_category = '\nIntegration instances that had ("Test" Button) failures' \
                            ' both before and after the content update'
-        print_warning(failure_category)
+        prints_manager.add_print_job(failure_category, print_warning, 0)
         for instance_name, integration_of_instance in failed_pre_and_post:
-            print_warning('Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name))
+            prints_manager.add_print_job(
+                'Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name), print_warning, 0)
 
     # fail the step if there are instances that only failed after content was updated
     if failed_only_after_update:
@@ -578,9 +627,10 @@ def report_tests_status(preupdate_fails, postupdate_fails, new_integrations_name
         failure_category = '\nIntegration instances that had ("Test" Button) failures' \
                            ' only after content was updated. This indicates that your' \
                            'updates introduced breaking changes to the integration.'
-        print_error(failure_category)
+        prints_manager.add_print_job(failure_category, print_error, 0)
         for instance_name, integration_of_instance in failed_only_after_update:
-            print_error('Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name))
+            prints_manager.add_print_job(
+                'Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name), print_error, 0)
 
     return testing_status
 
@@ -596,7 +646,8 @@ def main():
     secret_conf_path = options.secret
 
     prints_manager = ParallelPrintsManager(1)
-    server_numeric_version = get_server_numeric_version(ami_env)
+    server_numeric_version = get_server_numeric_version(ami_env, prints_manager)
+    prints_manager.execute_thread_prints(0)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf.get('integrations', []) if secret_conf else []
@@ -612,21 +663,27 @@ def main():
     tests_for_iteration = tests
     if run_all_tests:
         # skip test button testing
-        print_warning('Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT))
+        skipped_instance_test_message = 'Not running instance tests when {} is turned on'.format(RUN_ALL_TESTS_FORMAT)
+        prints_manager.add_print_job(skipped_instance_test_message, print_warning, 0)
         tests_for_iteration = []
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
     tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version,
                                                                  prints_manager)
+    prints_manager.execute_thread_prints(0)
 
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
     new_integrations_names, modified_integrations_names = get_new_and_modified_integrations(git_sha1)
     if new_integrations_names:
-        print_warning('New Integrations Since Last Release:\n{}\n'.format('\n'.join(new_integrations_names)))
+        new_integrations_names_message = \
+            'New Integrations Since Last Release:\n{}\n'.format('\n'.join(new_integrations_names))
+        prints_manager.add_print_job(new_integrations_names_message, print_warning, 0)
     if modified_integrations_names:
-        print_warning('Updated Integrations Since Last Release:\n{}\n'.format('\n'.join(modified_integrations_names)))
-
+        modified_integrations_names_message = \
+            'Updated Integrations Since Last Release:\n{}\n'.format('\n'.join(modified_integrations_names))
+        prints_manager.add_print_job(modified_integrations_names_message, print_warning, 0)
+    prints_manager.execute_thread_prints(0)
     # Each test is a dictionary from Tests/conf.json which may contain the following fields
     # "playbookID", "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion"
     # Note that only the "playbookID" field is required with all of the others being optional.
@@ -645,15 +702,15 @@ def main():
             instance_names_conf = [instance_names_conf]
 
         integrations_names = [i.get('name') for i in integrations]
-        print_warning('All Integrations for test "{}":'.format(test.get('playbookID')))
-        print_warning(integrations_names)
+        prints_manager.add_print_job('All Integrations for test "{}":'.format(test.get('playbookID')), print_warning, 0)
+        prints_manager.add_print_job(integrations_names, print_warning, 0)
 
         new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
             integrations, skipped_integrations_conf, new_integrations_names, modified_integrations_names
         )
 
         integrations_msg = '\n'.join(['"{}" - {}'.format(key, val) for key, val in integration_to_status.items()])
-        print_warning('{}\n'.format(integrations_msg))
+        prints_manager.add_print_job('{}\n'.format(integrations_msg), print_warning, 0)
 
         integrations_to_configure = modified_integrations[:]
         integrations_to_configure.extend(unchanged_integrations)
@@ -664,11 +721,15 @@ def main():
         ints_to_configure_params_set = set_integration_params(integrations_to_configure, secret_params,
                                                               instance_names_conf)
         if not new_ints_params_set:
-            print_error('failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)))
+            prints_manager.add_print_job(
+                'failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)), print_error, 0)
         if not ints_to_configure_params_set:
-            print_error('failed setting parameters for integrations "{}"'.format('\n'.join(integrations_to_configure)))
+            prints_manager.add_print_job(
+                'failed setting parameters for integrations "{}"'.format('\n'.join(integrations_to_configure)),
+                print_error, 0)
         if not (new_ints_params_set and ints_to_configure_params_set):
             continue
+        prints_manager.execute_thread_prints(0)
 
         brand_new_integrations.extend(new_integrations)
 
@@ -682,13 +743,18 @@ def main():
 
     preupdate_fails = set()
     postupdate_fails = set()
+    preupdate_success = set()
+    postupdate_success = set()
 
     # Test all module instances (of modified + unchanged integrations) pre-updating content
     if all_module_instances:
         # only print start message if there are instances to configure
-        print_warning('Start of Instance Testing ("Test" button) prior to Content Update:')
+        prints_manager.add_print_job('Start of Instance Testing ("Test" button) prior to Content Update:',
+                                     print_warning, 0)
     else:
-        print_warning('No integrations to configure for the chosen tests. (Pre-update)')
+        prints_manager.add_print_job('No integrations to configure for the chosen tests. (Pre-update)',
+                                     print_warning, 0)
+    prints_manager.execute_thread_prints(0)
 
     for instance in all_module_instances:
         testing_client = demisto_client.configure(base_url=servers[0], username=username, password=password,
@@ -697,12 +763,15 @@ def main():
         instance_name = instance.get('name', '')
         msg = 'Testing ("Test" button) for instance "{}" of integration "{}".'.format(instance_name,
                                                                                       integration_of_instance)
-        print(msg)
+        prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(0)
         # If there is a failure, __test_integration_instance will print it
         success = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
             preupdate_fails.add((instance_name, integration_of_instance))
+        else:
+            preupdate_success.add((instance_name, integration_of_instance))
 
     threads_list = []
     threads_prints_manager = ParallelPrintsManager(len(servers))
@@ -728,30 +797,39 @@ def main():
     # After content upload has completed - test ("Test" button) integration instances
     # Test all module instances (of pre-existing AND new integrations) post-updating content
     if all_module_instances:
-        print_warning('Start of Instance Testing ("Test" button) after the Content Update:')
+        # only print start message if there are instances to configure
+        prints_manager.add_print_job('Start of Instance Testing ("Test" button) after the Content Update:',
+                                     print_warning, 0)
     else:
-        print_warning('No integrations to configure for the chosen tests. (Post-update)')
+        prints_manager.add_print_job('No integrations to configure for the chosen tests. (Post-update)',
+                                     print_warning, 0)
+    prints_manager.execute_thread_prints(0)
+
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
         msg = 'Testing ("Test" button) for instance "{}" of integration "{}" .'.format(instance_name,
                                                                                        integration_of_instance)
-        print(msg)
+        prints_manager.add_print_job(msg, print_color, 0, LOG_COLORS.GREEN)
+        prints_manager.execute_thread_prints(0)
         # If there is a failure, __test_integration_instance will print it
         success = __test_integration_instance(testing_client, instance, prints_manager)
         prints_manager.execute_thread_prints(0)
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
-
+        else:
+            postupdate_success.add((instance_name, integration_of_instance))
     # reinitialize all clients since their authorization has probably expired by now
     for server_url in servers:
         client = demisto_client.configure(base_url=server_url, username=username, password=password, verify_ssl=False)
         __disable_integrations_instances(client, all_module_instances, prints_manager)
     prints_manager.execute_thread_prints(0)
 
-    success = report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names)
+    success = report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
+                                  new_integrations_names, prints_manager)
+    prints_manager.execute_thread_prints(0)
     if not success:
-        sys.exit(1)
+        sys.exit(2)
 
 
 if __name__ == '__main__':
