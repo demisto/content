@@ -6,7 +6,7 @@ from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
 from typing import Callable, List, Any, Dict, cast
 from base64 import b64decode
-import ssl
+from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
 
 
@@ -268,7 +268,7 @@ def run_long_running(params, is_test=False):
             private_key_path = private_key_file.name
             private_key_file.write(bytes(private_key, 'utf-8'))
             private_key_file.close()
-            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+            context = SSLContext(PROTOCOL_TLSv1_2)
             context.load_cert_chain(certificate_path, private_key_path)
             ssl_args['ssl_context'] = context
             demisto.debug('Starting HTTPS Server')
@@ -283,7 +283,7 @@ def run_long_running(params, is_test=False):
             server_process.terminate()
         else:
             server.serve_forever()
-    except ssl.SSLError as e:
+    except SSLError as e:
         ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
         demisto.error(ssl_err_message)
         raise ValueError(ssl_err_message)

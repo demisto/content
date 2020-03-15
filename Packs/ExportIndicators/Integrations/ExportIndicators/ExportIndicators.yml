@@ -105,7 +105,7 @@ script:
       On-Demand).
     execution: false
     name: eis-update
-  dockerimage: demisto/teams:1.0.0.4937
+  dockerimage: demisto/teams:1.0.0.6483
   isfetch: false
   longRunning: true
   longRunningPort: true
