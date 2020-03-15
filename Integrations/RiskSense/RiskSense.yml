@@ -47,7 +47,7 @@ script:
             - Host Name
             - IP Address
             - Criticality
-          description: The RiskSense host attribute that should be considered for filtering the results. The available choices are 'Host Name', 'IP Adress' and 'Criticality'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /host/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
+          description: The RiskSense host attribute by which to filter the results. Can be 'Host Name', 'IP Address', or 'Criticality'. Apart from the available choices you can provide the attributes supported by RiskSense API. Refer to the API /host/filter API to get the list of supported attributes. The uid of filter attributes must be provided here, for example assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
         - name: operator
           auto: PREDEFINED
           predefined:
@@ -55,22 +55,22 @@ script:
             - IN
             - LIKE
             - BETWEEN
-          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
+          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Can be 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
         - name: exclusive_operator
           auto: PREDEFINED
           predefined:
             - 'true'
             - 'false'
-          description: The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False.
+          description: The exclusive operator flag that determines whether the returned records matches filter criteria or not. The default set is false.
             If set to True, host not matching the specified values are fetched.
         - name: value
           description: The value of the host property mentioned in 'fieldname' to be considered for filter criteria.
           isArray: true
         - name: page
-          description: The index of the page. The index is numeric value starting with 0.
+          description: The index of the page. The index is a numeric value starting with 0.
           defaultValue: 0
         - name: size
-          description: The maximum number of records to be fetched in one page.
+          description: The maximum number of records to fetch in one page.
           defaultValue: 10
         - name: sort_by
           auto: PREDEFINED
@@ -82,14 +82,14 @@ script:
             - Low Findings
             - Info Findings
             - RS3
-          description: The fieldname that should be considered for sorting the returned records.
+          description: The fieldname by which to sort the returned records.
           defaultValue: RS3
         - name: sort_order
           auto: PREDEFINED
           predefined:
             - ASC
             - DESC
-          description: The sorting order to be considered for returned records.
+          description: The sorting order to apply to returned records.
           defaultValue: ASC
       outputs:
         - contextPath: Host.Hostname
@@ -111,7 +111,7 @@ script:
           description: The client id of the host.
           type: Number
         - contextPath: RiskSense.Host.GroupID
-          description: The id of the group belonging to the host.
+          description: The ID of the group belonging to the host.
           type: Number
         - contextPath: RiskSense.Host.GroupName
           description: The name of the group belonging to the host.
@@ -164,7 +164,7 @@ script:
           description: The time when the host was last found.
           type: String
         - contextPath: RiskSense.Host.LastScanTime
-          description: The last time when the host was scanned.
+          description: The last time when the host was last scanned.
           type: String
         - contextPath: RiskSense.Host.HostName
           description: The hostname of the host.
@@ -185,7 +185,7 @@ script:
           description: The class of the operating system of the host.
           type: String
         - contextPath: RiskSense.Host.OS.Vendor
-          description: The vendor information of the operating system of the host
+          description: The vendor information of the operating system of the host.
           type: String
         - contextPath: RiskSense.Host.CMDB.Order
           description: The CMDB order number of the host.
@@ -206,13 +206,13 @@ script:
           description: The User ID of the user who added a note for the host.
           type: String
         - contextPath: RiskSense.Host.Note.UserName
-          description: The Username of the user who added a note for the host.
+          description: The username of the user who added a note for the host.
           type: String
         - contextPath: RiskSense.Host.Note.Note
           description: The notes that are added by the user for the host.
           type: String
         - contextPath: RiskSense.Host.Note.Date
-          description: The time when note is added by the user for the host.
+          description: The time when the note was added by the user for the host.
           type: String
         - contextPath: RiskSense.Host.Source.Name
           description: The name of the source associated with the host.
@@ -283,13 +283,13 @@ script:
         - contextPath: Ticket.State
           description: The state of the ticket associated with the host.
           type: String
-      description: Look up the host details. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort order.
+      description: Gets details of the supplied host. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort order.
     - name: risksense-get-host-detail
       arguments:
         - name: host_id
-          description: The host ID is unique for the host. Host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in human-readable output of 'risksense-get-hosts' command.
+          description: The unique host ID of the host. Host ID is either known by RiskSense users or it can be searched in context output (RiskSense.Host.ID) or in human-readable output of 'risksense-get-hosts' command.
         - name: host
-          description: The host is identified by hostname. Host name is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in human-readable output of 'risksense-get-hosts' command.
+          description: The hostname of the host. Host name is either known by RiskSense users or it can be searched in context output (RiskSense.Host.HostName) or in human-readable output of 'risksense-get-hosts' command.
       outputs:
         - contextPath: Host.Hostname
           description: The hostname of the host.
@@ -307,10 +307,10 @@ script:
           description: The unique identifier of the host.
           type: Number
         - contextPath: RiskSense.Host.ClientID
-          description: The client id of the host.
+          description: The client ID of the host.
           type: Number
         - contextPath: RiskSense.Host.GroupID
-          description: The id of the group belonging to the host.
+          description: The ID of the group belonging to the host.
           type: Number
         - contextPath: RiskSense.Host.GroupName
           description: The name of the group belonging to the host.
@@ -330,7 +330,7 @@ script:
           description: The ID of the tag.
           type: Number
         - contextPath: RiskSense.Host.Tag.Name
-          description: The Name of the tag.
+          description: The name of the tag.
           type: String
         - contextPath: RiskSense.Host.Tag.Category
           description: The category of the tag.
@@ -363,13 +363,13 @@ script:
           description: The time when the host was last found.
           type: String
         - contextPath: RiskSense.Host.LastScanTime
-          description: The last time when the host was scanned.
+          description: The last time when the host was last scanned.
           type: String
         - contextPath: RiskSense.Host.HostName
           description: The hostname of the host.
           type: String
         - contextPath: RiskSense.Host.IpAddress
-          description: The IP Address of the host.
+          description: The IP address of the host.
           type: String
         - contextPath: RiskSense.Host.PortNumbers
           description: The list of ports that are currently bound.
@@ -405,13 +405,13 @@ script:
           description: The User ID of the user who added a note for the host.
           type: String
         - contextPath: RiskSense.Host.Note.UserName
-          description: The Username of the user who added a note for the host.
+          description: The username of the user who added a note for the host.
           type: String
         - contextPath: RiskSense.Host.Note.Note
           description: The notes that are added by the user for the host.
           type: String
         - contextPath: RiskSense.Host.Note.Date
-          description: The time when note is added by the user for the host.
+          description: The time when the note was added by the user for the host.
           type: String
         - contextPath: RiskSense.Host.Source.Name
           description: The name of the source associated with the host.
@@ -482,7 +482,7 @@ script:
         - contextPath: Ticket.State
           description: The state of the ticket associated with the host.
           type: String
-      description: Look up single host details in depth. This command accepts either hostname or host id as an argument.
+      description: Gets in-depth details of a single host. This command accepts either hostname or host ID as an argument.
     - name: risksense-get-unique-cves
       arguments:
         - name: hostFindingId
@@ -496,34 +496,34 @@ script:
           description: The unique ID of the host finding.
           type: String
         - contextPath: RiskSense.UniqueVulnerabilities.BaseScore
-          description: The base score represents Severity(informational, low, medium, high, critical) of risk.
+          description: The base score represents the severity of the risk (informational, low, medium, high, or critical).
         - contextPath: RiskSense.UniqueVulnerabilities.ThreatCount
-          description: Total number of Threats found.
+          description: Total number of threats found.
           type: Number
         - contextPath: RiskSense.UniqueVulnerabilities.AttackVector
-          description: The Attack vectors are a path by which attackers can gain access to the network.
+          description: The attack vectors are a path by which attackers can gain access to the network.
           type: String
         - contextPath: RiskSense.UniqueVulnerabilities.AccessComplexity
-          description: The Access complexity describes conditions that are  beyond the attacker's control that must exist in order to exploit the vulnerability.
+          description: The access complexity describes conditions that are beyond the attacker's control that must exist in order to exploit the vulnerability.
           type: String
         - contextPath: RiskSense.UniqueVulnerabilities.Authentication
-          description: The Authentication value represents attackers authorization to get network access.
+          description: The authentication value represents attackers authorization to get network access.
           type: String
         - contextPath: RiskSense.UniqueVulnerabilities.ConfidentialityImpact
-          description: The Confidentiality impact measures the potential impact on confidentiality of a successfully exploited misuse vulnerability.
+          description: The confidentiality impact measures the potential impact on confidentiality of a successfully exploited misuse vulnerability.
           type: String
         - contextPath: RiskSense.UniqueVulnerabilities.Integrity
-          description: The Integrity refers to the trustworthiness and veracity of information.
+          description: The Integrity refers to the trust level and veracity of the information.
           type: String
         - contextPath: RiskSense.UniqueVulnerabilities.AvailabilityImpact
-          description: The Availability refers to accessibility of network resources.
+          description: The availability refers to accessibility of network resources.
           type: String
         - contextPath: RiskSense.UniqueVulnerabilities.Trending
           description: Trending is defined by RiskSense as vulnerabilities that are being actively abused by attackers
-            in the wild based on activity in hacker forums, Twitter feeds as well as analysis of 3rd party threat intelligence sources.
+            in the wild based on activity in hacker forums, Twitter feeds, and analysis of 3rd party threat intelligence sources.
           type: Boolean
         - contextPath: RiskSense.UniqueVulnerabilities.VulnLastTrendingOn
-          description: The Last trending date of vulnerability.
+          description: The last trending date of vulnerability.
           type: String
         - contextPath: CVE.ID
           description: Common Vulnerabilities and Exposures ID.
@@ -532,10 +532,10 @@ script:
           description: Description about CVE.
           type: String
         - contextPath: CVE.CVSS
-          description: The CVSS represents Severity(informational, low, medium, high,
-            critical) of risk.
+          description: The CVSS represents the severity of the risk (informational, low, medium, high,
+            critical).
           type: String
-      description: Lookup vulnerability details per host finding with its base score.
+      description: Looks up vulnerability details for the supplied host finding with its base score.
     - name: risksense-get-unique-open-findings
       arguments:
         - name: fieldname
@@ -561,12 +561,12 @@ script:
           predefined:
             - 'true'
             - 'false'
-          description: The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False.
+          description: The exclusive operator flag that determines whether the returned records matche filter criteria or not. By default set to False.
         - name: page
           description: The index of the page. The index is a numeric value and starting with 0.
           defaultValue: 0
         - name: size
-          description: The maximum number of records to be fetched in one page.
+          description: The maximum number of records to fetch in one page.
           defaultValue: 10
         - name: sort_by
           default: true
@@ -584,17 +584,17 @@ script:
           predefined:
             - ASC
             - DESC
-          description: The sorting order to be considerd for retunred records.
+          description: The sorting order to apply to returned records.
           defaultValue: ASC
       outputs:
         - contextPath: RiskSense.UniqueHostFinding.Title
           description: The title of the unique host finding.
           type: String
         - contextPath: RiskSense.UniqueHostFinding.Severity
-          description: Similar to risk rating,the severity of a vulnerability conveys the potential threat posed.
+          description: Similar to risk rating, the severity of a vulnerability conveys the potential threat.
           type: Number
         - contextPath: RiskSense.UniqueHostFinding.HostCount
-          description: The total number of the host found in unique host finding.
+          description: The total number of hosts found in unique host finding.
           type: Number
         - contextPath: RiskSense.UniqueHostFinding.Source
           description: The name of the source associated with the unique host finding.
@@ -603,9 +603,9 @@ script:
           description: The unique ID of the source.
           type: String
         - contextPath: RiskSense.UniqueHostFinding.Href
-          description: Reference api link of unique host finding search.
+          description: Reference API link of the unique host finding search.
           type: String
-      description: This command is used to find unique open host findings.The open findings can be searched based on input parameters like fieldname (Severity, Title, Source etc), operator (EXACT, IN, LIKE, BETWEEN), page and size.
+      description: Finds unique open host findings.The open findings can be searched based on input parameters like fieldname (Severity, Title, Source etc), operator (EXACT, IN, LIKE, BETWEEN), page and size.
     - name: risksense-get-host-findings
       description: A detailed host finding view with the severity level. Displays vulnerability information like CVE, Threats associated with current findings and origin of findings.
       arguments:
@@ -615,7 +615,7 @@ script:
             - Title
             - IP Address
             - Host Name
-          description: The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'IP Adress' and 'Host Name'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /hostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
+          description: The RiskSense host finding attribute that should be considered for filtering the results. The available choices are 'Title', 'IP Address', or 'Host Name'. In addition to the available choices you can provide the attributes supported by RiskSense API. Refer the API /hostFinding/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
         - name: operator
           auto: PREDEFINED
           predefined:
@@ -623,7 +623,7 @@ script:
             - IN
             - LIKE
             - BETWEEN
-          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
+          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with value matching the the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
         - name: exclusive_operator
           auto: PREDEFINED
           predefined:
@@ -637,7 +637,7 @@ script:
           description: The index of the page. The index is numeric value starting with 0.
           defaultValue: 0
         - name: size
-          description: The maximum number of records to be fetched in one page.
+          description: The maximum number of records to fetch in one page.
           defaultValue: 10
         - name: sort_by
           auto: PREDEFINED
@@ -651,7 +651,7 @@ script:
           predefined:
             - ASC
             - DESC
-          description: The sorting order to be considered for returned records.
+          description: The sorting order to apply to returned records.
           defaultValue: ASC
         - name: status
           auto: PREDEFINED
@@ -688,19 +688,19 @@ script:
           description: The unique ID of the host associated with the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.HostName
-          description: The Hostname of the host associated with the host finding.
+          description: The hostname of the host associated with the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.HostIpAddress
-          description: The IP Address of the host associated with the host finding.
+          description: The IP address of the host associated with the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.Host.Criticality
           description: The criticality of the host associated with the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.Host.External
-          description: To identify if the host is external or internal.
+          description: Whether the identify of the host is external or internal.
           type: boolean
         - contextPath: RiskSense.HostFinding.Host.Port.ID
-          description: The unique ID of the Host(s) Port associated with the host finding.
+          description: The unique ID of the host(s) port associated with the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.Host.Port.Number
           description: The port number of the host associated with the host finding.
@@ -736,10 +736,10 @@ script:
           description: The total number of threats associated with the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.Vulnerability.AttackVector
-          description: Vector information in which it has been attacked.
+          description: Vector information in which the host was attacked.
           type: String
         - contextPath: RiskSense.HostFinding.Vulnerability.AccessComplexity
-          description: Complexity Level.
+          description: Complexity level.
           type: String
         - contextPath: RiskSense.HostFinding.Vulnerability.Authentication
           description: Authentication value represents attackers authorization to get network access.
@@ -757,19 +757,19 @@ script:
           description: This signifies whether the vulnerability (which is associated with the hostFinding) has been reported by our internal functions as being trending.
           type: boolean
         - contextPath: RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn
-          description: Date when last trending found.
+          description: Date when last trending vulnerability was found.
           type: String
         - contextPath: RiskSense.HostFinding.ThreatCount
           description: The total number of threats.
           type: Number
         - contextPath: RiskSense.HostFinding.Threat.Title
-          description: The title of threat.
+          description: The title of the threat.
           type: String
         - contextPath: RiskSense.HostFinding.Threat.Category
-          description: The category of threat.
+          description: The threat category.
           type: String
         - contextPath: RiskSense.HostFinding.Threat.Severity
-          description: The severity level of threat.
+          description: The severity level of the threat.
           type: String
         - contextPath: RiskSense.HostFinding.Threat.Description
           description: The threat description.
@@ -780,7 +780,7 @@ script:
           description: The source of the threat.
           type: String
         - contextPath: RiskSense.HostFinding.Threat.Published
-          description: The time when threat was published.
+          description: The time when the threat was published.
           type: String
         - contextPath: RiskSense.HostFinding.Threat.Updated
           description: The time when the threat was last updated.
@@ -789,19 +789,19 @@ script:
           description: The last time when threat was in trending.
           type: String
         - contextPath: RiskSense.HostFinding.Threat.Trending
-          description: To check wheter threat is trending or not.
+          description: Whether the threat is trending.
           type: boolean
         - contextPath: RiskSense.HostFinding.Patch.Name
           description: The patch name of the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.Patch.Url
-          description: The patch url of the host finding.
+          description: The patch URL of the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.TagCount
           description: The total number of tags associated with host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.Tag.ID
-          description: The Tag identifier of the host finding.
+          description: The tag identifier of the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.Tag.Name
           description: The tag name of the host finding.
@@ -813,10 +813,10 @@ script:
           description: The tag description of the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.Tag.Created
-          description: The time when the tag is created.
+          description: The time when the tag was created.
           type: String
         - contextPath: RiskSense.HostFinding.Tag.Updated
-          description: The time when the tag is last updated.
+          description: The time when the tag was last updated.
           type: String
         - contextPath: RiskSense.HostFinding.Tag.Color
           description: The color of the tag.
@@ -831,16 +831,16 @@ script:
           description: The name of the tag asset.
           type: String
         - contextPath: RiskSense.HostFinding.TagAsset.Category
-          description: The cateogry of the tag asset.
+          description: The category of the tag asset.
           type: String
         - contextPath: RiskSense.HostFinding.TagAsset.Description
           description: The description of the tag asset.
           type: String
         - contextPath: RiskSense.HostFinding.TagAsset.Created
-          description: The time Date when tag asset created.
+          description: The date and time when tag asset was created.
           type: String
         - contextPath: RiskSense.HostFinding.TagAsset.Updated
-          description: The time when tag asset was last updated.
+          description: The time when the tag asset was last updated.
           type: String
         - contextPath: RiskSense.HostFinding.TagAsset.Color
           description: The color name of the tag asset.
@@ -852,31 +852,31 @@ script:
           description: The severity of the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.SeverityDetail.Combined
-          description: The combined name of severity detail for the host finding.
+          description: The combined name of the severity detail for the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.SeverityDetail.Overridden
-          description: The overridden name of severity detail for the host finding.
+          description: The overridden name of the severity detail for the host finding.
           type: boolean
         - contextPath: RiskSense.HostFinding.SeverityDetail.Scanner
-          description: The scanner of severity detail for the host finding.
+          description: The scanner of the severity detail for the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.SeverityDetail.CvssV2
-          description: The cvssv2 value of severity detail for the host finding.
+          description: The CVSS v2 value of the severity detail for the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.SeverityDetail.CvssV3
-          description: The cvssv3 value of severity detail for the host finding.
+          description: The CVSS v3 value of the severity detail for the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.SeverityDetail.Aggregated
-          description: The aggregated value of severity detail for the host finding.
+          description: The aggregated value of the severity detail for the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.SeverityDetail.State
-          description: The state of severity detail for the host finding.
+          description: The state of the severity detail for the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.SeverityDetail.StateName
-          description: The state name of severity detail for the host finding.
+          description: The state name of the severity detail for the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.SeverityDetail.ExpirationDate
-          description: The time when severity detail was expired.
+          description: The time when the severity detail expired.
           type: String
         - contextPath: RiskSense.HostFinding.RiskRating
           description: The risk rate of the host finding.
@@ -891,7 +891,7 @@ script:
           description: The latest time when the particular host finding is found.
           type: String
         - contextPath: RiskSense.HostFinding.DiscoveredOn
-          description: The time when hostfinding was discovered.
+          description: The time when the host finding was discovered.
           type: String
         - contextPath: RiskSense.HostFinding.ResolvedOn
           description: The time when the host finding was resolved.
@@ -915,7 +915,7 @@ script:
           description: The state description of embedded status associated with the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.StatusEmbedded.Status
-          description: The staus of embedded status associated with the host finding.
+          description: The status of embedded status associated with the host finding.
           type: boolean
         - contextPath: RiskSense.HostFinding.StatusEmbedded.DurationInDays
           description: The time duration (In days) of embedded status associated with the host finding.
@@ -924,7 +924,625 @@ script:
           description: The due date of embedded status associated with the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.StatusEmbedded.ExpirationDate
-          description: The time when status is expired associated with the host findin..
+          description: The time when the status is expired associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.ManualFindingReportCount
+          description: The total number of manual finding reports associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.ID
+          description: The ID of manual finding reports associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.Title
+          description: The title of manual finding reports associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.Label
+          description: The label of manual finding reports associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.Pii
+          description: The PII number of manual finding reports associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.Source
+          description: The source of manual finding reports associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.IsManualExploit
+          description: Whether the manual finding report is an exploit.
+          type: boolean
+        - contextPath: RiskSense.HostFinding.ManualFindingReport.EaseOfExploit
+          description: The total number of manual finding reports associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.NoteCount
+          description: Number of notes found for the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Note.Date
+          description: The time when the note was added by the user for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Note.Note
+          description: The notes that were added by the user for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Note.UserID
+          description: The User ID of the user who added the note for the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Note.UserName
+          description: The username of the user who added a note for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Assignment.ID
+          description: The unique ID of the assignment associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Assignment.FirstName
+          description: The first name of the assigned user for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Assignment.LastName
+          description: The last name of the assigned user for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Assignment.ReceiveEmails
+          description: Indicates whether the email was received.
+          type: boolean
+        - contextPath: RiskSense.HostFinding.Assignment.Email
+          description: The email address of the assigned user for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Assignment.Username
+          description: The username of the assigned user for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Services
+          description: The name of the services for the host finding.
+          type: String
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the host finding.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the host finding.
+          type: String
+        - contextPath: Host.Hostname
+          description: The hostname of the host.
+          type: String
+        - contextPath: Host.ID
+          description: The unique ID within the tool retrieving the host.
+          type: String
+        - contextPath: Host.IP
+          description: The IP address of the host.
+          type: String
+        - contextPath: CVE.ID
+          description: Common Vulnerabilities and Exposures ID.
+          type: String
+        - contextPath: CVE.Description
+          description: Description of the CVE.
+          type: String
+        - contextPath: CVE.CVSS
+          description: The CVSS represents the severity of the risk (informational, low, medium, high,
+            critical).
+          type: String
+        - contextPath: RiskSense.HostFinding.Ticket.TicketNumber
+          description: The number of tickets associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Ticket.TicketStatus
+          description: The status of the ticket associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Ticket.DeepLink
+          description: The deeplink associated with the ticket associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Ticket.Type
+          description: The type of ticket associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Ticket.ConnectorName
+          description: The connector name of the ticket associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Ticket.DetailedStatus
+          description: The detailed status of the ticket associated with the host finding.
+          type: String
+    - name: risksense-get-apps
+      arguments:
+        - name: fieldname
+          auto: PREDEFINED
+          predefined:
+            - Name
+            - Network
+            - Address
+          description: The RiskSense application attribute that should be considered for filtering the results. The available choices are 'Name', 'Network', or 'Address'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /application/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
+        - name: operator
+          auto: PREDEFINED
+          predefined:
+            - EXACT
+            - IN
+            - LIKE
+            - BETWEEN
+          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' (filter records exactly matching the criteria), 'IN' (filter records matching any one of the comma-separated values), or 'LIKE' (filter records with value matching the the specified pattern). All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
+        - name: value
+          description: The value of the apps property mentioned in 'fieldname' to be considered for filter criteria.
+        - name: exclusive_operator
+          auto: PREDEFINED
+          predefined:
+            - 'true'
+            - 'false'
+          description: The exclusive operator flag that determines whether the returned records matches filter criteria or not. The default is "false".
+        - name: page
+          default: true
+          description: The index of the page. The index is a numeric value and starting with 0.
+          defaultValue: 0
+        - name: size
+          default: true
+          description: The maximum number of records to fetch in one page.
+          defaultValue: 10
+        - name: sort_by
+          auto: PREDEFINED
+          predefined:
+            - Address
+            - Name
+            - Network
+            - Total Findings
+            - Critical Findings
+            - Info Findings
+            - Low Findings
+            - Medium Findings
+            - High Findings
+          description: The fieldname that should be considered for sorting the returned records.
+          defaultValue: Name
+        - name: sort_order
+          auto: PREDEFINED
+          predefined:
+            - ASC
+            - DESC
+          description: The sorting order to apply to returned records.
+          defaultValue: ASC
+      outputs:
+        - contextPath: RiskSense.Application.ID
+          description: The unique ID within the tool retrieving the application.
+          type: Number
+        - contextPath: RiskSense.Application.GroupID
+          description: The group ID of the application.
+          type: Number
+        - contextPath: RiskSense.Application.GroupName
+          description: The group name of the application.
+          type: String
+        - contextPath: RiskSense.Application.Groups
+          description: The list of groups.
+        - contextPath: RiskSense.Application.Network.ID
+          description: The network ID of the application.
+          type: Number
+        - contextPath: RiskSense.Application.Network.Name
+          description: The network name of the application.
+          type: String
+        - contextPath: RiskSense.Application.Network.Type
+          description: The network type of the application.
+          type: String
+        - contextPath: RiskSense.Application.ClientID
+          description: The client ID of the application.
+          type: Number
+        - contextPath: RiskSense.Application.HostID
+          description: The host ID of the application.
+          type: Number
+        - contextPath: RiskSense.Application.Uri
+          description: The reference URI of the application.
+          type: String
+        - contextPath: RiskSense.Application.Name
+          description: The name of the application.
+          type: String
+        - contextPath: RiskSense.Application.Description
+          description: The detailed description of the application.
+          type: String
+        - contextPath: RiskSense.Application.NoteCount
+          description: The total number of notes found in the application.
+          type: Number
+        - contextPath: RiskSense.Application.DiscoveredOn
+          description: The time when the application was discovered.
+          type: String
+        - contextPath: RiskSense.Application.LastFoundOn
+          description: The time when the application was last found.
+          type: String
+        - contextPath: RiskSense.Application.Total
+          description: The total number of open findings of the application.
+          type: Number
+        - contextPath: RiskSense.Application.Critical
+          description: The number of open findings of the application with critical severity.
+          type: Number
+        - contextPath: RiskSense.Application.High
+          description: The number of open findings of the application with high severity.
+          type: Number
+        - contextPath: RiskSense.Application.Medium
+          description: The number of open findings of the application with medium severity.
+          type: Number
+        - contextPath: RiskSense.Application.Low
+          description: The number of open findings of the application with low severity.
+          type: Number
+        - contextPath: RiskSense.Application.Info
+          description: The number of open findings of the application with info severity.
+          type: Number
+        - contextPath: RiskSense.Application.Icon.Type
+          description: The type of icon of the application.
+          type: String
+        - contextPath: RiskSense.Application.Icon.OverlayText
+          description: The overlay text of the icon of the application.
+          type: String
+        - contextPath: RiskSense.Application.TagCount
+          description: The total number of tags of the application.
+          type: Number
+        - contextPath: RiskSense.Application.UrlCount
+          description: The total number of URLs of the application.
+          type: Number
+        - contextPath: RiskSense.Application.Href
+          description: The deeplink pointing to the application details on RiskSense.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.ManufacturedBy
+          description: The name of the manufacturer in the configuration management DB (CMDB) from application details.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.Model
+          description: The CMDB model name of the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.MacAddress
+          description: The CMDB MAC address of the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.Location
+          description: The CMDB location of the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.ManagedBy
+          description: The CMDB entity name that managed the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.OwnedBy
+          description: The CMDB entity name that owned the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.SupportedBy
+          description: The CMDB entity name that supported the application
+          type: String
+        - contextPath: RiskSense.Application.CMDB.SupportGroup
+          description: The CMDB supporting group of the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.SysID
+          description: The CMDB system ID of the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.OperatingSystem
+          description: The CMDB operating system of the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.LastScanDate
+          description: The CMDB last scan date of the application.
+          type: String
+        - contextPath: RiskSense.Application.CMDB.FerpaComplianceAsset
+          description: The Family Educational Rights and Privacy Act.
+          type: Boolean
+        - contextPath: RiskSense.Application.CMDB.HipaaComplianceAsset
+          description: Health Insurance Portability and Accountability Act.
+          type: Boolean
+        - contextPath: RiskSense.Application.CMDB.PciComplianceAsset
+          description: The Payment Card Industry (PCI) Council continues to make changes to ensure that their
+            standards are up to date with emerging threats and changes in the market.
+          type: String
+        - contextPath: RiskSense.Application.Ticket.TicketNumber
+          description: The number of the ticket associated with the application.
+          type: String
+        - contextPath: RiskSense.Application.Ticket.TicketStatus
+          description: The status of the ticket associated with the application.
+          type: String
+        - contextPath: RiskSense.Application.Ticket.Type
+          description: The type of ticket associated with the application.
+          type: String
+        - contextPath: RiskSense.Application.Ticket.ConnectorName
+          description: The connector name of the ticket associated with the application.
+          type: String
+        - contextPath: RiskSense.Application.Ticket.DetailedStatus
+          description: The detailed status of ticket associated with the application.
+          type: String
+        - contextPath: RiskSense.Application.Ticket.DeepLink
+          description: The deeplink associated with the ticket associated with the application.
+          type: String
+        - contextPath: RiskSense.Application.Source.Name
+          description: The name of the source associated with the application.
+          type: String
+        - contextPath: RiskSense.Application.Source.UuID
+          description: The unique ID of the source associated with the application.
+          type: String
+        - contextPath: RiskSense.Application.Source.ScannerType
+          description: The type of scanner of the source associated with the application..
+          type: String
+        - contextPath: RiskSense.Application.Note.UserID
+          description: The user ID of the user who added a note for the application.
+          type: String
+        - contextPath: RiskSense.Application.Note.UserName
+          description: The username of the user who added a note for the application.
+          type: String
+        - contextPath: RiskSense.Application.Note.Note
+          description: The notes that were added by the user for the application.
+          type: String
+        - contextPath: RiskSense.Application.Note.Date
+          description: The time when the note was added by the user for the application.
+          type: String
+        - contextPath: RiskSense.Application.Tag.ID
+          description: The ID of the tag.
+          type: Number
+        - contextPath: RiskSense.Application.Tag.Name
+          description: The name of the tag.
+          type: String
+        - contextPath: RiskSense.Application.Tag.Category
+          description: The category of the tag.
+          type: String
+        - contextPath: RiskSense.Application.Tag.Description
+          description: The description of the tag.
+          type: String
+        - contextPath: RiskSense.Application.Tag.Created
+          description: The time when the tag was created.
+          type: String
+        - contextPath: RiskSense.Application.Tag.Updated
+          description: The time when the tag was last updated.
+          type: String
+        - contextPath: RiskSense.Application.Tag.Color
+          description: The color code of the tag of the application.
+          type: String
+        - contextPath: Ticket.ID
+          description: The ID of the ticket associated with the application.
+          type: String
+        - contextPath: Ticket.State
+          description: The state of the ticket associated with the application.
+          type: String
+      description: Looks up the application details. The application details can be searched based on input parameters like fieldname (Name, Network, Address), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort order.
+    - name: risksense-get-host-finding-detail
+      description: Gets in-depth details of a single host finding. The command accepts the host finding ID as an argument.
+      arguments:
+        - name: hostfinding_id
+          description: The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command.
+          required: true
+      outputs:
+        - contextPath: RiskSense.HostFinding.ID
+          description: The unique ID of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Source
+          description: Host discovered by the scanner.
+          type: String
+        - contextPath: RiskSense.HostFinding.SourceID
+          description: Scanner ID of the discovered scanner.
+          type: String
+        - contextPath: RiskSense.HostFinding.Title
+          description: The title of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Port
+          description: The port number of the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.GroupCount
+          description: The total number of groups for the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Group.ID
+          description: The unique ID of the group associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Group.Name
+          description: The name of the group associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.HostID
+          description: The unique ID of the host associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.HostName
+          description: The hostname of the host associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.HostIpAddress
+          description: The IP address of the host associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Host.Criticality
+          description: The criticality of the host associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Host.External
+          description: Whether the host is external.
+          type: boolean
+        - contextPath: RiskSense.HostFinding.Host.Port.ID
+          description: The unique ID of the host(s) port associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Host.Port.Number
+          description: The port number of the host associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Host.Rs3
+          description: The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications).
+          type: Number
+        - contextPath: RiskSense.HostFinding.Network.ID
+          description: The network ID of the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Network.Name
+          description: The name of the network used by the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Network.Type
+          description: The type of the network used by the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Assessment.ID
+          description: The assessment ID of the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Assessment.Name
+          description: The name of the assessment associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Assessment.Date
+          description: The time when the assessment is created.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.Cve
+          description: The name of the Common Vulnerabilities and Exposures associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.BaseScore
+          description: CVE Score.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Vulnerability.ThreatCount
+          description: The total number of threats associated with the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Vulnerability.AttackVector
+          description: Vector information in which the host finding was attacked.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.AccessComplexity
+          description: Complexity level.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.Authentication
+          description: Authentication value represents attackers authorization to get network access.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.ConfidentialityImpact
+          description: Confidentiality impact measures the potential impact on the confidentiality of a successfully exploited misuse vulnerability.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.Integrity
+          description: Integrity refers to the level of trust and veracity of the information.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.AvailabilityImpact
+          description: Availability refers to accessibility of network resources.
+          type: String
+        - contextPath: RiskSense.HostFinding.Vulnerability.Trending
+          description: Whether the vulnerability (which is associated with the hostFinding) has been reported by our internal functions as being trending.
+          type: boolean
+        - contextPath: RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn
+          description: Date when the last trending vulnerability was found.
+          type: String
+        - contextPath: RiskSense.HostFinding.ThreatCount
+          description: The total number of threats.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Threat.Title
+          description: The title of the threat.
+          type: String
+        - contextPath: RiskSense.HostFinding.Threat.Category
+          description: The category of the threat.
+          type: String
+        - contextPath: RiskSense.HostFinding.Threat.Severity
+          description: The severity level of the threat.
+          type: String
+        - contextPath: RiskSense.HostFinding.Threat.Description
+          description: The threat description.
+          type: String
+        - contextPath: RiskSense.HostFinding.Threat.Cve
+          description: The Common Vulnerabilities and Exposures name of the threat.
+        - contextPath: RiskSense.HostFinding.Threat.Source
+          description: The source of the threat.
+          type: String
+        - contextPath: RiskSense.HostFinding.Threat.Published
+          description: The time when threat was published.
+          type: String
+        - contextPath: RiskSense.HostFinding.Threat.Updated
+          description: The time when the threat was last updated.
+          type: String
+        - contextPath: RiskSense.HostFinding.Threat.ThreatLastTrendingOn
+          description: The last time when the threat was trending.
+          type: String
+        - contextPath: RiskSense.HostFinding.Threat.Trending
+          description: Whether the threat is trending.
+          type: boolean
+        - contextPath: RiskSense.HostFinding.Patch.Name
+          description: The patch name of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Patch.Url
+          description: The patch URL of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.TagCount
+          description: The total number of tags associated with host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Tag.ID
+          description: The tag identifier of the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Tag.Name
+          description: The tag name of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Tag.Category
+          description: The tag category of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Tag.Description
+          description: The tag description of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Tag.Created
+          description: The time when the tag was created.
+          type: String
+        - contextPath: RiskSense.HostFinding.Tag.Updated
+          description: The time when the tag was last updated.
+          type: String
+        - contextPath: RiskSense.HostFinding.Tag.Color
+          description: The color of the tag.
+          type: String
+        - contextPath: RiskSense.HostFinding.TagAssetCount
+          description: The total number of tag assets.
+          type: Number
+        - contextPath: RiskSense.HostFinding.TagAsset.ID
+          description: The ID of the tag asset.
+          type: Number
+        - contextPath: RiskSense.HostFinding.TagAsset.Name
+          description: The name of the tag asset.
+          type: String
+        - contextPath: RiskSense.HostFinding.TagAsset.Category
+          description: The category of the tag asset.
+          type: String
+        - contextPath: RiskSense.HostFinding.TagAsset.Description
+          description: The description of the tag asset.
+          type: String
+        - contextPath: RiskSense.HostFinding.TagAsset.Created
+          description: The time and date when the tag asset was created.
+          type: String
+        - contextPath: RiskSense.HostFinding.TagAsset.Updated
+          description: The time when the tag asset was last updated.
+          type: String
+        - contextPath: RiskSense.HostFinding.TagAsset.Color
+          description: The color name of the tag asset.
+          type: String
+        - contextPath: RiskSense.HostFinding.Output
+          description: The output of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Severity
+          description: The severity of the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.SeverityDetail.Combined
+          description: The combined name of the severity detail for the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.SeverityDetail.Overridden
+          description: The overridden name of the severity detail for the host finding.
+          type: boolean
+        - contextPath: RiskSense.HostFinding.SeverityDetail.Scanner
+          description: The scanner of severity detail for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.SeverityDetail.CvssV2
+          description: The CVSS v2 value of severity detail for the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.SeverityDetail.CvssV3
+          description: The CVSS v3 value of severity detail for the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.SeverityDetail.Aggregated
+          description: The aggregated value of the severity detail for the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.SeverityDetail.State
+          description: The state of the severity detail for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.SeverityDetail.StateName
+          description: The state name of the severity detail for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.SeverityDetail.ExpirationDate
+          description: The time when the severity detail expired.
+          type: String
+        - contextPath: RiskSense.HostFinding.RiskRating
+          description: The risk rate of the host finding.
+          type: Number
+        - contextPath: RiskSense.HostFinding.Xrs3Impact
+          description: The impact of xrs3 for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.Xrs3ImpactOnCategory
+          description: The category impact of xrs3 for the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.LastFoundOn
+          description: The latest time when the particular host finding was found.
+          type: String
+        - contextPath: RiskSense.HostFinding.DiscoveredOn
+          description: The time when the host finding was discovered.
+          type: String
+        - contextPath: RiskSense.HostFinding.ResolvedOn
+          description: The time when the host finding was resolved.
+          type: String
+        - contextPath: RiskSense.HostFinding.ScannerName
+          description: The name of the scanner of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.FindingType
+          description: The finding type of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.MachineID
+          description: The machine ID of the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.StatusEmbedded.State
+          description: The current state of the embedded status associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.StatusEmbedded.StateName
+          description: The state name of the embedded status associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.StatusEmbedded.StateDescription
+          description: The state description of the embedded status associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.StatusEmbedded.Status
+          description: The status of the embedded status associated with the host finding.
+          type: boolean
+        - contextPath: RiskSense.HostFinding.StatusEmbedded.DurationInDays
+          description: The time duration (in days) of the embedded status associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.StatusEmbedded.DueDate
+          description: The due date of embedded status associated with the host finding.
+          type: String
+        - contextPath: RiskSense.HostFinding.StatusEmbedded.ExpirationDate
+          description: The time when status is expired associated with the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.ManualFindingReportCount
           description: The total number of manual finding reports associated with the host finding.
@@ -954,7 +1572,7 @@ script:
           description: Number of notes found.
           type: Number
         - contextPath: RiskSense.HostFinding.Note.Date
-          description: The time when note is added by the user for the host finding.
+          description: The time when the note was added by the user for the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.Note.Note
           description: The notes that are added by the user for the host finding.
@@ -963,7 +1581,7 @@ script:
           description: The User ID of the user who added a note for the host finding.
           type: Number
         - contextPath: RiskSense.HostFinding.Note.UserName
-          description: The Username of the user who added a note for the host finding.
+          description: The username of the user who added a note for the host finding.
           type: String
         - contextPath: RiskSense.HostFinding.Assignment.ID
           description: The unique ID of the assignment associated with the host finding.
@@ -1005,11 +1623,11 @@ script:
           description: Common Vulnerabilities and Exposures ID.
           type: String
         - contextPath: CVE.Description
-          description: Description about CVE.
+          description: Description about the CVE.
           type: String
         - contextPath: CVE.CVSS
-          description: The CVSS represents Severity(informational, low, medium, high,
-            critical) of risk.
+          description: The CVSS represents the severity of the risk (informational, low, medium, high,
+            critical).
           type: String
         - contextPath: RiskSense.HostFinding.Ticket.TicketNumber
           description: The number of the ticket associated with the host finding.
@@ -1029,60 +1647,11 @@ script:
         - contextPath: RiskSense.HostFinding.Ticket.DetailedStatus
           description: The detailed status of the ticket associated with the host finding.
           type: String
-    - name: risksense-get-apps
+    - name: risksense-get-app-detail
       arguments:
-        - name: fieldname
-          auto: PREDEFINED
-          predefined:
-            - Name
-            - Network
-            - Address
-          description: The RiskSense application attribute that should be considered for filtering the results. The available choices are 'Name', 'Network' and 'Address'. Apart from the available choices one can provide the attributes supported by RiskSense API. Refer the API /application/filter API to get the list of supported attributes. The uid of filter attributes must be provided here. e.g. assessment_labels, asset_tags, cvss3BaseI, etc. If specified, 'value' argument is mandatory.
-        - name: operator
-          auto: PREDEFINED
-          predefined:
-            - EXACT
-            - IN
-            - LIKE
-            - BETWEEN
-          description: The match operator that should be applied for filtering the hosts based on 'fieldname' and 'value'. Available options are 'EXACT' - filter records exactly matching the criteria; 'IN' - filter records matching any one of the comma-separated values; 'LIKE' - filter records with value matching the the specified pattern. All the records fieldname value contains the string provided in value; 'BETWEEN' - filter the records with fieldname value falling in the numerical/date range provided. This argument also accepts other operator values supported by the RiskSense API. Refer the API documentation for the list of supported operators.
-        - name: value
-          description: The value of the apps property mentioned in 'fieldname' to be considered for filter criteria.
-        - name: exclusive_operator
-          auto: PREDEFINED
-          predefined:
-            - 'true'
-            - 'false'
-          description: The exclusive operator flag that determines whether the returned records matches filter criteria or not. By default set to False.
-        - name: page
-          default: true
-          description: The index of the page. The index is a numeric value and starting with 0.
-          defaultValue: 0
-        - name: size
-          default: true
-          description: The maximum number of records to be fetched in one page.
-          defaultValue: 10
-        - name: sort_by
-          auto: PREDEFINED
-          predefined:
-            - Address
-            - Name
-            - Network
-            - Total Findings
-            - Critical Findings
-            - Info Findings
-            - Low Findings
-            - Medium Findings
-            - High Findings
-          description: The fieldname that should be considered for sorting the returned records.
-          defaultValue: Name
-        - name: sort_order
-          auto: PREDEFINED
-          predefined:
-            - ASC
-            - DESC
-          description: The sorting order to be considerd for retunred records.
-          defaultValue: ASC
+        - name: application_id
+          required: true
+          description: The application ID is unique for the application. Application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.ID) or in human-readable output of 'risksense-get-apps' command.
       outputs:
         - contextPath: RiskSense.Application.ID
           description: The unique ID within the tool retrieving the application.
@@ -1111,7 +1680,7 @@ script:
           description: The host ID of the application.
           type: Number
         - contextPath: RiskSense.Application.Uri
-          description: The reference uri of the application.
+          description: The reference URI of the application.
           type: String
         - contextPath: RiskSense.Application.Name
           description: The name of the application.
@@ -1123,31 +1692,31 @@ script:
           description: The total number of notes found in the application.
           type: Number
         - contextPath: RiskSense.Application.DiscoveredOn
-          description: The time when application is discovered.
+          description: The time when the application was discovered.
           type: String
         - contextPath: RiskSense.Application.LastFoundOn
           description: The time when the application was last found.
           type: String
         - contextPath: RiskSense.Application.Total
-          description: The total numbers of open findings of the application.
+          description: The total number of open findings of the application.
           type: Number
         - contextPath: RiskSense.Application.Critical
-          description: The number of open findings of application with critical severity.
+          description: The number of open findings of the application with critical severity.
           type: Number
         - contextPath: RiskSense.Application.High
-          description: The number of open findings of application with high severity.
+          description: The number of open findings of the application with high severity.
           type: Number
         - contextPath: RiskSense.Application.Medium
-          description: The number of open findings of application with medium severity.
+          description: The number of open findings of the application with medium severity.
           type: Number
         - contextPath: RiskSense.Application.Low
-          description: The number of open findings of application with low severity.
+          description: The number of open findings of the application with low severity.
           type: Number
         - contextPath: RiskSense.Application.Info
-          description: The number of open findings of application with info severity.
+          description: The number of open findings of the application with info severity.
           type: Number
         - contextPath: RiskSense.Application.Icon.Type
-          description: The type of icon of the application.
+          description: The icon type of the application.
           type: String
         - contextPath: RiskSense.Application.Icon.OverlayText
           description: The overlay text of the icon of the application.
@@ -1156,7 +1725,7 @@ script:
           description: The total number of tags of the application.
           type: Number
         - contextPath: RiskSense.Application.UrlCount
-          description: The total number of urls of the application.
+          description: The total number of URLs of the application.
           type: Number
         - contextPath: RiskSense.Application.Href
           description: The deeplink pointing to the application details on RiskSense.
@@ -1235,13 +1804,13 @@ script:
           description: The user ID of the user who added a note for the application.
           type: String
         - contextPath: RiskSense.Application.Note.UserName
-          description: The user name of the user who added a note for the application.
+          description: The username of the user who added a note for the application.
           type: String
         - contextPath: RiskSense.Application.Note.Note
           description: The notes that are added by the user for the application.
           type: String
         - contextPath: RiskSense.Application.Note.Date
-          description: The time when the note is added by the user for the application.
+          description: The time when the note was added by the user for the application.
           type: String
         - contextPath: RiskSense.Application.Tag.ID
           description: The ID of the tag.
@@ -1270,576 +1839,7 @@ script:
         - contextPath: Ticket.State
           description: The state of the ticket associated with the application.
           type: String
-      description: Look up the application details. The application details can be searched based on input parameters like fieldname (Name, Network, Address), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by and sort order.
-    - name: risksense-get-host-finding-detail
-      description: This command is used to lookup single host finding details in depth. Command accepts host finding id as an argument.
-      arguments:
-        - name: hostfinding_id
-          description: The unique host finding ID. HostFindingId is either known by RiskSense users or it can be found in human-readable output or context data(RiskSense.HostFinding.ID) after executing 'risksense-get-host-findings' command.
-          required: true
-      outputs:
-        - contextPath: RiskSense.HostFinding.ID
-          description: The unique ID of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Source
-          description: Host discovered by the scanner.
-          type: String
-        - contextPath: RiskSense.HostFinding.SourceID
-          description: Scanner ID of discovered scanner.
-          type: String
-        - contextPath: RiskSense.HostFinding.Title
-          description: The title of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Port
-          description: The port number of the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.GroupCount
-          description: The total number of groups for host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Group.ID
-          description: The unique ID of the group associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Group.Name
-          description: The name of the group associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.HostID
-          description: The unique ID of the host associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.HostName
-          description: The Hostname of the host associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.HostIpAddress
-          description: The IP Address of the host associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Host.Criticality
-          description: The criticality of the host associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Host.External
-          description: To identify if the host is external or internal.
-          type: boolean
-        - contextPath: RiskSense.HostFinding.Host.Port.ID
-          description: The unique ID of the Host(s) Port associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Host.Port.Number
-          description: The port number of the host associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Host.Rs3
-          description: The Asset Security Score calculated by the RiskSense platform (includes vulnerability risk on related web applications).
-          type: Number
-        - contextPath: RiskSense.HostFinding.Network.ID
-          description: The network ID of the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Network.Name
-          description: The name of the network used by the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Network.Type
-          description: The type of the network used by the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Assessment.ID
-          description: The assessment ID of the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Assessment.Name
-          description: The name of the assessment associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Assessment.Date
-          description: The time when the assessment is created.
-          type: String
-        - contextPath: RiskSense.HostFinding.Vulnerability.Cve
-          description: The name of the Common Vulnerabilities and Exposures associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Vulnerability.BaseScore
-          description: CVE Score.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Vulnerability.ThreatCount
-          description: The total number of threats associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Vulnerability.AttackVector
-          description: Vector information in which it has been attacked.
-          type: String
-        - contextPath: RiskSense.HostFinding.Vulnerability.AccessComplexity
-          description: Complexity Level.
-          type: String
-        - contextPath: RiskSense.HostFinding.Vulnerability.Authentication
-          description: Authentication value represents attackers authorization to get network access.
-          type: String
-        - contextPath: RiskSense.HostFinding.Vulnerability.ConfidentialityImpact
-          description: Confidentiality impact measures the potential impact on confidentiality of a successfully exploited misuse vulnerability.
-          type: String
-        - contextPath: RiskSense.HostFinding.Vulnerability.Integrity
-          description: Integrity refers to the trustworthiness and veracity of information.
-          type: String
-        - contextPath: RiskSense.HostFinding.Vulnerability.AvailabilityImpact
-          description: Availability refers to accessibility of network resources.
-          type: String
-        - contextPath: RiskSense.HostFinding.Vulnerability.Trending
-          description: This signifies whether the vulnerability (which is associated with the hostFinding) has been reported by our internal functions as being trending.
-          type: boolean
-        - contextPath: RiskSense.HostFinding.Vulnerability.VulnLastTrendingOn
-          description: Date when last trending found.
-          type: String
-        - contextPath: RiskSense.HostFinding.ThreatCount
-          description: The total number of threats.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Threat.Title
-          description: The title of threat.
-          type: String
-        - contextPath: RiskSense.HostFinding.Threat.Category
-          description: The category of threat.
-          type: String
-        - contextPath: RiskSense.HostFinding.Threat.Severity
-          description: The severity level of threat.
-          type: String
-        - contextPath: RiskSense.HostFinding.Threat.Description
-          description: The threat description.
-          type: String
-        - contextPath: RiskSense.HostFinding.Threat.Cve
-          description: The Common Vulnerabilities and Exposures name of the threat.
-        - contextPath: RiskSense.HostFinding.Threat.Source
-          description: The source of the threat.
-          type: String
-        - contextPath: RiskSense.HostFinding.Threat.Published
-          description: The time when threat was published.
-          type: String
-        - contextPath: RiskSense.HostFinding.Threat.Updated
-          description: The time when the threat was last updated.
-          type: String
-        - contextPath: RiskSense.HostFinding.Threat.ThreatLastTrendingOn
-          description: The last time when threat was in trending.
-          type: String
-        - contextPath: RiskSense.HostFinding.Threat.Trending
-          description: To check wheter threat is trending or not.
-          type: boolean
-        - contextPath: RiskSense.HostFinding.Patch.Name
-          description: The patch name of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Patch.Url
-          description: The patch url of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.TagCount
-          description: The total number of tags associated with host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Tag.ID
-          description: The Tag identifier of the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Tag.Name
-          description: The tag name of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Tag.Category
-          description: The tag category of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Tag.Description
-          description: The tag description of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Tag.Created
-          description: The time when the tag is created.
-          type: String
-        - contextPath: RiskSense.HostFinding.Tag.Updated
-          description: The time when the tag is last updated.
-          type: String
-        - contextPath: RiskSense.HostFinding.Tag.Color
-          description: The color of the tag.
-          type: String
-        - contextPath: RiskSense.HostFinding.TagAssetCount
-          description: The total number of tag assets.
-          type: Number
-        - contextPath: RiskSense.HostFinding.TagAsset.ID
-          description: The ID of the tag asset.
-          type: Number
-        - contextPath: RiskSense.HostFinding.TagAsset.Name
-          description: The name of the tag asset.
-          type: String
-        - contextPath: RiskSense.HostFinding.TagAsset.Category
-          description: The cateogry of the tag asset.
-          type: String
-        - contextPath: RiskSense.HostFinding.TagAsset.Description
-          description: The description of the tag asset.
-          type: String
-        - contextPath: RiskSense.HostFinding.TagAsset.Created
-          description: The time Date when tag asset created.
-          type: String
-        - contextPath: RiskSense.HostFinding.TagAsset.Updated
-          description: The time when tag asset was last updated.
-          type: String
-        - contextPath: RiskSense.HostFinding.TagAsset.Color
-          description: The color name of the tag asset.
-          type: String
-        - contextPath: RiskSense.HostFinding.Output
-          description: The output of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Severity
-          description: The severity of the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.SeverityDetail.Combined
-          description: The combined name of severity detail for the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.SeverityDetail.Overridden
-          description: The overridden name of severity detail for the host finding.
-          type: boolean
-        - contextPath: RiskSense.HostFinding.SeverityDetail.Scanner
-          description: The scanner of severity detail for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.SeverityDetail.CvssV2
-          description: The cvssv2 value of severity detail for the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.SeverityDetail.CvssV3
-          description: The cvssv3 value of severity detail for the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.SeverityDetail.Aggregated
-          description: The aggregated value of severity detail for the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.SeverityDetail.State
-          description: The state of severity detail for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.SeverityDetail.StateName
-          description: The state name of severity detail for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.SeverityDetail.ExpirationDate
-          description: The time when severity detail was expired.
-          type: String
-        - contextPath: RiskSense.HostFinding.RiskRating
-          description: The risk rate of the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Xrs3Impact
-          description: The impact of xrs3 for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Xrs3ImpactOnCategory
-          description: The category impact of xrs3 for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.LastFoundOn
-          description: The latest time when the particular host finding is found.
-          type: String
-        - contextPath: RiskSense.HostFinding.DiscoveredOn
-          description: The time when hostfinding was discovered.
-          type: String
-        - contextPath: RiskSense.HostFinding.ResolvedOn
-          description: The time when the host finding was resolved.
-          type: String
-        - contextPath: RiskSense.HostFinding.ScannerName
-          description: The name of the scanner of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.FindingType
-          description: The finding type of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.MachineID
-          description: The machine ID of the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.StatusEmbedded.State
-          description: The current state of embedded status associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.StatusEmbedded.StateName
-          description: The state name of embedded status associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.StatusEmbedded.StateDescription
-          description: The state description of embedded status associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.StatusEmbedded.Status
-          description: The staus of embedded status associated with the host finding.
-          type: boolean
-        - contextPath: RiskSense.HostFinding.StatusEmbedded.DurationInDays
-          description: The time duration (In days) of embedded status associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.StatusEmbedded.DueDate
-          description: The due date of embedded status associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.StatusEmbedded.ExpirationDate
-          description: The time when status is expired associated with the host findin..
-          type: String
-        - contextPath: RiskSense.HostFinding.ManualFindingReportCount
-          description: The total number of manual finding reports associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.ID
-          description: The ID of manual finding reports associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.Title
-          description: The title of manual finding reports associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.Label
-          description: The label of manual finding reports associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.Pii
-          description: The pii number of manual finding reports associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.Source
-          description: The source of manual finding reports associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.IsManualExploit
-          description: To check whether manual finding report is exploit or not.
-          type: boolean
-        - contextPath: RiskSense.HostFinding.ManualFindingReport.EaseOfExploit
-          description: The total number of manual finding reports associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.NoteCount
-          description: Number of notes found.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Note.Date
-          description: The time when the note is added by the user for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Note.Note
-          description: The notes that are added by the user for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Note.UserID
-          description: The User ID of the user who added a note for the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Note.UserName
-          description: The Username of the user who added a note for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Assignment.ID
-          description: The unique ID of the assignment associated with the host finding.
-          type: Number
-        - contextPath: RiskSense.HostFinding.Assignment.FirstName
-          description: The first name of the assigned user for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Assignment.LastName
-          description: The last name of the assigned user for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Assignment.ReceiveEmails
-          description: Indicates whether email is received or not.
-          type: boolean
-        - contextPath: RiskSense.HostFinding.Assignment.Email
-          description: The email of the assigned user for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Assignment.Username
-          description: The username of the assigned user for the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Services
-          description: The name of the services for the host finding.
-          type: String
-        - contextPath: Ticket.ID
-          description: The ID of the ticket associated with the host finding.
-          type: String
-        - contextPath: Ticket.State
-          description: The state of the ticket associated with the host finding.
-          type: String
-        - contextPath: Host.Hostname
-          description: The hostname of the host.
-          type: String
-        - contextPath: Host.ID
-          description: The unique ID within the tool retrieving the host.
-          type: String
-        - contextPath: Host.IP
-          description: The IP address of the host.
-          type: String
-        - contextPath: CVE.ID
-          description: Common Vulnerabilities and Exposures ID.
-          type: String
-        - contextPath: CVE.Description
-          description: Description about CVE.
-          type: String
-        - contextPath: CVE.CVSS
-          description: The CVSS represents Severity(informational, low, medium, high,
-            critical) of risk.
-          type: String
-        - contextPath: RiskSense.HostFinding.Ticket.TicketNumber
-          description: The number of the ticket associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Ticket.TicketStatus
-          description: The status of the ticket associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Ticket.DeepLink
-          description: The deeplink associated with the ticket associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Ticket.Type
-          description: The type of the ticket associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Ticket.ConnectorName
-          description: The connector name of the ticket associated with the host finding.
-          type: String
-        - contextPath: RiskSense.HostFinding.Ticket.DetailedStatus
-          description: The detailed status of the ticket associated with the host finding.
-          type: String
-    - name: risksense-get-app-detail
-      arguments:
-        - name: application_id
-          required: true
-          description: The application ID is unique for the application. Application ID is either known by RiskSense users or it can be searched in context output (RiskSense.Application.ID) or in human-readable output of 'risksense-get-apps' command.
-      outputs:
-        - contextPath: RiskSense.Application.ID
-          description: The unique ID within the tool retrieving the application.
-          type: Number
-        - contextPath: RiskSense.Application.GroupID
-          description: The group ID of the application.
-          type: Number
-        - contextPath: RiskSense.Application.GroupName
-          description: The group name of the application.
-          type: String
-        - contextPath: RiskSense.Application.Groups
-          description: The list of groups.
-        - contextPath: RiskSense.Application.Network.ID
-          description: The network ID of the application.
-          type: Number
-        - contextPath: RiskSense.Application.Network.Name
-          description: The network name of the application.
-          type: String
-        - contextPath: RiskSense.Application.Network.Type
-          description: The network type of the application.
-          type: String
-        - contextPath: RiskSense.Application.ClientID
-          description: The client ID of the application.
-          type: Number
-        - contextPath: RiskSense.Application.HostID
-          description: The host ID of the application.
-          type: Number
-        - contextPath: RiskSense.Application.Uri
-          description: The reference uri of the application.
-          type: String
-        - contextPath: RiskSense.Application.Name
-          description: The name of the application.
-          type: String
-        - contextPath: RiskSense.Application.Description
-          description: The detailed description of the application.
-          type: String
-        - contextPath: RiskSense.Application.NoteCount
-          description: The total number of notes found in the application.
-          type: Number
-        - contextPath: RiskSense.Application.DiscoveredOn
-          description: The time when application is discovered.
-          type: String
-        - contextPath: RiskSense.Application.LastFoundOn
-          description: The time when the application was last found.
-          type: String
-        - contextPath: RiskSense.Application.Total
-          description: The total numbers of open findings of the application.
-          type: Number
-        - contextPath: RiskSense.Application.Critical
-          description: The number of open findings of application with critical severity.
-          type: Number
-        - contextPath: RiskSense.Application.High
-          description: The number of open findings of application with high severity.
-          type: Number
-        - contextPath: RiskSense.Application.Medium
-          description: The number of open findings of application with medium severity.
-          type: Number
-        - contextPath: RiskSense.Application.Low
-          description: The number of open findings of application with low severity.
-          type: Number
-        - contextPath: RiskSense.Application.Info
-          description: The number of open findings of application with info severity.
-          type: Number
-        - contextPath: RiskSense.Application.Icon.Type
-          description: The type of icon of the application.
-          type: String
-        - contextPath: RiskSense.Application.Icon.OverlayText
-          description: The overlay text of the icon of the application.
-          type: String
-        - contextPath: RiskSense.Application.TagCount
-          description: The total number of tags of the application.
-          type: Number
-        - contextPath: RiskSense.Application.UrlCount
-          description: The total number of urls of the application.
-          type: Number
-        - contextPath: RiskSense.Application.Href
-          description: The deeplink pointing to the application details on RiskSense.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.ManufacturedBy
-          description: The name of the manufacturer in configuration management DB (CMDB) from application details.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.Model
-          description: The CMDB model name of the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.MacAddress
-          description: The CMDB MAC Address of the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.Location
-          description: The CMDB location of the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.ManagedBy
-          description: The CMDB entity name that managed the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.OwnedBy
-          description: The CMDB entity name that owned the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.SupportedBy
-          description: The CMDB entity name that supported the application
-          type: String
-        - contextPath: RiskSense.Application.CMDB.SupportGroup
-          description: The CMDB supporting group of the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.SysID
-          description: The CMDB system ID of the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.OperatingSystem
-          description: The CMDB Operating system of the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.LastScanDate
-          description: The CMDB last scan date of the application.
-          type: String
-        - contextPath: RiskSense.Application.CMDB.FerpaComplianceAsset
-          description: The Family Educational Rights and Privacy Act.
-          type: Boolean
-        - contextPath: RiskSense.Application.CMDB.HipaaComplianceAsset
-          description: Health Insurance Portability and Accountability Act
-          type: Boolean
-        - contextPath: RiskSense.Application.CMDB.PciComplianceAsset
-          description: The Payment Card Industry (PCI) Council continues to make changes to ensure that their
-            standards are up to date with emerging threats and changes in the market.
-          type: String
-        - contextPath: RiskSense.Application.Ticket.TicketNumber
-          description: The number of the ticket associated with the application.
-          type: String
-        - contextPath: RiskSense.Application.Ticket.TicketStatus
-          description: The status of the ticket associated with the application.
-          type: String
-        - contextPath: RiskSense.Application.Ticket.Type
-          description: The type of the ticket associated with the application.
-          type: String
-        - contextPath: RiskSense.Application.Ticket.ConnectorName
-          description: The connector name of the ticket associated with the application.
-          type: String
-        - contextPath: RiskSense.Application.Ticket.DetailedStatus
-          description: The detailed status of ticket associated with the application.
-          type: String
-        - contextPath: RiskSense.Application.Ticket.DeepLink
-          description: The deeplink associated with the ticket associated with the application.
-          type: String
-        - contextPath: RiskSense.Application.Source.Name
-          description: The name of the source associated with the application.
-          type: String
-        - contextPath: RiskSense.Application.Source.UuID
-          description: The unique ID of the source associated with the application.
-          type: String
-        - contextPath: RiskSense.Application.Source.ScannerType
-          description: The type of scanner of the source associated with the application..
-          type: String
-        - contextPath: RiskSense.Application.Note.UserID
-          description: The user ID of the user who added a note for the application.
-          type: String
-        - contextPath: RiskSense.Application.Note.UserName
-          description: The user name of the user who added a note for the application.
-          type: String
-        - contextPath: RiskSense.Application.Note.Note
-          description: The notes that are added by the user for the application.
-          type: String
-        - contextPath: RiskSense.Application.Note.Date
-          description: The time when note is added by the user for the application.
-          type: String
-        - contextPath: RiskSense.Application.Tag.ID
-          description: The ID of the tag.
-          type: Number
-        - contextPath: RiskSense.Application.Tag.Name
-          description: The name of the tag.
-          type: String
-        - contextPath: RiskSense.Application.Tag.Category
-          description: The category of the tag.
-          type: String
-        - contextPath: RiskSense.Application.Tag.Description
-          description: The description of the tag.
-          type: String
-        - contextPath: RiskSense.Application.Tag.Created
-          description: The time when the tag was created.
-          type: String
-        - contextPath: RiskSense.Application.Tag.Updated
-          description: The time when the tag was last updated.
-          type: String
-        - contextPath: RiskSense.Application.Tag.Color
-          description: The color code of the tag of the application.
-          type: String
-        - contextPath: Ticket.ID
-          description: The ID of the ticket associated with the application.
-          type: String
-        - contextPath: Ticket.State
-          description: The state of the ticket associated with the application.
-          type: String
-      description: This command is used to lookup single application details in depth. Command accepts application id as an argument.
+      description: Gets in-depth details of a single application. The command accepts an application ID as an argument.
   dockerimage: demisto/python3:3.8.1.6442
   isfetch: false
   longRunning: false
