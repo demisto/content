@@ -1,4 +1,4 @@
-TAXII Feed integration is a TAXII client that is built to ingest indicators from TAXII feeds. The integration will fetch new indicators after they are published.
+TAXII Feed integration is a TAXII client that ingests indicators from TAXII feeds. The integration will fetch new indicators after they are published.
 
 # Connect the TAXII Feed Integration to a TAXII Server
 To connect the TAXII Feed integration to a TAXII server you'll need to configure the following parameters.
