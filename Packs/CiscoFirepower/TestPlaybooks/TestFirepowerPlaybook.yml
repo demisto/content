@@ -1,8 +1,8 @@
-id: TestFirepowerPlaybook
+id: Cisco Firepower - Test
 version: -1
 contentitemfields:
   propagationLabels: []
-name: TestFirePowerPlaybook
+name: Cisco Firepower - Test
 starttaskid: "0"
 tasks:
   "0":

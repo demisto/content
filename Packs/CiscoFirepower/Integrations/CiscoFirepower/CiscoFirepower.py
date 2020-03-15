@@ -31,7 +31,6 @@ class Client(BaseClient):
         self._base_url += f'/api/fmc_config/v1/domain/{new_headers.get("DOMAIN_UUID")}/'
         if self._headers['X-auth-access-token'] == '':
             return_error('No valid access token')
-        return
 
     def get_list(self, limit: int, offset: int, object_path: str) -> Dict:
         params = {'expanded': 'true', 'limit': limit, 'offset': offset}
@@ -440,7 +439,7 @@ def raw_response_to_context_access_policy(items: Union[Dict, List]) -> Union[Dic
     }
 
 
-def raw_response_to_context_ruls(items: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]:
     """Receives raw response and returns Context entry to ruls command
 
     :type items: ``list`` or ``dict``
@@ -450,7 +449,7 @@ def raw_response_to_context_ruls(items: Union[Dict, List]) -> Union[Dict, List]:
     :rtype: context entry`
     """
     if isinstance(items, list):
-        return [raw_response_to_context_ruls(item) for item in items]
+        return [raw_response_to_context_rules(item) for item in items]
     return {
         'ID': items.get('id'),
         'Name': items.get('name'),
@@ -646,7 +645,7 @@ def get_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     object_id = args.get('object_id', '')
 
     raw_response = client.get_network_objects(limit, offset, object_id)
-    items = raw_response.get('items')
+    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List network objects:'
         if 'id' in raw_response:
@@ -670,7 +669,7 @@ def get_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
     object_id = args.get('object_id', '')
 
     raw_response = client.get_hosts_objects(limit, offset, object_id)
-    items = raw_response.get('items')
+    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List host objects:'
         if 'id' in raw_response:
@@ -689,9 +688,9 @@ def get_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
 
 
 def create_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    name = args.get('name')
-    value = args.get('value')
-    description = args.get('description', '')
+    name: str = args.get('name')    # type:ignore
+    value: str = args.get('value')    # type:ignore
+    description: str = args.get('description', '')    # type:ignore
     overridable = args.get('overridable', '')
     raw_response = client.create_network_objects(name, value, description, overridable)
     title = f'{INTEGRATION_NAME} - network object has been created.'
@@ -706,9 +705,9 @@ def create_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
 
 
 def create_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    name = args.get('name')
-    value = args.get('value')
-    description = args.get('description', '')
+    name: str = args.get('name')    # type:ignore
+    value: str = args.get('value')    # type:ignore
+    description: str = args.get('description', '')    # type:ignore
     overridable = args.get('overridable', '')
     raw_response = client.create_host_objects(name, value, description, overridable)
     title = f'{INTEGRATION_NAME} - host object has been created.'
@@ -723,10 +722,10 @@ def create_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 
 
 def update_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    object_id = args.get('id')
-    name = args.get('name')
-    value = args.get('value')
-    description = args.get('description', '')
+    object_id: str = args.get('id')    # type:ignore
+    name: str = args.get('name')    # type:ignore
+    value: str = args.get('value')    # type:ignore
+    description: str = args.get('description', '')    # type:ignore
     overridable = args.get('overridable', '')
     raw_response = client.update_network_objects(name, value, description, overridable, object_id)
     title = f'{INTEGRATION_NAME} - network object has been updated.'
@@ -742,10 +741,10 @@ def update_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
 
 
 def update_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    object_id = args.get('id')
-    name = args.get('name')
-    value = args.get('value')
-    description = args.get('description', '')
+    object_id: str = args.get('id')    # type:ignore
+    name: str = args.get('name')    # type:ignore
+    value: str = args.get('value')    # type:ignore
+    description: str = args.get('description', '')    # type:ignore
     overridable = args.get('overridable', '')
     raw_response = client.update_host_objects(name, value, description, overridable, object_id)
     title = f'{INTEGRATION_NAME} - host object has been updated.'
@@ -761,7 +760,7 @@ def update_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 
 
 def delete_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    object_id = args.get('id')
+    object_id: str = args.get('id')    # type:ignore
     raw_response = client.delete_network_objects(object_id)
     title = f'{INTEGRATION_NAME} - network object has been deleted.'
     list_to_output = ['id', 'name', 'value', 'overridable', 'description']
@@ -775,7 +774,7 @@ def delete_network_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
 
 
 def delete_host_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    object_id = args.get('id')
+    object_id: str = args.get('id')    # type:ignore
     raw_response = client.delete_host_objects(object_id)
     title = f'{INTEGRATION_NAME} - host object has been deleted.'
     list_to_output = ['id', 'name', 'value', 'overridable', 'description']
@@ -793,7 +792,7 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
     raw_response = client.get_network_groups_objects(limit, offset, object_id)
-    items = raw_response.get('items')
+    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List of network groups object:'
         if 'id' in raw_response:
@@ -812,7 +811,7 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
 
 
 def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    name = args.get('name')
+    name: str = args.get('name')    # type:ignore
     ids = args.get('network_objects_id_list', '')
     values = args.get('network_address_list', '')
     description = args.get('description', '')
@@ -834,8 +833,8 @@ def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
 
 
 def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    group_id = args.get('id')
-    name = args.get('name')
+    group_id: str = args.get('id')   # type:ignore
+    name: str = args.get('name')    # type:ignore
     ids = args.get('network_objects_id_list', '')
     values = args.get('network_address_list', '')
     description = args.get('description', '')
@@ -875,7 +874,7 @@ def get_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
     raw_response = client.get_access_policy(limit, offset, policy_id)
-    items = raw_response.get('items')
+    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
     if items or 'id' in raw_response:
         title = f'{INTEGRATION_NAME} - List access policy:'
         if 'id' in raw_response:
@@ -893,8 +892,8 @@ def get_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 
 
 def create_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    name = args.get('name')
-    action = args.get('action')
+    name: str = args.get('name')    # type:ignore
+    action: str = args.get('action')    # type:ignore
     raw_response = client.create_access_policy(name, action)
     title = f'{INTEGRATION_NAME} - access policy has been created.'
     context_entry = raw_response_to_context_access_policy(raw_response)
@@ -907,10 +906,10 @@ def create_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
 
 
 def update_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    name = args.get('name')
-    policy_id = args.get('id')
-    action = args.get('action')
-    action_id = args.get('default_action_id')
+    name: str = args.get('name')    # type:ignore
+    policy_id: str = args.get('id')    # type:ignore
+    action: str = args.get('action')    # type:ignore
+    action_id: str = args.get('default_action_id')    # type:ignore
 
     raw_response = client.update_access_policy(name, policy_id, action, action_id)
     title = f'{INTEGRATION_NAME} - access policy has been updated.'
@@ -924,7 +923,7 @@ def update_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict,
 
 
 def delete_access_policy_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    policy_id = args.get('id')
+    policy_id: str = args.get('id')    # type:ignore
     raw_response = client.delete_access_policy(policy_id)
     title = f'{INTEGRATION_NAME} - access policy deleted.'
     context_entry = raw_response_to_context_access_policy(raw_response)
@@ -1078,7 +1077,7 @@ def list_applications_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 def get_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    policy_id = args.get('policy_id')
+    policy_id: str = args.get('policy_id')    # type:ignore
     rule_id = args.get('rule_id', '')
     raw_response = client.get_access_rules(limit, offset, policy_id, rule_id)
     items = raw_response.get('items')
@@ -1138,7 +1137,7 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
                                               policy_id,
                                               action)
     title = f'{INTEGRATION_NAME} - the new access rule:'
-    context_entry = raw_response_to_context_ruls(raw_response)
+    context_entry = raw_response_to_context_rules(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
@@ -1151,7 +1150,7 @@ def create_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
 
 
 def update_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    update_strategy = args.get('update_strategy')
+    update_strategy: str = args.get('update_strategy')     # type:ignore
     source_zone_object_ids = args.get('source_zone_object_ids', '')
     destination_zone_object_ids = args.get('destination_zone_object_ids', '')
     vlan_tag_object_ids = args.get('vlan_tag_object_ids', '')
@@ -1169,7 +1168,7 @@ def update_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     name = args.get('rule_name', '')
     policy_id = args.get('policy_id', '')
     action = args.get('action', '')
-    rule_id = args.get('rule_id')
+    rule_id: str = args.get('rule_id')    # type:ignore
 
     raw_response = client.update_access_rules(update_strategy,
                                               source_zone_object_ids,
@@ -1191,7 +1190,7 @@ def update_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
                                               action,
                                               rule_id)
     title = f'{INTEGRATION_NAME} - access rule:'
-    context_entry = raw_response_to_context_ruls(raw_response)
+    context_entry = raw_response_to_context_rules(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
@@ -1208,7 +1207,7 @@ def delete_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     rule_id = args.get('rule_id')
     raw_response = client.delete_access_rules(policy_id, rule_id)
     title = f'{INTEGRATION_NAME} - deleted access rule:'
-    context_entry = raw_response_to_context_ruls(raw_response)
+    context_entry = raw_response_to_context_rules(raw_response)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
@@ -1240,9 +1239,9 @@ def list_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Di
 
 
 def create_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    device_ids = args.get('device_ids')
-    device_group_ids = args.get('device_group_ids')
-    policy_id = args.get('policy_id')
+    device_ids: str = args.get('device_ids')    # type:ignore
+    device_group_ids: str = args.get('device_group_ids')    # type:ignore
+    policy_id: str = args.get('policy_id')    # type:ignore
     raw_response = client.create_policy_assignments(policy_id, device_ids, device_group_ids)
     title = f'{INTEGRATION_NAME} - Policy assignments has been done.'
     context_entry = raw_response_to_context_policy_assignment(raw_response)
@@ -1256,9 +1255,9 @@ def create_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
 
 
 def update_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    device_ids = args.get('device_ids')
-    device_group_ids = args.get('device_group_ids')
-    policy_id = args.get('policy_id')
+    device_ids: str = args.get('device_ids')    # type:ignore
+    device_group_ids: str = args.get('device_group_ids')    # type:ignore
+    policy_id: str = args.get('policy_id')    # type:ignore
     raw_response = client.update_policy_assignments(policy_id, device_ids, device_group_ids)
     title = f'{INTEGRATION_NAME} - policy update has been done.'
     context_entry = raw_response_to_context_policy_assignment(raw_response)
@@ -1347,7 +1346,7 @@ def deploy_to_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 
 
 def get_task_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    task_id = args.get('task_id')
+    task_id: str = args.get('task_id')    # type:ignore
     raw_response = client.get_task_status(task_id)
     if 'status' in raw_response:
         context_entry = {
@@ -1375,10 +1374,11 @@ def main():  # pragma: no cover
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     client = Client(base_url=base_url, verify=verify_ssl, proxy=proxy, auth=(username, password))
-
+    command = demisto.command()
     client.login()
 
-    LOG('command is %s' % (demisto.command(),))
+    LOG(f'Command being called is {command}')
+
     try:
         if demisto.command() == 'test-module':
             return_outputs('ok')

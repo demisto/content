@@ -108,7 +108,7 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_POLICY_ASSIGNMENT = [
                 {
                     "id": "43e032dc-07c5-11ea-b83d-d5fdc079bf65",
                     "keepLocalEvents": 'false',
-                    "name": "FTD_CircleCI builds are failing on Setup Instance - I’m investigating this209",
+                    "name": "FTD_10.8.49.209",
                     "type": "Device"
                 }
             ],

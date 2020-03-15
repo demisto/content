@@ -28,7 +28,7 @@
         },
         {
             "integrations": "Cisco Firepower",
-            "playbookID": "TestFirepowerPlaybook",
+            "playbookID": "Cisco Firepower - Test",
             "timeout": 1000
         },
         {
