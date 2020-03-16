@@ -13,18 +13,20 @@ client = Client("https://www.threathq.com", ("username", "password"))
 
 class TestFetchIndicators:
     process_items_params = [
-        (threats[0], "http://example.com/mal.exe", FeedIndicatorType.URL, 4),
-        ({}, "", "", 0),
+        (threats[0], "http://example.com/mal.exe", FeedIndicatorType.URL, 0, 5),
+        (threats[0], "example.com", FeedIndicatorType.Domain, 3, 5),
+        (threats[0], "*example.com", FeedIndicatorType.DomainGlob, 4, 5),
+        ({}, "", "", 0, 0),
     ]
 
-    @pytest.mark.parametrize("threat, value, _type, length", process_items_params)
-    def test_process_item(self, threat, value, _type, length):
+    @pytest.mark.parametrize("threat, value, _type, indicator_index, length", process_items_params)
+    def test_process_item(self, threat, value, _type, indicator_index, length):
         ans = client.process_item(threat)
         if length:
-            first_obj = ans[0]
-            assert length == len(ans)
-            assert value == first_obj["value"]
-            assert _type == first_obj["type"]
+            first_obj = ans[indicator_index]
+            assert len(ans) == length
+            assert first_obj["value"] == value
+            assert first_obj["type"] == _type
         else:
             assert not ans
 
@@ -37,6 +39,7 @@ class TestFetchIndicators:
                 "5.5.5.111",
                 "https://example.com/raw/malp",
                 "example.com",
+                "*example.com",
                 "user@example.com",
             ],
             [
@@ -44,6 +47,7 @@ class TestFetchIndicators:
                 FeedIndicatorType.IP,
                 FeedIndicatorType.URL,
                 FeedIndicatorType.Domain,
+                FeedIndicatorType.DomainGlob,
                 FeedIndicatorType.Email,
             ],
             None,
