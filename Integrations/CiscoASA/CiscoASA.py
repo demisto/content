@@ -181,6 +181,15 @@ class Client(BaseClient):
         except Exception:
             raise ValueError("This network object already exists.")
 
+    def list_interfaces(self):
+        interfaces = []
+        for type in ['global', 'in', 'out']:
+            resp = self._http_request('GET', f'/api/access/{type}')
+            interfaces.extend(resp.get('items', []))
+        return interfaces
+
+
+
 
 
 '''HELPER COMMANDS'''
@@ -232,9 +241,9 @@ def raw_to_rules(raw_rules):
             dest_services_list = [v['value'] for v in dest_services]
         else:
             dest_services_list = dest_services.get('value')
-        rules.append({"SourceIP": rule.get('sourceAddress', {}).get('value'),
+        rules.append({"Source": rule.get('sourceAddress', {}).get('value'),
                       "SourceService": source_services_list,
-                      "DestIP": rule.get('destinationAddress', {}).get('value'),
+                      "Dest": rule.get('destinationAddress', {}).get('value'),
                       "DestService": dest_services_list,
                       "IsActive": rule.get('active'),
                       "Interface": rule.get("interface"),
@@ -244,10 +253,10 @@ def raw_to_rules(raw_rules):
                       "ID": rule.get('objectId'),
                       'Permit': rule.get('permit')
                       })
-        if not rules[-1].get('SourceIP'):
-            rules[-1]['SourceIP'] = rule.get('sourceAddress', {}).get('objectId')
-        if not rules[-1].get('DestIP'):
-            rules[-1]['DestIP'] = rule.get('destinationAddress', {}).get('objectId')
+        if not rules[-1].get('Source'):
+            rules[-1]['Source'] = rule.get('sourceAddress', {}).get('objectId')
+        if not rules[-1].get('Dest'):
+            rules[-1]['Dest'] = rule.get('destinationAddress', {}).get('objectId')
 
     return rules
 
@@ -272,7 +281,7 @@ def list_rules_command(client: Client, args):
         raw_rules = client.get_all_rules(interface, interface_type)  # demisto.getRules() #
         rules = raw_to_rules(raw_rules)
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
-        hr = tableToMarkdown("Rules:", rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface", "InterfaceType",
+        hr = tableToMarkdown("Rules:", rules, ["ID", "Source", "Dest", "Permit", "Interface", "InterfaceType",
                                                "IsActive", "Position", "SourceService", "destService"])
         return hr, outputs, raw_rules
 
@@ -331,7 +340,7 @@ def rule_by_id_command(client: Client, args):
     rules = raw_to_rules([raw_rules])
 
     outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
-    hr = tableToMarkdown("Rule {}:".format(rule_id), rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface",
+    hr = tableToMarkdown("Rule {}:".format(rule_id), rules, ["ID", "Source", "Dest", "Permit", "Interface",
                                                              "InterfaceType", "IsActive", "Position", "SourceService",
                                                              "destService"])
     return hr, outputs, raw_rules
@@ -383,7 +392,7 @@ def create_rule_command(client: Client, args):
 
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown("Created new rule. ID: {}".format(raw_rule.get('objectId'),),
-                             rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface", "InterfaceType", "IsActive",
+                             rules, ["ID", "Source", "Dest", "Permit", "Interface", "InterfaceType", "IsActive",
                                      "Position", "SourceService", "destService"])
         return hr, outputs, raw_rule
     except Exception as e:
@@ -476,7 +485,7 @@ def edit_rule_command(client: Client, args):
 
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown(f"Edited rule {raw_rule.get('objectId')}",
-                             rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface", "InterfaceType", "IsActive",
+                             rules, ["ID", "Source", "Dest", "Permit", "Interface", "InterfaceType", "IsActive",
                                      "Position", "SourceService", "destService"])
         return hr, outputs, raw_rule
     except Exception as e:
@@ -504,7 +513,7 @@ def list_objects_command(client: Client, args: dict):
     hr = tableToMarkdown("Network Objects", formated_objects, headers=['ID', 'Name', 'Host', 'Description'])
     return hr, ec, json.dumps(formated_objects)
 
-
+@logger
 def create_object_command(client: Client, args: dict):
     obj_type = args.get('object_type')
     obj_name = args.get('object_name')
@@ -513,6 +522,21 @@ def create_object_command(client: Client, args: dict):
         raise ValueError("Please enter an object type from the given dropdown list.")
     client.create_object(obj_name, obj_type, obj_value)
     return list_objects_command(client, {'object_name': obj_name})
+
+
+@logger
+def list_interfaces_command(client: Client, args: dict):
+    raw_interfaces = client.list_interfaces()
+    interface_list = []
+    for interface in raw_interfaces:
+
+        temp_interface = {'Type': interface.get('direction', '').capitalize(),
+                          'ID': interface.get('interface', {}).get('objectId', '-1'),
+                          'Name': interface.get('interface', {}).get('name')}
+        interface_list.append(temp_interface)
+    ec = {'CiscoASA.Interface(val.ID == obj.ID)': interface_list}
+    hr = tableToMarkdown('Interfaces', interface_list, ['Type', 'ID', 'Name'])
+    return hr, ec, hr
 
 
 @logger
@@ -549,7 +573,8 @@ def main():
         f'{INTEGRATION_COMMAND}-delete-rule': delete_rule_command,
         f'{INTEGRATION_COMMAND}-edit-rule': edit_rule_command,
         f'{INTEGRATION_COMMAND}-list-network-objects': list_objects_command,
-        f'{INTEGRATION_COMMAND}-create-network-object': create_object_command
+        f'{INTEGRATION_COMMAND}-create-network-object': create_object_command,
+        f'{INTEGRATION_COMMAND}-list-interfaces': list_interfaces_command
     }
 
     LOG(f'Command being called is {demisto.command()}')

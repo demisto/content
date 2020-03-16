@@ -25,7 +25,9 @@ configuration:
   name: isASAv
   required: false
   type: 8
-description: Manage Cisco ASA
+description: Cisco Adaptive Security Appliance Software is the core operating system
+  for the Cisco ASA Family. It delivers enterprise-class firewall capabilities for
+  ASA devices
 display: Cisco ASA
 name: Cisco ASA
 script:
@@ -53,11 +55,11 @@ script:
     execution: false
     name: cisco-asa-list-rules
     outputs:
-    - contextPath: CiscoASA.Rules.SourceIP
-      description: The rule's source IP.
+    - contextPath: CiscoASA.Rules.Source
+      description: The rule's source.
       type: String
-    - contextPath: CiscoASA.Rules.DestIP
-      description: The rule's destination IP.
+    - contextPath: CiscoASA.Rules.Dest
+      description: The rule's destination.
       type: String
     - contextPath: CiscoASA.Rules.InterfaceType
       description: The Interface's type. Could be In/Out/Global
@@ -135,11 +137,11 @@ script:
     - contextPath: CiscoASA.Rules.Interface
       description: The name of the interface.
       type: String
-    - contextPath: CiscoASA.Rules.SourceIP
-      description: The rule's source IP.
+    - contextPath: CiscoASA.Rules.Source
+      description: The rule's source.
       type: String
-    - contextPath: CiscoASA.Rules.DestIP
-      description: The rule's destination IP.
+    - contextPath: CiscoASA.Rules.Dest
+      description: The rule's destination.
       type: String
     - contextPath: CiscoASA.Rules.InterfaceType
       description: The Interface's type. Could be In/Out/Global
@@ -257,11 +259,11 @@ script:
     execution: false
     name: cisco-asa-create-rule
     outputs:
-    - contextPath: CiscoASA.Rules.SourceIP
-      description: The rule's source IP.
+    - contextPath: CiscoASA.Rules.Source
+      description: The rule's source.
       type: String
-    - contextPath: CiscoASA.Rules.DestIP
-      description: The rule's destination IP.
+    - contextPath: CiscoASA.Rules.Dest
+      description: The rule's destination.
       type: String
     - contextPath: CiscoASA.Rules.InterfaceType
       description: The Interface's type. Could be In/Out/Global
@@ -405,11 +407,11 @@ script:
     execution: false
     name: cisco-asa-edit-rule
     outputs:
-    - contextPath: CiscoASA.Rules.SourceIP
-      description: The rule's source IP.
+    - contextPath: CiscoASA.Rules.Source
+      description: The rule's source.
       type: String
-    - contextPath: CiscoASA.Rules.DestIP
-      description: The rule's destination IP.
+    - contextPath: CiscoASA.Rules.Dest
+      description: The rule's destination.
       type: String
     - contextPath: CiscoASA.Rules.InterfaceType
       description: The Interface's type. Could be In/Out/Global
@@ -507,6 +509,20 @@ script:
       type: String
     - contextPath: CiscoASA.NetworkObject.Name
       description: The name of the network object.
+      type: String
+  - deprecated: false
+    description: List all interfaces.
+    execution: false
+    name: cisco-asa-list-interfaces
+    outputs:
+    - contextPath: CiscoASA.Interface.ID
+      description: The interface ID
+      type: String
+    - contextPath: CiscoASA.Interface.Name
+      description: The inteface name.
+      type: String
+    - contextPath: CiscoASA.Interface.Type
+      description: The type of interface.
       type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
