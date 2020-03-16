@@ -1,7 +1,7 @@
  {
    "id": "incidentPerFeed",
-   "name": "DailyTotalSales",
+   "name": "Incident Per Feed",
    "dataType": "scripts",
    "widgetType": "table",
-   "query": "GetIncidentsPerFeed"
+   "query": "ThreatIntelligenceManagementGetIncidentsPerFeed"
 }
