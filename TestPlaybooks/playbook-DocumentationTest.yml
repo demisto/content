@@ -55,7 +55,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/Integrations/integration-Ipinfo.yml
+        simple: https://github.com/demisto/content/raw/master/Packs/ipinfo/Integrations/integration-Ipinfo.yml
       username: {}
     separatecontext: false
     view: |-
