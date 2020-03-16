@@ -5,6 +5,8 @@ commonfields:
 enabled: false
 name: ThreatIntelligenceManagementGetIncidentsPerFeed
 script: '-'
+tags:
+- Threat Intelligence Management
 subtype: python3
 system: false
 timeout: '0'
