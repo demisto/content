@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- You can now supply a comma-separated list for the *value* argument in the ***qradar-update-reference-set-value*** command.
 
 ## [20.2.3] - 2020-02-18
  - Added **Full Incident Enrichment** instance parameter. Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.
