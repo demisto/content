@@ -583,6 +583,9 @@ def describe_vpcs_command(args):
 
     response = client.describe_vpcs(**kwargs)
 
+    if len(response['Vpcs'] == 0):
+        demisto.results('No VPCs were found.')
+
     for i, vpc in enumerate(response['Vpcs']):
         data.append({
             'CidrBlock': vpc['CidrBlock'],
