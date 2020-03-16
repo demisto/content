@@ -669,12 +669,12 @@ def main():
             print_error("Error: some release notes are missing. See previous errors.")
             sys.exit(1)
     except RuntimeError:
-        print_error('Failed to get latest release tag. This may happen if your branch is not updated with origin '
-                    'master. Please merge from origin master and try again.\nIf you\'re not on a fork please run '
-                    '"git merge origin/master".\nIf you are on a fork, then please set https://github.com/demisto'
-                    '/content to be your upstream by running "git remote add upstream https://github.com/demisto/'
-                    'content". After setting the upstream, run "git fetch upstream", and then run "git merge upst'
-                    'ream/master". Doing these steps will update your branch with the content master as a base.')
+        print_error('Failed to get latest release release SHA1. This may happen if your branch is not updated with '
+                    'origin master. Please merge from origin master and try again.\nIf you\'re not on a fork run "git '
+                    'merge origin/master".\nIf you are on a fork, first set https://github.com/demisto/content to be '
+                    'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
+                    'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
+                    'these steps will merge your branch with content master as a base.')
 
 
 if __name__ == "__main__":
