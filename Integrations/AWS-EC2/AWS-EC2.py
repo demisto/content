@@ -585,6 +585,7 @@ def describe_vpcs_command(args):
 
     if len(response['Vpcs'] == 0):
         demisto.results('No VPCs were found.')
+        return
 
     for i, vpc in enumerate(response['Vpcs']):
         data.append({
