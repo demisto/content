@@ -1,19 +1,18 @@
+elasticcommonfields: {}
 id: HybridAnalysis-Test
 version: -1
-fromversion: 4.1.0
 name: HybridAnalysis-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c45eff83-a350-403b-8d0e-8a344a8dc2a8
+    taskid: d606ef20-50ec-4abb-8b3d-6bb18d99be11
     type: start
     task:
-      id: c45eff83-a350-403b-8d0e-8a344a8dc2a8
+      elasticcommonfields: {}
+      id: d606ef20-50ec-4abb-8b3d-6bb18d99be11
       version: -1
-      name: ""
       iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "1"
@@ -28,19 +27,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 1c9fdb96-9d08-4365-8275-9ba69b85ce38
+    taskid: fa9162b3-a339-49ef-8595-02d9a2716bd5
     type: regular
     task:
-      id: 1c9fdb96-9d08-4365-8275-9ba69b85ce38
+      elasticcommonfields: {}
+      id: fa9162b3-a339-49ef-8595-02d9a2716bd5
       version: -1
       name: DeleteContext
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "13"
@@ -62,34 +63,39 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 06892eb4-931d-4b51-8766-66b8d66755f0
+    taskid: d90b8e20-4ded-4fca-89d9-d5eaeac5cd7e
     type: title
     task:
-      id: 06892eb4-931d-4b51-8766-66b8d66755f0
+      elasticcommonfields: {}
+      id: d90b8e20-4ded-4fca-89d9-d5eaeac5cd7e
       version: -1
       name: Done
       type: title
       iscommand: false
-      brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 3520
+          "y": 3650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 22353fd6-157e-44a5-8925-3d2657fdbed3
+    taskid: 7cf52681-eb08-4102-8763-659edbfbde12
     type: regular
     task:
-      id: 22353fd6-157e-44a5-8925-3d2657fdbed3
+      elasticcommonfields: {}
+      id: 7cf52681-eb08-4102-8763-659edbfbde12
       version: -1
       name: hybrid-analysis-scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
@@ -97,7 +103,6 @@ tasks:
       script: '|||hybrid-analysis-scan'
       type: regular
       iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -118,17 +123,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: d312ccca-53d6-4ee0-8093-7985677e9b05
+    taskid: 7b56557d-47e9-4081-8f68-8917da1abecf
     type: condition
     task:
-      id: d312ccca-53d6-4ee0-8093-7985677e9b05
+      elasticcommonfields: {}
+      id: 7b56557d-47e9-4081-8f68-8917da1abecf
       version: -1
       name: verify-scan
       type: condition
       iscommand: false
-      brand: ""
     nexttasks:
       '#default#':
       - "16"
@@ -177,19 +184,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: ecfcc69e-7125-4fd7-8003-9dd134c9ebd9
+    taskid: c863d143-c3da-4c7d-8900-dd05da4681e9
     type: regular
     task:
-      id: ecfcc69e-7125-4fd7-8003-9dd134c9ebd9
+      elasticcommonfields: {}
+      id: c863d143-c3da-4c7d-8900-dd05da4681e9
       version: -1
       name: hybrid-analysis-submit-url
       description: Submit a website's url or url with file for analysis
       script: '|||hybrid-analysis-submit-url'
       type: regular
       iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -209,12 +218,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 6d662d7a-2989-47b3-8311-94a7eacdc2fc
+    taskid: f00a5dec-ea12-4291-8f2d-a76c715c2a72
     type: regular
     task:
-      id: 6d662d7a-2989-47b3-8311-94a7eacdc2fc
+      elasticcommonfields: {}
+      id: f00a5dec-ea12-4291-8f2d-a76c715c2a72
       version: -1
       name: verify submission through scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
@@ -222,7 +234,6 @@ tasks:
       script: '|||hybrid-analysis-scan'
       type: regular
       iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -241,20 +252,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 102af89a-3418-46cd-8797-2383ada3e367
+    taskid: 51d12cfc-c43e-4792-888c-58a73d3f9ea9
     type: condition
     task:
-      id: 102af89a-3418-46cd-8797-2383ada3e367
+      elasticcommonfields: {}
+      id: 51d12cfc-c43e-4792-888c-58a73d3f9ea9
       version: -1
       name: verify submission scan
       type: condition
       iscommand: false
-      brand: ""
     nexttasks:
+      '#default#':
+      - "31"
       "yes":
-      - "4"
+      - "30"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -274,19 +289,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 684fcd62-9477-4600-8f43-d745cc18a33a
+    taskid: 433115bb-7de2-455f-8cbe-ef9bef4272aa
     type: regular
     task:
-      id: 684fcd62-9477-4600-8f43-d745cc18a33a
+      elasticcommonfields: {}
+      id: 433115bb-7de2-455f-8cbe-ef9bef4272aa
       version: -1
       name: hybrid-analysis-search
       description: Search the database using the Hybrid Analysis search syntax
       script: '|||hybrid-analysis-search'
       type: regular
       iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -323,17 +340,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 27856955-b7e6-42ff-8591-81168fbff524
+    taskid: f8a43f67-55ca-4736-8a6f-e2fea72607f4
     type: condition
     task:
-      id: 27856955-b7e6-42ff-8591-81168fbff524
+      elasticcommonfields: {}
+      id: f8a43f67-55ca-4736-8a6f-e2fea72607f4
       version: -1
       name: verify-search
       type: condition
       iscommand: false
-      brand: ""
     nexttasks:
       '#default#':
       - "17"
@@ -369,19 +388,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 2848ab03-7bf5-4c66-8733-faca98a8fb22
+    taskid: 922504e5-932a-4ba7-8380-8327ce0536bd
     type: regular
     task:
-      id: 2848ab03-7bf5-4c66-8733-faca98a8fb22
+      elasticcommonfields: {}
+      id: 922504e5-932a-4ba7-8380-8327ce0536bd
       version: -1
       name: Create sample file
       description: Sends http request. Returns the response as json.
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -411,12 +432,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: 15a5dbcc-990c-48ec-8f51-884dd69727c7
+    taskid: d720caae-031f-4acc-82ce-1d2d916f43a5
     type: regular
     task:
-      id: 15a5dbcc-990c-48ec-8f51-884dd69727c7
+      elasticcommonfields: {}
+      id: d720caae-031f-4acc-82ce-1d2d916f43a5
       version: -1
       name: hybrid-analysis-submit-sample
       description: Submit a file from investigation to analysis server  (NOTE - minimum
@@ -424,7 +448,6 @@ tasks:
       script: '|||hybrid-analysis-submit-sample'
       type: regular
       iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -446,17 +469,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 43a39dc0-3b5d-42b5-81b1-f829894f7ece
+    taskid: f504b2ac-934d-4129-87b1-0f8199c8d476
     type: condition
     task:
-      id: 43a39dc0-3b5d-42b5-81b1-f829894f7ece
+      elasticcommonfields: {}
+      id: f504b2ac-934d-4129-87b1-0f8199c8d476
       version: -1
       name: verify-submission
       type: condition
       iscommand: false
-      brand: ""
     nexttasks:
       "yes":
       - "23"
@@ -482,12 +507,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 0d1c46e7-5f59-4a37-845f-dd4b2945e25d
+    taskid: 440d9563-140b-4335-8669-20793881938d
     type: regular
     task:
-      id: 0d1c46e7-5f59-4a37-845f-dd4b2945e25d
+      elasticcommonfields: {}
+      id: 440d9563-140b-4335-8669-20793881938d
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -509,19 +537,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: 1ed5622a-bd0d-4eb0-863c-fee5f3bed91f
+    taskid: 5ce213f4-a869-4a05-831e-d42a317e1ad6
     type: regular
     task:
-      id: 1ed5622a-bd0d-4eb0-863c-fee5f3bed91f
+      elasticcommonfields: {}
+      id: 5ce213f4-a869-4a05-831e-d42a317e1ad6
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
     scriptarguments:
       message:
         simple: search failed
@@ -536,17 +566,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: 654d6588-73b1-4533-8d1e-9c9ad9dd02ae
+    taskid: 43175e8f-9d19-43ac-8ba0-dfad84eb11c4
     type: condition
     task:
-      id: 654d6588-73b1-4533-8d1e-9c9ad9dd02ae
+      elasticcommonfields: {}
+      id: 43175e8f-9d19-43ac-8ba0-dfad84eb11c4
       version: -1
       name: verify quick-scan results
       type: condition
       iscommand: false
-      brand: ""
     nexttasks:
       '#default#':
       - "19"
@@ -581,19 +613,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: 6d15070a-7694-42ed-85d9-00c1c03a38ce
+    taskid: 718c07e6-b558-4e43-85c2-06805f420bfa
     type: regular
     task:
-      id: 6d15070a-7694-42ed-85d9-00c1c03a38ce
+      elasticcommonfields: {}
+      id: 718c07e6-b558-4e43-85c2-06805f420bfa
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
     scriptarguments:
       message:
         simple: quick-scan failed
@@ -608,18 +642,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: c22379d0-04fd-4fd8-89f9-c5dbd1811dc5
+    taskid: d0e3f96d-9860-4503-81a4-5a48ed3ad0f8
     type: playbook
     task:
-      id: c22379d0-04fd-4fd8-89f9-c5dbd1811dc5
+      elasticcommonfields: {}
+      id: d0e3f96d-9860-4503-81a4-5a48ed3ad0f8
       version: -1
       name: Hybrid-analysis quick-scan
       playbookName: Hybrid-analysis quick-scan
       type: playbook
       iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "18"
@@ -635,6 +671,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -645,19 +682,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 9a4d86e6-a105-4513-86a6-d8d795af8c2a
+    taskid: dd1d0b4e-db9f-4b0a-868d-6969747dec3d
     type: regular
     task:
-      id: 9a4d86e6-a105-4513-86a6-d8d795af8c2a
+      elasticcommonfields: {}
+      id: dd1d0b4e-db9f-4b0a-868d-6969747dec3d
       version: -1
       name: hybrid-analysis-detonate-file
       description: Submits a file for detonation in Hybrid Analysis.
       script: '|||hybrid-analysis-detonate-file'
       type: regular
       iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "27"
@@ -682,19 +721,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: 007376d6-1d84-40f8-8a87-943ee93ca878
+    taskid: 101c0527-079d-43c9-848a-e17f8c6a7ff1
     type: regular
     task:
-      id: 007376d6-1d84-40f8-8a87-943ee93ca878
+      elasticcommonfields: {}
+      id: 101c0527-079d-43c9-848a-e17f8c6a7ff1
       version: -1
       name: hybrid-analysis-get-report-status
       description: Returns the state of the file submission.
       script: '|||hybrid-analysis-get-report-status'
       type: regular
       iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "26"
@@ -720,17 +761,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 7d626e46-f1fa-4753-8c6b-711a1dfe20af
+    taskid: 0a19f82e-d094-4532-8c2c-9305b37d25f8
     type: condition
     task:
-      id: 7d626e46-f1fa-4753-8c6b-711a1dfe20af
+      elasticcommonfields: {}
+      id: 0a19f82e-d094-4532-8c2c-9305b37d25f8
       version: -1
       name: verify-report-status
       type: condition
       iscommand: false
-      brand: ""
     nexttasks:
       "yes":
       - "28"
@@ -758,17 +801,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: e490cac7-cfda-4d66-8872-110505f17f73
+    taskid: a7ece4b2-2094-40c9-8197-3f39fbca0f8f
     type: condition
     task:
-      id: e490cac7-cfda-4d66-8872-110505f17f73
+      elasticcommonfields: {}
+      id: a7ece4b2-2094-40c9-8197-3f39fbca0f8f
       version: -1
       name: verify-detonate-file
       type: condition
       iscommand: false
-      brand: ""
     nexttasks:
       "yes":
       - "25"
@@ -815,19 +860,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 25891236-db3c-485b-845b-052ca68c95b4
+    taskid: e019f4f9-7292-4e69-82de-475de9e9b419
     type: regular
     task:
-      id: 25891236-db3c-485b-845b-052ca68c95b4
+      elasticcommonfields: {}
+      id: e019f4f9-7292-4e69-82de-475de9e9b419
       version: -1
       name: DeleteContext
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "29"
@@ -849,19 +896,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 469d72eb-a475-4dab-87cd-ef302bee9219
+    taskid: 458f3272-4456-45bf-890e-1eb0b8615773
     type: regular
     task:
-      id: 469d72eb-a475-4dab-87cd-ef302bee9219
+      elasticcommonfields: {}
+      id: 458f3272-4456-45bf-890e-1eb0b8615773
       version: -1
       name: Create sample file
       description: Sends http request. Returns the response as json.
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -891,6 +940,73 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: c4133e9f-165f-4714-8a93-17c0960cdc05
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: c4133e9f-165f-4714-8a93-17c0960cdc05
+      version: -1
+      name: quick-scan-url with key=valye url
+      description: Submits the URL of a website, or the URL that contains the file,
+        for analysis.
+      script: '|||hybrid-analysis-quick-scan-url'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      scan_type:
+        simple: all
+      url:
+        simple: https://www.google.com/search?q=test&oq=test&aqs=chrome..69i57j69i59l2j0l2j69i60j69i61l2.1320j0j7&sourceid=chrome&ie=UTF-8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 03af2856-166f-4f3d-8718-c281393f1c38
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 03af2856-166f-4f3d-8718-c281393f1c38
+      version: -1
+      name: hybrid-analysis-submit-url with key=value URL
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: hybrid-analysis-submit-url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -898,7 +1014,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3535,
+        "height": 3665,
         "width": 1025,
         "x": 50,
         "y": 50

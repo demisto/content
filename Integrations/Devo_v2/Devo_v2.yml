@@ -2,7 +2,7 @@ commonfields:
   id: Devo_v2
   version: -1
 name: Devo_v2
-display: Devo_v2
+display: Devo v2
 category: Analytics & SIEM
 description: Use the Devo v2 integration to query Devo for alerts, lookup tables, and to write to lookup tables.
 configuration:
@@ -33,12 +33,10 @@ configuration:
   required: false
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
   type: 13
   required: false
 - display: Fetch incidents alert filter (Same filters for get-alerts)
