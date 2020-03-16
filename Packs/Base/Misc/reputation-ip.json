@@ -111,12 +111,45 @@
             "simple": "",
             "complex": {
                 "root": "IP",
-                "filters": [],
-                "accessor": "Internal",
+                "filters": [
+                    [
+                        {
+                            "operator": "IsInCidrRanges",
+                            "left": {
+                                "value": {
+                                    "simple": "IP.Address",
+                                    "complex": null
+                                },
+                                "isContext": true
+                            },
+                            "right": {
+                                "value": {
+                                    "simple": "192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,127.0.0.0/8,169.254.0.0/16",
+                                    "complex": null
+                                },
+                                "isContext": false
+                            },
+                            "ignoreCase": false
+                        }
+                    ]
+                ],
+                "accessor": "Address",
                 "transformers": [
                     {
                         "operator": "uniq",
                         "args": {}
+                    },
+                    {
+                        "operator": "DT",
+                        "args": {
+                            "dt": {
+                                "value": {
+                                    "simple": ".=Boolean(val)",
+                                    "complex": null
+                                },
+                                "isContext": false
+                            }
+                        }
                     }
                 ]
             }
