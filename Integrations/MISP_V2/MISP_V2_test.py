@@ -1,6 +1,3 @@
-import pytest
-
-
 def mock_misp(mocker):
     from pymisp import ExpandedPyMISP
     mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
