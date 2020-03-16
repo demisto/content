@@ -169,7 +169,7 @@ def parse_events(events):
 
 def is_not_empty_value(value):
     """
-    Checks for empty response values. Demisto recommends returning the None type if a value is empty, 
+    Checks for empty response values. Demisto recommends returning the None type if a value is empty,
     rather than an empty string/list.
     """
     return value != "" and value != [] and value != [""]
