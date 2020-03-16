@@ -1,6 +1,9 @@
+# coding=utf-8
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import pytest_mock
 
 ''' IMPORTS '''
 
@@ -9,6 +12,7 @@ import tempfile
 import contextlib
 import OpenSSL.crypto
 from xml.sax.saxutils import escape
+import re
 
 ''' GLOBALS/PARAMS '''
 
@@ -74,15 +78,26 @@ DST = 1 if time.daylight else 0
 ''' HELPER FUNCTIONS '''
 
 
+def strip_unwanted_chars(s):
+    # try:
+    #     respXML = s.encode('utf-8')
+    # except:
+    #     return_warning("Unable to encode some characters. For complete text view this incident in Symantec."
+    #                    " Unencoded characters are displayed as'?'")
+    #     respXML = s.encode('utf-8', 'replace')
+    return re.sub('&.+[0-9]+.?;', '', s)
+
+
 def api_call(body, headers):
     """ Makes an HTTP Post to the SWS incidents API using the configured certificate """
-    with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
-        res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers)
-        if res.status_code < 200 or res.status_code >= 300:
-            raise Exception(
-                "Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(
-                    res.headers))
-    return xml.etree.ElementTree.fromstring(res.content)
+    # with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
+    res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert='', data=body, headers=headers)
+    if res.status_code < 200 or res.status_code >= 300:
+        raise Exception(
+            "Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(
+                res.headers))
+
+    return xml.etree.ElementTree.fromstring(strip_unwanted_chars(res.content))
 
 
 def event_to_incident(event):
