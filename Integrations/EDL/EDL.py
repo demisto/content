@@ -1,14 +1,16 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from flask import Flask, Response, request
+
+
+import re
+from copy import deepcopy
+from base64 import b64decode
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List, Any, Dict, cast, Tuple
-from base64 import b64decode
-from copy import deepcopy
-import re
+from flask import Flask, Response, request
 from netaddr import IPAddress, iprange_to_cidrs
+from typing import Callable, List, Any, Dict, cast, Tuple
 
 
 class Handler:
@@ -91,23 +93,24 @@ def refresh_edl_context(indicator_query: str, limit: int = 0, collapse_ips: str 
     iocs = find_indicators_to_limit(indicator_query, limit, offset, panos_compatible, url_port_stripping)
     out_dict, actual_indicator_amount = create_values_out_dict(iocs, collapse_ips=collapse_ips)
 
-    while collapse_ips != DONT_COLLAPSE and actual_indicator_amount < limit:
-        # from where to start the new poll and how many results should be fetched
-        new_offset = len(iocs) + offset + actual_indicator_amount - 1
-        new_limit = limit - actual_indicator_amount
+    if collapse_ips != DONT_COLLAPSE:
+        while actual_indicator_amount < limit:
+            # from where to start the new poll and how many results should be fetched
+            new_offset = len(iocs) + offset + actual_indicator_amount - 1
+            new_limit = limit - actual_indicator_amount
 
-        # poll additional indicators into list from demisto
-        new_iocs = find_indicators_to_limit(indicator_query, new_limit, new_offset)
+            # poll additional indicators into list from demisto
+            new_iocs = find_indicators_to_limit(indicator_query, new_limit, new_offset)
 
-        # in case no additional indicators exist - exit
-        if len(new_iocs) == 0:
-            break
+            # in case no additional indicators exist - exit
+            if len(new_iocs) == 0:
+                break
 
-        # add the new results to the existing results
-        iocs += new_iocs
+            # add the new results to the existing results
+            iocs += new_iocs
 
-        # reformat the output
-        out_dict, actual_indicator_amount = create_values_out_dict(iocs, collapse_ips=collapse_ips)
+            # reformat the output
+            out_dict, actual_indicator_amount = create_values_out_dict(iocs, collapse_ips=collapse_ips)
 
     out_dict["last_run"] = date_to_timestamp(now)
     demisto.setIntegrationContext(out_dict)
@@ -123,7 +126,7 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0,
         indicator_query (str): Query that determines which indicators to include in
             the EDL (Cortex XSOAR indicator query syntax)
         limit (int): The maximum number of indicators to include in the EDL
-        offset (int): The stating index from which to fetch incidents
+        offset (int): The starting index from which to fetch incidents
         panos_compatible (bool): Whether to make the indicators PANOS compatible or not
         url_port_stripping (bool): Whether to strip the port from URL indicators (if a port is present) or not
 
@@ -205,23 +208,34 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
 
 
 def ips_to_ranges(ips: list, collapse_ips):
+    """Collapse IPs to Ranges or CIDRs.
+
+    Args:
+        ips (list): a list of IP strings.
+        collapse_ips (str): Whether to collapse to Ranges or CIDRs.
+
+    Returns:
+        list. a list to Ranges or CIDRs.
+    """
     ip_ranges = []
     ips_range_groups = []  # type:List
     ips = sorted(ips)
-    for ip in ips:
-        appended = False
-        if len(ips_range_groups) == 0:
-            ips_range_groups.append([ip])
-            continue
 
-        for group in ips_range_groups:
-            if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
-                group.append(ip)
-                sorted(group)
-                appended = True
+    if len(ips) > 0:
+        ips_range_groups.append([ips[0]])
 
-        if not appended:
-            ips_range_groups.append([ip])
+    if len(ips) > 1:
+        for ip in ips[1:]:
+            appended = False
+
+            for group in ips_range_groups:
+                if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
+                    group.append(ip)
+                    sorted(group)
+                    appended = True
+
+            if not appended:
+                ips_range_groups.append([ip])
 
     for group in ips_range_groups:
         # handle single ips
@@ -236,7 +250,7 @@ def ips_to_ranges(ips: list, collapse_ips):
 
         elif collapse_ips == COLLAPSE_TO_CIDR:
             moved_ip = False
-            # CIDR must begin with and even LSB
+            # CIDR must begin with an even LSB
             # if the first ip does not - separate it from the rest of the range
             if (int(str(min_ip).split('.')[-1]) % 2) != 0:
                 ip_ranges.append(str(min_ip))
