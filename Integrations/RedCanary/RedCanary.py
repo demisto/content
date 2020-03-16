@@ -162,7 +162,7 @@ def get_full_timeline(detection_id, per_page=100):
                            'per_page': per_page,
         })
 
-        if len(res['data']) == 0 or True:
+        if len(res['data']) == 0:
             done = True
 
         activities.extend(res['data'])

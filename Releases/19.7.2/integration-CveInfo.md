@@ -1,1 +1,0 @@
-Fixed bug where UserAgent was not present in request
