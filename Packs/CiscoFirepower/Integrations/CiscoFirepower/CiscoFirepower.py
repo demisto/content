@@ -440,7 +440,7 @@ def raw_response_to_context_access_policy(items: Union[Dict, List]) -> Union[Dic
 
 
 def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]:
-    """Receives raw response and returns Context entry to ruls command
+    """Receives raw response and returns Context entry to rules command
 
     :type items: ``list`` or ``dict``
     :param items:  list of dict or dict of data from http request
@@ -1088,7 +1088,7 @@ def get_access_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
         items = raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any access rule.', {}, {}
-    context_entry = raw_response_to_context_ruls(items)
+    context_entry = raw_response_to_context_rules(items)
     entry_white_list_count = switch_list_to_list_counter(context_entry)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
