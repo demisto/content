@@ -1,7 +1,0 @@
- {
-   "id": "incidentPerFeed",
-   "name": "Incident Per Feed",
-   "dataType": "scripts",
-   "widgetType": "table",
-   "query": "ThreatIntelligenceManagementGetIncidentsPerFeed"
-}
