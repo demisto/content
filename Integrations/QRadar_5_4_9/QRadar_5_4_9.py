@@ -419,7 +419,7 @@ def create_note(offense_id, note_text, fields):
 
 
 # Returns the result of a reference request
-def get_ref_set(ref_name, _range='', _filter='', _fields=''):
+def get_reference_by_name(ref_name, _range='', _filter='', _fields=''):
     url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'filter': _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
@@ -934,7 +934,7 @@ def create_note_command():
 
 
 def get_reference_by_name_command():
-    raw_ref = get_ref_set(demisto.args().get('ref_name'))
+    raw_ref = get_reference_by_name(demisto.args().get('ref_name'))
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     convert_date_elements = True if demisto.args().get('date_value') == 'True' and ref[
         'ElementType'] == 'DATE' else False
@@ -1122,8 +1122,6 @@ try:
         demisto.results(get_domains_command())
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
-    elif demisto.command() == 'qradar-upload-indicators':
-        return_outputs(*upload_indicators_command())
 except Exception as e:
     message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
