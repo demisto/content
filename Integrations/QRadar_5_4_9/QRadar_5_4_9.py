@@ -215,14 +215,18 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
 
     except HTTPError:
         if res is not None:
-            err_json = res.json()
+            try:
+                err_json = res.json()
+            except ValueError:
+                raise Exception('Error code {err}\nContent: {cnt}'.format(err=res.status_code, cnt=res.content))
+
             err_msg = ''
             if 'message' in err_json:
-                err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
+                err_msg += 'Error: {0}.\n'.format(err_json['message'])
             elif 'http_response' in err_json:
-                err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
+                err_msg += 'Error: {0}.\n'.format(err_json['http_response'])
             if 'code' in err_json:
-                err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
+                err_msg += 'QRadar Error Code: {0}'.format(err_json['code'])
 
             raise Exception(err_msg)
         else:
