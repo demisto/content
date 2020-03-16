@@ -187,8 +187,6 @@ def get_ip_context(data):
                 data['locationInformation'][0].get('geolocation', {}).get('latitude'),
                 data['locationInformation'][0].get('geolocation', {}).get('longitude')
             )
-        else:
-            geo["Location"] = None
         geo["Country"] = data['locationInformation'][0].get('geolocation', {}).get('countryCode')
         geo["Description"] = data['locationInformation'][0].get('geolocation', {}).get('city')
     return {
@@ -250,8 +248,6 @@ def get_expanse_ip_context(data):
                 data['locationInformation'][0].get('geolocation', {}).get('latitude'),
                 data['locationInformation'][0].get('geolocation', {}).get('longitude')
             )
-        else:
-            geo["Location"] = None
     c["Geo"] = geo
 
     points_of_contact = ",".join([poc["email"] for poc in data['annotations'].get('pointsOfContact', [])])

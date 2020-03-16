@@ -25,6 +25,12 @@ def http_request_mock(method, endpoint, params=None, token=False):
     return r
 
 
+def http_request_mock_missing(method, endpoint, params=None, token=False):
+    if endpoint == 'ip-range':
+        r = MOCK_IP_EMPTY_RESPONSE
+    return r
+
+
 def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'api_key': TEST_API_KEY,
@@ -58,7 +64,7 @@ def test_ip(mocker):
 def test_ip_missing_values(mocker):
     mocker.patch.object(demisto, 'params', return_value={'api_key': TEST_API_KEY})
     mocker.patch.object(demisto, 'args', return_value={'ip': TEST_IP})
-    mocker.patch('Expanse.http_request', side_effect=lambda: MOCK_IP_EMPTY_RESPONSE)
+    mocker.patch('Expanse.http_request', side_effect=http_request_mock_missing)
     mocker.patch.object(demisto, 'command', return_value='ip')
     mocker.patch.object(demisto, 'results')
     main()
