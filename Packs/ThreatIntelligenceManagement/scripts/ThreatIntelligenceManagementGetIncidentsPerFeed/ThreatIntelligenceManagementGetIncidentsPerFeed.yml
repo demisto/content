@@ -5,10 +5,10 @@ args:
   required: false
   secret: false
 commonfields:
-  id: GetIncidentsPerFeed
+  id: ThreatIntelligenceManagementGetIncidentsPerFeed
   version: -1
 enabled: false
-name: GetIncidentsPerFeed
+name: ThreatIntelligenceManagementGetIncidentsPerFeed
 script: '-'
 subtype: python3
 system: false
