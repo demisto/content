@@ -83,17 +83,29 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix, params=params)
 
-    def get_host_info(self, host_name: Union[None, str], ip_address: Union[None, str]):
-
+    def get_host_info(self, host_name: str, ip_address: str) -> Dict:
+        url_suffix = '/endpoints/v2/0/100/hostname Ascending'
         if host_name:
-            url_suffix = f'/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={{%22searchFields%22: \
-                             [{{%22fieldName%22:%22HostName%22,%22values%22:[{{%22value%22:%22{host_name}%22}}]}}]}}'
+            field_name = 'HostName'
+            value = host_name
 
         elif ip_address:
-            url_suffix = f'/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={{%22searchFields%22: \
-                         [{{%22fieldName%22:%22IpAddress%22,%22values%22:[{{%22value%22:%22{ip_address}%22}}]}}]}}'
+            field_name = 'IpAddress'
+            value = ip_address
 
-        return self._http_request('GET', url_suffix)
+        params = {
+            'accessType': '3',
+            'search': json.dumps({
+                'searchFields': [{
+                    'fieldName': field_name,
+                    'values': [{
+                        'value': value
+                    }]
+                }]
+            })
+        }
+
+        return self._http_request('GET', url_suffix, params=params)
 
     def search_file(self, host=None, md5=None, file_extension=None, file_path=None, file_size=None) -> Dict:
 
@@ -721,8 +733,8 @@ def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
 def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
-    ip_address = args.get('ip_address')
-    host = args.get('host')
+    ip_address = args.get('ip_address', '')
+    host = args.get('host', '')
 
     if not host and not ip_address:
         return f'You must provide either ip_address or host', {}, {}
