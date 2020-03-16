@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed the transformer to properly set the *Internal* field.
 
 ## [20.1.2] - 2020-01-22
 -
