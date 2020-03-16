@@ -179,11 +179,7 @@ def get_ip_context(data):
     """
     provide custom context information about ip address with data from Expanse API
     """
-    geo = {
-        "Location": None,
-        "Country": None,
-        "Description": None,
-    }
+    geo = {}
     if len(data.get('locationInformation', [])) > 0:
         geo["Location"] = "{0}:{1}".format(
             data['locationInformation'][0].get('geolocation', {}).get('latitude', ''),
@@ -234,15 +230,7 @@ def get_expanse_ip_context(data):
     for i in data['attributionReasons']:
         c['IPRange']['AttributionReasons'].append(i['reason'])
 
-    geo = {
-        "Location": None,
-        "Description": None,
-        "Latitude": None,
-        "Longitude": None,
-        "City": None,
-        "RegionCode": None,
-        "CountryCode": None
-    }
+    geo = {}
     if len(data.get("locationInformation", [])) > 0:
         geo = {
             "Location": "{0}:{1}".format(data['locationInformation'][0]['geolocation']['latitude'],
