@@ -158,40 +158,18 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
     return iocs, next_page
 
 
-def ips_to_ranges(ips: list, collapse_ips):
-    """Collapse IPs to Ranges or CIDRs.
+def ip_groups_to_ranges(ip_range_groups: list, collapse_ips: str):
+    """Collapse ip groups list to ranges or CIDRs
 
     Args:
-        ips (list): a list of IP strings.
-        collapse_ips (str): Whether to collapse to Ranges or CIDRs.
+        ip_range_groups (list): a list of lists containing connected IPs
+        collapse_ips (str):  Whether to collapse to Ranges or CIDRs.
 
     Returns:
         list. a list to Ranges or CIDRs.
     """
-    ip_ranges = []
-    ips_range_groups = []  # type:List
-    ips = sorted(ips)
-    if len(ips) > 0:
-        ips_range_groups.append([ips[0]])
-
-    if len(ips) > 1:
-        for ip in ips[1:]:
-            appended = False
-
-            if len(ips_range_groups) == 0:
-                ips_range_groups.append([ip])
-                continue
-
-            for group in ips_range_groups:
-                if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
-                    group.append(ip)
-                    sorted(group)
-                    appended = True
-
-            if not appended:
-                ips_range_groups.append([ip])
-
-    for group in ips_range_groups:
+    ip_ranges = []  # type:List
+    for group in ip_range_groups:
         # handle single ips
         if len(group) == 1:
             ip_ranges.append(str(group[0]))
@@ -227,6 +205,41 @@ def ips_to_ranges(ips: list, collapse_ips):
                 ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
 
     return ip_ranges
+
+
+def ips_to_ranges(ips: list, collapse_ips):
+    """Collapse IPs to Ranges or CIDRs.
+
+    Args:
+        ips (list): a list of IP strings.
+        collapse_ips (str): Whether to collapse to Ranges or CIDRs.
+
+    Returns:
+        list. a list to Ranges or CIDRs.
+    """
+    ips_range_groups = []  # type:List
+    ips = sorted(ips)
+    if len(ips) > 0:
+        ips_range_groups.append([ips[0]])
+
+    if len(ips) > 1:
+        for ip in ips[1:]:
+            appended = False
+
+            if len(ips_range_groups) == 0:
+                ips_range_groups.append([ip])
+                continue
+
+            for group in ips_range_groups:
+                if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
+                    group.append(ip)
+                    sorted(group)
+                    appended = True
+
+            if not appended:
+                ips_range_groups.append([ip])
+
+    return ip_groups_to_ranges(ips_range_groups, collapse_ips)
 
 
 def create_values_out_dict(iocs: list, out_format: str, collapse_ips=DONT_COLLAPSE) -> Tuple[dict, int]:
