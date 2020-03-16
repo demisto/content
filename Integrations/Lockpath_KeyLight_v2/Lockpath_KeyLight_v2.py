@@ -423,7 +423,10 @@ def get_records_command(client: Client, args: dict) -> None:
         title += f' \n### with filter "{filter_type}: {filter_value}" on field "{field_name}"'
     records = []
     for record in res:
-        temp_dict = record.get('Fields')
+        temp_dict = record.get('Fields').copy()
+        for key in temp_dict.keys():
+            if isinstance(temp_dict[key], dict):
+                temp_dict[key] = temp_dict[key].get('Value')
         temp_dict['Id'] = record.get("ID")
         temp_dict['DisplayName'] = record.get('DisplayName')
         records.append(temp_dict)
