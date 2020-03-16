@@ -181,10 +181,14 @@ def get_ip_context(data):
     """
     geo = {}
     if len(data.get('locationInformation', [])) > 0:
-        geo["Location"] = "{0}:{1}".format(
-            data['locationInformation'][0].get('geolocation', {}).get('latitude', ''),
-            data['locationInformation'][0].get('geolocation', {}).get('longitude', '')
-        )
+        if (data['locationInformation'][0].get('geolocation', {}).get('latitude') is not None
+           and data['locationInformation'][0].get('geolocation', {}).get('longitude') is not None):
+            geo["Location"] = "{0}:{1}".format(
+                data['locationInformation'][0].get('geolocation', {}).get('latitude'),
+                data['locationInformation'][0].get('geolocation', {}).get('longitude')
+            )
+        else:
+            geo["Location"] = None
         geo["Country"] = data['locationInformation'][0].get('geolocation', {}).get('countryCode')
         geo["Description"] = data['locationInformation'][0].get('geolocation', {}).get('city')
     return {
@@ -233,8 +237,6 @@ def get_expanse_ip_context(data):
     geo = {}
     if len(data.get("locationInformation", [])) > 0:
         geo = {
-            "Location": "{0}:{1}".format(data['locationInformation'][0]['geolocation']['latitude'],
-                                         data['locationInformation'][0]['geolocation']['longitude']),
             "Description": data['locationInformation'][0]['geolocation']['city'],
             "Latitude": data['locationInformation'][0]['geolocation']['latitude'],
             "Longitude": data['locationInformation'][0]['geolocation']['longitude'],
@@ -242,6 +244,14 @@ def get_expanse_ip_context(data):
             "RegionCode": data['locationInformation'][0]['geolocation']['regionCode'],
             "CountryCode": data['locationInformation'][0]['geolocation']['countryCode']
         }
+        if (data['locationInformation'][0].get('geolocation', {}).get('latitude') is not None
+           and data['locationInformation'][0].get('geolocation', {}).get('longitude') is not None):
+            geo["Location"] = "{0}:{1}".format(
+                data['locationInformation'][0].get('geolocation', {}).get('latitude'),
+                data['locationInformation'][0].get('geolocation', {}).get('longitude')
+            )
+        else:
+            geo["Location"] = None
     c["Geo"] = geo
 
     points_of_contact = ",".join([poc["email"] for poc in data['annotations'].get('pointsOfContact', [])])

@@ -52,6 +52,18 @@ def test_ip(mocker):
     assert results[0]['Contents']['search'] == TEST_IP
     assert results[0]['EntryContext']['DBotScore']['Type'] == 'ip'
     assert results[0]['EntryContext']['IP(val.Address == obj.Address)']['Address'] == TEST_IP
+    assert results[0]['EntryContext']['IP(val.Address == obj.Address)']['Geo']['Location'] == "41.0433:-81.5239"
+
+
+def test_ip_missing_values(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'api_key': TEST_API_KEY})
+    mocker.patch.object(demisto, 'args', return_value={'ip': TEST_IP})
+    mocker.patch('Expanse.http_request', side_effect=lambda: MOCK_IP_EMPTY_RESPONSE)
+    mocker.patch.object(demisto, 'command', return_value='ip')
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    assert results[0]['EntryContext']['IP(val.Address == obj.Address)']['Geo']['Location'] is None
 
 
 def test_domain(mocker):
@@ -282,7 +294,217 @@ MOCK_IP_RESPONSE = {
         "totalCount": 1
     }
 }
-
+MOCK_IP_EMPTY_RESPONSE = {
+    "data": [
+        {
+            "id": "b0f025ab-5e6c-4300-a68e-bd127d97e201",
+            "created": "2019-08-02",
+            "modified": "2019-09-04",
+            "ipVersion": "4",
+            "startAddress": "74.142.119.128",
+            "endAddress": "74.142.119.135",
+            "businessUnits": [
+                {
+                    "id": "6b73ef6c-b230-3797-b321-c4a340169eb7",
+                    "name": "Acme Latex Supply"
+                }
+            ],
+            "annotations": {
+                "tags": [],
+                "additionalNotes": "",
+                "pointsOfContact": []
+            },
+            "severityCounts": [
+                {
+                    "type": "CRITICAL",
+                    "count": 2
+                },
+                {
+                    "type": "ROUTINE",
+                    "count": 2
+                },
+                {
+                    "type": "WARNING",
+                    "count": 4
+                }
+            ],
+            "attributionReasons": [
+                {
+                    "reason": "This parent range is attributed via IP network registration ..."
+                }
+            ],
+            "relatedRegistrationInformation": [
+                {
+                    "handle": "NET-74-142-119-128-1",
+                    "startAddress": "74.142.119.128",
+                    "endAddress": "74.142.119.135",
+                    "ipVersion": "4",
+                    "country": "None",
+                    "name": "NET-74-142-119-128-1",
+                    "parentHandle": "NET-74-142-0-0-1",
+                    "whoisServer": "whois.arin.net",
+                    "updatedDate": "2019-08-02",
+                    "remarks": "",
+                    "registryEntities": [
+                        {
+                            "id": "0165fc31-502d-3a77-8a47-2f2520888a60",
+                            "handle": "CC-3517",
+                            "address": "6399 S. Fiddler's Green Circle\nGreenwood Village\nCO\n80111\nUnited States          ",
+                            "email": "",
+                            "events": [
+                                {
+                                    "action": "last changed",
+                                    "actor": False,
+                                    "date": "2018-11-27T15:23:50-05:00",
+                                    "links": "[]"
+                                },
+                                {
+                                    "action": "registration",
+                                    "actor": False,
+                                    "date": "2018-10-10T11:22:33-04:00",
+                                    "links": "[]"
+                                }
+                            ],
+                            "firstRegistered": False,
+                            "formattedName": "Charter Communications Inc",
+                            "lastChanged": False,
+                            "org": "",
+                            "phone": "",
+                            "remarks": "Legacy Time Warner Cable IP Assets",
+                            "statuses": "",
+                            "relatedEntityHandles": [
+                                "IPADD1-ARIN",
+                                "ABUSE10-ARIN"
+                            ],
+                            "roles": [
+                                "registrant"
+                            ]
+                        },
+                        {
+                            "id": "33c2c1bb-43e0-3a8d-94e6-81f800aa1786",
+                            "handle": "IPADD1-ARIN",
+                            "address": "6399 S Fiddlers Green Circle\nGreenwood Village\nCO\n80111\nUnited States",
+                            "email": "ipaddressing@chartercom.com",
+                            "events": [
+                                {
+                                    "action": "last changed",
+                                    "actor": False,
+                                    "date": "2018-10-10T13:09:53-04:00",
+                                    "links": "[]"
+                                },
+                                {
+                                    "action": "registration",
+                                    "actor": False,
+                                    "date": "2002-09-10T11:10:50-04:00",
+                                    "links": "[]"
+                                }
+                            ],
+                            "firstRegistered": False,
+                            "formattedName": "IPAddressing",
+                            "lastChanged": False,
+                            "org": "IPAddressing",
+                            "phone": "+1-314-288-3111",
+                            "remarks": "IP Addressing is used for corporate IP allocation and administration ...",
+                            "statuses": "validated",
+                            "relatedEntityHandles": [],
+                            "roles": [
+                                "technical",
+                                "administrative"
+                            ]
+                        },
+                        {
+                            "id": "49e585f7-0e2b-30df-acb0-2a4c45f4654f",
+                            "handle": "ABUSE10-ARIN",
+                            "address": "13820 Sunrise Valley Drive\nHerndon\nVA\n20171\nUnited States          ",
+                            "email": "abuse@rr.com",
+                            "events": [
+                                {
+                                    "action": "last changed",
+                                    "actor": False,
+                                    "date": "2016-07-28T13:11:35-04:00",
+                                    "links": "[]"
+                                },
+                                {
+                                    "action": "registration",
+                                    "actor": False,
+                                    "date": "2002-08-25T14:28:44-04:00",
+                                    "links": "[]"
+                                }
+                            ],
+                            "firstRegistered": False,
+                            "formattedName": "Abuse",
+                            "lastChanged": False,
+                            "org": "Abuse",
+                            "phone": "+1-703-345-3416",
+                            "remarks": "ARIN has attempted to validate the data ...",
+                            "statuses": "",
+                            "relatedEntityHandles": [],
+                            "roles": [
+                                "abuse"
+                            ]
+                        },
+                        {
+                            "id": "736dbbcf-977e-301a-8705-c6a9ebff83fe",
+                            "handle": "C07162769",
+                            "address": "2064 KILLIAN RD\nAKRON\nOH\n44312\nUnited States          ",
+                            "email": "",
+                            "events": [
+                                {
+                                    "action": "last changed",
+                                    "actor": False,
+                                    "date": "2018-10-25T21:53:06-04:00",
+                                    "links": "[]"
+                                },
+                                {
+                                    "action": "registration",
+                                    "actor": False,
+                                    "date": "2018-10-25T21:53:06-04:00",
+                                    "links": "[]"
+                                }
+                            ],
+                            "firstRegistered": False,
+                            "formattedName": "KILLIAN LATEX, INC",
+                            "lastChanged": False,
+                            "org": "",
+                            "phone": "",
+                            "remarks": "",
+                            "statuses": "",
+                            "relatedEntityHandles": [
+                                "CC-3517",
+                                "IPADD1-ARIN",
+                                "ABUSE10-ARIN"
+                            ],
+                            "roles": [
+                                "registrant"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "locationInformation": [
+                {
+                    "ip": "74.142.119.130",
+                    "geolocation": {
+                        "city": "AKRON",
+                        "regionCode": "OH",
+                        "countryCode": "US"
+                    }
+                }
+            ],
+            "rangeSize": 8,
+            "responsiveIpCount": 1,
+            "rangeIntroduced": "2019-08-02",
+            "customChildRanges": []
+        }
+    ],
+    "pagination": {
+        "next": False,
+        "prev": False
+    },
+    "meta": {
+        "totalCount": 1
+    }
+}
 MOCK_DOMAIN_RESPONSE = {
     "data": [
         {
