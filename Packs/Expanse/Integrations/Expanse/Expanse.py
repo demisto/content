@@ -168,7 +168,11 @@ def parse_events(events):
 
 
 def is_not_empty_value(value):
-    return value is not None and value != "" and value != [] and value != [""]
+    """
+    Checks for empty response values. Demisto recommends returning the None type if a value is empty, 
+    rather than an empty string/list.
+    """
+    return value != "" and value != [] and value != [""]
 
 
 def get_ip_context(data):
@@ -176,17 +180,17 @@ def get_ip_context(data):
     provide custom context information about ip address with data from Expanse API
     """
     geo = {
-        "Location": "None",
-        "Country": "None",
-        "Description": "None",
+        "Location": None,
+        "Country": None,
+        "Description": None,
     }
     if len(data.get('locationInformation', [])) > 0:
         geo["Location"] = "{0}:{1}".format(
-            data['locationInformation'][0].get('geolocation', {}).get('latitude', "None"),
-            data['locationInformation'][0].get('geolocation', {}).get('longitude', "None")
+            data['locationInformation'][0].get('geolocation', {}).get('latitude'),
+            data['locationInformation'][0].get('geolocation', {}).get('longitude')
         )
-        geo["Country"] = data['locationInformation'][0].get('geolocation', {}).get('countryCode', "None")
-        geo["Description"] = data['locationInformation'][0].get('geolocation', {}).get('city', "None")
+        geo["Country"] = data['locationInformation'][0].get('geolocation', {}).get('countryCode')
+        geo["Description"] = data['locationInformation'][0].get('geolocation', {}).get('city')
     return {
         "Address": data['search'],
         "Geo": geo,
@@ -210,7 +214,7 @@ def get_expanse_ip_context(data):
             "AttributionReasons": []
         },
         "Annotations": {
-            "AdditionalNotes": data['annotations'].get('additionalNotes', "None"),
+            "AdditionalNotes": data['annotations'].get('additionalNotes'),
         },
         "SeverityCounts": {
             "CRITICAL": 0,
@@ -231,13 +235,13 @@ def get_expanse_ip_context(data):
         c['IPRange']['AttributionReasons'].append(i['reason'])
 
     geo = {
-        "Location": "None",
-        "Description": "None",
-        "Latitude": "None",
-        "Longitude": "None",
-        "City": "None",
-        "RegionCode": "None",
-        "CountryCode": "None"
+        "Location": None,
+        "Description": None,
+        "Latitude": None,
+        "Longitude": None,
+        "City": None,
+        "RegionCode": None,
+        "CountryCode": None
     }
     if len(data.get("locationInformation", [])) > 0:
         geo = {
@@ -253,10 +257,10 @@ def get_expanse_ip_context(data):
     c["Geo"] = geo
 
     points_of_contact = ",".join([poc["email"] for poc in data['annotations'].get('pointsOfContact', [])])
-    c["Annotations"]["PointsOfContact"] = points_of_contact if is_not_empty_value(points_of_contact) else "None"
+    c["Annotations"]["PointsOfContact"] = points_of_contact if is_not_empty_value(points_of_contact) else None
 
     tags = ",".join([tag["name"] for tag in data['annotations'].get('tags', [])])
-    c["Annotations"]["Tags"] = tags if is_not_empty_value(tags) else "None"
+    c["Annotations"]["Tags"] = tags if is_not_empty_value(tags) else None
 
     return c
 
@@ -267,50 +271,50 @@ def get_domain_context(data):
     """
     return {
         "Name": data['domain'],
-        "DNS": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else "None",
+        "DNS": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else None,
         "CreationDate": data['whois'][0]['creationDate'],
         "DomainStatus": data['dnsResolutionStatus'],
         "ExpirationDate": data['whois'][0]['registryExpiryDate'],
         "NameServers": data['whois'][0]['nameServers'],
         "Organization": data['whois'][0]['registrant']['organization'],
         "Admin": {
-            "Country": data['whois'][0]['admin'].get('country', "None"),
-            "Email": data['whois'][0]['admin'].get('emailAddress', "None"),
-            "Name": data['whois'][0]['admin'].get('name', "None"),
-            "Phone": data['whois'][0]['admin'].get('phoneNumber', "None")
+            "Country": data['whois'][0]['admin'].get('country'),
+            "Email": data['whois'][0]['admin'].get('emailAddress'),
+            "Name": data['whois'][0]['admin'].get('name'),
+            "Phone": data['whois'][0]['admin'].get('phoneNumber')
         },
         "Registrant": {
-            "Country": data['whois'][0]['registrant'].get('country', "None"),
-            "Email": data['whois'][0]['registrant'].get('emailAddress', "None"),
-            "Name": data['whois'][0]['registrant'].get('name', "None"),
-            "Phone": data['whois'][0]['registrant'].get('phoneNumber', "None")
+            "Country": data['whois'][0]['registrant'].get('country'),
+            "Email": data['whois'][0]['registrant'].get('emailAddress'),
+            "Name": data['whois'][0]['registrant'].get('name'),
+            "Phone": data['whois'][0]['registrant'].get('phoneNumber')
         },
         "WHOIS": {
             "DomainStatus": data['whois'][0]['domainStatuses'],
             "NameServers": data['whois'][0]['nameServers'],
             "CreationDate": (data['whois'][0].get('creationDate')
                              if is_not_empty_value(data['whois'][0].get('creationDate'))
-                             else "None"),
+                             else None),
             "UpdatedDate": (data['whois'][0].get('updatedDate')
                             if is_not_empty_value(data['whois'][0].get('updatedDate'))
-                            else "None"),
+                            else None),
             "ExpirationDate": (data['whois'][0].get('registryExpiryDate')
                                if is_not_empty_value(data['whois'][0].get('registryExpiryDate'))
-                               else "None"),
+                               else None),
             "Registrant": {
-                "Email": data['whois'][0]['registrant'].get('emailAddress', "None"),
-                "Name": data['whois'][0]['registrant'].get('name', "None"),
-                "Phone": data['whois'][0]['registrant'].get('phoneNumber', "None")
+                "Email": data['whois'][0]['registrant'].get('emailAddress'),
+                "Name": data['whois'][0]['registrant'].get('name'),
+                "Phone": data['whois'][0]['registrant'].get('phoneNumber')
             },
             "Registrar": {
-                "Name": data['whois'][0]['registrar'].get('name', "None"),
-                "AbuseEmail": data['whois'][0]['registrar'].get('abuseContactEmail', "None"),
-                "AbusePhone": data['whois'][0]['registrar'].get('abuseContactPhone', "None")
+                "Name": data['whois'][0]['registrar'].get('name'),
+                "AbuseEmail": data['whois'][0]['registrar'].get('abuseContactEmail'),
+                "AbusePhone": data['whois'][0]['registrar'].get('abuseContactPhone')
             },
             "Admin": {
-                "Name": data['whois'][0]['admin'].get('name', "None"),
-                "Email": data['whois'][0]['admin'].get('emailAddress', "None"),
-                "Phone": data['whois'][0]['admin'].get('phoneNumber', "None")
+                "Name": data['whois'][0]['admin'].get('name'),
+                "Email": data['whois'][0]['admin'].get('emailAddress'),
+                "Phone": data['whois'][0]['admin'].get('phoneNumber')
             }
         },
     }
@@ -322,109 +326,109 @@ def get_expanse_domain_context(data):
     """
     c = {
         "Name": data['domain'],
-        "DNS": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else "None",
-        "CreationDate": data['whois'][0].get('creationDate', "None"),
-        "DomainStatus": data.get('dnsResolutionStatus', "None"),
+        "DNS": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else None,
+        "CreationDate": data['whois'][0].get('creationDate'),
+        "DomainStatus": data.get('dnsResolutionStatus'),
         "ExpirationDate": (data['whois'][0].get('registryExpiryDate')
                            if is_not_empty_value(data['whois'][0].get('registryExpiryDate'))
-                           else "None"),
-        "NameServers": data['whois'][0].get('nameServers', "None"),
-        "Organization": data['whois'][0]['registrant'].get('organization', "None"),
+                           else None),
+        "NameServers": data['whois'][0].get('nameServers'),
+        "Organization": data['whois'][0]['registrant'].get('organization'),
         "Admin": {
             "Country": (data['whois'][0]['admin'].get('country')
                         if is_not_empty_value(data['whois'][0]['admin'].get('country'))
-                        else "None"),
+                        else None),
             "Email": (data['whois'][0]['admin'].get('emailAddress')
                       if is_not_empty_value(data['whois'][0]['admin'].get('emailAddress'))
-                      else "None"),
+                      else None),
             "Name": (data['whois'][0]['admin'].get('name')
                      if is_not_empty_value(data['whois'][0]['admin'].get('name'))
-                     else "None"),
+                     else None),
             "Phone": (data['whois'][0]['admin'].get('phoneNumber')
                       if is_not_empty_value(data['whois'][0]['admin'].get('phoneNumber'))
-                      else "None")
+                      else None)
         },
         "Registrant": {
             "Country": (data['whois'][0]['registrant'].get('country')
                         if is_not_empty_value(data['whois'][0]['registrant'].get('country'))
-                        else "None"),
+                        else None),
             "Email": (data['whois'][0]['registrant'].get('emailAddress')
                       if is_not_empty_value(data['whois'][0]['registrant'].get('emailAddress'))
-                      else "None"),
+                      else None),
             "Name": (data['whois'][0]['registrant'].get('name')
                      if is_not_empty_value(data['whois'][0]['registrant'].get('name'))
-                     else "None"),
+                     else None),
             "Phone": (data['whois'][0]['registrant'].get('phoneNumber')
                       if is_not_empty_value(data['whois'][0]['registrant'].get('phoneNumber'))
-                      else "None")
+                      else None)
         },
         "WHOIS": {
             "DomainStatus": (data['whois'][0].get('domainStatuses')
                              if is_not_empty_value(data['whois'][0].get('domainStatuses'))
-                             else "None"),
+                             else None),
             "NameServers": (data['whois'][0].get('nameServers')
                             if is_not_empty_value(data['whois'][0].get('nameServers'))
-                            else "None"),
+                            else None),
             "CreationDate": (data['whois'][0].get('creationDate')
                              if is_not_empty_value(data['whois'][0].get('creationDate'))
-                             else "None"),
+                             else None),
             "UpdatedDate": (data['whois'][0].get('updatedDate')
                             if is_not_empty_value(data['whois'][0].get('updatedDate'))
-                            else "None"),
+                            else None),
             "ExpirationDate": (data['whois'][0].get('registryExpiryDate')
                                if is_not_empty_value(data['whois'][0].get('registryExpiryDate'))
-                               else "None"),
+                               else None),
             "Registrant": {
                 "Email": (data['whois'][0]['registrant'].get('emailAddress')
                           if is_not_empty_value(data['whois'][0]['registrant'].get('emailAddress'))
-                          else "None"),
+                          else None),
                 "Name": (data['whois'][0]['registrant'].get('name')
                          if is_not_empty_value(data['whois'][0]['registrant'].get('name'))
-                         else "None"),
+                         else None),
                 "Phone": (data['whois'][0]['registrant'].get('phoneNumber')
                           if is_not_empty_value(data['whois'][0]['registrant'].get('phoneNumber'))
-                          else "None")
+                          else None)
             },
             "Registrar": {
                 "Name": (data['whois'][0]['registrar'].get('name')
                          if is_not_empty_value(data['whois'][0]['registrar'].get('name'))
-                         else "None"),
+                         else None),
                 "AbuseEmail": (data['whois'][0]['registrar'].get('abuseContactEmail')
                                if is_not_empty_value(data['whois'][0]['registrar'].get('abuseContactEmail'))
-                               else "None"),
+                               else None),
                 "AbusePhone": (data['whois'][0]['registrar'].get('abuseContactPhone')
                                if is_not_empty_value(data['whois'][0]['registrar'].get('abuseContactPhone'))
-                               else "None")
+                               else None)
             },
             "Admin": {
                 "Name": (data['whois'][0]['admin'].get('name')
                          if is_not_empty_value(data['whois'][0]['admin'].get('name'))
-                         else "None"),
+                         else None),
                 "Email": (data['whois'][0]['admin'].get('emailAddress')
                           if is_not_empty_value(data['whois'][0]['admin'].get('emailAddress'))
-                          else "None"),
+                          else None),
                 "Phone": (data['whois'][0]['admin'].get('phoneNumber')
                           if is_not_empty_value(data['whois'][0]['admin'].get('phoneNumber'))
-                          else "None")
+                          else None)
             }
         },
         "DateAdded": data['dateAdded'],
         "FirstObserved": data['firstObserved'],
         "LastObserved": data['lastObserved'],
         "HasLinkedCloudResources": data['hasLinkedCloudResources'],
-        "SourceDomain": data.get('sourceDomain') if is_not_empty_value(data.get('sourceDomain')) else "None",
-        "Tenant": data['tenant'].get('name') if is_not_empty_value(data['tenant'].get('name')) else "None",
+        "SourceDomain": data.get('sourceDomain') if is_not_empty_value(data.get('sourceDomain')) else None,
+        "Tenant": data['tenant'].get('name') if is_not_empty_value(data['tenant'].get('name')) else None,
         "BusinessUnits": [],
-        "DNSSEC": data['whois'][0].get('dnssec') if is_not_empty_value(data['whois'][0].get('dnssec')) else "None",
-        "RecentIPs": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else "None",
+        "DNSSEC": data['whois'][0].get('dnssec') if is_not_empty_value(data['whois'][0].get('dnssec')) else None,
+        "RecentIPs": data['details'].get('recentIps') if is_not_empty_value(data['details'].get('recentIps')) else None,
         "CloudResources": (data['details'].get('cloudResources')
                            if is_not_empty_value(data['details'].get('cloudResources'))
-                           else "None"),
+                           else None),
         "LastSubdomainMetadata": (data.get('lastSubdomainMetadata')
                                   if is_not_empty_value(data.get('lastSubdomainMetadata'))
-                                  else "None"),
-        "ServiceStatus": data.get('serviceStatus') if is_not_empty_value(data.get('serviceStatus')) else "None",
-        "LastSampledIP": data.get('lastSampledIp') if is_not_empty_value(data.get('lastSampledIp')) else "None"
+                                  else None),
+        "ServiceStatus": data.get('serviceStatus') if is_not_empty_value(data.get('serviceStatus')) else None,
+        "LastSampledIP": data.get('lastSampledIp') if is_not_empty_value(data.get('lastSampledIp')) else None
     }
     for i in data['businessUnits']:
         c['BusinessUnits'].append(i['name'])
