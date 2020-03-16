@@ -888,14 +888,13 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         'category',
         'org',
         'tags',
-        'from',
-        'to',
+        'date_from',
+        'date_to',
         'last',
         'eventid',
         'uuid',
         'to_ids'
     ]
-
     args = dict()
     # Create dict to pass into the search
     for arg in search_args:
