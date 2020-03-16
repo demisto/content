@@ -1,5 +1,5 @@
 id: Cisco ASA - Test Playbook
-version: 13
+version: -1
 name: Cisco ASA - Test Playbook
 starttaskid: "0"
 tasks:
@@ -138,10 +138,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 2a9de836-9900-4e0f-85f3-bbeaecced546
+    taskid: 6ff50b24-7176-4263-8a49-70caee06ad21
     type: condition
     task:
-      id: 2a9de836-9900-4e0f-85f3-bbeaecced546
+      id: 6ff50b24-7176-4263-8a49-70caee06ad21
       version: -1
       name: Verify Rule
       type: condition
@@ -157,7 +157,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CiscoASA.Rules.SourceIP
+              simple: CiscoASA.Rules.Source
             iscontext: true
           right:
             value:
@@ -165,7 +165,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CiscoASA.Rules.DestIP
+              simple: CiscoASA.Rules.Dest
             iscontext: true
           right:
             value:
@@ -224,10 +224,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: e4861931-04b4-4b99-817e-ea0a326b917e
+    taskid: 1f711257-034b-4600-88b0-bd1d9f7f0d97
     type: condition
     task:
-      id: e4861931-04b4-4b99-817e-ea0a326b917e
+      id: 1f711257-034b-4600-88b0-bd1d9f7f0d97
       version: -1
       name: Verify Rule Edited
       type: condition
@@ -243,7 +243,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CiscoASA.Rules.DestIP
+              simple: CiscoASA.Rules.Dest
             iscontext: true
           right:
             value:
@@ -251,7 +251,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CiscoASA.Rules.SourceIP
+              simple: CiscoASA.Rules.Source
             iscontext: true
           right:
             value:
