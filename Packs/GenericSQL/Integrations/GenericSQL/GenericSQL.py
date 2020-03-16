@@ -18,6 +18,7 @@ class Client:
     Client to use in the SQL databases integration. Overrides BaseClient
     makes the connection to the DB server
     """
+
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
                  database: str, connect_parameters: str):
         self.dialect = dialect
@@ -57,10 +58,9 @@ class Client:
             module = self._convert_dialect_to_module(self.dialect)
             db_preferences = f'{module}://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}'
             if self.dialect == "Microsoft SQL Server":
-                db_preferences +="?driver=FreeTDS"
+                db_preferences += "?driver=FreeTDS"
             if self.connect_parameters:
                 db_preferences += f'?{self.connect_parameters}'
-            demisto.log(db_preferences)
             return sqlalchemy.create_engine(db_preferences).connect()
         except Exception as err:
             raise Exception(err)
@@ -136,10 +136,12 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
     :return: Demisto outputs
     """
     try:
-        sql_query = args.get('query')
+        sql_query = str(args.get('query'))
         limit = int(args.get('limit', 50))
         skip = int(args.get('skip', 0))
-        bind_variables = generate_bind_vars(args.get('bind_variables_names'), args.get('bind_variables_values'))
+        bind_variables_names = str(args.get('bind_variables_names'))
+        bind_variables_values = str(args.get('bind_variables_values'))
+        bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
         table = [dict(row) for row in result]
@@ -160,6 +162,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
             return human_readable, {}, []
         else:
             return_error(err)
+            return "", {}, []
 
 
 def main():

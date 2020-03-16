@@ -1,4 +1,4 @@
-from .GenericSQL import Client, sql_query_execute
+from GenericSQL import Client, sql_query_execute
 import pytest
 
 args1 = {

@@ -1,6 +1,6 @@
 id: 1ac750b0-87af-43fd-8cbe-49bb71db62a8
 version: 33
-name: generic-sql-forall
+name: generic-sql
 starttaskid: "0"
 tasks:
   "0":
