@@ -1222,9 +1222,9 @@ def slack_send():
         original_channel = INCIDENT_NOTIFICATION_CHANNEL
         channel = DEDICATED_CHANNEL
 
-    if (channel == DEDICATED_CHANNEL and original_channel == INCIDENT_NOTIFICATION_CHANNEL and
-            ((severity is not None and severity < SEVERITY_THRESHOLD) or
-             not NOTIFY_INCIDENTS)):
+    if (channel == DEDICATED_CHANNEL and original_channel == INCIDENT_NOTIFICATION_CHANNEL
+            and ((severity is not None and severity < SEVERITY_THRESHOLD)
+                 or not NOTIFY_INCIDENTS)):
         channel = None
 
     if not (to or group or channel):
