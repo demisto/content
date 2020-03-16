@@ -1,13 +1,11 @@
-import logging
 import warnings
 from typing import Union, List, Any, Tuple, Dict
 from urllib.parse import urlparse
 
 import requests
+from CommonServerPython import *
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject  # type: ignore
 from pymisp.tools import EMailObject, GenericObjectGenerator  # type: ignore
-
-from CommonServerPython import *
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
