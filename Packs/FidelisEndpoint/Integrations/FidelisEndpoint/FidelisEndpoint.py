@@ -1625,7 +1625,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'occurred': alert_create_date,
             'rawJSON': json.dumps(alert)
         }
-        alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp())*1000
+        alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp()) * 1000
         # update last run
         if alert_create_date_timestamp > last_fetch_alert_time:
             incidents.append(incident)
