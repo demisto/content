@@ -1606,12 +1606,6 @@ def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def parse_timestamp(time_):
-    if len(time_[time_.rfind('.')+1:time_.rfind('Z')]) > 3:
-        new_time = time_[:time_.rfind('.') + 4] + 'Z'
-    return new_time
-
-
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
     # handle first time fetch
     last_fetch_alert_time = last_run.get('time')
@@ -1620,9 +1614,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
 
     current_fetch = last_fetch_alert_time
     incidents = []
-    last_fetch_date_string = timestamp_to_datestring(last_fetch_alert_time, '%Y-%m-%dT%H:%M:%S.%fZ')
-    start_time = parse_timestamp(last_fetch_date_string)
-    response = client.list_alerts(limit=fetch_limit, start_date=start_time)
+    last_fetch_date_string = timestamp_to_datestring(last_fetch_alert_time)
+    response = client.list_alerts(limit=fetch_limit, start_date=last_fetch_date_string)
     alerts = response.get('data', {}).get('entities', [])
     for alert in alerts:
         alert_id = str(alert.get('id'))
@@ -1640,7 +1633,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         if alert_create_date_timestamp > current_fetch:
             current_fetch = alert_create_date_timestamp
 
-    return incidents, current_fetch
+    return incidents, {'time': current_fetch}
 
 
 def main():
