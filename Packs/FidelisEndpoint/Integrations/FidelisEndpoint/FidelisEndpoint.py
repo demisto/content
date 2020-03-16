@@ -1,11 +1,10 @@
-import dateutil
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
-"""GLOBALS/PARAMS"""
 
 import requests
+import dateutil.parser
 from typing import Dict, Tuple, List, Union
 
 # Disable insecure warnings
@@ -1615,33 +1614,33 @@ def parse_timestamp(time_):
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
     # handle first time fetch
-    last_run = last_run.get('time')
-    if not last_run:
-        last_run, _ = parse_date_range(fetch_time, to_timestamp=True)
+    last_fetch_alert_time = last_run.get('time')
+    if not last_fetch_alert_time:
+        last_fetch_alert_time, _ = parse_date_range(fetch_time, to_timestamp=True)
 
-    current_fetch = last_run
+    current_fetch = last_fetch_alert_time
     incidents = []
-    last_fetch_date_string = timestamp_to_datestring(last_run, '%Y-%m-%dT%H:%M:%S.%fZ')
+    last_fetch_date_string = timestamp_to_datestring(last_fetch_alert_time, '%Y-%m-%dT%H:%M:%S.%fZ')
     start_time = parse_timestamp(last_fetch_date_string)
     response = client.list_alerts(limit=fetch_limit, start_date=start_time)
     alerts = response.get('data', {}).get('entities', [])
     for alert in alerts:
         alert_id = str(alert.get('id'))
+        alert_create_date = alert.get('createDate')
         incident = {
-            'name': f"Fidlie Endpoint alert: {alert_id}",
-            'occurred': alert.get('createDate'),
+            'name': f"Fidelis Endpoint alert {alert_id}",
+            'occurred': alert_create_date,
             'rawJSON': json.dumps(alert)
         }
-        incident_date = int(dateutil.parser.parse(alert.get('createDate')).timestamp())*1000
+        alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp())*1000
         # update last run
-        if incident_date > last_run:
+        if alert_create_date_timestamp > last_fetch_alert_time:
             incidents.append(incident)
 
-        if incident_date > current_fetch:
-            current_fetch = incident_date
+        if alert_create_date_timestamp > current_fetch:
+            current_fetch = alert_create_date_timestamp
 
-    demisto.setLastRun({'time': current_fetch})
-    return incidents
+    return incidents, current_fetch
 
 
 def main():
@@ -1667,10 +1666,11 @@ def main():
             result = test_module(client)
             demisto.results(result)
         elif demisto.command() == 'fetch-incidents':
-            fetch_time = demisto.params().get('fetch_time')
-            fetch_limit = demisto.params().get('fetch_time', '50')
-            incidents = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())  # type: ignore
+            fetch_time = demisto.params().get('fetch_time', '3 days')
+            fetch_limit = demisto.params().get('fetch_limit', '50')
+            incidents, last_run= fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())  # type: ignore
             demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
 
         elif demisto.command() == 'fidelis-endpoint-list-alerts':
             return_outputs(*list_alerts_command(client, demisto.args()))
