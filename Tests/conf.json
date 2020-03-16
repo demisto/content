@@ -1266,10 +1266,9 @@
             "pid_threshold": 12
         },
                 {
-            "integrations": ["VirusTotal - Private API",
-                            "VirusTotal"],
+            "integrations": ["VirusTotal - Private API", "VirusTotal"],
             "playbookID": "vt-detonate test",
-            "instance_names": "virus_total_private_api_general",
+            "instance_names": ["virus_total_private_api_general", "virus_total_general"],
             "timeout": 1400,
             "nightly": true
         },
