@@ -60,7 +60,7 @@ configuration:
   hidden: false
   name: collapse_ips
   options:
-  - 'Should Collapse IPs:'
+  - Don't Collapse
   - To CIDRS
   - To Ranges
   required: false
