@@ -146,16 +146,16 @@ def ip_command(client, args, reputation_only):
 
     report = raw_response.get('data', {}).get('report', None)
     if report:
-        urlvoid = dict()
+        apivoid = dict()
         for k, v in report.items():
-            urlvoid[k] = v
-        engines = urlvoid.get('blacklists', {}).get('engines_count', 0)
-        detections = urlvoid.get('blacklists', {}).get('detections', 0)
+            apivoid[k] = v
+        engines = apivoid.get('blacklists', {}).get('engines_count', 0)
+        detections = apivoid.get('blacklists', {}).get('detections', 0)
 
         # IP Information
-        information = urlvoid.get('information', {})
+        information = apivoid.get('information', {})
         ip = dict()
-        ip['Address'] = urlvoid['ip']
+        ip['Address'] = apivoid['ip']
         ip['Hostname'] = information.get('reverse_dns', None)
         geo = dict()
         lat = information.get('latitude', None)
@@ -183,7 +183,7 @@ def ip_command(client, args, reputation_only):
             dbotScore = 3
         if (client.malicious == "suspicious" and dbotScore >= 2) or (client.malicious == "bad" and dbotScore == 3):
             ip['Malicious'] = dict()
-            ip['Malicious']['Vendor'] = 'URLVoid'
+            ip['Malicious']['Vendor'] = 'apivoid'
             ip['Malicious']['Description'] = f"Detection rate of {ip['PositiveDetections']}/{ip['DetectionEngines']}"
 
         ec = {
@@ -196,10 +196,10 @@ def ip_command(client, args, reputation_only):
             }
         }
 
-        md = tableToMarkdown(f'URLVoid information for {ip["Address"]}:', ip)
+        md = tableToMarkdown(f'apivoid information for {ip["Address"]}:', ip)
 
         if not reputation_only:
-            ec['URLVoid.IP(val.ip && val.ip == obj.ip)'] = urlvoid
+            ec['apivoid.IP(val.ip && val.ip == obj.ip)'] = apivoid
 
     else:
         ec = {}
@@ -225,17 +225,17 @@ def domain_command(client, args, reputation_only):
 
     report = raw_response.get('data', {}).get('report', None)
     if report:
-        urlvoid = dict()
+        apivoid = dict()
         for k, v in report.items():
-            urlvoid[k] = v
+            apivoid[k] = v
 
-        engines = urlvoid.get('blacklists', {}).get('engines_count', 0)
-        detections = urlvoid.get('blacklists', {}).get('detections', 0)
+        engines = apivoid.get('blacklists', {}).get('engines_count', 0)
+        detections = apivoid.get('blacklists', {}).get('detections', 0)
 
         # Domain Information
         domain = dict()
-        domain['Name'] = urlvoid['host']
-        domain['DNS'] = urlvoid['host']
+        domain['Name'] = apivoid['host']
+        domain['DNS'] = apivoid['host']
         domain['DetectionEngines'] = engines
         domain['PositiveDetections'] = detections
 
@@ -255,7 +255,7 @@ def domain_command(client, args, reputation_only):
             dbotScore = 3
         if (client.malicious == "suspicious" and dbotScore >= 2) or (client.malicious == "bad" and dbotScore == 3):
             domain['Malicious'] = dict()
-            domain['Malicious']['Vendor'] = 'URLVoid'
+            domain['Malicious']['Vendor'] = 'apivoid'
             domain['Malicious']['Description'] = f"Detection rate of {domain['PositiveDetections']}/{domain['DetectionEngines']}"
 
         ec = {
@@ -267,10 +267,10 @@ def domain_command(client, args, reputation_only):
                 'Type': 'domain'
             }
         }
-        md = tableToMarkdown(f'URLVoid information for {domain["Name"]}:', domain)
+        md = tableToMarkdown(f'apivoid information for {domain["Name"]}:', domain)
 
         if not reputation_only:
-            ec['URLVoid.Domain(val.domain && val.domain == obj.domain)'] = urlvoid
+            ec['apivoid.Domain(val.domain && val.domain == obj.domain)'] = apivoid
 
     else:
         ec = {}
@@ -296,17 +296,17 @@ def url_command(client, args, reputation_only):
 
     report = raw_response.get('data', {}).get('report', None)
     if report:
-        urlvoid = dict()
+        apivoid = dict()
         for k, v in report.items():
-            urlvoid[k] = v
-        urlvoid['url'] = url
+            apivoid[k] = v
+        apivoid['url'] = url
 
-        engines = len(urlvoid.get('domain_blacklist', {}).get('engines', 0))
-        detections = urlvoid.get('domain_blacklist', {}).get('detections', 0)
+        engines = len(apivoid.get('domain_blacklist', {}).get('engines', 0))
+        detections = apivoid.get('domain_blacklist', {}).get('detections', 0)
 
         # URL Information
         url = dict()
-        url['Data'] = urlvoid['url']
+        url['Data'] = apivoid['url']
         url['DetectionEngines'] = engines
         url['PositiveDetections'] = detections
 
@@ -326,7 +326,7 @@ def url_command(client, args, reputation_only):
             dbotScore = 3
         if (client.malicious == "suspicious" and dbotScore >= 2) or (client.malicious == "bad" and dbotScore == 3):
             url['Malicious'] = dict()
-            url['Malicious']['Vendor'] = 'URLVoid'
+            url['Malicious']['Vendor'] = 'apivoid'
             url['Malicious']['Description'] = f"Detection rate of {url['PositiveDetections']}/{url['DetectionEngines']}"
 
         ec = {
@@ -338,10 +338,10 @@ def url_command(client, args, reputation_only):
                 'Type': 'url'
             }
         }
-        md = tableToMarkdown(f'URLVoid information for {url["Data"]}:', url)
+        md = tableToMarkdown(f'apivoid information for {url["Data"]}:', url)
 
         if not reputation_only:
-            ec['URLVoid.URL(val.url && val.url == obj.url)'] = urlvoid
+            ec['apivoid.URL(val.url && val.url == obj.url)'] = apivoid
 
     else:
         ec = {}
@@ -369,11 +369,11 @@ def dns_lookup_command(client, args):
     records = raw_response.get('data', {}).get('records', None)
     entries = list()
     if records:
-        urlvoid = dict()
+        apivoid = dict()
         for k, v in records.items():
-            urlvoid[k] = v
-        urlvoid['host'] = host
-        urlvoid['type'] = dns_type
+            apivoid[k] = v
+        apivoid['host'] = host
+        apivoid['type'] = dns_type
 
         mdData = dict()
         mdData['Host'] = host
@@ -383,9 +383,9 @@ def dns_lookup_command(client, args):
                 mdData[k] = v
 
         ec = {
-            'URLVoid.DNS(val.host && val.type && val.host == obj.host && val.type == obj.type)': urlvoid
+            'apivoid.DNS(val.host && val.type && val.host == obj.host && val.type == obj.type)': apivoid
         }
-        md = tableToMarkdown(f'URLVoid DNS-{dns_type} information for {host}:', mdData)
+        md = tableToMarkdown(f'apivoid DNS-{dns_type} information for {host}:', mdData)
         entries.append({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
@@ -395,7 +395,7 @@ def dns_lookup_command(client, args):
             'EntryContext': ec
         })
 
-        for item in urlvoid.get('items', []):
+        for item in apivoid.get('items', []):
             thisType = item.get('type', dns_type)
             md = tableToMarkdown(f'Information of {thisType} record from {host}:', item)
             entries.append({
@@ -423,10 +423,10 @@ def ssl_lookup_command(client, args):
 
     certificate = raw_response.get('data', {}).get('certificate', None)
     if certificate:
-        urlvoid = dict()
+        apivoid = dict()
         for k, v in certificate.items():
-            urlvoid[k] = v
-        urlvoid['host'] = host
+            apivoid[k] = v
+        apivoid['host'] = host
 
         mdData = dict()
         for k, v in certificate.items():
@@ -434,9 +434,9 @@ def ssl_lookup_command(client, args):
                 mdData[k] = v
 
         ec = {
-            'URLVoid.SSL(val.host && val.host == obj.host)': urlvoid
+            'apivoid.SSL(val.host && val.host == obj.host)': apivoid
         }
-        md = tableToMarkdown(f'URLVoid SSL Information for {host}:', mdData)
+        md = tableToMarkdown(f'apivoid SSL Information for {host}:', mdData)
 
     else:
         ec = {}
@@ -462,13 +462,13 @@ def email_address_command(client, args):
 
     data = raw_response.get('data', {})
     if data:
-        urlvoid = dict()
+        apivoid = dict()
         for k, v in data.items():
-            urlvoid[k] = v
+            apivoid[k] = v
         ec = {
-            'URLVoid.Email(val.email && val.email == obj.email)': urlvoid
+            'apivoid.Email(val.email && val.email == obj.email)': apivoid
         }
-        md = tableToMarkdown(f'URLVoid Email Information for {email}:', urlvoid)
+        md = tableToMarkdown(f'apivoid Email Information for {email}:', apivoid)
 
     else:
         ec = {}
@@ -494,17 +494,17 @@ def threatlog_command(client, args):
 
     data = raw_response.get('data', {}).get('threatlog', None)
     if data:
-        urlvoid = dict()
+        apivoid = dict()
 
         for k, v in data.items():
-            urlvoid[k] = v
+            apivoid[k] = v
         ec = {
-            'URLVoid.ThreatLog(val.host && val.host == obj.host)': urlvoid,
+            'apivoid.ThreatLog(val.host && val.host == obj.host)': apivoid,
             'Domain': {
                 'Name': host,
             }
         }
-        md = tableToMarkdown(f'URLVoid ThreatLog Information for {host}:', urlvoid)
+        md = tableToMarkdown(f'apivoid ThreatLog Information for {host}:', apivoid)
 
     else:
         ec = {}
@@ -530,17 +530,17 @@ def check_parked_domain_command(client, args):
 
     data = raw_response.get('data', {})
     if data:
-        urlvoid = dict()
+        apivoid = dict()
 
         for k, v in data.items():
-            urlvoid[k] = v
+            apivoid[k] = v
         ec = {
-            'URLVoid.ParkedDomain(val.host && val.host == obj.host)': urlvoid,
+            'apivoid.ParkedDomain(val.host && val.host == obj.host)': apivoid,
             'Domain': {
                 'Name': domain
             }
         }
-        md = tableToMarkdown(f'URLVoid Parked Domain Information for {domain}:', urlvoid)
+        md = tableToMarkdown(f'apivoid Parked Domain Information for {domain}:', apivoid)
 
     else:
         ec = {}
@@ -566,18 +566,18 @@ def domain_age_command(client, args):
 
     data = raw_response.get('data', {})
     if data:
-        urlvoid = dict()
+        apivoid = dict()
 
         for k, v in data.items():
-            urlvoid[k] = v
+            apivoid[k] = v
         ec = {
-            'URLVoid.DomainAge(val.host && val.host == obj.host)': urlvoid,
+            'apivoid.DomainAge(val.host && val.host == obj.host)': apivoid,
             'Domain': {
                 'Name': domain,
-                'CreationDate': urlvoid.get('domain_creation_date', None),
+                'CreationDate': apivoid.get('domain_creation_date', None),
             }
         }
-        md = tableToMarkdown(f'URLVoid Domain Age Information for {domain}:', urlvoid)
+        md = tableToMarkdown(f'apivoid Domain Age Information for {domain}:', apivoid)
 
     else:
         ec = {}
@@ -655,24 +655,24 @@ def site_trust_command(client, args):
     data = raw_response.get('data', {}).get('report', None)
     if data:
 
-        urlvoid = dict()
+        apivoid = dict()
         for k, v in data.items():
-            urlvoid[k] = v
-        urlvoid['host'] = host
+            apivoid[k] = v
+        apivoid['host'] = host
         ec = {
-            'URLVoid.SiteTrust(val.host && val.host == obj.host)': urlvoid,
+            'apivoid.SiteTrust(val.host && val.host == obj.host)': apivoid,
         }
-        md = tableToMarkdown(f'URLVoid Site Trustworthiness for {host}:', urlvoid)
+        md = tableToMarkdown(f'apivoid Site Trustworthiness for {host}:', apivoid)
 
         # Populate Domain information if available
-        if urlvoid.get('domain_age', {}).get('found', False):
+        if apivoid.get('domain_age', {}).get('found', False):
             ec['Domain'] = {
                 'Name': host,
-                'CreationDate': urlvoid.get('domain_age', {}).get('domain_creation_date', None),
+                'CreationDate': apivoid.get('domain_age', {}).get('domain_creation_date', None),
             }
-        if "ns" in urlvoid.get('dns_records', {}):
+        if "ns" in apivoid.get('dns_records', {}):
             nameServers = ",".join([
-                x.get('target', None) for x in urlvoid.get('dns_records', {}).get('ns', {}).get('records', [])
+                x.get('target', None) for x in apivoid.get('dns_records', {}).get('ns', {}).get('records', [])
             ])
             ec['Domain']['NameServers'] = nameServers
 
@@ -724,16 +724,16 @@ def main():
         command = demisto.command()
 
         commands = {
-            'urlvoid-dns-lookup': dns_lookup_command,
-            'urlvoid-ssl-info': ssl_lookup_command,
-            'urlvoid-email-verify': email_address_command,
-            'urlvoid-threatlog': threatlog_command,
-            'urlvoid-parked-domain': check_parked_domain_command,
-            'urlvoid-domain-age': domain_age_command,
-            'urlvoid-url-to-image': screenshot_command,
-            'urlvoid-url-to-pdf': url_to_pdf_command,
-            'urlvoid-url-to-html': url_to_html_command,
-            'urlvoid-site-trustworthiness': site_trust_command,
+            'apivoid-dns-lookup': dns_lookup_command,
+            'apivoid-ssl-info': ssl_lookup_command,
+            'apivoid-email-verify': email_address_command,
+            'apivoid-threatlog': threatlog_command,
+            'apivoid-parked-domain': check_parked_domain_command,
+            'apivoid-domain-age': domain_age_command,
+            'apivoid-url-to-image': screenshot_command,
+            'apivoid-url-to-pdf': url_to_pdf_command,
+            'apivoid-url-to-html': url_to_html_command,
+            'apivoid-site-trustworthiness': site_trust_command,
         }
 
         if command == 'test-module':
@@ -744,33 +744,23 @@ def main():
         elif command == 'ip':
             ip_command(client, args, True)
 
-        elif command == 'urlvoid-ip':
+        elif command == 'apivoid-ip':
             ip_command(client, args, False)
 
         elif command == 'domain':
             domain_command(client, args, True)
 
-        elif command == 'urlvoid-domain':
+        elif command == 'apivoid-domain':
             domain_command(client, args, False)
 
         elif command == 'url':
             url_command(client, args, True)
 
-        elif command == 'urlvoid-url':
+        elif command == 'apivoid-url':
             url_command(client, args, False)
 
         else:
             commands[command](client, args)
-        '''
-        elif command== 'urlvoid-dns-lookup':
-            dns_lookup_command(client, args)
-
-        elif command== 'urlvoid-ssl-info':
-            ssl_lookup_command(client, args)
-
-        elif command== 'urlvoid-email-verify':
-            email_address_command(client, args)
-        '''
 
     # Log exceptions
     except Exception as e:
