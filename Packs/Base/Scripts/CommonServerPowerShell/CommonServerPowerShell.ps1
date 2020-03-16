@@ -44,7 +44,12 @@ class DemistoObject {
     hidden [hashtable] $ContextArgs
 
     DemistoObject () {
-        $context = $global:InnerContext | ConvertFrom-Json -AsHashtable
+        if($global:InnerContext.GetType().Name -eq 'String') {
+            $context = $global:InnerContext | ConvertFrom-Json -AsHashtable
+        }
+        else {
+            $context = $global:InnerContext
+        }
         $this.ServerEntry = $context
         $this.ContextArgs = $context.args
         $this.IsDebug = $context.IsDebug
