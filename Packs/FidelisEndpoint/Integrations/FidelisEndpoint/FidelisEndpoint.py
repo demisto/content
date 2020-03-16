@@ -1,10 +1,12 @@
+import dateutil
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 """GLOBALS/PARAMS"""
 
 import requests
-from typing import Dict, Tuple, List, Optional, Union
+from typing import Dict, Tuple, List, Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -80,17 +82,29 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix, params=params)
 
-    def get_host_info(self, host_name: Union[None, str], ip_address: Union[None, str]):
-
+    def get_host_info(self, host_name: str, ip_address: str) -> Dict:
+        url_suffix = '/endpoints/v2/0/100/hostname Ascending'
         if host_name:
-            url_suffix = f'/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={{%22searchFields%22: \
-                             [{{%22fieldName%22:%22HostName%22,%22values%22:[{{%22value%22:%22{host_name}%22}}]}}]}}'
+            field_name = 'HostName'
+            value = host_name
 
         elif ip_address:
-            url_suffix = f'/endpoints/v2/0/100/hostname%20Ascending?accessType=3&search={{%22searchFields%22: \
-                         [{{%22fieldName%22:%22IpAddress%22,%22values%22:[{{%22value%22:%22{ip_address}%22}}]}}]}}'
+            field_name = 'IpAddress'
+            value = ip_address
 
-        return self._http_request('GET', url_suffix)
+        params = {
+            'accessType': '3',
+            'search': json.dumps({
+                'searchFields': [{
+                    'fieldName': field_name,
+                    'values': [{
+                        'value': value
+                    }]
+                }]
+            })
+        }
+
+        return self._http_request('GET', url_suffix, params=params)
 
     def search_file(self, host=None, md5=None, file_extension=None, file_path=None, file_size=None) -> Dict:
 
@@ -718,8 +732,8 @@ def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
 def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
-    ip_address = args.get('ip_address')
-    host = args.get('host')
+    ip_address = args.get('ip_address', '')
+    host = args.get('host', '')
 
     if not host and not ip_address:
         return f'You must provide either ip_address or host', {}, {}
@@ -1593,28 +1607,41 @@ def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def fetch_incidents(client: Client, fetch_time: Optional[str], severity: str, last_run: Dict) -> Tuple[List, Dict]:
-    if not last_run:  # if first time running
-        new_last_run = {'time': fetch_time}
-    else:
-        new_last_run = last_run
-    incidents: list = list()
-    response = client.list_alerts()
+def parse_timestamp(time_):
+    if len(time_[time_.rfind('.')+1:time_.rfind('Z')]) > 3:
+        new_time = time_[:time_.rfind('.') + 4] + 'Z'
+    return new_time
+
+
+def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
+    # handle first time fetch
+    last_run = last_run.get('time')
+    if not last_run:
+        last_run, _ = parse_date_range(fetch_time, to_timestamp=True)
+
+    current_fetch = last_run
+    incidents = []
+    last_fetch_date_string = timestamp_to_datestring(last_run, '%Y-%m-%dT%H:%M:%S.%fZ')
+    start_time = parse_timestamp(last_fetch_date_string)
+    response = client.list_alerts(limit=fetch_limit, start_date=start_time)
     alerts = response.get('data', {}).get('entities', [])
-    if alerts:
-        last_incident_id = last_run.get('id', 0)
-        # Creates incident entry
-        incidents = [{
-            'name': f"Fidlie Endpoint alert: {alert.get('id')}",
+    for alert in alerts:
+        alert_id = str(alert.get('id'))
+        incident = {
+            'name': f"Fidlie Endpoint alert: {alert_id}",
             'occurred': alert.get('createDate'),
             'rawJSON': json.dumps(alert)
-        } for alert in alerts if alert.get('id') > last_incident_id and alert.get('severity') == severity]
-        # New incidents fetched
-        if incidents:
-            last_incident_id = alerts[-1].get('id')
-            new_last_run.update({'id': last_incident_id})
-    # Return results
-    return incidents, new_last_run
+        }
+        incident_date = int(dateutil.parser.parse(alert.get('createDate')).timestamp())*1000
+        # update last run
+        if incident_date > last_run:
+            incidents.append(incident)
+
+        if incident_date > current_fetch:
+            current_fetch = incident_date
+
+    demisto.setLastRun({'time': current_fetch})
+    return incidents
 
 
 def main():
@@ -1641,10 +1668,9 @@ def main():
             demisto.results(result)
         elif demisto.command() == 'fetch-incidents':
             fetch_time = demisto.params().get('fetch_time')
-            severity = demisto.params().get('severity', 'Medium')
-            incidents, last_run = fetch_incidents(client, severity, fetch_time, last_run=demisto.getLastRun())  # type: ignore
+            fetch_limit = demisto.params().get('fetch_time', '50')
+            incidents = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())  # type: ignore
             demisto.incidents(incidents)
-            demisto.setLastRun(last_run)
 
         elif demisto.command() == 'fidelis-endpoint-list-alerts':
             return_outputs(*list_alerts_command(client, demisto.args()))

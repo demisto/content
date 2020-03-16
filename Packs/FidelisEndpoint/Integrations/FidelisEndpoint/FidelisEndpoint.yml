@@ -23,7 +23,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch incidents query
+- display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -33,8 +33,9 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- display: severity
-  name: severity
+- defaultvalue: '50'
+  display: Fetch limit
+  name: fetch_limit
   required: false
   type: 0
 description: Fidelis Endpoint provides advanced endpoint detection and response (EDR)
@@ -45,7 +46,7 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: '10'
+      defaultValue: '50'
       description: Limits the number of alerts returned.
       isArray: false
       name: limit
@@ -60,7 +61,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '50'
       description: 'The start of the time range of returned values in UTC format.
         For example: 0001-01-01T00:00:00Z'
       isArray: false
@@ -1499,6 +1499,8 @@ script:
       required: false
       secret: false
     - default: false
+      description: 'Add additional filter to the query. for example: pid = 1234, pid
+        > 1233'
       isArray: false
       name: additional_filter
       required: false
@@ -1584,5 +1586,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - no test - test exists in non circle
