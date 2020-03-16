@@ -1,5 +1,5 @@
 id: bf0fa3f3-7b42-40dc-8ea9-9db4a1c2eb12
-version: 1
+version: 2
 name: APIVoid Test
 starttaskid: "0"
 tasks:
@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 720
         }
       }
     note: false
@@ -87,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 895
         }
       }
     note: false
@@ -119,7 +119,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1070
         }
       }
     note: false
@@ -151,7 +151,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1245
         }
       }
     note: false
@@ -183,7 +183,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1420
         }
       }
     note: false
@@ -215,7 +215,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1595
         }
       }
     note: false
@@ -247,7 +247,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1770
         }
       }
     note: false
@@ -279,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1945
         }
       }
     note: false
@@ -311,7 +311,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2120
         }
       }
     note: false
@@ -343,7 +343,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2295
         }
       }
     note: false
@@ -375,7 +375,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -407,7 +407,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2645
         }
       }
     note: false
@@ -436,7 +436,103 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: f76f1a07-e4df-40ce-826c-44957f1429fc
+    type: regular
+    task:
+      id: f76f1a07-e4df-40ce-826c-44957f1429fc
+      version: -1
+      name: ip
+      description: Returns the reputation of the IP.
+      script: apivoid|||ip
+      type: regular
+      iscommand: true
+      brand: apivoid
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      ip:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 7b24392d-c763-4e0b-898f-72bdac52fcc7
+    type: regular
+    task:
+      id: 7b24392d-c763-4e0b-898f-72bdac52fcc7
+      version: -1
+      name: domain
+      description: Returns the reputation of the domain.
+      script: apivoid|||domain
+      type: regular
+      iscommand: true
+      brand: apivoid
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: ea100bd0-6c17-41b9-8c69-4481919fbb6d
+    type: regular
+    task:
+      id: ea100bd0-6c17-41b9-8c69-4481919fbb6d
+      version: -1
+      name: url
+      description: Returns the reputation of the URL.
+      script: apivoid|||url
+      type: regular
+      iscommand: true
+      brand: apivoid
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      url:
+        simple: https://www.disney.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -449,7 +545,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2340,
+        "height": 2865,
         "width": 380,
         "x": 50,
         "y": 50
