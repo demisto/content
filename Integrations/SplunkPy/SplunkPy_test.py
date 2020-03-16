@@ -1,3 +1,7 @@
+from copy import deepcopy
+import pytest
+from SplunkPy import replace_keys, rawToDict
+
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
                     'xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", distinct_hosts="5", ' \
@@ -101,7 +105,6 @@ POSITIVE = {
 
 
 def test_raw_to_dict():
-    from SplunkPy import rawToDict
     actual_raw = DICT_RAW_RESPONSE
     response = rawToDict(actual_raw)
     list_response = rawToDict(LIST_RAW)
@@ -118,3 +121,19 @@ def test_raw_to_dict():
     assert empty == {}
     assert URL_TESTING_OUT == url_test
     assert POSITIVE == character_check
+
+
+data_test_replace_keys = [
+    ({}, {}),
+    ({'test': 'test'}, {'test': 'test'}),
+    ({'test.': 'test.'}, {'test_': 'test.'}),
+    ({'te.st': 'te.st'}, {'te_st': 'te.st'}),
+    ('', ''),
+    (None, None)
+]
+
+
+@pytest.mark.parametrize('dict_in, dict_out', data_test_replace_keys)
+def test_replace_keys(dict_in, dict_out):
+    out = replace_keys(deepcopy(dict_in))
+    assert out == dict_out, 'replace_keys({}) got: {} instead: {}'.format(dict_in, out, dict_out)
