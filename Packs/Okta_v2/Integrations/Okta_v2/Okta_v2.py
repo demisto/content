@@ -497,7 +497,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client):
+def test_module(client, args):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -507,6 +507,7 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
+    args
     uri = 'users/me'
     client._http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
