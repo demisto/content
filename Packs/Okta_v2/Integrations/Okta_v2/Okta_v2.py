@@ -497,7 +497,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client, data_args):
+def test_module(client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
