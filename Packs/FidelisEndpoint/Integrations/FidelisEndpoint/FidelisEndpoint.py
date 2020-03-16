@@ -36,18 +36,15 @@ class Client(BaseClient):
     Client to use in the Fidelis Endpoint integration. Overrides BaseClient
     """
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):
-
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         token = self._generate_token(username, password)
         self._headers = {'Authorization': f'Bearer {token}'}
 
     def _generate_token(self, username: str, password: str) -> str:
         """Generate a token
-
         Arguments:
             username {str} -- Fidelis username to retrieve token with
             password {str} -- Fidelis password to retrieve token with
-
         Returns:
             token valid for 10 minutes
         """
@@ -202,7 +199,7 @@ class Client(BaseClient):
 
         url_suffix = '/endpoints/endpointidsbyname'
 
-        body = [endpoint_name]
+        body = endpoint_name
 
         return self._http_request('POST', url_suffix, json_data=body)
 
@@ -749,11 +746,13 @@ def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         return f'No hosts was found', {}, {}
 
     host_info = hosts.get('entities', [])
+    if not host_info:
+        return f'No entities were found for the host', {}, {}
     for host in host_info:
         contents.append({
-            'HostName': host.get('hostName'),
+            'Hostname': host.get('hostName'),
             'ID': host.get('id'),
-            'IpAddress': host.get('ipAddress'),
+            'IPAddress': host.get('ipAddress'),
             'OS': host.get('os'),
             'MacAddress': host.get('macAddress'),
             'LastContactDate': host.get('lastContactDate'),
@@ -848,7 +847,7 @@ def file_search_reasult_metadata(client: Client, args: dict) -> Tuple[str, Dict,
         return f'Could not find results for this job ID.', {}, {}
     data = response.get('data', {}).get('jobResultInfos', [])
     if not data:
-        return 'Check the job status, it might be still running', {}, {}
+        return 'No results found.\nCheck the job status, it might be still running.', {}, {}
     contents = {}
     file_standards = {}
     for item in data:
@@ -959,13 +958,14 @@ def execute_script_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]
     endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
 
     response = client.execute_script(script_id, endpoint_id, answer, time_out, additional_answer)
+    job_id = response.get('data')
     context = {
         'ID': script_id,
-        'JobID': response.get('data')
+        'JobID': job_id
     }
     entry_context = {'FidelisEndpoint.Script(val.ID && val.ID === obj.ID)': context}
 
-    return 'The job has been executed successfully', entry_context, response
+    return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
 def list_process_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
@@ -986,13 +986,14 @@ def list_process_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         script_id = LIST_PROCESSES_MACOS
 
     response = client.list_process(script_id, time_out, endpoint_id)
+    job_id = response.get('data')
     context = {
         'ID': script_id,
-        'JobID': response.get('data')
+        'JobID': job_id
     }
     entry_context = {'FidelisEndpoint.Process(val.ID && val.ID === obj.ID)': context}
 
-    return 'The job has been executed successfully', entry_context, response
+    return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
 def get_script_result(client: Client, args: dict):
@@ -1064,13 +1065,14 @@ def kill_process_by_pid(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         script_id = KILL_PROCESS_MAC_LINUX
 
     response = client.kill_process(script_id, pid, time_out, endpoint_id)
+    job_id = response.get('data')
     context = {
         'ID': script_id,
-        'JobID': response.get('data')
+        'JobID': job_id
     }
     entry_context = {'FidelisEndpoint.Process(val.ID && val.ID === obj.ID)': context}
 
-    return 'The job has been executed successfully', entry_context, response
+    return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
 def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
@@ -1089,13 +1091,14 @@ def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         script_id = DELETE_FILE_MAC_LINUX
 
     response = client.delete_file(script_id, file_path, time_out, endpoint_id)
+    job_id = response.get('data')
     context = {
         'ID': script_id,
-        'JobID': response.get('data')
+        'JobID': job_id
     }
     entry_context = {'FidelisEndpoint.Script(val.ID && val.ID === obj.ID)': context}
 
-    return 'The job has been executed successfully', entry_context, response
+    return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
 def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
@@ -1114,13 +1117,14 @@ def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Di
         script_id = NETWORK_ISOLATION_MAC_LINUX
 
     response = client.network_isolation(script_id, allowed_server, time_out, endpoint_id)
+    job_id = response.get('data')
     context = {
         'ID': script_id,
-        'JobID': response.get('data')
+        'JobID': job_id
     }
     entry_context = {'FidelisEndpoint.Isolation(val.ID && val.ID === obj.ID)': context}
 
-    return 'The job has been executed successfully', entry_context, response
+    return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
 def remove_network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
@@ -1138,13 +1142,14 @@ def remove_network_isolation_command(client: Client, args: dict) -> Tuple[str, D
         script_id = REMOVE_NETWORK_ISOLATION_MAC_LINUX
 
     response = client.remove_network_isolation(script_id, time_out, endpoint_id)
+    job_id = response.get('data')
     context = {
         'ID': script_id,
-        'JobID': response.get('data')
+        'JobID': job_id
     }
     entry_context = {'FidelisEndpoint.Isolation(val.ID && val.ID === obj.ID)': context}
 
-    return 'The job has been executed successfully', entry_context, response
+    return f'The job has been executed successfully. \n Job ID: {job_id}', entry_context, response
 
 
 def script_job_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
@@ -1159,7 +1164,7 @@ def script_job_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
             'JobResultID': result.get('jobResultId'),
             'Name': result.get('name'),
             'Status': result.get('status'),
-            'JobName': response.get('data').get('jobName')  # type: ignore
+            'JobName': response.get('data', {}).get('jobName')  # type: ignore
         })
     entry_context = {'FidelisEndpoint.ScriptResult(val.JobResultID && val.JobResultID === obj.JobResultID)': contents}
     human_readable = tableToMarkdown('Fidelis Endpoint script job status', contents, removeNull=True)
@@ -1177,6 +1182,8 @@ def query_file_by_hash(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         raise Exception('Enter a valid hash format.')
     contents = []
     context = []
+    headers = ['PID', 'EndpointName', 'Name', 'Path', 'User', 'Hash', 'ProcessStartTime', 'Parameters', 'ParentName',
+               'EventType']
     response = client.query_by_hash(limit, start_time, end_time, logic, file_hash)
     res = response.get('data', {})
     events = res.get('events', [])
@@ -1227,7 +1234,8 @@ def query_file_by_hash(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         })
 
     entry_context = {'FidelisEndpoint.Query(val.Hash && val.Hash === obj.Hash)': context}
-    human_readable = tableToMarkdown('Fidelis Endpoint file hash query results', contents, removeNull=True)
+    human_readable = tableToMarkdown('Fidelis Endpoint file hash query results', contents, headers=headers,
+                                     removeNull=True)
     return human_readable, entry_context, response
 
 
@@ -1295,6 +1303,9 @@ def query_connection_by_remote_ip_command(client: Client, args: dict) -> Tuple[s
     limit = args.get('limit')
     contents = []
     context = []
+    headers = ['EndpointID', 'EndpointName', 'PPID', 'LocalIP', 'LocalPort', 'RemoteIP', 'RemotePort',
+               'ProcessStartTime', 'FirstEventTime', 'LastEventTime', 'Protocol', 'ParentHashSHA1', 'ParentName',
+               'EventType']
 
     response = client.query_by_remote_ip(limit, start_time, end_time, logic, remote_ip)
     res = response.get('data', {})
@@ -1346,7 +1357,7 @@ def query_connection_by_remote_ip_command(client: Client, args: dict) -> Tuple[s
 
     entry_context = {'FidelisEndpoint.Query(val.PPID && val.PPID === obj.PPID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint query results for connection by remote IP', contents,
-                                     removeNull=True)
+                                     headers=headers, removeNull=True)
     return human_readable, entry_context, response
 
 
@@ -1358,6 +1369,8 @@ def query_dns_request_command(client: Client, args: dict) -> Tuple[str, Dict, Di
     limit = args.get('limit')
     contents = []
     context = []
+    headers = ['EndpointName', 'LocalIP', 'LocalPort', 'RemoteIP', 'RemotePort', 'ProcessStartTime', 'DnsAnswer',
+               'EventType']
 
     response = client.query_by_dns_request(limit, start_time, end_time, logic, url)
     res = response.get('data', {})
@@ -1398,7 +1411,7 @@ def query_dns_request_command(client: Client, args: dict) -> Tuple[str, Dict, Di
         })
 
     entry_context = {'FidelisEndpoint.Query(val.ParentID && val.ParentID === obj.ParentID)': context}
-    human_readable = tableToMarkdown('Fidelis Endpoint query results for the DNS request', contents,
+    human_readable = tableToMarkdown('Fidelis Endpoint query results for the DNS request', contents, headers=headers,
                                      removeNull=True)
     return human_readable, entry_context, response
 
@@ -1411,6 +1424,8 @@ def query_by_server_ip_command(client: Client, args: dict) -> Tuple[str, Dict, D
     limit = args.get('limit')
     contents = []
     context = []
+    headers = ['EndpointName', 'LocalIP', 'LocalPort', 'RemoteIP', 'RemotePort', 'ProcessStartTime', 'DnsAnswer',
+               'EventType']
 
     response = client.query_by_dns_server_ip(limit, start_time, end_time, logic, remote_ip)
     res = response.get('data', {})
@@ -1452,7 +1467,7 @@ def query_by_server_ip_command(client: Client, args: dict) -> Tuple[str, Dict, D
 
     entry_context = {'FidelisEndpoint.Query(val.TargetID && val.TargetID === obj.TargetID)': context}
     human_readable = tableToMarkdown('Fidelis Endpoint query results for the DNS request by server IP', contents,
-                                     removeNull=True)
+                                     headers=headers, removeNull=True)
     return human_readable, entry_context, response
 
 
@@ -1520,20 +1535,26 @@ def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     value = args.get('value')
     operator = args.get('operator')
     limit = args.get('limit')
-    additional_filter = args.get('additional_filter')
-    if additional_filter:
-        add_filter = additional_filter.split()
-        add_filter = {
-            'filterType': 'criteria',
-            'column': add_filter[0],
-            'operator': add_filter[1],
-            'value': add_filter[2]
-        }
+    additional_filter_string = args.get('additional_filter')
+    if additional_filter_string:
+        additional_filter_split = additional_filter_string.split()
+        if len(additional_filter_split) == 3:
+            additional_filter = {
+                'filterType': 'criteria',
+                'column': additional_filter_split[0],
+                'operator': additional_filter_split[1],
+                'value': additional_filter_split[2]
+            }
+        else:
+            raise Exception('Make sure that the additional_filter argument is in valid format')
+
     contents = []
     context = []
+    headers = ['PID', 'EndpointName', 'User', 'ProcessStartTime', 'LocalIP', 'LocalPort', 'RemoteIP', 'RemotePort',
+               'ParentID', 'EventType']
 
     response = client.query_events(limit, start_time, end_time, logic, column, value, entity_type, operator,
-                                   add_filter)
+                                   additional_filter)
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1579,7 +1600,7 @@ def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         })
 
     entry_context = {'FidelisEndpoint.Query(val.PID && val.PID === obj.PID)': context}
-    human_readable = tableToMarkdown('Fidelis Endpoint query events result', contents,
+    human_readable = tableToMarkdown('Fidelis Endpoint query events result', contents, headers=headers,
                                      removeNull=True)
     return human_readable, entry_context, response
 
@@ -1598,7 +1619,6 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], severity: str, la
         incidents = [{
             'name': f"Fidlie Endpoint alert: {alert.get('id')}",
             'occurred': alert.get('createDate'),
-            'severity': alert.get('severity'),
             'rawJSON': json.dumps(alert)
         } for alert in alerts if alert.get('id') > last_incident_id and alert.get('severity') == severity]
         # New incidents fetched

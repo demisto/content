@@ -181,7 +181,7 @@ script:
     - contextPath: FidelisEndpoint.Host.OS
       description: Endpoint OS.
       type: String
-    - contextPath: FidelisEndpoint.Host.IpAddress
+    - contextPath: FidelisEndpoint.Host.IPAddress
       description: Endpoint IP Address.
       type: String
     - contextPath: FidelisEndpoint.Host.Isolated
@@ -190,7 +190,7 @@ script:
     - contextPath: FidelisEndpoint.Host.AV_Enabled
       description: Is AV Enabled.
       type: Boolean
-    - contextPath: FidelisEndpoint.Host.HostName
+    - contextPath: FidelisEndpoint.Host.Hostname
       description: Host name.
       type: String
     - contextPath: FidelisEndpoint.Host.AgentInstalled
@@ -219,7 +219,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: MD5 to search for (for multiple hashes use (comma separated)
+      description: MD5 to search for (for multiple hashes use comma separated). Get
+        the hash from the queries commands.
       isArray: true
       name: md5
       required: true
@@ -1497,6 +1498,11 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      isArray: false
+      name: additional_filter
+      required: false
+      secret: false
     deprecated: false
     description: Query events.
     execution: false
@@ -1578,6 +1584,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
-  - no test - test exists in non circle
+- no test - test exists in non circle
