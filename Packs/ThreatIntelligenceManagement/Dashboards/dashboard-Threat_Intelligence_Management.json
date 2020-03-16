@@ -757,6 +757,5 @@
 	"isCommon": false,
 	"fromVersion": "5.5.0",
 	"shared": true,
-	"owner": "sbenyakir@paloaltonetworks.com",
 	"locked": false
 }
