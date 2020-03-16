@@ -239,7 +239,7 @@ class Pack(object):
                     dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
 
                     for f in files:
-                        # skipping unzipping of unwanted files
+                        # skipping zipping of unwanted files
                         if f.startswith('.') or f in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
                             print_warning(f"Skipping zipping {f} for {self._pack_name} pack")
                             continue
