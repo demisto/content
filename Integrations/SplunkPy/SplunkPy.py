@@ -24,6 +24,8 @@ SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+PROBLEMATIC_CHARACTERS = ['.']
+REPLACE_WITH = '_'
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -187,7 +189,7 @@ def notable_to_incident(event):
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
-    incident["rawJSON"] = json.dumps(event)
+    incident["rawJSON"] = json.dumps(replace_keys(event))
     labels = []
     if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
         isParseNotableEventsRaw = demisto.params()['parseNotableEventsRaw']
@@ -564,6 +566,18 @@ def test_module(service):
             service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
         except HTTPError as error:
             return_error(str(error))
+
+
+def replace_keys(dict_in):
+    if not isinstance(dict_in, dict):
+        return dict_in
+    for key in dict_in.keys():
+        value = dict_in.pop(key)
+        for character in PROBLEMATIC_CHARACTERS:
+            key = key.replace(character, REPLACE_WITH)
+
+        dict_in[key] = value
+    return dict_in
 
 
 def main():
