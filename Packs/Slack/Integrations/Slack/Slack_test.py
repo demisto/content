@@ -323,8 +323,11 @@ RETURN_ERROR_TARGET = 'Slack.return_error'
 
 
 @pytest.fixture(autouse=True)
-def setup():
+def setup(mocker):
     from Slack import init_globals
+
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
 
     set_integration_context({
         'mirrors': MIRRORS,
@@ -1418,7 +1421,6 @@ async def test_slack_loop_should_exit(mocker):
     def yeah_im_not_going_to_run(time):
         return "sup"
 
-    mocker.patch.object(demisto, 'info')
     mocker.patch.object(asyncio, 'sleep', side_effect=yeah_im_not_going_to_run)
 
     with pytest.raises(InterruptedError):
@@ -1948,6 +1950,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
 
     # Assert
     assert demisto.handleEntitlementForUser.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
     assert requests_mock._adapter.last_request.proxies == OrderedDict()
     assert result_args[0] == '22'
     assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
@@ -1998,6 +2001,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
 
     # Assert
     assert demisto.handleEntitlementForUser.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
     assert requests_mock._adapter.last_request.proxies == proxy_dict
     assert result_args[0] == '22'
     assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
@@ -2063,6 +2067,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
 
     # Assert
     assert demisto.handleEntitlementForUser.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
     assert demisto.error.call_count == 1
 
     assert result_args[0] == '22'
@@ -2147,6 +2152,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
     # Assert
 
     assert demisto.handleEntitlementForUser.call_count == 0
+    assert demisto.setIntegrationContext.call_count == 1
 
     # Should not delete the question
     assert demisto.getIntegrationContext()['questions'] == js.dumps([{
@@ -2165,6 +2171,69 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
+    }])
+
+
+def test_check_for_answers_no_polling(mocker, requests_mock):
+    import Slack
+
+    # Set
+    mocker.patch.object(demisto, 'handleEntitlementForUser')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'add_info_headers')
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+    requests_mock.post(
+        'https://oproxy.demisto.ninja/slack-poll',
+        json={}
+    )
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = js.dumps([{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro',
+        'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
+        'default_response': 'NoResponse',
+        'last_poll_time': '2019-09-26 18:38:00'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro',
+        'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
+        'default_response': 'NoResponse',
+        'last_poll_time': '2019-09-26 18:38:01'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    Slack.check_for_answers()
+
+    # Assert
+
+    assert demisto.handleEntitlementForUser.call_count == 0
+    assert demisto.setIntegrationContext.call_count == 0
+
+    # Should not delete the question
+    assert demisto.getIntegrationContext()['questions'] == js.dumps([{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro',
+        'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
+        'default_response': 'NoResponse',
+        'last_poll_time': '2019-09-26 18:38:00'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro',
+        'expiry': '3000-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
+        'default_response': 'NoResponse',
+        'last_poll_time': '2019-09-26 18:38:01'
     }])
 
 
@@ -2208,7 +2277,7 @@ def test_check_for_answers_no_answer_expires(mocker, requests_mock):
 
     # Assert
     assert demisto.handleEntitlementForUser.call_count == 1
-
+    assert demisto.setIntegrationContext.call_count == 1
     assert result_args[0] == '30'
     assert result_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
     assert result_args[2] == ''
@@ -2263,6 +2332,7 @@ def test_check_for_answers_error(mocker, requests_mock):
     # Assert
 
     assert demisto.handleEntitlementForUser.call_count == 0
+    assert demisto.setIntegrationContext.call_count == 1
     assert demisto.error.call_count == 2
 
     # Should not delete the question
@@ -2313,6 +2383,7 @@ def test_check_for_answers_handle_entitlement_error(mocker, requests_mock):
     # Assert
 
     assert demisto.handleEntitlementForUser.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
     assert demisto.error.call_count == 1
 
     # Should not delete the question
@@ -2610,6 +2681,59 @@ def test_send_request_with_notification_channel(mocker):
     mocker.patch.object(demisto, 'args', return_value={'channel': 'incidentNotificationChannel',
                                                        'severity': '4', 'message': '!!!',
                                                        'messageType': 'incidentOpened'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    # Arrange
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+
+    calls = slack.WebClient.api_call.call_args_list
+
+    users_call = [c for c in calls if c[0][0] == 'users.list']
+    conversations_call = [c for c in calls if c[0][0] == 'conversations.list']
+
+    # Assert
+
+    assert len(users_call) == 0
+    assert len(conversations_call) == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['C012AB3CD']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == '!!!'
+    assert send_args[5] == ''
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+
+@pytest.mark.parametrize('notify', [False, True])
+def test_send_request_with_notification_channel_as_dest(mocker, notify):
+    import Slack
+
+    mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
+                                                         'min_severity': 'High', 'notify_incidents': notify})
+
+    Slack.init_globals()
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            return {'members': js.loads(USERS)}
+        elif method == 'conversations.list':
+            return {'channels': js.loads(CONVERSATIONS)}
+        elif method == 'im.open':
+            return {'channel': {'id': 'im_channel'}}
+        return {}
+
+    mocker.patch.object(demisto, 'args', return_value={'channel': 'general', 'message': '!!!'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
