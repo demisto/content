@@ -186,8 +186,8 @@ def get_ip_context(data):
     }
     if len(data.get('locationInformation', [])) > 0:
         geo["Location"] = "{0}:{1}".format(
-            data['locationInformation'][0].get('geolocation', {}).get('latitude'),
-            data['locationInformation'][0].get('geolocation', {}).get('longitude')
+            data['locationInformation'][0].get('geolocation', {}).get('latitude', ''),
+            data['locationInformation'][0].get('geolocation', {}).get('longitude', '')
         )
         geo["Country"] = data['locationInformation'][0].get('geolocation', {}).get('countryCode')
         geo["Description"] = data['locationInformation'][0].get('geolocation', {}).get('city')
