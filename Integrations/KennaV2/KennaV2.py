@@ -120,10 +120,10 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     human_readable = []
     context: Dict[str, Any] = {}
     params = {
-        f'id[]': args.get('id'),
-        f'top_priority[]': args.get('top-priority'),
+        f'id[]': argToList(args.get('id')),
+        f'top_priority[]': argToList(args.get('top-priority')),
         f'min_risk_meter_score': args.get('min-score'),
-        f'status[]': args.get('status')
+        f'status[]': argToList(args.get('status')),
     }
     response = client.http_request(message='GET', suffix=url_suffix,
                                    params=params).get('vulnerabilities')
@@ -230,10 +230,10 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     to_context = args.get('to_context')
     context: Dict[str, Any] = {}
     params = {
-        f'id[]': args.get('id'),
-        f'top_priority[]': args.get('top-priority'),
+        f'id[]': argToList(args.get('id')),
+        f'top_priority[]': argToList(args.get('top-priority')),
         f'min_risk_meter_score': args.get('min-score'),
-        f'status[]': args.get('status'),
+        f'status[]': argToList(args.get('status')),
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
     if response:
@@ -335,12 +335,12 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     to_context = args.get('to_context')
     context: Dict[str, Any] = {}
     if args.get('tags'):
-        tags = argToList(args.get('tags'), ',')
+        tags = argToList(args.get('tags'))
     else:
         tags = args.get('tags')
     params = {
-        f'id[]': args.get('id'),
-        f'hostname[]': args.get('hostname'),
+        f'id[]': argToList(args.get('id')),
+        f'hostname[]': argToList(args.get('hostname')),
         f'min_risk_meter_score': args.get('min-score'),
         f'tags[]': tags
     }

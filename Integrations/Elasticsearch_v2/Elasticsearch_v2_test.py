@@ -1,5 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
+from dateutil.parser import parse
 
 """MOCKED RESPONSES"""
 
@@ -36,7 +37,6 @@ ES_V6_RESPONSE = {
         ]
     }
 }
-
 
 ES_V7_RESPONSE = {
     'took': 1,
@@ -244,7 +244,6 @@ MOCK_ES6_INCIDETNS = str([
     }
 ])
 
-
 ES_V7_RESPONSE_WITH_TIMESTAMP = {
     'took': 1,
     'timed_out': False,
@@ -281,7 +280,6 @@ ES_V7_RESPONSE_WITH_TIMESTAMP = {
         ]
     }
 }
-
 
 MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
     {
@@ -355,28 +353,26 @@ def test_context_creation_es6():
 
 
 @patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
 @patch("Elasticsearch_v2.TIME_FIELD", 'Date')
 @patch("Elasticsearch_v2.FETCH_INDEX", "users")
 def test_incident_creation_e6():
     from Elasticsearch_v2 import results_to_incidents_datetime
-    last_fetch = datetime.strptime('2019-08-29T14:44:00Z', '%Y-%m-%dT%H:%M:%SZ')
+    last_fetch = parse('2019-08-29T14:44:00Z')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-29 14:46:00'
+    assert str(last_fetch2) == '2019-08-29T14:46:00Z'
     assert str(incidents) == MOCK_ES6_INCIDETNS
 
 
 @patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
-@patch("Elasticsearch_v2.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
 @patch("Elasticsearch_v2.TIME_FIELD", 'Date')
 @patch("Elasticsearch_v2.FETCH_INDEX", "customer")
 def test_incident_creation_e7():
     from Elasticsearch_v2 import results_to_incidents_datetime
-    last_fetch = datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ')
+    last_fetch = parse('2019-08-27T17:59:00')
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
-    assert str(last_fetch2) == '2019-08-27 18:01:00'
+    assert str(last_fetch2) == '2019-08-27T18:01:00Z'
     assert str(incidents) == MOCK_ES7_INCIDENTS
 
 
@@ -403,3 +399,46 @@ def test_incident_creation_with_timestamp_e7():
     incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
+
+
+def test_format_to_iso():
+    from Elasticsearch_v2 import format_to_iso
+    date_string_1 = "2020-02-03T10:00:00"
+    date_string_2 = "2020-02-03T10:00:00+02:00"
+    date_string_3 = "2020-02-03T10:00:00-02:00"
+    iso_format = "2020-02-03T10:00:00Z"
+    assert format_to_iso(date_string_1) == iso_format
+    assert format_to_iso(date_string_2) == iso_format
+    assert format_to_iso(date_string_3) == iso_format
+    assert format_to_iso(iso_format) == iso_format
+
+
+@patch("Elasticsearch_v2.USERNAME", "mock")
+@patch("Elasticsearch_v2.PASSWORD", "demisto")
+def test_elasticsearch_builder_called_with_username_password(mocker):
+    from elasticsearch import Elasticsearch
+    from Elasticsearch_v2 import elasticsearch_builder
+    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
+    elasticsearch_builder()
+    assert es_mock.call_args[1].get('http_auth') == ('mock', 'demisto')
+    assert es_mock.call_args[1].get('api_key') is None
+
+
+@patch("Elasticsearch_v2.API_KEY_ID", "demisto")
+@patch("Elasticsearch_v2.PASSWORD", "mock")
+def test_elasticsearch_builder_called_with_api_key(mocker):
+    from elasticsearch import Elasticsearch
+    from Elasticsearch_v2 import elasticsearch_builder
+    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
+    elasticsearch_builder()
+    assert es_mock.call_args[1].get('http_auth') is None
+    assert es_mock.call_args[1].get('api_key') == ('demisto', 'mock')
+
+
+def test_elasticsearch_builder_called_with_no_creds(mocker):
+    from elasticsearch import Elasticsearch
+    from Elasticsearch_v2 import elasticsearch_builder
+    es_mock = mocker.patch.object(Elasticsearch, '__init__', return_value=None)
+    elasticsearch_builder()
+    assert es_mock.call_args[1].get('http_auth') is None
+    assert es_mock.call_args[1].get('api_key') is None
