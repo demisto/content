@@ -97,6 +97,10 @@ class Client(BaseClient):
                                         url + fusion_path,
                                         headers=self.headers,
                                         params=self.PARAMS)
+        
+        else:
+            return_error("You've selected a non-existing service")
+            
         return response.prepare()
 
     def build_iterator(self, service, indicator_type):
