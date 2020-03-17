@@ -30,3 +30,6 @@ conftest.py
 venv
 failed_unittests.txt
 .python-version
+Scripts/**/__init__.py
+Integrations/**/__init__.py
+Packs/**/__init__.py
