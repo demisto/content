@@ -40,12 +40,12 @@ def get_all_incidents(from_date: str) -> list:
     return incidents
 
 
-def get_feeds_for_incident(incident_id: int) -> list:
+def get_feeds_for_incident(incident_id: int) -> set:
     """
     Retrieves a list feeds based on indicators that appear in a given incident.
     :param incident_id: int
         Incident ID to query by.
-    :return: list
+    :return: set
         List of feeds that have indicators in the given incident.
     """
     indicator_query = f'sourceBrands:*Feed* and incident.id:{incident_id}'
