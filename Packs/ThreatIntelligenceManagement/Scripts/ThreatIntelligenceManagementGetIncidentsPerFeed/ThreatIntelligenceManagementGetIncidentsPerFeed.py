@@ -59,15 +59,13 @@ def get_feeds_for_incident(incident_id: int) -> list:
     return feeds
 
 
-def sum_number_of_feeds_for_an_incident(incident_id: int, feed_counter: dict) -> dict:
+def sum_number_of_feeds_for_an_incident(incident_id: int, feed_counter: dict):
     """
     Counts the number of feeds that are related to a given incident (due to indicators that appear in the incident)
     :param incident_id: int
         the incident ID to count the feeds for.
     :param feed_counter: dict
         The general dictionary that holds all the sums.
-    :return: dict
-        Updated dictionary counter.
     """
     feeds = get_feeds_for_incident(incident_id)
     for feed in feeds:
