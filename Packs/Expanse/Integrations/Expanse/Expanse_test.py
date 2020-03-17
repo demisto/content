@@ -69,7 +69,7 @@ def test_ip_missing_values(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
-    assert results[0]['EntryContext']['IP(val.Address == obj.Address)']['Geo']['Location'] is None
+    assert results[0]['EntryContext']['IP(val.Address == obj.Address)']['Geo'].get('Location') is None
 
 
 def test_domain(mocker):
