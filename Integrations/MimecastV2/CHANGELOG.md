@@ -1,5 +1,8 @@
 ## [Unreleased]
+-
 
+## [20.2.0] - 2020-02-04
+Added the ***mimecast-update-policy*** command.
 
 ## [19.12.1] - 2019-12-25
 - Added 9 commands.

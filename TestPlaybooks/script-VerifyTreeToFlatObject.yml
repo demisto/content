@@ -1,6 +1,6 @@
 commonfields:
-  id: c5cb179f-d6d2-4d87-8857-b224689d5b00
-  version: 15
+  id: VerifyTreeToFlatObject
+  version: -1
 name: VerifyTreeToFlatObject
 script: |+
   var dataWithNestedObject = {

@@ -200,7 +200,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
             dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
-                'Type': arg,
+                'Type': 'ip',
                 'Vendor': 'AlienVault OTX v2'
             })
     if not raws:
@@ -355,7 +355,7 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
             })
             dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
-                'Score': str(calculate_dbot_score(raw_response.get('pulse_info'))),
+                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
                 'Type': 'url',
                 'Vendor': 'AlienVault OTX v2'
             })

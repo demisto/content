@@ -33,11 +33,7 @@ CONTENT_DIRS = [
     WIDGETS_DIR,
 ]
 
-PACKAGES_TO_SKIP = [
-    'HelloWorld',
-    'HelloWorldSimple',
-    'HelloWorldScript'
-]
+PACKAGES_TO_SKIP = []
 
 # temp folder names
 BUNDLE_POST = 'bundle_post'
@@ -149,7 +145,7 @@ def copy_test_files(bundle_test):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def update_content_version(content_ver: str, path: str = './Scripts/CommonServerPython/CommonServerPython.py'):
+def update_content_version(content_ver: str, path: str = './Packs/Base/Scripts/CommonServerPython/CommonServerPython.py'):
     regex = r'CONTENT_RELEASE_VERSION = .*'
     try:
         with open(path, 'r+') as f:
@@ -161,7 +157,7 @@ def update_content_version(content_ver: str, path: str = './Scripts/CommonServer
         print_warning(f'Could not open CommonServerPython File - {ex}')
 
 
-def update_branch(path: str = './Scripts/CommonServerPython/CommonServerPython.py'):
+def update_branch(path: str = './Packs/Base/Scripts/CommonServerPython/CommonServerPython.py'):
 
     regex = r'CONTENT_BRANCH_NAME = .*'
     branches = run_command('git branch')
