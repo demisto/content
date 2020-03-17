@@ -119,13 +119,13 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) ->
         raise Exception("The bind variables lists are not is the same length")
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     """
     Performs basic connect to SQL server
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
     """
-    return 'ok', None, None
+    return 'ok', {}, []
 
 
 def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
