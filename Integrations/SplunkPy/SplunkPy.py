@@ -232,7 +232,7 @@ def request(url, message):
         'body': StringIO(response.read())    # type: ignore
     }
     for key in t.keys():
-        demisto.info('{}: {}'.format(key, str(t[key] if not isinstance(t[key], StringIO) else t[key])))
+        demisto.info('{}: {}'.format(key, str(t[key])))
     return t
 
 
