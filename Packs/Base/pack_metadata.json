@@ -1,5 +1,5 @@
 {
-    "displayName": "Base",
+    "name": "Base",
     "description": "The base pack for Cortex XSOAR.",
     "support": "Cortex XSOAR",
     "serverMinVersion": "1.0.0",
