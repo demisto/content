@@ -19,13 +19,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Define utf8 as default encoding
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
-
+params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
-FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
+VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
+FETCH_LIMIT = int(params.get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 PROBLEMATIC_CHARACTERS = ['.']
-REPLACE_WITH = '_' if True else False
+REPLACE_WITH = '_'
+REPLACE_FLAG = params.get('replaceKeys', False)
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -189,7 +190,7 @@ def notable_to_incident(event):
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
-    event = replace_keys(event) if REPLACE_WITH else event
+    event = replace_keys(event) if REPLACE_FLAG else event
     incident["rawJSON"] = json.dumps(event)
     labels = []
     if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
