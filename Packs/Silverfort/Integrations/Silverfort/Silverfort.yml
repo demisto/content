@@ -198,7 +198,7 @@ script:
     name: silverfort-update-resource-risk
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false

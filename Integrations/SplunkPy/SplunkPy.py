@@ -1,3 +1,5 @@
+from splunklib.binding import HTTPError
+
 import demistomock as demisto
 from CommonServerPython import *
 import splunklib.client as client
@@ -78,20 +80,17 @@ def rawToDict(raw):
                 val = single_key_val[1]
                 key = single_key_val[0].strip()
 
-            alreadyThere = False
-            for dictkey, dictvalue in result.items():
-                if dictkey == key:
-                    alreadyThere = True
-                    result[dictkey] = dictvalue + "," + val
+                if key in result.keys():
+                    result[key] = result[key] + "," + val
+                else:
+                    result[key] = val
 
-            if not alreadyThere:
-                result[key] = val
     else:
-        raw_response = re.split('\S,', raw)  # split by any non-whitespace character follows by
+        raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
         for key_val in raw_response:
             key_value = key_val.replace('"', '').strip()
             if '=' in key_value:
-                key_and_val = key_value.split('=')
+                key_and_val = key_value.split('=', 1)
                 result[key_and_val[0]] = key_and_val[1]
     return result
 
@@ -126,7 +125,6 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     # Make sure that rule IDs and/or a search ID is provided
     if eventIDs is None and searchID is None:
         raise Exception("Either eventIDs of a searchID must be provided (or both)")
-        return False
 
     # These the arguments to the REST handler
     args = {}
@@ -210,7 +208,7 @@ def handler(proxy):
     return request
 
 
-def request(url, message, **kwargs):
+def request(url, message):
     method = message['method'].lower()
     data = message.get('body', "") if method == 'post' else None
     headers = dict(message.get('headers', []))
@@ -549,7 +547,7 @@ def splunk_edit_notable_event_command(proxy):
 
 
 def splunk_parse_raw_command():
-    raw = demisto.args()['raw']
+    raw = demisto.args().get('raw', '')
     rawDict = rawToDict(raw)
     ec = {}
     ec['Splunk.Raw.Parsed'] = rawDict
@@ -558,18 +556,14 @@ def splunk_parse_raw_command():
 
 def test_module(service):
     if demisto.params().get('isFetch'):
-        t = datetime.utcnow() - timedelta(days=3)
+        t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs_oneshot = {'count': 1, 'earliest_time': time}
         searchquery_oneshot = demisto.params()['fetchQuery']
-        oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
-        reader = results.ResultsReader(oneshotsearch_results)
-        for item in reader:
-            if item:
-                demisto.results('ok')
-
-    if len(service.jobs) >= 0:  # type: ignore
-        demisto.results('ok')
+        try:
+            service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+        except HTTPError as error:
+            return_error(str(error))
 
 
 def main():
@@ -605,6 +599,7 @@ def main():
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         test_module(service)
+        demisto.results('ok')
     if demisto.command() == 'splunk-search':
         splunk_search_command(service)
     if demisto.command() == 'splunk-job-create':
