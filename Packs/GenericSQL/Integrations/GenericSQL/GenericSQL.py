@@ -139,9 +139,9 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
         sql_query = str(args.get('query'))
         limit = int(args.get('limit', 50))
         skip = int(args.get('skip', 0))
-        bind_variables_names = args.get('bind_variables_names')
-        bind_variables_values = args.get('bind_variables_values')
-        bind_variables = generate_bind_vars(str(bind_variables_names), str(bind_variables_values))
+        bind_variables_names = args.get('bind_variables_names', "")
+        bind_variables_values = args.get('bind_variables_values', "")
+        bind_variables = generate_bind_vars(bind_variables_names, bind_variables_values)
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
         table = [dict(row) for row in result]
