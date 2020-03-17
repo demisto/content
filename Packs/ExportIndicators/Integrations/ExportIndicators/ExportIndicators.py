@@ -82,7 +82,7 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
     """
     now = datetime.now()
     iocs = find_indicators_with_limit(indicator_query, limit, offset)  # poll indicators into list from demisto
-    out_dict, actual_indicator_amount = create_values_out_dict(iocs, out_format, collapse_ips=collapse_ips)
+    out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, out_format, collapse_ips=collapse_ips)
 
     # re-polling in case ip collapse caused a lack in results
     if collapse_ips != DONT_COLLAPSE:
@@ -102,7 +102,8 @@ def refresh_outbound_context(indicator_query: str, out_format: str, limit: int =
             iocs += new_iocs
 
             # reformat the output
-            out_dict, actual_indicator_amount = create_values_out_dict(iocs, out_format, collapse_ips=collapse_ips)
+            out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, out_format,
+                                                                                collapse_ips=collapse_ips)
 
     out_dict[CTX_MIMETYPE_KEY] = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     demisto.setIntegrationContext({
@@ -158,15 +159,14 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
     return iocs, next_page
 
 
-def ip_groups_to_ranges(ip_range_groups: list, collapse_ips: str):
-    """Collapse ip groups list to ranges or CIDRs
+def ip_groups_to_cidrs(ip_range_groups: list):
+    """Collapse ip groups list to CIDRs
 
     Args:
         ip_range_groups (list): a list of lists containing connected IPs
-        collapse_ips (str):  Whether to collapse to Ranges or CIDRs.
 
     Returns:
-        list. a list to Ranges or CIDRs.
+        list. a list of CIDRs.
     """
     ip_ranges = []  # type:List
     for group in ip_range_groups:
@@ -177,32 +177,51 @@ def ip_groups_to_ranges(ip_range_groups: list, collapse_ips: str):
 
         min_ip = group[0]
         max_ip = group[-1]
-        if collapse_ips == COLLAPSE_TO_RANGES:
-            ip_ranges.append(str(min_ip) + "-" + str(max_ip))
+        moved_ip = False
+        # CIDR must begin with an even LSB
+        # if the first ip does not - separate it from the rest of the range
+        if (int(str(min_ip).split('.')[-1]) % 2) != 0:
+            ip_ranges.append(str(min_ip))
+            min_ip = group[1]
+            moved_ip = True
 
-        elif collapse_ips == COLLAPSE_TO_CIDR:
-            moved_ip = False
-            # CIDR must begin with an even LSB
-            # if the first ip does not - separate it from the rest of the range
-            if (int(str(min_ip).split('.')[-1]) % 2) != 0:
-                ip_ranges.append(str(min_ip))
-                min_ip = group[1]
-                moved_ip = True
+        # CIDR must end with uneven LSB
+        # if the last ip does not - separate it from the rest of the range
+        if (int(str(max_ip).split('.')[-1]) % 2) == 0:
+            ip_ranges.append(str(max_ip))
+            max_ip = group[-2]
+            moved_ip = True
 
-            # CIDR must end with uneven LSB
-            # if the last ip does not - separate it from the rest of the range
-            if (int(str(max_ip).split('.')[-1]) % 2) == 0:
-                ip_ranges.append(str(max_ip))
-                max_ip = group[-2]
-                moved_ip = True
+        # if both min and max ips were shifted and there are only 2 ips in the range
+        # we added both ips by the shift and now we move to the next  range
+        if moved_ip and len(group) == 2:
+            continue
 
-            # if both min and max ips were shifted and there are only 2 ips in the range
-            # we added both ips by the shift and now we move to the next  range
-            if moved_ip and len(group) == 2:
-                continue
+        else:
+            ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
 
-            else:
-                ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
+    return ip_ranges
+
+
+def ip_groups_to_ranges(ip_range_groups: list):
+    """Collapse ip groups list to ranges
+
+    Args:
+        ip_range_groups (list): a list of lists containing connected IPs
+
+    Returns:
+        list. a list of Ranges.
+    """
+    ip_ranges = []  # type:List
+    for group in ip_range_groups:
+        # handle single ips
+        if len(group) == 1:
+            ip_ranges.append(str(group[0]))
+            continue
+
+        min_ip = group[0]
+        max_ip = group[-1]
+        ip_ranges.append(str(min_ip) + "-" + str(max_ip))
 
     return ip_ranges
 
@@ -239,10 +258,14 @@ def ips_to_ranges(ips: list, collapse_ips):
             if not appended:
                 ips_range_groups.append([ip])
 
-    return ip_groups_to_ranges(ips_range_groups, collapse_ips)
+    if collapse_ips == COLLAPSE_TO_RANGES:
+        return ip_groups_to_ranges(ips_range_groups)
+
+    else:
+        return ip_groups_to_cidrs(ips_range_groups)
 
 
-def create_values_out_dict(iocs: list, out_format: str, collapse_ips=DONT_COLLAPSE) -> Tuple[dict, int]:
+def create_values_for_returned_dict(iocs: list, out_format: str, collapse_ips=DONT_COLLAPSE) -> Tuple[dict, int]:
     """
     Create a dictionary for output values using the selected format (json, json-seq, text, csv)
     """
@@ -354,7 +377,7 @@ def get_ioc_values_str_from_context(iocs=None, new_format: str = FORMAT_TEXT,
             return ''
 
         iocs = iocs[offset: limit + offset]
-        returned_dict, _ = create_values_out_dict(iocs, new_format)
+        returned_dict, _ = create_values_for_returned_dict(iocs, new_format)
         current_cache = demisto.getIntegrationContext()
         current_cache['last_output'] = returned_dict
         demisto.setIntegrationContext(current_cache)
