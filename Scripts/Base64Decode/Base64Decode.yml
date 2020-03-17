@@ -2,15 +2,7 @@ commonfields:
   id: Base64Decode
   version: 2
 name: Base64Decode
-script: |+
-  import base64
-
-  value = demisto.args()["value"]
-
-  decodedBytes = base64.urlsafe_b64decode(str(value))
-  res = str(decodedBytes)
-  demisto.results(res)
-
+script: ''
 type: python
 tags:
 - Utility
@@ -25,7 +17,10 @@ args:
   description: to decode in Base64 format
 outputs:
 - contextPath: Base64.decoded
-  description: input encoded as Base64 format
+  description: Decoded output of the script.
+  type: string
+- contextPath: Base64.originalValue
+  description: Original value givven to the script.
   type: string
 scripttarget: 0
 subtype: python3
