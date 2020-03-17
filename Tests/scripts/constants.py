@@ -95,6 +95,8 @@ PACKS_INCIDENT_TYPES_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, IN
 PACKS_INCIDENT_FIELDS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, INCIDENT_FIELDS_DIR)
 PACKS_LAYOUTS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, LAYOUTS_DIR)
 PACKS_WIDGETS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, WIDGETS_DIR)
+PACKS_REPORTS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, REPORTS_DIR)
+PACKS_INDICATOR_FIELDS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, INDICATOR_FIELDS_DIR)
 PACKS_CHANGELOG_REGEX = r'{}/([^/]+)/CHANGELOG\.md'.format(PACKS_DIR)
 PACKS_README_REGEX = r'{}/([^/]+)/README\.md'.format(PACKS_DIR)
 PACKS_PACKAGE_META_REGEX = r'{}/([^/]+)/package-meta\.json'.format(PACKS_DIR)
@@ -124,7 +126,7 @@ MISC_REPUTATIONS_REGEX = r'{}.reputations.json$'.format(MISC_DIR)
 # Pack Unique Files
 PACKS_WHITELIST_FILE_NAME = '.secrets-ignore'
 PACKS_PACK_IGNORE_FILE_NAME = '.pack-ignore'
-PACKS_PACK_META_FILE_NAME = 'pack-metadata.json'
+PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 PACKS_README_FILE_NAME = 'README.md'
 
 FILE_IN_INTEGRATIONS_DIR_REGEX = r'{}/(.+)'.format(INTEGRATIONS_DIR)
@@ -335,6 +337,7 @@ class PB_Status:
     COMPLETED = 'completed'
     FAILED = 'failed'
     IN_PROGRESS = 'inprogress'
+    FAILED_DOCKER_TEST = 'failed_docker_test'
 
 
 # change log regexes

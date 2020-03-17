@@ -1,6 +1,7 @@
 {
 	"id": "incident_devicegsuiteaccountstatus",
 	"version": -1,
+	"fromVersion": "5.0.0",
 	"modified": "2020-01-05T15:51:35.880235683Z",
 	"name": "Device G-Suite Account Status",
 	"ownerOnly": false,

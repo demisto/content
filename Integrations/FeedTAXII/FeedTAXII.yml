@@ -1,20 +1,30 @@
 category: Data Enrichment & Threat Intelligence
+fromversion: 5.5.0
 commonfields:
   id: TAXIIFeed
   version: -1
 configuration:
 - display: Fetch indicators
   name: feed
+  defaultvalue: true
   required: false
   type: 8
-- defaultvalue: '240'
-  display: Fetch Interval
-  name: feedFetchInterval
-  required: true
-  type: 19
-- defaultvalue: F - Reliability cannot be judged
-  display: Reliability
-  name: feedInstanceReliability
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -24,33 +34,34 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: expiration
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
   type: 17
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
+  display: ""
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ""
   required: false
   type: 1
-- display: Bypass exclusion list
-  name: bypassExclusionList
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
   defaultvalue: ""
-  type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list will be ignored for this feed.
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - additionalinfo: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
   display: Discovery Service
   name: discovery_service
@@ -66,7 +77,7 @@ configuration:
   name: subscription_id
   required: false
   type: 0
-- display: Username
+- display: Name (To use the API key click the "?" icon)
   name: credentials
   required: false
   type: 9
@@ -81,16 +92,6 @@ configuration:
   name: poll_service
   required: false
   type: 0
-- additionalinfo: API key used for authentication with the TAXII server.
-  display: API Key
-  name: api_key
-  required: false
-  type: 0
-- additionalinfo: API key header to be used to provide API key to the TAXII server. For example, "Authorization".
-  display: API Header Name
-  name: api_header
-  required: false
-  type: 0
 - additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12
     hours, 7 days.
   defaultvalue: 1 day
@@ -99,6 +100,15 @@ configuration:
   name: initial_interval
   required: false
   type: 0
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Ingests indicator feeds from TAXII 1.x servers.
 display: TAXII Feed
 name: TAXIIFeed
@@ -134,7 +144,7 @@ script:
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/taxii:1.0.0.5214
+  dockerimage: demisto/taxii:1.0.0.6243
   feed: true
   isfetch: false
   longRunning: false

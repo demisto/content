@@ -1,5 +1,5 @@
 {
-	"autorun": false,
+	"autorun": true,
 	"closureScript": "",
 	"color": "#8052F3",
 	"days": 0,
@@ -11,6 +11,7 @@
 	"id": "AWS IAM Policy Misconfiguration",
 	"locked": false,
 	"name": "AWS IAM Policy Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - AWS IAM Policy Misconfiguration",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
