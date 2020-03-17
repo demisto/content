@@ -508,8 +508,8 @@ class Pack(object):
                     author_image_storage_path = os.path.join(GCS_PUBLIC_URL, storage_bucket.name,
                                                              author_image_storage_path)
                     # disable-secrets-detection-end
-                print_warning((f"Skipping uploading of {self._pack_name} pack author image "
-                               f"and use default {BASE_PACK} pack image"))
+                print_color((f"Skipping uploading of {self._pack_name} pack author image "
+                             f"and use default {BASE_PACK} pack image"), LOG_COLORS.GREEN)
 
         except Exception as e:
             print_error(f"Failed uploading {self._pack_name} pack author image. Additional info:\n {e}")
