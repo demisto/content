@@ -336,7 +336,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix, json_data=body)
 
-    def remove_network_isolation(self, script_id: str = None, time_out: int = None, endpoint_ip=None) -> Dict:
+    def remove_network_isolation(self, script_id: str = None, time_out: int = None, endpoint_ip: list = None) -> Dict:
 
         url_suffix = '/jobs/createTask'
         body: dict = {
@@ -368,8 +368,8 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix)
 
-    def query_by_hash(self, limit: str = None, start_time: Union[None, int, float] = None,
-                      end_time: Union[None, int, float] = None, logic: str = None, file_hash: str = None) -> Dict:
+    def query_file_by_hash(self, limit: str = None, start_time: str = None, end_time: str = None, logic: str = None,
+                           file_hash: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -404,8 +404,8 @@ class Client(BaseClient):
             raise Exception(response.get('error'))
         return response
 
-    def query_by_process_name(self, limit: str = None, start_time: Union[None, int, float] = None,
-                              end_time: Union[None, int, float] = None, logic: str = None,
+    def query_by_process_name(self, limit: str = None, start_time: str = None,
+                              end_time: str = None, logic: str = None,
                               process_name: str = None) -> Dict:
 
         url_suffix = '/v2/events'
@@ -441,8 +441,8 @@ class Client(BaseClient):
             raise Exception(response.get('error'))
         return response
 
-    def query_by_remote_ip(self, limit: str = None, start_time: Union[None, int, float] = None,
-                           end_time: Union[None, int, float] = None, logic: str = None, remote_ip: str = None) -> Dict:
+    def query_by_remote_ip(self, limit: str = None, start_time: str = None,
+                           end_time: str = None, logic: str = None, remote_ip: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -479,8 +479,8 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_request(self, limit: str = None, start_time: Union[None, int, float] = None,
-                             end_time: Union[None, int, float] = None, logic: str = None, url: str = None) -> Dict:
+    def query_by_dns_request(self, limit: str = None, start_time: str = None,
+                             end_time: str = None, logic: str = None, url: str = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -515,8 +515,8 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_server_ip(self, limit: str = None, start_time: Union[None, int, float] = None,
-                               end_time: Union[None, int, float] = None, logic: str = None,
+    def query_by_dns_server_ip(self, limit: str = None, start_time: str = None,
+                               end_time: str = None, logic: str = None,
                                remote_ip: str = None) -> Dict:
 
         url_suffix = '/v2/events'
@@ -552,8 +552,8 @@ class Client(BaseClient):
 
         return response
 
-    def query_by_dns_source_ip(self, limit: str = None, start_time: Union[None, int, float] = None,
-                               end_time: Union[None, int, float] = None, logic: str = None, source_ip: str = None,
+    def query_by_dns_source_ip(self, limit: str = None, start_time: str = None,
+                               end_time: str = None, logic: str = None, source_ip: str = None,
                                domain: str = None) -> Dict:
 
         url_suffix = '/v2/events'
@@ -595,10 +595,10 @@ class Client(BaseClient):
 
         return response
 
-    def query_events(self, limit: str = None, start_time: Union[None, int, float] = None,
-                     end_time: Union[None, int, float] = None, logic: str = None, column: str = None,
+    def query_events(self, limit: str = None, start_time: str = None,
+                     end_time: str = None, logic: str = None, column: str = None,
                      value: str = None, entity_type: str = None, operator: str = None,
-                     additional_filter=None) -> Dict:
+                     additional_filter: Dict = None) -> Dict:
 
         url_suffix = '/v2/events'
         params = assign_params(pageSize=limit)
@@ -640,9 +640,9 @@ class Client(BaseClient):
         return response
 
 
-def get_endpoint_id(client: Client, endpoint_ip=None, endpoint_name=None):
+def get_endpoint_id(client: Client, endpoint_ip: list = None, endpoint_name: list = None):
     if endpoint_name and endpoint_ip:
-        raise Exception('You must provide only one argument endpoint_ip or endpoint_name')
+        raise Exception('You must provide only one of the arguments endpoint_ip or endpoint_name')
 
     if not endpoint_ip and not endpoint_name:
         raise Exception('You must provide either endpoint_ip or endpoint_name')
@@ -658,13 +658,12 @@ def get_endpoint_id(client: Client, endpoint_ip=None, endpoint_name=None):
     return endpoint_id
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
     client.test_module_request()
-    demisto.results('ok')
-    return '', {}, {}
+    return 'ok', {}, {}
 
 
 def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
@@ -735,7 +734,7 @@ def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     host = args.get('host', '')
 
     if not host and not ip_address:
-        return f'You must provide either ip_address or host', {}, {}
+        raise Exception(f'You must provide either ip_address or host')
 
     contents = []
     context_standards = []
@@ -1066,6 +1065,8 @@ def kill_process_by_pid(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         script_id = KILL_PROCESS_MAC_LINUX
 
     response = client.kill_process(script_id, pid, time_out, endpoint_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     job_id = response.get('data')
     context = {
         'ID': script_id,
@@ -1092,6 +1093,8 @@ def delete_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         script_id = DELETE_FILE_MAC_LINUX
 
     response = client.delete_file(script_id, file_path, time_out, endpoint_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     job_id = response.get('data')
     context = {
         'ID': script_id,
@@ -1118,6 +1121,8 @@ def network_isolation_command(client: Client, args: dict) -> Tuple[str, Dict, Di
         script_id = NETWORK_ISOLATION_MAC_LINUX
 
     response = client.network_isolation(script_id, allowed_server, time_out, endpoint_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     job_id = response.get('data')
     context = {
         'ID': script_id,
@@ -1139,10 +1144,12 @@ def remove_network_isolation_command(client: Client, args: dict) -> Tuple[str, D
     if operating_system == 'Windows':
         script_id = REMOVE_NETWORK_ISOLATION_WINDOWS
 
-    elif operating_system == 'Linux' or os == 'macOS':
+    elif operating_system in {'Linux', 'macOS'}:
         script_id = REMOVE_NETWORK_ISOLATION_MAC_LINUX
 
     response = client.remove_network_isolation(script_id, time_out, endpoint_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     job_id = response.get('data')
     context = {
         'ID': script_id,
@@ -1173,7 +1180,7 @@ def script_job_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def query_file_by_hash(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_file_by_hash_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1183,9 +1190,10 @@ def query_file_by_hash(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         raise Exception('Enter a valid hash format.')
     contents = []
     context = []
+    file_standards = []
     headers = ['PID', 'EndpointName', 'Name', 'Path', 'User', 'Hash', 'ProcessStartTime', 'Parameters', 'ParentName',
                'EventType']
-    response = client.query_by_hash(limit, start_time, end_time, logic, file_hash)
+    response = client.query_file_by_hash(limit, start_time, end_time, logic, file_hash)
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1234,7 +1242,23 @@ def query_file_by_hash(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
             'StartTime': event.get('startTime')
         })
 
-    entry_context = {'FidelisEndpoint.Query(val.Hash && val.Hash === obj.Hash)': context}
+        file_standards.append({
+            'Name': event.get('name'),
+            'Size': event.get('size'),
+            'MD5': event.get('hash'),
+            'Extension': event.get('fileExtension'),
+            'Type': event.get('fileType'),
+            'Path': event.get('path'),
+            'Hostname': event.get('endpointName'),
+            'SHA1': event.get('hashSHA1'),
+            'SHA256': event.get('hashSHA256'),
+            'FileVersion': event.get('fileVersion')
+        })
+
+    entry_context = {
+        'FidelisEndpoint.Query(val.Hash && val.Hash === obj.Hash)': context,
+        'File': file_standards
+    }
     human_readable = tableToMarkdown('Fidelis Endpoint file hash query results', contents, headers=headers,
                                      removeNull=True)
     return human_readable, entry_context, response
@@ -1527,7 +1551,7 @@ def query_by_source_ip(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
-def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+def query_events_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     logic = args.get('logic')
@@ -1537,6 +1561,7 @@ def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     operator = args.get('operator')
     limit = args.get('limit')
     additional_filter_string = args.get('additional_filter')
+    additional_filter = ''
     if additional_filter_string:
         additional_filter_split = additional_filter_string.split()
         if len(additional_filter_split) == 3:
@@ -1547,13 +1572,13 @@ def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
                 'value': additional_filter_split[2]
             }
         else:
-            raise Exception('Make sure that the additional_filter argument is in valid format')
+            raise Exception('Make sure that the additional_filter argument is in valid format.\n '
+                            'For Example: pid = 1234')
 
     contents = []
     context = []
     headers = ['PID', 'EndpointName', 'User', 'ProcessStartTime', 'LocalIP', 'LocalPort', 'RemoteIP', 'RemotePort',
                'ParentID', 'EventType']
-
     response = client.query_events(limit, start_time, end_time, logic, column, value, entity_type, operator,
                                    additional_filter)
     res = response.get('data', {})
@@ -1607,7 +1632,6 @@ def query_events(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
-    # handle first time fetch
     last_fetch_alert_time = last_run.get('time')
     if not last_fetch_alert_time:
         last_fetch_alert_time, _ = parse_date_range(fetch_time, to_timestamp=True)
@@ -1621,12 +1645,11 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         alert_id = str(alert.get('id'))
         alert_create_date = alert.get('createDate')
         incident = {
-            'name': f"Fidelis Endpoint alert {alert_id}",
+            'name': f'Fidelis Endpoint alert {alert_id}',
             'occurred': alert_create_date,
             'rawJSON': json.dumps(alert)
         }
         alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp()) * 1000
-        # update last run
         if alert_create_date_timestamp > last_fetch_alert_time:
             incidents.append(incident)
 
@@ -1656,8 +1679,7 @@ def main():
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            demisto.results(result)
+            return_outputs(*test_module(client))
         elif demisto.command() == 'fetch-incidents':
             fetch_time = demisto.params().get('fetch_time', '3 days')
             fetch_limit = demisto.params().get('fetch_limit', '50')
@@ -1717,7 +1739,7 @@ def main():
             return_outputs(*execute_script_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-query-file':
-            return_outputs(*query_file_by_hash(client, demisto.args()))
+            return_outputs(*query_file_by_hash_command(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-query-process':
             return_outputs(*query_process_name_command(client, demisto.args()))
@@ -1735,7 +1757,7 @@ def main():
             return_outputs(*query_by_source_ip(client, demisto.args()))
 
         elif demisto.command() == 'fidelis-endpoint-query-events':
-            return_outputs(*query_events(client, demisto.args()))
+            return_outputs(*query_events_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:

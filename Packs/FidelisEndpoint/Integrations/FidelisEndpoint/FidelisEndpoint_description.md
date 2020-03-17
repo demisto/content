@@ -1,3 +1,7 @@
-## Hello World
-- This text is markdown
-- Here you should explain how to configure the instance in Demisto
+## Fidelis Elvate Networks (EDR)
+Fidelis Endpoint provides advanced endpoint detection and response (EDR) across Windows, Mac and Linux OSes for faster threat remediation.
+
+Supported version - 9.2
+
+### Creating an instance
+To create an instance enter your Fidleis username and password.

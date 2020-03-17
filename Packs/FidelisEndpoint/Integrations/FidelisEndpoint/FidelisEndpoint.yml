@@ -15,14 +15,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -38,6 +30,14 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Fidelis Endpoint provides advanced endpoint detection and response (EDR)
   across Windows, Mac and Linux OSes for faster threat remediation.
 display: Fidelis EDR
@@ -56,6 +56,7 @@ script:
       description: |-
         Sorts the result before applying take and skip.
         Can be any property name of the alert object.
+        For example: insertionDate+Descending
       isArray: false
       name: sort
       required: false
@@ -168,7 +169,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search for endpoints based on an IP Address or host  name.
+    description: Search for endpoints based on an IP Address or hostname.
     execution: false
     name: fidelis-endpoint-host-info
     outputs:
@@ -455,7 +456,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Endpoint IP.
+      description: Endpoint IP. Get the endpoint IP from host-info command.
       isArray: true
       name: endpoint_ip
       required: false
@@ -497,7 +498,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Job ID (can be found in the scrip exeutions commands)
+      description: 'The script execution job ID. (Can be found in the following commands:
+        script-exeution, file-search, list-processes, kill-process-by-pid, delete-file,
+        network-siolation, remove-network-isolation).'
       isArray: false
       name: job_id
       required: true
@@ -596,7 +599,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Kill process by process ID.
+    description: Terminates the process that matches the required parameter's process
+      ID.
     execution: false
     name: fidelis-endpoint-kill-process
     outputs:
@@ -663,7 +667,7 @@ script:
       secret: false
     - default: false
       defaultValue: '300'
-      description: Script time out (in seconds).
+      description: Script timeout (in seconds).
       isArray: false
       name: time_out
       required: false
@@ -680,7 +684,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The server ip that can communicate with the isolated endpoint.
+      description: 'The server ip that can communicate with the isolated endpoint.
+        For example: 10.10.10.10.'
       isArray: false
       name: allowed_server
       required: true
@@ -692,7 +697,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Isolate an endpoint from the network.
+    description: Quarantines an endpoint. While isolated, the endpoint's network communication
+      is restricted to only the allowed servers.
     execution: false
     name: fidelis-endpoint-isolate-network
     outputs:
@@ -711,7 +717,7 @@ script:
       secret: false
     - default: false
       defaultValue: '300'
-      description: Script time out
+      description: Script timeout (in seconds).
       isArray: false
       name: time_out
       required: false
@@ -746,7 +752,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The job result ID (get the id from the scripts executions command).
+      description: 'The script execution job result ID. (Can be found in the following
+        commands: script-exeution, file-search, list-processes, kill-process-by-pid,
+        delete-file, network-siolation, remove-network-isolation).'
       isArray: false
       name: job_result_id
       required: true
@@ -801,7 +809,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Execute script.
+    description: Execute script package from Fidelis endpoint packages.
     execution: false
     name: fidelis-endpoint-execute-script
     outputs:
@@ -814,7 +822,7 @@ script:
   - arguments:
     - default: false
       description: |-
-        The start time of the event in the system.
+        The start time of the event in the system in UTC format.
         Supported values: "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
@@ -822,7 +830,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time of the event in the system.
+        The end time of the event in the system in UTC format.
         Supported values:"2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
@@ -839,7 +847,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The file hash to search for.
+      description: The MD5 file hash to search for.
       isArray: false
       name: file_hash
       required: true
@@ -934,10 +942,41 @@ script:
     - contextPath: FidelisEndpoint.Query.EntityType
       description: Entity type.
       type: Number
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension, for example: "txt".'
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: Number
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: File.Hostname
+      description: The name of the host where the file was found.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.FileVersion
+      description: The file version.
+      type: String
   - arguments:
     - default: false
       description: |-
-        The start time of the event in the system.
+        The start time of the event in the system in UTC format.
         Supported values: "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
@@ -945,7 +984,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time of the event in the system.
+        The end time of the event in the system in UTC format.
         Supported values:"2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
@@ -1027,7 +1066,7 @@ script:
   - arguments:
     - default: false
       description: |-
-        The start time of the event in the system.
+        The start time of the event in the system in UTC format.
         Supported values: "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
@@ -1035,7 +1074,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time of the event in the system.
+        The end time of the event in the system in UTC format.
         Supported values:"2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
@@ -1129,13 +1168,13 @@ script:
     - contextPath: FidelisEndpoint.Query.EntityType
       description: Entity type.
       type: Number
-    - contextPath: FidelisEndpoint.Query.parentHashSHA1
+    - contextPath: FidelisEndpoint.Query.ParentHashSHA1
       description: Parent hash SHA1
       type: String
   - arguments:
     - default: false
       description: |-
-        The start time of the event in the system.
+        The start time of the event in the system in UTC format.
         Supported values: "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
@@ -1143,7 +1182,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time of the event in the system.
+        The end time of the event in the system in UTC format.
         Supported values:"2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
@@ -1178,7 +1217,7 @@ script:
     name: fidelis-endpoint-query-by-dns
     outputs:
     - contextPath: FidelisEndpoint.Query.ProcessStartTime
-      description: Process start time0
+      description: Process start time.
       type: Date
     - contextPath: FidelisEndpoint.Query.EndpointName
       description: Endpoint name.
@@ -1231,7 +1270,7 @@ script:
   - arguments:
     - default: false
       description: |-
-        The start time of the event in the system.
+        The start time of the event in the system in UTC format.
         Supported values: "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
@@ -1239,7 +1278,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time of the event in the system.
+        The end time of the event in the system in UTC format.
         Supported values:"2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
@@ -1253,7 +1292,7 @@ script:
       predefined:
       - and
       - or
-      required: false
+      required: true
       secret: false
     - default: false
       description: The remote IP to query on.
@@ -1327,7 +1366,7 @@ script:
   - arguments:
     - default: false
       description: |-
-        The start time of the event in the system.
+        The start time of the event in the system in UTC format.
         Supported values: "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
@@ -1335,7 +1374,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time of the event in the system.
+        The end time of the event in the system in UTC format.
         Supported values:"2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time
@@ -1429,7 +1468,7 @@ script:
   - arguments:
     - default: false
       description: |-
-        The start time of the event in the system.
+        The start time of the event in the system in UTC format.
         Supported values: "2019-10-21T23:45:00" (date)
       isArray: false
       name: start_time
@@ -1437,7 +1476,7 @@ script:
       secret: false
     - default: false
       description: |-
-        The end time of the event in the system.
+        The end time of the event in the system in UTC format.
         Supported values:"2019-10-21T23:45:00" (date)
       isArray: false
       name: end_time

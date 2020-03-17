@@ -120,7 +120,7 @@ tasks:
       iscommand: true
       brand: ""
     scriptarguments:
-      ip:
+      ip_address:
         simple: 10.128.0.2
     separatecontext: false
     view: |-
@@ -396,7 +396,7 @@ tasks:
       version: -1
       name: Get script manifest
       description: Get the script manifest
-      script: '|||fidelis-endpoint-script-manifest'
+      script: '|||fidelis-endpoint-get-script-manifest'
       type: regular
       iscommand: true
       brand: ""
