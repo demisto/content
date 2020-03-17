@@ -1,5 +1,5 @@
-id: 1ac750b0-87af-43fd-8cbe-49bb71db62a8
-version: 33
+id: generic-sql
+version: -1
 name: generic-sql
 starttaskid: "0"
 tasks:
