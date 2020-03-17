@@ -168,9 +168,6 @@ script:
     - contextPath: MSGraphDeviceManagement.Device.WiFiMacAddress
       description: Wi-Fi MAC
       type: String
-    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState
-      description: TBD
-      type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime
       description: The Timestamp of the last update.
       type: String
@@ -709,9 +706,6 @@ script:
       type: Boolean
     - contextPath: MSGraphDeviceManagement.Device.WiFiMacAddress
       description: Wi-Fi MAC
-      type: String
-    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState
-      description: TBD
       type: String
     - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime
       description: The Timestamp of the last update.
