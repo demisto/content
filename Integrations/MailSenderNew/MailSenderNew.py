@@ -67,6 +67,9 @@ def handle_file(msg, filename, maintype, subtype, cid, data):
         att = MIMEImage(data, subtype)
     elif maintype == 'audio':
         att = MIMEAudio(data, subtype)
+    elif maintype == 'message':
+        att = MIMEBase(maintype, subtype)
+        att.set_payload(data)
     else:
         att = MIMEBase(maintype, subtype)
         att.set_payload(data)

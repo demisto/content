@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import urllib3
 import requests
 import traceback
+from dateutil.parser import parse
 from typing import Optional, Pattern, List
 
 # disable insecure warnings
@@ -22,7 +23,7 @@ class Client(BaseClient):
         :param: url: URL of the feed.
         :param: polling_timeout: timeout of the polling request in seconds.
             Default: 20
-        :param: custom_fields_mapping: Dict, the CustomFields to be used in the indicator - where the keys
+        :param: custom_fields_mapping: Dict, the "fields" to be used in the indicator - where the keys
         are the *current* keys of the fields returned feed data and the *values* are the *indicator fields in Demisto*.
         :param: headers: list, Optional list of headers to send in the request.
         :param: ignore_regex: Python regular expression for lines that should be
@@ -45,12 +46,12 @@ class Client(BaseClient):
             'indicator': { (Regex to extract the indicator by, if empty - the whole line is extracted)
                 'regex': r'^AS[0-9]+',
             },
-            'fields': { (See Extraction dictionary below)
+            'fields': [{ (See Extraction dictionary below)
                 'asndrop_country': {
                     'regex': '^.*;\\W([a-zA-Z]+)\\W+',
                     'transform: r'\1'
                 }
-            }
+            }]
         }
         :param: proxy: Use proxy in requests.
         **Extraction dictionary**
@@ -227,6 +228,11 @@ class Client(BaseClient):
         return created_custom_fields
 
 
+def datestring_to_millisecond_timestamp(datestring):
+    date = parse(str(datestring))
+    return int(date.timestamp() * 1000)
+
+
 def get_indicator_fields(line, url, client: Client):
     """
     Extract indicators according to the feed type
@@ -301,6 +307,13 @@ def fetch_indicators_command(client, itype, **kwargs):
             for line in lines:
                 attributes, value = get_indicator_fields(line, url, client)
                 if value:
+                    if 'lastseenbyfeed' in attributes.keys():
+                        attributes['lastseenbyfeed'] = datestring_to_millisecond_timestamp(attributes['lastseenbyfeed'])
+
+                    if 'firstseenbyfeed' in attributes.keys():
+                        attributes['firstseenbyfeed'] = datestring_to_millisecond_timestamp(
+                            attributes['firstseenbyfeed'])
+
                     indicator_data = {
                         "value": value,
                         "type": client.feed_url_to_config.get(url, {}).get('indicator_type', itype),
@@ -309,7 +322,7 @@ def fetch_indicators_command(client, itype, **kwargs):
 
                     if len(client.custom_fields_mapping.keys()) > 0:
                         custom_fields = client.custom_fields_creator(attributes)
-                        indicator_data["CustomFields"] = custom_fields
+                        indicator_data["fields"] = custom_fields
 
                     indicators.append(indicator_data)
     return indicators
