@@ -56,7 +56,7 @@ script:
       description: |-
         Sorts the result before applying take and skip.
         Can be any property name of the alert object.
-        For example: insertionDate+Descending
+        For example: "insertionDate Descending"
       isArray: false
       name: sort
       required: false
@@ -685,7 +685,7 @@ script:
       secret: false
     - default: false
       description: 'The server ip that can communicate with the isolated endpoint.
-        For example: 10.10.10.10.'
+        For example: 2.2.2.2'
       isArray: false
       name: allowed_server
       required: true

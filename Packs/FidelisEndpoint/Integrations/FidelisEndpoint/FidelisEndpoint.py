@@ -677,6 +677,8 @@ def list_alerts_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     contents = []
     context = []
     response = client.list_alerts(limit, sort, start_date, end_date)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
 
     alerts = response.get('data', {}).get('entities', [])
     if not alerts:
@@ -741,6 +743,8 @@ def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     headers = ['ID', 'HostName', 'IpAddress', 'OS', 'MacAddress', 'Isolated', 'LastContactDate', 'AgentInstalled',
                'AgentVersion', 'OnNetwork', 'AV_Enabled', 'Groups', 'ProcessorName']
     response = client.get_host_info(host, ip_address)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     hosts = response.get('data', {})
     if not hosts:
         return f'No hosts was found', {}, {}
@@ -799,6 +803,8 @@ def file_search(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         raise Exception(e)
 
     response = client.search_file(host, md5, file_extension, file_path, file_size)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     data = response.get('data', {})
     contents = {
         'JobID': data.get('jobId'),
@@ -818,6 +824,8 @@ def file_search_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     job_result_id = args.get('job_result_id')
 
     response = client.file_search_status(job_id, job_result_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     data = response.get('data', {})
     if not data:
         return 'Could not find any data for this Job ID', {}, {}
@@ -893,6 +901,8 @@ def get_file_command(client: Client, args: dict):
 def delete_file_search_job_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     job_id = args.get('job_id')
     response = client.delete_job(job_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
 
     return 'The job was successfully deleted', {}, response
 
@@ -900,6 +910,8 @@ def delete_file_search_job_command(client: Client, args: dict) -> Tuple[str, Dic
 def list_scripts_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
     headers = ['ID', 'Name', 'Description']
     response = client.list_scripts()
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     res = response.get('data', {})
     scripts = res.get('scripts', [])
     if not scripts:
@@ -923,6 +935,8 @@ def script_manifest_command(client: Client, args: dict) -> Tuple[str, Dict, Dict
     headers = ['ID', 'Name', 'Description', 'Platform', 'Command', 'Questions', 'Priority', 'TimeoutSeconds',
                'ResultColumns', 'ImpersonationUser', 'ImpersonationPassword', 'WizardOverridePassword']
     response = client.script_manifest(script_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     data = response.get('data', {})
 
     platforms = [k for k, v in data.get('platforms', {}).items() if v]
@@ -958,6 +972,8 @@ def execute_script_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]
     endpoint_id = get_endpoint_id(client, endpoint_ip, endpoint_name)
 
     response = client.execute_script(script_id, endpoint_id, answer, time_out, additional_answer)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     job_id = response.get('data')
     context = {
         'ID': script_id,
@@ -986,6 +1002,8 @@ def list_process_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
         script_id = LIST_PROCESSES_MACOS
 
     response = client.list_process(script_id, time_out, endpoint_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     job_id = response.get('data')
     context = {
         'ID': script_id,
@@ -1002,6 +1020,8 @@ def get_script_result(client: Client, args: dict):
                'StartTime']
 
     response = client.script_job_results(job_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     hits = response.get('data', {}).get('hits', {}).get('hits', [])
     if not hits:
         return 'No results were found', {}, {}
@@ -1164,6 +1184,8 @@ def script_job_status(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     job_result_id = args.get('job_result_id')
     contents = []
     response = client.get_script_job_status(job_result_id)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
 
     results = response.get('data', {}).get('targets', [])
 
@@ -1194,6 +1216,8 @@ def query_file_by_hash_command(client: Client, args: dict) -> Tuple[str, Dict, D
     headers = ['PID', 'EndpointName', 'Name', 'Path', 'User', 'Hash', 'ProcessStartTime', 'Parameters', 'ParentName',
                'EventType']
     response = client.query_file_by_hash(limit, start_time, end_time, logic, file_hash)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1276,6 +1300,8 @@ def query_process_name_command(client: Client, args: dict) -> Tuple[str, Dict, D
     context = []
 
     response = client.query_by_process_name(limit, start_time, end_time, logic, process_name)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1333,6 +1359,8 @@ def query_connection_by_remote_ip_command(client: Client, args: dict) -> Tuple[s
                'EventType']
 
     response = client.query_by_remote_ip(limit, start_time, end_time, logic, remote_ip)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1398,6 +1426,8 @@ def query_dns_request_command(client: Client, args: dict) -> Tuple[str, Dict, Di
                'EventType']
 
     response = client.query_by_dns_request(limit, start_time, end_time, logic, url)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1453,6 +1483,8 @@ def query_by_server_ip_command(client: Client, args: dict) -> Tuple[str, Dict, D
                'EventType']
 
     response = client.query_by_dns_server_ip(limit, start_time, end_time, logic, remote_ip)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1508,6 +1540,8 @@ def query_by_source_ip(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     headers = ['EndpointName', 'LocalIP', 'LocalPort', 'RemoteIP', 'RemotePort', 'ProcessStartTime', 'DnsQuestion',
                'DnsAnswer']
     response = client.query_by_dns_source_ip(limit, start_time, end_time, logic, source_ip, domain)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1581,6 +1615,8 @@ def query_events_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
                'ParentID', 'EventType']
     response = client.query_events(limit, start_time, end_time, logic, column, value, entity_type, operator,
                                    additional_filter)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
     res = response.get('data', {})
     events = res.get('events', [])
     if not events:
@@ -1639,7 +1675,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     current_fetch = last_fetch_alert_time
     incidents = []
     last_fetch_date_string = timestamp_to_datestring(last_fetch_alert_time)
-    response = client.list_alerts(limit=fetch_limit, start_date=last_fetch_date_string)
+    response = client.list_alerts(limit=fetch_limit, sort='createDate Ascending', start_date=last_fetch_date_string)
     alerts = response.get('data', {}).get('entities', [])
     for alert in alerts:
         alert_id = str(alert.get('id'))
@@ -1652,9 +1688,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp()) * 1000
         if alert_create_date_timestamp > last_fetch_alert_time:
             incidents.append(incident)
-
-        if alert_create_date_timestamp > current_fetch:
-            current_fetch = alert_create_date_timestamp
 
     return incidents, {'time': current_fetch}
 
