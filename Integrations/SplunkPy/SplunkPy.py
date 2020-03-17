@@ -225,12 +225,14 @@ def request(url, message):
         response = urllib2.urlopen(req, context=context)  # guardrails-disable-line
     except urllib2.HTTPError as response:
         demisto.error(str(response))  # Propagate HTTP errors via the returned response message
-    return {
+    t = {
         'status': response.code,  # type: ignore
         'reason': response.msg,  # type: ignore
         'headers': response.info().dict,  # type: ignore
         'body': StringIO(response.read())  # type: ignore
     }
+    demisto.info(t)
+    return t
 
 
 def build_search_kwargs(args):
