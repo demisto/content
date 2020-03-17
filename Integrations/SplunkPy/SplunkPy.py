@@ -224,13 +224,16 @@ def request(url, message):
     try:
         response = urllib2.urlopen(req, context=context)  # guardrails-disable-line
     except urllib2.HTTPError as response:
-        pass  # Propagate HTTP errors via the returned response message
-    return {
+        demisto.error(str(response))  # Propagate HTTP errors via the returned response message
+    t = {
         'status': response.code,  # type: ignore
         'reason': response.msg,  # type: ignore
         'headers': response.info().dict,  # type: ignore
-        'body': StringIO(response.read())  # type: ignore
+        'body': StringIO(response.read())    # type: ignore
     }
+    for key in t.keys():
+        demisto.info('{}: {}'.format(key, str(t[key] if not isinstance(t[key], StringIO) else t[key])))
+    return t
 
 
 def build_search_kwargs(args):
