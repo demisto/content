@@ -15,11 +15,17 @@ requests.packages.urllib3.disable_warnings()
 
 EMPTY_RESP_TYPE = 'None'
 
+SPECIAL_HEADERS: dict = {
+    'id': 'ID',
+    'userId': 'User ID',
+    'osVersion': 'OS Version',
+    'imei': 'IMEI',
+    'meid': 'MEID'
+}
+
 HEADERS: dict = {
     'raw_device': ['id', 'userId', 'deviceName', 'operatingSystem', 'osVersion', 'emailAddress',
                    'manufacturer', 'model', 'imei', 'meid'],
-    'device': ['ID', 'User ID', 'Device Name', 'Operating System', 'OS Version', 'Email Address',
-               'Manufacturer', 'Model', 'IMEI', 'MEID']
 }
 
 
@@ -211,19 +217,6 @@ def build_device_object(raw_device: dict) -> dict:
     })
 
 
-def build_device_human_readable(device: dict) -> dict:
-    """
-    Builds a device human readable object
-    :param device: The raw device object
-    :return: The device human readable object
-    """
-    device_human_readable: dict = dict()
-    for header in HEADERS['raw_device']:
-        index: int = HEADERS['raw_device'].index(header)
-        device_human_readable[HEADERS['device'][index]] = device.get(header)
-    return assign_params(**device_human_readable)
-
-
 ''' COMMANDS '''
 
 
@@ -231,11 +224,12 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     limit: int = try_parse_integer(args.get('limit', 10), err_msg='This value for limit must be an integer.')
     list_raw_devices, raw_response = client.list_managed_devices(limit)
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
-    list_devices_hr: list = [build_device_human_readable(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
     human_readable: str = 'No managed devices found.'
     if list_devices:
-        human_readable = tableToMarkdown('List managed devices', list_devices_hr, headers=HEADERS['device'])
+        human_readable = tableToMarkdown(name='List managed devices', t=list_raw_devices, headers=HEADERS['raw_device'],
+                                         headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
+                                         removeNull=True)
     return_outputs(human_readable, entry_context, raw_response)
 
 
@@ -243,12 +237,14 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
     device_id: str = str(args.get('device_id'))
     raw_response, device_id = client.get_managed_device(device_id)
     device: dict = build_device_object(raw_response)
-    device_hr: dict = build_device_human_readable(raw_response)
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
     device_name: str = device.get('Name', '')
     human_readable: str = f'Managed device {device_id} not found.'
     if device:
-        human_readable = tableToMarkdown(f'Managed device {device_name}', device_hr, headers=HEADERS['device'])
+        human_readable = tableToMarkdown(name=f'Managed device {device_name}', t=raw_response,
+                                         headers=HEADERS['raw_device'],
+                                         headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
+                                         removeNull=True)
     return_outputs(human_readable, entry_context, raw_response)
 
 
@@ -386,9 +382,7 @@ def main():
     enc_key: str = params.get('enc_key', '')
     # remove trailing slash to prevent wrong URL path to service
     url: str = params.get('url', '')
-    server: str = url[:-1] if (url and url.endswith('/')) else url
-    # service base URL
-    base_url: str = server + '/v1.0'
+    base_url: str = urljoin(url, '/v1.0')
     app_name: str = 'ms-graph-device-management'
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)

@@ -1,7 +1,7 @@
 import pytest
 import json
 from CommonServerPython import DemistoException
-from MicrosoftGraphDeviceManagement import build_device_human_readable, build_device_object, try_parse_integer
+from MicrosoftGraphDeviceManagement import build_device_object, try_parse_integer
 
 with open('test_data/raw_device.json', 'r') as json_file:
     data: dict = json.load(json_file)
@@ -12,10 +12,6 @@ with open('test_data/device_hr.json', 'r') as json_file:
 
 with open('test_data/device.json', 'r') as json_file:
     device: dict = json.load(json_file)
-
-
-def test_build_device_human_readable():
-    assert build_device_human_readable(raw_device) == device_hr
 
 
 def test_build_device_object():
