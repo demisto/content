@@ -209,17 +209,17 @@ tasks:
     ignoreworker: false
   '10':
     id: '10'
-    taskid: 0f2d6fbc-e3bd-4497-89ff-17eab8830ad8
+    taskid: 334d6196-0879-41b7-8163-2552557d0a6a
     type: playbook
     task:
-      id: 0f2d6fbc-e3bd-4497-89ff-17eab8830ad8
+      id: 334d6196-0879-41b7-8163-2552557d0a6a
       version: -1
       name: Account Enrichment - Generic v2.1
+      description: ''
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#none#':
       - '9'
@@ -230,7 +230,7 @@ tasks:
           accessor: Username
           transformers:
           - operator: uniq
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ''

@@ -102,21 +102,30 @@ tasks:
     ignoreworker: false
   '10':
     id: '10'
-    taskid: e87a1d20-0975-4a50-8c35-6717bf10f35d
+    taskid: 5634c03f-b0fc-4b38-872c-26132a8fa9c4
     type: playbook
     task:
-      id: e87a1d20-0975-4a50-8c35-6717bf10f35d
+      id: 5634c03f-b0fc-4b38-872c-26132a8fa9c4
       version: -1
       name: Account Enrichment - Generic v2.1
+      description: ''
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#none#':
       - '17'
-    separatecontext: true
+    scriptarguments:
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
     view: |-
       {
         "position": {
@@ -273,10 +282,10 @@ tasks:
     ignoreworker: false
   '17':
     id: '17'
-    taskid: 66eac42d-8955-4edd-8829-25e3701035f8
+    taskid: f4d4547a-8882-4198-84a3-f2f6e3dbf1c6
     type: regular
     task:
-      id: 66eac42d-8955-4edd-8829-25e3701035f8
+      id: f4d4547a-8882-4198-84a3-f2f6e3dbf1c6
       version: -1
       name: ExtractADMembership
       description: ''
