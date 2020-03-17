@@ -109,6 +109,27 @@ def get_current_utc_time() -> datetime:
     return datetime.utcnow()
 
 
+def merge_lists(original_list: List[dict], updated_list: List[dict], key: str) -> List[dict]:
+    """
+    Replace values in a list with those in an updated list.
+    :param original_list: The original list.
+    :param updated_list: The updated list.
+    :param key: The key to replace elements by.
+    :return: The merged list.
+
+    Example:
+    >>> original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}]
+    >>> updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}]
+    >>> result = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
+
+    """
+    original_dict = {element[key]: element for element in original_list}
+    updated_dict = {element[key]: element for element in updated_list}
+    original_dict.update(updated_dict)
+
+    return list(original_dict.values())
+
+
 def get_user_by_name(user_to_search: str, update_context: bool = True) -> dict:
     """
     Gets a slack user by a user name
@@ -670,22 +691,6 @@ def check_for_answers():
         questions = merge_lists(latest_questions, updated_questions, 'entitlement')
         questions = list(filter(lambda q: q.get('remove', False) is False, questions))
         set_to_latest_integration_context({'users': users, 'questions': questions})
-
-
-def merge_lists(original_list: list, updated_list: list, key: str) -> list:
-    """
-    Replace values in a list with those in an updated list.
-    :param original_list: The original list.
-    :param updated_list: The updated list.
-    :param key: The key to replace elements by.
-    :return: The merged list.
-
-    """
-    original_dict = {element[key]: element for element in original_list}
-    updated_dict = {element[key]: element for element in updated_list}
-    original_dict.update(updated_dict)
-
-    return list(original_dict.values())
 
 
 def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
