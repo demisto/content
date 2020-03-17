@@ -339,6 +339,21 @@ def setup(mocker):
     init_globals()
 
 
+def test_merge_lists():
+    from Slack import merge_lists
+
+    # Set
+    original = [{'id': '1', 'updated': 'n'}, {'id': '2', 'updated': 'n'}]
+    updated = [{'id': '1', 'updated': 'y'}, {'id': '3', 'updated': 'y'}]
+    expected = [{'id': '1', 'updated': 'y'}, {'id': '2', 'updated': 'n'}, {'id': '3', 'updated': 'y'}]
+
+    # Arrange
+    result = merge_lists(original, updated, 'id')
+
+    # Assert
+    assert result == expected
+
+
 @pytest.mark.asyncio
 async def test_get_slack_name_user(mocker):
     from Slack import get_slack_name
@@ -1232,6 +1247,7 @@ def test_check_for_mirrors_no_updates(mocker):
     check_for_mirrors()
 
     # Assert
+    assert demisto.getIntegrationContext.call_count == 1
     assert demisto.setIntegrationContext.call_count == 0
 
 
@@ -2238,6 +2254,7 @@ def test_check_for_answers_no_polling(mocker, requests_mock):
 
     assert demisto.handleEntitlementForUser.call_count == 0
     assert demisto.setIntegrationContext.call_count == 0
+    assert demisto.getIntegrationContext.call_count == 1
 
     # Should not delete the question
     assert demisto.getIntegrationContext()['questions'] == js.dumps([{
