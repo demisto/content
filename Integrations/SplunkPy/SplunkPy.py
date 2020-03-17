@@ -568,16 +568,17 @@ def test_module(service):
             return_error(str(error))
 
 
-def replace_keys(dict_in):
-    if not isinstance(dict_in, dict):
-        return dict_in
-    for key in dict_in.keys():
-        value = dict_in.pop(key)
+def replace_keys(data):
+    if not isinstance(data, dict):
+        return data
+    keys = data.keys()
+    for key in keys:
+        value = data.pop(key)
         for character in PROBLEMATIC_CHARACTERS:
             key = key.replace(character, REPLACE_WITH)
 
-        dict_in[key] = value
-    return dict_in
+        data[key] = value
+    return data
 
 
 def main():
