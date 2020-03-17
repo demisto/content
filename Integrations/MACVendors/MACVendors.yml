@@ -1,4 +1,4 @@
-category: Endpoint
+category: Utilities
 commonfields:
   id: MACVendors
   version: -1
@@ -25,13 +25,13 @@ script:
     - default: false
       description: The MAC Address Value
       isArray: false
-      name: address
+      name: macaddress
       required: true
       secret: false
     deprecated: false
     description: MAC Address to Query Vendor For
     execution: false
-    name: mac
+    name: MACAddress
     outputs:
     - contextPath: MACVendors.Vendor
       description: MAC Vendor Name

@@ -6,26 +6,26 @@ INTEGRATION_NAME = "MAC Vendors"
 '''API Client'''
 
 
-class Client:
+class Client(BaseClient):
 
-    def __init__(self, url, proxies):
-        self.base_url = url
-        self.proxies = proxies
-
-    def query(self, address=None):
-        LOG('running request with url=%s' % self.base_url)
-        full_url = self.base_url + '/api/' + address
-        res = requests.request(
-            "GET",
-            full_url,
+    def __init__(self, url, verify: bool, proxy: bool):
+        super().__init__(
+            base_url=url,
+            verify=verify,
+            proxy=proxy,
+            ok_codes=(200, 201, 204),
             headers={'accept': "application/json"}
         )
-        if res.status_code not in [200, 204]:
-            raise ValueError("Error in API call to Service API %s. Reason: %s " % (res.status_code, res.text))
-        try:
-            return res.json()
-        except Exception:
-            raise ValueError("Failed to parse http response to JSON format. Original response body: \n %s" % res.text)
+
+    def query(self, address):
+        LOG(f"running request with url= {self._base_url}")
+        suffix = address
+        res = self._http_request(
+            "GET",
+            url_suffix=suffix,
+            resp_type="text"
+        )
+        return res
 
 
 '''' Commands '''
@@ -43,9 +43,9 @@ def test_module(client):
 
 def get_mac_vendor(client):
     args = demisto.args()
-    mac_address = args.get('address')
+    mac_address = args.get('macaddress')
     try:
-        title = ("%s - Results for MAC Address Query" % INTEGRATION_NAME)
+        title = f"Results for MAC Address Query {INTEGRATION_NAME}"
         raws = []
         macvendors_ec = []
 
@@ -54,14 +54,11 @@ def get_mac_vendor(client):
         if raw_response:
             raws.append(raw_response)
             macvendors_ec.append({
-                'Mac': mac_address,
-                'Vendor': raw_response['result'].get('company'),
-                'Type': raw_response['result'].get('type'),
-                'Address': raw_response['result'].get('address')
+                'Vendor': raw_response
             })
 
         if not raws:
-            return ("%s - Could not find any results for given query" % INTEGRATION_NAME)
+            return f'Could not find any results for given query {INTEGRATION_NAME}'
 
         context_entry = {
             "MACVendors": macvendors_ec
@@ -82,12 +79,11 @@ def main():
     # Remove trailing slash to prevent wrong URL path to service
     url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
     # Remove proxy if not set to true in params
-    proxies = handle_proxy()
 
     try:
-        client = Client(url, proxies)
+        client = Client(url, verify=params['verify'], proxy=params['proxy'])
         commands = {
-            'mac': get_mac_vendor,
+            'MACAddress': get_mac_vendor,
             'test-module': test_module
         }
 
