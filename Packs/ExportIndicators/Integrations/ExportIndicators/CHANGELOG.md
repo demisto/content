@@ -5,6 +5,7 @@
     - s - The first index from which to fetch indicators.
     - v - The output format for indicators.
     - q - The query that defines which indicators to fetch.
+  - Improved test module functionality.
     - t - The type indicated in the mwg format.
     - sp - Whether to strip ports of urls in the panosurl format.
     - di - Whether to drop invalid urls in the panosurl format.
