@@ -3,7 +3,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import pytest_mock
 
 ''' IMPORTS '''
 
@@ -79,12 +78,6 @@ DST = 1 if time.daylight else 0
 
 
 def strip_unwanted_chars(s):
-    # try:
-    #     respXML = s.encode('utf-8')
-    # except:
-    #     return_warning("Unable to encode some characters. For complete text view this incident in Symantec."
-    #                    " Unencoded characters are displayed as'?'")
-    #     respXML = s.encode('utf-8', 'replace')
     return re.sub('&.+[0-9]+.?;', '', s)
 
 
