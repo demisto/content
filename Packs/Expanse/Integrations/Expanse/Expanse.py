@@ -235,12 +235,12 @@ def get_expanse_ip_context(data):
     geo = {}
     if len(data.get("locationInformation", [])) > 0:
         geo = {
-            "Description": data['locationInformation'][0]['geolocation']['city'],
-            "Latitude": data['locationInformation'][0]['geolocation']['latitude'],
-            "Longitude": data['locationInformation'][0]['geolocation']['longitude'],
-            "City": data['locationInformation'][0]['geolocation']['city'],
-            "RegionCode": data['locationInformation'][0]['geolocation']['regionCode'],
-            "CountryCode": data['locationInformation'][0]['geolocation']['countryCode']
+            "Description": data['locationInformation'][0]['geolocation'].get('city'),
+            "Latitude": data['locationInformation'][0]['geolocation'].get('latitude'),
+            "Longitude": data['locationInformation'][0]['geolocation'].get('longitude'),
+            "City": data['locationInformation'][0]['geolocation'].get('city'),
+            "RegionCode": data['locationInformation'][0]['geolocation'].get('regionCode'),
+            "CountryCode": data['locationInformation'][0]['geolocation'].get('countryCode')
         }
         if (data['locationInformation'][0].get('geolocation', {}).get('latitude') is not None
            and data['locationInformation'][0].get('geolocation', {}).get('longitude') is not None):
