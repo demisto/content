@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Resolved issue caused by data with empty characters from Symantec MSS.   
 
 ## [19.12.0] - 2019-12-10
 Added support for special characters in ***symantec-mss-update-incident*** comments.
