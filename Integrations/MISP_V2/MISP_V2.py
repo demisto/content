@@ -29,7 +29,10 @@ MISP_URL = demisto.params().get('url')
 USE_SSL = not demisto.params().get('insecure')
 proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
-MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
+MISP: ExpandedPyMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)
+METADATA_STATE: bool = demisto.params().get('metadata')
+RELATED_EVENTS_STATE: bool = demisto.params().get('related_events')
+SELECTED_KEYS: List[str] = [item.lower() for item in demisto.params().get('context_select') or []]
 
 """
 dict format :
@@ -135,24 +138,17 @@ def filter_obj(obj: dict, is_att: bool = True) -> dict:
     Returns:
         dict: Filtered dict by configuration.
     """
-    metadata_state = demisto.params().get('metadata')
-    related_events_state = demisto.params().get('related_events')
-    selected_keys: List[str] = [item.lower() for item in demisto.params().get('context_select')]
     ignored_keys_metadata: List[str] = ["Galaxy", "Tag"]
     ignored_keys_related_events: List[str] = ["RelatedEvent"]
 
     for dict_key in list(obj.keys()):
         if dict_key in ignored_keys_metadata:
-            if not metadata_state:
+            if not METADATA_STATE:
                 obj[dict_key] = []
-            else:
-                continue
         elif dict_key in ignored_keys_related_events:
-            if not related_events_state:
+            if not RELATED_EVENTS_STATE:
                 obj[dict_key] = []
-            else:
-                continue
-        elif is_att and selected_keys and dict_key not in selected_keys:
+        elif is_att and SELECTED_KEYS and dict_key not in SELECTED_KEYS:
             obj.pop(dict_key)
 
     return obj
@@ -171,21 +167,15 @@ def filter_misp_response(misp_response: List[dict]) -> List[dict]:
     Returns:
         list: Filtered response
     """
-    metadata_state = demisto.params().get('metadata')
-    related_events_state = demisto.params().get('related_events')
-    selected_keys: List[str] = [item.lower() for item in demisto.params().get('context_select')]
-
-    if not related_events_state or not metadata_state or selected_keys:
-        for i in range(len(misp_response)):
+    if not RELATED_EVENTS_STATE or not METADATA_STATE or SELECTED_KEYS:
+        for event in misp_response:
             # Filter Misp Event object
-            misp_response[i]['Event']: dict = filter_obj(misp_response[i]['Event'], is_att=False)
+            event['Event']: dict = filter_obj(event['Event'], is_att=False)
             # Filter Misp Attribute object
-            misp_response[i]['Event']['Attribute'] = [filter_obj(att) for att in
-                                                      misp_response[i]['Event']['Attribute']]
+            event['Event']['Attribute'] = [filter_obj(att) for att in event['Event']['Attribute']]
             # Filter Misp Object object
-            for j in range(len(misp_response[i]['Event']['Object'])):
-                misp_response[i]['Event']['Object'][j]['Attribute'] = [filter_obj(att) for att in
-                                                                       misp_response[i]['Event']['Object'][j]['Attribute']]
+            for obj in event['Event']['Object']:
+                obj = [filter_obj(att) for att in obj['Attribute']]
 
     return misp_response
 
@@ -303,6 +293,8 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
     Returns:
         dict: context output
     """
+    # Filter response before extracting ec
+    response = filter_misp_response(response)
     event_args = [
         'id',
         'date',
@@ -652,7 +644,7 @@ def create_event(ret_only_event_id: bool = False) -> Union[int, None]:
     # add attribute
     add_attribute(event_id=event_id, internal=True)
 
-    event = filter_misp_response(MISP.search(eventid=event_id))
+    event = MISP.search(eventid=event_id)
 
     md = f"## MISP create event\nNew event with ID: {event_id} has been successfully created.\n"
     ec = {
@@ -712,7 +704,7 @@ def add_attribute(event_id: int = None, internal: bool = None):
     MISP.update_event(event=event)
     if internal:
         return
-    event = filter_misp_response(MISP.search(eventid=args.get('id')))
+    event = MISP.search(eventid=args.get('id'))
     md = f"## MISP add attribute\nNew attribute: {args.get('value')} was added to event id {args.get('id')}.\n"
     ec = {
         MISP_PATH: build_context(event)
@@ -770,7 +762,7 @@ def get_urls_events():
 
 
 def check_url(url):
-    response = filter_misp_response(MISP.search(value=url, type_attribute='url'))
+    response = MISP.search(value=url, type_attribute='url')
 
     if response:
         dbot_list = list()
@@ -877,38 +869,23 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     Returns
      dict: Object with results to demisto:
     """
-    d_args = demisto.args()
+    d_args: dict = demisto.args()
     # List of all applicable search arguments
-    search_args = [
-        'event_id',
-        'value',
-        'type',
-        'category',
-        'org',
-        'tags',
-        'date_from',
-        'date_to',
-        'last',
-        'eventid',
-        'uuid',
-        'to_ids'
-    ]
-    args = dict()
-    # Create dict to pass into the search
-    for arg in search_args:
-        if arg in d_args:
-            args[arg] = d_args[arg]
-    # Replacing keys and values from Demisto to Misp's keys
-    if 'type' in args:
-        args['type_attribute'] = d_args.pop('type')
-    # search function 'to_ids' parameter gets 0 or 1 instead of bool.
-    if 'to_ids' in args:
-        args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
-    # build MISP complex filter
-    if 'tags' in args:
-        args['tags'] = build_misp_complex_filter(args['tags'])
+    search_args = assign_params(**{
+        'type_attribute': d_args.get('type'),
+        'value': d_args.get('value'),
+        'category': d_args.get('category'),
+        'org': d_args.get('org'),
+        'tags': build_misp_complex_filter(d_args.get('tags')) if d_args.get('tags') else None,
+        'date_from': d_args.get('from'),
+        'date_to': d_args.get('to'),
+        'last': d_args.get('last'),
+        'eventid': d_args.get('eventid'),
+        'uuid': d_args.get('uuid'),
+        'to_ids': 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+    })
 
-    response = filter_misp_response(MISP.search(**args))
+    response = MISP.search(**search_args)
     if response:
         response_for_context = build_context(response)
 
@@ -974,7 +951,7 @@ def add_tag():
     tag = demisto.args().get('tag')
 
     MISP.tag(uuid, tag)
-    event = filter_misp_response(MISP.search(uuid=uuid))
+    event = MISP.search(uuid=uuid)
     ec = {
         MISP_PATH: build_context(event)
     }

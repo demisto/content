@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: MISP V2
+  id: MISP V2 new
   version: -1
 configuration:
 - display: MISP server URL (e.g., https://192.168.0.1)
@@ -12,14 +12,17 @@ configuration:
   required: true
   type: 4
 - display: Use system proxy settings
+  defaultvalue: 'false'
   name: proxy
   required: false
   type: 8
 - display: Trust any certificate (not secure)
+  defaultvalue: 'false'
   name: insecure
   required: false
   type: 8
-- display: Select which field of the attribute will be saved
+- display: Select which attribute data fields of the event will be saved to context.
+    Leave empty to select all attributes.
   name: context_select
   options:
   - Category
@@ -41,22 +44,25 @@ configuration:
   - Value
   required: false
   type: 16
-- additionalinfo: Include Related events for Events, if not selected all will be retreived.
+- additionalinfo: Include Related events for Events, if selected Related events will
+    retreive.
+  defaultvalue: 'true'
   display: Retreive Related events for Events
   hidden: false
   name: related_events
   required: false
   type: 8
-- additionalinfo: Include the Galaxies and tags of the matching attributes, if not
-    selected all will be retreived.
+- additionalinfo: Include the Galaxies and tags of the matching attributes, if selected
+    Galaxy and Tag will retreive.
+  defaultvalue: 'true'
   display: Retreive Galaxys and Tags for Events
   hidden: false
   name: metadata
   required: false
   type: 8
 description: Malware information sharing platform and threat sharing.
-display: MISP v2
-name: MISP V2
+display: MISP v2 new
+name: MISP V2 new
 script:
   commands:
   - arguments:

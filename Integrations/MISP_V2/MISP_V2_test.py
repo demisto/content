@@ -1,3 +1,6 @@
+from unittest.mock import patch
+
+
 def mock_misp(mocker):
     from pymisp import ExpandedPyMISP
     mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
@@ -157,15 +160,12 @@ def test_build_misp_complex_filter(mocker):
 
 
 class TestFilterKeys:
+    @patch('MISP_V2.METADATA_STATE', True)
+    @patch('MISP_V2.RELATED_EVENTS_STATE', True)
+    @patch('MISP_V2.SELECTED_KEYS', [])
     def test_keys_not_selected_include_all(self, mocker, datadir):
-        from MISP_V2 import demisto, filter_misp_response
+        from MISP_V2 import filter_misp_response
         import json
-        mocker.patch.object(demisto, 'params')
-        demisto.params.return_value = {
-            "context_select": [],
-            "metadata": True,
-            "related_events": True
-        }
 
         raw_misp = json.load(fp=open(datadir['raw_misp.json']))
         actual = filter_misp_response(misp_response=raw_misp)
@@ -173,15 +173,12 @@ class TestFilterKeys:
 
         assert actual == excpected
 
+    @patch('MISP_V2.METADATA_STATE', False)
+    @patch('MISP_V2.RELATED_EVENTS_STATE', True)
+    @patch('MISP_V2.SELECTED_KEYS', [])
     def test_keys_not_selected_metadata_not_include_related_include(self, mocker, datadir):
-        from MISP_V2 import demisto, filter_misp_response
+        from MISP_V2 import filter_misp_response
         import json
-        mocker.patch.object(demisto, 'params')
-        demisto.params.return_value = {
-            "context_select": [],
-            "metadata": False,
-            "related_events": True
-        }
 
         raw_misp = json.load(fp=open(datadir['raw_misp.json']))
         actual = filter_misp_response(misp_response=raw_misp)
@@ -189,15 +186,12 @@ class TestFilterKeys:
 
         assert actual == excpected
 
+    @patch('MISP_V2.METADATA_STATE', False)
+    @patch('MISP_V2.RELATED_EVENTS_STATE', False)
+    @patch('MISP_V2.SELECTED_KEYS', [])
     def test_keys_not_selected_metadata_not_include_related_not_include(self, mocker, datadir):
-        from MISP_V2 import demisto, filter_misp_response
+        from MISP_V2 import filter_misp_response
         import json
-        mocker.patch.object(demisto, 'params')
-        demisto.params.return_value = {
-            "context_select": [],
-            "metadata": False,
-            "related_events": False
-        }
 
         raw_misp = json.load(fp=open(datadir['raw_misp.json']))
         actual = filter_misp_response(misp_response=raw_misp)
@@ -205,15 +199,12 @@ class TestFilterKeys:
 
         assert actual == excpected
 
+    @patch('MISP_V2.METADATA_STATE', True)
+    @patch('MISP_V2.RELATED_EVENTS_STATE', False)
+    @patch('MISP_V2.SELECTED_KEYS', [])
     def test_keys_not_selected_metadata_include_related_not_include(self, mocker, datadir):
-        from MISP_V2 import demisto, filter_misp_response
+        from MISP_V2 import filter_misp_response
         import json
-        mocker.patch.object(demisto, 'params')
-        demisto.params.return_value = {
-            "context_select": [],
-            "metadata": True,
-            "related_events": False
-        }
 
         raw_misp = json.load(fp=open(datadir['raw_misp.json']))
         actual = filter_misp_response(misp_response=raw_misp)
@@ -221,15 +212,12 @@ class TestFilterKeys:
 
         assert actual == excpected
 
+    @patch('MISP_V2.METADATA_STATE', True)
+    @patch('MISP_V2.RELATED_EVENTS_STATE', False)
+    @patch('MISP_V2.SELECTED_KEYS', ['category', 'org_id'])
     def test_keys_selected_metadata_include_related_not_include(self, mocker, datadir):
-        from MISP_V2 import demisto, filter_misp_response
+        from MISP_V2 import filter_misp_response
         import json
-        mocker.patch.object(demisto, 'params')
-        demisto.params.return_value = {
-            "context_select": ['Category', 'org_id'],
-            "metadata": True,
-            "related_events": False
-        }
 
         raw_misp = json.load(fp=open(datadir['raw_misp.json']))
         actual = filter_misp_response(misp_response=raw_misp)
