@@ -295,47 +295,47 @@ class TestHelperFunctions:
                                                                  last_found_len=IOC_RES_LEN)
             assert nxt_pg == 1  # assert entered into loop
 
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_1(self):
+    @pytest.mark.create_values_for_returned_dict
+    def test_create_values_for_returned_dict_1(self):
         """Test CSV out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_CSV, DONT_COLLAPSE
+        from ExportIndicators import create_values_for_returned_dict, FORMAT_CSV, DONT_COLLAPSE
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            csv_out, _ = create_values_out_dict(iocs_json, FORMAT_CSV, DONT_COLLAPSE)
+            csv_out, _ = create_values_for_returned_dict(iocs_json, FORMAT_CSV, DONT_COLLAPSE)
             # assert len(csv_out) == IOC_RES_LEN + 1
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
                 expected_csv_out = iocs_out_f.read()
                 for csv_line in csv_out.values():
                     assert csv_line in expected_csv_out
 
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_2(self):
+    @pytest.mark.create_values_for_returned_dict
+    def test_create_values_for_returned_dict_2(self):
         """Test JSON out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_JSON, CTX_VALUES_KEY
+        from ExportIndicators import create_values_for_returned_dict, FORMAT_JSON, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.load(iocs_json_f)
-            result_dict, _ = create_values_out_dict(iocs_json, FORMAT_JSON)
+            result_dict, _ = create_values_for_returned_dict(iocs_json, FORMAT_JSON)
             json_out = json.loads(result_dict.get(CTX_VALUES_KEY))
             assert json_out == iocs_json
 
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_3(self):
+    @pytest.mark.create_values_for_returned_dict
+    def test_create_values_for_returned_dict_3(self):
         """Test JSON_SEQ out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY
+        from ExportIndicators import create_values_for_returned_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            result_dict, _ = create_values_out_dict(iocs_json, FORMAT_JSON_SEQ)
+            result_dict, _ = create_values_for_returned_dict(iocs_json, FORMAT_JSON_SEQ)
             json_seq_out = result_dict.get(CTX_VALUES_KEY)
             for seq_line in json_seq_out.split('\n'):
                 assert json.loads(seq_line) in iocs_json
 
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_4(self):
+    @pytest.mark.create_values_for_returned_dict
+    def test_create_values_for_returned_dict_4(self):
         """Test TEXT out"""
-        from ExportIndicators import create_values_out_dict, FORMAT_TEXT, CTX_VALUES_KEY
+        from ExportIndicators import create_values_for_returned_dict, FORMAT_TEXT, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            result_dict, _ = create_values_out_dict(iocs_json, FORMAT_TEXT)
+            result_dict, _ = create_values_for_returned_dict(iocs_json, FORMAT_TEXT)
             text_out = result_dict.get(CTX_VALUES_KEY)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_txt_f:
                 iocs_txt_json = json.load(iocs_txt_f)
@@ -372,7 +372,7 @@ class TestHelperFunctions:
         assert not validate_basic_authentication(data.get('wrong_credentials_auth'), username, password)
         assert validate_basic_authentication(data.get('right_credentials_auth'), username, password)
 
-    @pytest.mark.create_values_out_dict
+    @pytest.mark.ips_to_ranges
     def test_ips_to_ranges_range(self):
         from ExportIndicators import ips_to_ranges, COLLAPSE_TO_RANGES
         ip_list = [IPAddress("1.1.1.1"), IPAddress("25.24.23.22"), IPAddress("22.21.20.19"),
@@ -385,7 +385,7 @@ class TestHelperFunctions:
         assert "1.1.1.2" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
 
-    @pytest.mark.create_values_out_dict
+    @pytest.mark.ips_to_cidrs
     def test_ips_to_ranges_cidr(self):
         from ExportIndicators import ips_to_ranges, COLLAPSE_TO_CIDR
         ip_list = [IPAddress("1.1.1.1"), IPAddress("25.24.23.22"), IPAddress("22.21.20.19"),
