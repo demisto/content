@@ -571,8 +571,7 @@ def test_module(service):
 def replace_keys(data):
     if not isinstance(data, dict):
         return data
-    keys = data.keys()
-    for key in keys:
+    for key in list(data.keys()):
         value = data.pop(key)
         for character in PROBLEMATIC_CHARACTERS:
             key = key.replace(character, REPLACE_WITH)
