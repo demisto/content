@@ -25,7 +25,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Open authentication (less secure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
