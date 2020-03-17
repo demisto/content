@@ -10,9 +10,14 @@ TestData/EmailWithNonUnicodeSubject.eml
 CommonServerPython.py
 *Module.py
 !Packs/ApiModules/Scripts/*/*Module.py
-!Scripts/CommonServerPython/CommonServerPython.py
+!Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
+!Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
 CommonServerUserPython.py
+CommonServerPowerShell.ps1
 demistomock.py
+demistomock.ps1
+!Tests/demistomock/demistomock.py
+!Tests/demistomock/demistomock.ps1
 Tests/filter_file.txt
 Tests/id_set.json
 .mypy_cache
@@ -25,3 +30,6 @@ conftest.py
 venv
 failed_unittests.txt
 .python-version
+Scripts/**/__init__.py
+Integrations/**/__init__.py
+Packs/**/__init__.py

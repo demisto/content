@@ -37,8 +37,13 @@ configuration:
     command. Possible options are: unresolved, in progress, resolved or suppressed.
     Empty list won''t filter the incidents by state.'
   name: filter_alerts_by_state
+  options:
+  - unresolved
+  - in progress
+  - resolved
+  - suppressed
   required: false
-  type: 0
+  type: 16
 description: Tanium Threat Response
 display: Tanium Threat Response
 name: Tanium Threat Response
@@ -380,8 +385,8 @@ script:
     - contextPath: Tanium.Snapshot.Error
       description: The snapshot error message.
       type: String
-    - contextPath: Tanium.Snapshot.FileName
-      description: The snapshot file name.
+    - contextPath: Tanium.Snapshot.ID
+      description: The snapshot id.
       type: String
     - contextPath: Tanium.Snapshot.Started
       description: The date when the snapshot was created.
@@ -417,6 +422,16 @@ script:
     description: Deletes a snapshot by connection name and snapshot ID.
     execution: false
     name: tanium-tr-delete-snapshot
+    outputs:
+    - contextPath: Tanium.Snapshot.ID
+      description: The snapshot ID.
+      type: String
+    - contextPath: Tanium.Snapshot.ConnectionName
+      description: The connection name.
+      type: String
+    - contextPath: Tanium.Snapshot.Deleted
+      description: Whether the snapshot has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       defaultValue: '50'
@@ -467,6 +482,13 @@ script:
     description: Deletes a local snapshot by directory name and file name.
     execution: false
     name: tanium-tr-delete-local-snapshot
+    outputs:
+    - contextPath: Tanium.LocalSnapshot.FileName
+      description: The snapshot file name.
+      type: String
+    - contextPath: Tanium.LocalSnapshot.Deleted
+      description: Whether the local snapshot has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       defaultValue: '5'
@@ -500,6 +522,9 @@ script:
       description: Current connection state. Can be "closed", "pending", "active",
         "timeout", or "migrating".
       type: String
+    - contextPath: Tanium.Connection.Deleted
+      description: Whether the connection has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: The connection name.
@@ -525,6 +550,9 @@ script:
       description: Current connection state. Can be "closed", "pending", "active",
         "timeout", or "migrating".
       type: String
+    - contextPath: Tanium.Connection.Deleted
+      description: Whether the connection has been deleted.
+      type: Boolean
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -574,6 +602,13 @@ script:
     description: Deletes a connection by connection name.
     execution: false
     name: tanium-tr-delete-connection
+    outputs:
+    - contextPath: Tanium.Connection.Name
+      description: The connection name.
+      type: String
+    - contextPath: Tanium.Connection.Deleted
+      description: Whether the connection has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       defaultValue: '50'
@@ -723,6 +758,9 @@ script:
     - contextPath: Tanium.FileDownload.Tags
       description: The downloaded file tags.
       type: String
+    - contextPath: Tanium.FileDownload.Deleted
+      description: Whether the file download has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: The file ID.
@@ -745,7 +783,7 @@ script:
       default: false
       defaultValue: combined
       description: The type of event. Can be "File", "Network", "Registry", "Process",
-        "Driver", "SID", "Combined", "DNS", or "Image". The default is "Combined".
+        "Driver", "Security", "Combined", "DNS", or "Image". The default is "Combined".
       isArray: false
       name: event-type
       predefined:
@@ -754,7 +792,7 @@ script:
       - Registry
       - Process
       - Driver
-      - SID
+      - Security
       - Combined
       - DNS
       - Image
@@ -861,9 +899,6 @@ script:
     - contextPath: TaniumEvent.ValueName
       description: The registry value name.
       type: String
-    - contextPath: TaniumEvent.EndTime
-      description: The process end time.
-      type: Date
     - contextPath: TaniumEvent.ExitCode
       description: The process exit code.
       type: Number
@@ -888,7 +923,7 @@ script:
     - contextPath: TaniumEvent.Signed
       description: Whether the driver is signed.
       type: Boolean
-    - contextPath: TaniumEvent.EventId
+    - contextPath: TaniumEvent.EventID
       description: The ID of the event.
       type: Number
     - contextPath: TaniumEvent.EventOpcode
@@ -905,6 +940,24 @@ script:
       type: String
     - contextPath: TaniumEvent.Response
       description: The response of the DNS.
+      type: String
+    - contextPath: TaniumEvent.ImagePath
+      description: The image path.
+      type: String
+    - contextPath: TaniumEvent.CreationTime
+      description: The process creation time
+      type: Date
+    - contextPath: TaniumEvent.EndTime
+      description: The process end time.
+      type: Date
+    - contextPath: TaniumEvent.EventTaskName
+      description: The name of the event task.
+      type: String
+    - contextPath: TaniumEvent.Property.Name
+      description: The name of the event's property
+      type: String
+    - contextPath: TaniumEvent.Property.Value
+      description: The value of the event's property
       type: String
   - arguments:
     - default: false
@@ -976,6 +1029,9 @@ script:
     - contextPath: Tanium.FileDownload.Tags
       description: The downloaded file tags.
       type: String
+    - contextPath: Tanium.FileDownload.Deleted
+      description: Whether the file download has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: The connection name.
@@ -1282,6 +1338,9 @@ script:
     - contextPath: Tanium.Evidence.Tags
       description: The evidence tags.
       type: String
+    - contextPath: Tanium.Evidence.Deleted
+      description: Whether the evident has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: The ID of the evidence.
@@ -1330,6 +1389,9 @@ script:
     - contextPath: Tanium.Evidence.Tags
       description: The evidence tags.
       type: String
+    - contextPath: Tanium.Evidence.Deleted
+      description: Whether the evident has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: The name of the connection.
@@ -1364,6 +1426,13 @@ script:
     description: Deletes an evidence.
     execution: false
     name: tanium-tr-delete-evidence
+    outputs:
+    - contextPath: Tanium.Evidence.ID
+      description: The evidence ID.
+      type: String
+    - contextPath: Tanium.Evidence.Deleted
+      description: Whether the evidence has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: Path to file.
@@ -1408,6 +1477,13 @@ script:
     description: Deletes a file download.
     execution: false
     name: tanium-tr-delete-file-download
+    outputs:
+    - contextPath: Tanium.FileDownload.ID
+      description: The file download ID.
+      type: String
+    - contextPath: Tanium.FileDownload.Deleted
+      description: Whether the file download has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: Path to the directory.
@@ -1458,6 +1534,12 @@ script:
     - contextPath: Tanium.File.Permissions
       description: The file permissions.
       type: Date
+    - contextPath: Tanium.File.ConnectionName
+      description: The host of the file.
+      type: String
+    - contextPath: Tanium.File.Deleted
+      description: Whether the file has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       defaultValue: Connection name.
@@ -1490,6 +1572,15 @@ script:
     - contextPath: Tanium.File.LastModified
       description: The date that the file was last modified.
       type: Date
+    - contextPath: Tanium.File.Path
+      description: The file path.
+      type: String
+    - contextPath: Tanium.File.ConnectionName
+      description: The host of the file.
+      type: String
+    - contextPath: Tanium.File.Deleted
+      description: Whether the file has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: Connection name.
@@ -1507,6 +1598,16 @@ script:
     description: Deletes a file from the given endpoint.
     execution: false
     name: tanium-tr-delete-file-from-endpoint
+    outputs:
+    - contextPath: Tanium.File.Path
+      description: The file path.
+      type: String
+    - contextPath: Tanium.File.ConnectionName
+      description: The host of the file.
+      type: String
+    - contextPath: Tanium.File.Deleted
+      description: Whether the file has been deleted.
+      type: Boolean
   - arguments:
     - default: false
       description: Connection name.
