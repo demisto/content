@@ -892,8 +892,9 @@ def file_search_reasult_metadata(client: Client, args: dict) -> Tuple[str, Dict,
 
 def get_file_command(client: Client, args: dict):
     file_id: str = str(args.get('file_id'))
+    file_name: str = args.get('file_name')
     response = client.get_file(file_id)
-    attachment_file = fileResult('Fidelis_Endpoint.zip', response)
+    attachment_file = fileResult(file_name, response)
 
     return attachment_file
 
@@ -1687,7 +1688,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp()) * 1000
         if alert_create_date_timestamp > last_fetch_alert_time:
             incidents.append(incident)
-            latest_alert_create_date = alert_create_date_timestamp
+        latest_alert_create_date = alert_create_date_timestamp
 
     return incidents, {'time': latest_alert_create_date}
 

@@ -348,6 +348,13 @@ script:
       name: file_id
       required: true
       secret: false
+    - default: false
+      description: The file name to download with extension(can be found in file-search-result-metadata
+        command).
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
     deprecated: false
     description: Get the file stream and download the file.
     execution: false
