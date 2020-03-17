@@ -59,7 +59,6 @@ def execute_command(name, args=None):
 
 
 def search_indicators(query):
-    # query = args.get('indicator_query')
     query_list = re.split(r'\W+', query)
     investigation_id = int(query_list[-1])
     source_brands = query_list[1]
