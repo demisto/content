@@ -458,6 +458,7 @@
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
+            "memory_threshold": 80,
             "timeout": 3600
         },
         {
@@ -606,7 +607,8 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500
+            "timeout": 500,
+            "pid_threshold": 12
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1122,6 +1124,13 @@
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_general",
             "playbookID": "virusTotalPrivateAPI-test-playbook",
+            "timeout": 1400,
+            "nightly": true
+        },
+                {
+            "integrations": ["VirusTotal - Private API", "VirusTotal"],
+            "playbookID": "vt-detonate test",
+            "instance_names": ["virus_total_private_api_general", "virus_total_general"],
             "timeout": 1400,
             "nightly": true
         },
@@ -2282,6 +2291,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
+        "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
