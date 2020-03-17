@@ -571,6 +571,7 @@
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
+            "memory_threshold": 80,
             "timeout": 3600
         },
         {
@@ -2513,7 +2514,6 @@
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
         "test_Qradar": "Issue 22186",
-        "IntSights Test": "Issue 22185",
         "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
@@ -2545,7 +2545,8 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423"
+        "TAXII_Feed_Test": "Issue #22423",
+        "palo_alto_panorama_test_pb": "Issue #22835"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2689,6 +2690,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
+        "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
