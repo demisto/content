@@ -890,7 +890,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         response_for_context = build_context(response)
 
         # Prepare MD. getting all keys and values if exists
-        args_for_md = {key: value for key, value in args.items() if value}
+        args_for_md = {key: value for key, value in d_args.items() if value}
         if post_to_warroom:
             md = tableToMarkdown('Results in MISP for search:', args_for_md)
             md_event = response_for_context[0]
@@ -920,7 +920,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
             })
         return response_for_context, response
     else:
-        demisto.results(f"No events found in MISP for {args}")
+        demisto.results(f"No events found in MISP for {d_args}")
         return {}, {}
 
 
