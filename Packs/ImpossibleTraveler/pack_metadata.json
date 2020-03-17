@@ -30,7 +30,7 @@
         "Active_Directory_Query": {
             "mandatory": false,
             "minVersion": "1.0.0",
-            "name": "Active Directory Query",
+            "name": "Active Directory Query v2",
             "certification": "certified",
             "author": "Cortex XSOAR"
           },
