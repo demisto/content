@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: MISP V2 new
+  id: MISP V2
   version: -1
 configuration:
 - display: MISP server URL (e.g., https://192.168.0.1)
@@ -61,8 +61,8 @@ configuration:
   required: false
   type: 8
 description: Malware information sharing platform and threat sharing.
-display: MISP v2 new
-name: MISP V2 new
+display: MISP v2
+name: MISP V2
 script:
   commands:
   - arguments:
