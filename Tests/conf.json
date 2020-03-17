@@ -2547,7 +2547,7 @@
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "TAXII_Feed_Test": "Issue #22423",
-        "palo_alto_panorama_test_pb": "instance configuration issue"
+        "palo_alto_panorama_test_pb": "instance configuration (issue #22835)"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
