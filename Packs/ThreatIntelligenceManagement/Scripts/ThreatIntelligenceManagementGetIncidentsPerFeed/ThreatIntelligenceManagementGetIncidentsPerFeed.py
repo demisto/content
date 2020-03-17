@@ -19,9 +19,9 @@ def get_all_incidents(from_date):
     while total > size:
         contents = demisto.executeCommand("getIncidents", {"fromdate": from_date, "page": page})[0]['Contents']
         new_incidents = contents['data']
-        incidents = incidents + new_incidents
+        incidents += new_incidents
         size = len(incidents)
-        page = page + 1
+        page += 1
 
     return incidents
 
@@ -63,8 +63,7 @@ def main():
             'Feed Name': key,
             'Number Of Incidents': val
         } for key, val in data.items()]})
-    demisto.results('Done')
 
 
-if __name__ == "__main__":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
