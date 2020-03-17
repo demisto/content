@@ -780,7 +780,7 @@ def host_info_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
     entry_context = {
         'FidelisEndpoint.Host(val.ID && val.ID === obj.ID)': contents,
-        'Endpoint': context_standards
+        'Endpoint(val.ID && val.ID === obj.ID)': context_standards
     }
     human_readable = tableToMarkdown('Fidelis Endpoint Host Info', contents, headers=headers, removeNull=True)
 
@@ -883,7 +883,7 @@ def file_search_reasult_metadata(client: Client, args: dict) -> Tuple[str, Dict,
 
     entry_context = {
         'FidelisEndpoint.File(val.ID && val.ID === obj.ID)': contents,
-        'File': file_standards
+        outputPaths['file']: file_standards
     }
     human_readable = tableToMarkdown('Fidelis Endpoint file results metadata', contents, headers=headers, removeNull=True)
 
@@ -1281,7 +1281,7 @@ def query_file_by_hash_command(client: Client, args: dict) -> Tuple[str, Dict, D
 
     entry_context = {
         'FidelisEndpoint.Query(val.Hash && val.Hash === obj.Hash)': context,
-        'File': file_standards
+        outputPaths['file']: file_standards
     }
     human_readable = tableToMarkdown('Fidelis Endpoint file hash query results', contents, headers=headers,
                                      removeNull=True)
@@ -1595,7 +1595,7 @@ def query_events_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     operator = args.get('operator')
     limit = args.get('limit')
     additional_filter_string = args.get('additional_filter')
-    additional_filter = ''
+    additional_filter = None
     if additional_filter_string:
         additional_filter_split = additional_filter_string.split()
         if len(additional_filter_split) == 3:
@@ -1672,7 +1672,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     if not last_fetch_alert_time:
         last_fetch_alert_time, _ = parse_date_range(fetch_time, to_timestamp=True)
 
-    current_fetch = last_fetch_alert_time
     incidents = []
     last_fetch_date_string = timestamp_to_datestring(last_fetch_alert_time)
     response = client.list_alerts(limit=fetch_limit, sort='createDate Ascending', start_date=last_fetch_date_string)
@@ -1688,8 +1687,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp()) * 1000
         if alert_create_date_timestamp > last_fetch_alert_time:
             incidents.append(incident)
+            latest_alert_create_date = alert_create_date_timestamp
 
-    return incidents, {'time': current_fetch}
+    return incidents, {'time': latest_alert_create_date}
 
 
 def main():
