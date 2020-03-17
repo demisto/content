@@ -224,7 +224,7 @@ def request(url, message):
     try:
         response = urllib2.urlopen(req, context=context)  # guardrails-disable-line
     except urllib2.HTTPError as response:
-        pass  # Propagate HTTP errors via the returned response message
+        demisto.error(str(response))  # Propagate HTTP errors via the returned response message
     return {
         'status': response.code,  # type: ignore
         'reason': response.msg,  # type: ignore
