@@ -8,6 +8,7 @@ import uuid
 import yaml
 import enum
 import prettytable
+import fnmatch
 import google.auth
 from google.cloud import storage
 from distutils.util import strtobool
@@ -75,6 +76,7 @@ class Pack(object):
         USER_METADATA (str); user metadata file name, the one that located in content repo.
         INDEX_NAME (str): pack's index name, may be changed in the future.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
+        AUTHOR_IMAGE_NAME (str): author image file name.
 
     """
     PACK_INITIAL_VERSION = "1.0.0"
@@ -84,6 +86,7 @@ class Pack(object):
     README = "README.md"
     USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
+    AUTHOR_IMAGE_NAME = "Author_image.png"
     INDEX_NAME = "index"
     EXCLUDE_DIRECTORIES = ["TestPlaybooks"]
 
@@ -236,6 +239,18 @@ class Pack(object):
                     dirs[:] = [d for d in dirs if d not in Pack.EXCLUDE_DIRECTORIES]
 
                     for f in files:
+                        # skipping zipping of unwanted files
+                        if f.startswith('.') or f in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA]:
+                            print_warning(f"Skipping zipping {f} for {self._pack_name} pack")
+                            continue
+
+                        current_directory = root.split(os.path.sep)[-1]
+
+                        if current_directory == 'Misc' and not fnmatch.fnmatch(f, 'reputation-*.json'):
+                            # reputation in old format aren't supported in 6.0.0 server version
+                            print_warning(f"Skipped zipping {f} for {self._pack_name} pack")
+                            continue
+
                         full_file_path = os.path.join(root, f)
                         relative_file_path = os.path.relpath(full_file_path, self._pack_path)
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
