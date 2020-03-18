@@ -717,7 +717,7 @@
 				"prevName": "Incident Per Feed",
 				"dataType": "scripts",
 				"widgetType": "table",
-				"query": "GetIncidentsPerFeed",
+				"query": "ThreatIntelligenceManagementGetIncidentsPerFeed",
 				"sort": null,
 				"isPredefined": false,
 				"dateRange": {
