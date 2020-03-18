@@ -26,7 +26,9 @@ IGNORED_PATHS = [os.path.join(CONTENT_PACKS_FOLDER, p) for p in IGNORED_FILES]
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../..'))  # full path to content root repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, CONTENT_PACKS_FOLDER)  # full path to Packs folder in content repo
 INTEGRATIONS_FOLDER = "Integrations"  # integrations folder name inside pack
+BASE_PACK = "Base"  # base pack name
 USE_GCS_RELATIVE_PATH = False  # whether to use relative path in uploaded to gcs images
+GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
 
 # the format is defined in issue #19786, may change in the future
 DIR_NAME_TO_CONTENT_TYPE = {
@@ -50,6 +52,7 @@ class PackStatus(enum.Enum):
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
+    FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
     FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
@@ -163,7 +166,7 @@ class Pack(object):
             return pack_versions[0].vstring
 
     @staticmethod
-    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images):
+    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image):
         """Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -171,6 +174,7 @@ class Pack(object):
             pack_content_items (dict): content items located inside specific pack.
             pack_id (str): pack unique identifier.
             integration_images (list): list of gcs uploaded integration images.
+            author_image (str): gcs uploaded author image
 
         Returns:
             dict: parsed pack metadata.
@@ -195,7 +199,7 @@ class Pack(object):
             pack_metadata['supportDetails']['email'] = support_email
         pack_metadata['author'] = user_metadata.get('author', '')
         # todo get vendor image and upload to storage
-        pack_metadata['authorImage'] = ''
+        pack_metadata['authorImage'] = author_image
         is_beta = user_metadata.get('beta', False)
         pack_metadata['beta'] = bool(strtobool(is_beta)) if isinstance(is_beta, str) else is_beta
         is_deprecated = user_metadata.get('deprecated', False)
@@ -305,7 +309,7 @@ class Pack(object):
             print_error(f"Failed in uploading {self._pack_name} pack to gcs.\nAdditional info: {e}")
             return task_status, True
 
-    def format_metadata(self, pack_content_items, integration_images):
+    def format_metadata(self, pack_content_items, integration_images, author_image):
         """Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -316,6 +320,7 @@ class Pack(object):
             have no description.
             integration_images (list): list of uploaded integration images with integration display name and image gcs
             public url.
+            author_image (str): uploaded public gcs path to author image.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
@@ -333,7 +338,8 @@ class Pack(object):
             formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
-                                                           integration_images=integration_images)
+                                                           integration_images=integration_images,
+                                                           author_image=author_image)
 
         with open(metadata_path, "w") as metadata_file:
             json.dump(formatted_metadata, metadata_file, indent=4)  # writing back parsed metadata
@@ -459,9 +465,58 @@ class Pack(object):
             print(f"Uploaded {len(pack_local_images)} images for {self._pack_name} pack.")
         except Exception as e:
             task_status = False
-            print_error(f"Failed to upload {self._pack_name} pack integration images. Additional info\n: {e}")
+            print_error(f"Failed to upload {self._pack_name} pack integration images. Additional info:\n {e}")
         finally:
             return task_status, uploaded_integration_images
+
+    def upload_author_image(self, storage_bucket):
+        """Uploads pack author image to gcs.
+
+        Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
+        default Base pack image path is used and it's gcp path is returned.
+
+        Args:
+            storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
+
+        Returns:
+            bool: whether the operation succeeded.
+            str: public gcp path of author image.
+
+        """
+        task_status = True
+        author_image_storage_path = ""
+
+        try:
+            repo_author_image_path = os.path.join(self._pack_repo_path, Pack.AUTHOR_IMAGE_NAME)
+
+            if os.path.exists(repo_author_image_path):
+                image_to_upload_storage_path = os.path.join(STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+                pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
+
+                with open(repo_author_image_path, "rb") as author_image_file:
+                    pack_author_image_blob.upload_from_file(author_image_file)
+
+                author_image_storage_path = pack_author_image_blob.name if USE_GCS_RELATIVE_PATH \
+                    else pack_author_image_blob.public_url
+
+                print_color(f"Uploaded successfully {self._pack_name} pack author image", LOG_COLORS.GREEN)
+            else:  # use default Base pack image
+                author_image_storage_path = os.path.join(STORAGE_BASE_PATH, BASE_PACK, Pack.AUTHOR_IMAGE_NAME)
+
+                if not USE_GCS_RELATIVE_PATH:
+                    # disable-secrets-detection-start
+                    author_image_storage_path = os.path.join(GCS_PUBLIC_URL, storage_bucket.name,
+                                                             author_image_storage_path)
+                    # disable-secrets-detection-end
+                print_color((f"Skipping uploading of {self._pack_name} pack author image "
+                             f"and use default {BASE_PACK} pack image"), LOG_COLORS.GREEN)
+
+        except Exception as e:
+            print_error(f"Failed uploading {self._pack_name} pack author image. Additional info:\n {e}")
+            task_status = False
+            author_image_storage_path = ""
+        finally:
+            return task_status, author_image_storage_path
 
     def cleanup(self):
         """Finalization action, removes extracted pack folder.
@@ -779,13 +834,19 @@ def main():
             pack.cleanup()
             continue
 
+        task_status, author_image = pack.upload_author_image(storage_bucket)
+        if not task_status:
+            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack.cleanup()
+            continue
+
         task_status, pack_content_items = collect_pack_content_items(pack.path)
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(pack_content_items, integration_images)
+        task_status = pack.format_metadata(pack_content_items, integration_images, author_image)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()

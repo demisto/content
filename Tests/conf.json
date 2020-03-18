@@ -589,6 +589,7 @@
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
+            "memory_threshold": 80,
             "timeout": 3600
         },
         {
@@ -2519,6 +2520,11 @@
         }
     ],
     "skipped_tests": {
+        "test_MsGraphFiles": "Issue 22853",
+        "TestCofenseFeed": "Issue 22854",
+        "RecordedFutureFeed - Test": "Issue 22855",
+        "Indicator Feed - Test": "Issue 22858",
+        "Blocklist_de - Test": "Issue 22856",
         "Cybereason Test": "Issue 22683",
         "CVE Search v2 - Test": "Issue 22661",
         "AbuseIPDB Test": "Issue 22658",
@@ -2531,7 +2537,6 @@
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
         "test_Qradar": "Issue 22186",
-        "IntSights Test": "Issue 22185",
         "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
@@ -2563,7 +2568,8 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423"
+        "TAXII_Feed_Test": "Issue #22423",
+        "palo_alto_panorama_test_pb": "Issue #22835"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2711,7 +2717,6 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
-        "Feed Office365": "SSl Issues. issue: 21181",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
