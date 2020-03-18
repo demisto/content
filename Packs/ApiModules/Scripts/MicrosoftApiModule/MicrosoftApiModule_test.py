@@ -30,8 +30,8 @@ def oproxy_client_tenant():
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_oproxy(auth_id, enc_key, app_name, tenant_id=tenant_id,
-                                       base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name, tenant_id=tenant_id,
+                           base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def oproxy_client_refresh():
@@ -42,8 +42,8 @@ def oproxy_client_refresh():
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_oproxy(auth_id, enc_key, app_name, refresh_token=refresh_token,
-                                       base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                           refresh_token=refresh_token, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def self_deployed_client():
@@ -56,9 +56,9 @@ def self_deployed_client():
     resource = RESOURCE
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_self_deployed(tenant_id, client_id, client_secret, app_url=app_url, resource=resource,
-                                              scope=scope, base_url=base_url,
-                                              verify=True, proxy=False, ok_codes=ok_codes)
+    return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, client_id=client_id, client_secret=client_secret,
+                           app_url=app_url, resource=resource, scope=scope, base_url=base_url,
+                           verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def test_error_parser():
