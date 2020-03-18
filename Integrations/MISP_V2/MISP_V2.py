@@ -32,7 +32,9 @@ MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP: ExpandedPyMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)
 METADATA_STATE: bool = demisto.params().get('metadata')
 RELATED_EVENTS_STATE: bool = demisto.params().get('related_events')
-SELECTED_KEYS: List[str] = [item.lower() for item in demisto.params().get('context_select') or []]
+LIMIT = int(demisto.args().get('limit', 10))
+PAGE = int(demisto.args().get('page', 1))
+LIMIT_ATT = int(demisto.args().get('limit_att', 50))
 
 """
 dict format :
@@ -125,15 +127,19 @@ DISTRIBUTION_NUMBERS = {
     'Connected_communities': 2,
     'All_communities': 3
 }
+
 ''' HELPER FUNCTIONS '''
 
 
-def filter_obj(obj: dict, is_att: bool = True) -> dict:
-    """ Filter Event, Attribute
+@logger
+def filter_obj(obj: dict) -> dict:
+    """ Filter raw response:
+        1. If configured in integration parameters, replace metadata lists with empty lists.
+        2. If configured in integration parameters, replace related events lists with empty list.
+        3. Limit the number of attribute in events (in objects or attributes)
 
     Args:
         obj(dict): dictionary MISP event or attribute.
-        is_att: True if dict represent Attribute otherwise Event (False)
 
     Returns:
         dict: Filtered dict by configuration.
@@ -148,18 +154,16 @@ def filter_obj(obj: dict, is_att: bool = True) -> dict:
         elif dict_key in ignored_keys_related_events:
             if not RELATED_EVENTS_STATE:
                 obj[dict_key] = []
-        elif is_att and SELECTED_KEYS and dict_key not in SELECTED_KEYS:
-            obj.pop(dict_key)
 
     return obj
 
 
+@logger
 def filter_misp_response(misp_response: List[dict]) -> List[dict]:
-    """ Filter MISP response -
-        Remove from Attributes and Objects the following keys if exists:
-         1. MetaData keys - Galaxy, Tags (The keys both determine classification by publisher)
-         2. Selected keys - Removing all not selected keys in response.
-         3. Related events - Remove related events if not chosen.
+    """ Filter raw response:
+        1. If configured in integration parameters, replace metadata lists with empty lists.
+        2. If configured in integration parameters, replace related events lists with empty list.
+        3. Limit the number of attribute in events (in objects or attributes)
 
     Args:
         misp_response(list): valid response of MISP client using PyMisp
@@ -167,15 +171,14 @@ def filter_misp_response(misp_response: List[dict]) -> List[dict]:
     Returns:
         list: Filtered response
     """
-    if not RELATED_EVENTS_STATE or not METADATA_STATE or SELECTED_KEYS:
-        for event in misp_response:
-            # Filter Misp Event object
-            event['Event']: dict = filter_obj(event['Event'], is_att=False)
-            # Filter Misp Attribute object
-            event['Event']['Attribute'] = [filter_obj(att) for att in event['Event']['Attribute']]
-            # Filter Misp Object object
-            for obj in event['Event']['Object']:
-                obj = [filter_obj(att) for att in obj['Attribute']]
+    for event in misp_response:
+        # Filter Misp Event object
+        event['Event']: dict = filter_obj(event['Event'])
+        # Filter Misp Attribute object
+        event['Event']['Attribute'] = [filter_obj(att) for att in event['Event']['Attribute'][:LIMIT_ATT]]
+        # Filter Misp Object object
+        for obj in event['Event']['Object']:
+            obj = [filter_obj(att) for att in obj['Attribute'][:LIMIT_ATT]]
 
     return misp_response
 
@@ -425,7 +428,9 @@ def check_file(file_hash):
         return_error('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
 
     # misp_response will remain the raw output of misp
-    misp_response = MISP.search(value=file_hash)
+    misp_response = MISP.search(value=file_hash,
+                                limit=LIMIT,
+                                page=PAGE)
     if misp_response:
         dbot_list = list()
         file_list = list()
@@ -501,7 +506,9 @@ def check_ip(ip):
     if not is_ip_valid(ip):
         return_error("IP isn't valid")
 
-    misp_response = MISP.search(value=ip)
+    misp_response = MISP.search(value=ip,
+                                limit=LIMIT,
+                                page=PAGE)
 
     if misp_response:
         dbot_list = list()
@@ -542,7 +549,7 @@ def check_ip(ip):
             MISP_PATH: build_context(misp_response)
         }
 
-        md = tableToMarkdown(f'Results found in MISP for IP: {ip}', md_list)
+        md = tableToMarkdown(f'Results found in MISP for IP: {ip}, Page: {PAGE} - Limit: {LIMIT}', md_list)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': misp_response,
@@ -705,6 +712,7 @@ def add_attribute(event_id: int = None, internal: bool = None):
     if internal:
         return
     event = MISP.search(eventid=args.get('id'))
+
     md = f"## MISP add attribute\nNew attribute: {args.get('value')} was added to event id {args.get('id')}.\n"
     ec = {
         MISP_PATH: build_context(event)
@@ -755,14 +763,17 @@ def download_file():
 
 
 def get_urls_events():
-    urls = argToList(demisto.args().get('url'), ',')
+    urls = argToList(demisto.args().get('url'))
     demisto.results(urls)
     for url in urls:
         check_url(url)
 
 
 def check_url(url):
-    response = MISP.search(value=url, type_attribute='url')
+    response = MISP.search(value=url,
+                           type_attribute='url',
+                           limit=LIMIT,
+                           page=PAGE)
 
     if response:
         dbot_list = list()
@@ -802,7 +813,7 @@ def check_url(url):
             outputPaths.get('dbotscore'): dbot_list,
             MISP_PATH: build_context(response)
         }
-        md = tableToMarkdown(f'MISP Reputation for URL: {url}', md_list)
+        md = tableToMarkdown(f'MISP Reputation for URL: {url}, Page: {PAGE} - Limit: {LIMIT}', md_list)
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': response,
@@ -885,14 +896,16 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         'to_ids': 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
     })
 
-    response = MISP.search(**search_args)
+    response = MISP.search(**search_args,
+                           limit=LIMIT,
+                           page=PAGE)
     if response:
         response_for_context = build_context(response)
 
         # Prepare MD. getting all keys and values if exists
         args_for_md = {key: value for key, value in d_args.items() if value}
         if post_to_warroom:
-            md = tableToMarkdown('Results in MISP for search:', args_for_md)
+            md = tableToMarkdown(f'Results in MISP for search: Page: {PAGE} - Limit: {LIMIT}', args_for_md)
             md_event = response_for_context[0]
             md += f'Total of {len(response_for_context)} events found\n'
             event_highlights = {
@@ -952,6 +965,7 @@ def add_tag():
 
     MISP.tag(uuid, tag)
     event = MISP.search(uuid=uuid)
+
     ec = {
         MISP_PATH: build_context(event)
     }
@@ -1250,6 +1264,8 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins'):
     main()
+
+main()
 
 # TODO: in 5.0
 #   * Add !file (need docker change).

@@ -11,39 +11,16 @@ configuration:
   name: api_key
   required: true
   type: 4
-- display: Use system proxy settings
-  defaultvalue: 'false'
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (not secure)
-  defaultvalue: 'false'
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Select which attribute data fields of the event will be saved to context.
-    Leave empty to select all attributes.
-  name: context_select
-  options:
-  - Category
-  - Comment
-  - Deleted
-  - DisableCorrelation
-  - Distribution
-  - EventID
-  - Galaxy
-  - ID
-  - ObjectID
-  - ObjectRelation
-  - ShadowAttribute
-  - SharingGroupID
-  - Timestamp
-  - ToIDs
-  - Type
-  - UUID
-  - Value
-  required: false
-  type: 16
 - additionalinfo: Include Related events for Events, if selected Related events will
     retreive.
   defaultvalue: 'true'
@@ -141,6 +118,28 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '10'
+      description: Limit the number of events returned.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: If a limit is set, sets the page to be returned. page 3, limit
+        10 will return records 21->30).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: Limit the number of attributes in each event.
+      isArray: false
+      name: limit_att
       required: false
       secret: false
     deprecated: false
@@ -342,6 +341,28 @@ script:
       name: file
       required: false
       secret: false
+    - default: true
+      defaultValue: '10'
+      description: Limit the number of events returned.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: If a limit is set, sets the page to be returned. page 3, limit
+        10 will return records 21->30).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: Limit the number of attributes in each event.
+      isArray: false
+      name: limit_att
+      required: false
+      secret: false
     deprecated: false
     description: Checks the file reputation of the given hash.
     execution: false
@@ -381,6 +402,28 @@ script:
       name: url
       required: false
       secret: false
+    - default: true
+      defaultValue: '10'
+      description: Limit the number of events returned.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: If a limit is set, sets the page to be returned. page 3, limit
+        10 will return records 21->30).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: Limit the number of attributes in each event.
+      isArray: false
+      name: limit_att
+      required: false
+      secret: false
     deprecated: false
     description: Checks if the URL is in MISP events.
     execution: false
@@ -412,6 +455,28 @@ script:
       description: IP address to check
       isArray: true
       name: ip
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '10'
+      description: Limit the number of events returned.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: If a limit is set, sets the page to be returned. page 3, limit
+        10 will return records 21->30).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: Limit the number of attributes in each event.
+      isArray: false
+      name: limit_att
       required: false
       secret: false
     deprecated: false

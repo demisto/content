@@ -162,7 +162,7 @@ def test_build_misp_complex_filter(mocker):
 class TestFilterKeys:
     @patch('MISP_V2.METADATA_STATE', True)
     @patch('MISP_V2.RELATED_EVENTS_STATE', True)
-    @patch('MISP_V2.SELECTED_KEYS', [])
+    @patch('MISP_V2.LIMIT_ATT', 50)
     def test_keys_not_selected_include_all(self, mocker, datadir):
         from MISP_V2 import filter_misp_response
         import json
@@ -175,7 +175,7 @@ class TestFilterKeys:
 
     @patch('MISP_V2.METADATA_STATE', False)
     @patch('MISP_V2.RELATED_EVENTS_STATE', True)
-    @patch('MISP_V2.SELECTED_KEYS', [])
+    @patch('MISP_V2.LIMIT_ATT', 50)
     def test_keys_not_selected_metadata_not_include_related_include(self, mocker, datadir):
         from MISP_V2 import filter_misp_response
         import json
@@ -188,7 +188,7 @@ class TestFilterKeys:
 
     @patch('MISP_V2.METADATA_STATE', False)
     @patch('MISP_V2.RELATED_EVENTS_STATE', False)
-    @patch('MISP_V2.SELECTED_KEYS', [])
+    @patch('MISP_V2.LIMIT_ATT', 50)
     def test_keys_not_selected_metadata_not_include_related_not_include(self, mocker, datadir):
         from MISP_V2 import filter_misp_response
         import json
@@ -201,21 +201,8 @@ class TestFilterKeys:
 
     @patch('MISP_V2.METADATA_STATE', True)
     @patch('MISP_V2.RELATED_EVENTS_STATE', False)
-    @patch('MISP_V2.SELECTED_KEYS', [])
+    @patch('MISP_V2.LIMIT_ATT', 50)
     def test_keys_not_selected_metadata_include_related_not_include(self, mocker, datadir):
-        from MISP_V2 import filter_misp_response
-        import json
-
-        raw_misp = json.load(fp=open(datadir['raw_misp.json']))
-        actual = filter_misp_response(misp_response=raw_misp)
-        excpected = json.load(fp=open(datadir['filtered_misp.json']))
-
-        assert actual == excpected
-
-    @patch('MISP_V2.METADATA_STATE', True)
-    @patch('MISP_V2.RELATED_EVENTS_STATE', False)
-    @patch('MISP_V2.SELECTED_KEYS', ['category', 'org_id'])
-    def test_keys_selected_metadata_include_related_not_include(self, mocker, datadir):
         from MISP_V2 import filter_misp_response
         import json
 
