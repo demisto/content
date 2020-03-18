@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Added classification to 'AWS CloudTrail Misconfiguration' incident type.
 
 
