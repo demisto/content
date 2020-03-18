@@ -267,18 +267,18 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 84f11816-381a-471d-8cb7-8707d7ef0b93
+    taskid: 81940fd5-a3e4-4162-88f0-9c92f541ef3e
     type: regular
     task:
       elasticcommonfields: {}
-      id: 84f11816-381a-471d-8cb7-8707d7ef0b93
+      id: 81940fd5-a3e4-4162-88f0-9c92f541ef3e
       version: -1
       name: Get snapshots list by connection
       description: Returns all snapshots of a single connection.
-      script: Tanium Threat Response|||tanium-tr-list-snapshots-by-connection
+      script: '|||tanium-tr-list-snapshots-by-connection'
       type: regular
       iscommand: true
-      brand: Tanium Threat Response
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -307,18 +307,18 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: a1e8f695-a0fe-41b6-8611-f30f01703a4c
+    taskid: 4ecbe52a-3e4d-4d92-8b3f-fe0cd7af53ac
     type: regular
     task:
       elasticcommonfields: {}
-      id: a1e8f695-a0fe-41b6-8611-f30f01703a4c
+      id: 4ecbe52a-3e4d-4d92-8b3f-fe0cd7af53ac
       version: -1
       name: Get local snapshots list by connection
       description: Returns all local snapshots of a single connection.
-      script: Tanium Threat Response|||tanium-tr-list-local-snapshots-by-connection
+      script: '|||tanium-tr-list-local-snapshots-by-connection'
       type: regular
       iscommand: true
-      brand: Tanium Threat Response
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -626,7 +626,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2440
+          "y": 2090
         }
       }
     note: false
@@ -634,34 +634,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "20":
-    id: "20"
-    taskid: c4c4ec33-3f0e-4543-871a-07ccb42e9688
+  "23":
+    id: "23"
+    taskid: 45ea66f5-88ac-47ee-8abd-ea865debf5cf
     type: regular
     task:
       elasticcommonfields: {}
-      id: c4c4ec33-3f0e-4543-871a-07ccb42e9688
+      id: 45ea66f5-88ac-47ee-8abd-ea865debf5cf
       version: -1
-      name: Get file events by connection
-      description: Queries events for a connection.
-      script: '|||tanium-tr-list-events-by-connection'
+      name: tanium-tr-get-evidence-by-id
+      description: Gets evidence by evidence ID.
+      script: '|||tanium-tr-get-evidence-by-id'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "18"
     scriptarguments:
-      connection-name:
-        simple: local-EC2AMAZ-KGMRO60-2020_03_03T14.57.01.801Z.db
-      event-type:
-        simple: File
-      fields: {}
-      filter: {}
-      limit: {}
-      match: {}
-      offset: {}
-      sort: {}
+      evidence-id:
+        simple: "29"
     separatecontext: false
     view: |-
       {
@@ -675,95 +667,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
-    taskid: 5fefa072-cabb-44be-826e-07a3f70588e0
+  "24":
+    id: "24"
+    taskid: c3669e96-b9fc-433c-8bb2-3e91b83181a8
     type: regular
     task:
       elasticcommonfields: {}
-      id: 5fefa072-cabb-44be-826e-07a3f70588e0
+      id: c3669e96-b9fc-433c-8bb2-3e91b83181a8
       version: -1
-      name: tanium-tr-get-process-info
-      description: Get information for a process.
-      script: Tanium Threat Response|||tanium-tr-get-process-info
+      name: Create connection
+      description: Creates a local or remote connection.
+      script: '|||tanium-tr-create-connection'
       type: regular
       iscommand: true
-      brand: Tanium Threat Response
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
     scriptarguments:
-      connection-name:
-        simple: local-EC2AMAZ-KGMRO60-2020_03_03T14.57.01.801Z.db
-      ptid:
-        simple: "732460"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: b7bd0bf5-50bd-4ccf-8401-a5d430885306
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: b7bd0bf5-50bd-4ccf-8401-a5d430885306
-      version: -1
-      name: tanium-tr-get-evidence-by-id
-      description: Retrive the evidence by it's ID.
-      script: Tanium Threat Response|||tanium-tr-get-evidence-by-id
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      evidence-id:
-        simple: "29"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2265
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: 3beabf3f-1a01-48c7-82e3-c1412fc93f59
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 3beabf3f-1a01-48c7-82e3-c1412fc93f59
-      version: -1
-      name: Create connection
-      description: Creates a local or remote connection.
-      script: Tanium Threat Response|||tanium-tr-create-connection
-      type: regular
-      iscommand: true
-      brand: Tanium Threat Response
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
       connection-timeout: {}
       destination:
-        simple: local-EC2AMAZ-KGMRO60-2020_03_03T14.57.01.801Z.db
+        simple: EC2AMAZ-KGMRO60
       destination-type:
         simple: computer_name
       remote:
@@ -786,7 +710,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2455,
+        "height": 2105,
         "width": 810,
         "x": 50,
         "y": 50
