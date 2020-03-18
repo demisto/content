@@ -21,7 +21,7 @@ class Client(BaseClient):
         )
         return response
 
-    def get_upn_by_email_or_sam_account_http_request(self, domain, email=None, sam_account=None):
+    def get_upn_by_email_or_sam_account_http_request(self, domain=None, email=None, sam_account=None):
         """
         initiates an http request to get the upn by email or sam account
         """
