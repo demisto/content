@@ -412,12 +412,13 @@ def fetch_incidents(service):
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
     if demisto.get(demisto.params(), 'useSplunkTime'):
         now = get_current_splunk_time(service)
-        current_time_for_fetch = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
 
     if len(last_run) == 0:
         fetch_time_in_minutes = parse_time_to_minutes()
-        current_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-        last_run = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
     earliest_fetch_time_fieldname = demisto.params().get("earliest_fetch_time_fieldname", "index_earliest")
     latest_fetch_time_fieldname = demisto.params().get("latest_fetch_time_fieldname", "index_latest")
