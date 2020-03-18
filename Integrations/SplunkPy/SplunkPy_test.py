@@ -1,3 +1,5 @@
+RETURN_ERROR_TARGET = 'SplunkPy.return_error'
+
 DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
                     'xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", distinct_hosts="5", ' \
@@ -118,3 +120,30 @@ def test_raw_to_dict():
     assert empty == {}
     assert URL_TESTING_OUT == url_test
     assert POSITIVE == character_check
+
+
+def test_parse_time_to_minutes_no_error():
+    import SplunkPy as splunk
+    splunk.FETCH_TIME = '3 hours'
+    res = splunk.parse_time_to_minutes()
+    assert res == 180
+
+
+def test_parse_time_to_minutes_invalid_time_integer(mocker):
+    import SplunkPy as splunk
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    splunk.FETCH_TIME = 'abc hours'
+    splunk.parse_time_to_minutes()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Error: Invalid fetch time, need to be a positive integer.'
+
+
+def test_parse_time_to_minutes_invalid_time_unit(mocker):
+    import SplunkPy as splunk
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+
+    splunk.FETCH_TIME = '3 hoursss'
+    splunk.parse_time_to_minutes()
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Error: Invalid time unit.'
