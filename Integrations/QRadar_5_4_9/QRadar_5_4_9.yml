@@ -1229,12 +1229,12 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The value to add or update in the reference set. Note: Date values
-        must be represented in epoch in reference sets (milliseconds since the Unix
-        Epoch January 1st 1970). If ''date_value'' is set to ''True'', then the argument
-        will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g.
-        ''2018-11-06T08:56:41.000000Z'') to epoch.'
-      isArray: false
+      description: 'The value/s to add or update in the reference set. Note: Date
+        values must be represented in epoch in reference sets (milliseconds since
+        the Unix Epoch January 1st 1970). If ''date_value'' is set to ''True'', then
+        the argument will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z''
+        (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      isArray: true
       name: value
       required: true
       secret: false
@@ -1285,9 +1285,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The value to add or update in the reference set. Note: Date values
-        must be represented in milliseconds since the Unix Epoch January 1st 1970.'
-      isArray: false
+      description: ' A comma-separated list of values to add or update in the reference set. Date
+        values must be represented in milliseconds since the Unix Epoch January 1st
+        1970.'
+      isArray: true
       name: value
       required: true
       secret: false
@@ -1311,7 +1312,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add or update a value in a reference set.
+    description: Adds or updates a value in a reference set.
     execution: false
     name: qradar-update-reference-set-value
     outputs:
