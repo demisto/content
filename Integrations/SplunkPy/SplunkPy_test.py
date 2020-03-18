@@ -128,6 +128,10 @@ data_test_replace_keys = [
     ({'test': 'test'}, {'test': 'test'}),
     ({'test.': 'test.'}, {'test_': 'test.'}),
     ({'te.st': 'te.st'}, {'te_st': 'te.st'}),
+    ({'te[st': 'te[st'}, {'te_st': 'te[st'}),
+    ({'te]st': 'te]st'}, {'te_st': 'te]st'}),
+    ({'te)st': 'te)st'}, {'te_st': 'te)st'}),
+    ({'te(st': 'te(st'}, {'te_st': 'te(st'}),
     ('', ''),
     (None, None)
 ]
