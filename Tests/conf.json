@@ -571,6 +571,7 @@
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
+            "memory_threshold": 80,
             "timeout": 3600
         },
         {
@@ -724,7 +725,8 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500
+            "timeout": 500,
+            "pid_threshold": 12
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1264,6 +1266,13 @@
             "nightly": true,
             "pid_threshold": 12
         },
+                {
+            "integrations": ["VirusTotal - Private API", "VirusTotal"],
+            "playbookID": "vt-detonate test",
+            "instance_names": ["virus_total_private_api_general", "virus_total_general"],
+            "timeout": 1400,
+            "nightly": true
+        },
         {
             "integrations": "VirusTotal - Private API",
             "instance_names": "virus_total_private_api_preferred_vendors",
@@ -1327,7 +1336,19 @@
             "playbookID": "Microsoft Graph Groups - Test",
             "instance_names": "ms_graph_groups_prod"
         },
-                {
+        {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "instance_names": "ms_graph_files_dev",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Microsoft_Graph_Files",
+            "playbookID": "test_MsGraphFiles",
+            "instance_names": "ms_graph_files_prod",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Microsoft Graph Calendar",
             "playbookID": "Microsoft Graph Calendar - Test",
             "instance_names": "ms_graph_calendar_dev"
@@ -2416,8 +2437,49 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Code42",
+            "playbookID": "Code42-Test",
+            "timeout": 600
+        },
+        {
+            "playbookID": "Code42 File Search Test",
+            "integrations": "Code42"
+        },
+        {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Apps - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Detail - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Finding Detail - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Hosts - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Host Findings - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Unique Cves - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Unique Open Findings - Test"
+        },
+        {
+            "integrations": "RiskSense",
+            "playbookID": "RiskSense Get Apps Detail - Test"
         },
         {
             "integrations": "Indeni",
@@ -2444,10 +2506,14 @@
         }
     ],
     "skipped_tests": {
-        "AutoFocus V2 test": "Issue 22721",
+        "test_MsGraphFiles": "Issue 22853",
+        "TestCofenseFeed": "Issue 22854",
+        "RecordedFutureFeed - Test": "Issue 22855",
+        "Blocklist_de - Test": "Issue 22856",
         "Cybereason Test": "Issue 22683",
         "CVE Search v2 - Test": "Issue 22661",
         "AbuseIPDB Test": "Issue 22658",
+        "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
         "RasterizeTest": "Issue 20702",
@@ -2455,9 +2521,7 @@
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
-        "EmailReputationTest": "Issue 22187",
         "test_Qradar": "Issue 22186",
-        "IntSights Test": "Issue 22185",
         "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
@@ -2489,10 +2553,12 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "TAXII_Feed_Test": "Issue #22423"
+        "TAXII_Feed_Test": "Issue #22423",
+        "palo_alto_panorama_test_pb": "Issue #22835"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "RiskSense": "We should get an instance talk to Francesco",
         "Palo Alto Networks Cortex": "Issue 22300",
         "Claroty": "Issue 22255",
         "AWS - IAM": "Issue 21401",
@@ -2553,6 +2619,7 @@
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Instance not set up yet",
+        "Code42": "Instance not set up yet",
         "LogRhythm": "Issue 21672",
         "SecBI": "Issue 22545",
 
@@ -2574,7 +2641,9 @@
         "SafeBreach": "pending rewrite",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
+        "Google Chronicle Backstory": "Issue 22720",
         "XFE_v2": "Issue 22715",
+        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "AlphaSOC Wisdom": "API key has expired",
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
@@ -2629,10 +2698,10 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
+        "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
-        "Feed Office365": "SSl Issues. issue: 21181",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
