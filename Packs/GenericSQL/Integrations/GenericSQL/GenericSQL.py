@@ -125,7 +125,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
     """
-    return 'yes', {}, []
+    return 'ok', {}, []
 
 
 def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
