@@ -27,7 +27,7 @@ CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../..'))  # full pat
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, CONTENT_PACKS_FOLDER)  # full path to Packs folder in content repo
 INTEGRATIONS_FOLDER = "Integrations"  # integrations folder name inside pack
 BASE_PACK = "Base"  # base pack name
-USE_GCS_RELATIVE_PATH = False  # whether to use relative path in uploaded to gcs images
+USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
 GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
 
 # the format is defined in issue #19786, may change in the future
