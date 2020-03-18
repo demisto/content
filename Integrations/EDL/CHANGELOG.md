@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+ Improved test module functionality.
 
 ## [20.3.3] - 2020-03-18
 Add integration parameter options for formatting indicator values to PAN-OS's expected input standards.
