@@ -77,3 +77,5 @@ dependson:
   - pt-whois
   - pt-ssl-cert
 timeout: 0s
+tests:
+  - No test
