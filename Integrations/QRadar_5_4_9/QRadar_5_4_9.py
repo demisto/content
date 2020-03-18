@@ -14,22 +14,23 @@ from copy import deepcopy
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-CREDENTIALS = demisto.params().get('credentials')
+PARAMS = demisto.params()
+SERVER = PARAMS.get('server', '').strip('/')
+CREDENTIALS = PARAMS.get('credentials')
 USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
 PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
-TOKEN = demisto.params().get('token')
-USE_SSL = not demisto.params().get('insecure', False)
+TOKEN = PARAMS.get('token')
+USE_SSL = not PARAMS.get('insecure', False)
 AUTH_HEADERS = {'Content-Type': 'application/json'}
 if TOKEN:
     AUTH_HEADERS['SEC'] = str(TOKEN)
-OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
+OFFENSES_PER_CALL = int(PARAMS.get('offensesPerCall', 50))
 OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
 
 if not TOKEN and not (USERNAME and PASSWORD):
     raise Exception('Either credentials or auth token should be provided.')
 
-if not demisto.params()['proxy']:
+if not PARAMS['proxy']:
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
@@ -201,27 +202,40 @@ def dict_values_to_comma_separated_string(dic):
 
 
 # Sends request to the server using the given method, url, headers and params
-def send_request(method, url, headers=AUTH_HEADERS, params=None):
+def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
+    res = None
     try:
         try:
-            res = send_request_no_error_handling(headers, method, params, url)
+            res = send_request_no_error_handling(headers, method, params, url, data=data)
+            res.raise_for_status()
         except ConnectionError:
             # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
-            res = send_request_no_error_handling(headers, method, params, url)
+            res = send_request_no_error_handling(headers, method, params, url, data=data)
+            res.raise_for_status()
+
     except HTTPError:
-        err_json = res.json()
-        err_msg = ''
-        if 'message' in err_json:
-            err_msg = err_msg + 'Error: {0}.\n'.format(err_json['message'])
-        elif 'http_response' in err_json:
-            err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
-        if 'code' in err_json:
-            err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
-        raise Exception(err_msg)
+        if res is not None:
+            try:
+                err_json = res.json()
+            except ValueError:
+                raise Exception('Error code {err}\nContent: {cnt}'.format(err=res.status_code, cnt=res.content))
+
+            err_msg = ''
+            if 'message' in err_json:
+                err_msg += 'Error: {0}.\n'.format(err_json['message'])
+            elif 'http_response' in err_json:
+                err_msg += 'Error: {0}.\n'.format(err_json['http_response'])
+            if 'code' in err_json:
+                err_msg += 'QRadar Error Code: {0}'.format(err_json['code'])
+
+            raise Exception(err_msg)
+        else:
+            raise
+
     return res.json()
 
 
-def send_request_no_error_handling(headers, method, params, url):
+def send_request_no_error_handling(headers, method, params, url, data):
     """
         Send request with no error handling, so the error handling can be done via wrapper function
     """
@@ -230,11 +244,10 @@ def send_request_no_error_handling(headers, method, params, url):
     LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
         .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
     if TOKEN:
-        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data)
     else:
-        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, data=data,
                                auth=(USERNAME, PASSWORD))
-    res.raise_for_status()
     return res
 
 
@@ -479,8 +492,8 @@ def test_module():
 
 
 def fetch_incidents():
-    query = demisto.params().get('query')
-    full_enrich = demisto.params().get('full_enrich')
+    query = PARAMS.get('query')
+    full_enrich = PARAMS.get('full_enrich')
     last_run = demisto.getLastRun()
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
     if last_run and offense_id == 0:
@@ -984,12 +997,19 @@ def delete_reference_set_command():
 
 
 def update_reference_set_value_command():
+    """
+        The function creates or updates values in QRadar reference set
+    """
     args = demisto.args()
+    values = argToList(args.get('value'))
     if args.get('date_value') == 'True':
-        value = date_to_timestamp(args.get('value'), date_format="%Y-%m-%dT%H:%M:%S.%f000Z")
+        values = [date_to_timestamp(value, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for value in values]
+    if len(values) > 1:
+        raw_ref = upload_indicators_list_request(args.get('ref_name'), values)
+    elif len(values) == 1:
+        raw_ref = update_reference_set_value(args.get('ref_name'), values[0], args.get('source'))
     else:
-        value = args.get('value')
-    raw_ref = update_reference_set_value(args.get('ref_name'), value, args.get('source'))
+        raise DemistoException('Expected at least a single value, cant create or update an empty value')
     ref = replace_keys(raw_ref, REFERENCE_NAMES_MAP)
     enrich_reference_set_result(ref)
     return get_entry_for_reference_set(ref, title='Element value was updated successfully in reference set:')
@@ -1046,6 +1066,21 @@ def get_domains_by_id_command():
             'HumanReadable': tableToMarkdown('Domains Found', formatted_domain, removeNull=True),
             'EntryContext': ec
         }
+
+
+def upload_indicators_list_request(reference_name, indicators_list):
+    """
+        Upload indicators list to the reference set
+
+        Args:
+              reference_name (str): Reference set name
+              indicators_list (list): Indicators values list
+        Returns:
+            dict: Reference set object
+    """
+    url = '{0}/api/reference_data/sets/bulk_load/{1}'.format(SERVER, urllib.quote(reference_name, safe=''))
+    params = {'name': reference_name}
+    return send_request('POST', url, params=params, data=json.dumps(indicators_list))
 
 
 # Command selector
