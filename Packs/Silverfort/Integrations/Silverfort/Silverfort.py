@@ -125,7 +125,7 @@ def test_module(client):
 
 def get_user_entity_risk_command(client, args):
     upn = args.get('upn')
-    if upn is None:
+    if not upn:
         upn = get_upn(client, args)
     result = client.get_user_entity_risk_http_request(upn)
 
@@ -168,7 +168,7 @@ def get_resource_entity_risk_command(client, args):
 
 def update_user_entity_risk_command(client, args):
     upn = args.get('upn')
-    if upn is None:
+    if not upn:
         upn = get_upn(client, args)
     risks = create_risk_json(args)
     result = client.update_user_entity_risk_http_request(upn, risks)
