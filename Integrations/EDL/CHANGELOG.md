@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Add integration parameter options for formatting indicator values to PAN-OS's expected input standards.
 
 ## [20.2.4] - 2020-02-25
