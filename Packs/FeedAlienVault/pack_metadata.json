@@ -1,5 +1,5 @@
 {
-    "name": "AlientVault Feed",
+    "name": "AlienVault Feed",
     "description": "Indicators feed from AlienVault",
     "support": "Cortex XSOAR",
     "serverMinVersion": "5.5.0",
@@ -17,7 +17,7 @@
     "deprecated": false,
     "certification": "certified",
     "useCases": [],
-    "keywords": ["AlientVault", "Feed"],
+    "keywords": ["AlienVault", "Feed"],
     "price": 0,
     "dependencies": {
         "Base": {

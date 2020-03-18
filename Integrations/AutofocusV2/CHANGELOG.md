@@ -1,5 +1,8 @@
 ## [Unreleased]
-- 
+-
+
+## [20.3.3] - 2020-03-18
+-
 
 ## [20.2.0] - 2020-02-04
 Added the ***autofocus-get-export-list-indicators*** command.

@@ -6,6 +6,8 @@ from urllib.parse import urlparse, ParseResult
 from tempfile import NamedTemporaryFile
 from base64 import b64decode
 from typing import Callable, List, Generator
+from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+from multiprocessing import Process
 
 from libtaxii.messages_11 import (
     TAXIIMessage,
@@ -865,10 +867,11 @@ def taxii_poll_service() -> Response:
 
 
 def test_module(taxii_server: TAXIIServer):
+    run_server(taxii_server, is_test=True)
     return 'ok', {}, {}
 
 
-def run_server(taxii_server: TAXIIServer):
+def run_server(taxii_server: TAXIIServer, is_test=False):
     """
     Start the taxii server.
     """
@@ -883,25 +886,38 @@ def run_server(taxii_server: TAXIIServer):
             certificate_path = certificate_file.name
             certificate_file.write(bytes(taxii_server.certificate, 'utf-8'))
             certificate_file.close()
-            ssl_args['certfile'] = certificate_path
 
             private_key_file = NamedTemporaryFile(delete=False)
             private_key_path = private_key_file.name
             private_key_file.write(bytes(taxii_server.private_key, 'utf-8'))
             private_key_file.close()
-            ssl_args['keyfile'] = private_key_path
+            context = SSLContext(PROTOCOL_TLSv1_2)
+            context.load_cert_chain(certificate_path, private_key_path)
+            ssl_args['ssl_context'] = context
             demisto.debug('Starting HTTPS Server')
         else:
             demisto.debug('Starting HTTP Server')
 
         wsgi_server = WSGIServer(('', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
-        wsgi_server.serve_forever()
+        if is_test:
+            server_process = Process(target=wsgi_server.serve_forever)
+            server_process.start()
+            time.sleep(5)
+            server_process.terminate()
+        else:
+            wsgi_server.serve_forever()
+    except SSLError as e:
+        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
+        handle_long_running_error(ssl_err_message)
+        raise ValueError(ssl_err_message)
     except Exception as e:
+        handle_long_running_error(f'An error occurred: {str(e)}')
+        raise ValueError(str(e))
+    finally:
         if certificate_path:
             os.unlink(certificate_path)
         if private_key_path:
             os.unlink(private_key_path)
-        handle_long_running_error(f'An error occurred: {str(e)}')
 
 
 def main():

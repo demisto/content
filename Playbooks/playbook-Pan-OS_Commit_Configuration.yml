@@ -3,7 +3,7 @@ version: -1
 name: PAN-OS Commit Configuration
 fromversion: 4.0.0
 description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama,
-  it also pushes the Policies to the specified Device Group in the instance.
+ it also pushes the Policies to the specified Device Group in the instance.
 starttaskid: "0"
 tasks:
   "0":
@@ -293,12 +293,12 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 7872718f-5cce-4129-804c-a6307ee51c62
+    taskid: 589fe169-faf7-4986-806f-51eecdb7246c
     type: regular
     task:
-      id: 7872718f-5cce-4129-804c-a6307ee51c62
+      id: 589fe169-faf7-4986-806f-51eecdb7246c
       version: -1
-      name: Check Panorama commit status
+      name: Get Panorama commit status
       description: Get commit status
       script: '|||panorama-commit-status'
       type: regular
@@ -306,7 +306,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "14"
     scriptarguments:
       job_id:
         complex:
@@ -317,7 +317,7 @@ tasks:
       {
         "position": {
           "x": 150,
-          "y": 1420
+          "y": 1310
         }
       }
     note: false
@@ -325,12 +325,12 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 3d04bc47-7374-43a7-88d3-07eb59e141c3
+    taskid: f3cb81ed-446f-4a55-87ed-866a5acc3be0
     type: regular
     task:
-      id: 3d04bc47-7374-43a7-88d3-07eb59e141c3
+      id: f3cb81ed-446f-4a55-87ed-866a5acc3be0
       version: -1
-      name: Check Panorama push status
+      name: Get Panorama push status
       description: Get push status
       script: '|||panorama-push-status'
       type: regular
@@ -338,7 +338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "15"
     scriptarguments:
       job_id:
         complex:
@@ -399,7 +399,7 @@ tasks:
       id: 3123d9ad-2650-478e-8746-3401631faa14
       version: -1
       name: Filter JobID
-      description: Filter JobID to validate only new push configuration JobIDs.
+      description: Filters by JobID to validate only the new push configuration JobIDs.
       type: condition
       iscommand: false
       brand: ""
@@ -475,7 +475,7 @@ tasks:
       {
         "position": {
           "x": 150,
-          "y": 1710
+          "y": 2000
         }
       }
     note: false
@@ -514,7 +514,199 @@ tasks:
       {
         "position": {
           "x": 150,
-          "y": 2070
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 658af397-af4e-4589-8cc5-e5d22d67fb7b
+    type: condition
+    task:
+      id: 658af397-af4e-4589-8cc5-e5d22d67fb7b
+      version: -1
+      name: Was Panorama commit successful?
+      description: '-'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Commit.Status
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: e5e51f27-0ef7-4603-8ff4-6f29c327187f
+    type: condition
+    task:
+      id: e5e51f27-0ef7-4603-8ff4-6f29c327187f
+      version: -1
+      name: Was Panorama push successful?
+      description: '-'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.Push.Status
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 1312dacc-0f37-48ba-884d-e8fa9697e965
+    type: regular
+    task:
+      id: 1312dacc-0f37-48ba-884d-e8fa9697e965
+      version: -1
+      name: Print Commit Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      message:
+        simple: Panorama Commit Failed
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 0de2ff3e-cdac-4477-8939-cc6722a78b99
+    type: regular
+    task:
+      id: 0de2ff3e-cdac-4477-8939-cc6722a78b99
+      version: -1
+      name: Print Push Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      message:
+        simple: Panorama Commit Failed
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 3e46d493-9404-476d-8d95-68b8ad017a84
+    type: regular
+    task:
+      id: 3e46d493-9404-476d-8d95-68b8ad017a84
+      version: -1
+      name: Fix errors and commit manually
+      description: '-'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: c1b6bfd6-729d-4c47-8f96-f9a7527b3c9b
+    type: regular
+    task:
+      id: c1b6bfd6-729d-4c47-8f96-f9a7527b3c9b
+      version: -1
+      name: Fix errors and push manually
+      description: '-'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 3790
         }
       }
     note: false
@@ -528,6 +720,9 @@ view: |-
       "11_5_#default#": 0.1,
       "13_5_#default#": 0.1,
       "13_6_Panorama": 0.73,
+      "14_12_yes": 0.24,
+      "15_17_#default#": 0.2,
+      "15_5_yes": 0.1,
       "1_5_#default#": 0.17
     },
     "paper": {
@@ -541,5 +736,4 @@ view: |-
   }
 inputs: []
 outputs: []
-tests:
-  - No Tests
+sourceplaybookid: PAN-OS Commit Configuration

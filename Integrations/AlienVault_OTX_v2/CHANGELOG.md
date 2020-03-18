@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
  - Fixed an issue where the IP indicator type was incorrect.
  - Fixed an issue where the URL indicator score was a string.
 
