@@ -5,13 +5,14 @@ args:
   name: input
   required: false
   secret: false
-comment: Extracts FQDNs from URLs and emails.
+comment: Extracts domains and FQDNs from URLs and emails.
 commonfields:
   id: ExtractDomainAndFQDNFromUrlAndEmail
   version: -1
 enabled: true
 name: ExtractDomainAndFQDNFromUrlAndEmail
 script: '-'
+subtype: python3
 system: false
 tags:
 - indicator-format
@@ -20,7 +21,6 @@ type: python
 dockerimage: demisto/tld:1.0.0.6587
 runas: DBotWeakRole
 runonce: false
-subtype: python3
-fromversion: 5.5.0
 tests:
-  - ExtractDomainAndFQDNFromUrlAndEmail-Test
+- ExtractDomainAndFQDNFromUrlAndEmail-Test
+fromversion: 5.5.0

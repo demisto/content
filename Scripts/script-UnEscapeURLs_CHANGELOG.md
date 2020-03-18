@@ -1,6 +1,6 @@
 ## [Unreleased]
 - Fixed an issue with unescaped 'https' URLs.
-- Fixed an issue with the ATP link regex
+- Fixed an issue with the ATP link regex.
 
 
 ## [19.12.0] - 2019-12-10
