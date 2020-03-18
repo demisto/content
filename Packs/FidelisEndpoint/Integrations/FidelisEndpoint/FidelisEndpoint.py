@@ -656,11 +656,14 @@ def get_endpoint_id(client: Client, endpoint_ip: list = None, endpoint_name: lis
     return endpoint_id
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, fetch_limit: str, *_) -> Tuple[str, Dict, Dict]:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
     client.test_module_request()
+    if demisto.params().get('isFetch'):
+        if int(fetch_limit) < 5:
+            return 'Fetch limit must be minimum 5', {}, {}
     return 'ok', {}, {}
 
 
@@ -1724,7 +1727,8 @@ def main():
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_outputs(*test_module(client))
+            fetch_limit = demisto.params().get('fetch_limit')
+            return_outputs(*test_module(client, fetch_limit))
         elif demisto.command() == 'fetch-incidents':
             fetch_time = demisto.params().get('fetch_time', '3 days')
             fetch_limit = demisto.params().get('fetch_limit', '50')

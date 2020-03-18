@@ -27,7 +27,7 @@ configuration:
   type: 0
 - defaultvalue: '50'
   display: Fetch limit
-  name: fetch_limit
+  name: fetch_limit (minimum 5)
   required: false
   type: 0
 - display: Trust any certificate (not secure)
