@@ -7,7 +7,7 @@ import datetime
 import requests
 import urllib3.util
 
-from Tests.test_utils import run_command, print_error
+from Tests.test_utils import run_command, print_error, print_warning
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -53,7 +53,11 @@ def main():
                 host = "https://{}".format(ami_instance_ip)
                 path = '/health'
                 method = 'GET'
-                res = requests.request(method=method, url=(host + path), verify=False)
+                try:
+                    res = requests.request(method=method, url=(host + path), verify=False)
+                except Exception as e:
+                    print_warning('Encountered error: {}\nWill retry this step later.'.format(str(e)))
+                    continue
                 if res.status_code == 200:
                     print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                     # ready_ami_list.append(ami_instance_name)
