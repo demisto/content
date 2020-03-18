@@ -663,7 +663,7 @@ def test_module(client: Client, fetch_limit: str, *_) -> Tuple[str, Dict, Dict]:
     client.test_module_request()
     if demisto.params().get('isFetch'):
         if int(fetch_limit) < 5:
-            return 'Fetch limit must be minimum 5', {}, {}
+            return 'Fetch limit must be at lest 5', {}, {}
     return 'ok', {}, {}
 
 
@@ -1811,11 +1811,9 @@ def main():
     # Log exceptions
     except Exception as e:
         err_msg = str(e)
-        if 'requests.exceptions' in err_msg:
-            return_error('Encountered an error reaching the endpoint, please verify that the server URL parameter'
-                         ' is correct and that you have access to the server from your host.')
-        else:
-            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        if 'password=' in err_msg:
+            err_msg = re.sub(r'password=([^\s]*)\s', 'password=**** ', err_msg)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
