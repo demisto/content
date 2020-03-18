@@ -1,0 +1,86 @@
+Use McAfee Database Activity Monitoring (DAM) Integration to fetch Alerts (incidents) and query Alerts.
+
+This integration was integrated and developed with version 4.6.x of McAfee DAM.
+
+
+
+## Configure McAfeeDAM on Demisto
+
+Make sure that the XML API interface is enabled on your McAfee DAM server (Settings -> Interfaces -> XML API), and that the configured user has read permissions to query DAM Alerts and Sensors (XML API).
+
+Instruction on how to configure and test the XML API for McAfee DAM are available [here](https://docs.mcafee.com/bundle/database-security-4.6.5-product-guide/page/GUID-E51275F4-B365-499B-879C-51FE6A6989BA.html).
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for McAfeeDAM.
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | URL | True |
+| credentials | Credentials | True |
+| batchSize | Batch size for incident fetch | False |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+| secure | Validate ceritifacte | False |
+| ruleName | Rule Name, If fetch incident is checked, this field is mandatory and will be used to get DAM alerts only triggered by this rule | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### dam-get-alert-by-id
+***
+Get a DAM alert from McAfee Database Activity Monitoring by alert ID
+##### Required Permissions
+* Alerts Read 
+##### Base Command
+
+`dam-get-alert-by-id`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The alert ID | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AlertId | unknown | DAM Alert ID | 
+| alertAccessedObjects | unknown | DAM Accessed Objects | 
+| dbUser | unknown | DAM Database User | 
+| Account.Username | unknown | DAM OS User | 
+| database | unknown | DAM Database | 
+| sensor | unknown | DAM Sensor | 
+| rules | unknown | DAM Rules | 
+
+
+### dam-get-latest-by-rule
+***
+Get latest DAM alerts by rule name
+##### Required Permissions
+* Alerts Read
+##### Base Command
+
+`dam-get-latest-by-rule`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ruleName | Name of the rule that triggered the alert | Required | 
+| count | Number of alerts to retrieve, defaults to 10 | Optional | 
+| timeBack | Filter DAM alerts and import alerts that where created only in the last given minutes, defaults to last 10 minutes | Optional | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AlertId | unknown | DAM Alert ID | 
+| alertAccessedObjects | unknown | DAM Accessed Objects | 
+| dbUser | unknown | DAM Database User | 
+| Account.Username | unknown | DAM OS User | 
+| database | unknown | DAM Database | 
+| sensor | unknown | DAM Sensor | 
+| rules | unknown | DAM Rules | 
