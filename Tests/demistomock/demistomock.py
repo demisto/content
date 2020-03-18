@@ -476,13 +476,6 @@ def executeCommand(command, args):
     return ""
 
 
-def demistoVersion():
-    return {
-        'version': '5.5.0',
-        'buildNumber': '12345   '
-    }
-
-
 def getParam(param):
     return params().get(param)
 
@@ -560,7 +553,10 @@ def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
     return {}
 
 def demistoVersion():
-    return {}
+    return {
+        'version': '5.5.0',
+        'buildNumber': '12345'
+    }
 
 def integrationInstance():
     return ""
