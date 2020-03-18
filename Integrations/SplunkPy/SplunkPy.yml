@@ -52,6 +52,11 @@ configuration:
   name: parseNotableEventsRaw
   required: false
   type: 8
+- defaultvalue: false
+  display: should replace dots in incident fields
+  name: replaceKeys
+  required: false
+  type: 8
 - display: Extract Fields - CSV fields that will be parsed out of _raw notable events
   name: extractFields
   required: false
@@ -346,7 +351,7 @@ script:
       JSON event protocol.
     execution: false
     name: splunk-submit-event-hec
-  dockerimage: demisto/splunksdk:1.0
+  dockerimage: demisto/splunksdk:2.0
   isfetch: true
   longRunning: false
   longRunningPort: false
