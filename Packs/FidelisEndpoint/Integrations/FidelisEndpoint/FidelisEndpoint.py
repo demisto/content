@@ -1669,30 +1669,41 @@ def query_events_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
-    last_fetch_alert_time = last_run.get('time')
-    if not last_fetch_alert_time:
-        last_fetch_alert_time, _ = parse_date_range(fetch_time, to_timestamp=True)
+    last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
+    last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
+    if not last_fetched_alert_create_time:
+        last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.000Z')
+        last_fetched_alert_id = '0'
+    latest_alert_create_date = last_fetched_alert_create_time
+    latest_alert_id = last_fetched_alert_id
 
     incidents = []
-    last_fetch_date_string = timestamp_to_datestring(last_fetch_alert_time)
-    latest_alert_create_date = last_fetch_alert_time
-    response = client.list_alerts(limit=fetch_limit, sort='createDate Ascending', start_date=last_fetch_date_string)
+
+    response = client.list_alerts(
+        limit=fetch_limit,
+        sort='createDate Ascending',
+        start_date=last_fetched_alert_create_time
+    )
     alerts = response.get('data', {}).get('entities', [])
+
     for alert in alerts:
-        alert_id = str(alert.get('id'))
+        alert_id = alert.get('id')
+        if alert_id <= int(last_fetched_alert_id):
+            # got an alert we already fetched, skipping it
+            continue
+        alert_id = str(alert_id)
         alert_create_date = alert.get('createDate')
         incident = {
             'name': f'Fidelis Endpoint alert {alert_id}',
             'occurred': alert_create_date,
             'rawJSON': json.dumps(alert)
         }
-        alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp()) * 1000
-        # Check if the create date of the alert is bigger then the time range the alerts started at.
-        if alert_create_date_timestamp > last_fetch_alert_time:
-            incidents.append(incident)
-            latest_alert_create_date = alert_create_date_timestamp
+        incidents.append(incident)
+        latest_alert_create_date = alert_create_date
+        latest_alert_id = alert_id
 
-    return incidents, {'time': latest_alert_create_date}
+    return incidents, \
+        {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
 
 
 def main():
@@ -1797,7 +1808,12 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        err_msg = str(e)
+        if 'requests.exceptions' in err_msg:
+            return_error('Encountered an error reaching the endpoint, please verify that the server URL parameter'
+                         ' is correct and that you have access to the server from your host.')
+        else:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
