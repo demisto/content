@@ -188,6 +188,7 @@ class Pack(object):
         pack_metadata['description'] = user_metadata.get('description') if user_metadata.get('description') else pack_id
         pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
+        pack_metadata['legacy'] = user_metadata.get('legacy', True)
         pack_metadata['support'] = user_metadata.get('support', '')
         pack_metadata['supportDetails'] = {}
         support_url = user_metadata.get('url')
@@ -306,7 +307,7 @@ class Pack(object):
             return task_status, False
         except Exception as e:
             task_status = False
-            print_error(f"Failed in uploading {self._pack_name} pack to gcs.\nAdditional info: {e}")
+            print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
     def format_metadata(self, pack_content_items, integration_images, author_image):
