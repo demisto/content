@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Added URL decoding for the **hybrid-analysis-quick-scan-url** command.
 
 ## [19.11.1] - 2019-11-26

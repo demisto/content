@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Added the ***domain*** command to enable domain enrichment.
 
 ## [19.9.1] - 2019-09-18
