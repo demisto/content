@@ -24,14 +24,24 @@ def get_all_incidents(from_date: str) -> list:
     :return: list
         List of incidents.
     """
-    contents = demisto.executeCommand('getIncidents', {'fromdate': from_date})[0]['Contents']
+    command_res = demisto.executeCommand('getIncidents', {'fromdate': from_date})
+    if is_error(command_res):
+        LOG(f'Error executing "getIncidents fromdate: {from_date}"')
+        LOG.print_log(verbose=True)
+        sys.exit(0)
+    contents = command_res[0]['Contents']
     incidents = contents['data']
     size = len(incidents)
     total = contents['total']
     page = 1
 
     while total > size:
-        contents = demisto.executeCommand('getIncidents', {'fromdate': from_date, 'page': page})[0]['Contents']
+        command_res = demisto.executeCommand('getIncidents', {'fromdate': from_date})
+        if is_error(command_res):
+            LOG(f'Error executing "getIncidents fromdate: {from_date}"')
+            LOG.print_log(verbose=True)
+            sys.exit(0)
+        contents = command_res[0]['Contents']
         new_incidents = contents['data']
         incidents += new_incidents
         size = len(incidents)
