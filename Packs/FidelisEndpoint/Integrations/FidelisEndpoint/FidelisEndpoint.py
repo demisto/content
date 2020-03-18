@@ -1,10 +1,8 @@
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import requests
-import dateutil.parser
 from typing import Dict, Tuple, List, Union
 
 # Disable insecure warnings
