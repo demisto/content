@@ -1,5 +1,5 @@
 id: Fidelis Endpoint - Test
-version: -1
+version: 47
 contentitemfields:
   propagationLabels:
   - all
@@ -108,20 +108,21 @@ tasks:
     quiet: false
   "3":
     id: "3"
-    taskid: "163"
+    taskid: "409"
     type: regular
     task:
-      id: "163"
+      id: "409"
       version: -1
       name: Get host info
-      description: Search for endpoints based on an IP Address
+      description: Search for endpoints based on an IP Address or hostname.
       script: '|||fidelis-endpoint-host-info'
       type: regular
       iscommand: true
       brand: ""
     scriptarguments:
+      host: {}
       ip_address:
-        simple: 10.128.0.2
+        simple: 10.128.0.5
     separatecontext: false
     view: |-
       {
@@ -328,10 +329,10 @@ tasks:
     quiet: false
   "13":
     id: "13"
-    taskid: "176"
+    taskid: "407"
     type: regular
     task:
-      id: "176"
+      id: "407"
       version: -1
       name: Get file
       description: Get the file stream and download the file.
@@ -345,6 +346,8 @@ tasks:
     scriptarguments:
       file_id:
         simple: ${FidelisEndpoint.File.ID}
+      file_name:
+        simple: ${FidelisEndpoint.File.FileName}
     separatecontext: false
     view: |-
       {
@@ -389,10 +392,10 @@ tasks:
     quiet: false
   "15":
     id: "15"
-    taskid: "330"
+    taskid: "403"
     type: regular
     task:
-      id: "330"
+      id: "403"
       version: -1
       name: Get script manifest
       description: Get the script manifest

@@ -891,8 +891,8 @@ def file_search_reasult_metadata(client: Client, args: dict) -> Tuple[str, Dict,
 
 
 def get_file_command(client: Client, args: dict):
-    file_id: str = str(args.get('file_id'))
-    file_name: str = args.get('file_name')
+    file_id: str = str(args.get('file_id', ''))
+    file_name: str = args.get('file_name', '')
     response = client.get_file(file_id)
     attachment_file = fileResult(file_name, response)
 
@@ -1675,6 +1675,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
 
     incidents = []
     last_fetch_date_string = timestamp_to_datestring(last_fetch_alert_time)
+    latest_alert_create_date = last_fetch_alert_time
     response = client.list_alerts(limit=fetch_limit, sort='createDate Ascending', start_date=last_fetch_date_string)
     alerts = response.get('data', {}).get('entities', [])
     for alert in alerts:
@@ -1686,9 +1687,10 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'rawJSON': json.dumps(alert)
         }
         alert_create_date_timestamp = int(dateutil.parser.parse(alert_create_date).timestamp()) * 1000
+        # Check if the create date of the alert is bigger then the time range the alerts started at.
         if alert_create_date_timestamp > last_fetch_alert_time:
             incidents.append(incident)
-        latest_alert_create_date = alert_create_date_timestamp
+            latest_alert_create_date = alert_create_date_timestamp
 
     return incidents, {'time': latest_alert_create_date}
 
