@@ -46,7 +46,8 @@ INCIDENTS_TO_RETURN = [
                     'investigationId': 1
                 }
             ]
-        }
+        },
+        'Type': 1
     }
 ]
 
