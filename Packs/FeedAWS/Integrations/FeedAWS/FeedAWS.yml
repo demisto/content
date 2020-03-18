@@ -17,7 +17,6 @@ configuration:
 - additionalinfo: The AWS Regions to fetch indicators by. If empty, all regions will
     be included.
   display: Regions
-  hidden: false
   name: regions
   options:
   - ap-east-1
@@ -77,7 +76,6 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  hidden: true
   name: feedExpirationPolicy
   display: ""
   required: false
@@ -87,8 +85,7 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
-- hidden: true
-  name: feedExpirationInterval
+- name: feedExpirationInterval
   required: false
   display: ""
   type: 1
@@ -130,7 +127,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.5129
+  dockerimage: demisto/jmespath:1.0.0.6232
   feed: true
   isfetch: false
   longRunning: false
