@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Changed search alerts API v1 call to API v2 call.
 
 ## [20.1.0] - 2020-01-07
