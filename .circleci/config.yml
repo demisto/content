@@ -13,7 +13,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - restore_cache:
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - run:
           name: Prepare Environment
           when: always
@@ -42,6 +42,8 @@ jobs:
               echo "venv exists (from cache). activating"
               source ./venv/bin/activate
             fi
+            # Install node packages
+            npm install .
             # store in bash env so we load our venv in each step
             echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
             python --version
@@ -49,8 +51,8 @@ jobs:
       - save_cache:
           paths:
             - venv
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
-
+            - node_modules
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - add_ssh_keys:
           fingerprints:
             - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
