@@ -458,7 +458,7 @@ def parse_time_to_minutes():
         number_of_times = int(number_of_times)
     else:
         return_error('Error: Invalid fetch time, need to be a positive integer.')
-    time_unit_value_in_minutes = TIME_IN_MINUTES_DICT.get(time_unit)
+    time_unit_value_in_minutes = TIME_IN_MINUTES_DICT.get(time_unit.lower())
     if time_unit_value_in_minutes:
         return number_of_times * time_unit_value_in_minutes
 
