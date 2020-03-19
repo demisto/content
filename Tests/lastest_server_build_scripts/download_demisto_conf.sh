@@ -13,6 +13,9 @@ echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 DEMISTO_SEVERCONF_PATH="./demisto.conf"
 echo ${DEMISTO_SEVERCONF_PATH} > demisto_conf_path
 
+DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
+echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
+
 # download configuration files from github repo
 wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" --no-check-certificate -q
 if [ "$?" != "0" ]; then
@@ -22,6 +25,7 @@ if [ "$?" != "0" ]; then
     cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
     cp -r ./content-test-conf-master/demisto.lic $DEMISTO_LIC_PATH
     cp -r ./content-test-conf-master/conf.json $SECRET_CONF_PATH
+    cp -r ./content-test-conf-master/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
     cat >> "$DEMISTO_SEVERCONF_PATH" <<-EOF
 {
   "Server": {
@@ -50,6 +54,7 @@ EOF
     cp -r ./content-test-conf-$CIRCLE_BRANCH/demisto.lic $DEMISTO_LIC_PATH
     cp -r ./content-test-conf-$CIRCLE_BRANCH/conf.json $SECRET_CONF_PATH
     cp -r ./content-test-conf-$CIRCLE_BRANCH/server.conf $DEMISTO_SEVERCONF_PATH
+    cp -r ./content-test-conf-master/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
     if [ -n "${NIGHTLY}" ]
       then
         cp -r ./content-test-conf-$CIRCLE_BRANCH/nightly_instance.json instance.json
