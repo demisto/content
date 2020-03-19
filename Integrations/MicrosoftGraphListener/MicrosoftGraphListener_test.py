@@ -19,9 +19,10 @@ def oproxy_client():
     base_url = "https://graph.microsoft.com/v1.0/"
     ok_codes = (200, 201, 202)
 
-    ms_client = MicrosoftClient.from_oproxy(auth_id, enc_key, token_retrieval_url, app_name,
-                                            refresh_token=refresh_token,
-                                            base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    ms_client = MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key,
+                                token_retrieval_url=token_retrieval_url, app_name=app_name,
+                                refresh_token=refresh_token, base_url=base_url, verify=True, proxy=False,
+                                ok_codes=ok_codes)
 
     return MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
 
@@ -39,10 +40,9 @@ def self_deployed_client():
     scope = "https://graph.microsoft.com/.default"
     ok_codes = (200, 201, 202)
 
-    ms_client = MicrosoftClient.from_self_deployed(tenant_id, client_id,
-                                                   client_secret, app_url=app_url,
-                                                   scope=scope,
-                                                   base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+    ms_client = MicrosoftClient(self_deployed=True, tenant_id=tenant_id, client_id=client_id,
+                                client_secret=client_secret, app_url=app_url, scope=scope, base_url=base_url,
+                                verify=True, proxy=False, ok_codes=ok_codes)
 
     return MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
 
