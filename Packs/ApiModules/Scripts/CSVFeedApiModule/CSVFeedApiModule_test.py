@@ -121,6 +121,8 @@ def test_get_feed_content():
     with open('test_data/ip_ranges.gz', 'rb') as ip_ranges_gz:
         ip_ranges_zipped = ip_ranges_gz.read()
 
+    expected_output = ip_ranges_unzipped.decode('utf8').split('\n')
+
     feed_url_to_config = {
         'https://ipstack1.com': {
             'content': ip_ranges_unzipped
@@ -145,4 +147,4 @@ def test_get_feed_content():
             m.get(url, content=feed_url_to_config.get(url).get('content'))
             raw_response = requests.get(url)
 
-            assert client.get_feed_content_divided_to_lines(url, raw_response) == ip_ranges_unzipped.decode('utf8').split('\n')
+            assert client.get_feed_content_divided_to_lines(url, raw_response) == expected_output
