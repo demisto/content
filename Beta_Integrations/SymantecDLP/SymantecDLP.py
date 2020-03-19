@@ -13,9 +13,23 @@ from typing import Dict, Tuple, Any
 from dateutil.parser import parse
 import urllib3
 import uuid
+import tempfile
+import os
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+def get_cache_path():
+    path = tempfile.gettempdir() + "/zeepcache"
+    try:
+        os.makedirs(path)
+    except OSError:
+        if os.path.isdir(path):
+            pass
+        else:
+            raise
+    return os.path.join(path, "cache.db")
 
 
 class SymantecAuth(AuthBase):
@@ -673,6 +687,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
 
 def main():
+    handle_proxy()
     params: Dict = demisto.params()
     server: str = params.get('server', '').rstrip('/')
     credentials: Dict = params.get('credentials', {})
@@ -691,7 +706,7 @@ def main():
     session: Session = Session()
     session.auth = SymantecAuth(username, password, server)
     session.verify = verify_ssl
-    cache: SqliteCache = SqliteCache(timeout=None)
+    cache: SqliteCache = SqliteCache(path=get_cache_path(), timeout=None)
     transport: Transport = Transport(session=session, cache=cache)
     client: Client = Client(wsdl=wsdl, transport=transport)
 
@@ -710,7 +725,6 @@ def main():
         'symantec-dlp-incident-violations': incident_violations_command
     }
     try:
-        handle_proxy()
         if command == 'fetch-incidents':
             fetch_incidents(client, fetch_time, fetch_limit, last_run, saved_report_id)  # type: ignore[operator]
         elif command == 'test-module':

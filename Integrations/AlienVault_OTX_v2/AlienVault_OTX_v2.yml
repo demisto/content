@@ -74,10 +74,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -118,10 +118,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
   - arguments:
     - default: true
@@ -159,10 +159,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
   - arguments:
     - default: true
@@ -200,10 +200,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -257,10 +257,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
   - arguments:
     - default: true
@@ -301,10 +301,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -312,7 +312,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", "hostname",
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname",
         or "url".'
       isArray: false
       name: indicator_type
@@ -347,7 +347,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", or
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or
         "hostname".'
       isArray: false
       name: indicator_type
@@ -369,7 +369,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", or
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or
         "hostname".'
       isArray: false
       name: indicator_type
@@ -529,10 +529,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The AlienVault OTX vendor.
+      description: The vendor used to calculate the score.
       type: String
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: false
