@@ -54,7 +54,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The page width, for example, 50px. If empty, the width is the entire page.
+      description: The page width, for example, 1024px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
