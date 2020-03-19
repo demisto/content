@@ -6474,7 +6474,7 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
-  pythonSubtype: python3
+  pythonSubtype: python2
   runonce: false
   script: '-'
   type: python
