@@ -571,6 +571,7 @@
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
+            "memory_threshold": 80,
             "timeout": 3600
         },
         {
@@ -724,7 +725,8 @@
                 "VirusTotal - Private API"
             ],
             "instance_names": "virus_total_private_api_general",
-            "timeout": 500
+            "timeout": 500,
+            "pid_threshold": 12
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1263,6 +1265,13 @@
             "timeout": 1400,
             "nightly": true,
             "pid_threshold": 12
+        },
+                {
+            "integrations": ["VirusTotal - Private API", "VirusTotal"],
+            "playbookID": "vt-detonate test",
+            "instance_names": ["virus_total_private_api_general", "virus_total_general"],
+            "timeout": 1400,
+            "nightly": true
         },
         {
             "integrations": "VirusTotal - Private API",
@@ -2001,7 +2010,7 @@
         {
             "integrations": "AWS - EC2",
             "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b",
-            "memory_threshold": 65
+            "memory_threshold": 75
         },
         {
             "integrations": "AWS - EC2",
@@ -2493,6 +2502,10 @@
         }
     ],
     "skipped_tests": {
+        "test_MsGraphFiles": "Issue 22853",
+        "TestCofenseFeed": "Issue 22854",
+        "RecordedFutureFeed - Test": "Issue 22855",
+        "Blocklist_de - Test": "Issue 22856",
         "Cybereason Test": "Issue 22683",
         "CVE Search v2 - Test": "Issue 22661",
         "AbuseIPDB Test": "Issue 22658",
@@ -2505,7 +2518,6 @@
         "TestProofpointFeed": "Issue 22229",
         "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test": "Issue 22227",
         "test_Qradar": "Issue 22186",
-        "IntSights Test": "Issue 22185",
         "Tenable.io test": "Issue 22184",
         "ThreatQ - Test": "Issue 22175",
         "PostgreSQL Test": "Issue 22172",
@@ -2681,10 +2693,10 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
+        "Microsoft_Graph_Files": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
-        "Feed Office365": "SSl Issues. issue: 21181",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
