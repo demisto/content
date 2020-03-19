@@ -669,9 +669,10 @@ def main():
             print_error("Error: some release notes are missing. See previous errors.")
             sys.exit(1)
     except RuntimeError:
-        print_error('Unable to get previous release git SHA1. This can happen if your branch is not updated with '
-                    'origin master. Merge from origin master and, try again.\nIf you\'re not on a fork run "git '
-                    'merge origin/master".\nIf you are on a fork, first set https://github.com/demisto/content to be '
+        print_error('Unable to get the SHA1 of the commit in which the version was released. This can happen if your '
+                    'branch is not updated with origin master. Merge from origin master and, try again.\n'
+                    'If you\'re not on a fork run "git merge origin/master".\n'
+                    'If you are on a fork, first set https://github.com/demisto/content to be '
                     'your upstream by running "git remote add upstream https://github.com/demisto/content". After '
                     'setting the upstream, run "git fetch upstream", and then run "git merge upstream/master". Doing '
                     'these steps will merge your branch with content master as a base.')
