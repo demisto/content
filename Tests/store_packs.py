@@ -9,6 +9,7 @@ import yaml
 import enum
 import prettytable
 import fnmatch
+import subprocess
 import google.auth
 from google.cloud import storage
 from distutils.util import strtobool
@@ -235,6 +236,9 @@ class Pack(object):
             str: full path to created pack zip.
         """
         zip_pack_path = f"{self._pack_path}.zip"
+        args = ('./signDirectory',  self._pack_path)
+        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+        popen.wait()
         task_status = False
 
         try:
