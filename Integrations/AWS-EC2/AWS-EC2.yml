@@ -4633,7 +4633,7 @@ script:
       secret: false
     - default: false
       description: The IPv6 network range to allow or deny, in CIDR notation (for
-        example 2001:db8:1234:1a00::/64 ).
+        example 2001:db8:1234:1a00::/64 ).  # disable-secrets-detection
       isArray: false
       name: Ipv6CidrBlock
       required: false
