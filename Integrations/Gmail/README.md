@@ -373,6 +373,9 @@
           <li>
             <a href="#h_426da8de-404c-432d-9080-b476cf896f5a" target="_self">Removers a delegate from a mailbox: gmail-remove-delegated-mailbox</a>
           </li>
+          <li>
+            <a href="#h_426da8de-404c-432d-9080-b476cf896g9a" target="_self">Get details of a specific role: gmail-get-role</a>
+          </li>
         </ol>
       </ol>
     </ol>
@@ -5220,3 +5223,198 @@
 </pre>
 <h5>Human Readable Output</h5>
 <p>Email shai@demistodev.com has been removed from delegation</p>
+
+<h3 id="h_426da8de-404c-432d-9080-b476cf896g9a">28. Get details of a specific role</h3>
+<hr>
+<p>Get details of a specific role.</p>
+<h5>Base Command</h5>
+<p>
+  <code>gmail-get-role</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>role-id</td>
+      <td>The ID of the role.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>customer-id</td>
+      <td>Immutable Google Apps ID.</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Gmail.Role.ETag</td>
+      <td>Unknown</td>
+      <td>The ETag of the resource.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Role.IsSuperAdminRole</td>
+      <td>Boolean</td>
+      <td>Indicates whether the role is a super admin role or not.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Role.IsSystemRole</td>
+      <td>Boolean</td>
+      <td>Indicates whether the role is a pre-defined system role or not.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Role.Kind</td>
+      <td>String</td>
+      <td>The kind of the Role.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Role.Description</td>
+      <td>String</td>
+      <td>The description of the role.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Role.ID</td>
+      <td>String</td>
+      <td>The ID of the role.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Role.Name</td>
+      <td>String</td>
+      <td>The name of the role.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Role.Privilege.ServiceID</td>
+      <td>String</td>
+      <td>The ID of the service this privilege is for.</td>
+    </tr>
+    <tr>
+      <td>Gmail.Role.Privilege.Name</td>
+      <td>String</td>
+      <td>The name of the privilege.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!gmail-get-role role-id=10740456929361923 customer-id=C02f0zfqw</code>
+</p>
+<h5>Context Example</h5>
+<pre>
+{
+    "Gmail.Role": {
+        "Description": "User Management Administrator",
+        "ETag": "xW2YlxjdVEsAJNu_Hp5Dnespo8s/ZQw5R9B4LllVCDw22c-6qkEBmNk",
+        "ID": "10740456929361923",
+        "IsSuperAdminRole": false,
+        "IsSystemRole": true,
+        "Kind": "admin#directory#role",
+        "Name": "_USER_MANAGEMENT_ADMIN_ROLE",
+        "Privilege": [
+            {
+                "Name": "USER_SECURITY_ALL",
+                "ServiceID": "00haapch16h1ysv"
+            },
+            {
+                "Name": "USERS_ALL",
+                "ServiceID": "00haapch16h1ysv"
+            },
+            {
+                "Name": "ADMIN_DASHBOARD",
+                "ServiceID": "01ci93xb3tmzyin"
+            },
+            {
+                "Name": "ORGANIZATION_UNITS_RETRIEVE",
+                "ServiceID": "00haapch16h1ysv"
+            }
+        ]
+    }
+}
+</pre>
+<h5>Human Readable Output</h5>
+<p>
+<h3>Role 10740456929361923 details:</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>ETag</strong></th>
+      <th><strong>IsSuperAdminRole</strong></th>
+      <th><strong>IsSystemRole</strong></th>
+      <th><strong>Kind</strong></th>
+      <th><strong>Description</strong></th>
+      <th><strong>ID</strong></th>
+      <th><strong>Name</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> xW2YlxjdVEsAJNu_Hp5Dnespo8s/ZQw5R9B4LllVCDw22c-6qkEBmNk </td>
+      <td> false </td>
+      <td> true </td>
+      <td> admin#directory#role </td>
+      <td> User Management Administrator </td>
+      <td> 10740456929361923 </td>
+      <td> _USER_MANAGEMENT_ADMIN_ROLE </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Role 10740456929361923 privileges:</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>ServiceID</strong></th>
+      <th><strong>Name</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> 00haapch16h1ysv </td>
+      <td> USER_SECURITY_ALL </td>
+    </tr>
+    <tr>
+      <td> 00haapch16h1ysv </td>
+      <td> USERS_ALL </td>
+    </tr>
+    <tr>
+      <td> 01ci93xb3tmzyin </td>
+      <td> ADMIN_DASHBOARD </td>
+    </tr>
+    <tr>
+      <td> 00haapch16h1ysv </td>
+      <td> ORGANIZATION_UNITS_RETRIEVE </td>
+    </tr>
+  </tbody>
+</table>

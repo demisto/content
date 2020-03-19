@@ -224,13 +224,6 @@ def send_vuln_details_request(plugin_id, date_range=None):
     return res.json()
 
 
-def send_asset_vuln_request(asset_id, date_range):
-    full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
-    res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
-    res.raise_for_status()
-    return res.json()
-
-
 def get_vuln_info(vulns):
     vulns_info = {v['plugin_id']: v for v in vulns}
     infos = []
@@ -245,30 +238,26 @@ def get_vuln_info(vulns):
     return infos, errors
 
 
-def get_assets():
-    full_url = "{}{}".format(BASE_URL, "assets/")
-    res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+def send_assets_request(params):
+    full_url = "{}{}".format(BASE_URL, "workbenches/assets")
+    res = requests.request("GET", full_url, headers=AUTH_HEADERS, params=params, verify=USE_SSL)
     return res.json()
 
 
-def get_asset_id(hostname=None, ip=None):
-    if all(s is None for s in (hostname, ip)):
-        return_error("Please provide one of the following arguments: hostname, ip")
-    assets = get_assets()
+def get_asset_id(params):
+    assets = send_assets_request(params)
     if 'error' in assets:
         return_error(assets['error'])
-    assets = assets['assets']
-    if hostname:
-        assets = filter(lambda x: hostname in x['fqdn'] + x['netbios_name'], assets)
-        if not assets:
-            return_error('No assets found for hostname: {}'.format(hostname))
-        return assets[0]['id'], hostname
-    if ip:
-        assets = filter(lambda x: ip in x['ipv4'] + x['ipv6'], assets)
-        if not assets:
-            return_error('No assets found for ip: {}'.format(ip))
-        return assets[0]['id'], ip
-    return_error('No IP or Hostname found for asset.')
+    if assets.get('assets'):
+        return assets['assets'][0]['id']
+    return None
+
+
+def send_asset_vuln_request(asset_id, date_range):
+    full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
+    res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
+    res.raise_for_status()
+    return res.json()
 
 
 # Command methods
@@ -280,8 +269,9 @@ def test_module():
 def get_scans_command():
     folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
     if last_modification_date:
+        # str(YYYY-MM-DD) to int(timestamp)
         last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
-                                                                   "%Y-%m-%d").timetuple()))  # str(YYYY-MM-DD) to int(timestamp)
+                                                                   "%Y-%m-%d").timetuple()))
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
     scan_entries = map(get_scan_info, response['scans'])
     valid_scans = filter(lambda x: x is not None, scan_entries)
@@ -354,20 +344,50 @@ def get_vulnerability_details_command():
                                 VULNERABILITY_DETAILS_HEADERS)
 
 
+def args_to_request_params(hostname, ip, date_range):
+    if not hostname and not ip:
+        return_error("Please provide one of the following arguments: hostname, ip")
+
+    indicator = hostname if hostname else ip
+
+    # Query filter parameters to be passed in request
+    params = {
+        "filter.0.filter": "host.target",  # filter by host target
+        "filter.0.quality": "eq",  # operator
+        "filter.0.value": indicator  # value
+    }
+
+    # Add date_range filter if provided (timeframe to retrieve results, in days)
+    if date_range:
+        if not date_range.isdigit():
+            return_error("Invalid date range: {}".format(date_range))
+        else:
+            params["date_range"] = date_range
+
+    return params, indicator
+
+
 def get_vulnerabilities_by_asset_command():
     hostname, ip, date_range = demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')
-    asset_id, indicator = get_asset_id(hostname, ip)
+    params, indicator = args_to_request_params(hostname, ip, date_range)
+
+    asset_id = get_asset_id(params)
+    if not asset_id:
+        return 'No Vulnerabilities for asset {}'.format(indicator)
+
     info = send_asset_vuln_request(asset_id, date_range)
     if 'error' in info:
         return_error(info['error'])
+
     vulns = convert_severity_values(replace_keys(info['vulnerabilities'], ASSET_VULNS_NAMES_MAP))
-    entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities', vulns,
-                                 ASSET_VULNS_HEADERS)
-    entry['EntryContext']['TenableIO.Assets(val.Hostname === obj.Hostname)'] = {
-        'Vulnerabilities': map(lambda x: x['plugin_id'], info['vulnerabilities']),
-        'Hostname': indicator
-    }
-    return entry
+    if vulns:
+        entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities',
+                                     vulns, ASSET_VULNS_HEADERS)
+        entry['EntryContext']['TenableIO.Assets(val.Hostname === obj.Hostname)'] = {
+            'Vulnerabilities': map(lambda x: x['plugin_id'], info['vulnerabilities']),
+            'Hostname': indicator
+        }
+        return entry
 
 
 def get_scan_status_command():

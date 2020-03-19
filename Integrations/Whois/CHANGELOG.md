@@ -1,5 +1,8 @@
 ## [Unreleased]
-Improved handling of error messages.
+
+
+## [20.3.3] - 2020-03-18
+Added the ***domain*** command to enable domain enrichment.
 
 ## [19.9.1] - 2019-09-18
   - Updated documentation to reflect capabilities of the Whois integration.

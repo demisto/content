@@ -148,6 +148,18 @@ inputs:
   value: {}
   required: false
   description: Endpoint ID to isolate using Traps.
-outputs: []
+outputs:
+- contextPath: CbResponse.Sensors.CbSensorID
+  description: Carbon Black Response Sensors ids that has been isolated.
+  type: string
+- contextPath: Endpoint
+  description: The isolated enpoint.
+  type: string
+- contextPath: Traps.Isolate.EndpointID
+  description: The ID of the endpoint.
+  type: string
+- contextPath: Traps.IsolateResult.Status
+  description: The status of the isolation operation.
+  type: string
 tests:
   - No Test

@@ -91,6 +91,7 @@ results = [
         'Contents': {'ZippedFiles': zipName},
         'EntryContext': {
             'ZippedFiles': zipName,
+            'ZipFile.ZippedFile': zipName,
             'File(val.EntryID=="' + fileEntryID + '").zipped': True
         },
         'ReadableContentsFormat': formats['markdown'],

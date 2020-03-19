@@ -22,7 +22,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -63,5 +63,6 @@ script:
       type: string
     description: Parses a User Agent string
   runonce: false
+  subtype: python3
 tests:
 - WhatsMyBrowser-Test

@@ -1,0 +1,82 @@
+{
+    "header": {
+        "id": "6252c895-1445-11ea-8edf-0a8e0de89b4e",
+        "queryParams": {
+            "format": "json",
+            "maxRecords": 5,
+            "offset": 5
+        },
+        "requestDate": "2019-12-01T14:18:02.311296051Z",
+        "returnResult": 2,
+        "totalResult": 2,
+        "user": "api.ioc.demisto"
+    },
+    "data": [
+        {
+            "caseId": "04ea42a5-0361-11ea-94e8-0ee0a3f3cb1c",
+            "title": "FW: [PL-XXXXXX] RespOrg Information",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: FW: [PL-XXXXXX] RespOrg Information\n\n\n\n\n________________________________________\nFrom: Apache\nSent: Saturday, November 9, 2019 9:22:04 PM (UTC-05:00) Eastern Time (US & Canada)\nTo: PhishLabs Security Operations\nSubject: [PL-XXXXXX] RespOrg Information\n\n-- External email--\n\n\n------------------------------\nFonefinder Results\n------------------------------\nNumber: 8889090104\nCity/Switch Name:\nState:\nTelephone Company: N/A\nTelco Type: N/A\n\n ",
+            "caseNumber": 1374701,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-10T02:23:01Z",
+            "dateClosed": "2019-11-10T02:30:37Z",
+            "dateModified": "2019-11-10T02:30:37Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "04fced89-0361-11ea-9b11-0ad24386a0d6",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-10T02:23:01Z",
+                    "fileName": "msg.kKAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/04fced89-0361-11ea-9b11-0ad24386a0d6"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        },
+        {
+            "caseId": "eca21458-035e-11ea-94e8-0ee0a3f3cb1c",
+            "title": "FW: [PL-XXXXXX] RespOrg Information",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: FW: [PL-XXXXXX] RespOrg Information\n\n\n\n\n________________________________________\nFrom: Apache\nSent: Saturday, November 9, 2019 9:07:28 PM (UTC-05:00) Eastern Time (US & Canada)\nTo: PhishLabs Security Operations\nSubject: [PL-XXXXXX] RespOrg Information\n\n-- External email--\n\n\n------------------------------\nData 24-7 Results\n------------------------------\nNumber: 1\nStatus: OK\nCarrier: Distributel Communications Limited\nCarrier ID: 50717\nCountry: Canada\nIs Wireless: n\n\n------------------------------\nFonefinder Results\n------------------------------\nNumber: \nCity/Switch Name: Kingston\nState: Ontario\nTelephone Company: Distributel\nTelco Type:\n\n ",
+            "caseNumber": 1374695,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-10T02:08:02Z",
+            "dateClosed": "2019-11-10T02:09:17Z",
+            "dateModified": "2019-11-10T02:09:17Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "ecb86bda-035e-11ea-9b11-0ad24386a0d6",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-10T02:08:02Z",
+                    "fileName": "msg.r_AH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/ecb86bda-035e-11ea-9b11-0ad24386a0d6"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        }
+    ]
+}

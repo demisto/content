@@ -1,4 +1,6 @@
+
 import os
+import re
 import sys
 import json
 import glob
@@ -10,8 +12,9 @@ import yaml
 from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
     WIDGETS_DIR, SCRIPTS_DIR, INCIDENT_FIELDS_DIR, CLASSIFIERS_DIR, LAYOUTS_DIR, CONNECTIONS_DIR, \
     BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
-from Tests.test_utils import print_error
+from Tests.test_utils import print_error, print_warning, run_command
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml, write_yaml_with_docker
+
 
 CONTENT_DIRS = [
     BETA_INTEGRATIONS_DIR,
@@ -29,6 +32,8 @@ CONTENT_DIRS = [
     SCRIPTS_DIR,
     WIDGETS_DIR,
 ]
+
+PACKAGES_TO_SKIP = []
 
 # temp folder names
 BUNDLE_POST = 'bundle_post'
@@ -140,9 +145,43 @@ def copy_test_files(bundle_test):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def main(circle_artifacts):
-    print('Starting to create content artifact...')
+def update_content_version(content_ver: str, path: str = './Packs/Base/Scripts/CommonServerPython/CommonServerPython.py'):
+    regex = r'CONTENT_RELEASE_VERSION = .*'
+    try:
+        with open(path, 'r+') as f:
+            content = f.read()
+            content = re.sub(regex, f"CONTENT_RELEASE_VERSION = '{content_ver}'", content, re.M)
+            f.seek(0)
+            f.write(content)
+    except Exception as ex:
+        print_warning(f'Could not open CommonServerPython File - {ex}')
 
+
+def update_branch(path: str = './Packs/Base/Scripts/CommonServerPython/CommonServerPython.py'):
+
+    regex = r'CONTENT_BRANCH_NAME = .*'
+    branches = run_command('git branch')
+    branch_name_reg = re.search(r'\* (.*)', branches)
+    branch_name = branch_name_reg.group(1)
+    try:
+        with open(path, 'r+') as f:
+            content = f.read()
+            content = re.sub(regex, f"CONTENT_BRANCH_NAME = '{branch_name}'", content, re.M)
+            f.seek(0)
+            f.write(content)
+    except Exception as ex:
+        print_warning(f'Could not open CommonServerPython File - {ex}')
+
+    return branch_name
+
+
+def main(circle_artifacts, content_version):
+
+    # update content_version in commonServerPython
+    update_content_version(content_version)
+    branch_name = update_branch()
+    print(f'Updating CommonServerPython with branch {branch_name} and content version {content_version}')
+    print('Starting to create content artifact...')
     print('creating dir for bundles...')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
         os.mkdir(bundle_dir)
@@ -154,7 +193,13 @@ def main(circle_artifacts):
     for package_dir in DIR_TO_PREFIX:
         scanned_packages = glob.glob(os.path.join(package_dir, '*/'))
         for package in scanned_packages:
-            merge_script_package_to_yml(package, package_dir, BUNDLE_POST)
+            if any(package_to_skip in package for package_to_skip in PACKAGES_TO_SKIP):
+                # there are some packages that we don't want to include in the content zip
+                # for example HelloWorld integration
+                merge_script_package_to_yml(package, package_dir, BUNDLE_TEST)
+                print('skipping {}'.format(package))
+            else:
+                merge_script_package_to_yml(package, package_dir, BUNDLE_POST)
 
     for content_dir in CONTENT_DIRS:
         print(f'Copying dir {content_dir} to bundles...')
@@ -177,12 +222,11 @@ def main(circle_artifacts):
     shutil.copyfile("./Tests/id_set.json", os.path.join(circle_artifacts, "id_set.json"))
 
     shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
-
     print(f'finished create content artifact at {circle_artifacts}')
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(*sys.argv[1:])
     if LONG_FILE_NAMES:
         print_error(f'The following files exceeded to file name length limit of {MAX_FILE_NAME}:\n'
                     f'{json.dumps(LONG_FILE_NAMES, indent=4)}')

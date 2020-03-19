@@ -39,7 +39,7 @@ def http_request(data):
 
 def ua_parse(user_agent):
     post_data = {
-        "user_agent": "{}".format(user_agent)
+        "user_agent": user_agent
     }
     post_json = json.dumps(post_data)
     r = http_request(post_json)
@@ -98,7 +98,7 @@ def ua_parse_command():
         }
         demisto.results({
             'Type': entryTypes['note'],
-            'ContentsFormat': formats['markdown'],
+            'ContentsFormat': formats['json'],
             'Contents': r,
             'HumanReadable': tableToMarkdown('Parsed result for {}'.format(user_agent), hr),
             'EntryContext': ec

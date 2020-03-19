@@ -1,6 +1,16 @@
 ## [Unreleased]
 
 
+## [20.3.1] - 2020-03-04
+Added the ability to run the integration as a separate process, which protects against memory depletion.
+
+## [19.12.0] - 2019-12-10
+Fixed issue where threads not closed after executing commands.
+
+## [19.11.1] - 2019-11-26
+- Logging improvement.
+- Added the *Max incidents per fetch* parameter, which specifies the maximum number of incidents to retrieve per fetch. The maximum for this parameter is 50.
+
 ## [19.11.0] - 2019-11-12
   - Improved implementation of the ***ews-move-item-between-mailboxes*** command.
   -  The email body now prints to context and the War Room for the following commands:

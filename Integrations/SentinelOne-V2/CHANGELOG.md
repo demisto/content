@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 
+## [20.3.3] - 2020-03-18
+-
+
+## [19.11.1] - 2019-11-26
+ Fixed an issue in the ***Fetch incidents*** function.
+
 ## [19.10.2] - 2019-10-29
   - Fixed an issue in the ***Fetch incidents*** function.
   - Fixed an issue in the ***sentinelone-get-threats*** command.

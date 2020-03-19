@@ -223,10 +223,11 @@ def test_module():
 
 
 def pwned_email_command():
-    email = demisto.args().get('email')
-    email_suffix = PWNED_EMAIL_SUFFIX + email + EMAIL_TRUNCATE_VERIFIED_SUFFIX
-    paste_suffix = PWNED_PASTE_SUFFIX + email
-    pwned_email(email, email_suffix, paste_suffix)
+    email_list = argToList(demisto.args().get('email', ''))
+    for email in email_list:
+        email_suffix = PWNED_EMAIL_SUFFIX + email + EMAIL_TRUNCATE_VERIFIED_SUFFIX
+        paste_suffix = PWNED_PASTE_SUFFIX + email
+        pwned_email(email, email_suffix, paste_suffix)
 
 
 def pwned_email(email, email_suffix, paste_suffix):
@@ -239,14 +240,14 @@ def pwned_email(email, email_suffix, paste_suffix):
 
 
 def pwned_domain_command():
-    domain = demisto.args().get('domain')
-    suffix = PWNED_DOMAIN_SUFFIX + domain + DOMAIN_TRUNCATE_VERIFIED_SUFFIX
-    pwned_domain(domain, suffix)
+    domain_list = argToList(demisto.args().get('domain', ''))
+    for domain in domain_list:
+        suffix = PWNED_DOMAIN_SUFFIX + domain + DOMAIN_TRUNCATE_VERIFIED_SUFFIX
+        pwned_domain(domain, suffix)
 
 
 def pwned_domain(domain, suffix):
     api_res = http_request('GET', url_suffix=suffix)
-
     md = data_to_markdown('Domain', domain, api_res)
     ec = domain_to_entry_context(domain, api_res or [])
     return_outputs(md, ec, api_res)

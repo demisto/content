@@ -323,3 +323,5 @@ outputs:
   description: The log's magnitude
 - contextPath: QRadar.Log.ProtocolName
   description: The log's protocol name
+tests:
+- no tests

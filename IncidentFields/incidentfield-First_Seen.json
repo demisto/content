@@ -2,7 +2,10 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Malware",
-		"Prisma Cloud"
+		"Prisma Cloud",
+		"AWS CloudTrail Misconfiguration",
+		"AWS IAM Policy Misconfiguration",
+		"AWS EC2 Instance Misconfiguration"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -38,3 +41,4 @@
 	"version": -1,
 	"fromVersion": "5.0.0"
 }
+

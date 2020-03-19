@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 
+## [20.3.1] - 2020-03-04
+Improved parsing of ***ip*** command 
+
+# [19.11.1] - 2019-11-26
+Added support to check for IP batch addresses.
+
 ## [19.10.1] - 2019-10-15
 -
 

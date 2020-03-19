@@ -729,13 +729,11 @@ def logout():
 
 def main():
     LOG('command is %s' % (demisto.command(),))
+    handle_proxy()  # Remove proxy if not set to true in params
     global API_HEADERS
     API_HEADERS = get_headers()
 
     try:
-        # Remove proxy if not set to true in params
-        handle_proxy()
-
         if demisto.command() == 'test-module':
             test_get_session()
             demisto.results('ok')

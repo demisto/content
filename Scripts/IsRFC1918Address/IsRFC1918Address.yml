@@ -17,7 +17,7 @@ args:
   description: The IPv4 address to check.
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.7.4.2728
+dockerimage: demisto/netutils:1.0.0.5165
 runas: DBotWeakRole
 tests:
   - No test - unit test
