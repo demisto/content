@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.3.3] - 2020-03-18
+-
+
 ## [19.11.1] - 2019-11-26
 Added batch support for domain and email commands.
 

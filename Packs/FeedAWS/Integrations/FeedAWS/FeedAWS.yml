@@ -17,7 +17,6 @@ configuration:
 - additionalinfo: The AWS Regions to fetch indicators by. If empty, all regions will
     be included.
   display: Regions
-  hidden: false
   name: regions
   options:
   - ap-east-1
@@ -49,12 +48,20 @@ configuration:
 - display: Fetch indicators
   name: feed
   required: false
+  defaultvalue: true
   type: 8
-- defaultvalue: '5'
-  display: Feed Fetch Interval
-  name: feedFetchInterval
+- defaultvalue: Good
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
-  type: 19
+  type: 18
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -69,29 +76,32 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  hidden: true
   name: feedExpirationPolicy
+  display: ""
   required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   type: 17
-- hidden: true
-  name: feedExpirationInterval
+- name: feedExpirationInterval
   required: false
+  display: ""
   type: 1
-- additionalinfo: When selected, the exclusion list will be ignored for this feed.
+- defaultvalue: '5'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
+  defaultvalue: ""
   type: 8
-- defaultvalue: Good
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -117,7 +127,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.5129
+  dockerimage: demisto/jmespath:1.0.0.6232
   feed: true
   isfetch: false
   longRunning: false

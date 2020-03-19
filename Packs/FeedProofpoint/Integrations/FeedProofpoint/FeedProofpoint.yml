@@ -3,6 +3,11 @@ commonfields:
   id: ProofpointFeed
   version: -1
 configuration:
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+  defaultvalue: true
 - display: Authorization Code
   hidden: false
   name: auth_code
@@ -33,8 +38,32 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
-- display: Fetch indicators
-  name: feed
+- defaultvalue: suddenDeath
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: "20160"
+  name: feedExpirationInterval
+  display: ""
+  required: false
+  type: 1
+- defaultvalue: "60"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: ""
   required: false
   type: 8
 - additionalinfo: The indicator type in the feed to fetch. Domain is referring to
@@ -49,34 +78,6 @@ configuration:
   - domain
   required: true
   type: 15
-- defaultvalue: suddenDeath
-  display: ""
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- defaultvalue: "20160"
-  name: feedExpirationInterval
-  display: " "
-  required: false
-  type: 1
-- defaultvalue: "60"
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  required: true
-  type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  defaultvalue: ""
-  required: false
-  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -116,7 +117,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: proofpoint-get-indicators
-  dockerimage: demisto/python3:3.8.1.5734
+  dockerimage: demisto/python3:3.8.1.6442
   feed: true
   isfetch: false
   longRunning: false

@@ -105,7 +105,7 @@ PAN_OS_ERROR_DICT = {
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
-    def __init__(self, *args, **kwargs):  # real signature unknown
+    def __init__(self, *args):  # real signature unknown
         pass
 
 
@@ -653,25 +653,26 @@ def panorama_push_status_command():
     Check jobID of push status
     """
     result = panorama_push_status()
-    if result['response']['result']['job']['type'] != 'CommitAll':
+    job = result.get('response', {}).get('result', {}).get('job', {})
+    if job.get('type', '') != 'CommitAll':
         raise Exception('JobID given is not of a Push.')
 
-    push_status_output = {'JobID': result['response']['result']['job']['id']}
-    if result['response']['result']['job']['status'] == 'FIN':
-        if result['response']['result']['job']['result'] == 'OK':
+    push_status_output = {'JobID': job.get('id')}
+    if job.get('status', '') == 'FIN':
+        if job.get('result', '') == 'OK':
             push_status_output['Status'] = 'Completed'
         else:
-            # result['response']['job']['result'] == 'FAIL'
             push_status_output['Status'] = 'Failed'
 
-        devices = result['response']['result']['job']['devices']['entry']
+        devices = job.get('devices')
+        devices = devices.get('entry') if devices else devices
         if isinstance(devices, list):
-            devices_details = [device.get('status') for device in devices]
+            devices_details = [device.get('status') for device in devices if device]
             push_status_output['Details'] = devices_details
         elif isinstance(devices, dict):
             push_status_output['Details'] = devices.get('status')
 
-    if result['response']['result']['job']['status'] == 'PEND':
+    if job.get('status') == 'PEND':
         push_status_output['Status'] = 'Pending'
 
     demisto.results({
@@ -3587,6 +3588,110 @@ def panorama_unregister_ip_tag_command():
     })
 
 
+''' User Tags '''
+
+
+@logger
+def panorama_register_user_tag(tag: str, users: List):
+    entry: str = ''
+    for user in users:
+        entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
+
+    params = {
+        'type': 'user-id',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register-user>{entry}'
+               f'</register-user></payload></uid-message>',
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'POST',
+        params=params,
+    )
+
+    return result
+
+
+def panorama_register_user_tag_command():
+    """
+    Register Users to a Tag
+    """
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:
+        raise Exception('The panorama-register-user-tag command is only available for PAN-OS 9.X and above versions.')
+    tag = demisto.args()['tag']
+    users = argToList(demisto.args()['Users'])
+
+    result = panorama_register_user_tag(tag, users)
+
+    # get existing Users for this tag
+    context_users = demisto.dt(demisto.context(), 'Panorama.DynamicTags(val.Tag ==\"' + tag + '\").Users')
+
+    if context_users:
+        all_users = users + context_users
+    else:
+        all_users = users
+
+    registered_user = {
+        'Tag': tag,
+        'Users': all_users
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Registered user-tag successfully',
+        'EntryContext': {
+            "Panorama.DynamicTags(val.Tag == obj.Tag)": registered_user
+        }
+    })
+
+
+@logger
+def panorama_unregister_user_tag(tag: str, users: list):
+    entry = ''
+    for user in users:
+        entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
+
+    params = {
+        'type': 'user-id',
+        'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><unregister-user>{entry}'
+               f'</unregister-user></payload></uid-message>',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'POST',
+        params=params,
+    )
+
+    return result
+
+
+def panorama_unregister_user_tag_command():
+    """
+    Unregister Users from a Tag
+    """
+    major_version = get_pan_os_major_version()
+    if major_version <= 8:
+        raise Exception('The panorama-unregister-user-tag command is only available for PAN-OS 9.X and above versions.')
+    tag = demisto.args()['tag']
+    users = argToList(demisto.args()['Users'])
+
+    result = panorama_unregister_user_tag(tag, users)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['text'],
+        'HumanReadable': 'Unregistered user-tag successfully'
+    })
+
+
 ''' Traffic Logs '''
 
 
@@ -5202,6 +5307,13 @@ def main():
 
         elif demisto.command() == 'panorama-unregister-ip-tag':
             panorama_unregister_ip_tag_command()
+
+        # Registered Users
+        elif demisto.command() == 'panorama-register-user-tag':
+            panorama_register_user_tag_command()
+
+        elif demisto.command() == 'panorama-unregister-user-tag':
+            panorama_unregister_user_tag_command()
 
         # Security Rules Managing
         elif demisto.command() == 'panorama-list-rules':

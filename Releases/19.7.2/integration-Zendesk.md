@@ -1,2 +1,0 @@
-- Attachments are now visible in context when you run the zendesk-ticket-details command.
-- Added a test playbook.

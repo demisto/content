@@ -26,7 +26,7 @@
   "shouldPublish": false,
   "associatedTypes": [
     "IP",
-    "IP_tmp"
+    "IPv6"
   ],
   "caseInsensitive": true,
   "columns": null,
