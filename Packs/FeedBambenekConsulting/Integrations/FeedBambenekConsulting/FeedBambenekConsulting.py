@@ -39,9 +39,63 @@ def main():
             'mapping': {
                 'description': 'malwarefamily'
             }
+        },
+        'https://faf.bambenekconsulting.com/feeds/dga-feed.gz': {
+            'fieldnames': ['value',
+                           'ip',
+                           'nsname',
+                           'nsip',
+                           'description',
+                           'info'],
+            'indicator_type': FeedIndicatorType.Domain,
+            'mapping': {
+                'description': 'malwarefamily'
+            },
+            'is_zipped_file': True
+        },
+        'https://faf.bambenekconsulting.com/feeds/dga-feed-high.gz': {
+            'fieldnames': ['value',
+                           'ip',
+                           'nsname',
+                           'nsip',
+                           'description',
+                           'info'],
+            'indicator_type': FeedIndicatorType.Domain,
+            'mapping': {
+                'description': 'malwarefamily'
+            },
+            'is_zipped_file': True
+        },
+        'https://faf.bambenekconsulting.com/feeds/dga/c2-masterlist.txt': {
+            'fieldnames': ['value',
+                           'ip',
+                           'nsname',
+                           'nsip',
+                           'description',
+                           'info'],
+            'indicator_type': FeedIndicatorType.Domain,
+            'mapping': {
+                'description': 'malwarefamily'
+            }
+        },
+        'https://faf.bambenekconsulting.com/feeds/dga/c2-masterlist-high.txt': {
+            'fieldnames': ['value',
+                           'ip',
+                           'nsname',
+                           'nsip',
+                           'description',
+                           'info'],
+            'indicator_type': FeedIndicatorType.Domain,
+            'mapping': {
+                'description': 'malwarefamily'
+            }
+        },
+        'https://faf.bambenekconsulting.com/feeds/sinkhole/latest.csv': {
+            'fieldnames': ['value',
+                           'owner'],
+            'indicator_type': FeedIndicatorType.IP,
         }
     }
-
     params = {k: v for k, v in demisto.params().items() if v is not None}
     params['feed_url_to_config'] = feed_url_to_config
     params['ignore_regex'] = r'^#'

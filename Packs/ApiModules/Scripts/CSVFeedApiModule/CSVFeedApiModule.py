@@ -3,8 +3,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import urllib3
 import csv
+import gzip
+import urllib3
 from typing import Optional, Pattern, Dict, Any
 
 # disable insecure warnings
@@ -134,7 +135,12 @@ class Client(BaseClient):
                 return_error('Exception in request: {} {}'.format(r.status_code, r.content))
                 raise
 
-            response = r.content.decode(self.encoding).split('\n')
+            if self.feed_url_to_config.get(url).get('is_zipped_file'):
+                response_content = gzip.decompress(r.content)
+            else:
+                response_content = r.content
+
+            response = response_content.decode(self.encoding).split('\n')
             if self.feed_url_to_config:
                 fieldnames = self.feed_url_to_config.get(url, {}).get('fieldnames', [])
             else:
