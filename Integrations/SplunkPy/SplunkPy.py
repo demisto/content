@@ -376,22 +376,18 @@ def splunk_job_create_command(service):
 
 
 def splunk_results_command(service):
-    jobs = service.jobs  # type: ignore
-    found = False
     res = []
-    for job in jobs:
-        if job.sid == demisto.args()['sid']:
-            rr = results.ResultsReader(job.results())
-            for result in rr:
-                if isinstance(result, results.Message):
-                    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
-                elif isinstance(result, dict):
-                    # Normal events are returned as dicts
-                    res.append(result)
-            found = True
-    if not found:
+    job = service.job(demisto.args()['sid'])
+    for result in results.ResultsReader(job.results()):
+        if isinstance(result, results.Message):
+            demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
+        elif isinstance(result, dict):
+            # Normal events are returned as dicts
+            res.append(result)
+
+    if not res:
         demisto.results("Found no job for sid: " + demisto.args()['sid'])
-    if found:
+    else:
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
