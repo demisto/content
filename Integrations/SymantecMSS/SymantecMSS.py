@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -331,17 +329,22 @@ def query_incident_cmd():
 
     # Set Human readable
     flatten_relevant_fields = [{
-        "Incident Number": result["IncidentNumber"],
-        "Time Created": result["TimeCreated"],
-        "Status": result["WorkFlowDetail"]["Status"] or "",
-        "Classification": result["Classification"],
-        "Assigned Person": result["WorkFlowDetail"]["AssignedPerson"] or "",
-        "Description": result["Description"],
-        "Analyst Assessment": result["AnalystAssessment"],
-        "Number of Analyzed Signatures": result["NumberOfAnalyzedSignatures"],
+        "Incident Number": result.get("IncidentNumber", ""),
+        "Time Created": result.get("TimeCreated", ""),
+        "Status": result.get("WorkFlowDetail", {}).get("Status", ""),
+        "Classification": result.get("Classification", ""),
+        "Assigned Person": result.get("WorkFlowDetail", {}).get("AssignedPerson",
+                                                                "") if not result.get("WorkFlowDetail", {}) else "",
+        "Description": result.get("Description", ""),
+        "Analyst Assessment": result.get("AnalystAssessment", ""),
+        "Number of Analyzed Signatures": result.get("NumberOfAnalyzedSignatures", ""),
         "Signaturtes": json.dumps(sigs) or "",
-        "Related Incidents": json.dumps(result["RelatedIncidents"]["IncidentNumber"]) or "",
-        "Comment": result["IncidentComments"]["IncidentComment"]["Comment"] or ""
+        "Related Incidents": json.dumps(result.get("RelatedIncidents",
+                                                   {}).get("IncidentNumber", "")) if not result.get("RelatedIncidents",
+                                                                                                    {}) else "",
+        "Comment": result.get("IncidentComments", {}).get("IncidentComment",
+                                                          {}).get("Comment", "") if not result.get("IncidentComments",
+                                                                                                   {}) else ""
     }]
     headers = [
         "Incident Number",
@@ -360,42 +363,49 @@ def query_incident_cmd():
 
     # Set context
     result_ctx = {
-        "IncidentNumber": result["IncidentNumber"],
-        "NumberOfAnalyzedSignatures": result["NumberOfAnalyzedSignatures"],
+        "IncidentNumber": result.get("IncidentNumber", ""),
+        "NumberOfAnalyzedSignatures": result.get("NumberOfAnalyzedSignatures", ""),
         "SignatureList": {
             "Signature": sigs
         },
-        "TimeCreated": result["TimeCreated"],
-        "Classification": result["Classification"],
-        "Description": result["Description"],
-        "AnalystAssessment": result["AnalystAssessment"],
-        "CountryCode": result["CountryCode"],
-        "CountryName": result["CountryName"],
-        "RelatedTickets": result["RelatedTickets"],
+        "TimeCreated": result.get("TimeCreated", ""),
+        "Classification": result.get("Classification", ""),
+        "Description": result.get("Description", ""),
+        "AnalystAssessment": result.get("AnalystAssessment", ""),
+        "CountryCode": result.get("CountryCode", ""),
+        "CountryName": result.get("CountryName", ""),
+        "RelatedTickets": result.get("RelatedTickets", ""),
         "WorkFlowDetail": {
-            "Status": result["WorkFlowDetail"]["Status"],
-            "AssignedPerson": result["WorkFlowDetail"]["AssignedPerson"]
-        },
-        "IncidentComments": {
-            "IncidentComment": {
-                "CommentedTimeStampGMT": result["IncidentComments"]["IncidentComment"]["CommentedTimeStampGMT"],
-                "Comment": result["IncidentComments"]["IncidentComment"]["Comment"],
-                "CommentedBy": result["IncidentComments"]["IncidentComment"]["CommentedBy"]
-            }
-        },
-        "IncidentAttachmentItems": {
-            "IncidentAttachmentItem": {
-                "AttachmentNumber": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentNumber"],
-                "AttachmentName": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentName"],
-                "UploadDateGMT": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadDateGMT"],
-                "UploadBy": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadBy"],
-                "Comment": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["Comment"]
-            }
+            "Status": result.get("WorkFlowDetail", {}).get("Status", ""),
+            "AssignedPerson": result.get("WorkFlowDetail", {}).get("AssignedPerson", "")
         },
         "RelatedIncidents": {
-            "IncidentNumber": result["RelatedIncidents"]["IncidentNumber"]
+            "IncidentNumber": result["RelatedIncidents"]["IncidentNumber"] if result.get("RelatedIncidents") else ""
         }
     }
+
+    if result.get('IncidentComments') and result.get('IncidentComments').get('IncidentComment'):
+        result_ctx["IncidentComments"] = {"IncidentComment": {
+            "CommentedTimeStampGMT": result["IncidentComments"]["IncidentComment"]["CommentedTimeStampGMT"],
+            "Comment": result["IncidentComments"]["IncidentComment"]["Comment"],
+            "CommentedBy": result["IncidentComments"]["IncidentComment"]["CommentedBy"]
+        }
+        }
+    else:
+        result_ctx["IncidentComments"] = {}
+
+    if result.get("IncidentAttachmentItems") and result.get('IncidentAttachmentItems').get('IncidentAttachmentItem'):
+        result_ctx['IncidentAttachmentItems'] = {"IncidentAttachmentItem": {
+            "AttachmentNumber": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentNumber"],
+            "AttachmentName": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["AttachmentName"],
+            "UploadDateGMT": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadDateGMT"],
+            "UploadBy": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["UploadBy"],
+            "Comment": result["IncidentAttachmentItems"]["IncidentAttachmentItem"]["Comment"]
+        }
+        }
+    else:
+        result_ctx['IncidentAttachmentItems'] = {}
+
     context = {
         "Symantec MSS.Incident query(val.IncidentNumber && val.IncidentNumber === obj.IncidentNumber)": result_ctx
     }
