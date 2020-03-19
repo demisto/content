@@ -1,0 +1,571 @@
+import requests
+import datetime
+import pytest
+import json
+
+import demistomock as demisto
+
+
+bundle_index = 0
+submitted_indicators = 0
+mocked_get_token_response = '''{"access_token": "fababfafbh"}'''
+iocs_bundle = [{"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
+                "objects": [
+                    {"created": "2017-01-20T00:00:00.000Z", "definition": {"tlp": "amber"}, "definition_type": "tlp",
+                     "id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82", "type": "marking-definition"},
+                    {"created": "2019-12-26T00:00:00Z",
+                     "definition": {"statement": "Copyright Sixgill 2020. All rights reserved."},
+                     "definition_type": "statement", "id": "marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                     "type": "marking-definition"},
+                    {"created": "2020-01-09T07:31:16.708Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9",
+                     "kill_chain_phases": [
+                         {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["compromised", "shell", "webshell"], "lang": "en",
+                     "modified": "2020-01-09T07:31:16.708Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[domain-name:value = 'somewebsite.com']", "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_001",
+                     "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "6e407c41fe6591d591cd8bbf0d105f7c15ed8991",
+                     "sixgill_posttitle": "Credit Card Debt Help,       somewebsite.com",
+                     "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0",
+                     "type": "indicator",
+                     "valid_from": "2019-12-07T00:57:04Z"},
+                    {"created": "2020-01-09T07:31:16.824Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--67b2378f-cbdd-4263-b1c4-668014d376f2",
+                     "kill_chain_phases": [
+                         {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["compromised", "shell", "webshell"], "lang": "ru",
+                     "modified": "2020-01-09T07:31:16.824Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[ipv4-addr:value = '121.165.45.1']", "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_004",
+                     "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "59f08fbf692f84f15353a5e946d2a1cebab92418",
+                     "sixgill_posttitle": "somewebsite.com",
+                     "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0",
+                     "type": "indicator",
+                     "valid_from": "2019-12-06T17:10:04Z"},
+                    {"created": "2020-01-09T07:31:16.757Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--6e8b5f57-3ee2-4c4a-9283-8547754dfa09",
+                     "kill_chain_phases": [
+                         {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["url"], "lang": "en",
+                     "modified": "2020-01-09T07:31:16.757Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[url:value = 'http://somewebsite.rar[.]html']", "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_010",
+                     "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "f46cdfc3332d9a04aa63078d82c1e453fd76ba50",
+                     "sixgill_posttitle": "somewebsite.com", "sixgill_severity": 70,
+                     "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator",
+                     "valid_from": "2019-12-06T23:24:51Z"},
+                    {"created": "2020-01-09T07:31:16.834Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d",
+                     "kill_chain_phases": [
+                         {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["ip", "lokibot_c2s"], "lang": "en",
+                     "modified": "2020-01-09T07:31:16.834Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[ipv4-addr:value = '31.31.77.83']", "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 60, "sixgill_feedid": "darkfeed_005",
+                     "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "c3f266e67f163e1a6181c0789e225baba89212a2",
+                     "sixgill_posttitle": "somewebsite.com",
+                     "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0",
+                     "type": "indicator",
+                     "valid_from": "2019-12-06T14:37:16Z"},
+                    {"created": "2020-01-09T07:31:16.834Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d",
+                     "kill_chain_phases": [
+                         {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["malware hash", "hash", "md5"], "lang": "en",
+                     "modified": "2020-01-09T07:31:16.834Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[file:hashes.MD5 = '2f4e41ea7006099f365942349b05a269' OR "
+                                "file:hashes.'SHA-1' = '835e4574e01c12552c2a3b62b942d177c4d7aaca' OR "
+                                "file:hashes.'SHA-256' = 'a925164d6c0c479967b3d9870267a03adf65e8145']",
+                     "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 80, "sixgill_feedid": "darkfeed_002",
+                     "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "c3f266e67f163e1a6181c0789e225baba89212a2",
+                     "sixgill_posttitle": "somewebsite.com",
+                     "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0",
+                     "type": "indicator",
+                     "valid_from": "2019-12-06T14:37:16Z"},
+                    {"created": "2020-02-09T06:41:41.266Z",
+                     "description": "IP address was listed as a proxy",
+                     "external_reference": [
+                         {
+                             "description": "Mitre attack tactics and technique reference",
+                             "mitre_attack_tactic": "Adversary OPSEC",
+                             "mitre_attack_tactic_id": "TA0021",
+                             "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0021/",
+                             "mitre_attack_technique": "Proxy/protocol relays",
+                             "mitre_attack_technique_id": "T1304",
+                             "mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1304/",
+                             "source_name": "mitre-attack"
+                         }
+                     ],
+                     "id": "indicator--2ed98497-cef4-468c-9cee-4f05292b5142",
+                     "labels": [
+                         "anonymization",
+                         "ip",
+                         "proxy",
+                         "Proxy/protocol relays",
+                         "Adversary OPSEC"
+                     ],
+                     "lang": "en",
+                     "modified": "2020-02-09T06:41:41.266Z",
+                     "object_marking_refs": [
+                         "marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                         "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"
+                     ],
+                     "pattern": "[ipv4-addr:value = '182.253.121.14']",
+                     "sixgill_actor": "LunarEclipsed",
+                     "sixgill_confidence": 70,
+                     "sixgill_feedid": "darkfeed_009",
+                     "sixgill_feedname": "proxy_ips",
+                     "sixgill_postid": "00f74eea142e746415457d0dd4a4fc747add3a1b",
+                     "sixgill_posttitle": "✅ 9.7K HTTP/S PROXY LIST (FRESH) ✅",
+                     "sixgill_severity": 40,
+                     "sixgill_source": "forum_nulled",
+                     "spec_version": "2.0",
+                     "type": "indicator",
+                     "valid_from": "2020-01-25T21:08:25Z"
+                     }
+                ],
+                "spec_version": "2.0",
+                "type": "bundle"},
+               {"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
+                "objects": [
+                    {"created": "2017-01-20T00:00:00.000Z", "definition": {"tlp": "amber"}, "definition_type": "tlp",
+                     "id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82", "type": "marking-definition"},
+                    {"created": "2019-12-26T00:00:00Z",
+                     "definition": {"statement": "Copyright Sixgill 2020. All rights reserved."},
+                     "definition_type": "statement", "id": "marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                     "type": "marking-definition"}
+                ],
+                "spec_version": "2.0",
+                "type": "bundle"}
+               ]
+
+expected_ioc_output = [{'value': 'somewebsite.com', 'type': 'Domain',
+                        'rawJSON': '{"created": "2020-01-09T07:31:16.708Z", '
+                                   '"description": "Shell access to this domain is being sold on dark web markets", '
+                                   '"id": "indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9", '
+                                   '"kill_chain_phases": [{"kill_chain_name": "lockheed-martin-cyber-kill-chain", '
+                                   '"phase_name": "weaponization"}], "labels": ["compromised", "shell", "webshell"], '
+                                   '"lang": "en", "modified": "2020-01-09T07:31:16.708Z", '
+                                   '"object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",'
+                                   ' "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], '
+                                   '"pattern": "[domain-name:value = \'somewebsite.com\']", '
+                                   '"sixgill_actor": "some_actor", "sixgill_confidence": 90, '
+                                   '"sixgill_feedid": "darkfeed_001", "sixgill_feedname": "compromised_sites", '
+                                   '"sixgill_postid": "6e407c41fe6591d591cd8bbf0d105f7c15ed8991", '
+                                   '"sixgill_posttitle": "Credit Card Debt Help,       somewebsite.com", '
+                                   '"sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0", '
+                                   '"type": "indicator", "valid_from": "2019-12-07T00:57:04Z"}',
+                        'actor': {'some_actor'}, 'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                                                            'trafficlightprotocoltlp': 'amber',
+                                                            'creationdate': datetime.datetime(2020, 1, 9, 7, 31, 16,
+                                                                                              708000),
+                                                            'modified': datetime.datetime(2020, 1, 9, 7, 31, 16,
+                                                                                          708000),
+                                                            'description':
+                                                                'description: Shell access to this domain is being '
+                                                                'sold on dark web markets\nfeedid: darkfeed_001\n'
+                                                                'title: Credit Card Debt Help,       somewebsite.com\n'
+                                                                'post_id: 6e407c41fe6591d591cd8bbf0d105f7c15ed8991\n'
+                                                                'actor: some_actor\nlang: en\n'
+                                                                '"tags": [\'compromised\', \'shell\', \'webshell\']\n'
+                                                                'external_reference: {}'},
+                        'score': 3},
+                       {'value': '121.165.45.1', 'type': 'IP',
+                        'rawJSON': '{"created": "2020-01-09T07:31:16.824Z", '
+                                   '"description": "Shell access to this domain is being sold on dark web markets", '
+                                   '"id": "indicator--67b2378f-cbdd-4263-b1c4-668014d376f2", '
+                                   '"kill_chain_phases": [{"kill_chain_name": "lockheed-martin-cyber-kill-chain", '
+                                   '"phase_name": "weaponization"}], "labels": ["compromised", "shell", "webshell"], '
+                                   '"lang": "ru", "modified": "2020-01-09T07:31:16.824Z", '
+                                   '"object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",'
+                                   ' "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], '
+                                   '"pattern": "[ipv4-addr:value = \'121.165.45.1\']", '
+                                   '"sixgill_actor": "some_actor", "sixgill_confidence": 90, '
+                                   '"sixgill_feedid": "darkfeed_004", "sixgill_feedname": "compromised_sites", '
+                                   '"sixgill_postid": "59f08fbf692f84f15353a5e946d2a1cebab92418", '
+                                   '"sixgill_posttitle": "somewebsite.com", "sixgill_severity": 70, '
+                                   '"sixgill_source": "market_magbo", "spec_version": "2.0", '
+                                   '"type": "indicator", "valid_from": "2019-12-06T17:10:04Z"}',
+                        'actor': {'some_actor'},
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                                   'trafficlightprotocoltlp': 'amber',
+                                   'creationdate': datetime.datetime(2020, 1, 9, 7, 31, 16, 824000),
+                                   'modified': datetime.datetime(2020, 1, 9, 7, 31, 16, 824000),
+                                   'description': 'description: Shell access to this domain is being sold on '
+                                                  'dark web markets\nfeedid: darkfeed_004\ntitle: somewebsite.com\n'
+                                                  'post_id: 59f08fbf692f84f15353a5e946d2a1cebab92418\n'
+                                                  'actor: some_actor\nlang: ru\n'
+                                                  '"tags": [\'compromised\', \'shell\', \'webshell\']\n'
+                                                  'external_reference: {}'},
+                        'score': 3},
+                       {'value': 'http://somewebsite.rar.html', 'type': 'URL',
+                        'rawJSON': '{"created": "2020-01-09T07:31:16.757Z", "description": "Shell access to this domain '
+                                   'is being sold on dark web markets", "id": '
+                                   '"indicator--6e8b5f57-3ee2-4c4a-9283-8547754dfa09", '
+                                   '"kill_chain_phases": [{"kill_chain_name": "lockheed-martin-cyber-kill-chain", '
+                                   '"phase_name": "weaponization"}], "labels": ["url"], "lang": "en", '
+                                   '"modified": "2020-01-09T07:31:16.757Z", '
+                                   '"object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",'
+                                   ' "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], '
+                                   '"pattern": "[url:value = \'http://somewebsite.rar[.]html\']",'
+                                   ' "sixgill_actor": "some_actor", "sixgill_confidence": 90, '
+                                   '"sixgill_feedid": "darkfeed_010", "sixgill_feedname": "compromised_sites", '
+                                   '"sixgill_postid": "f46cdfc3332d9a04aa63078d82c1e453fd76ba50", '
+                                   '"sixgill_posttitle": "somewebsite.com", "sixgill_severity": 70, '
+                                   '"sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator", '
+                                   '"valid_from": "2019-12-06T23:24:51Z"}',
+                        'actor': {'some_actor'},
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                                   'trafficlightprotocoltlp': 'amber',
+                                   'creationdate': datetime.datetime(2020, 1, 9, 7, 31, 16,
+                                                                     757000),
+                                   'modified': datetime.datetime(2020, 1, 9, 7, 31, 16,
+                                                                 757000),
+                                   'description': 'description: Shell access to this domain is being sold on '
+                                                  'dark web markets\nfeedid: darkfeed_010\n'
+                                                  'title: somewebsite.com\n'
+                                                  'post_id: f46cdfc3332d9a04aa63078d82c1e453fd76ba50\n'
+                                                  'actor: some_actor\nlang: en\n'
+                                                  '"tags": [\'url\']\nexternal_reference: {}'},
+                        'score': 3}, {'value': '31.31.77.83', 'type': 'IP',
+                                      'rawJSON': '{"created": "2020-01-09T07:31:16.834Z", '
+                                                 '"description": "Shell access to this domain is being sold '
+                                                 'on dark web markets", '
+                                                 '"id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d", '
+                                                 '"kill_chain_phases": [{"kill_chain_name": '
+                                                 '"lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],'
+                                                 ' "labels": ["ip", "lokibot_c2s"], "lang": "en", '
+                                                 '"modified": "2020-01-09T07:31:16.834Z", '
+                                                 '"object_marking_refs": '
+                                                 '["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4", '
+                                                 '"marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], '
+                                                 '"pattern": "[ipv4-addr:value = \'31.31.77.83\']", '
+                                                 '"sixgill_actor": "some_actor", "sixgill_confidence": 60, '
+                                                 '"sixgill_feedid": "darkfeed_005", '
+                                                 '"sixgill_feedname": "compromised_sites", '
+                                                 '"sixgill_postid": "c3f266e67f163e1a6181c0789e225baba89212a2", '
+                                                 '"sixgill_posttitle": "somewebsite.com", "sixgill_severity": 70, '
+                                                 '"sixgill_source": "market_magbo", "spec_version": "2.0", "type": '
+                                                 '"indicator", "valid_from": "2019-12-06T14:37:16Z"}',
+                                      'actor': {'some_actor'},
+                                      'fields': {'source': 'market_magbo',
+                                                 'name': 'compromised_sites',
+                                                 'trafficlightprotocoltlp': 'amber',
+                                                 'creationdate': datetime.datetime(2020, 1,
+                                                                                   9, 7, 31,
+                                                                                   16,
+                                                                                   834000),
+                                                 'modified': datetime.datetime(2020, 1, 9,
+                                                                               7, 31, 16,
+                                                                               834000),
+                                                 'description': 'description: Shell access to this domain is being '
+                                                                'sold on dark web markets\nfeedid: darkfeed_005\n'
+                                                                'title: somewebsite.com\n'
+                                                                'post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                                'actor: some_actor\nlang: en\n'
+                                                                '"tags": [\'ip\', \'lokibot_c2s\']\n'
+                                                                'external_reference: {}'},
+                                      'score': 3},
+                       {'value': '2f4e41ea7006099f365942349b05a269',
+                        'type': {'hashes.MD5': 'File MD5', 'hashes.SHA-1': 'File SHA-1',
+                                 'hashes.SHA-256': 'File SHA-256'},
+                        'rawJSON': '{"created": "2020-01-09T07:31:16.834Z", '
+                                   '"description": "Shell access to this domain is being sold on dark web markets", '
+                                   '"id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d", '
+                                   '"kill_chain_phases": [{"kill_chain_name": "lockheed-martin-cyber-kill-chain", '
+                                   '"phase_name": "weaponization"}], "labels": ["malware hash", "hash", "md5"], '
+                                   '"lang": "en", "modified": "2020-01-09T07:31:16.834Z", '
+                                   '"object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",'
+                                   ' "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], '
+                                   '"pattern": '
+                                   '"[file:hashes.MD5 = \'2f4e41ea7006099f365942349b05a269\' OR '
+                                   'file:hashes.\'SHA-1\' = \'835e4574e01c12552c2a3b62b942d177c4d7aaca\' OR '
+                                   'file:hashes.\'SHA-256\' = \'a925164d6c0c479967b3d9870267a03adf65e8145\']", '
+                                   '"sixgill_actor": "some_actor", "sixgill_confidence": 80, '
+                                   '"sixgill_feedid": "darkfeed_002", "sixgill_feedname": "compromised_sites", '
+                                   '"sixgill_postid": "c3f266e67f163e1a6181c0789e225baba89212a2", '
+                                   '"sixgill_posttitle": "somewebsite.com", "sixgill_severity": 70, '
+                                   '"sixgill_source": "market_magbo", "spec_version": "2.0", '
+                                   '"type": "indicator", "valid_from": "2019-12-06T14:37:16Z"}',
+                        'actor': {'some_actor'},
+                        'fields': {'source': 'market_magbo',
+                                   'name': 'compromised_sites',
+                                           'trafficlightprotocoltlp': 'amber',
+                                           'creationdate': datetime.datetime(2020, 1, 9, 7, 31, 16,
+                                                                             834000),
+                                           'modified': datetime.datetime(2020, 1, 9, 7, 31, 16,
+                                                                         834000),
+                                           'description': 'description: Shell access to this '
+                                                          'domain is being sold on dark web '
+                                                          'markets\nfeedid: darkfeed_002\n'
+                                                          'title: somewebsite.com\n'
+                                                          'post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                          'actor: some_actor\nlang: en\n'
+                                                          '"tags": [\'malware hash\', \'hash\', \'md5\']\n'
+                                                          'external_reference: {}'},
+                        'score': 3},
+                       {'value': '835e4574e01c12552c2a3b62b942d177c4d7aaca',
+                        'type': {'hashes.MD5': 'File MD5', 'hashes.SHA-1': 'File SHA-1',
+                                 'hashes.SHA-256': 'File SHA-256'},
+                        'rawJSON': '{"created": "2020-01-09T07:31:16.834Z", '
+                                   '"description": "Shell access to this domain is being sold on dark web markets", '
+                                   '"id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d", '
+                                   '"kill_chain_phases": [{"kill_chain_name": "lockheed-martin-cyber-kill-chain", '
+                                   '"phase_name": "weaponization"}], "labels": ["malware hash", "hash", "md5"], '
+                                   '"lang": "en", "modified": "2020-01-09T07:31:16.834Z", '
+                                   '"object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",'
+                                   ' "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], '
+                                   '"pattern": "[file:hashes.MD5 = \'2f4e41ea7006099f365942349b05a269\' OR '
+                                   'file:hashes.\'SHA-1\' = \'835e4574e01c12552c2a3b62b942d177c4d7aaca\' '
+                                   'OR file:hashes.\'SHA-256\' = \'a925164d6c0c479967b3d9870267a03adf65e8145\']", '
+                                   '"sixgill_actor": "some_actor", "sixgill_confidence": 80, '
+                                   '"sixgill_feedid": "darkfeed_002", '
+                                   '"sixgill_feedname": "compromised_sites", '
+                                   '"sixgill_postid": "c3f266e67f163e1a6181c0789e225baba89212a2", '
+                                   '"sixgill_posttitle": "somewebsite.com", "sixgill_severity": 70, '
+                                   '"sixgill_source": "market_magbo", "spec_version": "2.0", '
+                                   '"type": "indicator", "valid_from": "2019-12-06T14:37:16Z"}',
+                        'actor': {'some_actor'},
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                                   'trafficlightprotocoltlp': 'amber',
+                                   'creationdate': datetime.datetime(2020, 1, 9, 7, 31, 16, 834000),
+                                   'modified': datetime.datetime(2020, 1, 9, 7, 31, 16, 834000),
+                                   'description': 'description: Shell access to this domain is being sold '
+                                                  'on dark web markets\nfeedid: darkfeed_002\n'
+                                                  'title: somewebsite.com\n'
+                                                  'post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                  'actor: some_actor\nlang: en\n'
+                                                  '"tags": [\'malware hash\', \'hash\', \'md5\']\n'
+                                                  'external_reference: {}'},
+                        'score': 3},
+                       {'value': 'a925164d6c0c479967b3d9870267a03adf65e8145',
+                        'type': {'hashes.MD5': 'File MD5', 'hashes.SHA-1': 'File SHA-1',
+                                 'hashes.SHA-256': 'File SHA-256'},
+                        'rawJSON': '{"created": "2020-01-09T07:31:16.834Z", '
+                                   '"description": "Shell access to this domain is being sold on '
+                                   'dark web markets", '
+                                   '"id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d", '
+                                   '"kill_chain_phases": [{"kill_chain_name": '
+                                   '"lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}], '
+                                   '"labels": ["malware hash", "hash", "md5"], '
+                                   '"lang": "en", "modified": "2020-01-09T07:31:16.834Z", '
+                                   '"object_marking_refs": '
+                                   '["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4", '
+                                   '"marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], '
+                                   '"pattern": "[file:hashes.MD5 = \'2f4e41ea7006099f365942349b05a269\''
+                                   ' OR file:hashes.\'SHA-1\' = \'835e4574e01c12552c2a3b62b942d177c4d7aaca\' '
+                                   'OR file:hashes.\'SHA-256\' = \'a925164d6c0c479967b3d9870267a03adf65e8145\']", '
+                                   '"sixgill_actor": "some_actor", "sixgill_confidence": 80, '
+                                   '"sixgill_feedid": "darkfeed_002", "sixgill_feedname": "compromised_sites", '
+                                   '"sixgill_postid": "c3f266e67f163e1a6181c0789e225baba89212a2", '
+                                   '"sixgill_posttitle": "somewebsite.com", "sixgill_severity": 70, '
+                                   '"sixgill_source": "market_magbo", "spec_version": "2.0", '
+                                   '"type": "indicator", "valid_from": "2019-12-06T14:37:16Z"}',
+                        'actor': {'some_actor'},
+                        'fields': {'source': 'market_magbo', 'name': 'compromised_sites',
+                                   'trafficlightprotocoltlp': 'amber',
+                                   'creationdate': datetime.datetime(2020, 1, 9, 7, 31, 16,
+                                                                     834000),
+                                   'modified': datetime.datetime(2020, 1, 9, 7, 31, 16,
+                                                                 834000),
+                                   'description': 'description: Shell access to this domain is being sold on dark '
+                                                  'web markets\nfeedid: darkfeed_002\n'
+                                                  'title: somewebsite.com\n'
+                                                  'post_id: c3f266e67f163e1a6181c0789e225baba89212a2\n'
+                                                  'actor: some_actor\nlang: en\n'
+                                                  '"tags": [\'malware hash\', \'hash\', \'md5\']\n'
+                                                  'external_reference: {}'},
+                        'score': 3},
+                       {'value': '182.253.121.14', 'type': 'IP',
+                        'rawJSON': '{"created": "2020-02-09T06:41:41.266Z", '
+                                   '"description": "IP address was listed as a proxy", '
+                                   '"external_reference": '
+                                   '[{"description": "Mitre attack tactics and technique reference", '
+                                   '"mitre_attack_tactic": "Adversary OPSEC", '
+                                   '"mitre_attack_tactic_id": "TA0021", "mitre_attack_tactic_url": '
+                                   '"https://attack.mitre.org/tactics/TA0021/", "mitre_attack_technique": '
+                                   '"Proxy/protocol relays", "mitre_attack_technique_id": "T1304", '
+                                   '"mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1304/", '
+                                   '"source_name": "mitre-attack"}], '
+                                   '"id": "indicator--2ed98497-cef4-468c-9cee-4f05292b5142", '
+                                   '"labels": ["anonymization", "ip", "proxy", "Proxy/protocol relays", '
+                                   '"Adversary OPSEC"], "lang": "en", "modified": "2020-02-09T06:41:41.266Z", '
+                                   '"object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",'
+                                   ' "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"], '
+                                   '"pattern": "[ipv4-addr:value = \'182.253.121.14\']", '
+                                   '"sixgill_actor": "LunarEclipsed", "sixgill_confidence": 70, '
+                                   '"sixgill_feedid": "darkfeed_009", "sixgill_feedname": "proxy_ips", '
+                                   '"sixgill_postid": "00f74eea142e746415457d0dd4a4fc747add3a1b", '
+                                   '"sixgill_posttitle": "\\u2705 9.7K HTTP/S PROXY LIST (FRESH) \\u2705", '
+                                   '"sixgill_severity": 40, "sixgill_source": "forum_nulled", '
+                                   '"spec_version": "2.0", "type": "indicator", "valid_from": "2020-01-25T21:08:25Z"}',
+                        'actor': {'LunarEclipsed'},
+                        'fields': {'source': 'forum_nulled',
+                                   'name': 'proxy_ips',
+                                   'trafficlightprotocoltlp': 'amber',
+                                   'creationdate': datetime.datetime(2020, 2,
+                                                                     9, 6, 41,
+                                                                     41,
+                                                                     266000),
+                                   'modified': datetime.datetime(2020, 2, 9,
+                                                                 6, 41, 41,
+                                                                 266000),
+                                   'description': 'description: IP address was listed as a proxy\n'
+                                                  'feedid: darkfeed_009\ntitle: ✅ 9.7K HTTP/S PROXY LIST (FRESH) ✅\n'
+                                                  'post_id: 00f74eea142e746415457d0dd4a4fc747add3a1b\n'
+                                                  'actor: LunarEclipsed\nlang: en\n'
+                                                  '"tags": [\'anonymization\', \'ip\', '
+                                                  '\'proxy\', \'Proxy/protocol relays\', \'Adversary OPSEC\']\n'
+                                                  'external_reference: [{\'description\': '
+                                                  '\'Mitre attack tactics and technique reference\', '
+                                                  '\'mitre_attack_tactic\': \'Adversary OPSEC\', '
+                                                  '\'mitre_attack_tactic_id\': \'TA0021\', '
+                                                  '\'mitre_attack_tactic_url\': '
+                                                  '\'https://attack.mitre.org/tactics/TA0021/\', '
+                                                  '\'mitre_attack_technique\': \'Proxy/protocol relays\', '
+                                                  '\'mitre_attack_technique_id\': \'T1304\', '
+                                                  '\'mitre_attack_technique_url\': '
+                                                  '\'https://attack.mitre.org/techniques/T1304/\', '
+                                                  '\'source_name\': \'mitre-attack\'}]'},
+                        'score': 3}]
+
+
+class MockedResponse(object):
+    def __init__(self, status_code, text, reason=None, url=None, method=None):
+        self.status_code = status_code
+        self.text = text
+        self.reason = reason
+        self.url = url
+        self.request = requests.Request('GET')
+        self.ok = True if self.status_code == 200 else False
+
+    def json(self):
+        return json.loads(self.text)
+
+
+def init_params():
+    return {
+        'client_id': 'WRONG_CLIENT_ID_TEST',
+        'client_secret': 'CLIENT_SECRET_TEST',
+    }
+
+
+def mocked_request(*args, **kwargs) -> MockedResponse:
+    global bundle_index
+    global submitted_indicators
+
+    request = kwargs.get("request", {})
+    end_point = request.path_url
+    method = request.method
+
+    response_dict = {
+        'POST': {
+            '/auth/token':
+                MockedResponse(200, mocked_get_token_response),
+            '/darkfeed/ioc/ack':
+                MockedResponse(200, str(submitted_indicators))
+        },
+        'GET': {
+            '/darkfeed/ioc?limit=1000':
+                MockedResponse(200, json.dumps(iocs_bundle[bundle_index])),
+        },
+    }
+
+    response_dict = response_dict.get(method)
+    response = response_dict.get(end_point)
+
+    if method == 'GET' and end_point == '/darkfeed/ioc?limit=1000':
+        submitted_indicators = len(iocs_bundle[bundle_index].get("objects")) - 2
+        bundle_index += 1
+
+    return response
+
+
+def test_test_module_command_raise_exception(mocker):
+    mocker.patch.object(demisto, 'params', return_value=init_params())
+    mocker.patch('requests.sessions.Session.send', return_value=MockedResponse(400, "error"))
+
+    from Sixgill_Darkfeed import test_module_command
+
+    with pytest.raises(Exception):
+        test_module_command()
+
+
+def test_test_module_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value=init_params())
+    mocker.patch('requests.sessions.Session.send', return_value=MockedResponse(200, "ok"))
+
+    from Sixgill_Darkfeed import test_module_command
+    test_module_command()
+
+
+def test_fetch_indicators_command(mocker):
+    global bundle_index
+    global submitted_indicators
+
+    mocker.patch.object(demisto, 'params', return_value=init_params())
+    mocker.patch('requests.sessions.Session.send', new=mocked_request)
+
+    from Sixgill_Darkfeed import fetch_indicators_command
+    from sixgill.sixgill_feed_client import SixgillFeedClient
+    from sixgill.sixgill_constants import FeedStream
+
+    client = SixgillFeedClient("client_id",
+                               "client_secret",
+                               "some_channel",
+                               FeedStream.DARKFEED,
+                               demisto, 1000)
+
+    output = fetch_indicators_command(client)
+
+    bundle_index = 0
+    submitted_indicators = 0
+
+    assert output == expected_ioc_output
+
+
+def test_get_indicators_command(mocker):
+    global bundle_index
+    global submitted_indicators
+
+    mocker.patch.object(demisto, 'params', return_value=init_params())
+    mocker.patch('requests.sessions.Session.send', new=mocked_request)
+
+    from Sixgill_Darkfeed import get_indicators_command
+    from sixgill.sixgill_feed_client import SixgillFeedClient
+    from sixgill.sixgill_constants import FeedStream
+
+    client = SixgillFeedClient("client_id",
+                               "client_secret",
+                               "some_channel",
+                               FeedStream.DARKFEED,
+                               demisto, 1000)
+
+    output = get_indicators_command(client, {"limit": 10})
+
+    bundle_index = 0
+    submitted_indicators = 0
+
+    assert output == expected_ioc_output
