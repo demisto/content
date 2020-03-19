@@ -6,14 +6,14 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "20.3.2"
+      CONTENT_VERSION: "20.3.3"
       SERVER_VERSION: "5.0.1"
-      GIT_SHA1: "7a14892ad6e15e67675289815e957e50b4cc2f09" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "ff7008afef82c5c88470d076f6c6eb673aa0ce51" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
       - restore_cache:
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - run:
           name: Prepare Environment
           when: always
@@ -24,8 +24,9 @@ jobs:
                 exit 0
             fi
             echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-            echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+            echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
             echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+            echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
             echo "=== sourcing $BASH_ENV ==="
             source $BASH_ENV
             sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
@@ -42,6 +43,8 @@ jobs:
               echo "venv exists (from cache). activating"
               source ./venv/bin/activate
             fi
+            # Install node packages
+            npm install .
             # store in bash env so we load our venv in each step
             echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
             python --version
@@ -49,8 +52,8 @@ jobs:
       - save_cache:
           paths:
             - venv
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
-
+            - node_modules
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - add_ssh_keys:
           fingerprints:
             - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
