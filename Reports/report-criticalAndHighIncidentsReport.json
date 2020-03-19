@@ -234,13 +234,13 @@
     {
       "layout": {
         "tableColumns": [
-          "name",
-          "occurred",
-          "type",
-          "owner",
-          "severity",
-          "status",
-          "dueDate"
+          "Name",
+          "Occurred",
+          "Type",
+          "Owner",
+          "Severity",
+          "Status",
+          "Due Date"
         ],
         "classes": "striped stackable small very compact",
         "i": "14558e70-005d-11e8-831f-e7429aff1c69",
