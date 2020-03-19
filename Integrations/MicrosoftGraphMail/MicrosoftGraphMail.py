@@ -29,8 +29,11 @@ FOLDER_MAPPING = {
 
 
 class MsGraphClient:
-    def __init__(self, ms_client):
-        self.ms_client = ms_client
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+                 ok_codes):
+        self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
+                                         enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
+                                         proxy=proxy, ok_codes=ok_codes)
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -637,17 +640,10 @@ def main():
     app_name: str = 'ms-graph-mail'
     ok_codes: tuple = (200, 201, 202)
     use_ssl: bool = not params.get('insecure', False)
-    app_url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token' if self_deployed else ''
-    scope: str = 'https://graph.microsoft.com/.default' if self_deployed else ''
+    proxy: bool = params.get('proxy', False)
 
-    proxy: dict = handle_proxy()
-
-    ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
-                                client_id=auth_and_token_url, enc_key=enc_key, client_secret=enc_key, app_name=app_name,
-                                app_url=app_url, scope=scope, base_url=base_url, verify=use_ssl, proxy=proxy,
-                                ok_codes=ok_codes)
-
-    client: MsGraphClient = MsGraphClient(ms_client)
+    client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
+                                          use_ssl, proxy, ok_codes)
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
