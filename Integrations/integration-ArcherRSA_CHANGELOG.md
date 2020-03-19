@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Fixed an issue where the following commands failed on numeric incident IDs.
   - ***archer-update-record***
   - ***archer-delete-record*** 
