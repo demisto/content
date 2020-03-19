@@ -1,4 +1,5 @@
 ## [Unreleased]
+Moved authentication to be handled in Microsoft API Module.
 
 
 ## [20.1.2] - 2020-01-22
