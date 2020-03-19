@@ -54,7 +54,7 @@ EOF
     cp -r ./content-test-conf-$CIRCLE_BRANCH/demisto.lic $DEMISTO_LIC_PATH
     cp -r ./content-test-conf-$CIRCLE_BRANCH/conf.json $SECRET_CONF_PATH
     cp -r ./content-test-conf-$CIRCLE_BRANCH/server.conf $DEMISTO_SEVERCONF_PATH
-    cp -r ./content-test-conf-master/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
+    cp -r ./content-test-conf-$CIRCLE_BRANCH/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
     if [ -n "${NIGHTLY}" ]
       then
         cp -r ./content-test-conf-$CIRCLE_BRANCH/nightly_instance.json instance.json
