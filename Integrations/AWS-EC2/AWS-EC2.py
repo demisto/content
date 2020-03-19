@@ -238,6 +238,11 @@ def describe_instances_command(args):
         kwargs.update({'InstanceIds': parse_resource_ids(args.get('instanceIds'))})
 
     response = client.describe_instances(**kwargs)
+
+    if len(response['Reservations']) == 0:
+        demisto.results('No reservations were found.')
+        return
+
     for i, reservation in enumerate(response['Reservations']):
         for instance in reservation['Instances']:
             try:
@@ -296,6 +301,11 @@ def describe_images_command(args):
         kwargs.update({'ExecutableUsers': parse_resource_ids(args.get('executableUsers'))})
 
     response = client.describe_images(**kwargs)
+
+    if len(response['Images']) == 0:
+        demisto.results('No images were found.')
+        return
+
     for i, image in enumerate(response['Images']):
         data.append({
             'CreationDate': image['CreationDate'],
@@ -347,6 +357,10 @@ def describe_addresses_command(args):
 
     response = client.describe_addresses(**kwargs)
 
+    if len(response['Addresses']) == 0:
+        demisto.results('No addresses were found.')
+        return
+
     for i, address in enumerate(response['Addresses']):
         data.append({
             'PublicIp': address['PublicIp'],
@@ -397,6 +411,10 @@ def describe_snapshots_command(args):
         kwargs.update({'RestorableByUserIds': parse_resource_ids(args.get('restorableByUserIds'))})
 
     response = client.describe_snapshots(**kwargs)
+
+    if len(response['Snapshots']) == 0:
+        demisto.results('No snapshots were found.')
+        return
 
     for i, snapshot in enumerate(response['Snapshots']):
         try:
@@ -451,6 +469,10 @@ def describe_volumes_command(args):
 
     response = client.describe_volumes(**kwargs)
 
+    if len(response['Volumes']) == 0:
+        demisto.results('No EC2 volumes were found.')
+        return
+
     for i, volume in enumerate(response['Volumes']):
         try:
             create_date = datetime.strftime(volume['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
@@ -500,6 +522,10 @@ def describe_launch_templates_command(args):
         kwargs.update({'LaunchTemplateNames': parse_resource_ids(args.get('launchTemplateNamess'))})
 
     response = client.describe_launch_templates(**kwargs)
+
+    if len(response['LaunchTemplates']) == 0:
+        demisto.results('No launch templates were found.')
+        return
 
     for i, template in enumerate(response['LaunchTemplates']):
         try:
@@ -583,6 +609,10 @@ def describe_vpcs_command(args):
 
     response = client.describe_vpcs(**kwargs)
 
+    if len(response['Vpcs']) == 0:
+        demisto.results('No VPCs were found.')
+        return
+
     for i, vpc in enumerate(response['Vpcs']):
         data.append({
             'CidrBlock': vpc['CidrBlock'],
@@ -629,6 +659,10 @@ def describe_subnets_command(args):
         kwargs.update({'SubnetIds': parse_resource_ids(args.get('subnetIds'))})
 
     response = client.describe_subnets(**kwargs)
+
+    if len(response['Subnets']) == 0:
+        demisto.results('No Subnets were found.')
+        return
 
     for i, subnet in enumerate(response['Subnets']):
         data.append({
@@ -679,6 +713,10 @@ def describe_security_groups_command(args):
         kwargs.update({'GroupNames': parse_resource_ids(args.get('groupNames'))})
 
     response = client.describe_security_groups(**kwargs)
+
+    if len(response['SecurityGroups']) == 0:
+        demisto.results('No security groups were found.')
+        return
 
     for i, sg in enumerate(response['SecurityGroups']):
         data.append({
@@ -1236,6 +1274,11 @@ def run_instances_command(args):
 
     response = client.run_instances(**kwargs)
     data = []
+
+    if len(response['Instances']) == 0:
+        demisto.results('No instances were found.')
+        return
+
     for i, instance in enumerate(response['Instances']):
         try:
             launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
@@ -1689,6 +1732,11 @@ def describe_reserved_instances_command(args):
         kwargs.update({'ReservedInstancesIds': parse_resource_ids(args.get('reservedInstancesIds'))})
 
     response = client.describe_reserved_instances(**kwargs)
+
+    if len(response['ReservedInstances']) == 0:
+        demisto.results('No reserved instances were found.')
+        return
+
     for i, reservation in enumerate(response['ReservedInstances']):
         try:
             start_time = datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ')
@@ -2152,22 +2200,26 @@ def delete_fleet_command(args):
         kwargs.update({'TerminateInstances': bool(args.get('TerminateInstances'))})
 
     response = client.delete_fleets(**kwargs)
-    for i, item in enumerate(response['SuccessfulFleetDeletions']):
-        data.append({'SuccessfulFleetDeletions': {
-            'CurrentFleetState': item['CurrentFleetState'],
-            'PreviousFleetState': item['PreviousFleetState'],
-            'FleetId': item['FleetId'],
-            'Region': obj['_user_provided_options']['region_name'],
-        }})
-        output.append(item)
-    for i, item in enumerate(response['UnsuccessfulFleetDeletions']):
-        data.append({'UnsuccessfulFleetDeletions': {
-            'Error-Code': item['Error']['Code'],
-            'Error-Message': item['Error']['Message'],
-            'FleetId': item['FleetId'],
-            'Region': obj['_user_provided_options']['region_name'],
-        }})
-        output.append(item)
+
+    if len(response['SuccessfulFleetDeletions']) > 0:
+        for i, item in enumerate(response['SuccessfulFleetDeletions']):
+            data.append({'SuccessfulFleetDeletions': {
+                'CurrentFleetState': item['CurrentFleetState'],
+                'PreviousFleetState': item['PreviousFleetState'],
+                'FleetId': item['FleetId'],
+                'Region': obj['_user_provided_options']['region_name'],
+            }})
+            output.append(item)
+
+    if len(response['UnsuccessfulFleetDeletions']) > 0:
+        for i, item in enumerate(response['UnsuccessfulFleetDeletions']):
+            data.append({'UnsuccessfulFleetDeletions': {
+                'Error-Code': item['Error']['Code'],
+                'Error-Message': item['Error']['Message'],
+                'FleetId': item['FleetId'],
+                'Region': obj['_user_provided_options']['region_name'],
+            }})
+            output.append(item)
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
@@ -2199,6 +2251,11 @@ def describe_fleets_command(args):
         kwargs.update({'NextToken': args.get('NextToken')})
 
     response = client.describe_fleets(**kwargs)
+
+    if len(response['Fleets']) == 0:
+        demisto.results('No fleets were found.')
+        return
+
     for i, item in enumerate(response['Fleets']):
 
         data.append({
@@ -2255,6 +2312,11 @@ def describe_fleet_instances_command(args):
         kwargs.update({'NextToken': args.get('NextToken')})
 
     response = client.describe_fleet_instances(**kwargs)
+
+    if len(response['ActiveInstances']) == 0:
+        demisto.results('No active instances were found.')
+        return
+
     for i, item in enumerate(response['ActiveInstances']):
         demisto.log(str(item))
         data.append({
@@ -2747,6 +2809,69 @@ def describe_internet_gateway_command(args):
     return_outputs(human_readable, ec)
 
 
+def create_traffic_mirror_session_command(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+    kwargs = {}
+    if args.get('NetworkInterfaceId') is not None:
+        kwargs.update({'NetworkInterfaceId': args.get('NetworkInterfaceId')})
+    if args.get('TrafficMirrorTargetId') is not None:
+        kwargs.update({'TrafficMirrorTargetId': args.get('TrafficMirrorTargetId')})
+    if args.get('TrafficMirrorFilterId') is not None:
+        kwargs.update({'TrafficMirrorFilterId': args.get('TrafficMirrorFilterId')})
+    if args.get('PacketLength') is not None:
+        kwargs.update({'PacketLength': int(args.get('PacketLength'))})
+    if args.get('SessionNumber') is not None:
+        kwargs.update({'SessionNumber': int(args.get('SessionNumber'))})
+    if args.get('VirtualNetworkId') is not None:
+        kwargs.update({'VirtualNetworkId': int(args.get('VirtualNetworkId'))})
+    if args.get('Description') is not None:
+        kwargs.update({'Description': args.get('Description')})
+    if args.get('ClientToken') is not None:
+        kwargs.update({'ClientToken': args.get('ClientToken')})
+    if args.get('DryRun') is not None:
+        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+
+    tag_specifications = []  # type: list
+    if args.get('Tags') is not None:
+        arr = args.get('Tags').split('#')
+        for i, item in enumerate(arr):
+            if len(tag_specifications) - 1 < (i):
+                tag_specifications.append({})
+            tg = item.split(':')
+            tag_specifications[i].update({
+                'ResourceType': tg[0],
+                'Tags': parse_tag_field(tg[1])
+            })
+    if tag_specifications:
+        kwargs.update({'TagSpecifications': tag_specifications})
+
+    response = client.create_traffic_mirror_session(**kwargs)
+    traffic_mirror_session = response['TrafficMirrorSession']
+    client_token = response['ClientToken']
+    data = {
+        'TrafficMirrorSessionId': traffic_mirror_session['TrafficMirrorSessionId'],
+        'TrafficMirrorTargetId': traffic_mirror_session['TrafficMirrorTargetId'],
+        'TrafficMirrorFilterId': traffic_mirror_session['TrafficMirrorFilterId'],
+        'NetworkInterfaceId': traffic_mirror_session['NetworkInterfaceId'],
+        'OwnerId': traffic_mirror_session['OwnerId'],
+        'PacketLength': traffic_mirror_session['PacketLength'],
+        'SessionNumber': traffic_mirror_session['SessionNumber'],
+        'VirtualNetworkId': traffic_mirror_session['VirtualNetworkId'],
+        'Description': traffic_mirror_session['Description'],
+        'Tags': traffic_mirror_session['Tags'],
+        'VpcId': traffic_mirror_session['VpcId'],
+        'ClientToken': client_token
+    }
+    ec = {'AWS.EC2.TrafficMirrorSession': data}
+    human_readable = tableToMarkdown('AWS Traffic Mirror Session', data)
+    return_outputs(human_readable, ec)
+
+
 """COMMAND BLOCK"""
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))
@@ -2939,6 +3064,24 @@ try:
 
     elif demisto.command() == 'aws-ec2-modify-instance-attribute':
         modify_instance_attribute_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-detach-internet-gateway':
+        detach_internet_gateway_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-delete-internet-gateway':
+        delete_internet_gateway_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-describe-internet-gateway':
+        describe_internet_gateway_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-delete-subnet':
+        delete_subnet_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-delete-vpc':
+        delete_vpc_command(demisto.args())
+
+    elif demisto.command() == 'aws-ec2-create-traffic-mirror-session':
+        create_traffic_mirror_session_command(demisto.args())
 
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(

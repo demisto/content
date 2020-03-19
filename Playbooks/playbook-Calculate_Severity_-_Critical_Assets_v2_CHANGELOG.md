@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Fixed an issue that caused the **Critical Assets** field to be populated partially or not at all.
 
 ## [19.10.1] - 2019-10-15

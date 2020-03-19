@@ -1,16 +1,10 @@
+category: IT Services
 commonfields:
   id: AWS - EC2
   version: -1
-name: AWS - EC2
-display: AWS - EC2
-category: IT Services
-description: Amazon Web Services Elastic Compute Cloud (EC2)
 configuration:
 - display: AWS Default Region
   name: defaultRegion
-  defaultvalue: ""
-  type: 15
-  required: false
   options:
   - us-east-1
   - us-east-2
@@ -28,61 +22,84 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
+  required: false
+  type: 15
 - display: Role Arn
   name: roleArn
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Role Session Name
   name: roleSessionName
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Role Session Duration
   name: sessionDuration
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Access Key
   name: access_key
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Secret Key
   name: secret_key
-  defaultvalue: ""
-  type: 4
   required: false
+  type: 4
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Amazon Web Services Elastic Compute Cloud (EC2)
+display: AWS - EC2
+name: AWS - EC2
 script:
-  script: ''
-  type: python
   commands:
-  - name: aws-ec2-describe-instances
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters.See documentation for details & filter options.
-    - name: instanceIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more instance IDs. Seprated by comma.
-    - name: region
+      isArray: false
+      name: instanceIds
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of your instances.
+    execution: false
+    name: aws-ec2-describe-instances
     outputs:
     - contextPath: AWS.EC2.Instances.AmiLaunchIndex
       description: The AMI launch index, which can be used to find this instance in
@@ -349,31 +366,68 @@ script:
     - contextPath: AWS.EC2.Instances.VirtualizationType
       description: The virtualization type of the instance.
       type: string
-    description: Describes one or more of your instances.
-  - name: aws-ec2-describe-images
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters.
-    - name: imageIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more image IDs, Seperated by comma
-    - name: owners
+      isArray: false
+      name: imageIds
+      required: false
+      secret: false
+    - default: false
       description: Filters the images by the owner. Specify an AWS account ID, self
         (owner is the sender of the request), or an AWS owner alias (valid values
         are amazon | aws-marketplace | microsoft ). Omitting this option returns all
         images for which you have launch permissions, regardless of ownership.
-    - name: executableUsers
+      isArray: false
+      name: owners
+      required: false
+      secret: false
+    - default: false
       description: Scopes the images by users with explicit launch permissions. Specify
         an AWS account ID, self (the sender of the request), or all (public AMIs).
-    - name: region
+      isArray: false
+      name: executableUsers
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of the images (AMIs, AKIs, and ARIs) available
+      to you. Images available to you include public images, private images that you
+      own, and private images owned by other AWS accounts but for which you have explicit
+      launch permissions.
+    execution: false
+    name: aws-ec2-describe-images
     outputs:
     - contextPath: AWS.EC2.Images.Architecture
       description: The architecture of the image.
@@ -494,24 +548,43 @@ script:
     - contextPath: AWS.EC2.Images.VirtualizationType
       description: The type of virtualization of the AMI.
       type: string
-    description: Describes one or more of the images (AMIs, AKIs, and ARIs) available
-      to you. Images available to you include public images, private images that you
-      own, and private images owned by other AWS accounts but for which you have explicit
-      launch permissions.
-  - name: aws-ec2-describe-regions
-    arguments:
-    - name: regionNames
+  - arguments:
+    - default: false
       description: The name of the region (for example, us-east-1 ).
-    - name: region
+      isArray: false
+      name: regionNames
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more regions that are currently available to you.
+    execution: false
+    name: aws-ec2-describe-regions
     outputs:
     - contextPath: AWS.Regions.Endpoint
       description: The region service endpoint.
@@ -519,25 +592,55 @@ script:
     - contextPath: AWS.Regions.RegionName
       description: The name of the region.
       type: string
-    description: Describes one or more regions that are currently available to you.
-  - name: aws-ec2-describe-addresses
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for filters list.
-    - name: publicIps
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more Elastic IP addresses.
-    - name: allocationIds
+      isArray: false
+      name: publicIps
+      required: false
+      secret: false
+    - default: false
       description: One or more allocation IDs.
-    - name: region
+      isArray: false
+      name: allocationIds
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of your Elastic IP addresses.
+    execution: false
+    name: aws-ec2-describe-addresses
     outputs:
     - contextPath: AWS.EC2.ElasticIPs.InstanceId
       description: The ID of the instance that the address is associated with (if
@@ -576,28 +679,62 @@ script:
     - contextPath: AWS.EC2.ElasticIPs.Tags.Value
       description: The value of the tag.
       type: string
-    description: Describes one or more of your Elastic IP addresses.
-  - name: aws-ec2-describe-snapshots
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for filters list.
-    - name: ownerIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: Returns the snapshots owned by the specified owner. Multiple owners
         can be specified.
-    - name: snapshotIds
+      isArray: false
+      name: ownerIds
+      required: false
+      secret: false
+    - default: false
       description: One or more snapshot IDs. Seperated by commas
-    - name: restorableByUserIds
+      isArray: false
+      name: snapshotIds
+      required: false
+      secret: false
+    - default: false
       description: One or more AWS accounts IDs that can create volumes from the snapshot.
-    - name: region
+      isArray: false
+      name: restorableByUserIds
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of the EBS snapshots available to you.
+    execution: false
+    name: aws-ec2-describe-snapshots
     outputs:
     - contextPath: AWS.EC2.Snapshots.DataEncryptionKeyId
       description: The data encryption key identifier for the snapshot.
@@ -650,25 +787,55 @@ script:
     - contextPath: AWS.EC2.Snapshots.Tags.Value
       description: The value of the tag.
       type: string
-    description: Describes one or more of the EBS snapshots available to you.
-  - name: aws-ec2-describe-launch-templates
-    arguments:
-    - name: Filters
+  - arguments:
+    - default: false
       description: One or more filters.See documentation for filters list.
-    - name: LaunchTemplateNames
+      isArray: false
+      name: Filters
+      required: false
+      secret: false
+    - default: false
       description: One or more launch template names. Sepereted by comma.
-    - name: LaunchTemplateIds
+      isArray: false
+      name: LaunchTemplateNames
+      required: false
+      secret: false
+    - default: false
       description: One or more launch template IDs. Sepereted by comma.
-    - name: region
+      isArray: false
+      name: LaunchTemplateIds
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more launch templates.
+    execution: false
+    name: aws-ec2-describe-launch-templates
     outputs:
     - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplateId
       description: The ID of the launch template.
@@ -697,23 +864,49 @@ script:
     - contextPath: AWS.EC2.LaunchTemplates.Region
       description: The aws region where the template is located
       type: string
-    description: Describes one or more launch templates.
-  - name: aws-ec2-describe-key-pairs
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for filters list.
-    - name: keyNames
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more key pair names. Sepereted by comma.
-    - name: region
+      isArray: false
+      name: keyNames
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of your key pairs.
+    execution: false
+    name: aws-ec2-describe-key-pairs
     outputs:
     - contextPath: AWS.EC2.KeyPairs.KeyFingerprint
       description: If you used CreateKeyPair to create the key pair, this is the SHA-1
@@ -727,23 +920,49 @@ script:
     - contextPath: AWS.EC2.KeyPairs.Region
       description: The aws region where the key pair is located
       type: Unknown
-    description: Describes one or more of your key pairs.
-  - name: aws-ec2-describe-volumes
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for filters list.
-    - name: volumeIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more volume IDs. Sepereted by comma.
-    - name: region
+      isArray: false
+      name: volumeIds
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes the specified EBS volumes.
+    execution: false
+    name: aws-ec2-describe-volumes
     outputs:
     - contextPath: AWS.EC2.Volumes.AvailabilityZone
       description: The Availability Zone for the volume.
@@ -800,23 +1019,49 @@ script:
     - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
-    description: Describes the specified EBS volumes.
-  - name: aws-ec2-describe-vpcs
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for filters list.
-    - name: vpcIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more VPC IDs. Sepereted by comma.
-    - name: region
+      isArray: false
+      name: vpcIds
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of your VPCs.
+    execution: false
+    name: aws-ec2-describe-vpcs
     outputs:
     - contextPath: AWS.EC2.Vpcs.CidrBlock
       description: The primary IPv4 CIDR block for the VPC.
@@ -867,23 +1112,49 @@ script:
     - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage
       description: A message about the status of the CIDR block, if applicable.
       type: string
-    description: Describes one or more of your VPCs.
-  - name: aws-ec2-describe-subnets
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters. See documetation for filters list.
-    - name: subnetIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more subnet IDs. Sepereted by comma.
-    - name: region
+      isArray: false
+      name: subnetIds
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of your subnets.
+    execution: false
+    name: aws-ec2-describe-subnets
     outputs:
     - contextPath: AWS.EC2.Subnets.AvailabilityZone
       description: The Availability Zone of the subnet.
@@ -934,26 +1205,56 @@ script:
     - contextPath: AWS.EC2.Subnets.Tags.Value
       description: The value of the tag.
       type: string
-    description: Describes one or more of your subnets.
-  - name: aws-ec2-describe-security-groups
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: One or more filters. See documetation for filters list.
-    - name: groupIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more security group IDs. Required for security groups in
         a nondefault VPC. Sepereted by comma.
-    - name: groupNames
+      isArray: false
+      name: groupIds
+      required: false
+      secret: false
+    - default: false
       description: One or more security group names. Sepereted by comma.
-    - name: region
+      isArray: false
+      name: groupNames
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of your security groups.
+    execution: false
+    name: aws-ec2-describe-security-groups
     outputs:
     - contextPath: AWS.EC2.SecurityGroups.Description
       description: A description of the security group.
@@ -1084,19 +1385,37 @@ script:
     - contextPath: AWS.EC2.SecurityGroups.Tags.Value
       description: The value of the tag.
       type: string
-    description: Describes one or more of your security groups.
-  - name: aws-ec2-allocate-address
-    arguments:
-    - name: region
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Allocates an Elastic IP address.
+    execution: true
+    name: aws-ec2-allocate-address
     outputs:
     - contextPath: AWS.EC2.ElasticIPs.PublicIp
       description: The Elastic IP address.
@@ -1112,72 +1431,138 @@ script:
     - contextPath: AWS.EC2.ElasticIPs.Region
       description: The aws region where the elastic IP is located.
       type: Unknown
-    description: Allocates an Elastic IP address.
-    execution: true
-  - name: aws-ec2-associate-address
-    arguments:
-    - name: allocationId
-      required: true
+  - arguments:
+    - default: false
       description: The allocation ID.
-    - name: instanceId
+      isArray: false
+      name: allocationId
+      required: true
+      secret: false
+    - default: false
       description: The ID of the instance. For EC2-VPC, you can specify either the
         instance ID or the network interface ID, but not both. The operation fails
         if you specify an instance ID unless exactly one network interface is attached.
-    - name: allowReassociation
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: instanceId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
       description: For a VPC in an EC2-Classic account, specify true to allow an Elastic
         IP address that is already associated with an instance or network interface
         to be reassociated with the specified instance or network interface. Otherwise,
         the operation fails. In a VPC in an EC2-VPC-only account, reassociation is
         automatic, therefore you can specify false to ensure the operation fails if
         the Elastic IP address is already associated with another resource.
-      defaultValue: "False"
-    - name: networkInterfaceId
+      isArray: false
+      name: allowReassociation
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The ID of the network interface. If the instance has more than
         one network interface, you must specify a network interface ID.
-    - name: privateIpAddress
+      isArray: false
+      name: networkInterfaceId
+      required: false
+      secret: false
+    - default: false
       description: The primary or secondary private IP address to associate with the
         Elastic IP address. If no private IP address is specified, the Elastic IP
         address is associated with the primary private IP address.
-    - name: region
+      isArray: false
+      name: privateIpAddress
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Associates an Elastic IP address with an instance or a network interface.
+    execution: true
+    name: aws-ec2-associate-address
     outputs:
     - contextPath: AWS.EC2.ElasticIPs.AssociationId
       description: The ID that represents the association of the Elastic IP address
         with an instance.
       type: string
-    description: Associates an Elastic IP address with an instance or a network interface.
-    execution: true
-  - name: aws-ec2-create-snapshot
-    arguments:
-    - name: volumeId
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the EBS volume.
-    - name: description
+      isArray: false
+      name: volumeId
+      required: true
+      secret: false
+    - default: false
       description: A description for the snapshot.
-    - name: tags
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
       description: The tags to apply to the snapshot during creation.
-    - name: region
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You
+      can use snapshots for backups, to make copies of EBS volumes, and to save data
+      before shutting down an instance.
+    execution: true
+    name: aws-ec2-create-snapshot
     outputs:
     - contextPath: AWS.EC2.Snapshots.DataEncryptionKeyId
       description: The data encryption key identifier for the snapshot.
@@ -1227,56 +1612,106 @@ script:
     - contextPath: AWS.EC2.Snapshots.Tags.Value
       description: The value of the tag.
       type: string
-    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You
-      can use snapshots for backups, to make copies of EBS volumes, and to save data
-      before shutting down an instance.
-    execution: true
-  - name: aws-ec2-delete-snapshot
-    arguments:
-    - name: snapshotId
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the EBS snapshot.
-    - name: region
+      isArray: false
+      name: snapshotId
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Deletes the specified snapshot.
     execution: true
-  - name: aws-ec2-create-image
-    arguments:
-    - name: name
-      required: true
+    name: aws-ec2-delete-snapshot
+  - arguments:
+    - default: false
       description: A name for the new image.
-    - name: instanceId
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The ID of the instance.
-    - name: description
+      isArray: false
+      name: instanceId
+      required: true
+      secret: false
+    - default: false
       description: A description for the new image.
-    - name: noReboot
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: By default, Amazon EC2 attempts to shut down and reboot the instance
         before creating the image. If the noReboot option is set, Amazon EC2 wont
         shut down the instance before creating the image. When this option is used,
         file system integrity on the created image cant be guaranteed.
-    - name: region
+      isArray: false
+      name: noReboot
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
+      that is either running or stopped.
+    execution: true
+    name: aws-ec2-create-image
     outputs:
     - contextPath: AWS.EC2.Images.ImageId
       description: The ID of the new AMI.
@@ -1290,48 +1725,101 @@ script:
     - contextPath: AWS.EC2.Images.Region
       description: The aws region where the image is located
       type: string
-    description: Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance
-      that is either running or stopped.
-    execution: true
-  - name: aws-ec2-deregister-image
-    arguments:
-    - name: imageId
+  - arguments:
+    - default: false
       description: The ID of the AMI.
-    - name: region
+      isArray: false
+      name: imageId
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Deregisters the specified AMI.
     execution: true
-  - name: aws-ec2-modify-volume
-    arguments:
-    - name: volumeId
-      required: true
+    name: aws-ec2-deregister-image
+  - arguments:
+    - default: false
       description: The ID of the volume.
-    - name: size
+      isArray: false
+      name: volumeId
+      required: true
+      secret: false
+    - default: false
       description: Target size in GiB of the volume to be modified.
-    - name: volumeType
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
       description: Target EBS volume type of the volume to be modified  The API does
         not support modifications for volume type standard . You also cannot change
         the type of a volume to standard .
-    - name: iops
+      isArray: false
+      name: volumeType
+      required: false
+      secret: false
+    - default: false
       description: Target IOPS rate of the volume to be modified.
-    - name: region
+      isArray: false
+      name: iops
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: You can modify several parameters of an existing EBS volume, including
+      volume size, volume type, and IOPS capacity.
+    execution: true
+    name: aws-ec2-modify-volume
     outputs:
     - contextPath: AWS.EC2.Volumes.Modification.VolumeId
       description: ID of the volume being modified.
@@ -1370,162 +1858,335 @@ script:
     - contextPath: AWS.EC2.Volumes.Modification.EndTime
       description: Modification completion or failure time.
       type: date
-    description: You can modify several parameters of an existing EBS volume, including
-      volume size, volume type, and IOPS capacity.
-    execution: true
-  - name: aws-ec2-create-tags
-    arguments:
-    - name: resources
+  - arguments:
+    - default: false
       description: The IDs of one or more resources to tag. For example, ami-1a2b3c4d.
-    - name: tags
+      isArray: false
+      name: resources
+      required: false
+      secret: false
+    - default: false
       description: One or more tags.
-    - name: region
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Adds or overwrites one or more tags for the specified Amazon EC2
       resource or resources.
     execution: true
-  - name: aws-ec2-disassociate-address
-    arguments:
-    - name: associationId
-      required: true
+    name: aws-ec2-create-tags
+  - arguments:
+    - default: false
       description: The association ID.
-    - name: region
+      isArray: false
+      name: associationId
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Disassociates an Elastic IP address from the instance or network
       interface its associated with.
     execution: true
-  - name: aws-ec2-release-address
-    arguments:
-    - name: allocationId
-      required: true
+    name: aws-ec2-disassociate-address
+  - arguments:
+    - default: false
       description: The allocation ID.
-    - name: region
+      isArray: false
+      name: allocationId
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Releases the specified Elastic IP address.
     execution: true
-  - name: aws-ec2-start-instances
-    arguments:
-    - name: instanceIds
-      required: true
+    name: aws-ec2-release-address
+  - arguments:
+    - default: false
       description: One or more instance IDs. Sepereted by comma.
-    - name: region
+      isArray: false
+      name: instanceIds
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Starts an Amazon EBS-backed instance that you have previously stopped.
     execution: true
-  - name: aws-ec2-stop-instances
-    arguments:
-    - name: instanceIds
-      required: true
+    name: aws-ec2-start-instances
+  - arguments:
+    - default: false
       description: One or more instance IDs.
-    - name: region
+      isArray: false
+      name: instanceIds
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Stops an Amazon EBS-backed instance.
     execution: true
-  - name: aws-ec2-terminate-instances
-    arguments:
-    - name: instanceIds
-      required: true
+    name: aws-ec2-stop-instances
+  - arguments:
+    - default: false
       description: One or more instance IDs.
-    - name: region
+      isArray: false
+      name: instanceIds
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Shuts down one or more instances. This operation is idempotent; if
       you terminate an instance more than once, each call succeeds.
     execution: true
-  - name: aws-ec2-create-volume
-    arguments:
-    - name: availabilityZone
-      required: true
+    name: aws-ec2-terminate-instances
+  - arguments:
+    - default: false
       description: The Availability Zone in which to create the volume. Use DescribeAvailabilityZones
         to list the Availability Zones that are currently available to you.
-    - name: encrypted
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: availabilityZone
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Specifies whether the volume should be encrypted.
-    - name: iops
+      isArray: false
+      name: encrypted
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The number of I/O operations per second (IOPS) to provision for
         the volume, with a maximum ratio of 50 IOPS/GiB. Range is 100 to 32000 IOPS
         for volumes in most regions.
-    - name: kmsKeyId
+      isArray: false
+      name: iops
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the AWS Key Management Service (AWS KMS) customer
         master key (CMK) to use when creating the encrypted volume. This parameter
         is only required if you want to use a non-default CMK; if this parameter is
         not specified, the default CMK for EBS is used. If a KmsKeyId is specified,
         the Encrypted flag must also be set.
-    - name: size
+      isArray: false
+      name: kmsKeyId
+      required: false
+      secret: false
+    - default: false
       description: The size of the volume, in GiBs.
-    - name: snapshotId
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
       description: The snapshot from which to create the volume.
-    - name: volumeType
-      auto: PREDEFINED
+      isArray: false
+      name: snapshotId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The volume type.
+      isArray: false
+      name: volumeType
       predefined:
       - standard
       - io1
       - gp2
       - sc1
       - st1
-      description: The volume type.
-    - name: tags
+      required: false
+      secret: false
+    - default: false
       description: One or more tags.Example key=Name,value=test;key=Owner,value=Bob
-    - name: region
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an EBS volume that can be attached to an instance in the
+      same Availability Zone.
+    execution: true
+    name: aws-ec2-create-volume
     outputs:
     - contextPath: AWS.EC2.Volumes.AvailabilityZone
       description: The Availability Zone for the volume.
@@ -1568,76 +2229,57 @@ script:
     - contextPath: AWS.EC2.Volumes.Tags.Value
       description: The value of the tag.
       type: string
-    description: Creates an EBS volume that can be attached to an instance in the
-      same Availability Zone.
-    execution: true
-  - name: aws-ec2-attach-volume
-    arguments:
-    - name: device
-      required: true
+  - arguments:
+    - default: false
       description: The device name (for example, /dev/sdh or xvdh).
-    - name: instanceId
+      isArray: false
+      name: device
       required: true
+      secret: false
+    - default: false
       description: The ID of the instance.
-    - name: volumeId
+      isArray: false
+      name: instanceId
       required: true
+      secret: false
+    - default: false
       description: The ID of the EBS volume. The volume and instance must be within
         the same Availability Zone.
-    - name: region
+      isArray: false
+      name: volumeId
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    outputs:
-    - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
-      description: The time stamp when the attachment initiated.
-      type: date
-    - contextPath: AWS.EC2.Volumes.Attachments.Device
-      description: The device name.
-      type: string
-    - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
-      description: The ID of the instance.
-      type: string
-    - contextPath: AWS.EC2.Volumes.Attachments.State
-      description: The attachment state of the volume.
-      type: string
-    - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
-      description: The ID of the volume.
-      type: string
-    - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
-      description: Indicates whether the EBS volume is deleted on instance termination.
-      type: boolean
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Attaches an EBS volume to a running or stopped instance and exposes
       it to the instance with the specified device name.
     execution: true
-  - name: aws-ec2-detach-volume
-    arguments:
-    - name: volumeId
-      required: true
-      description: The ID of the volume.
-    - name: force
-      description: Forces detachment if the previous detachment attempt did not occur
-        cleanly. This option can lead to data loss or a corrupted file system. Use
-        this option only as a last resort to detach a volume from a failed instance.
-    - name: device
-      description: The device name (for example, /dev/sdh or xvdh).
-    - name: instanceId
-      description: The ID of the instance.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: An identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+    name: aws-ec2-attach-volume
     outputs:
     - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
       description: The time stamp when the attachment initiated.
@@ -1657,127 +2299,340 @@ script:
     - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
       description: Indicates whether the EBS volume is deleted on instance termination.
       type: boolean
-    description: Detaches an EBS volume from an instance.
-    execution: true
-  - name: aws-ec2-delete-volume
-    arguments:
-    - name: volumeId
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the volume.
-    - name: region
+      isArray: false
+      name: volumeId
+      required: true
+      secret: false
+    - default: false
+      description: Forces detachment if the previous detachment attempt did not occur
+        cleanly. This option can lead to data loss or a corrupted file system. Use
+        this option only as a last resort to detach a volume from a failed instance.
+      isArray: false
+      name: force
+      required: false
+      secret: false
+    - default: false
+      description: The device name (for example, /dev/sdh or xvdh).
+      isArray: false
+      name: device
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the instance.
+      isArray: false
+      name: instanceId
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Detaches an EBS volume from an instance.
+    execution: true
+    name: aws-ec2-detach-volume
+    outputs:
+    - contextPath: AWS.EC2.Volumes.Attachments.AttachTime
+      description: The time stamp when the attachment initiated.
+      type: date
+    - contextPath: AWS.EC2.Volumes.Attachments.Device
+      description: The device name.
+      type: string
+    - contextPath: AWS.EC2.Volumes.Attachments.InstanceId
+      description: The ID of the instance.
+      type: string
+    - contextPath: AWS.EC2.Volumes.Attachments.State
+      description: The attachment state of the volume.
+      type: string
+    - contextPath: AWS.EC2.Volumes.Attachments.VolumeId
+      description: The ID of the volume.
+      type: string
+    - contextPath: AWS.EC2.Volumes.Attachments.DeleteOnTermination
+      description: Indicates whether the EBS volume is deleted on instance termination.
+      type: boolean
+  - arguments:
+    - default: false
+      description: The ID of the volume.
+      isArray: false
+      name: volumeId
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Deletes the specified EBS volume. The volume must be in the available
       state (not attached to an instance).
     execution: true
-  - name: aws-ec2-run-instances
-    arguments:
-    - name: count
-      required: true
+    name: aws-ec2-delete-volume
+  - arguments:
+    - default: false
+      defaultValue: '1'
       description: The number of instances to launch. must be grater then 0.
-      defaultValue: "1"
-    - name: imageId
+      isArray: false
+      name: count
+      required: true
+      secret: false
+    - default: false
       description: The ID of the AMI, which you can get by calling DescribeImages
         . An AMI is required to launch an instance and must be specified here or in
         a launch template.
-    - name: instanceType
+      isArray: false
+      name: imageId
+      required: false
+      secret: false
+    - default: false
       description: 'The instance type. for example: t2.large'
-    - name: securityGroupIds
+      isArray: false
+      name: instanceType
+      required: false
+      secret: false
+    - default: false
       description: One or more security group IDs. Sepereted by comma.
-    - name: securityGroups
+      isArray: false
+      name: securityGroupIds
+      required: false
+      secret: false
+    - default: false
       description: One or more security group names. For a nondefault VPC, you must
         use security group IDs instead.
-    - name: subnetId
+      isArray: false
+      name: securityGroups
+      required: false
+      secret: false
+    - default: false
       description: The ID of the subnet to launch the instance into.
-    - name: userData
+      isArray: false
+      name: subnetId
+      required: false
+      secret: false
+    - default: false
       description: The user data to make available to the instance.This value will
         be base64 encoded automatically. Do not base64 encode this value prior to
         performing the operation.
-    - name: disableApiTermination
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: userData
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: If you set this parameter to true , you cant terminate the instance
         using the Amazon EC2 console, CLI, or API.
-    - name: iamInstanceProfileArn
+      isArray: false
+      name: disableApiTermination
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the instance profile. Both iamInstanceProfileArn
         and iamInstanceProfile are required if you would like to associate an instance
         profile.
-    - name: iamInstanceProfileName
+      isArray: false
+      name: iamInstanceProfileArn
+      required: false
+      secret: false
+    - default: false
       description: The name of the instance profile. Both iamInstanceProfileArn and
         iamInstanceProfile are required if you would like to associate an instance
         profile.
-    - name: keyName
+      isArray: false
+      name: iamInstanceProfileName
+      required: false
+      secret: false
+    - default: false
       description: The name of the key pair. Warning - If you do not specify a key
         pair, you cant connect to the instance unless you choose an AMI that is configured
         to allow users another way to log in.
-    - name: ebsOptimized
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: keyName
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the instance is optimized for Amazon EBS I/O.
-    - name: deviceName
+      isArray: false
+      name: ebsOptimized
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The device name (for example, /dev/sdh or xvdh).
-    - name: ebsVolumeSize
+      isArray: false
+      name: deviceName
+      required: false
+      secret: false
+    - default: false
       description: The size of the volume, in GiB.
-    - name: ebsVolumeType
-      auto: PREDEFINED
+      isArray: false
+      name: ebsVolumeSize
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The volume type.
+      isArray: false
+      name: ebsVolumeType
       predefined:
       - gp2
       - io1
       - st1
       - sc1
       - standard
-      description: The volume type.
-    - name: ebsIops
+      required: false
+      secret: false
+    - default: false
       description: The number of I/O operations per second (IOPS) that the volume
         supports.
-    - name: ebsDeleteOnTermination
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: ebsIops
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the EBS volume is deleted on instance termination.
-    - name: ebsKmsKeyId
+      isArray: false
+      name: ebsDeleteOnTermination
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed
         CMK under which the EBS volume is encrypted.
-    - name: ebsSnapshotId
+      isArray: false
+      name: ebsKmsKeyId
+      required: false
+      secret: false
+    - default: false
       description: The ID of the snapshot.
-    - name: ebsEncrypted
+      isArray: false
+      name: ebsSnapshotId
+      required: false
+      secret: false
+    - default: false
       description: Indicates whether the EBS volume is encrypted.
-    - name: launchTemplateId
+      isArray: false
+      name: ebsEncrypted
+      required: false
+      secret: false
+    - default: false
       description: The ID of the launch template. The launch template to use to launch
         the instances. Any parameters that you specify in RunInstances override the
         same parameters in the launch template. You can specify either the name or
         ID of a launch template, but not both.
-    - name: launchTemplateName
+      isArray: false
+      name: launchTemplateId
+      required: false
+      secret: false
+    - default: false
       description: The name of the launch template. The launch template to use to
         launch the instances. Any parameters that you specify in RunInstances override
         the same parameters in the launch template. You can specify either the name
         or ID of a launch template, but not both.
-    - name: launchTemplateVersion
+      isArray: false
+      name: launchTemplateName
+      required: false
+      secret: false
+    - default: false
       description: The version number of the launch template.
-    - name: tags
+      isArray: false
+      name: launchTemplateVersion
+      required: false
+      secret: false
+    - default: false
       description: The tags to apply to the instance.
-    - name: region
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Launches the specified number of instances using an AMI for which
+      you have permissions. You can create a launch template , which is a resource
+      that contains the parameters to launch an instance. When you launch an instance
+      using RunInstances , you can specify the launch template instead of specifying
+      the launch parameters. An instance is ready for you to use when its in the running
+      state. You can check the state of your instance using DescribeInstances.
+    execution: true
+    name: aws-ec2-run-instances
     outputs:
     - contextPath: AWS.EC2.Instances.AmiLaunchIndex
       description: The AMI launch index, which can be used to find this instance in
@@ -2044,184 +2899,428 @@ script:
     - contextPath: AWS.EC2.Instances.VirtualizationType
       description: The virtualization type of the instance.
       type: string
-    description: Launches the specified number of instances using an AMI for which
-      you have permissions. You can create a launch template , which is a resource
-      that contains the parameters to launch an instance. When you launch an instance
-      using RunInstances , you can specify the launch template instead of specifying
-      the launch parameters. An instance is ready for you to use when its in the running
-      state. You can check the state of your instance using DescribeInstances.
-    execution: true
-  - name: aws-ec2-waiter-instance-running
-    arguments:
-    - name: filter
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for details & filter options.
-    - name: instanceIds
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
       description: One or more instance IDs. Sepreted by comma.
-    - name: waiterDelay
+      isArray: false
+      name: instanceIds
+      required: false
+      secret: false
+    - default: false
       description: The amount of time in seconds to wait between attempts. Default
         15
-    - name: waiterMaxAttempts
+      isArray: false
+      name: waiterDelay
+      required: false
+      secret: false
+    - default: false
       description: The maximum number of attempts to be made. Default 40
-    - name: region
+      isArray: false
+      name: waiterMaxAttempts
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: A waiter function that runs every 15  seconds until a successful
       state is reached.
-  - name: aws-ec2-waiter-instance-status-ok
-    arguments:
-    - name: filter
+    execution: false
+    name: aws-ec2-waiter-instance-running
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for details & filter options.
-    - name: instanceIds
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
       description: One or more instance IDs. Seprated by comma.
-    - name: waiterDelay
+      isArray: false
+      name: instanceIds
+      required: false
+      secret: false
+    - default: false
       description: The amount of time in seconds to wait between attempts. Default
         15
-    - name: waiterMaxAttempts
+      isArray: false
+      name: waiterDelay
+      required: false
+      secret: false
+    - default: false
       description: The maximum number of attempts to be made. Default 40.
-    - name: region
+      isArray: false
+      name: waiterMaxAttempts
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: A waiter function that runs every 15  seconds until a successful
       state is reached
-  - name: aws-ec2-waiter-instance-stopped
-    arguments:
-    - name: filter
+    execution: false
+    name: aws-ec2-waiter-instance-status-ok
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for details & filter options.
-    - name: instanceIds
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
       description: One or more instance IDs. Seprated by comma.
-    - name: waiterDelay
+      isArray: false
+      name: instanceIds
+      required: false
+      secret: false
+    - default: false
       description: The amount of time in seconds to wait between attempts. Default
         15
-    - name: waiterMaxAttempts
+      isArray: false
+      name: waiterDelay
+      required: false
+      secret: false
+    - default: false
       description: The maximum number of attempts to be made. Default 40
-    - name: region
+      isArray: false
+      name: waiterMaxAttempts
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: A waiter function that runs every 15  seconds until a successful
       state is reached
-  - name: aws-ec2-waiter-instance-terminated
-    arguments:
-    - name: filter
+    execution: false
+    name: aws-ec2-waiter-instance-stopped
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for details & filter options.
-    - name: instanceIds
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
       description: One or more instance IDs. Seprated by comma.
-    - name: waiterDelay
+      isArray: false
+      name: instanceIds
+      required: false
+      secret: false
+    - default: false
       description: The amount of time in seconds to wait between attempts. Default
         15
-    - name: waiterMaxAttempts
+      isArray: false
+      name: waiterDelay
+      required: false
+      secret: false
+    - default: false
       description: The maximum number of attempts to be made. Default 40
-    - name: region
+      isArray: false
+      name: waiterMaxAttempts
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: A waiter function that runs every 15  seconds until a successful
       state is reached
-  - name: aws-ec2-waiter-image-available
-    arguments:
-    - name: filters
+    execution: false
+    name: aws-ec2-waiter-instance-terminated
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for available filters.
-    - name: imageIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more image IDs. Sperated by comma.
-    - name: owners
+      isArray: false
+      name: imageIds
+      required: false
+      secret: false
+    - default: false
       description: Filters the images by the owner. Specify an AWS account ID, self
         (owner is the sender of the request), or an AWS owner alias (valid values
         are amazon | aws-marketplace | microsoft ). Omitting this option returns all
         images for which you have launch permissions, regardless of ownership.
-    - name: executableUsers
+      isArray: false
+      name: owners
+      required: false
+      secret: false
+    - default: false
       description: Scopes the images by users with explicit launch permissions. Specify
         an AWS account ID, self (the sender of the request), or all (public AMIs).
-    - name: waiterDelay
+      isArray: false
+      name: executableUsers
+      required: false
+      secret: false
+    - default: false
       description: The amount of time in seconds to wait between attempts. Default
         15
-    - name: waiterMaxAttempts
+      isArray: false
+      name: waiterDelay
+      required: false
+      secret: false
+    - default: false
       description: The maximum number of attempts to be made. Default 40
-    - name: region
+      isArray: false
+      name: waiterMaxAttempts
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: A waiter function that waits until image is avilable
-  - name: aws-ec2-waiter-snapshot_completed
-    arguments:
-    - name: filters
+    execution: false
+    name: aws-ec2-waiter-image-available
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for available filters.
-    - name: ownerIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: Returns the snapshots owned by the specified owner. Multiple owners
         can be specified. Sperated by comma.
-    - name: snapshotIds
+      isArray: false
+      name: ownerIds
+      required: false
+      secret: false
+    - default: false
       description: One or more snapshot IDs. Sperated by comma.
-    - name: restorableByUserIds
+      isArray: false
+      name: snapshotIds
+      required: false
+      secret: false
+    - default: false
       description: One or more AWS accounts IDs that can create volumes from the snapshot.
-    - name: waiterDelay
+      isArray: false
+      name: restorableByUserIds
+      required: false
+      secret: false
+    - default: false
       description: The amount of time in seconds to wait between attempts. Default
         15
-    - name: waiterMaxAttempts
+      isArray: false
+      name: waiterDelay
+      required: false
+      secret: false
+    - default: false
       description: The maximum number of attempts to be made. Default 40
-    - name: region
+      isArray: false
+      name: waiterMaxAttempts
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: A waiter function that waits until the snapshot is complate
-  - name: aws-ec2-get-latest-ami
-    arguments:
-    - name: filters
+    execution: false
+    name: aws-ec2-waiter-snapshot_completed
+  - arguments:
+    - default: false
       description: One or more filters. See documentation for available filters.
-    - name: owners
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: Filters the images by the owner. Specify an AWS account ID, self
         (owner is the sender of the request), or an AWS owner alias (valid values
         are amazon | aws-marketplace | microsoft ). Omitting this option returns all
         images for which you have launch permissions, regardless of ownership.
-    - name: executableUsers
+      isArray: false
+      name: owners
+      required: false
+      secret: false
+    - default: false
       description: Scopes the images by users with explicit launch permissions. Specify
         an AWS account ID, self (the sender of the request), or all (public AMIs).
-    - name: region
+      isArray: false
+      name: executableUsers
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Get The latest AMI
+    execution: false
+    name: aws-ec2-get-latest-ami
     outputs:
     - contextPath: AWS.EC2.Images.Architecture
       description: The architecture of the image.
@@ -2342,28 +3441,55 @@ script:
     - contextPath: AWS.EC2.Images.VirtualizationType
       description: The type of virtualization of the AMI.
       type: string
-    description: Get The latest AMI
-  - name: aws-ec2-create-security-group
-    arguments:
-    - name: groupName
-      required: true
+  - arguments:
+    - default: false
       description: The name of the security group.
-    - name: description
+      isArray: false
+      name: groupName
       required: true
+      secret: false
+    - default: false
       description: A description for the security group.
-    - name: vpcId
+      isArray: false
+      name: description
       required: true
+      secret: false
+    - default: false
       description: The ID of the VPC.
-    - name: region
+      isArray: false
+      name: vpcId
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a security group.
+    execution: true
+    name: aws-ec2-create-security-group
     outputs:
     - contextPath: AWS.EC2.SecurityGroups.GroupName
       description: The name of the security group.
@@ -2377,183 +3503,395 @@ script:
     - contextPath: AWS.EC2.SecurityGroups.GroupId
       description: The ID of the security group.
       type: string
-    description: Creates a security group.
-    execution: true
-  - name: aws-ec2-delete-security-group
-    arguments:
-    - name: groupId
+  - arguments:
+    - default: false
       description: The ID of the security group. Required for a nondefault VPC.
-    - name: groupName
+      isArray: false
+      name: groupId
+      required: false
+      secret: false
+    - default: false
       description: default VPC only.  The name of the security group. You can specify
         either the security group name or the security group ID.
-    - name: region
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Deletes a security group.
     execution: true
-  - name: aws-ec2-authorize-security-group-ingress-rule
-    arguments:
-    - name: groupId
-      required: true
+    name: aws-ec2-delete-security-group
+  - arguments:
+    - default: false
       description: The ID of the security group. You must specify either the security
         group ID or the security group name in the request. For security groups in
         a nondefault VPC, you must specify the security group ID.
-    - name: fromPort
+      isArray: false
+      name: groupId
+      required: true
+      secret: false
+    - default: false
       description: The start of port range for the TCP and UDP protocols.
-    - name: toPort
+      isArray: false
+      name: fromPort
+      required: false
+      secret: false
+    - default: false
       description: The end of port range for the TCP and UDP protocols.
-    - name: cidrIp
+      isArray: false
+      name: toPort
+      required: false
+      secret: false
+    - default: false
       description: The CIDR IPv4 address range.
-    - name: ipProtocol
+      isArray: false
+      name: cidrIp
+      required: false
+      secret: false
+    - default: false
       description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify
         all protocols.
-    - name: sourceSecurityGroupName
+      isArray: false
+      name: ipProtocol
+      required: false
+      secret: false
+    - default: false
       description: The name of the source security group. The source security group
         must be in the same VPC.
-    - name: region
+      isArray: false
+      name: sourceSecurityGroupName
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: IpPermissionsfromPort
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
         type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify
         all ICMP/ICMPv6 types, you must specify all codes.
-    - name: IpPermissionsIpProtocol
+      isArray: false
+      name: IpPermissionsfromPort
+      required: false
+      secret: false
+    - default: false
       description: The IP protocol name (tcp, udp, icmp, icmpv6) or number.
-    - name: IpPermissionsToPort
+      isArray: false
+      name: IpPermissionsIpProtocol
+      required: false
+      secret: false
+    - default: false
       description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
         code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6
         types, you must specify all codes.
-    - name: IpRangesCidrIp
+      isArray: false
+      name: IpPermissionsToPort
+      required: false
+      secret: false
+    - default: false
       description: The IPv4 CIDR range. You can either specify a CIDR range or a source
         security group, not both. To specify a single IPv4 address, use the /32 prefix
         length.
-    - name: IpRangesDesc
+      isArray: false
+      name: IpRangesCidrIp
+      required: false
+      secret: false
+    - default: false
       description: |-
         A description for the security group rule that references this IPv4 address range.
 
         Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
-    - name: Ipv6RangesCidrIp
+      isArray: false
+      name: IpRangesDesc
+      required: false
+      secret: false
+    - default: false
       description: The IPv6 CIDR range. You can either specify a CIDR range or a source
         security group, not both. To specify a single IPv6 address, use the /128 prefix
         length.
-    - name: Ipv6RangesDesc
+      isArray: false
+      name: Ipv6RangesCidrIp
+      required: false
+      secret: false
+    - default: false
       description: |-
         A description for the security group rule that references this IPv6 address range.
 
         Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
-    - name: PrefixListId
+      isArray: false
+      name: Ipv6RangesDesc
+      required: false
+      secret: false
+    - default: false
       description: The ID of the prefix.
-    - name: PrefixListIdDesc
+      isArray: false
+      name: PrefixListId
+      required: false
+      secret: false
+    - default: false
       description: |-
         A description for the security group rule that references this prefix list ID.
 
         Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
-    - name: UserIdGroupPairsDescription
+      isArray: false
+      name: PrefixListIdDesc
+      required: false
+      secret: false
+    - default: false
       description: |-
         A description for the security group rule that references this user ID group pair.
 
         Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
-    - name: UserIdGroupPairsGroupId
+      isArray: false
+      name: UserIdGroupPairsDescription
+      required: false
+      secret: false
+    - default: false
       description: The ID of the security group.
-    - name: UserIdGroupPairsGroupName
+      isArray: false
+      name: UserIdGroupPairsGroupId
+      required: false
+      secret: false
+    - default: false
       description: The name of the security group. In a request, use this parameter
         for a security group in EC2-Classic or a default VPC only. For a security
         group in a nondefault VPC, use the security group ID.
-    - name: UserIdGroupPairsPeeringStatus
+      isArray: false
+      name: UserIdGroupPairsGroupName
+      required: false
+      secret: false
+    - default: false
       description: The status of a VPC peering connection, if applicable.
-    - name: UserIdGroupPairsUserId
+      isArray: false
+      name: UserIdGroupPairsPeeringStatus
+      required: false
+      secret: false
+    - default: false
       description: The ID of an AWS account.
-    - name: UserIdGroupPairsVpcId
+      isArray: false
+      name: UserIdGroupPairsUserId
+      required: false
+      secret: false
+    - default: false
       description: The ID of the VPC for the referenced security group, if applicable.
-    - name: UserIdGroupPairsVpcPeeringConnectionId
+      isArray: false
+      name: UserIdGroupPairsVpcId
+      required: false
+      secret: false
+    - default: false
       description: The ID of the VPC peering connection, if applicable.
+      isArray: false
+      name: UserIdGroupPairsVpcPeeringConnectionId
+      required: false
+      secret: false
+    deprecated: false
     description: Adds ingress rule to a security group.
     execution: true
-  - name: aws-ec2-revoke-security-group-ingress-rule
-    arguments:
-    - name: groupId
-      required: true
+    name: aws-ec2-authorize-security-group-ingress-rule
+  - arguments:
+    - default: false
       description: The ID of the security group.
-    - name: fromPort
+      isArray: false
+      name: groupId
+      required: true
+      secret: false
+    - default: false
       description: The start of port range for the TCP and UDP protocols.
-    - name: toPort
+      isArray: false
+      name: fromPort
+      required: false
+      secret: false
+    - default: false
       description: The end of port range for the TCP and UDP protocols.
-    - name: cidrIp
+      isArray: false
+      name: toPort
+      required: false
+      secret: false
+    - default: false
       description: The CIDR IPv4 address range.
-    - name: ipProtocol
+      isArray: false
+      name: cidrIp
+      required: false
+      secret: false
+    - default: false
       description: The IP protocol name (tcp , udp , icmp) or number.  Use -1 to specify
         all protocols.
-    - name: sourceSecurityGroupName
+      isArray: false
+      name: ipProtocol
+      required: false
+      secret: false
+    - default: false
       description: The name of the source security group. The source security group
         must be in the same VPC.
-    - name: region
+      isArray: false
+      name: sourceSecurityGroupName
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the
       values that you specify (for example, ports) must match the existing rule's
       values exactly.
     execution: true
-  - name: aws-ec2-copy-image
-    arguments:
-    - name: name
-      required: true
+    name: aws-ec2-revoke-security-group-ingress-rule
+  - arguments:
+    - default: false
       description: The name of the new AMI in the destination region.
-    - name: sourceImageId
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The ID of the AMI to copy.
-    - name: sourceRegion
+      isArray: false
+      name: sourceImageId
       required: true
+      secret: false
+    - default: false
       description: The name of the region that contains the AMI to copy.
-    - name: description
+      isArray: false
+      name: sourceRegion
+      required: true
+      secret: false
+    - default: false
       description: A description for the new AMI in the destination region.
-    - name: encrypted
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Specifies whether the destination snapshots of the copied image
         should be encrypted. The default CMK for EBS is used unless a non-default
         AWS Key Management Service (AWS KMS) CMK is specified with KmsKeyId .
-    - name: kmsKeyId
+      isArray: false
+      name: encrypted
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the AWS Key Management Service (AWS KMS) customer
         master key (CMK) to use when creating the encrypted volume. This parameter
         is only required if you want to use a non-default CMK; if this parameter is
         not specified, the default CMK for EBS is used. If a KmsKeyId is specified,
         the Encrypted flag must also be set.
-    - name: clientToken
+      isArray: false
+      name: kmsKeyId
+      required: false
+      secret: false
+    - default: false
       description: nique, case-sensitive identifier you provide to ensure idempotency
         of the request.
-    - name: region
+      isArray: false
+      name: clientToken
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates the copy of an AMI from the specified source region to
+      the current region.
+    execution: true
+    name: aws-ec2-copy-image
     outputs:
     - contextPath: AWS.EC2.Images.ImageId
       description: The ID of the new AMI.
@@ -2561,41 +3899,77 @@ script:
     - contextPath: AWS.EC2.Images.Region
       description: The Region where the image is located.
       type: string
-    description: Initiates the copy of an AMI from the specified source region to
-      the current region.
-    execution: true
-  - name: aws-ec2-copy-snapshot
-    arguments:
-    - name: sourceSnapshotId
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the EBS snapshot to copy.
-    - name: sourceRegion
+      isArray: false
+      name: sourceSnapshotId
       required: true
+      secret: false
+    - default: false
       description: The ID of the region that contains the snapshot to be copied.
-    - name: description
+      isArray: false
+      name: sourceRegion
+      required: true
+      secret: false
+    - default: false
       description: A description for the EBS snapshot.
-    - name: encrypted
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
       description: ' Specifies whether the destination snapshot should be encrypted.
         You can encrypt a copy of an unencrypted snapshot using this flag, but you
         cannot use it to create an unencrypted copy from an encrypted snapshot. Your
         default CMK for EBS is used unless a non-default AWS Key Management Service
         (AWS KMS) CMK is specified with KmsKeyId .'
-    - name: kmsKeyId
+      isArray: false
+      name: encrypted
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the AWS Key Management Service (AWS KMS) customer
         master key (CMK) to use when creating the encrypted volume. This parameter
         is only required if you want to use a non-default CMK; if this parameter is
         not specified, the default CMK for EBS is used. If a KmsKeyId is specified,
         the Encrypted flag must also be set.
-    - name: region
+      isArray: false
+      name: kmsKeyId
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Copies a point-in-time snapshot of an EBS volume and stores it in
+      Amazon S3. You can copy the snapshot within the same region or from one region
+      to another.
+    execution: true
+    name: aws-ec2-copy-snapshot
     outputs:
     - contextPath: AWS.EC2.Snapshots.SnapshotId
       description: The ID of the new snapshot.
@@ -2603,32 +3977,59 @@ script:
     - contextPath: AWS.EC2.Snapshots.Region
       description: The Region where the snapshot is located.
       type: string
-    description: Copies a point-in-time snapshot of an EBS volume and stores it in
-      Amazon S3. You can copy the snapshot within the same region or from one region
-      to another.
-    execution: true
-  - name: aws-ec2-describe-reserved-instances
-    arguments:
-    - name: filters
+  - arguments:
+    - default: false
       description: ne or more filters.
-    - name: reservedInstancesIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more Reserved Instance IDs. Separated by comma.
-    - name: offeringClass
-      auto: PREDEFINED
+      isArray: false
+      name: reservedInstancesIds
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Describes whether the Reserved Instance is Standard or Convertible.
+      isArray: false
+      name: offeringClass
       predefined:
       - standard
       - convertible
-      description: Describes whether the Reserved Instance is Standard or Convertible.
-    - name: region
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of the Reserved Instances that you purchased.
+    execution: false
+    name: aws-ec2-describe-reserved-instances
     outputs:
     - contextPath: AWS.EC2.ReservedInstances.AvailabilityZone
       description: The Availability Zone in which the Reserved Instance can be used.
@@ -2695,47 +4096,88 @@ script:
     - contextPath: AWS.EC2.ReservedInstances.Region
       description: The AWS region where the reserved instance is located.
       type: string
-    description: Describes one or more of the Reserved Instances that you purchased.
-  - name: aws-ec2-monitor-instances
-    arguments:
-    - name: instancesIds
-      required: true
+  - arguments:
+    - default: false
       description: One or more instance IDs. Separated by comma.
-    - name: region
+      isArray: false
+      name: instancesIds
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    outputs:
-    - contextPath: AWS.EC2.Instances.InstanceId
-      description: The ID of the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
-        monitoring is enabled.
-      type: string
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Enables detailed monitoring for a running instance.
     execution: true
-  - name: aws-ec2-unmonitor-instances
-    arguments:
-    - name: instancesIds
-      required: true
+    name: aws-ec2-monitor-instances
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled. Otherwise, basic
+        monitoring is enabled.
+      type: string
+  - arguments:
+    - default: false
       description: One or more instance IDs. Separated by comma.
-    - name: region
+      isArray: false
+      name: instancesIds
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Disables detailed monitoring for a running instance.
+    execution: true
+    name: aws-ec2-unmonitor-instances
     outputs:
     - contextPath: AWS.EC2.Instances.InstanceId
       description: The ID of the instance.
@@ -2744,44 +4186,85 @@ script:
       description: Indicates whether detailed monitoring is enabled. Otherwise, basic
         monitoring is enabled.
       type: Unknown
-    description: Disables detailed monitoring for a running instance.
-    execution: true
-  - name: aws-ec2-reboot-instances
-    arguments:
-    - name: instanceIds
-      required: true
+  - arguments:
+    - default: false
       description: One or more instance IDs. Separated by comma.
-    - name: region
+      isArray: false
+      name: instanceIds
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Requests a reboot of one or more instances. This operation is asynchronous;
       it only queues a request to reboot the specified instances. The operation succeeds
       if the instances are valid and belong to you. Requests to reboot terminated
       instances are ignored. If an instance does not cleanly shut down within four
       minutes, Amazon EC2 performs a hard reboot.
     execution: true
-  - name: aws-ec2-get-password-data
-    arguments:
-    - name: instanceId
-      required: true
+    name: aws-ec2-reboot-instances
+  - arguments:
+    - default: false
       description: The ID of the Windows instance.
-    - name: region
+      isArray: false
+      name: instanceId
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the encrypted administrator password for a running Windows
+      instance.
+    execution: true
+    name: aws-ec2-get-password-data
     outputs:
     - contextPath: AWS.EC2.Instances.PasswordData.PasswordData
       description: The password of the instance. Returns an empty string if the password
@@ -2790,119 +4273,203 @@ script:
     - contextPath: AWS.EC2.Instances.PasswordData.Timestamp
       description: The time the data was last updated.
       type: date
-    description: Retrieves the encrypted administrator password for a running Windows
-      instance.
-    execution: true
-  - name: aws-ec2-modify-network-interface-attribute
-    arguments:
-    - name: networkInterfaceId
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the network interface.
-    - name: groups
+      isArray: false
+      name: networkInterfaceId
+      required: true
+      secret: false
+    - default: false
       description: Changes the security groups for the network interface. The new
         set of groups you specify replaces the current set. You must specify at least
         one group, even if it's just the default security group in the VPC. You must
         specify the ID of the security group, not the name.
-    - name: sourceDestCheck
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: groups
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether source/destination checking is enabled. A value
         of true means checking is enabled, and false means checking is disabled. This
         value must be false for a NAT instance to perform NAT.
-    - name: description
+      isArray: false
+      name: sourceDestCheck
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: A description for the network interface.
-    - name: attachmentId
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
       description: The ID of the network interface attachment. Information about the
         interface attachment. If modifying the 'delete on termination' attribute,
         you must specify the ID of the interface attachment.
-    - name: deleteOnTermination
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: attachmentId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the network interface is deleted when the instance
         is terminated. Information about the interface attachment. If modifying the
         'delete on termination' attribute, you must specify the ID of the interface
         attachment.
-    - name: region
+      isArray: false
+      name: deleteOnTermination
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Modifies the specified network interface attribute. You can specify
       only one attribute at a time.
     execution: true
-  - name: aws-ec2-modify-instance-attribute
-    arguments:
-    - name: instanceId
-      required: true
+    name: aws-ec2-modify-network-interface-attribute
+  - arguments:
+    - default: false
       description: The ID of the instance.
-    - name: sourceDestCheck
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: instanceId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Specifies whether source/destination checking is enabled. A value
         of true means that checking is enabled, and false means that checking is disabled.
         This value must be false for a NAT instance to perform NAT.
-    - name: disableApiTermination
-      auto: PREDEFINED
+      isArray: false
+      name: sourceDestCheck
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: If the value is true , you can't terminate the instance using the
         Amazon EC2 console, CLI, or API; otherwise, you can. You cannot use this parameter
         for Spot Instances.
-    - name: ebsOptimized
-      auto: PREDEFINED
+      isArray: false
+      name: disableApiTermination
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Specifies whether the instance is optimized for Amazon EBS I/O.
         This optimization provides dedicated throughput to Amazon EBS and an optimized
         configuration stack to provide optimal EBS I/O performance. This optimization
         isn't available with all instance types. Additional usage charges apply when
         using an EBS Optimized instance.
-    - name: enaSupport
-      auto: PREDEFINED
+      isArray: false
+      name: ebsOptimized
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Set to true to enable enhanced networking with ENA for the instance.  This
         option is supported only for HVM instances. Specifying this option with a
         PV instance can make it unreachable.
-    - name: instanceType
-      description: Changes the instance type to the specified value.
-    - name: instanceInitiatedShutdownBehavior
-      auto: PREDEFINED
+      isArray: false
+      name: enaSupport
       predefined:
-      - Stop
-      - Terminate
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Changes the instance type to the specified value.
+      isArray: false
+      name: instanceType
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Specifies whether an instance stops or terminates when you initiate
         shutdown from the instance (using the operating system command for system
         shutdown)
-    - name: groups
+      isArray: false
+      name: instanceInitiatedShutdownBehavior
+      predefined:
+      - Stop
+      - Terminate
+      required: false
+      secret: false
+    - default: false
       description: '[EC2-VPC] Changes the security groups of the instance. You must
         specify at least one security group, even if it''s just the default security
         group for the VPC. You must specify the security group ID, not the security
         group name.'
-    - name: region
+      isArray: false
+      name: groups
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Modifies the specified attribute of the specified instance. You can
       specify only one attribute at a time. Using this action to change the security
       groups associated with an elastic network interface (ENI) attached to an instance
@@ -2911,28 +4478,57 @@ script:
       multiple ENIs, we recommend that you use the ModifyNetworkInterfaceAttribute
       action.
     execution: true
-  - name: aws-ec2-create-network-acl
-    arguments:
-    - name: DryRun
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+    name: aws-ec2-modify-instance-attribute
+  - arguments:
+    - auto: PREDEFINED
+      default: false
       description: Checks whether you have the required permissions for the action,
         without actually making the request, and provides an error response.
-    - name: VpcId
-      required: true
+      isArray: false
+      name: DryRun
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The ID of the VPC.
-    - name: region
+      isArray: false
+      name: VpcId
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a network ACL in a VPC. Network ACLs provide an optional
+      layer of security (in addition to security groups) for the instances in your
+      VPC.
+    execution: false
+    name: aws-ec2-create-network-acl
     outputs:
     - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclAssociationId
       description: The ID of the association between a network ACL and a subnet.
@@ -2992,46 +4588,75 @@ script:
     - contextPath: AWS.EC2.VpcId.NetworkAcl.OwnerId
       description: The ID of the AWS account that owns the network ACL.
       type: String
-    description: Creates a network ACL in a VPC. Network ACLs provide an optional
-      layer of security (in addition to security groups) for the instances in your
-      VPC.
-  - name: aws-ec2-create-network-acl-entry
-    arguments:
-    - name: CidrBlock
+  - arguments:
+    - default: false
       description: The IPv4 network range to allow or deny, in CIDR notation (for
         example 172.16.0.0/24 ).
-    - name: DryRun
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: CidrBlock
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Checks whether you have the required permissions for the action,
         without actually making the request, and provides an error response.
-    - name: Egress
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: DryRun
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether this is an egress rule (rule is applied to traffic
         leaving the subnet).
-    - name: Code
+      isArray: false
+      name: Egress
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    - default: false
       description: The ICMP code. A value of -1 means all codes for the specified
         ICMP type.
-    - name: Type
+      isArray: false
+      name: Code
+      required: false
+      secret: false
+    - default: false
       description: The ICMP type. A value of -1 means all types.
-    - name: Ipv6CidrBlock
+      isArray: false
+      name: Type
+      required: false
+      secret: false
+    - default: false
       description: The IPv6 network range to allow or deny, in CIDR notation (for
-        example 2001:db8:1234:1a00::/64 ).  # disable-secrets-detection
-    - name: NetworkAclId
-      required: true
+        example 2001:db8:1234:1a00::/64 ).
+      isArray: false
+      name: Ipv6CidrBlock
+      required: false
+      secret: false
+    - default: false
       description: The ID of the network ACL.
-    - name: From
-      description: The first port in the range.
-    - name: To
-      description: The last port in the range.
-    - name: Protocol
+      isArray: false
+      name: NetworkAclId
       required: true
+      secret: false
+    - default: false
+      description: The first port in the range.
+      isArray: false
+      name: From
+      required: false
+      secret: false
+    - default: false
+      description: The last port in the range.
+      isArray: false
+      name: To
+      required: false
+      secret: false
+    - default: false
       description: The protocol number. A value of "-1" means all protocols. If you
         specify "-1" or a protocol number other than "6" (TCP), "17" (UDP), or "1"
         (ICMP), traffic on all ports is allowed, regardless of any ports or ICMP types
@@ -3039,137 +4664,302 @@ script:
         an IPv4 CIDR block, traffic for all ICMP types and codes allowed, regardless
         of any that you specify. If you specify protocol "58" (ICMPv6) and specify
         an IPv6 CIDR block, you must specify an ICMP type and code.
-    - name: RuleAction
+      isArray: false
+      name: Protocol
       required: true
+      secret: false
+    - default: false
       description: Indicates whether to allow or deny the traffic that matches the
         rule.
-    - name: RuleNumber
+      isArray: false
+      name: RuleAction
       required: true
+      secret: false
+    - default: false
       description: The rule number for the entry (for example, 100). ACL entries are
         processed in ascending order by rule number.
-    - name: region
+      isArray: false
+      name: RuleNumber
+      required: true
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Creates an entry (a rule) in a network ACL with the specified rule
       number.
-  - name: aws-ec2-create-fleet
-    arguments:
-    - name: region
+    execution: false
+    name: aws-ec2-create-network-acl-entry
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: DryRun
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Checks whether you have the required permissions for the action,
         without actually making the request, and provides an error response.
-    - name: ClientToken
+      isArray: false
+      name: DryRun
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: Unique, case-sensitive identifier you provide to ensure the idempotency
         of the request.
-    - name: SpotAllocationStrategy
+      isArray: false
+      name: ClientToken
+      required: false
+      secret: false
+    - default: false
       description: Indicates how to allocate the target capacity across the Spot pools
         specified by the Spot Fleet request.
-    - name: InstanceInterruptionBehavior
+      isArray: false
+      name: SpotAllocationStrategy
+      required: false
+      secret: false
+    - default: false
       description: The behavior when a Spot Instance is interrupted.
-    - name: InstancePoolsToUseCount
+      isArray: false
+      name: InstanceInterruptionBehavior
+      required: false
+      secret: false
+    - default: false
       description: The number of Spot pools across which to allocate your target Spot
         capacity.
-    - name: SpotSingleInstanceType
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: InstancePoolsToUseCount
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates that the fleet uses a single instance type to launch
         all Spot Instances in the fleet.
-    - name: SpotSingleInstanceType
-      auto: PREDEFINED
+      isArray: false
+      name: SpotSingleInstanceType
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates that the fleet launches all Spot Instances into a single
         Availability Zone.
-    - name: SpotMinTargetCapacity
+      isArray: false
+      name: SpotSingleInstanceType
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The minimum target capacity for Spot Instances in the fleet. If
         the minimum target capacity is not reached, the fleet launches no instances.
-    - name: OnDemandAllocationStrategy
+      isArray: false
+      name: SpotMinTargetCapacity
+      required: false
+      secret: false
+    - default: false
       description: The order of the launch template overrides to use in fulfilling
         On-Demand capacity.
-    - name: OnDemandSingleInstanceType
+      isArray: false
+      name: OnDemandAllocationStrategy
+      required: false
+      secret: false
+    - default: false
       description: Indicates that the fleet uses a single instance type to launch
         all On-Demand Instances in the fleet.
-    - name: OnDemandSingleAvailabilityZone
+      isArray: false
+      name: OnDemandSingleInstanceType
+      required: false
+      secret: false
+    - default: false
       description: Indicates that the fleet launches all On-Demand Instances into
         a single Availability Zone.
-    - name: OnDemandMinTargetCapacity
+      isArray: false
+      name: OnDemandSingleAvailabilityZone
+      required: false
+      secret: false
+    - default: false
       description: The minimum target capacity for On-Demand Instances in the fleet.
         If the minimum target capacity is not reached, the fleet launches no instances.
-    - name: ExcessCapacityTerminationPolicy
+      isArray: false
+      name: OnDemandMinTargetCapacity
+      required: false
+      secret: false
+    - default: false
       description: ' Indicates whether running instances should be terminated if the
         total target capacity of the EC2 Fleet is decreased below the current size
         of the EC2 Fleet.'
-    - name: LaunchTemplateId
-      required: true
+      isArray: false
+      name: ExcessCapacityTerminationPolicy
+      required: false
+      secret: false
+    - default: false
       description: The ID of the launch template.
-    - name: LaunchTemplateName
+      isArray: false
+      name: LaunchTemplateId
       required: true
+      secret: false
+    - default: false
       description: The name of the launch template.
-    - name: Version
+      isArray: false
+      name: LaunchTemplateName
       required: true
+      secret: false
+    - default: false
       description: The version number of the launch template.
-    - name: OverrideInstanceType
+      isArray: false
+      name: Version
+      required: true
+      secret: false
+    - default: false
       description: The instance type.
-    - name: OverrideMaxPrice
+      isArray: false
+      name: OverrideInstanceType
+      required: false
+      secret: false
+    - default: false
       description: The maximum price per unit hour that you are willing to pay for
         a Spot Instance.
-    - name: OverrideSubnetId
+      isArray: false
+      name: OverrideMaxPrice
+      required: false
+      secret: false
+    - default: false
       description: The ID of the subnet in which to launch the instances.
-    - name: OverrideAvailabilityZone
+      isArray: false
+      name: OverrideSubnetId
+      required: false
+      secret: false
+    - default: false
       description: The Availability Zone in which to launch the instances.
-    - name: OverrideWeightedCapacity
+      isArray: false
+      name: OverrideAvailabilityZone
+      required: false
+      secret: false
+    - default: false
       description: The number of units provided by the specified instance type.
-    - name: OverridePriority
+      isArray: false
+      name: OverrideWeightedCapacity
+      required: false
+      secret: false
+    - default: false
       description: The priority for the launch template override.
-    - name: TotalTargetCapacity
-      required: true
+      isArray: false
+      name: OverridePriority
+      required: false
+      secret: false
+    - default: false
       description: The number of units to request, filled using DefaultTargetCapacityType
         .
-    - name: OnDemandTargetCapacity
+      isArray: false
+      name: TotalTargetCapacity
       required: true
+      secret: false
+    - default: false
       description: The number of On-Demand units to request.
-    - name: SpotTargetCapacity
+      isArray: false
+      name: OnDemandTargetCapacity
       required: true
+      secret: false
+    - default: false
       description: The number of Spot units to request.
-    - name: DefaultTargetCapacityType
+      isArray: false
+      name: SpotTargetCapacity
       required: true
+      secret: false
+    - default: false
       description: The default TotalTargetCapacity, which is either Spot or On-Demand
         .
-    - name: Type
+      isArray: false
+      name: DefaultTargetCapacityType
+      required: true
+      secret: false
+    - default: false
       description: The type of the request.
-    - name: ValidFrom
+      isArray: false
+      name: Type
+      required: false
+      secret: false
+    - default: false
       description: The start date and time of the request, in UTC format (for example,
         YYYY -MM -DD T*HH* :MM :SS Z).
-    - name: ValidUntil
+      isArray: false
+      name: ValidFrom
+      required: false
+      secret: false
+    - default: false
       description: The end date and time of the request, in UTC format (for example,
         YYYY -MM -DD T*HH* :MM :SS Z).
-    - name: ReplaceUnhealthyInstances
+      isArray: false
+      name: ValidUntil
+      required: false
+      secret: false
+    - default: false
       description: Indicates whether EC2 Fleet should replace unhealthy instances.
-    - name: Tags
+      isArray: false
+      name: ReplaceUnhealthyInstances
+      required: false
+      secret: false
+    - default: false
       description: The tags to apply to the resource.
+      isArray: false
+      name: Tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Launches an EC2 Fleet.
+    execution: false
+    name: aws-ec2-create-fleet
     outputs:
     - contextPath: AWS.EC2.Fleet.FleetId
       description: The ID of the EC2 Fleet.
@@ -3270,29 +5060,57 @@ script:
     - contextPath: AWS.EC2.Fleet.Instances.LaunchTemplateAndOverrides.Overrides.Platform
       description: The value is Windows for Windows instances; otherwise blank.
       type: String
-    description: Launches an EC2 Fleet.
-  - name: aws-ec2-delete-fleet
-    arguments:
-    - name: region
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: DryRun
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: Checks whether you have the required permissions for the action,
         without actually making the request, and provides an error response.
-    - name: FleetIds
-      required: true
+      isArray: false
+      name: DryRun
+      required: false
+      secret: false
+    - default: false
       description: The IDs of the EC2 Fleets.
-    - name: TerminateInstances
+      isArray: false
+      name: FleetIds
       required: true
+      secret: false
+    - default: false
       description: Indicates whether to terminate instances for an EC2 Fleet if it
         is deleted successfully.
+      isArray: false
+      name: TerminateInstances
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes the specified EC2 Fleet.
+    execution: false
+    name: aws-ec2-delete-fleet
     outputs:
     - contextPath: AWS.EC2.DeletedFleets.SuccessfulFleetDeletions.CurrentFleetState
       description: The current state of the EC2 Fleet.
@@ -3312,28 +5130,62 @@ script:
     - contextPath: AWS.EC2.DeletedFleets.UnsuccessfulFleetDeletions.FleetId
       description: The ID of the EC2 Fleet.
       type: String
-    description: Deletes the specified EC2 Fleet.
-  - name: aws-ec2-describe-fleets
-    arguments:
-    - name: region
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: filters
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: One or more filters.
-    - name: FleetIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: The ID of the EC2 Fleets.
-    - name: MaxResults
+      isArray: false
+      name: FleetIds
+      required: false
+      secret: false
+    - default: false
       description: The maximum number of results to return in a single call. Specify
         a value between 1 and 1000.
-    - name: NextToken
+      isArray: false
+      name: MaxResults
+      required: false
+      secret: false
+    - default: false
       description: The token for the next set of results.
+      isArray: false
+      name: NextToken
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of your EC2 Fleets.
+    execution: false
+    name: aws-ec2-describe-fleets
     outputs:
     - contextPath: AWS.EC2.Fleet.NextToken
       description: The token for the next set of results.
@@ -3570,30 +5422,63 @@ script:
     - contextPath: AWS.EC2.Fleet.Fleets.Instances.Platform
       description: The value is Windows for Windows instances; otherwise blank.
       type: string
-    description: Describes one or more of your EC2 Fleets.
-  - name: aws-ec2-describe-fleet-instances
-    arguments:
-    - name: region
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: filters
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: A filter name and value pair that is used to return a more specific
         list of results from a describe operation.
-    - name: FleetId
-      required: true
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: The ID of the EC2 Fleet.
-    - name: MaxResults
+      isArray: false
+      name: FleetId
+      required: true
+      secret: false
+    - default: false
       description: The maximum number of results to return in a single call. Specify
         a value between 1 and 1000.
-    - name: NextToken
+      isArray: false
+      name: MaxResults
+      required: false
+      secret: false
+    - default: false
       description: The token for the next set of results.
+      isArray: false
+      name: NextToken
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes the running instances for the specified EC2 Fleet.
+    execution: false
+    name: aws-ec2-describe-fleet-instances
     outputs:
     - contextPath: AWS.EC2.Fleet.ActiveInstances.InstanceId
       description: The ID of the instance.
@@ -3613,192 +5498,454 @@ script:
     - contextPath: AWS.EC2.Fleet.FleetId
       description: The ID of the EC2 Fleet.
       type: String
-    description: Describes the running instances for the specified EC2 Fleet.
-  - name: aws-ec2-modify-fleet
-    arguments:
-    - name: region
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: FleetId
-      required: true
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: The ID of the EC2 Fleet.
-    - name: TotalTargetCapacity
+      isArray: false
+      name: FleetId
       required: true
+      secret: false
+    - default: false
       description: The number of units to request, filled using DefaultTargetCapacityType.
-    - name: OnDemandTargetCapacity
+      isArray: false
+      name: TotalTargetCapacity
+      required: true
+      secret: false
+    - default: false
       description: The number of On-Demand units to request.
-    - name: SpotTargetCapacity
+      isArray: false
+      name: OnDemandTargetCapacity
+      required: false
+      secret: false
+    - default: false
       description: The number of Spot units to request.
-    - name: DefaultTargetCapacityType
+      isArray: false
+      name: SpotTargetCapacity
+      required: false
+      secret: false
+    - default: false
       description: The default TotalTargetCapacity, which is either Spot or On-Demand.
+      isArray: false
+      name: DefaultTargetCapacityType
+      required: false
+      secret: false
+    deprecated: false
     description: Modifies the specified EC2 Fleet.
-  - name: aws-ec2-create-launch-template
-    arguments:
-    - name: region
+    execution: false
+    name: aws-ec2-modify-fleet
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: ClientToken
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: Unique, case-sensitive identifier you provide to ensure the idempotency
         of the request.
-    - name: LaunchTemplateName
-      required: true
+      isArray: false
+      name: ClientToken
+      required: false
+      secret: false
+    - default: false
       description: A name for the launch template.
-    - name: VersionDescription
+      isArray: false
+      name: LaunchTemplateName
+      required: true
+      secret: false
+    - default: false
       description: A description for the first version of the launch template.
-    - name: KernelId
+      isArray: false
+      name: VersionDescription
+      required: false
+      secret: false
+    - default: false
       description: The ID of the kernel.
-    - name: EbsOptimized
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: KernelId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the instance is optimized for Amazon EBS I/O.
-    - name: iamInstanceProfileArn
+      isArray: false
+      name: EbsOptimized
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the instance profile.
-    - name: iamInstanceProfileName
+      isArray: false
+      name: iamInstanceProfileArn
+      required: false
+      secret: false
+    - default: false
       description: The name of the instance profile.
-    - name: deviceName
+      isArray: false
+      name: iamInstanceProfileName
+      required: false
+      secret: false
+    - default: false
       description: The device name (for example, /dev/sdh or xvdh).
-    - name: VirtualName
+      isArray: false
+      name: deviceName
+      required: false
+      secret: false
+    - default: false
       description: The virtual device name (ephemeralN). Instance store volumes are
         numbered starting from 0.
-    - name: ebsEncrypted
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: VirtualName
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the EBS volume is encrypted.
-    - name: ebsDeleteOnTermination
-      auto: PREDEFINED
+      isArray: false
+      name: ebsEncrypted
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the EBS volume is deleted on instance termination.
-    - name: ebsIops
+      isArray: false
+      name: ebsDeleteOnTermination
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: The number of I/O operations per second (IOPS) that the volume
         supports.
-    - name: ebsKmsKeyId
+      isArray: false
+      name: ebsIops
+      required: false
+      secret: false
+    - default: false
       description: The ARN of the AWS Key Management Service (AWS KMS) CMK used for
         encryption.
-    - name: ebsSnapshotId
+      isArray: false
+      name: ebsKmsKeyId
+      required: false
+      secret: false
+    - default: false
       description: The ID of the snapshot.
-    - name: ebsVolumeSize
+      isArray: false
+      name: ebsSnapshotId
+      required: false
+      secret: false
+    - default: false
       description: The size of the volume, in GiB.
-    - name: ebsVolumeType
+      isArray: false
+      name: ebsVolumeSize
+      required: false
+      secret: false
+    - default: false
       description: The volume type.
-    - name: NoDevice
+      isArray: false
+      name: ebsVolumeType
+      required: false
+      secret: false
+    - default: false
       description: Suppresses the specified device included in the block device mapping
         of the AMI.
-    - name: AssociatePublicIpAddress
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: NoDevice
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Associates a public IPv4 address with eth0 for a new network interface.
-    - name: NetworkInterfacesDeleteOnTermination
-      auto: PREDEFINED
+      isArray: false
+      name: AssociatePublicIpAddress
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Indicates whether the network interface is deleted when the instance
         is terminated.
-    - name: NetworkInterfacesDescription
+      isArray: false
+      name: NetworkInterfacesDeleteOnTermination
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: A description for the network interface.
-    - name: NetworkInterfacesDeviceIndex
+      isArray: false
+      name: NetworkInterfacesDescription
+      required: false
+      secret: false
+    - default: false
       description: The device index for the network interface attachment.
-    - name: NetworkInterfaceGroups
+      isArray: false
+      name: NetworkInterfacesDeviceIndex
+      required: false
+      secret: false
+    - default: false
       description: The IDs of one or more security groups.
-    - name: Ipv6AddressCount
+      isArray: false
+      name: NetworkInterfaceGroups
+      required: false
+      secret: false
+    - default: false
       description: 'The number of IPv6 addresses to assign to a network interface. '
-    - name: Ipv6Addresses
+      isArray: false
+      name: Ipv6AddressCount
+      required: false
+      secret: false
+    - default: false
       description: One or more specific IPv6 addresses from the IPv6 CIDR block range
         of your subnet.
-    - name: NetworkInterfaceId
+      isArray: false
+      name: Ipv6Addresses
+      required: false
+      secret: false
+    - default: false
       description: The ID of the network interface.
-    - name: PrivateIpAddress
+      isArray: false
+      name: NetworkInterfaceId
+      required: false
+      secret: false
+    - default: false
       description: The primary private IPv4 address of the network interface.
-    - name: SubnetId
+      isArray: false
+      name: PrivateIpAddress
+      required: false
+      secret: false
+    - default: false
       description: The ID of the subnet for the network interface.
-    - name: ImageId
+      isArray: false
+      name: SubnetId
+      required: false
+      secret: false
+    - default: false
       description: The ID of the AMI, which you can get by using DescribeImages.
-    - name: InstanceType
+      isArray: false
+      name: ImageId
+      required: false
+      secret: false
+    - default: false
       description: The instance type.
-    - name: KeyName
+      isArray: false
+      name: InstanceType
+      required: false
+      secret: false
+    - default: false
       description: The name of the key pair.
-    - name: Monitoring
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: KeyName
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Specify true to enable detailed monitoring. Otherwise, basic monitoring
         is enabled.
-    - name: AvailabilityZone
-      description: The Availability Zone for the instance.
-    - name: PlacementAffinity
-      description: The affinity setting for an instance on a Dedicated Host.
-    - name: AvailabilityZoneGroupName
-      description: The name of the placement group for the instance.
-    - name: PlacementHostId
-      description: The ID of the Dedicated Host for the instance.
-    - name: PlacementTenancy
-      description: The tenancy of the instance (if the instance is running in a VPC).
-    - name: PlacementSpreadDomain
-      description: Reserved for future use.
-    - name: RamDiskId
-      description: The ID of the RAM disk.
-    - name: DisableApiTermination
-      auto: PREDEFINED
+      isArray: false
+      name: Monitoring
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: The Availability Zone for the instance.
+      isArray: false
+      name: AvailabilityZone
+      required: false
+      secret: false
+    - default: false
+      description: The affinity setting for an instance on a Dedicated Host.
+      isArray: false
+      name: PlacementAffinity
+      required: false
+      secret: false
+    - default: false
+      description: The name of the placement group for the instance.
+      isArray: false
+      name: AvailabilityZoneGroupName
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the Dedicated Host for the instance.
+      isArray: false
+      name: PlacementHostId
+      required: false
+      secret: false
+    - default: false
+      description: The tenancy of the instance (if the instance is running in a VPC).
+      isArray: false
+      name: PlacementTenancy
+      required: false
+      secret: false
+    - default: false
+      description: Reserved for future use.
+      isArray: false
+      name: PlacementSpreadDomain
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the RAM disk.
+      isArray: false
+      name: RamDiskId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: If set to true , you can't terminate the instance using the Amazon
         EC2 console, CLI, or API.
-    - name: InstanceInitiatedShutdownBehavior
+      isArray: false
+      name: DisableApiTermination
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
       description: Indicates whether an instance stops or terminates when you initiate
         shutdown from the instance (using the operating system command for system
         shutdown).
-    - name: UserData
+      isArray: false
+      name: InstanceInitiatedShutdownBehavior
+      required: false
+      secret: false
+    - default: false
       description: The Base64-encoded user data to make available to the instance.
-    - name: Tags
+      isArray: false
+      name: UserData
+      required: false
+      secret: false
+    - default: false
       description: The tags to apply to the resource.
-    - name: ElasticGpuSpecificationsType
+      isArray: false
+      name: Tags
+      required: false
+      secret: false
+    - default: false
       description: The type of Elastic Graphics accelerator.
-    - name: ElasticInferenceAcceleratorsType
+      isArray: false
+      name: ElasticGpuSpecificationsType
+      required: false
+      secret: false
+    - default: false
       description: The type of elastic inference accelerator. The possible values
         are eia1.medium, eia1.large, and eia1.xlarge.
-    - name: securityGroupIds
+      isArray: false
+      name: ElasticInferenceAcceleratorsType
+      required: false
+      secret: false
+    - default: false
       description: One or more security group IDs.
-    - name: securityGroups
+      isArray: false
+      name: securityGroupIds
+      required: false
+      secret: false
+    - default: false
       description: One or more security group names.
-    - name: MarketType
+      isArray: false
+      name: securityGroups
+      required: false
+      secret: false
+    - default: false
       description: The market type.
-    - name: SpotInstanceType
+      isArray: false
+      name: MarketType
+      required: false
+      secret: false
+    - default: false
       description: The Spot Instance request type.
-    - name: BlockDurationMinutes
+      isArray: false
+      name: SpotInstanceType
+      required: false
+      secret: false
+    - default: false
       description: The required duration for the Spot Instances (also known as Spot
         blocks), in minutes. This value must be a multiple of 60 (60, 120, 180, 240,
         300, or 360).
-    - name: SpotValidUntil
+      isArray: false
+      name: BlockDurationMinutes
+      required: false
+      secret: false
+    - default: false
       description: The end date of the request.
-    - name: SpotInstanceInterruptionBehavior
+      isArray: false
+      name: SpotValidUntil
+      required: false
+      secret: false
+    - default: false
       description: The behavior when a Spot Instance is interrupted. The default is
         terminate.
-    - name: SpotMaxPrice
+      isArray: false
+      name: SpotInstanceInterruptionBehavior
+      required: false
+      secret: false
+    - default: false
       description: The maximum hourly price you're willing to pay for the Spot Instances.
+      isArray: false
+      name: SpotMaxPrice
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a launch template. A launch template contains the parameters
+      to launch an instance.
+    execution: false
+    name: aws-ec2-create-launch-template
     outputs:
     - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.LaunchTemplateId
       description: The ID of the launch template.
@@ -3824,24 +5971,50 @@ script:
     - contextPath: AWS.EC2.LaunchTemplates.LaunchTemplate.Tags.Value
       description: The value of the tag.
       type: String
-    description: Creates a launch template. A launch template contains the parameters
-      to launch an instance.
-  - name: aws-ec2-delete-launch-template
-    arguments:
-    - name: region
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: LaunchTemplateId
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: The ID of the launch template.
-    - name: LaunchTemplateName
+      isArray: false
+      name: LaunchTemplateId
+      required: false
+      secret: false
+    - default: false
       description: The name of the launch template.
+      isArray: false
+      name: LaunchTemplateName
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes a launch template. Deleting a launch template deletes all
+      of its versions.
+    execution: false
+    name: aws-ec2-delete-launch-template
     outputs:
     - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.LaunchTemplateId
       description: The ID of the launch template.
@@ -3861,121 +6034,274 @@ script:
     - contextPath: AWS.EC2.DeletedLaunchTemplates.LaunchTemplate.LatestVersionNumber
       description: The version number of the latest version of the launch template.
       type: Number
-    description: Deletes a launch template. Deleting a launch template deletes all
-      of its versions.
-  - name: aws-ec2-modify-image-attribute
-    arguments:
-    - name: region
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: Attribute
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: The name of the attribute to modify. The valid values are description,
         launchPermission, and productCodes.
-    - name: Description
+      isArray: false
+      name: Attribute
+      required: false
+      secret: false
+    - default: false
       description: A new description for the AMI.
-    - name: ImageId
-      required: true
+      isArray: false
+      name: Description
+      required: false
+      secret: false
+    - default: false
       description: The ID of the AMI.
-    - name: LaunchPermission-Add-Group
+      isArray: false
+      name: ImageId
+      required: true
+      secret: false
+    - default: false
       description: The name of the group.
-    - name: LaunchPermission-Add-UserId
+      isArray: false
+      name: LaunchPermission-Add-Group
+      required: false
+      secret: false
+    - default: false
       description: The AWS account ID.
-    - name: LaunchPermission-Remove-Group
+      isArray: false
+      name: LaunchPermission-Add-UserId
+      required: false
+      secret: false
+    - default: false
       description: The name of the group.
-    - name: LaunchPermission-Remove-UserId
+      isArray: false
+      name: LaunchPermission-Remove-Group
+      required: false
+      secret: false
+    - default: false
       description: The AWS account ID.
-    - name: OperationType
+      isArray: false
+      name: LaunchPermission-Remove-UserId
+      required: false
+      secret: false
+    - default: false
       description: The operation type.
-    - name: ProductCodes
+      isArray: false
+      name: OperationType
+      required: false
+      secret: false
+    - default: false
       description: One or more DevPay product codes. After you add a product code
         to an AMI, it can't be removed.
-    - name: UserGroups
+      isArray: false
+      name: ProductCodes
+      required: false
+      secret: false
+    - default: false
       description: One or more user groups. This parameter can be used only when the
         Attribute parameter is launchPermission.
-    - name: UserIds
+      isArray: false
+      name: UserGroups
+      required: false
+      secret: false
+    - default: false
       description: One or more AWS account IDs. This parameter can be used only when
         the Attribute parameter is launchPermission.
-    - name: Value
+      isArray: false
+      name: UserIds
+      required: false
+      secret: false
+    - default: false
       description: The value of the attribute being modified. This parameter can be
         used only when the Attribute parameter is description or productCodes.
+      isArray: false
+      name: Value
+      required: false
+      secret: false
+    deprecated: false
     description: Modifies the specified attribute of the specified AMI.
-  - name: aws-ec2-delete-subnet
-    arguments:
-    - name: region
+    execution: false
+    name: aws-ec2-modify-image-attribute
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: SubnetId
-      required: true
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: The ID of the subnet.
+      isArray: false
+      name: SubnetId
+      required: true
+      secret: false
+    deprecated: false
     description: Deletes the specified subnet. You must terminate all running instances
       in the subnet before you can delete the subnet.
-  - name: aws-ec2-delete-vpc
-    arguments:
-    - name: region
+    execution: false
+    name: aws-ec2-delete-subnet
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: VpcId
-      required: true
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: The ID of the VPC.
+      isArray: false
+      name: VpcId
+      required: true
+      secret: false
+    deprecated: false
     description: Deletes the specified VPC. You must detach or delete all gateways
       and resources that are associated with the VPC before you can delete it. For
       example, you must terminate all instances running in the VPC, delete all security
       groups associated with the VPC (except the default one), delete all route tables
       associated with the VPC (except the default one), and so on.
-  - name: aws-ec2-delete-internet-gateway
-    arguments:
-    - name: region
+    execution: false
+    name: aws-ec2-delete-vpc
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: InternetGatewayId
-      required: true
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: The ID of the internet gateway.
+      isArray: false
+      name: InternetGatewayId
+      required: true
+      secret: false
+    deprecated: false
     description: Deletes the specified internet gateway. You must detach the internet
       gateway from the VPC before you can delete it.
-  - name: aws-ec2-describe-internet-gateway
-    arguments:
-    - name: region
+    execution: false
+    name: aws-ec2-delete-internet-gateway
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: filters
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: One or more filters.
-    - name: InternetGatewayIds
+      isArray: false
+      name: filters
+      required: false
+      secret: false
+    - default: false
       description: One or more internet gateway IDs.
+      isArray: false
+      name: InternetGatewayIds
+      required: false
+      secret: false
+    deprecated: false
+    description: Describes one or more of your internet gateways.
+    execution: false
+    name: aws-ec2-describe-internet-gateway
     outputs:
     - contextPath: AWS.EC2.InternetGateways.InternetGatewayId
       description: The ID of the internet gateway.
@@ -3992,30 +6318,165 @@ script:
     - contextPath: AWS.EC2.InternetGateways.Attachments.VpcId
       description: The ID of the VPC.
       type: string
-    description: Describes one or more of your internet gateways.
-  - name: aws-ec2-detach-internet-gateway
-    arguments:
-    - name: region
+  - arguments:
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
-    - name: roleArn
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
       description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
       description: An identifier for the assumed role session.
-    - name: roleSessionDuration
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
       description: The duration, in seconds, of the role session. The value can range
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
-    - name: InternetGatewayId
-      required: true
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
       description: The ID of the internet gateway.
-    - name: VpcId
+      isArray: false
+      name: InternetGatewayId
       required: true
+      secret: false
+    - default: false
       description: The ID of the VPC.
+      isArray: false
+      name: VpcId
+      required: true
+      secret: false
+    deprecated: false
     description: Detaches an internet gateway from a VPC, disabling connectivity between
       the internet and the VPC. The VPC must not contain any running instances with
       Elastic IP addresses or public IPv4 addresses.
+    execution: false
+    name: aws-ec2-detach-internet-gateway
+  - arguments:
+    - default: false
+      description: The ID of the source network interface.
+      isArray: false
+      name: NetworkInterfaceId
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the Traffic Mirror target.
+      isArray: false
+      name: TrafficMirrorTargetId
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the Traffic Mirror filter.
+      isArray: false
+      name: TrafficMirrorFilterId
+      required: true
+      secret: false
+    - default: false
+      description: The number of bytes in each packet to mirror.
+      isArray: false
+      name: PacketLength
+      required: false
+      secret: false
+    - default: false
+      description: The session number determines the order in which sessions are evaluated
+        when an interface is used by multiple sessions.
+      isArray: false
+      name: SessionNumber
+      required: true
+      secret: false
+    - default: false
+      description: The VXLAN ID for the Traffic Mirror session.
+      isArray: false
+      name: VirtualNetworkId
+      required: false
+      secret: false
+    - default: false
+      description: The description of the Traffic Mirror session.
+      isArray: false
+      name: Description
+      required: false
+      secret: false
+    - default: false
+      description: The tags to assign to a Traffic Mirror session.
+      isArray: false
+      name: Tags
+      required: false
+      secret: false
+    - default: false
+      description: Checks whether you have the required permissions for the action,
+        without actually making the request, and provides an error response.
+      isArray: false
+      name: DryRun
+      required: false
+      secret: false
+    - default: false
+      description: Unique, case-sensitive identifier that you provide to ensure the
+        idempotency of the request.
+      isArray: false
+      name: ClientToken
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a Traffic Mirror session.
+    execution: false
+    name: aws-ec2-create-traffic-mirror-session
+    outputs:
+    - contextPath: AWS.EC2.TrafficMirrorSession.TrafficMirrorSessionId
+      description: The ID for the Traffic Mirror session.
+      type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.TrafficMirrorTargetId
+      description: The ID of the Traffic Mirror target.
+      type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.TrafficMirrorFilterId
+      description: The ID of the Traffic Mirror filter.
+      type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.NetworkInterfaceId
+      description: The ID of the Traffic Mirror session's network interface.
+      type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.OwnerId
+      description: The ID of the account that owns the Traffic Mirror session.
+      type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.PacketLength
+      description: The number of bytes in each packet to mirror.
+      type: Number
+    - contextPath: AWS.EC2.TrafficMirrorSession.SessionNumber
+      description: The session number determines the order in which sessions are evaluated
+        when an interface is used by multiple sessions.
+      type: Number
+    - contextPath: AWS.EC2.TrafficMirrorSession.VirtualNetworkId
+      description: The virtual network ID associated with the Traffic Mirror session.
+      type: Number
+    - contextPath: AWS.EC2.TrafficMirrorSession.Description
+      description: The description of the Traffic Mirror session.
+      type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.EC2.TrafficMirrorSession.ClientToken
+      description: Unique, case-sensitive identifier that you provide to ensure the
+        idempotency of the request.
+      type: String
   dockerimage: demisto/boto3:1.9.55
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  pythonSubtype: python3
   runonce: false
-  subtype: python2
+  script: '-'
+  type: python
 tests:
 - 2142f8de-29d5-4288-8426-0db39abe988b

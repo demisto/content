@@ -1,5 +1,7 @@
 ## [Unreleased]
- - Added the ***aws-ec2-delete-subnets***, ***aws-ec2-describe-internet-gateway***, 
+* Improved handling of error messages.
+* Updated the result returned when the command is an empty list.
+* Added the ***aws-ec2-delete-subnets***, ***aws-ec2-describe-internet-gateway***, 
  ***aws-ec2-detach-internet-gateway***, ***aws-ec2-delete-internet-gateway***, and 
  ***aws-ec2-delete-vpc*** commands.
 
