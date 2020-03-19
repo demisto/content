@@ -328,7 +328,15 @@ def search_alarms(start_time=None, end_time=None, status=None, priority=None, sh
     if end_time:
         params['timestamp_occured_lte'] = end_time
 
+
+    demisto.info('====================search reqest parameters====================')
+    demisto.info(params)
+
     res = http_request('GET', '/alarms', params=params)
+
+    totalElements = res['page']['totalElements']
+    demisto.info(f'totalElements: {totalElements}')
+
     if res['page']['totalElements'] == 0:
         return []
 
@@ -414,7 +422,11 @@ def fetch_incidents():
 
     incidents = []
     limit = dict_value_to_int(demisto.params(), 'fetch_limit')
+    demisto.info('====================fetch incidents====================')
+    demisto.info(f'last_fetch: {last_fetch} | limit: {limit}')
     items = search_alarms(start_time=last_fetch, direction='asc', limit=limit)
+
+    demisto.info(f'alarms count: {len(items)}')
     for item in items:
         incident = item_to_incident(item)
         incidents.append(incident)
