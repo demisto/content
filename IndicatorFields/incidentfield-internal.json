@@ -31,9 +31,7 @@
     "URL",
     "Host",
     "IP",
-    "CIDR",
-    "IPv6",
-    "IPv6CIDR"
+    "IPv6"
   ],
   "caseInsensitive": true,
   "columns": null,
