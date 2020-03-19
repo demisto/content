@@ -351,7 +351,8 @@ script:
       JSON event protocol.
     execution: false
     name: splunk-submit-event-hec
-  dockerimage: demisto/splunksdk:2.0
+  dockerimage45: demisto/splunksdk:1.0
+  dockerimage: demisto/splunksdk:1.0.0.6822
   isfetch: true
   longRunning: false
   longRunningPort: false
