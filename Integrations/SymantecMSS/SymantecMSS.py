@@ -76,7 +76,7 @@ DST = 1 if time.daylight else 0
 
 
 def strip_unwanted_chars(s):
-    return re.sub('&.+[0-9]+.?;', '', s)
+    return re.sub('&\S{1,6};', '', s)
 
 
 def api_call(body, headers):
@@ -334,16 +334,16 @@ def query_incident_cmd():
         "Status": result.get("WorkFlowDetail", {}).get("Status", ""),
         "Classification": result.get("Classification", ""),
         "Assigned Person": result.get("WorkFlowDetail", {}).get("AssignedPerson",
-                                                                "") if not result.get("WorkFlowDetail", {}) else "",
+                                                                "") if result.get("WorkFlowDetail", {}) else "",
         "Description": result.get("Description", ""),
         "Analyst Assessment": result.get("AnalystAssessment", ""),
         "Number of Analyzed Signatures": result.get("NumberOfAnalyzedSignatures", ""),
         "Signaturtes": json.dumps(sigs) or "",
         "Related Incidents": json.dumps(result.get("RelatedIncidents",
-                                                   {}).get("IncidentNumber", "")) if not result.get("RelatedIncidents",
+                                                   {}).get("IncidentNumber", "")) if result.get("RelatedIncidents",
                                                                                                     {}) else "",
         "Comment": result.get("IncidentComments", {}).get("IncidentComment",
-                                                          {}).get("Comment", "") if not result.get("IncidentComments",
+                                                          {}).get("Comment", "") if result.get("IncidentComments",
                                                                                                    {}) else ""
     }]
     headers = [
