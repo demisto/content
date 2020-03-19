@@ -186,14 +186,12 @@ def generate_time_settings(time_frame=None, start_time=None, end_time=None):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-# This section will change the explicit score of an alert - works
-
 def update_alertstatus_command():
     status_to_explicit_score = {
-        'false positive': 1,
-        'not interesting': 2,
-        'interesting': 3,
-        'actionable': 4
+        'False Positive': 1,
+        'Not Interesting': 2,
+        'Interesting': 3,
+        'Actionable': 4
     }
     args = demisto.args()
     alert_id = args['alert_id']
@@ -216,8 +214,6 @@ def update_alertstatus(data):
     return http_request('PUT', url, data=data)
 
 
-# grabs the decoding path data - works
-
 def get_alert_dpath_command():
     args = demisto.args()
     alert_id = args['alert_id']
@@ -227,7 +223,7 @@ def get_alert_dpath_command():
 
     output = {
         'ID': alert_id,
-        'DPath': context_result
+        'DecodingPath': context_result
     }
 
     demisto.results({
@@ -250,11 +246,6 @@ def get_alert_dpath(alert_id):
     return result
 
 
-# End of decoding path data code block
-
-# Forces a file to get submited to the sandbox for analysis - works
-
-
 def alert_ef_submission_command():
     args = demisto.args()
 
@@ -265,7 +256,7 @@ def alert_ef_submission_command():
 
     output = {
         'ID': alert_id,
-        'EF': context_result
+        'ExecutionForensics': context_result
     }
 
     demisto.results({
@@ -286,11 +277,6 @@ def alert_ef_submission(alert_id):
     result = http_request('GET', '/j/rest/v1/alert/efsubmit/{}/'.format(alert_id))
 
     return result
-
-
-# End of file analysis submission code block
-
-# This section will add a comment to an alert - works
 
 
 def add_alert_comment_command():
@@ -314,31 +300,30 @@ def add_alert_comment(alert_id, data):
     http_request('PUT', url, data=data)
 
 
-# end of adding a comment section
-
-# This section will add a label to an alert - works
-
-
 def manage_alert_label_command():
     args = demisto.args()
     alert_id = args['alert_id']
     label = args['label']
-    label_action = args['action']
+    action = args['action']
 
-    # Action Options (LABEL_ADD, REPLACE_ALL, CLEAR, REMOVE)
-    # labelAction Options(LABEL_ADD, ASSIGN, UNASSIGN, LABEL_REMOVE)
+    label_action = {
+        'Add': 'LABEL_ADD',
+        'Remove': 'LABEL_REMOVE'
+    }
 
     data = {
         'type': "byAlertID",
         'alertIds': [alert_id],
-        # 'alertIds': ['Console-' + str(alert_id)],
         'labels': [label],
-        'labelAction': label_action,
+        'labelAction': label_action[action],
     }
 
     bad_res = manage_alert_label(data)
-    if bad_res:
-        return_error("Was not able to assign label {} to alert {}".format(label, alert_id))
+    if bad_res and action == 'Add':
+        return_error("Was not able to add the label {} to alert {}".format(label, alert_id))
+
+    elif bad_res and action == 'Remove':
+        return_error("Was not able to remove the label {} to alert {}".format(label, alert_id))
 
     else:
         return_outputs("Assigned label: {} to alert {}".format(label, alert_id), {}, {})
@@ -355,20 +340,15 @@ def manage_alert_label(data):
         return 1
 
 
-# end of adding a label section
-
-# This section will assign a user, add a comment and change the conclusion status to open (agg_alert_id)
-
-
 def manage_alert_assignuser_command():
     args = demisto.args()
-    alert_id = args['alert_id']
-    assignToUser = args['assignToUser']
-    comment = args['comment']
+    conclusion_id = args['conclusion_id']
+    assign_user = args['assign_user']
+    comment = args.get('comment')
 
     data = {
-        'alertIds': ['Console-' + str(alert_id)],
-        'assignToUser': assignToUser,
+        'alertIds': ['Console-' + str(conclusion_id)],
+        'assignToUser': assign_user,
         'searchParams': None,
         'byId': True,
         'purgeEvents': False,
@@ -380,30 +360,30 @@ def manage_alert_assignuser_command():
         'action': "ASSIGN",
     }
 
-    manage_alert_assignuser(alert_id, data)
+    raw_response = manage_alert_assignuser(data)
+    entry_context = {
+        'AssignedUser': assign_user,
+        'ConclusionID': conclusion_id
+    }
+
+    return_outputs("Assigned User: {} to alert with conclusion ID {}".format(assign_user, conclusion_id),
+                   {'Fidelis.Alert(val.ConclusionID && val.ID == obj.ConclusionID)': entry_context}, raw_response)
 
 
-@logger
-def manage_alert_assignuser(alert_id, data):
+def manage_alert_assignuser(data):
     url = '/j/rest/v2/alert/mgmt/'
-    http_request('POST', url, data=data)
-
-
-# end of assigning user section
-
-# This section will add a comment, assign a user and change status of an conclusion to closed (agg_alert_id)
+    raw_res = http_request('POST', url, data=data)
+    return raw_res
 
 
 def manage_alert_closealert_command():
     args = demisto.args()
-    alert_id = args['alert_id']
-    assignToUser = args['assignToUser']
-    comment = args['comment']
+    conclusion_id = args['conclusion_id']
+    comment = args.get('comment')
     resolution = args['resolution']
 
     data = {
-        'alertIds': ['Console-' + str(alert_id)],
-        'assignToUser': assignToUser,
+        'alertIds': ['Console-' + str(conclusion_id)],
         # This field is not used by Fidelis when closing alerts / So setting it doesn't matter
         'searchParams': None,
         'byId': True,
@@ -416,42 +396,16 @@ def manage_alert_closealert_command():
         'action': "STATUS",
     }
 
-    manage_alert_closealert(alert_id, data)
+    raw_response = manage_alert_closealert(data)
 
-    demisto.results(
-        data
-
-    )
+    return_outputs("Closed alert conclusion ID {}".format(conclusion_id), {}, raw_response)
 
 
 @logger
-def manage_alert_closealert(alert_id, data):
+def manage_alert_closealert(data):
     url = '/j/rest/v2/alert/mgmt/'
-    http_request('POST', url, data=data)
-
-
-# end of adding a comment, changing stats and assigning user section
-
-
-# This section will upload a URL - does not work / although it also doesn't return an error
-def upload_URL_command():
-    args = demisto.args()
-    url = args['url']
-
-    data = {
-        'url': url,
-    }
-
-    upload_URL(data)
-
-
-@logger
-def upload_URL(data):
-    url = '/j/rest/malware/submitUrl/'
-    http_request('POST', url, data=data)
-
-
-# end of URL upload
+    raw_res = http_request('POST', url, data=data)
+    return raw_res
 
 
 def get_alert_sessiondata_command():
@@ -460,6 +414,14 @@ def get_alert_sessiondata_command():
 
     result = get_alert_sessiondata(alert_id)
     context_result = capitalize_first_letter(result)
+
+    # The API has typos built in "serverDomaniName" - should be ServerDomainName,
+    # clientDomaniName - should be ClientDomainName,
+    context_result['ServerDomainName'] = context_result['ServerDomaniName']
+    del context_result['ServerDomaniName']
+    context_result['ClientDomainName'] = context_result['ClientDomaniClient']
+    del context_result['ClientDomaniClient']
+
     output = {
         'ID': alert_id,
         'SessionData': context_result
@@ -493,7 +455,7 @@ def get_alert_ef_command():
     context_result = capitalize_first_letter(result)
     output = {
         'ID': alert_id,
-        'EF': context_result
+        'ExecutionForensics': context_result
     }
 
     demisto.results({
@@ -1233,35 +1195,32 @@ def main():
         elif command == 'fidelis-get-alert-session-data':
             get_alert_sessiondata_command()
 
-        elif command == 'fidelis-get-alert-ef':
+        elif command == 'fidelis-get-alert-execution-forensics':
             get_alert_ef_command()
 
         elif command == 'fidelis-get-alert-forensic-text':
             get_alert_forensictext_command()
 
-        elif command == 'fidelis-get-alert-dpath':
+        elif command == 'fidelis-get-alert-decoding-path':
             get_alert_dpath_command()
 
         elif command == 'fidelis-update-alert-status':
             update_alertstatus_command()
 
-        elif command == 'fidelis-alert-ef-submission':
+        elif command == 'fidelis-alert-execution-forensics-submission':
             alert_ef_submission_command()
 
         elif command == 'fidelis-add-alert-comment':
             add_alert_comment_command()
 
-        elif command == 'fidelis-manage-alert-assign-user':
+        elif command == 'fidelis-assign-user-to-alert':
             manage_alert_assignuser_command()
 
-        elif command == 'fidelis-manage-alert-close-alert':
+        elif command == 'fidelis-close-alert':
             manage_alert_closealert_command()
 
         elif command == 'fidelis-manage-alert-label':
             manage_alert_label_command()
-
-        elif command == 'fidelis-upload-url':
-            upload_URL_command()
 
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
