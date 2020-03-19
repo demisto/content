@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Fixed an issue with the ***get-incident*** command when the returned sources attribute is set to "[null]". Applicable to NetWitness 11.4.
 
 ## [20.2.3] - 2020-02-18
