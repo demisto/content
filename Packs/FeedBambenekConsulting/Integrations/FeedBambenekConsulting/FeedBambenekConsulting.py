@@ -41,11 +41,8 @@ def main():
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga-feed.gz': {
-            'fieldnames': ['value',
-                           'ip',
-                           'nsname',
-                           'nsip',
-                           'description',
+            'fieldnames': ['value', 'description',
+                           'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {
@@ -54,11 +51,8 @@ def main():
             'is_zipped_file': True
         },
         'https://faf.bambenekconsulting.com/feeds/dga-feed-high.gz': {
-            'fieldnames': ['value',
-                           'ip',
-                           'nsname',
-                           'nsip',
-                           'description',
+            'fieldnames': ['value', 'description',
+                           'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
             'mapping': {

@@ -135,7 +135,7 @@ class Client(BaseClient):
                 return_error('Exception in request: {} {}'.format(r.status_code, r.content))
                 raise
 
-            if self.feed_url_to_config.get(url).get('is_zipped_file'):
+            if self.feed_url_to_config and self.feed_url_to_config.get(url).get('is_zipped_file'):  # type: ignore
                 response_content = gzip.decompress(r.content)
             else:
                 response_content = r.content
@@ -146,8 +146,8 @@ class Client(BaseClient):
             else:
                 fieldnames = self.fieldnames
             if self.ignore_regex is not None:
-                response = filter(
-                    lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
+                response = filter(  # type: ignore
+                    lambda x: self.ignore_regex.match(x) is None,  # type: ignore
                     response
                 )
 
