@@ -26,7 +26,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -109,7 +109,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.8.1.6120
+  dockerimage: demisto/python3:3.8.2.6712
   feed: true
   isfetch: false
   longRunning: false
