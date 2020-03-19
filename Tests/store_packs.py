@@ -209,7 +209,8 @@ class Pack(object):
         try:
             pack_metadata['price'] = int(user_metadata.get('price'))
         except Exception as e:
-            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional details {e}")
+            print_warning(f"{pack_id} pack price is not valid. The price was set to 0. Additional "
+                          f"details {e}")
             pack_metadata['price'] = 0
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
         pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
@@ -236,7 +237,7 @@ class Pack(object):
             str: full path to created pack zip.
         """
         zip_pack_path = f"{self._pack_path}.zip"
-        args = ('./signDirectory',  self._pack_path)
+        args = ('./signDirectory', self._pack_path)
         popen = subprocess.Popen(args, stdout=subprocess.PIPE)
         popen.wait()
         task_status = False
