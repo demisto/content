@@ -135,18 +135,14 @@ def test_get_feed_content():
         }
     }
 
-    adapter = requests_mock.Adapter()
-    session = requests.Session()
+    with requests_mock.Mocker() as m:
+        for url in feed_url_to_config:
+            client = Client(
+                url=url,
+                feed_url_to_config=feed_url_to_config,
+            )
 
-    session.mount('mock', adapter)
+            m.get(url, content=feed_url_to_config.get(url).get('content'))
+            raw_response = requests.get(url)
 
-    for url in feed_url_to_config:
-        client = Client(
-            url=url,
-            feed_url_to_config=feed_url_to_config,
-        )
-
-        adapter.register_uri('GET', f'mock://{url}', content=feed_url_to_config.get(url).get('content'))
-        raw_response = session.get(f'mock://{url}')
-
-        assert client.get_feed_content_divided_to_lines(url, raw_response) == ip_ranges_unzipped.decode('utf8').split('\n')
+            assert client.get_feed_content_divided_to_lines(url, raw_response) == ip_ranges_unzipped.decode('utf8').split('\n')
