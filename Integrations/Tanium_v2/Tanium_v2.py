@@ -100,16 +100,34 @@ class Client(BaseClient):
         return question_response
 
     def parse_question(self, text, parameters):
+        text_without_params = re.sub('\[(.*?)\]', '', text)
+        res = self.do_request('POST', 'parse_question', {'text': text_without_params}).get('data')[0]
+
         parameters_condition = []  # type: ignore
+        for item in res.get('selects'):
+            sensor = item.get('sensor').get('name')
+            search_results = re.search(f'{sensor}\[(.*?)\]', text)
+            if search_results:
+                parameters_str = search_results.group(1)
+                parameters = parameters_str.split(',')
+                endpoint_url = f'sensors/by-name/{sensor}'
+                sensor_response = self.do_request('GET', endpoint_url)
+                sensor_response = self.get_sensor_item(sensor_response.get('data'))
 
-        if parameters:
-            try:
-                parameters_condition = self.parse_sensor_parameters(parameters)
-            except Exception:
-                raise ValueError('Failed to parse question parameters.')
+                tmp_item = {'sensor': sensor, 'parameters': []}
+                index = 0
+                for param in parameters:
+                    if param:
+                        if param == '""':
+                            param = ''
+                        key = sensor_response['Parameters'][index]['Key']
+                        tmp_item['parameters'].append({
+                            'key': '||' + key + '||',
+                            'value': param
+                        })
 
-        res = self.do_request('POST', 'parse_question', {'text': text}).get('data')[0]
-
+                    index = index + 1
+                parameters_condition.append(tmp_item)
         res = self.add_parameters_to_question(res, parameters_condition)
         return res
 
@@ -140,7 +158,9 @@ class Client(BaseClient):
         for row in results_sets.get('rows'):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
-                item_value = item[0].get('text')
+                item_value = list(map(lambda x: x.get('text'), item))
+                item_value = ', '.join(item_value)
+
                 if item_value != '[no results]':
                     tmp_row[column] = item_value
             rows.append(tmp_row)
@@ -616,6 +636,7 @@ def ask_question(client, data_args):
     parameters = data_args.get('parameters')
 
     body = client.parse_question(question_text, parameters)
+    print(body)
     id_, res = client.create_question(body)
     context = {'ID': id_}
     context = createContext(context, removeNull=True)
