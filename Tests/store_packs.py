@@ -27,7 +27,7 @@ CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../..'))  # full pat
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, CONTENT_PACKS_FOLDER)  # full path to Packs folder in content repo
 INTEGRATIONS_FOLDER = "Integrations"  # integrations folder name inside pack
 BASE_PACK = "Base"  # base pack name
-USE_GCS_RELATIVE_PATH = False  # whether to use relative path in uploaded to gcs images
+USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
 GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
 
 # the format is defined in issue #19786, may change in the future
@@ -188,6 +188,7 @@ class Pack(object):
         pack_metadata['description'] = user_metadata.get('description') if user_metadata.get('description') else pack_id
         pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Pack.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
+        pack_metadata['legacy'] = user_metadata.get('legacy', True)
         pack_metadata['support'] = user_metadata.get('support', '')
         pack_metadata['supportDetails'] = {}
         support_url = user_metadata.get('url')
@@ -306,7 +307,7 @@ class Pack(object):
             return task_status, False
         except Exception as e:
             task_status = False
-            print_error(f"Failed in uploading {self._pack_name} pack to gcs.\nAdditional info: {e}")
+            print_error(f"Failed in uploading {self._pack_name} pack to gcs. Additional info:\n {e}")
             return task_status, True
 
     def format_metadata(self, pack_content_items, integration_images, author_image):
