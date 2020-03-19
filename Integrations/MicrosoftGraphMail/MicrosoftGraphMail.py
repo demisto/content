@@ -646,6 +646,7 @@ def main():
                                 client_id=auth_and_token_url, enc_key=enc_key, client_secret=enc_key, app_name=app_name,
                                 app_url=app_url, scope=scope, base_url=base_url, verify=use_ssl, proxy=proxy,
                                 ok_codes=ok_codes)
+
     client: MsGraphClient = MsGraphClient(ms_client)
 
     command = demisto.command()
