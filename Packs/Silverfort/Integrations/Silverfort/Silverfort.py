@@ -174,7 +174,7 @@ def update_user_entity_risk_command(client, args):
     result = client.update_user_entity_risk_http_request(upn, risks)
 
     if result == UPDATE_REQ_RESPONSE:
-        return "ok"
+        return "updated successfully!"
     else:
         return "Couldn't update the user entity's risk"
 
@@ -186,7 +186,7 @@ def update_resource_entity_risk_command(client, args):
     result = client.update_resource_entity_risk_http_request(resource_name, domain_name, risks)
 
     if result == UPDATE_REQ_RESPONSE:
-        return "ok"
+        return "updated successfully!"
     else:
         return "Couldn't update the resource entity's risk"
 
