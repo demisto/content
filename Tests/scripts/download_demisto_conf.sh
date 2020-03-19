@@ -33,7 +33,7 @@ if [ "$?" != "0" ]; then
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/awsinstancetool ./Tests/scripts/awsinstancetool
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/demisto.lic $DEMISTO_LIC_PATH
     cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/conf.json $SECRET_CONF_PATH
-    cp -r ./content-test-conf-master/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
+    cp -r ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
     rm -rf ./content-test-conf-$UNDERSCORE_CIRCLE_BRANCH
     rm -rf ./test_configuration.zip
     if [ "$UNDERSCORE_CIRCLE_BRANCH" != "master" ]; then
