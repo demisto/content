@@ -1,5 +1,8 @@
 ## [Unreleased]
-Fix User Account Control translation value.
+Fixed the User Account Control translation value.
+
+## [20.3.3] - 2020-03-18
+-
 
 ## [20.1.2] - 2020-01-22
  - Added 2 commands.
