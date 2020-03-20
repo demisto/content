@@ -2479,10 +2479,10 @@ class Domain(Indicator):
         if self.whois:
             domain_context['WHOIS'] = self.whois.to_context()
 
-            if domain_context['WHOIS']['Admin']:
+            if 'Admin' in domain_context['WHOIS']:
                 domain_context['Admin'] = domain_context['WHOIS']['Admin']
 
-            if domain_context['WHOIS']['Registrant']:
+            if 'Registrant' in domain_context['WHOIS']:
                 domain_context['Registrant'] = domain_context['WHOIS']['Registrant']
 
         if self.organization:

@@ -841,12 +841,7 @@ def search_indicator(indicator_type, indicator_value):
     return result_json
 
 
-def parse_indicator_response(res, indicator_type):
-    if not res.get('indicator'):
-        raise ValueError('Invalid response for indicator')
-    raw_tags = res.get('tags')
-    res = res['indicator']
-
+def parse_indicator_response(res, raw_tags, indicator_type):
     indicator = {}
     indicator['IndicatorValue'] = res.get('indicatorValue', '')
     indicator['IndicatorType'] = res.get('indicatorType', '')
@@ -893,7 +888,7 @@ def parse_indicator_response(res, indicator_type):
 
 
 def calculate_dbot_score(indicator_response, indicator_type):
-    latest_pan_verdicts = indicator_response['indicator']['latestPanVerdicts']
+    latest_pan_verdicts = indicator_response['latestPanVerdicts']
     if not latest_pan_verdicts:
         raise Exception('latestPanVerdicts value is empty in indicator response.')
 
@@ -1278,8 +1273,13 @@ def search_ip_command(ip):
 
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
+        if not raw_res.get('indicator'):
+            raise ValueError('Invalid response for indicator')
 
-        score = calculate_dbot_score(raw_res, indicator_type)
+        indicator = raw_res.get('indicator')
+        raw_tags = raw_res.get('tags')
+
+        score = calculate_dbot_score(indicator, indicator_type)
         dbot_score = DBotScore(
             indicator=ip_address,
             indicator_type=DBotScoreType.IP,
@@ -1292,7 +1292,7 @@ def search_ip_command(ip):
             dbot_score=dbot_score
         )
 
-        autofocus_ip_output = parse_indicator_response(raw_res, indicator_type)
+        autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         # create human readable markdown for ip
         tags = autofocus_ip_output.get('Tags')
@@ -1335,31 +1335,40 @@ def search_domain_command(args):
 
     for domain_name in domain_name_list:
         raw_res = search_indicator('domain', domain_name)
-        score = calculate_dbot_score(raw_res, indicator_type)
+        if not raw_res.get('indicator'):
+            raise ValueError('Invalid response for indicator')
+
+        indicator = raw_res.get('indicator')
+        raw_tags = raw_res.get('tags')
+
+        score = calculate_dbot_score(indicator, indicator_type)
+
         dbot_score = DBotScore(
             indicator=domain_name,
             indicator_type=DBotScoreType.DOMAIN,
             integration_name=VENDOR_NAME,
             score=score
         )
+        demisto.log(json.dumps(raw_res, indent=4))
 
         domain = Domain(
             domain=domain_name,
             dbot_score=dbot_score,
             whois=WHOIS(
-                creation_date=raw_res.get('whoisDomainCreationDate'),
-                expiration_date=raw_res.get('whoisDomainExpireDate'),
-                update_date=raw_res.get('whoisDomainUpdateDate'),
+                creation_date=indicator.get('whoisDomainCreationDate'),
+                expiration_date=indicator.get('whoisDomainExpireDate'),
+                update_date=indicator.get('whoisDomainUpdateDate'),
 
-                admin_email=raw_res.get('whoisAdminEmail'),
-                admin_name=raw_res.get('whoisAdminName'),
+                admin_email=indicator.get('whoisAdminEmail'),
+                admin_name=indicator.get('whoisAdminName'),
 
-                registrar_name=raw_res.get('whoisRegistrar'),
-                registrant_name=raw_res.get('whoisRegistrant')
+                registrar_name=indicator.get('whoisRegistrar'),
+
+                registrant_name=indicator.get('whoisRegistrant')
             )
         )
 
-        autofocus_domain_output = parse_indicator_response(raw_res, indicator_type)
+        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         # create human readable markdown for ip
         tags = autofocus_domain_output.get('Tags')
@@ -1403,7 +1412,13 @@ def search_url_command(url):
     for url_name in url_list:
 
         raw_res = search_indicator('url', url_name)
-        score = calculate_dbot_score(raw_res, indicator_type)
+        if not raw_res.get('indicator'):
+            raise ValueError('Invalid response for indicator')
+
+        indicator = raw_res.get('indicator')
+        raw_tags = raw_res.get('tags')
+
+        score = calculate_dbot_score(indicator, indicator_type)
 
         dbot_score = DBotScore(
             indicator=url_name,
@@ -1417,7 +1432,7 @@ def search_url_command(url):
             dbot_score=dbot_score
         )
 
-        autofocus_url_output = parse_indicator_response(raw_res, indicator_type)
+        autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_url_output.get('Tags')
         table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
@@ -1459,7 +1474,13 @@ def search_file_command(file):
 
     for sha256 in file_list:
         raw_res = search_indicator('sha256', sha256)
-        score = calculate_dbot_score(raw_res, indicator_type)
+        if not raw_res.get('indicator'):
+            raise ValueError('Invalid response for indicator')
+
+        indicator = raw_res.get('indicator')
+        raw_tags = raw_res.get('tags')
+
+        score = calculate_dbot_score(indicator, indicator_type)
         dbot_score = DBotScore(
             indicator=sha256,
             indicator_type=DBotScoreType.FILE,
@@ -1472,7 +1493,7 @@ def search_file_command(file):
             dbot_score=dbot_score
         )
 
-        autofocus_file_output = parse_indicator_response(raw_res, indicator_type)
+        autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
         table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {sha256}'
