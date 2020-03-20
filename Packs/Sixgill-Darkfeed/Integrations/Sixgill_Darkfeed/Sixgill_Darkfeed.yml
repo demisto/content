@@ -59,6 +59,11 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
+- defaultvalue: '1000'
+  display: Max number of indicators that can be fetched
+  name: maxIndicators
+  required: false
+  type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -66,11 +71,16 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- defaultvalue: '1000'
-  display: Max number of indicators that can be fetched
-  name: maxIndicators
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
   required: false
-  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
 description: Sixgill's premium underground intelligence collection capabilities, real-time collection and advanced warning about IOCs to help you keep your edge against unknown threats.
 display: Sixgill DarkFeed™ Threat Intelligence
 name: Sixgill_Darkfeed

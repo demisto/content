@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-import json
 import requests
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
@@ -22,6 +21,8 @@ CHANNEL_CODE = '7698e8287dfde53dcd13082be750a85a'
 MAX_INDICATORS = 1000
 SUSPICIOUS_FEED_IDS = ["darkfeed_003"]
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+VERIFY = not demisto.params().get("insecure", True)
+SESSION = requests.Session()
 
 ''' HELPER FUNCTIONS '''
 
@@ -63,16 +64,10 @@ def to_demisto_indicator(value, indicators_name, stix2obj):
     return {
         "value": value,
         "type": indicators_name,
-        "rawJSON": json.dumps(stix2obj),
-        "actor": {stix2obj.get("sixgill_actor")},
+        "rawJSON": stix2obj,
         "fields": {
             "source": stix2obj.get("sixgill_source"),
             "name": stix2obj.get("sixgill_feedname"),
-            "trafficlightprotocoltlp": "amber",
-            "creationdate": datetime.strptime(
-                stix2obj.get('created'), DEMISTO_DATETIME_FORMAT),
-            "modified": datetime.strptime(
-                stix2obj.get('modified'), DEMISTO_DATETIME_FORMAT),
             "description":
                 f'''description: {stix2obj.get("description")}
 feedid: {stix2obj.get("sixgill_feedid")}
@@ -80,7 +75,7 @@ title: {stix2obj.get("sixgill_posttitle")}
 post_id: {stix2obj.get("sixgill_postid")}
 actor: {stix2obj.get("sixgill_actor")}
 lang: {stix2obj.get("lang")}
-"tags": {stix2obj.get("labels")}
+labels: {stix2obj.get("labels")}
 external_reference: {stix2obj.get("external_reference", {})}'''},
         "score": to_demisto_score(stix2obj.get("sixgill_feedid"))}
 
@@ -104,11 +99,10 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
             if demisto_indicator_map:
                 indicators_name = demisto_indicator_map.get('name')
 
-                if sixgill_feedid == 'darkfeed_002' and sixgill_feedid == 'darkfeed_012':
+                if sixgill_feedid == 'darkfeed_002' or sixgill_feedid == 'darkfeed_012':
                     indicators_name = indicators_name.get(sub_type) if indicators_name else ""
 
                 value = run_pipeline(value, demisto_indicator_map.get('pipeline', []), log)
-
                 demisto_indicator = to_demisto_indicator(value, indicators_name, stix2obj)
                 indicators.append(demisto_indicator)
 
@@ -122,8 +116,8 @@ def stix2_to_demisto_indicator(stix2obj: Dict[str, Any], log):
 demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_001': {'name': FeedIndicatorType.Domain, 'pipeline': [strip_http, clean_url]},
     'darkfeed_002': {'name': {"hashes.MD5": FeedIndicatorType.MD5,
-                              "hashes.SHA-1": FeedIndicatorType.SHA1,
-                              "hashes.SHA-256": FeedIndicatorType.SHA256}, 'pipeline': []},
+                              "hashes.'SHA-1'": FeedIndicatorType.SHA1,
+                              "hashes.'SHA-256'": FeedIndicatorType.SHA256}, 'pipeline': []},
     'darkfeed_003': {'name': FeedIndicatorType.Domain, 'pipeline': [strip_http, clean_url]},
     'darkfeed_004': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_005': {'name': FeedIndicatorType.IP, 'pipeline': []},
@@ -133,8 +127,8 @@ demisto_mapping: Dict[str, Dict[str, Any]] = {
     'darkfeed_009': {'name': FeedIndicatorType.IP, 'pipeline': []},
     'darkfeed_010': {'name': FeedIndicatorType.URL, 'pipeline': [url_to_rfc3986, clean_url]},
     'darkfeed_012': {'name': {"hashes.MD5": FeedIndicatorType.MD5,
-                              "hashes.SHA-1": FeedIndicatorType.SHA1,
-                              "hashes.SHA-256": FeedIndicatorType.SHA256}, 'pipeline': []},
+                              "hashes.'SHA-1'": FeedIndicatorType.SHA1,
+                              "hashes.'SHA-256'": FeedIndicatorType.SHA256}, 'pipeline': []},
 
 }
 
@@ -146,31 +140,35 @@ def test_module_command(*args):
     """
     Performs basic Auth request
     """
-    session = requests.Session()
-    response = session.send(request=SixgillAuthRequest(demisto.params()['client_id'],
-                                                       demisto.params()['client_secret']).prepare(), verify=False)
+    response = SESSION.send(request=SixgillAuthRequest(demisto.params()['client_id'],
+                                                       demisto.params()['client_secret']).prepare(), verify=VERIFY)
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
-    return 'ok'
+    return 'ok', None, 'ok'
 
 
 def get_indicators_command(client: SixgillFeedClient, args):
     limit = int(args.get('limit'))
-    return fetch_indicators_command(client, limit, False)
+    indicators = fetch_indicators_command(client, limit, True)
+
+    human_readable = tableToMarkdown('Indicators from Sixgill Dark Feed:', indicators,
+                                     headers=['value', 'type', 'rawJSON', 'score'])
+    return human_readable, {}, indicators
 
 
-def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, force_commit: bool = True):
+def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, get_indicators_mode: bool = False):
     bundle = client.get_bundle()
     indicators_to_create: List = []
 
-    num_of_items = limit if not force_commit else len(bundle.get("objects"))
-
-    for stix_indicator in bundle.get("objects")[:num_of_items]:
+    for stix_indicator in bundle.get("objects"):
         if is_indicator(stix_indicator):
             demisto_indicators = stix2_to_demisto_indicator(stix_indicator, demisto)
             indicators_to_create.extend(demisto_indicators)
 
-    if force_commit:
+        if get_indicators_mode and len(indicators_to_create) == limit:
+            break
+
+    if not get_indicators_mode:
         client.commit_indicators()
 
     return indicators_to_create
@@ -180,13 +178,15 @@ def fetch_indicators_command(client: SixgillFeedClient, limit: int = 0, force_co
 
 
 def main():
-    max_indicators = get_limit(demisto.args().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
+    max_indicators = get_limit(demisto.params().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
+
+    SESSION.proxies = handle_proxy()
 
     client = SixgillFeedClient(demisto.params()['client_id'],
                                demisto.params()['client_secret'],
                                CHANNEL_CODE,
                                FeedStream.DARKFEED,
-                               demisto, max_indicators)
+                               demisto, max_indicators, SESSION)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -201,8 +201,9 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
-            outputs = commands[command](client, demisto.args())
-            return_outputs(outputs)
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+
+            return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Error failed to execute {demisto.command()}, error: [{e}]')
