@@ -48,6 +48,16 @@ configuration:
   - Trend Anomaly
   required: false
   type: 15
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
 description: Define key assets relevant to your brand, industry and geolocation. Obtain bespoke threat intelligence automatically gathered from exclusive deep, dark and surface web sources--delivered straight into the Anomali platform.
 display: Sixgill Deep Insights
 name: Sixgill

@@ -31,6 +31,9 @@ THREAT_LEVEL_TO_SEVERITY = {
 SCORE_LIST = ["Low", "Medium", "High"]
 MAX_SIXGILL_SEVERITY = 100
 SEVERITY_RATIO = (MAX_SIXGILL_SEVERITY + 1) // len(SCORE_LIST)
+VERIFY = not demisto.params().get("insecure", True)
+SESSION = requests.Session()
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -73,9 +76,8 @@ def test_module():
     """
     Performs basic Auth request
     """
-    session = requests.Session()
-    response = session.send(request=SixgillAuthRequest(demisto.params()['client_id'],
-                                                       demisto.params()['client_secret']).prepare(), verify=False)
+    response = SESSION.send(request=SixgillAuthRequest(demisto.params()['client_id'],
+                                                       demisto.params()['client_secret']).prepare(), verify=VERIFY)
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
 
@@ -86,7 +88,7 @@ def fetch_incidents():
     max_incidents = get_limit(demisto.params().get('maxIncidents', MAX_INCIDENTS), MAX_INCIDENTS)
 
     sixgill_alerts_client = SixgillAlertClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                               CHANNEL_CODE, demisto, max_incidents)
+                                               CHANNEL_CODE, demisto, max_incidents, SESSION)
 
     filter_alerts_kwargs = get_incident_init_params()
 
@@ -109,7 +111,7 @@ def sixgill_get_indicators_command():
     max_indicators = get_limit(demisto.args().get('maxIndicators', MAX_INDICATORS), MAX_INDICATORS)
 
     sixgill_darkfeed_client = SixgillFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                                CHANNEL_CODE, FeedStream.DARKFEED, demisto, max_indicators)
+                                                CHANNEL_CODE, FeedStream.DARKFEED, demisto, max_indicators, SESSION)
 
     bundle = sixgill_darkfeed_client.get_bundle()
     sixgill_darkfeed_client.commit_indicators()
@@ -136,6 +138,8 @@ def sixgill_get_indicators_command():
 
 
 try:
+    SESSION.proxies = handle_proxy()
+
     if demisto.command() == 'test-module':
         test_module()
         demisto.results('ok')
