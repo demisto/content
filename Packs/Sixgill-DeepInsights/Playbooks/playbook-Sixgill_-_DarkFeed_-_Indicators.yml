@@ -100,4 +100,4 @@ view: |-
   }
 inputs: []
 outputs: []
-description: 'The playbook extracts a STIX bundle then uses StixParser automation in order to parse and push indicators into demisto’s platform.'
+description: 'Deprecated, use Sixgill DarkFeed™ Threat Intelligence integration filters instead The playbook extracts a STIX bundle then uses StixParser automation in order to parse and push indicators into demisto’s platform.'

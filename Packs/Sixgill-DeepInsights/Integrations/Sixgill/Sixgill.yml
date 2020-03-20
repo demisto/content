@@ -48,22 +48,12 @@ configuration:
   - Trend Anomaly
   required: false
   type: 15
-description: Fetching Sixgill's alerts as incidents, Sixgill provides alerts that
-  are based on organization assets, enabling you to take proactive steps to eliminate
-  and mitigate your threats.
-display: Sixgill Alerts
+description: Define key assets relevant to your brand, industry and geolocation. Obtain bespoke threat intelligence automatically gathered from exclusive deep, dark and surface web sources--delivered straight into the Anomali platform.
+display: Sixgill Deep Insights
 name: Sixgill
 script:
   commands:
-  - arguments:
-    - default: false
-      defaultValue: '100'
-      description: Max number of indicators that can be fetched
-      isArray: false
-      name: maxIndicators
-      required: false
-      secret: false
-    deprecated: true
+  - deprecated: true
     description: Fetching Sixgill's DarkFeed Threat Intelligence indicators
     execution: true
     name: sixgill-get-indicators

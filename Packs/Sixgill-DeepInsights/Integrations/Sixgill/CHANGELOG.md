@@ -1,4 +1,9 @@
 ## [Unreleased]
+- Updated Readme
+- Updated DockerImage
+- Deprecated get-indicators command
+- Updated Test
+- New picture
 
 
 ## [20.2.0] - 2020-02-04
