@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.3.3] - 2020-03-18
 Fixed handling of reputation commands with array input in cases where no reputation was found for a specific indicator.
 
 ## [20.3.1] - 2020-03-04
