@@ -97,10 +97,10 @@ class Client(BaseClient):
                                         url + fusion_path,
                                         headers=self.headers,
                                         params=self.PARAMS)
-        
+
         else:
             return_error("You've selected a non-existing service")
-            
+
         return response.prepare()
 
     def build_iterator(self, service, indicator_type):
@@ -368,7 +368,7 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
 
 def main():
     params = demisto.params()
-    client = Client(params.get('indicator_type'), params.get('api_token'), params.get('services'),
+    client = Client(params.get('indicator_type'), params.get('api_token'), params.get('x_services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'))
     command = demisto.command()

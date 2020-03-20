@@ -86,7 +86,7 @@ configuration:
 - defaultvalue: connectApi
   display: Services
   hidden: false
-  name: services
+  name: x_services
   options:
   - connectApi
   - fusion
