@@ -2080,7 +2080,13 @@
         },
         {
             "integrations": ["Rasterize","Image OCR"],
-            "playbookID": "Rasterize Test"
+            "playbookID": "Rasterize Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": ["Rasterize","Image OCR"],
+            "playbookID": "Rasterize 4.5 Test",
+            "toversion": "4.5.9"
         },
         {
             "integrations": "Rasterize",
@@ -2512,7 +2518,6 @@
         "Bluecat Address Manager test": "Issue 22616",
         "Office365_Feed_Test": "Issue 22517",
         "Test XDR Playbook": "Issue 22512",
-        "RasterizeTest": "Issue 20702",
         "Send Investigation Summary Reports": "Issue 22299",
         "test-Expanse": "Expanse should provide domain that they have in their system",
         "TestProofpointFeed": "Issue 22229",

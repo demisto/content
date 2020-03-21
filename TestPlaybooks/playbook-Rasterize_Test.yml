@@ -2,6 +2,7 @@ id: Rasterize Test
 version: -1
 name: Rasterize Test
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
